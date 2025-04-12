@@ -1,0 +1,369 @@
+.board {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  width: 100%;
+  max-width: 750px;
+  margin: 2rem auto;
+}
+
+.zengo-board {
+  display: grid;
+  position: relative;
+  width: 100%; 
+  max-width: 700px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+                   linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+                   url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c4zIgKAAAA20lEQVR4nO3VbS+CQBCF4QFXhS5InQIW+P//1DYGEmOi7obEK8/HJs7J7CSzvROSyeR4GKQE6YlSKnyGvghp3f4MfgspfaQkJDEa8vzJMZC7kMskJJNQJqFMQpmEMgllEsoklEkok1AmoUxCmYQyCWXiZ9e2g1vNOc0u4GQYWs7po+CxLtSSs6qBYrseGv4JGi5pYRCcUsbYMOTEQ0nLT08GIetEXRvqT7RweTEcHaPi3HB0aSRqTtQ1sRhfMfVDMv4W11m7w+hMOZMQmGvvmxqjwawTzGQyieQNVXoKDAXgJ7MAAAAASUVORK5CYII=');
+  background-color: #e8c396; 
+  background-blend-mode: multiply;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  border: 12px solid #ba8c5e;
+  contain: content;
+}
+
+.board-intersection {
+  position: relative;
+  cursor: default;
+  transition: all 0.2s ease;
+  contain: layout style;
+}
+
+/* Create the grid lines */
+.board-intersection::before, 
+.board-intersection::after {
+  content: "";
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 2; /* Higher than 1 to ensure visibility */
+}
+
+/* Horizontal lines */
+.board-intersection::before {
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+}
+
+/* Vertical lines */
+.board-intersection::after {
+  width: 2px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+}
+
+/* Remove lines at edges */
+.board-intersection.is-first-row::before {
+  top: 50%;
+  width: 50%;
+  left: 50%;
+}
+
+.board-intersection.is-last-row::before {
+  top: 50%;
+  width: 50%;
+  right: 50%;
+}
+
+.board-intersection.is-first-col::after {
+  left: 50%;
+  height: 50%;
+  top: 50%;
+}
+
+.board-intersection.is-last-col::after {
+  left: 50%;
+  height: 50%;
+  bottom: 50%;
+}
+
+/* Style for the star points (Hoshi) */
+.star-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #000;
+  border-radius: 50%;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Style for stones */
+.stone {
+  width: 65%; /* Reduced from 70% */
+  height: 65%; /* Reduced from 70% */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  box-shadow: 
+    inset 0 -4px 5px rgba(0,0,0,0.2),
+    inset 0 4px 5px rgba(255,255,255,0.2),
+    0 6px 8px rgba(0,0,0,0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px;
+  contain: paint layout;
+}
+
+/* 실제 애니메이션 요소에만 will-change 적용 */
+.stone.animate-hide,
+.stone.animate-new,
+.stone.correct,
+.stone.incorrect {
+  will-change: transform, opacity;
+}
+
+.stone.black {
+  background: radial-gradient(circle at 30% 30%, #444, #111);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+}
+
+.stone.white {
+  background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+  color: #333;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.7);
+  border: 1px solid #bbb;
+}
+
+/* Memory phase styling */
+.stone.memory-phase {
+  animation: glow-pulse 2s infinite;
+  box-shadow: 
+    inset 0 -4px 5px rgba(0,0,0,0.2),
+    inset 0 4px 5px rgba(255,255,255,0.2),
+    0 0 15px 5px rgba(255, 215, 0, 0.6);
+  /* 메모리 페이즈 애니메이션 최적화 */
+  will-change: box-shadow;
+}
+
+@keyframes glow-pulse {
+  0% { box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.6); }
+  50% { box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.8); }
+  100% { box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.6); }
+}
+
+/* Placeable indicator styles */
+.board-intersection.placeable {
+  cursor: pointer;
+}
+
+.board-intersection.placeable:hover::before,
+.board-intersection.placeable:hover::after {
+  background-color: rgba(74, 144, 226, 0.7);
+}
+
+.board-intersection.placeable:hover {
+  background-color: rgba(74, 144, 226, 0.1);
+  border-radius: 50%;
+  /* 호버 시에만 will-change 적용 */
+  will-change: background-color;
+}
+
+/* Animation styles - optimized with transform and opacity only */
+.stone-appearing {
+  animation: appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform, opacity;
+}
+
+@keyframes appear {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0;
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.word-hiding {
+  animation: fadeOutText 0.8s forwards;
+  will-change: transform, opacity;
+}
+
+/* Stone hiding animation that matches word hiding - optimized for performance */
+.stone.animate-hide {
+  animation: fadeOutStone 0.8s forwards;
+  transition: opacity 0.8s, transform 0.8s;
+  will-change: transform, opacity;
+}
+
+@keyframes fadeOutStone {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  30% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+  }
+  70% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.7) rotate(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
+/* Enhanced word disappearing animation - optimized for performance */
+@keyframes fadeOutText {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* Enhanced feedback styles with optimized transform and opacity */
+.stone.correct {
+  box-shadow: 
+    inset 0 -4px 5px rgba(0,0,0,0.2),
+    inset 0 4px 5px rgba(255,255,255,0.2),
+    0 0 12px 4px rgba(76, 175, 80, 0.7);
+  animation: correctPulse 0.8s ease-in-out;
+  will-change: transform, box-shadow;
+}
+
+.stone.incorrect {
+  box-shadow: 
+    inset 0 -4px 5px rgba(0,0,0,0.2),
+    inset 0 4px 5px rgba(255,255,255,0.2),
+    0 0 12px 4px rgba(244, 67, 54, 0.7);
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+  will-change: transform;
+}
+
+@keyframes correctPulse {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.15); 
+    box-shadow: 
+      inset 0 -4px 5px rgba(0,0,0,0.2),
+      inset 0 4px 5px rgba(255,255,255,0.2),
+      0 0 20px 8px rgba(76, 175, 80, 0.9);
+  }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* 애니메이션 최적화 - transform으로만 변화 구현 */
+@keyframes shake {
+  0%, 100% { transform: translate(-50%, -50%); }
+  10%, 30%, 50%, 70%, 90% { transform: translate(-52%, -50%); }
+  20%, 40%, 60%, 80% { transform: translate(-48%, -50%); }
+}
+
+.word-order-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background-color: #FFC107;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  z-index: 4;
+}
+
+/* 7x7 보드를 위한 최적화된 반응형 미디어 쿼리 */
+@media (min-width: 601px) {
+  [data-board-size="5"] .zengo-board {
+    font-size: 0.9em;
+  }
+
+  [data-board-size="7"] .zengo-board {
+    font-size: 0.85em;
+  }
+}
+
+@media (max-width: 600px) {
+  .stone {
+    font-size: 0.85em;
+    padding: 1px;
+  }
+  
+  [data-board-size="5"] .stone {
+    font-size: 0.75em;
+    padding: 0;
+  }
+  
+  [data-board-size="7"] .stone {
+    font-size: 0.7em;
+    padding: 0;
+    width: 60%;
+    height: 60%;
+  }
+}
+
+/* 작은 화면에서의 추가 최적화 */
+@media (max-width: 400px) {
+  .stone {
+    font-size: 0.7em;
+  }
+  
+  [data-board-size="7"] .stone {
+    font-size: 0.6em;
+    width: 55%;
+    height: 55%;
+  }
+}
+
+/* 저사양 기기를 위한 애니메이션 최적화 */
+@media (prefers-reduced-motion: reduce) {
+  .stone,
+  .stone.animate-hide,
+  .stone.animate-new,
+  .stone.correct,
+  .stone.incorrect,
+  .stone.memory-phase {
+    transition: none;
+    animation: none;
+    will-change: auto;
+  }
+
+  .stone.animate-hide {
+    opacity: 0;
+  }
+
+  .stone.correct {
+    box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.7);
+  }
+
+  .stone.incorrect {
+    box-shadow: 0 0 8px 2px rgba(244, 67, 54, 0.7);
+  }
+}
+

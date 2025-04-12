@@ -1,0 +1,457 @@
+import axios, { AxiosError, AxiosResponse } from 'axios';
+
+// 베이스 URL을 8000번 포트로 변경
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+// Default timeout for all requests (ms)
+const DEFAULT_TIMEOUT = 10000; // 10 seconds
+
+// Error messages
+export const API_ERRORS = {
+  NETWORK_ERROR: '네트워크 연결에 문제가 있습니다. 인터넷 연결을 확인해주세요.',
+  TIMEOUT_ERROR: '서버 응답이 너무 오래 걸립니다. 나중에 다시 시도해주세요.',
+  AUTH_ERROR: '로그인이 필요하거나 세션이 만료되었습니다.',
+  SERVER_ERROR: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+  NOT_FOUND: '요청한 리소스를 찾을 수 없습니다.',
+  UNKNOWN_ERROR: '알 수 없는 오류가 발생했습니다.',
+};
+
+// Create axios instance with configuration
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: DEFAULT_TIMEOUT,
+});
+
+// Add a request interceptor to include the auth token
+api.interceptors.request.use(
+  (config) => {
+    // Get token from localStorage in client side
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error: any) => {
+    // Handle canceled requests
+    if (axios.isCancel(error)) {
+      const abortError = new Error('ABORTED');
+      console.log('Request aborted:', error?.message || 'No reason provided');
+      return Promise.reject(abortError);
+    }
+
+    // Handle network errors (no internet connection)
+    if (error?.message === 'Network Error') {
+      const networkError = new Error(API_ERRORS.NETWORK_ERROR);
+      return Promise.reject(networkError);
+    }
+
+    // Handle API errors based on status code
+    if (error?.response && typeof error.response === 'object') {
+      const { status } = error.response;
+      
+      switch (status) {
+        case 401:
+          return Promise.reject(new Error(API_ERRORS.AUTH_ERROR));
+        case 404:
+          return Promise.reject(new Error(API_ERRORS.NOT_FOUND));
+        case 500:
+        case 502:
+        case 503:
+        case 504:
+          return Promise.reject(new Error(API_ERRORS.SERVER_ERROR));
+        default:
+          // Get error message from response if available
+          const errorMessage = error.response?.data?.message || 
+                              error.response?.data?.error || 
+                              `Error ${status}`;
+          return Promise.reject(new Error(errorMessage));
+      }
+    }
+
+    // Fallback for other error types
+    const message = error?.message || 'Unknown error occurred';
+    return Promise.reject(new Error(message));
+  }
+);
+
+/**
+ * Higher-order function that adds retry logic to an API call
+ */
+export const withRetry = async <T>(
+  fn: () => Promise<T>,
+  {
+    retries = 3,
+    initialDelay = 500,
+    excludedErrors = [API_ERRORS.AUTH_ERROR, API_ERRORS.NOT_FOUND, 'ABORTED'],
+  }: {
+    retries?: number;
+    initialDelay?: number;
+    excludedErrors?: string[];
+  } = {}
+): Promise<T> => {
+  let lastError: any;
+  let attempt = 0;
+
+  while (attempt <= retries) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      lastError = error;
+      const errorMessage = error?.message || 'Unknown error';
+
+      // Don't retry on certain errors
+      if (excludedErrors.some(excluded => errorMessage.includes(excluded))) {
+        console.log(`Not retrying due to excluded error: ${errorMessage}`);
+        throw error;
+      }
+
+      // If we've exhausted our retries, throw the last error
+      if (attempt >= retries) {
+        console.log(`All ${retries} retries exhausted`);
+        throw lastError;
+      }
+
+      // Calculate backoff delay with jitter
+      const delay = initialDelay * Math.pow(2, attempt) * (0.8 + Math.random() * 0.4);
+      
+      // Log retry information
+      console.log(`API call failed (attempt ${attempt + 1}/${retries + 1}): ${errorMessage}`);
+      console.log(`Retrying in ${Math.round(delay)}ms...`);
+      
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, delay));
+      attempt++;
+    }
+  }
+
+  // This should never happen but TypeScript requires a return value
+  throw lastError;
+};
+
+/**
+ * Helper function to safely execute fetch requests with proper AbortError handling
+ * Use this wrapper when making direct fetch calls outside the axios instance
+ */
+export const safeFetch = async <T>(
+  fetchFn: () => Promise<T>,
+  errorHandler?: (error: any) => void
+): Promise<T | null> => {
+  try {
+    return await fetchFn();
+  } catch (error: any) {
+    // Don't propagate AbortError - it's expected when components unmount
+    if (error.name === 'AbortError') {
+      console.log('Fetch request aborted');
+      return null;
+    }
+    
+    // Let the caller handle other errors if they provided a handler
+    if (errorHandler) {
+      errorHandler(error);
+    } else {
+      console.error('Fetch error:', error);
+    }
+    
+    throw error;
+  }
+};
+
+// Auth API
+export const auth = {
+  register: async (email: string, password: string, nickname: string, inviteCode?: string) => {
+    const response = await api.post('/auth/register', { email, password, nickname, inviteCode });
+    return response.data;
+  },
+  
+  login: async (email: string, password: string) => {
+    const response = await api.post('/auth/login', { email, password });
+    // Store token in localStorage
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+    return response.data;
+  },
+  
+  logout: () => {
+    localStorage.removeItem('token');
+  },
+  
+  resetPassword: async (email: string) => {
+    const response = await api.post('/auth/reset-password', { email });
+    return response.data;
+  },
+};
+
+// User API
+export const user = {
+  updateProfile: async (userId: string, data: { nickname?: string, profileImage?: string }) => {
+    const response = await api.put(`/users/${userId}`, data);
+    return response.data;
+  },
+  
+  getProfile: async () => {
+    const response = await api.get('/users/profile');
+    return response.data;
+  },
+  
+  getSettings: async () => {
+    const response = await api.get('/users/settings');
+    return response.data;
+  },
+  
+  updateSettings: async (settings: any) => {
+    const response = await api.put('/users/settings', settings);
+    return response.data;
+  },
+  
+  uploadProfileImage: async (file: File) => {
+    const formData = new FormData();
+    formData.append('profileImage', file);
+    
+    const response = await api.post('/users/profile-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+};
+
+// Books API
+export const books = {
+  getAll: async () => {
+    return withRetry(async () => {
+      const response = await api.get('/books');
+      return response.data;
+    });
+  },
+  
+  getById: async (id: string) => {
+    return withRetry(async () => {
+      const response = await api.get(`/books/${id}`);
+      return response.data;
+    });
+  },
+  
+  create: async (bookData: any) => {
+    const response = await api.post('/books', bookData);
+    return response.data;
+  },
+  
+  update: async (id: string, bookData: any) => {
+    // The server only has a specific endpoint for updating book progress
+    const response = await api.put(`/books/${id}/progress`, bookData);
+    return response.data;
+  },
+  
+  delete: async (id: string) => {
+    const response = await api.delete(`/books/${id}`);
+    return response.data;
+  },
+};
+
+// Notes API
+export const notes = {
+  getByBookId: async (bookId: string) => {
+    return withRetry(async () => {
+      const response = await api.get(`/notes?bookId=${bookId}`);
+      return response.data;
+    });
+  },
+  
+  create: async (noteData: any) => {
+    const response = await api.post('/notes', noteData);
+    return response.data;
+  },
+  
+  update: async (id: string, noteData: any) => {
+    const response = await api.put(`/notes/${id}`, noteData);
+    return response.data;
+  },
+  
+  delete: async (id: string) => {
+    const response = await api.delete(`/notes/${id}`);
+    return response.data;
+  },
+};
+
+// TS Sessions API
+export const sessions = {
+  create: async (sessionData: any) => {
+    const response = await api.post('/sessions', sessionData);
+    return response.data;
+  },
+  
+  getByBookId: async (bookId: string) => {
+    return withRetry(async () => {
+      const response = await api.get(`/sessions?bookId=${bookId}`);
+      return response.data;
+    });
+  },
+  
+  getAll: async () => {
+    const response = await api.get('/sessions');
+    return response.data;
+  },
+  
+  update: async (id: string, sessionData: any) => {
+    const response = await api.put(`/sessions/${id}`, sessionData);
+    return response.data;
+  },
+};
+
+// Zengo API
+export const zengo = {
+  // 젠고 활동 목록 가져오기
+  getAll: async () => {
+    const response = await api.get('/zengo');
+    return response.data;
+  },
+  
+  // 특정 젠고 세션 상세 조회
+  getById: async (id: string) => {
+    const response = await api.get(`/zengo/${id}`);
+    return response.data;
+  },
+  
+  // 젠고 활동 결과 조회
+  getResults: async (id: string) => {
+    const response = await api.get(`/zengo/${id}/results`);
+    return response.data;
+  },
+  
+  // 젠고 세션 생성
+  create: async (data: { boardSize: number, moduleType: string }) => {
+    const response = await api.post('/zengo/start', data);
+    return response.data;
+  },
+  
+  // 젠고 세션 진행 중 모듈 결과 업데이트
+  updateModule: async (id: string, moduleResults: any) => {
+    const response = await api.put(`/zengo/${id}/module`, moduleResults);
+    return response.data;
+  },
+  
+  // 젠고 세션 완료
+  complete: async (id: string, results: any) => {
+    const response = await api.post(`/zengo/${id}/complete`, results);
+    return response.data;
+  },
+  
+  // 젠고 세션 취소
+  cancel: async (id: string) => {
+    const response = await api.post(`/zengo/${id}/cancel`);
+    return response.data;
+  },
+  
+  // 사용자의 젠고 통계 조회
+  getUserStats: async () => {
+    const response = await api.get('/zengo/stats');
+    return response.data;
+  },
+  
+  // 인지 능력 프로필 조회
+  getCognitiveProfile: async (period: 'all' | 'week' | 'month' | 'year' = 'month', limit?: number) => {
+    const params = new URLSearchParams();
+    params.append('period', period);
+    if (limit) params.append('limit', limit.toString());
+    
+    return withRetry(async () => {
+      const response = await api.get(`/zengo/cognitive-profile?${params.toString()}`);
+      return response.data;
+    });
+  },
+  
+  // 젠고 리더보드 조회
+  getLeaderboard: async (limit: number = 10) => {
+    const response = await api.get(`/leaderboard/zengo?limit=${limit}`);
+    return response.data;
+  }
+};
+
+// Leaderboard API
+export const leaderboard = {
+  getTopReaders: async (limit = 10) => {
+    const response = await api.get(`/leaderboard/readers?limit=${limit}`);
+    return response.data;
+  },
+  
+  getTopZengo: async (limit = 10) => {
+    const response = await api.get(`/leaderboard/zengo?limit=${limit}`);
+    return response.data;
+  },
+};
+
+// Badges API
+export const badges = {
+  getAll: async () => {
+    const response = await api.get('/badges');
+    return response.data;
+  },
+};
+
+// Invite API
+export const invites = {
+  create: async () => {
+    const response = await api.post('/invites');
+    return response.data;
+  },
+  
+  verify: async (code: string) => {
+    const response = await api.get(`/invites/verify/${code}`);
+    return response.data;
+  },
+};
+
+// Zengo Proverb Game API (NEW)
+export const zengoProverbApi = {
+  /**
+   * Fetches the content for a specific Zengo proverb level and language.
+   * GET /api/zengo/proverb-content
+   */
+  getContent: async (level: string, language: string) => {
+    return withRetry(async () => {
+      const response = await api.get('/zengo/proverb-content', {
+        params: { level, lang: language }, // Backend expects 'lang' query param
+      });
+      return response.data; // Should match IZengoProverbContent structure
+    });
+  },
+
+  /**
+   * Saves the result of a completed Zengo proverb session.
+   * POST /api/zengo/session-result
+   */
+  saveResult: async (resultData: {
+    contentId: string;
+    level: string;
+    language: string;
+    usedStonesCount: number;
+    correctPlacements: number;
+    incorrectPlacements: number;
+    timeTakenMs: number;
+    completedSuccessfully: boolean;
+    // Score is calculated backend, not sent from frontend
+  }) => {
+    // Ensure score is not sent, it's calculated server-side
+    const { score, ...dataToSend } = resultData as any;
+    const response = await api.post('/zengo/session-result', dataToSend);
+    return response.data; // Should match IZengoSessionResult structure
+  },
+};
+
+export default api; 

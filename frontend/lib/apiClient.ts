@@ -1,0 +1,159 @@
+import { toast } from 'react-hot-toast';
+import { apiDebug, debugLogger } from './debug';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+/**
+ * Base API client for making HTTP requests
+ */
+class ApiClient {
+  private getToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
+  }
+
+  /**
+   * Makes a fetch request with authorization and JSON handling
+   */
+  private async fetchWithAuth(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<any> {
+    const token = this.getToken();
+    const headers = new Headers(options.headers);
+    
+    headers.set('Content-Type', 'application/json');
+    
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    const config: RequestInit = {
+      ...options,
+      headers,
+    };
+
+    // 개발 환경에서는 디버그 래퍼 사용
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        const url = `${API_BASE_URL}${endpoint}`;
+        return await apiDebug.logApiRequest(url, config, 'apiClient');
+      } catch (error: any) {
+        const errorMessage = error.message || '서버와 통신 중 오류가 발생했습니다.';
+        toast.error(errorMessage);
+        throw error;
+      }
+    } else {
+      // 프로덕션 환경에서는 기존 방식 사용
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || '요청 처리 중 오류가 발생했습니다.');
+        }
+
+        return data;
+      } catch (error: any) {
+        const errorMessage = error.message || '서버와 통신 중 오류가 발생했습니다.';
+        toast.error(errorMessage);
+        throw error;
+      }
+    }
+  }
+
+  /**
+   * HTTP GET request
+   */
+  async get(endpoint: string): Promise<any> {
+    try {
+      const response = await this.fetchWithAuth(endpoint);
+      return response;
+    } catch (error) {
+      debugLogger.error(`GET ${endpoint} 실패`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * HTTP POST request
+   */
+  async post(endpoint: string, data: any): Promise<any> {
+    try {
+      const response = await this.fetchWithAuth(endpoint, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      return response;
+    } catch (error) {
+      debugLogger.error(`POST ${endpoint} 실패`, { error, data });
+      throw error;
+    }
+  }
+
+  /**
+   * HTTP PUT request
+   */
+  async put(endpoint: string, data: any): Promise<any> {
+    try {
+      const response = await this.fetchWithAuth(endpoint, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+      return response;
+    } catch (error) {
+      debugLogger.error(`PUT ${endpoint} 실패`, { error, data });
+      throw error;
+    }
+  }
+
+  /**
+   * HTTP DELETE request
+   */
+  async delete(endpoint: string): Promise<any> {
+    try {
+      const response = await this.fetchWithAuth(endpoint, {
+        method: 'DELETE',
+      });
+      return response;
+    } catch (error) {
+      debugLogger.error(`DELETE ${endpoint} 실패`, error);
+      throw error;
+    }
+  }
+}
+
+// Singleton instance
+export const apiClient = new ApiClient();
+
+/**
+ * Payment service for handling subscription-related API calls
+ */
+export const paymentService = {
+  /**
+   * Create a checkout session for subscription
+   */
+  createCheckoutSession: async (planId: string): Promise<{ checkoutUrl: string }> => {
+    return apiClient.post('/payments/create-checkout', { planId });
+  },
+
+  /**
+   * Get user's subscription status
+   */
+  getSubscriptionStatus: async (): Promise<{
+    isPremium: boolean;
+    currentPlan?: string;
+    expiresAt?: string;
+  }> => {
+    return apiClient.get('/user/subscription');
+  },
+
+  /**
+   * Cancel a subscription
+   */
+  cancelSubscription: async (): Promise<{ success: boolean }> => {
+    return apiClient.post('/payments/cancel-subscription', {});
+  },
+}; 

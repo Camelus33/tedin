@@ -1,0 +1,15 @@
+{
+  "/not-found": "app/not-found.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/ts/page": "app/ts/page.js",
+  "/zengo/page": "app/zengo/page.js",
+  "/page": "app/page.js",
+  "/books/new/page": "app/books/new/page.js",
+  "/books/[id]/edit/page": "app/books/[id]/edit/page.js",
+  "/books/[id]/page": "app/books/[id]/page.js",
+  "/ts/result/page": "app/ts/result/page.js",
+  "/books/page": "app/books/page.js",
+  "/ts/warmup/page": "app/ts/warmup/page.js",
+  "/ts/reading/page": "app/ts/reading/page.js",
+  "/ts/review/page": "app/ts/review/page.js"
+}

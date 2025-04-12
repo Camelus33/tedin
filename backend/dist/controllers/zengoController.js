@@ -1,0 +1,874 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.regeneratePositions = exports.saveSessionResult = exports.getProverbContent = exports.cancelZengo = exports.completeZengo = exports.updateModuleResults = exports.startZengo = exports.createZengo = exports.getZengoById = exports.getCognitiveProfile = exports.getZengoStats = exports.getUserZengo = void 0;
+const Zengo_1 = __importDefault(require("../models/Zengo"));
+const Badge_1 = __importDefault(require("../models/Badge"));
+const ZengoProverbContent_1 = __importDefault(require("../models/ZengoProverbContent"));
+const ZengoSessionResult_1 = __importDefault(require("../models/ZengoSessionResult"));
+const mongoose_1 = __importDefault(require("mongoose"));
+// import { koreanProverbs, englishProverbs } from '../scripts/data/expandedProverbs';
+// 사용자의 모든 Zengo 활동 조회
+const getUserZengo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        if (!userId) {
+            return res.status(401).json({ message: '인증이 필요합니다.' });
+        }
+        const zengo = yield Zengo_1.default.find({ userId })
+            .sort({ createdAt: -1 })
+            .select('-__v');
+        res.status(200).json(zengo);
+    }
+    catch (error) {
+        console.error('Zengo 목록 조회 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
+});
+exports.getUserZengo = getUserZengo;
+// Zengo 통계 조회
+const getZengoStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        // 현재 인증된 사용자의 ID
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        if (!userId) {
+            res.status(401).json({ message: '인증이 필요합니다.' });
+            return;
+        }
+        // 완료된 Zengo 활동만 조회
+        const completedActivities = yield Zengo_1.default.find({
+            user: userId,
+            status: 'completed'
+        }).sort({ completedAt: -1 });
+        if (completedActivities.length === 0) {
+            res.status(200).json({
+                totalActivities: 0,
+                averageScores: {
+                    overall: 0,
+                    attention: 0,
+                    memory: 0,
+                    reasoning: 0,
+                    creativity: 0
+                },
+                moduleAverages: {},
+                recentScores: [],
+                progress: {
+                    last7Days: [],
+                    last30Days: []
+                }
+            });
+            return;
+        }
+        // 전체 평균 점수 계산
+        let totalAttention = 0;
+        let totalMemory = 0;
+        let totalReasoning = 0;
+        let totalCreativity = 0;
+        let attentionCount = 0;
+        let memoryCount = 0;
+        let reasoningCount = 0;
+        let creativityCount = 0;
+        // 모듈별 평균 저장용 객체
+        const moduleScores = {};
+        // 최근 점수 (최대 10개)
+        const recentScores = completedActivities.slice(0, 10).map(activity => {
+            var _a, _b, _c, _d;
+            return ({
+                date: activity.completedAt,
+                moduleId: activity.moduleId,
+                scores: {
+                    attention: ((_a = activity.scores) === null || _a === void 0 ? void 0 : _a.attention) || 0,
+                    memory: ((_b = activity.scores) === null || _b === void 0 ? void 0 : _b.memory) || 0,
+                    reasoning: ((_c = activity.scores) === null || _c === void 0 ? void 0 : _c.reasoning) || 0,
+                    creativity: ((_d = activity.scores) === null || _d === void 0 ? void 0 : _d.creativity) || 0
+                }
+            });
+        });
+        // 각 활동별 데이터 처리
+        completedActivities.forEach(activity => {
+            var _a, _b, _c, _d, _e, _f, _g, _h;
+            // 모듈별 평균 계산용 데이터 수집
+            if (!moduleScores[activity.moduleId]) {
+                moduleScores[activity.moduleId] = { total: 0, count: 0, average: 0 };
+            }
+            // 수치형 평균값 계산을 위해 점수와 카운터 업데이트
+            if ((_a = activity.scores) === null || _a === void 0 ? void 0 : _a.attention) {
+                totalAttention += activity.scores.attention;
+                attentionCount++;
+            }
+            if ((_b = activity.scores) === null || _b === void 0 ? void 0 : _b.memory) {
+                totalMemory += activity.scores.memory;
+                memoryCount++;
+            }
+            if ((_c = activity.scores) === null || _c === void 0 ? void 0 : _c.reasoning) {
+                totalReasoning += activity.scores.reasoning;
+                reasoningCount++;
+            }
+            if ((_d = activity.scores) === null || _d === void 0 ? void 0 : _d.creativity) {
+                totalCreativity += activity.scores.creativity;
+                creativityCount++;
+            }
+            // 모듈별 평균 계산
+            const overallScore = ((((_e = activity.scores) === null || _e === void 0 ? void 0 : _e.attention) || 0) +
+                (((_f = activity.scores) === null || _f === void 0 ? void 0 : _f.memory) || 0) +
+                (((_g = activity.scores) === null || _g === void 0 ? void 0 : _g.reasoning) || 0) +
+                (((_h = activity.scores) === null || _h === void 0 ? void 0 : _h.creativity) || 0)) / 4;
+            moduleScores[activity.moduleId].total += overallScore;
+            moduleScores[activity.moduleId].count += 1;
+        });
+        // 모듈별 평균 계산
+        Object.keys(moduleScores).forEach(moduleId => {
+            moduleScores[moduleId].average = moduleScores[moduleId].total / moduleScores[moduleId].count;
+        });
+        // 최근 7일/30일 진행 데이터
+        const now = new Date();
+        const last7Days = new Date(now);
+        last7Days.setDate(now.getDate() - 7);
+        const last30Days = new Date(now);
+        last30Days.setDate(now.getDate() - 30);
+        const progress7Days = completedActivities
+            .filter(activity => activity.completedAt && activity.completedAt >= last7Days)
+            .map(activity => {
+            var _a, _b, _c, _d;
+            return ({
+                date: activity.completedAt,
+                moduleId: activity.moduleId,
+                overallScore: ((((_a = activity.scores) === null || _a === void 0 ? void 0 : _a.attention) || 0) +
+                    (((_b = activity.scores) === null || _b === void 0 ? void 0 : _b.memory) || 0) +
+                    (((_c = activity.scores) === null || _c === void 0 ? void 0 : _c.reasoning) || 0) +
+                    (((_d = activity.scores) === null || _d === void 0 ? void 0 : _d.creativity) || 0)) / 4
+            });
+        });
+        const progress30Days = completedActivities
+            .filter(activity => activity.completedAt && activity.completedAt >= last30Days)
+            .map(activity => {
+            var _a, _b, _c, _d;
+            return ({
+                date: activity.completedAt,
+                moduleId: activity.moduleId,
+                overallScore: ((((_a = activity.scores) === null || _a === void 0 ? void 0 : _a.attention) || 0) +
+                    (((_b = activity.scores) === null || _b === void 0 ? void 0 : _b.memory) || 0) +
+                    (((_c = activity.scores) === null || _c === void 0 ? void 0 : _c.reasoning) || 0) +
+                    (((_d = activity.scores) === null || _d === void 0 ? void 0 : _d.creativity) || 0)) / 4
+            });
+        });
+        // 평균 계산
+        const overallAverage = ((attentionCount > 0 ? totalAttention / attentionCount : 0) +
+            (memoryCount > 0 ? totalMemory / memoryCount : 0) +
+            (reasoningCount > 0 ? totalReasoning / reasoningCount : 0) +
+            (creativityCount > 0 ? totalCreativity / creativityCount : 0)) / 4;
+        res.status(200).json({
+            totalActivities: completedActivities.length,
+            averageScores: {
+                overall: overallAverage,
+                attention: attentionCount > 0 ? totalAttention / attentionCount : 0,
+                memory: memoryCount > 0 ? totalMemory / memoryCount : 0,
+                reasoning: reasoningCount > 0 ? totalReasoning / reasoningCount : 0,
+                creativity: creativityCount > 0 ? totalCreativity / creativityCount : 0
+            },
+            moduleAverages: moduleScores,
+            recentScores,
+            progress: {
+                last7Days: progress7Days,
+                last30Days: progress30Days
+            }
+        });
+    }
+    catch (error) {
+        console.error('Zengo 통계 조회 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.', error });
+    }
+});
+exports.getZengoStats = getZengoStats;
+// 인지 능력 프로필 조회
+const getCognitiveProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        // 현재 인증된 사용자의 ID
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        if (!userId) {
+            res.status(401).json({ message: '인증이 필요합니다.' });
+            return;
+        }
+        // 기간 파라미터 (기본값: 전체)
+        const period = req.query.period || 'all';
+        const limit = parseInt(req.query.limit) || 10;
+        // 날짜 필터 계산
+        const now = new Date();
+        let dateFilter = null;
+        if (period === 'week') {
+            dateFilter = new Date(now);
+            dateFilter.setDate(now.getDate() - 7);
+        }
+        else if (period === 'month') {
+            dateFilter = new Date(now);
+            dateFilter.setDate(now.getDate() - 30);
+        }
+        else if (period === 'year') {
+            dateFilter = new Date(now);
+            dateFilter.setDate(now.getDate() - 365);
+        }
+        // 완료된 Zengo 활동 및 세션 결과 조회
+        const findParams = {
+            userId: new mongoose_1.default.Types.ObjectId(userId)
+        };
+        if (dateFilter) {
+            findParams.createdAt = { $gte: dateFilter };
+        }
+        const sessionResults = yield ZengoSessionResult_1.default.find(findParams)
+            .sort({ createdAt: -1 })
+            .limit(limit);
+        if (sessionResults.length === 0) {
+            res.status(200).json({
+                currentProfile: {
+                    hippocampusActivation: 0,
+                    workingMemory: 0,
+                    spatialCognition: 0,
+                    attention: 0,
+                    patternRecognition: 0,
+                    cognitiveFlexibility: 0
+                },
+                historicalData: []
+            });
+            return;
+        }
+        // 기준에 따른 인지 능력 점수 계산
+        const calculateCognitiveMetrics = (result) => {
+            const { correctPlacements, incorrectPlacements, usedStonesCount, timeTakenMs, completedSuccessfully, orderCorrect } = result;
+            // 정확도 기반 계산
+            const accuracy = correctPlacements / (correctPlacements + incorrectPlacements) * 100 || 0;
+            // 시간 효율성 (지수 곡선으로 최적 시간 범위를 평가)
+            const timeEfficiencyScore = Math.max(0, 100 - Math.min(100, timeTakenMs / 60000 * 100));
+            // 각 인지 능력 메트릭 계산
+            return {
+                // 해마 활성화 (정확도 + 완료 여부 기반)
+                hippocampusActivation: Math.round(accuracy * 0.7 + (completedSuccessfully ? 30 : 0)),
+                // 작업 기억력 (정확도 + 오류율 역산)
+                workingMemory: Math.round(accuracy * 0.6 + Math.max(0, (1 - incorrectPlacements / (correctPlacements || 1)) * 40)),
+                // 공간 인지력 (정확한 배치 + 패턴 인식)
+                spatialCognition: Math.round(correctPlacements / (usedStonesCount || 1) * 100),
+                // 주의력 (시간 효율성 + 정확도)
+                attention: Math.round(timeEfficiencyScore * 0.5 + accuracy * 0.5),
+                // 패턴 인식 (순서 정확성 + 정확한 배치)
+                patternRecognition: Math.round((orderCorrect ? 60 : 30) + accuracy * 0.4),
+                // 인지적 유연성 (완료성 + 효율성)
+                cognitiveFlexibility: Math.round((completedSuccessfully ? 50 : 20) +
+                    timeEfficiencyScore * 0.3 +
+                    accuracy * 0.2)
+            };
+        };
+        // 시계열 데이터 생성 (각 세션별)
+        const historicalData = sessionResults.map(result => {
+            const metrics = calculateCognitiveMetrics(result);
+            return {
+                date: result.createdAt,
+                metrics
+            };
+        });
+        // 최신 프로필 계산 (가장 최근 3개 세션의 평균)
+        const recentSessions = sessionResults.slice(0, 3);
+        const currentProfile = {
+            hippocampusActivation: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).hippocampusActivation, 0) / recentSessions.length),
+            workingMemory: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).workingMemory, 0) / recentSessions.length),
+            spatialCognition: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).spatialCognition, 0) / recentSessions.length),
+            attention: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).attention, 0) / recentSessions.length),
+            patternRecognition: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).patternRecognition, 0) / recentSessions.length),
+            cognitiveFlexibility: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).cognitiveFlexibility, 0) / recentSessions.length)
+        };
+        res.status(200).json({
+            currentProfile,
+            historicalData
+        });
+    }
+    catch (error) {
+        console.error('인지 능력 프로필 조회 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.', error });
+    }
+});
+exports.getCognitiveProfile = getCognitiveProfile;
+// 특정 Zengo 활동 상세 조회
+const getZengoById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { zengoId } = req.params;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        if (!userId) {
+            return res.status(401).json({ message: '인증이 필요합니다.' });
+        }
+        // 'stats'와 같은 특수 경로 확인
+        if (zengoId === 'stats' || zengoId === 'proverb-content') {
+            return res.status(404).json({
+                message: '잘못된 요청입니다. 이 ID는 특수 경로로 예약되어 있습니다.',
+                suggestedPath: `/api/zengo/${zengoId}`
+            });
+        }
+        // ObjectId 유효성 검사
+        if (!mongoose_1.default.Types.ObjectId.isValid(zengoId)) {
+            return res.status(400).json({ message: '유효하지 않은 Zengo ID 형식입니다.' });
+        }
+        const zengo = yield Zengo_1.default.findOne({ _id: zengoId, userId })
+            .select('-__v');
+        if (!zengo) {
+            return res.status(404).json({ message: '해당 Zengo 활동을 찾을 수 없습니다.' });
+        }
+        res.status(200).json(zengo);
+    }
+    catch (error) {
+        console.error('Zengo 상세 조회 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
+});
+exports.getZengoById = getZengoById;
+// 새 Zengo 활동 생성
+const createZengo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        if (!userId) {
+            return res.status(401).json({ message: '인증이 필요합니다.' });
+        }
+        const { boardSize, modules } = req.body;
+        const newZengo = new Zengo_1.default({
+            userId,
+            boardSize,
+            modules,
+            status: 'setup',
+        });
+        const savedZengo = yield newZengo.save();
+        res.status(201).json(savedZengo);
+    }
+    catch (error) {
+        console.error('Zengo 활동 생성 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
+});
+exports.createZengo = createZengo;
+// Zengo 활동 시작
+const startZengo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { zengoId } = req.params;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        if (!userId) {
+            return res.status(401).json({ message: '인증이 필요합니다.' });
+        }
+        const zengo = yield Zengo_1.default.findOne({ _id: zengoId, userId });
+        if (!zengo) {
+            return res.status(404).json({ message: '해당 Zengo 활동을 찾을 수 없습니다.' });
+        }
+        if (zengo.status !== 'setup') {
+            return res.status(400).json({ message: '이미 시작되었거나 종료된 Zengo 활동입니다.' });
+        }
+        const updatedZengo = yield Zengo_1.default.findByIdAndUpdate(zengoId, { $set: { status: 'active' } }, { new: true }).select('-__v');
+        res.status(200).json(updatedZengo);
+    }
+    catch (error) {
+        console.error('Zengo 활동 시작 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
+});
+exports.startZengo = startZengo;
+// Zengo 모듈 결과 업데이트
+const updateModuleResults = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { zengoId, moduleName } = req.params;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const { accuracy, reactionTimeAvg, memoryScore, languageScore, logicScore } = req.body;
+        if (!userId) {
+            return res.status(401).json({ message: '인증이 필요합니다.' });
+        }
+        const zengo = yield Zengo_1.default.findOne({ _id: zengoId, userId });
+        if (!zengo) {
+            return res.status(404).json({ message: '해당 Zengo 활동을 찾을 수 없습니다.' });
+        }
+        if (zengo.status !== 'active') {
+            return res.status(400).json({ message: '활성 상태가 아닌 Zengo 활동은 업데이트할 수 없습니다.' });
+        }
+        // 지정된 모듈 찾기
+        const moduleIndex = zengo.modules.findIndex(module => module.name === moduleName);
+        if (moduleIndex === -1) {
+            return res.status(404).json({ message: '해당 모듈을 찾을 수 없습니다.' });
+        }
+        // 업데이트할 필드 설정
+        const updateQuery = {};
+        if (accuracy !== undefined)
+            updateQuery[`modules.${moduleIndex}.accuracy`] = accuracy;
+        if (reactionTimeAvg !== undefined)
+            updateQuery[`modules.${moduleIndex}.reactionTimeAvg`] = reactionTimeAvg;
+        if (memoryScore !== undefined)
+            updateQuery[`modules.${moduleIndex}.memoryScore`] = memoryScore;
+        if (languageScore !== undefined)
+            updateQuery[`modules.${moduleIndex}.languageScore`] = languageScore;
+        if (logicScore !== undefined)
+            updateQuery[`modules.${moduleIndex}.logicScore`] = logicScore;
+        const updatedZengo = yield Zengo_1.default.findByIdAndUpdate(zengoId, { $set: updateQuery }, { new: true }).select('-__v');
+        res.status(200).json(updatedZengo);
+    }
+    catch (error) {
+        console.error('Zengo 모듈 결과 업데이트 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
+});
+exports.updateModuleResults = updateModuleResults;
+// Zengo 활동 완료
+const completeZengo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { zengoId } = req.params;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const { overallScore } = req.body;
+        if (!userId) {
+            return res.status(401).json({ message: '인증이 필요합니다.' });
+        }
+        const zengo = yield Zengo_1.default.findOne({ _id: zengoId, userId });
+        if (!zengo) {
+            return res.status(404).json({ message: '해당 Zengo 활동을 찾을 수 없습니다.' });
+        }
+        if (zengo.status !== 'active') {
+            return res.status(400).json({ message: '활성 상태가 아닌 Zengo 활동은 완료할 수 없습니다.' });
+        }
+        // 배지 확인
+        const badges = [];
+        // 첫 번째 Zengo 활동 완료 배지
+        const zengoCount = yield Zengo_1.default.countDocuments({
+            userId,
+            status: 'completed'
+        });
+        if (zengoCount === 0) {
+            const firstZengoBadge = 'first_zengo_completed';
+            badges.push(firstZengoBadge);
+            // 배지 추가
+            yield Badge_1.default.findOneAndUpdate({ userId, name: firstZengoBadge }, {
+                $setOnInsert: {
+                    userId,
+                    name: firstZengoBadge,
+                    description: '첫 번째 Zengo 활동 완료',
+                    category: 'zengo'
+                }
+            }, { upsert: true, new: true });
+        }
+        // 고득점 배지 (80점 이상)
+        if (overallScore >= 80) {
+            const masterBadge = 'zengo_master';
+            badges.push(masterBadge);
+            // 배지 추가
+            yield Badge_1.default.findOneAndUpdate({ userId, name: masterBadge }, {
+                $setOnInsert: {
+                    userId,
+                    name: masterBadge,
+                    description: 'Zengo 마스터',
+                    category: 'zengo'
+                }
+            }, { upsert: true, new: true });
+        }
+        // Zengo 완료 처리
+        const updatedZengo = yield Zengo_1.default.findByIdAndUpdate(zengoId, {
+            $set: {
+                status: 'completed',
+                overallScore,
+                badges
+            }
+        }, { new: true }).select('-__v');
+        res.status(200).json(updatedZengo);
+    }
+    catch (error) {
+        console.error('Zengo 활동 완료 처리 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+    }
+});
+exports.completeZengo = completeZengo;
+// Zengo 활동 취소
+const cancelZengo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { zengoId } = req.params;
+        // 'stats'라는 특수 ID를 요청하면 API 패스가 충돌하므로 여기서 처리하지 않음
+        if (zengoId === 'stats') {
+            res.status(404).json({ message: '잘못된 요청입니다. /api/zengo/stats 경로를 사용하세요.' });
+            return;
+        }
+        const zengo = yield Zengo_1.default.findById(zengoId);
+        if (!zengo) {
+            res.status(404).json({ message: 'Zengo 활동을 찾을 수 없습니다.' });
+            return;
+        }
+        // 사용자 ID 확인
+        if (zengo.user.toString() !== ((_a = req.user) === null || _a === void 0 ? void 0 : _a.id.toString())) {
+            res.status(403).json({ message: '권한이 없습니다.' });
+            return;
+        }
+        // 취소 상태로 업데이트
+        zengo.status = 'cancelled';
+        zengo.endedAt = new Date();
+        yield zengo.save();
+        res.status(200).json({ message: 'Zengo 활동이 취소되었습니다.', zengo });
+    }
+    catch (error) {
+        console.error('Zengo 활동 취소 중 오류 발생:', error);
+        res.status(500).json({ message: '서버 오류가 발생했습니다.', error });
+    }
+});
+exports.cancelZengo = cancelZengo;
+// Zengo 콘텐츠 조회 (명세서 v3.0 기반) - MongoDB 기반으로 변경
+const getProverbContent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { level, lang, reshuffle, contentId } = req.query;
+        // Input validation
+        if (!level || !lang) {
+            return res.status(400).json({ message: 'Level and language query parameters are required.' });
+        }
+        // 로깅 추가
+        console.log(`요청 파라미터:`, {
+            level,
+            lang,
+            reshuffle,
+            contentId,
+            rawQuery: req.query
+        });
+        // reshuffleWords 값 결정 (reshuffle 파라미터를 우선 확인, 없으면 reshuffleWords 확인)
+        const shouldReshuffle = reshuffle === 'true' || req.query.reshuffleWords === 'true';
+        // 로깅 추가
+        console.log(`위치 재배치 여부: ${shouldReshuffle}`);
+        // 언어 검증
+        const language = lang;
+        if (!['ko', 'en', 'zh', 'ja'].includes(language)) {
+            return res.status(400).json({ message: 'Unsupported language. Supported languages are ko, en, zh, ja.' });
+        }
+        // 레벨 검증
+        const levelStr = level;
+        if (!['3x3-easy', '5x5-medium', '7x7-hard'].includes(levelStr)) {
+            return res.status(400).json({ message: 'Unsupported level. Supported levels are 3x3-easy, 5x5-medium, 7x7-hard.' });
+        }
+        let proverbContent;
+        const { ObjectId } = require('mongodb');
+        // 특정 contentId에 대한 처리
+        if (contentId) {
+            try {
+                let objectId;
+                try {
+                    // MongoDB ObjectId로 변환 시도
+                    objectId = new ObjectId(contentId);
+                }
+                catch (err) {
+                    console.error(`유효하지 않은 ObjectId 형식: ${contentId}`);
+                    return res.status(400).json({ message: 'Invalid contentId format' });
+                }
+                // MongoDB에서 문서 조회
+                const existingContent = yield ZengoProverbContent_1.default.findById(objectId);
+                if (existingContent) {
+                    console.log(`contentId ${contentId}에 해당하는 콘텐츠를 찾았습니다.`);
+                    // reshuffleWords 파라미터가 true인 경우 단어 위치만 재배치
+                    if (shouldReshuffle) {
+                        console.log(`reshuffleWords=true: 동일한 문장에 새로운 위치 생성`);
+                        // 보드 사이즈 결정
+                        let boardSize = existingContent.boardSize;
+                        // 각 단어에 대한 고유 좌표 생성
+                        function generateUniquePositions(count, size) {
+                            const positions = [];
+                            const usedPositions = new Set();
+                            while (positions.length < count) {
+                                const x = Math.floor(Math.random() * size);
+                                const y = Math.floor(Math.random() * size);
+                                const posStr = `${x},${y}`;
+                                if (!usedPositions.has(posStr)) {
+                                    usedPositions.add(posStr);
+                                    positions.push({ x, y });
+                                }
+                            }
+                            return positions;
+                        }
+                        // 단어 수에 맞는 새로운 좌표 생성
+                        const wordPositions = generateUniquePositions(existingContent.wordMappings.length, boardSize);
+                        // 기존 단어는 유지하고 좌표만 변경 (coords 필드 사용)
+                        const newWordMappings = existingContent.wordMappings.map((mapping, index) => ({
+                            word: mapping.word,
+                            coords: wordPositions[index] // coords 필드에 새 위치 할당
+                        }));
+                        // 기존 콘텐츠 복사 후 새 매핑으로 업데이트
+                        proverbContent = Object.assign(Object.assign({}, existingContent.toObject()), { wordMappings: newWordMappings, updatedAt: new Date() });
+                        console.log(`문장 "${existingContent.proverbText}"에 대한 새 위치 생성 완료`);
+                    }
+                    else {
+                        // reshuffleWords가 false인 경우 기존 콘텐츠 그대로 반환
+                        console.log(`reshuffleWords=false: 동일한 콘텐츠와 위치 유지`);
+                        proverbContent = existingContent.toObject();
+                    }
+                    // 최종 응답 반환
+                    return res.status(200).json(proverbContent);
+                }
+                else {
+                    console.log(`contentId ${contentId}에 해당하는 콘텐츠를 찾을 수 없습니다. 레벨과 언어에 따른 새 콘텐츠 조회로 전환`);
+                    // contentId를 찾지 못했을 때 오류 메시지를 반환하지 않고, 레벨과 언어에 따른 새 콘텐츠 제공
+                }
+            }
+            catch (error) {
+                console.error('contentId로 콘텐츠 조회 중 오류:', error);
+                // 오류 발생 시 레벨과 언어에 따른 랜덤 조회로 폴백
+                console.log('MongoDB에서 레벨과 언어에 따른 랜덤 조회로 전환');
+            }
+        }
+        // 레벨과 언어에 맞는 콘텐츠를 MongoDB에서 랜덤으로 조회
+        const count = yield ZengoProverbContent_1.default.countDocuments({ level: levelStr, language });
+        if (count === 0) {
+            return res.status(404).json({
+                message: `No proverbs found for level ${levelStr} and language ${language}.`,
+                details: 'Database may need to be seeded with proverb data. Please run "npm run clean-zengo-data".'
+            });
+        }
+        // 랜덤 인덱스 생성
+        const randomIndex = Math.floor(Math.random() * count);
+        // MongoDB에서 레벨과 언어에 맞는 모든 속담을 가져와 랜덤으로 하나 선택
+        const randomProverb = yield ZengoProverbContent_1.default.findOne({ level: levelStr, language })
+            .skip(randomIndex)
+            .exec();
+        if (!randomProverb) {
+            return res.status(404).json({
+                message: 'Random proverb selection failed.',
+                details: 'This is likely a database access issue. Please check database connection.'
+            });
+        }
+        console.log(`랜덤 속담 반환: "${randomProverb.proverbText}" (${levelStr}, ${language})`);
+        // reshuffleWords 파라미터가 true인 경우 단어 위치 재배치
+        if (shouldReshuffle) {
+            console.log(`reshuffleWords=true: 선택된 랜덤 속담에 새로운 위치 생성`);
+            // 보드 사이즈 결정
+            let boardSize = randomProverb.boardSize;
+            // 각 단어에 대한 고유 좌표 생성
+            function generateUniquePositions(count, size) {
+                const positions = [];
+                const usedPositions = new Set();
+                while (positions.length < count) {
+                    const x = Math.floor(Math.random() * size);
+                    const y = Math.floor(Math.random() * size);
+                    const posStr = `${x},${y}`;
+                    if (!usedPositions.has(posStr)) {
+                        usedPositions.add(posStr);
+                        positions.push({ x, y });
+                    }
+                }
+                return positions;
+            }
+            // 단어 수에 맞는 새로운 좌표 생성
+            const wordPositions = generateUniquePositions(randomProverb.wordMappings.length, boardSize);
+            // 기존 단어는 유지하고 좌표만 변경 (coords 필드 사용)
+            const newWordMappings = randomProverb.wordMappings.map((mapping, index) => ({
+                word: mapping.word,
+                coords: wordPositions[index] // coords 필드에 새 위치 할당
+            }));
+            // 기존 콘텐츠 복사 후 새 매핑으로 업데이트
+            proverbContent = Object.assign(Object.assign({}, randomProverb.toObject()), { wordMappings: newWordMappings, updatedAt: new Date() });
+            console.log(`문장 "${randomProverb.proverbText}"에 대한 새 위치 생성 완료`);
+        }
+        else {
+            // reshuffleWords가 false인 경우 기존 콘텐츠 그대로 반환
+            console.log(`reshuffleWords=false: 선택된 랜덤 속담과 위치 유지`);
+            proverbContent = randomProverb.toObject();
+        }
+        // 최종 응답 반환
+        res.status(200).json(proverbContent);
+    }
+    catch (error) {
+        console.error('Error fetching Zengo proverb content:', error);
+        res.status(500).json({
+            message: 'Server error occurred while fetching proverb content.',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+});
+exports.getProverbContent = getProverbContent;
+// Zengo 게임 세션 결과 저장 (명세서 v3.0 기반)
+const saveSessionResult = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        console.log('결과 제출 데이터 수신 전체:', JSON.stringify(req.body));
+        const { contentId, level, language, usedStonesCount, correctPlacements, incorrectPlacements, timeTakenMs, completedSuccessfully, orderCorrect, // 어순 정확성 추가
+        placementOrder, // 배치 순서 추가
+        resultType: clientResultType // 클라이언트 제출 결과 타입
+         } = req.body;
+        console.log('파싱된 필수 필드:', {
+            contentId,
+            level,
+            language,
+            usedStonesCount,
+            correctPlacements,
+            incorrectPlacements,
+            timeTakenMs,
+            completedSuccessfully,
+            orderCorrect,
+            placementOrder,
+            clientResultType
+        });
+        // 필수 필드 검증
+        if (!contentId || !level || !language ||
+            usedStonesCount === undefined ||
+            correctPlacements === undefined ||
+            incorrectPlacements === undefined ||
+            timeTakenMs === undefined ||
+            completedSuccessfully === undefined) {
+            console.error('필수 필드 누락:', {
+                contentId, level, language, usedStonesCount,
+                correctPlacements, incorrectPlacements,
+                timeTakenMs, completedSuccessfully, clientResultType
+            });
+            return res.status(400).json({
+                message: 'Missing required fields',
+                details: 'contentId, level, language, usedStonesCount, correctPlacements, incorrectPlacements, timeTakenMs, and completedSuccessfully are required'
+            });
+        }
+        // userId 가져오기 (인증된 경우) 또는 임시 ID 사용
+        const userId = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) || '6400000000000000000000001'; // 인증이 없는 경우 더미 ID 사용
+        // contentId가 유효한 ObjectId 형식인지 검증
+        const { ObjectId } = require('mongodb');
+        let objectId;
+        try {
+            objectId = new ObjectId(contentId);
+        }
+        catch (err) {
+            console.error(`세션 결과 저장 중 유효하지 않은 ObjectId 형식 발견: ${contentId}`);
+            return res.status(400).json({
+                message: 'Invalid contentId format',
+                details: 'The contentId must be a valid MongoDB ObjectId'
+            });
+        }
+        // 서버 측에서 독립적으로 결과 타입 판정
+        let serverResultType = 'FAIL';
+        if (completedSuccessfully) {
+            // 위치 정확도 검증
+            const perfectPositionAccuracy = correctPlacements === usedStonesCount ||
+                (usedStonesCount - correctPlacements <= 1); // 최대 1번 오류 허용
+            // 어순과 위치 정확도 모두 고려한 판정
+            if (perfectPositionAccuracy && orderCorrect) {
+                serverResultType = 'EXCELLENT'; // 위치와 어순 모두 정확
+            }
+            else if (perfectPositionAccuracy) {
+                serverResultType = 'SUCCESS'; // 위치는 정확하나 어순이 부정확
+            }
+        }
+        // 로깅 및 결과 타입 불일치 처리
+        if (clientResultType !== serverResultType) {
+            console.log(`결과 타입 불일치 - 클라이언트: ${clientResultType}, 서버: ${serverResultType}`);
+        }
+        // 최종 결과 타입은 서버에서 결정
+        const finalResultType = serverResultType;
+        // 점수 계산 로직 보강 (어순 반영)
+        const calculateScore = () => {
+            if (!completedSuccessfully)
+                return 0;
+            const baseScore = 100; // 기본 점수
+            const accuracyBonus = (correctPlacements / usedStonesCount) * 50; // 위치 정확도 보너스
+            const orderBonus = orderCorrect ? 25 : 0; // 어순 보너스
+            return Math.floor(baseScore + accuracyBonus + orderBonus);
+        };
+        const score = calculateScore();
+        // 새 활동 데이터 생성
+        const newActivity = new ZengoSessionResult_1.default({
+            userId,
+            contentId: objectId,
+            level,
+            language,
+            usedStonesCount,
+            correctPlacements,
+            incorrectPlacements,
+            timeTakenMs,
+            completedSuccessfully,
+            resultType: finalResultType,
+            orderCorrect: orderCorrect || false,
+            placementOrder: placementOrder || [],
+            score
+        });
+        // MongoDB에 저장
+        yield newActivity.save();
+        console.log(`Zengo 활동 저장 성공:`, {
+            id: newActivity._id,
+            contentId,
+            level,
+            language,
+            resultType: finalResultType,
+            orderCorrect,
+            score
+        });
+        // 결과 성공적으로 저장됨을 응답
+        res.status(201).json({
+            message: 'Zengo activity saved successfully',
+            activityId: newActivity._id,
+            resultType: finalResultType, // 서버가 결정한 결과 타입 반환
+            score
+        });
+    }
+    catch (error) {
+        console.error('Zengo 활동 저장 중 오류 발생:', error);
+        // 오류 유형에 따른 응답
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                message: 'Validation error',
+                details: error.message
+            });
+        }
+        res.status(500).json({
+            message: 'Error saving Zengo activity',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
+    }
+});
+exports.saveSessionResult = saveSessionResult;
+// 같은 문장에 대해 새로운 위치 생성
+const regeneratePositions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // URL 파라미터 또는 쿼리 파라미터에서 contentId 가져오기
+        const contentId = req.params.contentId || req.query.contentId;
+        if (!contentId) {
+            return res.status(400).json({ error: 'Content ID is required' });
+        }
+        // 기존 콘텐츠 조회
+        const content = yield ZengoProverbContent_1.default.findById(contentId);
+        if (!content) {
+            return res.status(404).json({ error: 'Content not found' });
+        }
+        // 단어 위치 재생성 함수
+        function generateUniquePositions(count, boardSize) {
+            const positions = [];
+            const usedPositions = new Set();
+            while (positions.length < count) {
+                const x = Math.floor(Math.random() * boardSize);
+                const y = Math.floor(Math.random() * boardSize);
+                const posStr = `${x},${y}`;
+                if (!usedPositions.has(posStr)) {
+                    usedPositions.add(posStr);
+                    positions.push({ x, y });
+                }
+            }
+            return positions;
+        }
+        // 단어 수 확인
+        const wordCount = content.wordMappings.length;
+        // 새 위치 생성
+        const newPositions = generateUniquePositions(wordCount, content.boardSize);
+        // 기존 단어와 순서는 유지하고 위치만 변경
+        const newMappings = content.wordMappings.map((mapping, index) => ({
+            word: mapping.word,
+            coords: newPositions[index]
+        }));
+        // 새로운 컨텐츠 생성 (기존 _id 사용 안함)
+        const updatedContent = Object.assign(Object.assign({}, content.toObject()), { wordMappings: newMappings, regeneratedAt: new Date() });
+        res.status(200).json(updatedContent);
+    }
+    catch (error) {
+        console.error('위치 재생성 중 오류:', error);
+        res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+    }
+});
+exports.regeneratePositions = regeneratePositions;

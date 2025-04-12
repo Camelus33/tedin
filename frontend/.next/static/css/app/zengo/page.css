@@ -1,0 +1,1803 @@
+/*!*****************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./app/zengo/zengo.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************/
+.zengo-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(240,240,240,0.7) 100%);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+}
+
+/* 인트로 화면 스타일 */
+.zengo-intro {
+  text-align: center;
+  margin: 2rem 0;
+  padding: 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f7f7f7 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+}
+
+.intro-title {
+  font-size: 2.5rem;
+  margin-bottom: 2.5rem;
+  color: #333;
+  background: linear-gradient(-70deg, #6A11CB, #2575FC, #41C7FF);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  padding: 0 1rem;
+  line-height: 1.3;
+  animation: gradient 3s ease infinite;
+  text-shadow: 0 5px 15px rgba(106, 17, 203, 0.15);
+  position: relative;
+}
+
+.intro-title::after {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, #6A11CB, #2575FC);
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.intro-subtitle {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  opacity: 0.85;
+  letter-spacing: 0.01em;
+  background: linear-gradient(-70deg, #6A11CB, #2575FC);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient 3s ease infinite;
+  animation-delay: 0.5s;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.tutorial-scroll-container {
+  margin: 3rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tutorial-section {
+  padding: 3.5rem 2rem;
+  position: relative;
+  min-height: 300px;
+  scroll-margin-top: 2rem;
+}
+
+.tutorial-section:nth-child(1) {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e6f0ff 100%);
+}
+
+.tutorial-section:nth-child(2) {
+  background: linear-gradient(135deg, #fff0f0 0%, #ffebeb 100%);
+}
+
+.tutorial-section:nth-child(3) {
+  background: linear-gradient(135deg, #f0fff0 0%, #e6ffe6 100%);
+}
+
+.tutorial-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+  gap: 3rem;
+}
+
+.tutorial-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 240px;
+}
+
+.tutorial-text {
+  flex: 1;
+  text-align: left;
+}
+
+.tutorial-text h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #333;
+  font-weight: 700;
+}
+
+.tutorial-text p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
+.tutorial-tip {
+  background: rgba(255, 255, 255, 0.7);
+  border-left: 4px solid #4a90e2;
+  padding: 1rem;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.tip-icon {
+  font-size: 1.3rem;
+}
+
+.tip-text {
+  font-size: 0.95rem;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+.scroll-indicator {
+  text-align: center;
+  margin-top: 2rem;
+  color: #666;
+  font-size: 0.9rem;
+  animation: bounce 2s infinite;
+}
+
+.scroll-arrow {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 애니메이션 요소 */
+.animation-board {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0.8rem;
+  width: 200px;
+  height: 200px;
+  background-color: #f0e4c9;
+  border-radius: 8px;
+  padding: 1rem;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.mini-stone {
+  background-color: #333;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  width: 45px;
+  height: 45px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.memory-phase .mini-stone.empty {
+  background-color: transparent;
+  border: 2px dashed #ccc;
+  box-shadow: none;
+}
+
+.memory-phase .mini-stone.placed {
+  animation: placedAnimation 0.8s ease-out;
+}
+
+.memory-phase .mini-stone.placing {
+  animation: placingAnimation 1.5s infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes placedAnimation {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.1); background-color: #4a90e2; }
+  100% { transform: scale(1); }
+}
+
+@keyframes placingAnimation {
+  0% { opacity: 0; transform: scale(0.7); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0; transform: scale(0.7); }
+}
+
+.difficulty-showcase {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.diff-board {
+  background-color: #f0e4c9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #333;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.diff-board:hover {
+  transform: translateY(-5px);
+}
+
+.diff-board.small {
+  width: 60px;
+  height: 60px;
+}
+
+.diff-board.medium {
+  width: 80px;
+  height: 80px;
+}
+
+.diff-board.large {
+  width: 100px;
+  height: 100px;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .tutorial-content {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .tutorial-image, .tutorial-text {
+    width: 100%;
+  }
+  
+  .intro-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .intro-subtitle {
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+  }
+  
+  .mini-board {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .mini-stone {
+    width: 40px;
+    height: 40px;
+    font-size: 0.7rem;
+  }
+}
+
+.start-button {
+  background: linear-gradient(135deg, #4a90e2 0%, #357ABD 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.3rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-top: 2rem;
+}
+
+.start-button:hover {
+  background: linear-gradient(135deg, #357ABD 0%, #2868A0 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
+}
+
+/* 선택 화면 스타일 */
+.zengo-selector {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.zengo-selector h2 {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 2.2rem;
+  color: #333;
+  font-weight: 700;
+}
+
+.board-size-section,
+.training-type-section,
+.style-section,
+.language-section {
+  margin-bottom: 2.5rem;
+}
+
+.board-size-section h3,
+.training-type-section h3,
+.style-section h3,
+.language-section h3 {
+  font-size: 1.3rem;
+  color: #444;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.size-grid,
+.type-grid,
+.style-grid,
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+}
+
+.style-grid {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.size-button,
+.type-button,
+.style-button,
+.language-button {
+  padding: 1.2rem;
+  border: 2px solid #e6e6e6;
+  border-radius: 12px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-weight: 500;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.size-button:hover,
+.type-button:hover,
+.style-button:hover,
+.language-button:hover {
+  border-color: #bbd6f7;
+  background-color: #f5f9ff;
+  transform: translateY(-2px);
+}
+
+.size-button.selected,
+.type-button.selected,
+.style-button.selected,
+.language-button.selected {
+  border-color: #4a90e2;
+  background: linear-gradient(to bottom, #e6f0ff, #d6e6ff);
+  color: #2868A0;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+}
+
+.start-button-container {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+/* Game status and board container */
+.game-board-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Status display enhancements */
+.game-status {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(to right, #f8f8f8, #f2f2f2);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Error container */
+.zengo-error-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 550px;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-top: 5px solid #f44336;
+}
+
+.zengo-error-container h2 {
+  color: #d32f2f;
+  margin-bottom: 1.2rem;
+  font-size: 1.8rem;
+}
+
+.zengo-error-container p {
+  color: #555;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.retry-button-error {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.retry-button-error:hover {
+  background: linear-gradient(135deg, #1976d2 0%, #0d5ca2 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(33, 150, 243, 0.4);
+}
+
+/* 훈련 화면 스타일 */
+.zengo-training {
+  text-align: center;
+}
+
+.placeholder-board {
+  width: 300px;
+  height: 300px;
+  background-color: #f5f5f5;
+  margin: 2rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+/* 결과 화면 스타일 */
+.zengo-results {
+  text-align: center;
+}
+
+.score-section {
+  margin: 2rem 0;
+}
+
+.score-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #4a90e2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.score-value {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.metrics-section {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.metric {
+  background-color: #f5f5f5;
+  padding: 1.5rem;
+  border-radius: 8px;
+  min-width: 150px;
+}
+
+.metric h3 {
+  margin-top: 0;
+  color: #666;
+}
+
+.metric p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.continue-button {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.exit-button {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.continue-button,
+.exit-button {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* 접근성 및 UI 개선 */
+.back-button {
+  margin-top: 1.5rem;
+  background-color: transparent;
+  color: #666;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.back-button:hover, .back-button:focus {
+  color: #333;
+  text-decoration: underline;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-right: 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 키보드 포커스 스타일 */
+button:focus, a:focus {
+  outline: 2px solid #4a90e2;
+  outline-offset: 2px;
+}
+
+/* 접근성이 향상된, 포커스 스타일을 보여주기 위한 것 */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #4a90e2;
+  outline-offset: 2px;
+}
+
+.error-message {
+  color: #dc2626; /* Red-600 */
+  background-color: #fee2e2; /* Red-100 */
+  border: 1px solid #fca5a5; /* Red-300 */
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  display: flex; /* For icon alignment */
+  align-items: center;
+}
+
+/* Optional: Add an error icon */
+.error-message::before {
+  content: '⚠️'; /* Or use an SVG icon */
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
+/* Style for a retry button specifically for errors */
+.retry-button-error {
+  /* Style similar to other buttons but maybe smaller or different color */
+  background-color: #fb923c; /* Orange-400 */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-left: 10px; /* Space from error message */
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.retry-button-error:hover {
+  background-color: #f97316; /* Orange-500 */
+}
+
+/* Add styles for the error container */
+.zengo-error-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #f44336;
+}
+
+.zengo-error-container h2 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.zengo-error-container p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.retry-button-error {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retry-button-error:hover {
+  background-color: #1976d2;
+}
+
+/* 설정 페이지 스타일 */
+.zengo-selector {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.settings-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.settings-intro {
+  font-size: 1.1rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.settings-section {
+  margin-bottom: 2.5rem;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+}
+
+.settings-section h3 {
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  font-size: 1.4rem;
+  color: #444;
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.8rem;
+}
+
+/* 레벨 선택 스타일 */
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.level-card {
+  background: white;
+  border: 2px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.level-card:hover {
+  border-color: #bbd6f7;
+  background-color: #f5f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.level-card.selected {
+  border-color: #4a90e2;
+  background: #f5f9ff;
+  box-shadow: 0 5px 15px rgba(74, 144, 226, 0.15);
+}
+
+.level-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.level-icon {
+  font-size: 1.4rem;
+  margin-right: 0.8rem;
+}
+
+.level-card h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.level-desc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 언어 선택 스타일 */
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.language-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  background: white;
+  border: 2px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.language-card:hover {
+  border-color: #bbd6f7;
+  background-color: #f5f9ff;
+  transform: translateY(-2px);
+}
+
+.language-card.selected {
+  border-color: #4a90e2;
+  background: #f5f9ff;
+  box-shadow: 0 5px 15px rgba(74, 144, 226, 0.15);
+}
+
+.language-flag {
+  font-size: 1.5rem;
+}
+
+.language-name {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 액션 버튼 컨테이너 */
+.action-buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* 시작 버튼 */
+.start-button {
+  background: linear-gradient(135deg, #4a90e2 0%, #357ABD 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  width: 100%;
+  max-width: 300px;
+}
+
+.start-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #357ABD 0%, #2868A0 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
+}
+
+.start-button:disabled {
+  background: linear-gradient(135deg, #b8b8b8 0%, #a0a0a0 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+/* 뒤로 가기 버튼 */
+.back-button {
+  background-color: transparent;
+  color: #666;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: underline;
+}
+
+.back-button:hover {
+  color: #357ABD;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .zengo-selector {
+    padding: 1.5rem;
+  }
+  
+  .settings-section {
+    padding: 1rem;
+  }
+  
+  .level-grid, 
+  .language-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .settings-title {
+    font-size: 1.8rem;
+  }
+  
+  .settings-intro {
+    font-size: 1rem;
+  }
+  
+  .level-card h4 {
+    font-size: 1rem;
+  }
+  
+  .level-desc {
+    font-size: 0.8rem;
+  }
+}
+
+/* 선택 표시자 스타일 */
+.selection-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #4a90e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selection-indicator::after {
+  content: "✓";
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 선택 가이드 스타일 */
+.selection-guide {
+  color: #f57c00;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
+}
+
+/* 선택 상태의 버튼에 접근성 포커스 표시 개선 */
+.level-card:focus-visible,
+.language-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.5);
+}
+
+/* 모바일 대응 추가 */
+@media (max-width: 768px) {
+  .selection-guide {
+    font-size: 0.8rem;
+  }
+}
+
+
+/*!*****************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[12].use[3]!./components/zengo/ZengoBoard.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************/
+.board {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  width: 100%;
+  max-width: 750px;
+  margin: 2rem auto;
+}
+
+.zengo-board {
+  display: grid;
+  position: relative;
+  width: 100%; 
+  max-width: 700px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+                   linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+                   url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c4zIgKAAAA20lEQVR4nO3VbS+CQBCF4QFXhS5InQIW+P//1DYGEmOi7obEK8/HJs7J7CSzvROSyeR4GKQE6YlSKnyGvghp3f4MfgspfaQkJDEa8vzJMZC7kMskJJNQJqFMQpmEMgllEsoklEkok1AmoUxCmYQyCWXiZ9e2g1vNOc0u4GQYWs7po+CxLtSSs6qBYrseGv4JGi5pYRCcUsbYMOTEQ0nLT08GIetEXRvqT7RweTEcHaPi3HB0aSRqTtQ1sRhfMfVDMv4W11m7w+hMOZMQmGvvmxqjwawTzGQyieQNVXoKDAXgJ7MAAAAASUVORK5CYII=');
+  background-color: #e8c396; 
+  background-blend-mode: multiply;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  border: 12px solid #ba8c5e;
+  contain: content;
+}
+
+.board-intersection {
+  position: relative;
+  cursor: default;
+  transition: all 0.2s ease;
+  contain: layout style;
+}
+
+/* Create the grid lines */
+.board-intersection::before, 
+.board-intersection::after {
+  content: "";
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 2; /* Higher than 1 to ensure visibility */
+}
+
+/* Horizontal lines */
+.board-intersection::before {
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+}
+
+/* Vertical lines */
+.board-intersection::after {
+  width: 2px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+}
+
+/* Remove lines at edges */
+.board-intersection.is-first-row::before {
+  top: 50%;
+  width: 50%;
+  left: 50%;
+}
+
+.board-intersection.is-last-row::before {
+  top: 50%;
+  width: 50%;
+  right: 50%;
+}
+
+.board-intersection.is-first-col::after {
+  left: 50%;
+  height: 50%;
+  top: 50%;
+}
+
+.board-intersection.is-last-col::after {
+  left: 50%;
+  height: 50%;
+  bottom: 50%;
+}
+
+/* Style for the star points (Hoshi) */
+.star-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #000;
+  border-radius: 50%;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Style for stones */
+.stone {
+  width: 65%; /* Reduced from 70% */
+  height: 65%; /* Reduced from 70% */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  box-shadow: 
+    inset 0 -4px 5px rgba(0,0,0,0.2),
+    inset 0 4px 5px rgba(255,255,255,0.2),
+    0 6px 8px rgba(0,0,0,0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px;
+  contain: paint layout;
+}
+
+/* 실제 애니메이션 요소에만 will-change 적용 */
+.stone.animate-hide,
+.stone.animate-new,
+.stone.correct,
+.stone.incorrect {
+  will-change: transform, opacity;
+}
+
+.stone.black {
+  background: radial-gradient(circle at 30% 30%, #444, #111);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+}
+
+.stone.white {
+  background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+  color: #333;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.7);
+  border: 1px solid #bbb;
+}
+
+/* Memory phase styling */
+.stone.memory-phase {
+  animation: glow-pulse 2s infinite;
+  box-shadow: 
+    inset 0 -4px 5px rgba(0,0,0,0.2),
+    inset 0 4px 5px rgba(255,255,255,0.2),
+    0 0 15px 5px rgba(255, 215, 0, 0.6);
+  /* 메모리 페이즈 애니메이션 최적화 */
+  will-change: box-shadow;
+}
+
+@keyframes glow-pulse {
+  0% { box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.6); }
+  50% { box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.8); }
+  100% { box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.6); }
+}
+
+/* Placeable indicator styles */
+.board-intersection.placeable {
+  cursor: pointer;
+}
+
+.board-intersection.placeable:hover::before,
+.board-intersection.placeable:hover::after {
+  background-color: rgba(74, 144, 226, 0.7);
+}
+
+.board-intersection.placeable:hover {
+  background-color: rgba(74, 144, 226, 0.1);
+  border-radius: 50%;
+  /* 호버 시에만 will-change 적용 */
+  will-change: background-color;
+}
+
+/* Animation styles - optimized with transform and opacity only */
+.stone-appearing {
+  animation: appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform, opacity;
+}
+
+@keyframes appear {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0;
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.word-hiding {
+  animation: fadeOutText 0.8s forwards;
+  will-change: transform, opacity;
+}
+
+/* Stone hiding animation that matches word hiding - optimized for performance */
+.stone.animate-hide {
+  animation: fadeOutStone 0.8s forwards;
+  transition: opacity 0.8s, transform 0.8s;
+  will-change: transform, opacity;
+}
+
+@keyframes fadeOutStone {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  30% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+  }
+  70% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.7) rotate(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
+/* Enhanced word disappearing animation - optimized for performance */
+@keyframes fadeOutText {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+/* Enhanced feedback styles with optimized transform and opacity */
+.stone.correct {
+  box-shadow: 
+    inset 0 -4px 5px rgba(0,0,0,0.2),
+    inset 0 4px 5px rgba(255,255,255,0.2),
+    0 0 12px 4px rgba(76, 175, 80, 0.7);
+  animation: correctPulse 0.8s ease-in-out;
+  will-change: transform, box-shadow;
+}
+
+.stone.incorrect {
+  box-shadow: 
+    inset 0 -4px 5px rgba(0,0,0,0.2),
+    inset 0 4px 5px rgba(255,255,255,0.2),
+    0 0 12px 4px rgba(244, 67, 54, 0.7);
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+  will-change: transform;
+}
+
+@keyframes correctPulse {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.15); 
+    box-shadow: 
+      inset 0 -4px 5px rgba(0,0,0,0.2),
+      inset 0 4px 5px rgba(255,255,255,0.2),
+      0 0 20px 8px rgba(76, 175, 80, 0.9);
+  }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* 애니메이션 최적화 - transform으로만 변화 구현 */
+@keyframes shake {
+  0%, 100% { transform: translate(-50%, -50%); }
+  10%, 30%, 50%, 70%, 90% { transform: translate(-52%, -50%); }
+  20%, 40%, 60%, 80% { transform: translate(-48%, -50%); }
+}
+
+.word-order-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background-color: #FFC107;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  z-index: 4;
+}
+
+/* 7x7 보드를 위한 최적화된 반응형 미디어 쿼리 */
+@media (min-width: 601px) {
+  [data-board-size="5"] .zengo-board {
+    font-size: 0.9em;
+  }
+
+  [data-board-size="7"] .zengo-board {
+    font-size: 0.85em;
+  }
+}
+
+@media (max-width: 600px) {
+  .stone {
+    font-size: 0.85em;
+    padding: 1px;
+  }
+  
+  [data-board-size="5"] .stone {
+    font-size: 0.75em;
+    padding: 0;
+  }
+  
+  [data-board-size="7"] .stone {
+    font-size: 0.7em;
+    padding: 0;
+    width: 60%;
+    height: 60%;
+  }
+}
+
+/* 작은 화면에서의 추가 최적화 */
+@media (max-width: 400px) {
+  .stone {
+    font-size: 0.7em;
+  }
+  
+  [data-board-size="7"] .stone {
+    font-size: 0.6em;
+    width: 55%;
+    height: 55%;
+  }
+}
+
+/* 저사양 기기를 위한 애니메이션 최적화 */
+@media (prefers-reduced-motion: reduce) {
+  .stone,
+  .stone.animate-hide,
+  .stone.animate-new,
+  .stone.correct,
+  .stone.incorrect,
+  .stone.memory-phase {
+    transition: none;
+    animation: none;
+    will-change: auto;
+  }
+
+  .stone.animate-hide {
+    opacity: 0;
+  }
+
+  .stone.correct {
+    box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.7);
+  }
+
+  .stone.incorrect {
+    box-shadow: 0 0 8px 2px rgba(244, 67, 54, 0.7);
+  }
+}
+
+
+/*!******************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[7].use[3]!./components/zengo/ZengoStatusDisplay.module.css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************/
+/* frontend/components/zengo/ZengoStatusDisplay.module.css */
+
+.ZengoStatusDisplay_statusDisplayContainer__O81JW {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+}
+
+.ZengoStatusDisplay_statusItem__KNpb0 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.5rem;
+  min-width: 80px;
+}
+
+.ZengoStatusDisplay_label__oBS_S {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.ZengoStatusDisplay_value__5gKJC {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Word order status styles */
+.ZengoStatusDisplay_wordOrderCorrect__GBWAm .ZengoStatusDisplay_value__5gKJC {
+  color: #4caf50;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.ZengoStatusDisplay_wordOrderIncorrect__gavkB .ZengoStatusDisplay_value__5gKJC {
+  color: #f44336;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .ZengoStatusDisplay_statusDisplayContainer__O81JW {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0.5rem;
+  }
+  
+  .ZengoStatusDisplay_statusItem__KNpb0 {
+    margin: 0.25rem;
+    min-width: 70px;
+  }
+  
+  .ZengoStatusDisplay_label__oBS_S {
+    font-size: 0.75rem;
+  }
+  
+  .ZengoStatusDisplay_value__5gKJC {
+    font-size: 0.95rem;
+  }
+} 
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[12].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[12].oneOf[7].use[3]!./components/zengo/ZengoResultPage.module.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+/* frontend/components/zengo/ZengoResultPage.module.css */
+
+.ZengoResultPage_resultContainer__kvBoQ {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ZengoResultPage_loading__Sb6zw {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.2rem;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ZengoResultPage_resultHeader__ddv8n {
+  text-align: center;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  color: white;
+}
+
+.ZengoResultPage_resultHeader__ddv8n h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.8rem;
+}
+
+.ZengoResultPage_resultHeader__ddv8n p {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.ZengoResultPage_excellent__vZd4q {
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+}
+
+.ZengoResultPage_success__NPiNF {
+  background: linear-gradient(135deg, #2196f3, #0d47a1);
+}
+
+.ZengoResultPage_fail__j9CsP {
+  background: linear-gradient(135deg, #f44336, #b71c1c);
+}
+
+.ZengoResultPage_default__nnhJX {
+  background: linear-gradient(135deg, #9e9e9e, #616161);
+}
+
+.ZengoResultPage_resultDetails__zGo6v {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.ZengoResultPage_statsItem__4Hop0 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #eee;
+}
+
+.ZengoResultPage_statsItem__4Hop0:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.ZengoResultPage_statLabel__0Jvi0 {
+  color: #555;
+  font-weight: 500;
+}
+
+.ZengoResultPage_statValue__Yeyko {
+  font-weight: 600;
+  color: #333;
+}
+
+.ZengoResultPage_correctValue__acUY6 {
+  color: #2e7d32; /* 짙은 녹색 */
+  font-weight: bold;
+}
+
+.ZengoResultPage_incorrectValue__Z_39e {
+  color: #ff5722; /* 주황색/빨간색 */
+  font-weight: bold;
+}
+
+.ZengoResultPage_actionButtons__zdjaC {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.ZengoResultPage_buttonContainer__IYT_S {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.ZengoResultPage_nextButton__ly9vH, .ZengoResultPage_retryButton__ARVtP, .ZengoResultPage_backButton__64PgV {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ZengoResultPage_nextButton__ly9vH {
+  background-color: #4caf50;
+  color: white;
+}
+
+.ZengoResultPage_nextButton__ly9vH:hover {
+  background-color: #388e3c;
+}
+
+.ZengoResultPage_retryButton__ARVtP {
+  background-color: #2196f3;
+  color: white;
+}
+
+.ZengoResultPage_retryButton__ARVtP:hover {
+  background-color: #1976d2;
+}
+
+.ZengoResultPage_backButton__64PgV {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+.ZengoResultPage_backButton__64PgV:hover {
+  background-color: #757575;
+}
+
+.ZengoResultPage_errorResult__X_0eI {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #fff5f5;
+  border-radius: 8px;
+  border: 1px solid #ffebee;
+}
+
+.ZengoResultPage_errorResult__X_0eI h2 {
+  color: #d32f2f;
+  margin-top: 0;
+}
+
+.ZengoResultPage_errorMessage__cqgl7 {
+  color: #f44336;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: 4px;
+}
+
+.ZengoResultPage_summary__eWfG7 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.ZengoResultPage_statusIcon__0LlH3 {
+  font-size: 3rem;
+  margin-right: 1rem;
+}
+
+.ZengoResultPage_successIcon__nGqTS {
+  color: #4caf50;
+}
+
+.ZengoResultPage_failIcon__NdlOu {
+  color: #f44336;
+}
+
+.ZengoResultPage_statusText__5p_mj {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Achievement banner for word order correctness */
+.ZengoResultPage_achievementBanner__5_VVG {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+  animation: ZengoResultPage_pulseBanner__DrM5n 1.5s ease-in-out infinite;
+}
+
+@keyframes ZengoResultPage_pulseBanner__DrM5n {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.ZengoResultPage_achievementIcon__k3a4M {
+  font-size: 1.8rem;
+  margin-right: 0.75rem;
+}
+
+.ZengoResultPage_achievementText__bXPaQ {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.ZengoResultPage_detailsGrid__fU5Pd {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.ZengoResultPage_detailItem__VLfcI {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+}
+
+.ZengoResultPage_detailLabel__4B4b5 {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.ZengoResultPage_detailValue__vak95 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.ZengoResultPage_actionButtonsContainer__8y_bN {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.ZengoResultPage_warningValue__NVmcs {
+  color: #ff9800;
+}
+
+/* Celebration message styles */
+.ZengoResultPage_celebrationMessage__IrB5Q {
+  background: linear-gradient(135deg, #4caf50 0%, #2196f3 100%);
+  color: white;
+  padding: 1.2rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+  animation: ZengoResultPage_scaleIn__uBjkh 0.5s ease-in-out;
+}
+
+.ZengoResultPage_celebrationMessage__IrB5Q p {
+  font-size: 1.2rem;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.ZengoResultPage_celebrationMessage__IrB5Q strong {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffeb3b;
+}
+
+.ZengoResultPage_celebrationIcon__RXA1i {
+  font-size: 1.8rem;
+  margin-right: 0.5rem;
+  display: inline-block;
+  animation: ZengoResultPage_bounce__F__CX 1s infinite;
+}
+
+@keyframes ZengoResultPage_scaleIn__uBjkh {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes ZengoResultPage_bounce__F__CX {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Button descriptions */
+.ZengoResultPage_buttonDescription__9rvxP {
+  font-size: 0.8rem;
+  color: #757575;
+  text-align: center;
+  margin: -0.3rem 0 1rem;
+  max-width: 230px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .ZengoResultPage_resultContainer__kvBoQ {
+    padding: 1.5rem;
+  }
+  
+  .ZengoResultPage_detailsGrid__fU5Pd {
+    grid-template-columns: 1fr;
+  }
+  
+  .ZengoResultPage_statusIcon__0LlH3 {
+    font-size: 2.5rem;
+  }
+  
+  .ZengoResultPage_statusText__5p_mj {
+    font-size: 1.75rem;
+  }
+  
+  .ZengoResultPage_actionButtons__zdjaC {
+    flex-direction: column;
+  }
+  
+  .ZengoResultPage_retryButton__ARVtP, .ZengoResultPage_nextButton__ly9vH {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+} 

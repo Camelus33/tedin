@@ -1,0 +1,69 @@
+/* frontend/components/zengo/ZengoStatusDisplay.module.css */
+
+.statusDisplayContainer {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+}
+
+.statusItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.5rem;
+  min-width: 80px;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.value {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Word order status styles */
+.wordOrderCorrect .value {
+  color: #4caf50;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.wordOrderIncorrect .value {
+  color: #f44336;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .statusDisplayContainer {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0.5rem;
+  }
+  
+  .statusItem {
+    margin: 0.25rem;
+    min-width: 70px;
+  }
+  
+  .label {
+    font-size: 0.75rem;
+  }
+  
+  .value {
+    font-size: 0.95rem;
+  }
+} 

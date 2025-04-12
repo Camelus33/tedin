@@ -1,0 +1,346 @@
+/* frontend/components/zengo/ZengoResultPage.module.css */
+
+.resultContainer {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.2rem;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.resultHeader {
+  text-align: center;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  color: white;
+}
+
+.resultHeader h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.8rem;
+}
+
+.resultHeader p {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.excellent {
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+}
+
+.success {
+  background: linear-gradient(135deg, #2196f3, #0d47a1);
+}
+
+.fail {
+  background: linear-gradient(135deg, #f44336, #b71c1c);
+}
+
+.default {
+  background: linear-gradient(135deg, #9e9e9e, #616161);
+}
+
+.resultDetails {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.statsItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #eee;
+}
+
+.statsItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.statLabel {
+  color: #555;
+  font-weight: 500;
+}
+
+.statValue {
+  font-weight: 600;
+  color: #333;
+}
+
+.correctValue {
+  color: #2e7d32; /* 짙은 녹색 */
+  font-weight: bold;
+}
+
+.incorrectValue {
+  color: #ff5722; /* 주황색/빨간색 */
+  font-weight: bold;
+}
+
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.nextButton, .retryButton, .backButton {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nextButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.nextButton:hover {
+  background-color: #388e3c;
+}
+
+.retryButton {
+  background-color: #2196f3;
+  color: white;
+}
+
+.retryButton:hover {
+  background-color: #1976d2;
+}
+
+.backButton {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+.backButton:hover {
+  background-color: #757575;
+}
+
+.errorResult {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #fff5f5;
+  border-radius: 8px;
+  border: 1px solid #ffebee;
+}
+
+.errorResult h2 {
+  color: #d32f2f;
+  margin-top: 0;
+}
+
+.errorMessage {
+  color: #f44336;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  background-color: rgba(244, 67, 54, 0.1);
+  border-radius: 4px;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.statusIcon {
+  font-size: 3rem;
+  margin-right: 1rem;
+}
+
+.successIcon {
+  color: #4caf50;
+}
+
+.failIcon {
+  color: #f44336;
+}
+
+.statusText {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Achievement banner for word order correctness */
+.achievementBanner {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+  animation: pulseBanner 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseBanner {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.achievementIcon {
+  font-size: 1.8rem;
+  margin-right: 0.75rem;
+}
+
+.achievementText {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+}
+
+.detailLabel {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.detailValue {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.actionButtonsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.warningValue {
+  color: #ff9800;
+}
+
+/* Celebration message styles */
+.celebrationMessage {
+  background: linear-gradient(135deg, #4caf50 0%, #2196f3 100%);
+  color: white;
+  padding: 1.2rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+  animation: scaleIn 0.5s ease-in-out;
+}
+
+.celebrationMessage p {
+  font-size: 1.2rem;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.celebrationMessage strong {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffeb3b;
+}
+
+.celebrationIcon {
+  font-size: 1.8rem;
+  margin-right: 0.5rem;
+  display: inline-block;
+  animation: bounce 1s infinite;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Button descriptions */
+.buttonDescription {
+  font-size: 0.8rem;
+  color: #757575;
+  text-align: center;
+  margin: -0.3rem 0 1rem;
+  max-width: 230px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .resultContainer {
+    padding: 1.5rem;
+  }
+  
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .statusIcon {
+    font-size: 2.5rem;
+  }
+  
+  .statusText {
+    font-size: 1.75rem;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+  }
+  
+  .retryButton, .nextButton {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+} 

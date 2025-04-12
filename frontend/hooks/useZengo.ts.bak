@@ -1,0 +1,217 @@
+'use client';
+
+import { useState, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { 
+  setupZengo,
+  startZengo,
+  moveToNextModule,
+  updateModuleResult,
+  completeZengo,
+  cancelZengo,
+  ZengoModule,
+  ZengoSession
+} from '@/store/slices/zengoSlice';
+import { zengo as zengoApi } from '@/lib/api';
+
+type ZengoModeStatus = 'idle' | 'setup' | 'active' | 'completed';
+
+// Available Zengo modules
+export const ZENGO_MODULES = [
+  { id: 'posuk', name: '포석 리딩', description: '핵심 구조 찾기', focus: '시각 집중력' },
+  { id: 'hangma', name: '행마 기억', description: '순서 복기', focus: '단기 기억력' },
+  { id: 'choyeok', name: '초읽기 판단', description: '제한시간 판단', focus: '직관력' },
+  { id: 'suri', name: '수리-언어', description: '수치 + 언어 통합', focus: '다중 처리' },
+  { id: 'pokki', name: '복기 루프', description: '글쓰기 결과 입력', focus: '메타 인지' },
+];
+
+export default function useZengo() {
+  const dispatch = useDispatch();
+  const { currentSession, currentModule, sessionHistory } = useSelector((state: RootState) => state.zengo);
+  
+  const [status, setStatus] = useState<ZengoModeStatus>('idle');
+  const [error, setError] = useState<string | null>(null);
+  
+  // Initialize a new Zengo session with selected modules
+  const setupSession = useCallback(async (boardSize: ZengoSession['boardSize'], moduleIds: string[]) => {
+    try {
+      // Validate that at least one module is selected
+      if (!moduleIds.length) {
+        throw new Error('최소 1개 이상의 모듈을 선택해주세요');
+      }
+      
+      // Maps module IDs to full module names
+      const moduleNames = moduleIds.map(id => {
+        const module = ZENGO_MODULES.find(m => m.id === id);
+        return module ? module.name : id;
+      });
+      
+      // Setup local state
+      dispatch(setupZengo({ boardSize, modules: moduleNames }));
+      
+      // Create a session in the backend
+      if (currentSession) {
+        const response = await zengoApi.create({
+          boardSize: currentSession.boardSize,
+          modules: currentSession.modules.map(m => m.name),
+        });
+        
+        // Update the session with the backend ID
+        // We'd normally do this in the slice, but this is a way to get the ID back
+        if (response.id) {
+          dispatch(updateModuleResult({ 
+            moduleIndex: 0, 
+            result: { id: response.id } 
+          }));
+        }
+      }
+      
+      setStatus('setup');
+      setError(null);
+    } catch (err: any) {
+      setError(err.message || 'Zengo 세션 설정 중 오류가 발생했습니다');
+    }
+  }, [currentSession, dispatch]);
+  
+  // Start the Zengo session and begin the first module
+  const startSession = useCallback(() => {
+    dispatch(startZengo());
+    setStatus('active');
+  }, [dispatch]);
+  
+  // Update the results for the current module
+  const updateModuleScore = useCallback((result: Partial<ZengoModule>) => {
+    if (!currentSession) {
+      setError('세션이 존재하지 않습니다');
+      return;
+    }
+    
+    dispatch(updateModuleResult({
+      moduleIndex: currentModule,
+      result,
+    }));
+  }, [currentModule, currentSession, dispatch]);
+  
+  // Move to the next module or complete if all modules are finished
+  const goToNextModule = useCallback(async () => {
+    if (!currentSession) {
+      setError('세션이 존재하지 않습니다');
+      return;
+    }
+    
+    const nextModuleIndex = currentModule + 1;
+    
+    if (nextModuleIndex < currentSession.modules.length) {
+      // Move to the next module
+      dispatch(moveToNextModule());
+      
+      // Update the backend with the current progress
+      if (currentSession.id) {
+        await zengoApi.update(currentSession.id, {
+          modules: currentSession.modules,
+        });
+      }
+    } else {
+      // All modules completed, calculate overall score
+      const overallScore = calculateOverallScore(currentSession.modules);
+      const earnedBadges = calculateEarnedBadges(currentSession.modules);
+      
+      // Complete the session
+      dispatch(completeZengo({
+        overallScore,
+        badges: earnedBadges,
+      }));
+      
+      // Update the backend
+      if (currentSession.id) {
+        await zengoApi.update(currentSession.id, {
+          status: 'completed',
+          modules: currentSession.modules,
+          overallScore,
+          badges: earnedBadges,
+        });
+      }
+      
+      setStatus('completed');
+    }
+  }, [currentModule, currentSession, dispatch]);
+  
+  // Cancel the current Zengo session
+  const cancelSession = useCallback(async () => {
+    if (currentSession?.id) {
+      // Update backend status to cancelled
+      try {
+        await zengoApi.update(currentSession.id, { status: 'cancelled' });
+      } catch (err) {
+        // Even if this fails, we still want to cancel the session locally
+        console.error('Error updating session:', err);
+      }
+    }
+    
+    dispatch(cancelZengo());
+    setStatus('idle');
+    setError(null);
+  }, [currentSession, dispatch]);
+  
+  // Helper function to calculate overall score
+  const calculateOverallScore = (modules: ZengoModule[]): number => {
+    const scores = modules.map(module => {
+      let moduleScore = 0;
+      
+      if (module.accuracy !== null) moduleScore += module.accuracy * 0.4;
+      if (module.memoryScore !== null) moduleScore += module.memoryScore * 0.2;
+      if (module.languageScore !== null) moduleScore += module.languageScore * 0.2;
+      if (module.logicScore !== null) moduleScore += module.logicScore * 0.2;
+      
+      return moduleScore;
+    });
+    
+    return Math.round(scores.reduce((sum, score) => sum + score, 0) / modules.length);
+  };
+  
+  // Helper function to calculate earned badges
+  const calculateEarnedBadges = (modules: ZengoModule[]): string[] => {
+    const badges: string[] = [];
+    
+    // Just some simple rules for badges
+    const totalAccuracy = modules.reduce((sum, m) => sum + (m.accuracy || 0), 0) / modules.length;
+    const totalMemory = modules.reduce((sum, m) => sum + (m.memoryScore || 0), 0) / modules.length;
+    const totalLanguage = modules.reduce((sum, m) => sum + (m.languageScore || 0), 0) / modules.length;
+    const totalLogic = modules.reduce((sum, m) => sum + (m.logicScore || 0), 0) / modules.length;
+    
+    if (totalAccuracy >= 90) badges.push('정확도 마스터');
+    if (totalMemory >= 85) badges.push('기억력 +2');
+    if (totalLanguage >= 85) badges.push('언어력 +2');
+    if (totalLogic >= 85) badges.push('판단력 +2');
+    
+    // Badges based on completed module combinations
+    const moduleNames = modules.map(m => m.name);
+    if (moduleNames.includes('포석 리딩') && moduleNames.includes('행마 기억')) {
+      badges.push('시각 기억력 마스터');
+    }
+    
+    return badges;
+  };
+  
+  return {
+    // State
+    status,
+    currentSession,
+    currentModule,
+    currentModuleData: currentSession?.modules[currentModule] || null,
+    modules: ZENGO_MODULES,
+    sessionHistory,
+    error,
+    
+    // Computed
+    progress: currentSession ? ((currentModule + 1) / currentSession.modules.length) * 100 : 0,
+    
+    // Methods
+    setupSession,
+    startSession,
+    updateModuleScore,
+    goToNextModule,
+    cancelSession,
+  };
+} 

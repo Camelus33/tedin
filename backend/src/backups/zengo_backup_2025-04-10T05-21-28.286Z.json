@@ -1,0 +1,714 @@
+[
+  {
+    "_id": "67f75370950dd8817cecd620",
+    "proverbText": "시작이 반이다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "시작이",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 1
+      },
+      {
+        "word": "반이다",
+        "position": {
+          "x": 1,
+          "y": 0
+        },
+        "order": 2
+      }
+    ],
+    "totalWords": 2,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.740Z",
+    "updatedAt": "2025-04-10T05:13:20.740Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd621",
+    "proverbText": "티끌 모아 태산",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "티끌",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 1
+      },
+      {
+        "word": "모아",
+        "position": {
+          "x": 2,
+          "y": 2
+        },
+        "order": 2
+      },
+      {
+        "word": "태산",
+        "position": {
+          "x": 2,
+          "y": 0
+        },
+        "order": 3
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.792Z",
+    "updatedAt": "2025-04-10T05:13:20.792Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd622",
+    "proverbText": "고생 끝에 낙이 온다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "고생",
+        "position": {
+          "x": 2,
+          "y": 2
+        },
+        "order": 1
+      },
+      {
+        "word": "끝에",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "order": 2
+      },
+      {
+        "word": "낙이",
+        "position": {
+          "x": 1,
+          "y": 0
+        },
+        "order": 3
+      },
+      {
+        "word": "온다",
+        "position": {
+          "x": 2,
+          "y": 0
+        },
+        "order": 4
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.794Z",
+    "updatedAt": "2025-04-10T05:13:20.794Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd623",
+    "proverbText": "사공이 많으면 배가 산으로 간다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "사공이",
+        "position": {
+          "x": 2,
+          "y": 2
+        },
+        "order": 1
+      },
+      {
+        "word": "많으면",
+        "position": {
+          "x": 1,
+          "y": 2
+        },
+        "order": 2
+      },
+      {
+        "word": "배가",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 3
+      },
+      {
+        "word": "산으로",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 4
+      },
+      {
+        "word": "간다",
+        "position": {
+          "x": 0,
+          "y": 1
+        },
+        "order": 5
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.795Z",
+    "updatedAt": "2025-04-10T05:13:20.795Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd624",
+    "proverbText": "웃는 낯에 침 못 뱉는다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "웃는",
+        "position": {
+          "x": 1,
+          "y": 0
+        },
+        "order": 1
+      },
+      {
+        "word": "낯에",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 2
+      },
+      {
+        "word": "침",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "order": 3
+      },
+      {
+        "word": "못",
+        "position": {
+          "x": 0,
+          "y": 1
+        },
+        "order": 4
+      },
+      {
+        "word": "뱉는다",
+        "position": {
+          "x": 1,
+          "y": 1
+        },
+        "order": 5
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.795Z",
+    "updatedAt": "2025-04-10T05:13:20.795Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd625",
+    "proverbText": "바늘 도둑이 소도둑 된다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "바늘",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 1
+      },
+      {
+        "word": "도둑이",
+        "position": {
+          "x": 2,
+          "y": 0
+        },
+        "order": 2
+      },
+      {
+        "word": "소도둑",
+        "position": {
+          "x": 1,
+          "y": 1
+        },
+        "order": 3
+      },
+      {
+        "word": "된다",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "order": 4
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.796Z",
+    "updatedAt": "2025-04-10T05:13:20.796Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd626",
+    "proverbText": "소문난 잔치에 먹을 것 없다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "소문난",
+        "position": {
+          "x": 1,
+          "y": 1
+        },
+        "order": 1
+      },
+      {
+        "word": "잔치에",
+        "position": {
+          "x": 2,
+          "y": 2
+        },
+        "order": 2
+      },
+      {
+        "word": "먹을",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 3
+      },
+      {
+        "word": "것",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "order": 4
+      },
+      {
+        "word": "없다",
+        "position": {
+          "x": 1,
+          "y": 0
+        },
+        "order": 5
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.797Z",
+    "updatedAt": "2025-04-10T05:13:20.797Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd627",
+    "proverbText": "천리 길도 한 걸음부터",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "천리",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 1
+      },
+      {
+        "word": "길도",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "order": 2
+      },
+      {
+        "word": "한",
+        "position": {
+          "x": 2,
+          "y": 2
+        },
+        "order": 3
+      },
+      {
+        "word": "걸음부터",
+        "position": {
+          "x": 0,
+          "y": 1
+        },
+        "order": 4
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.798Z",
+    "updatedAt": "2025-04-10T05:13:20.798Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd628",
+    "proverbText": "가는 말이 고와야 오는 말이 곱다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "가는",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 1
+      },
+      {
+        "word": "말이",
+        "position": {
+          "x": 2,
+          "y": 2
+        },
+        "order": 2
+      },
+      {
+        "word": "고와야",
+        "position": {
+          "x": 1,
+          "y": 0
+        },
+        "order": 3
+      },
+      {
+        "word": "오는",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 4
+      },
+      {
+        "word": "말이",
+        "position": {
+          "x": 1,
+          "y": 1
+        },
+        "order": 5
+      },
+      {
+        "word": "곱다",
+        "position": {
+          "x": 2,
+          "y": 0
+        },
+        "order": 6
+      }
+    ],
+    "totalWords": 6,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.799Z",
+    "updatedAt": "2025-04-10T05:13:20.799Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd629",
+    "proverbText": "말을 아끼면 병 없다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "말을",
+        "position": {
+          "x": 2,
+          "y": 2
+        },
+        "order": 1
+      },
+      {
+        "word": "아끼면",
+        "position": {
+          "x": 2,
+          "y": 0
+        },
+        "order": 2
+      },
+      {
+        "word": "병",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 3
+      },
+      {
+        "word": "없다",
+        "position": {
+          "x": 1,
+          "y": 1
+        },
+        "order": 4
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.800Z",
+    "updatedAt": "2025-04-10T05:13:20.800Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd62a",
+    "proverbText": "작은 고추가 맵다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "작은",
+        "position": {
+          "x": 1,
+          "y": 2
+        },
+        "order": 1
+      },
+      {
+        "word": "고추가",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 2
+      },
+      {
+        "word": "맵다",
+        "position": {
+          "x": 2,
+          "y": 0
+        },
+        "order": 3
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.800Z",
+    "updatedAt": "2025-04-10T05:13:20.800Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd62b",
+    "proverbText": "세 살 버릇 여든까지 간다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "세",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "order": 1
+      },
+      {
+        "word": "살",
+        "position": {
+          "x": 1,
+          "y": 0
+        },
+        "order": 2
+      },
+      {
+        "word": "버릇",
+        "position": {
+          "x": 1,
+          "y": 2
+        },
+        "order": 3
+      },
+      {
+        "word": "여든까지",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 4
+      },
+      {
+        "word": "간다",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 5
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.801Z",
+    "updatedAt": "2025-04-10T05:13:20.801Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd62c",
+    "proverbText": "낮말은 새가 듣고 밤말은 쥐가 듣는다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "낮말은",
+        "position": {
+          "x": 1,
+          "y": 2
+        },
+        "order": 1
+      },
+      {
+        "word": "새가",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 2
+      },
+      {
+        "word": "듣고",
+        "position": {
+          "x": 1,
+          "y": 0
+        },
+        "order": 3
+      },
+      {
+        "word": "밤말은",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 4
+      },
+      {
+        "word": "쥐가",
+        "position": {
+          "x": 2,
+          "y": 0
+        },
+        "order": 5
+      },
+      {
+        "word": "듣는다",
+        "position": {
+          "x": 1,
+          "y": 1
+        },
+        "order": 6
+      }
+    ],
+    "totalWords": 6,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.802Z",
+    "updatedAt": "2025-04-10T05:13:20.802Z"
+  },
+  {
+    "_id": "67f75370950dd8817cecd62d",
+    "proverbText": "늦더라도 안 하는 것보다 낫다",
+    "language": "ko",
+    "level": "3x3-easy",
+    "boardSize": 3,
+    "wordMappings": [
+      {
+        "word": "늦더라도",
+        "position": {
+          "x": 2,
+          "y": 1
+        },
+        "order": 1
+      },
+      {
+        "word": "안",
+        "position": {
+          "x": 1,
+          "y": 2
+        },
+        "order": 2
+      },
+      {
+        "word": "하는",
+        "position": {
+          "x": 0,
+          "y": 1
+        },
+        "order": 3
+      },
+      {
+        "word": "것보다",
+        "position": {
+          "x": 2,
+          "y": 0
+        },
+        "order": 4
+      },
+      {
+        "word": "낫다",
+        "position": {
+          "x": 0,
+          "y": 2
+        },
+        "order": 5
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 5,
+    "initialDisplayTimeMs": 5000,
+    "targetTimeMs": 30000,
+    "goPatternName": null,
+    "createdAt": "2025-04-10T05:13:20.802Z",
+    "updatedAt": "2025-04-10T05:13:20.802Z"
+  }
+]

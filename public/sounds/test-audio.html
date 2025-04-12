@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Audio Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .player { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; }
+    button { padding: 5px 10px; margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Audio Test Page</h1>
+  <p>This page tests the audio files in different formats.</p>
+  
+  
+    <div class="player">
+      <h3>correct</h3>
+      <audio id="correct">
+        <source src="correct.mp3" type="audio/mpeg">
+        <source src="correct.ogg" type="audio/ogg">
+        <source src="correct.wav" type="audio/wav">
+        Your browser does not support the audio element.
+      </audio>
+      <button onclick="document.getElementById('correct').play()">Play</button>
+      <button onclick="document.getElementById('correct').pause()">Pause</button>
+    </div>
+  
+  
+    <div class="player">
+      <h3>incorrect</h3>
+      <audio id="incorrect">
+        <source src="incorrect.mp3" type="audio/mpeg">
+        <source src="incorrect.ogg" type="audio/ogg">
+        <source src="incorrect.wav" type="audio/wav">
+        Your browser does not support the audio element.
+      </audio>
+      <button onclick="document.getElementById('incorrect').play()">Play</button>
+      <button onclick="document.getElementById('incorrect').pause()">Pause</button>
+    </div>
+  
+  
+    <div class="player">
+      <h3>stone-place</h3>
+      <audio id="stone-place">
+        <source src="stone-place.mp3" type="audio/mpeg">
+        <source src="stone-place.ogg" type="audio/ogg">
+        <source src="stone-place.wav" type="audio/wav">
+        Your browser does not support the audio element.
+      </audio>
+      <button onclick="document.getElementById('stone-place').play()">Play</button>
+      <button onclick="document.getElementById('stone-place').pause()">Pause</button>
+    </div>
+  
+  
+  <script>
+    // Preload all audio
+    window.onload = () => {
+      const audios = document.querySelectorAll('audio');
+      audios.forEach(audio => audio.load());
+    };
+  </script>
+</body>
+</html>
