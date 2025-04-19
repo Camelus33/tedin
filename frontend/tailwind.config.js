@@ -50,7 +50,18 @@ module.exports = {
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      }
+      },
+      fontSize: {
+        'heading-lg': ['2.5rem', { lineHeight: '1.2', fontWeight: '800' }],
+        'heading-md': ['2rem', { lineHeight: '1.3', fontWeight: '800' }],
+        'heading-sm': ['1.5rem', { lineHeight: '1.4', fontWeight: '600' }],
+        'body-md': ['1rem', { lineHeight: '1.6' }],
+      },
+      spacing: {
+        'page-y': '3rem',
+        'page-x': '1.5rem',
+        'card-p': '2rem',
+      },
     },
   },
   plugins: [],

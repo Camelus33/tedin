@@ -1,14 +1,17 @@
 .board {
   display: flex;
   justify-content: center;
-  margin: 2rem 0;
+  margin: 2rem auto;
+  padding: clamp(16px, 4vw, 32px);
+  box-sizing: border-box;
   width: 100%;
   max-width: 750px;
-  margin: 2rem auto;
 }
 
 .zengo-board {
   display: grid;
+  padding: 0.5rem;
+  box-sizing: border-box;
   position: relative;
   width: 100%; 
   max-width: 700px;
@@ -118,6 +121,8 @@
   white-space: nowrap;
   padding: 2px;
   contain: paint layout;
+  opacity: 1;
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
 /* 실제 애니메이션 요소에만 will-change 적용 */
@@ -202,28 +207,10 @@
 
 /* Stone hiding animation that matches word hiding - optimized for performance */
 .stone.animate-hide {
-  animation: fadeOutStone 0.8s forwards;
-  transition: opacity 0.8s, transform 0.8s;
-  will-change: transform, opacity;
-}
-
-@keyframes fadeOutStone {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  30% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
-  }
-  70% {
-    opacity: 0.3;
-    transform: translate(-50%, -50%) scale(0.7) rotate(-5deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0);
-  }
+  /* On hide, apply fade-out styles */
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
 /* Enhanced word disappearing animation - optimized for performance */

@@ -8,11 +8,20 @@ import './ZengoBoard.css';
 import { BoardStoneData, BoardSize, InteractionMode } from '@/src/types/zengo';
 
 // Stone component - extracted to prevent re-renders
-const Stone = React.memo(({ stone }: { stone: BoardStoneData }) => {
+const Stone = React.memo(({ stone, cellSize, boardSize }: { stone: BoardStoneData; cellSize?: number; boardSize: number }) => {
   if (!stone || !stone.color || stone.visible === undefined) {
     return null; // 안전하게 null 반환
   }
   
+  const sizeFactor = boardSize > 3 ? 0.7 : 0.6;
+  const fontFactor = 0.16;
+  const style = cellSize
+    ? {
+        width: `${cellSize * sizeFactor}px`,
+        height: `${cellSize * sizeFactor}px`,
+        fontSize: `${cellSize * fontFactor}px`,
+      }
+    : undefined;
   return (
     <div
       className={`stone ${stone.color} 
@@ -20,6 +29,7 @@ const Stone = React.memo(({ stone }: { stone: BoardStoneData }) => {
         ${stone.isHiding ? 'animate-hide' : ''}
         ${stone.memoryPhase ? 'memory-phase' : ''}
         ${stone.feedback ? stone.feedback : ''}`}
+      style={style}
     >
       {stone.value}
     </div>
@@ -37,6 +47,8 @@ interface BoardIntersectionProps {
   placeable: boolean;
   isShowing: boolean;
   onIntersectionClick: (position: [number, number]) => void;
+  cellSize?: number;
+  boardSize: number;
 }
 
 const BoardIntersection = React.memo(({ 
@@ -45,7 +57,9 @@ const BoardIntersection = React.memo(({
   isStarPoint, 
   placeable, 
   isShowing, 
-  onIntersectionClick 
+  onIntersectionClick,
+  cellSize,
+  boardSize,
 }: BoardIntersectionProps) => {
   const handleClick = useCallback(() => {
     onIntersectionClick([x, y]);
@@ -57,7 +71,7 @@ const BoardIntersection = React.memo(({
       onClick={handleClick}
     >
       {isStarPoint && <div className="star-point"></div>}
-      {stone && stone.visible === true && <Stone stone={stone} />}
+      {stone && stone.visible === true && <Stone stone={stone} cellSize={cellSize} boardSize={boardSize} />}
     </div>
   );
 });
@@ -83,10 +97,14 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
   const boardContainerRef = useRef<HTMLDivElement>(null);
   const [feedbackStones, setFeedbackStones] = useState<BoardStoneData[]>([]);
   
+  // Initial board size: dynamic based on viewport width (80% of vw) with upper limits
   const initialSize = useMemo(() => {
-    if (boardSize === 5) return 400;
-    if (boardSize === 7) return 490;
-    return 300;
+    const vw = typeof window !== 'undefined' ? window.innerWidth : 800;
+    const maxSize = vw * 0.8;
+    if (boardSize === 3) return Math.min(maxSize, 400);   // 3x3: 조금 더 크게
+    if (boardSize === 5) return Math.min(maxSize, 500);
+    if (boardSize === 7) return Math.min(maxSize, 650);
+    return Math.min(maxSize, 350);
   }, [boardSize]);
   
   const [boardWidthPx, setBoardWidthPx] = useState(initialSize);
@@ -235,11 +253,24 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
     };
   }, [boardSize, boardWidthPx]);
 
+  // Debug: log style and dimensions to verify grid layout
+  useEffect(() => {
+    console.log('ZengoBoard debug:', {
+      gridTemplateStyle,
+      boardSize,
+      boardWidthPx,
+      isShowing
+    });
+  }, [gridTemplateStyle, boardSize, boardWidthPx, isShowing]);
+
   const handleIntersectionClick = useCallback((position: [number, number]) => {
     if (interactionMode === 'click') {
       onIntersectionClick(position);
     }
   }, [interactionMode, onIntersectionClick]);
+
+  // Dynamic cell size for stone rendering
+  const cellSize = boardWidthPx / boardSize;
 
   return (
     <div className="board">
@@ -263,6 +294,8 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
               placeable={placeable}
               isShowing={isShowing}
               onIntersectionClick={handleIntersectionClick}
+              cellSize={cellSize}
+              boardSize={boardSize}
             />
           );
         })}

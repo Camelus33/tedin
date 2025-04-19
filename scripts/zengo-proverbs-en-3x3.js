@@ -9,6 +9,7 @@
  * - 교육적 가치 높음
  */
 
+/*
 const zengoProverbsEn3x3 = [
   // === 3x3 EASY (총 33개) ===
   {
@@ -547,4 +548,5 @@ const zengoProverbsEn3x3 = [
   },
 ];
 
-module.exports = zengoProverbsEn3x3; 
+module.exports = zengoProverbsEn3x3;
+*/ 

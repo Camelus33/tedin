@@ -1,0 +1,116 @@
+[
+  {
+    "_id": "67fef8abcc46f43e9f62271a",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Never give up",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Never",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "give",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "up",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 8,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 30000,
+    "createdAt": "2025-04-16T00:24:11.854Z",
+    "updatedAt": "2025-04-16T00:24:11.854Z",
+    "__v": 0
+  },
+  {
+    "_id": "67fef8abcc46f43e9f62271e",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Learn and grow",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Learn",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "and",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "grow",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 8,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 30000,
+    "createdAt": "2025-04-16T00:24:11.872Z",
+    "updatedAt": "2025-04-16T00:24:11.872Z",
+    "__v": 0
+  },
+  {
+    "_id": "67fef8abcc46f43e9f622721",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Trust your path",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Trust",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "your",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "path",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 8,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 30000,
+    "createdAt": "2025-04-16T00:24:11.875Z",
+    "updatedAt": "2025-04-16T00:24:11.875Z",
+    "__v": 0
+  }
+]

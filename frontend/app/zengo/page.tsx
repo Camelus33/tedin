@@ -14,6 +14,7 @@ import {
   hideWords, 
   clearStoneFeedback, 
   evaluateResult, 
+  evaluateResultThunk,
   prepareNextGame, 
   regeneratePositionsThunk,
   retryContentThunk,
@@ -367,221 +368,76 @@ export default function ZengoPage() {
   };
 
   // 다음 게임으로 진행하는 함수 
-  const handleNextGame = () => {
-    // 결과 제출 관련 상태 초기화
+  const handleNextGame = async () => {
     setHasSubmitted(false);
-    
     const level = mapSizeToLevel(selectedBoardSize);
     const language = selectedLanguage;
-    
-    // Redux 액션을 순차적으로 실행
     console.log('다음 게임 시작...', { level, language });
-    
-    // Promise 체인을 사용하여 액션 순서 보장
-    Promise.resolve()
-      // 1. 현재 상태 확인 및 결과 평가
-      .then(() => {
-        console.log('1단계: 결과 평가');
-        return dispatch(evaluateResult());
-      })
-      // 2. 결과 타입에 따라 다음 게임 준비 - 항상 새 콘텐츠로 진행
-      .then(() => {
-        console.log('2단계: 다음 게임 준비');
-        return dispatch(prepareNextGame({ keepContent: false, keepPositions: false }));
-      })
-      // 3. 게임 상태 리셋 (shouldKeepContent 플래그는 유지)
-      .then(() => {
-        console.log('3단계: 게임 상태 초기화');
-        return dispatch(resetGame({ preserveFlags: true }));
-      })
-      // 4. 새 설정 적용
-      .then(() => {
-        console.log('4단계: 새 설정 적용');
-        return dispatch(setSettings({ level, language }));
-      })
-      // 5. 새 콘텐츠 요청
-      .then(() => {
-        console.log('5단계: 새 콘텐츠 요청');
-        return dispatch(fetchContentThunk({ level, language, reshuffleWords: true }));
-      })
-      .then((result) => {
-        console.log('다음 게임 준비 완료:', result);
-      })
-      .catch((error) => {
-        console.error('다음 게임 준비 실패:', error);
-        // 오류 발생 시 기본 설정으로 새 게임 시작
-        dispatch(resetGame({ preserveFlags: false }));
-        dispatch(setSettings({ level, language }));
-        dispatch(fetchContentThunk({ level, language, reshuffleWords: true }));
-      });
+    try {
+      // 1. 결과 평가 및 최신 resultType 획득
+      const rt = await dispatch(evaluateResultThunk()).unwrap();
+      // 2. 다음 게임 준비 (새 콘텐츠, 새 위치)
+      dispatch(prepareNextGame({ keepContent: false, keepPositions: false }));
+      // 3. 게임 상태 초기화 (플래그만 보존)
+      dispatch(resetGame({ preserveFlags: true }));
+      // 4. 새 설정 적용 및 콘텐츠 로드
+      dispatch(setSettings({ level, language }));
+      await dispatch(fetchContentThunk({ level, language, reshuffleWords: true })).unwrap();
+      console.log('다음 게임 준비 완료:', rt);
+    } catch (error) {
+      console.error('다음 게임 준비 실패:', error);
+      dispatch(resetGame({ preserveFlags: false }));
+      dispatch(setSettings({ level, language }));
+      dispatch(fetchContentThunk({ level, language, reshuffleWords: true }));
+    }
   };
   
   // 어순은 틀렸지만 단어는 모두 맞춘 경우 같은 문장으로 다시 시작하는 함수
-  const handleRetrySameContent = () => {
-    // 결과 제출 관련 상태 초기화
+  const handleRetrySameContent = async () => {
     setHasSubmitted(false);
-    
-    // 현재 콘텐츠가 있을 때만 처리
-    if (currentContent) {
-      console.log('같은 문항 반복하기 시작...', { 
-        contentId: currentContent._id, 
-        level: currentContent.level, 
-        language: currentContent.language,
-        resultType
-      });
-      
-      try {
-        // 1. 콘텐츠 정보를 세션 스토리지에 백업
-        const contentToKeep = {
-          _id: currentContent._id,
-          level: currentContent.level,
-          language: currentContent.language
-        };
-        sessionStorage.setItem('zengo_last_content', JSON.stringify(contentToKeep));
-        
-        // 2. 결과 평가 (이미 평가되었을 수 있음)
-        dispatch(evaluateResult());
-        
-        // 3. 결과 타입에 따라 다른 동작 수행
-        let reshufflePositions: boolean;
-        let shouldFetchNewContent: boolean = false;
-        
-        if (resultType === 'EXCELLENT') {
-          // EXCELLENT 결과인 경우 새로운 콘텐츠 가져오기
-          console.log('EXCELLENT 결과: 새 콘텐츠 요청');
-          shouldFetchNewContent = true;
-          reshufflePositions = true; // 새 콘텐츠는 항상 재배치
-        } else if (resultType === 'SUCCESS') {
-          // SUCCESS 결과인 경우 같은 콘텐츠, 다른 위치
-          console.log('SUCCESS 결과: 같은 콘텐츠, 새 위치 요청');
-          reshufflePositions = true;
-          shouldFetchNewContent = false;
-        } else {
-          // FAIL 결과인 경우 같은 콘텐츠, 같은 위치
-          console.log('FAIL 결과: 같은 콘텐츠, 같은 위치 요청');
-          reshufflePositions = false;
-          shouldFetchNewContent = false;
-        }
-        
-        // 4-6. Redux 액션 순차 실행 (Promise 체인 사용)
-        // Redux Toolkit의 dispatch는 Promise를 반환하므로 체인 가능
-        Promise.resolve()
-          // 4. 게임 상태 초기화
-          .then(() => {
-            console.log('1단계: 게임 상태 초기화');
-            return dispatch(resetGame({ onlyGameState: true }));
-          })
-          // 5. 세팅 설정 유지
-          .then(() => {
-            console.log('2단계: 세팅 설정 적용');
-            return dispatch(setSettings({ 
-              level: contentToKeep.level, 
-              language: contentToKeep.language 
-            }));
-          })
-          // 6. 콘텐츠 요청 (상태 업데이트 완료 후 실행)
-          .then(() => {
-            console.log('3단계: 콘텐츠 요청 시작', { shouldFetchNewContent, reshufflePositions });
-            
-            if (shouldFetchNewContent) {
-              // 새 콘텐츠 요청 (EXCELLENT 결과)
-              return dispatch(fetchContentThunk({ 
-                level: contentToKeep.level, 
-                language: contentToKeep.language, 
-                reshuffleWords: true 
-              }));
-            } else {
-              // 기존 콘텐츠 재사용 (SUCCESS/FAIL 결과)
-              return dispatch(fetchContentThunk({ 
-                level: contentToKeep.level, 
-                language: contentToKeep.language, 
-                contentId: contentToKeep._id,
-                reshuffleWords: reshufflePositions
-              }));
-            }
-          })
-          .then((result) => {
-            console.log('콘텐츠 로드 완료:', result);
-          })
-          .catch((error) => {
-            console.error('재시작 프로세스 오류:', error);
-            // 오류 발생 시 새 게임 시작
-            if (currentContent) {
-              dispatch(fetchContentThunk({ 
-                level: currentContent.level, 
-                language: currentContent.language, 
-                reshuffleWords: true 
-              }));
-            }
-          });
-        
-        console.log(`API 요청 진행 중: ${shouldFetchNewContent ? '새 콘텐츠' : '같은 콘텐츠'}, reshuffle=${reshufflePositions}`);
-      } catch (error) {
-        console.error('같은 문항 반복하기 오류:', error);
-        // 오류 발생 시 새 게임 시작
-        if (currentContent) {
-          dispatch(fetchContentThunk({ 
-            level: currentContent.level, 
-            language: currentContent.language, 
-            reshuffleWords: true 
-          }));
-        }
-      }
-    } else {
+    if (!currentContent) {
       console.warn('현재 콘텐츠가 없어 새 게임을 시작합니다.');
-      // 세션 스토리지에서 마지막 콘텐츠 정보 복구
       try {
-        const lastContent = sessionStorage.getItem('zengo_last_content');
-        if (lastContent) {
-          const { level, language, _id } = JSON.parse(lastContent);
-          
-          // Promise 체인으로 순차 실행
-          Promise.resolve()
-            .then(() => {
-              return dispatch(setSettings({ level, language }));
-            })
-            .then(() => {
-              // 기존 콘텐츠 ID가 있으면 그것을 사용하여 요청
-              if (_id) {
-                return dispatch(fetchContentThunk({ 
-                  level, 
-                  language, 
-                  contentId: _id,
-                  reshuffleWords: false 
-                }));
-              } else {
-                // 콘텐츠 ID가 없으면 새 콘텐츠 요청
-                return dispatch(fetchContentThunk({ 
-                  level, 
-                  language, 
-                  reshuffleWords: true 
-                }));
-              }
-            })
-            .catch((error) => {
-              console.error('세션 데이터 처리 오류:', error);
-              // 기본 값으로 새 게임 시작
-              dispatch(setSettings({ level: 'beginner', language: 'ko' }));
-              dispatch(fetchContentThunk({ level: 'beginner', language: 'ko', reshuffleWords: true }));
-            });
+        const last = sessionStorage.getItem('zengo_last_content');
+        if (last) {
+          const { level, language, _id } = JSON.parse(last);
+          dispatch(setSettings({ level, language }));
+          await dispatch(fetchContentThunk({ level, language, contentId: _id, reshuffleWords: false })).unwrap();
         } else {
-          console.error('세션 스토리지에 저장된 콘텐츠 정보가 없습니다.');
-          
-          // 기본 레벨과 언어를 사용하여 새 게임 시작
           dispatch(setSettings({ level: 'beginner', language: 'ko' }));
-          dispatch(fetchContentThunk({ 
-            level: 'beginner', 
-            language: 'ko', 
-            reshuffleWords: true 
-          }));
+          await dispatch(fetchContentThunk({ level: 'beginner', language: 'ko', reshuffleWords: true })).unwrap();
         }
-      } catch (error) {
-        console.error('세션 스토리지 처리 중 오류:', error);
-        
-        // 오류 처리 - 기본 값으로 새 게임 시작
-        dispatch(setSettings({ level: 'beginner', language: 'ko' }));
-        dispatch(fetchContentThunk({ level: 'beginner', language: 'ko', reshuffleWords: true }));
+      } catch (err) {
+        console.error('세션 복구 중 오류:', err);
       }
+      return;
+    }
+    const { level, language } = currentContent;
+    sessionStorage.setItem(
+      'zengo_last_content',
+      JSON.stringify({ _id: currentContent._id, level, language })
+    );
+    // 1. 결과 평가 및 최신 resultType 획득
+    const rt = await dispatch(evaluateResultThunk()).unwrap();
+    // 2. 게임 상태 초기화 (플래그만 보존)
+    dispatch(resetGame({ onlyGameState: true, preserveFlags: true }));
+    try {
+      // 3. 결과 타입에 따른 재실행 동작
+      if (rt === 'EXCELLENT') {
+        // 완벽 성공: 완전히 새 콘텐츠
+        await dispatch(fetchContentThunk({ level, language, reshuffleWords: true })).unwrap();
+      } else if (rt === 'SUCCESS') {
+        // 성공(위치만 맞음): 같은 문장, 다른 위치
+        await dispatch(retryContentThunk({ reshufflePositions: true })).unwrap();
+      } else {
+        // 실패: 같은 위치로 재실행 (기존 좌표 유지)
+        dispatch(startGame());
+      }
+      console.log('콘텐츠 로드 또는 재실행 완료:', rt);
+    } catch (error) {
+      console.error('같은 문항 반복 오류:', error);
+      // 폴백: 새 콘텐츠 로드
+      await dispatch(fetchContentThunk({ level, language, reshuffleWords: true })).unwrap();
     }
   };
 
@@ -701,6 +557,9 @@ export default function ZengoPage() {
     });
   };
 
+  // --- ZenGo Myverse Modal State ---
+  const [showMyverseModal, setShowMyverseModal] = useState(false);
+
   // --- Render Logic --- 
 
   // Intro Screen
@@ -708,8 +567,8 @@ export default function ZengoPage() {
   return (
     <div className="zengo-container">
       <div className="zengo-intro">
-        <h1 className="intro-title">ZenGo : 기억 착수 - 해마자극 멘탈케어<br />
-          <span className="intro-subtitle">바둑과 신경과학의 만남</span>
+        <h1 className="intro-title">ZenGo : 기억 착수<br />
+          <span className="intro-subtitle">바둑과 인지과학의 만남</span>
         </h1>
         
         {/* 세로 스크롤 방식 튜토리얼 섹션 */}
@@ -948,27 +807,32 @@ export default function ZengoPage() {
 
           return (
               <div className="zengo-container">
-                  {/* Render ZengoStatusDisplay */}
-                  <ZengoStatusDisplay 
+                {/* Board with status overlay at top-left corner */}
+                <div style={{ position: 'relative', width: '100%' }}>
+                  <ZengoBoard
+                    boardSize={currentContent.boardSize as BoardSize}
+                    stoneMap={finalBoardStones}
+                    interactionMode={gameState === 'playing' ? 'click' : 'view'}
+                    onIntersectionClick={(position: [number, number]) => {
+                      if (gameState === 'playing') {
+                        dispatch(placeStone({ x: position[0], y: position[1] }));
+                      }
+                    }}
+                    isShowing={gameState === 'showing'}
+                  />
+                  <div className="status-card-responsive">
+                    <ZengoStatusDisplay
                       usedStonesCount={usedStonesCount}
                       totalAllowedStones={currentContent.totalAllowedStones}
                       startTime={startTime}
                       gameState={gameState}
                       wordOrderCorrect={wordOrderCorrect}
-                  />
-                  {/* Debugging state info - can be removed */} 
-                  {/* <p>Game State: {gameState}</p> */} 
-                  <ZengoBoard 
-                      boardSize={currentContent.boardSize as BoardSize} 
-                      stoneMap={finalBoardStones}
-                      interactionMode={gameState === 'playing' ? 'click' : 'view'}
-                      onIntersectionClick={(position: [number, number]) => {
-                          if (gameState === 'playing') {
-                              dispatch(placeStone({ x: position[0], y: position[1] }));
-                          }
-                      }}
-                      isShowing={gameState === 'showing'}
-                  /> 
+                    />
+                  </div>
+                  <div className="mt-2 text-[10px] text-gray-300 select-none opacity-70 text-center">
+                    본 페이지의 모든 콘텐츠는 저작권법에 의해 보호되며  무단 복제, 배포를 원칙적으로 금합니다
+                  </div>
+                </div>
               </div>
           );
       }
@@ -1011,96 +875,185 @@ export default function ZengoPage() {
       
       // Show Settings Selection UI if idle/setting/error
       return (
-          <div className="zengo-container">
-              <div className="zengo-selector">
-                  <h2 className="settings-title">ZenGo 설정</h2>
-                  
-                  {/* 설정 페이지 소개 */}
-                  <p className="settings-intro">
-                      훈련 레벨과 언어를 선택하여 기억력 향상 훈련을 시작하세요.
-                  </p>
-
-                  {/* 보드 크기 선택 (Simplified) */}
-                  <section className="settings-section">
-                      <h3>훈련 레벨 선택</h3>
-                      <div className="level-grid" role="radiogroup" aria-label="레벨 선택">
-                          {[
-                              { size: 3, label: '초급', desc: '기억력 기초 훈련 - 5분 세션 권장', icon: '🔰' },
-                              { size: 5, label: '중급', desc: '집중력 강화 - 10분 세션 권장', icon: '⭐' },
-                              { size: 7, label: '고급', desc: '고급 인지 능력 - 15분 세션 권장', icon: '🏆' }
-                          ].map(level => (
-                              <div 
-                                  key={level.size}
-                                  className={`level-card ${selectedBoardSize === level.size ? 'selected' : ''}`}
-                                  onClick={() => setSelectedBoardSize(level.size)}
-                                  onKeyPress={(e) => handleKeyPress(e, () => setSelectedBoardSize(level.size))}
-                                  role="radio"
-                                  aria-checked={selectedBoardSize === level.size}
-                                  tabIndex={0}
-                              >
-                                  <div className="level-header">
-                                      <span className="level-icon">{level.icon}</span>
-                                      <h4>{`${level.size}x${level.size} ${level.label}`}</h4>
-                                  </div>
-                                  <p className="level-desc">{level.desc}</p>
-                                  {selectedBoardSize === level.size && <div className="selection-indicator"></div>}
-                              </div>
-                          ))}
-                      </div>
-                      {!selectedBoardSize && <p className="selection-guide">레벨을 선택해주세요</p>}
-                  </section>
-              
-                  {/* 언어 선택 (Updated) */}
-                  <section className="settings-section">
-                      <h3>언어 선택</h3>
-                      <div className="language-grid" role="radiogroup" aria-label="언어 선택">
-                          {[
-                              { code: 'ko', name: '한국어', flag: '🇰🇷' },
-                              { code: 'en', name: 'English', flag: '🇺🇸' }
-                          ].map(lang => (
-                              <div
-                                  key={lang.code}
-                                  className={`language-card ${selectedLanguage === lang.code ? 'selected' : ''}`}
-                                  onClick={() => setSelectedLanguage(lang.code)}
-                                  onKeyPress={(e) => handleKeyPress(e, () => setSelectedLanguage(lang.code))}
-                                  role="radio"
-                                  aria-checked={selectedLanguage === lang.code}
-                                  tabIndex={0}
-                              >
-                                  <span className="language-flag">{lang.flag}</span>
-                                  <span className="language-name">{lang.name}</span>
-                                  {selectedLanguage === lang.code && <div className="selection-indicator"></div>}
-                              </div>
-                          ))}
-                      </div>
-                      {!selectedLanguage && <p className="selection-guide">언어를 선택해주세요</p>}
-                  </section>
-              
-                  {/* Start Game Button */} 
-                  <div className="action-buttons-container">
-                      <button 
-                          className="start-button" 
-                          onClick={handleStartGame}
-                          onKeyPress={(e) => handleKeyPress(e, handleStartGame)}
-                          disabled={loading || !selectedBoardSize || !selectedLanguage}
-                          aria-disabled={loading || !selectedBoardSize || !selectedLanguage}
-                          tabIndex={0}
-                      >
-                          {loading ? '로딩 중...' : (!selectedBoardSize || !selectedLanguage ? '옵션을 모두 선택하세요' : 'ZenGo 시작')}
-                      </button>
-                  
-                      <button 
-                          className="back-button" 
-                          onClick={() => setUiState('intro')}
-                          onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
-                          aria-label="인트로 화면으로 돌아가기"
-                          tabIndex={0}
-                      >
-                          뒤로 가기
-                      </button>
+        <div className="zengo-container">
+          <div className="zengo-selector">
+            <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo 설정</h2>
+            <p className="settings-intro">
+              레벨과 언어를 선택하고 시작하세요
+            </p>
+            {/* 보드 크기 선택 + Myverse 카드 */}
+            <section className="settings-section">
+              <h3>재밌게 즐기세요</h3>
+              <div className="level-grid" role="radiogroup" aria-label="레벨 선택">
+                {[{ size: 3, label: '초급', desc: '기억력 기초 - 5분 세션 권장', icon: '🔰' },
+                  { size: 5, label: '중급', desc: '집중력 강화 - 10분 세션 권장', icon: '⭐' },
+                  { size: 7, label: '고급', desc: '공간 지각력 - 15분 세션 권장', icon: '🏆' }
+                ].map(level => (
+                  <div
+                    key={level.size}
+                    className={`level-card ${selectedBoardSize === level.size ? 'selected' : ''}`}
+                    onClick={() => setSelectedBoardSize(level.size)}
+                    onKeyPress={(e) => handleKeyPress(e, () => setSelectedBoardSize(level.size))}
+                    role="radio"
+                    aria-checked={selectedBoardSize === level.size}
+                    tabIndex={0}
+                  >
+                    <div className="level-header">
+                      <span className="level-icon">{level.icon}</span>
+                      <h4>{`${level.size}x${level.size} ${level.label}`}</h4>
+                    </div>
+                    <p className="level-desc">{level.desc}</p>
+                    {selectedBoardSize === level.size && <div className="selection-indicator"></div>}
                   </div>
+                ))}
+                {/* ZenGo Myverse Premium Edition Card (as a level card) */}
+                <div
+                  className="level-card group cursor-pointer premium-myverse-card border-2 border-blue-400 relative flex flex-col items-center justify-center transition mx-auto"
+                  style={{ minHeight: 0, minWidth: 0, background: 'linear-gradient(135deg, #4F46E5 0%, #60A5FA 100%)', color: '#fff', boxShadow: '0 4px 24px 0 rgba(96,165,250,0.12), 0 1.5px 8px 0 rgba(79,70,229,0.10)', alignSelf: 'center', justifySelf: 'center' }}
+                  onClick={() => setShowMyverseModal(true)}
+                  tabIndex={0}
+                  aria-label="ZenGo Myverse 프리미엄 에디션 자세히 보기"
+                >
+                  <div className="flex items-center gap-2 mb-1 mt-1 w-full justify-center">
+                    <span className="text-sm md:text-lg font-extrabold" style={{ color: '#fff', letterSpacing: '-0.02em' }}>ZenGo</span>
+                    <span className="text-sm md:text-lg font-extrabold" style={{ color: '#FBBF24', letterSpacing: '-0.02em' }}>Myverse</span>
+                    <span className="ml-2 bg-blue-400 text-white px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold shadow border border-blue-300" style={{ letterSpacing: '0.01em', height: 'fit-content' }}>PREMIUM</span>
+                  </div>
+                  <div className="text-center font-semibold text-sm md:text-base mb-1 w-full" style={{ color: '#fff', wordBreak: 'keep-all', lineHeight: 1.3, maxWidth: '90%' }}>
+                    외우고 싶은 문장을 입력해 나 만의 ZenGo를 즐기세요
+                  </div>
+                  <div className="text-xs mb-2 w-full text-center" style={{ color: '#DBEAFE', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1.2, maxWidth: '90%' }}>
+                    - 초대코드 / 유료가입 -
+                  </div>
+                  <div className="mt-2 text-xs font-bold group-hover:underline" style={{ color: '#fff', letterSpacing: '0.01em' }}>자세히 보기 &gt;</div>
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 rounded-2xl pointer-events-none transition" style={{ background: 'linear-gradient(135deg, #60A5FA 0%, #4F46E5 100%)' }} />
+                </div>
               </div>
+            </section>
+            {/* 언어 선택 */}
+            <section className="settings-section">
+              <h3>언어를 선택하세요</h3>
+              <div className="language-grid" role="radiogroup" aria-label="언어 선택">
+                {[{ code: 'ko', name: '한국어', flag: '🇰🇷' },
+                  { code: 'en', name: 'English', flag: '🇺🇸' }
+                ].map(lang => (
+                  <div
+                    key={lang.code}
+                    className={`language-card ${selectedLanguage === lang.code ? 'selected' : ''}`}
+                    onClick={() => setSelectedLanguage(lang.code)}
+                    onKeyPress={(e) => handleKeyPress(e, () => setSelectedLanguage(lang.code))}
+                    role="radio"
+                    aria-checked={selectedLanguage === lang.code}
+                    tabIndex={0}
+                  >
+                    <span className="language-flag">{lang.flag}</span>
+                    <span className="language-name">{lang.name}</span>
+                    {selectedLanguage === lang.code && <div className="selection-indicator"></div>}
+                  </div>
+                ))}
+              </div>
+              {!selectedLanguage && <p className="selection-guide">언어를 선택해주세요</p>}
+            </section>
+            {/* 고급 트레이닝 섹션 */}
+            <section className="settings-section rounded-2xl p-6 md:p-8 mb-6 shadow-xl"
+              style={{ background: 'linear-gradient(90deg, #232946 0%, #1a237e 60%, #283593 100%)', position: 'relative' }}
+            >
+              <h3 className="text-2xl font-extrabold mb-2 text-white" style={{ color: '#fff', textShadow: '0 1px 8px rgba(30,40,80,0.18)' }}>
+                고급 트레이닝 33일 루틴 <span style={{ color: '#FFD600', fontWeight: 700, marginLeft: 4, fontSize: '1rem', letterSpacing: '-0.01em' }}>인지과학자 + 프로바둑기사 협업 독점콘텐츠</span>
+              </h3>
+              <div className="text-gray-200 text-sm md:text-base mb-4">
+                바둑 수읽기를 응용, 고급 시험에서 요구하는 긴 호흡의 문해력, 집중력, 언어추리력을 단계별로 향상시킬 수 있습니다.
+              </div>
+              <div className="level-grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                {[
+                  { size: '7x5', desc: '3분 모드' },
+                  { size: '9x7', desc: '5분 모드' },
+                  { size: '11x9', desc: '7분 모드' },
+                  { size: '13x11', desc: '9분 모드' },
+                ].map((item) => (
+                  <div
+                    key={item.size}
+                    className="level-card cursor-pointer border-2 border-gray-300 hover:border-blue-400 transition flex flex-col items-center justify-center p-4 rounded-xl bg-white shadow-sm"
+                    onClick={() => alert('고급 트레이닝은 곧 오픈 예정입니다.')}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`고급 트레이닝 ${item.size}`}
+                  >
+                    <div className="text-lg md:text-xl font-bold mb-1 text-gray-800">{item.size}</div>
+                    <div className="text-xs md:text-sm text-gray-500 mb-1">{item.desc}</div>
+                    <div className="text-xs text-gray-400">흑돌/백돌 기억 착수</div>
+                  </div>
+                ))}
+              </div>
+              {/* Gold badge at top-right */}
+              <span style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }} aria-label="프리미엄 골드 배지">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="22" cy="22" r="20" fill="#FFD600" stroke="#FFB300" strokeWidth="3"/>
+                  <circle cx="22" cy="22" r="14" fill="#FFF8E1" stroke="#FFECB3" strokeWidth="2"/>
+                  <path d="M22 11l2.47 6.62h6.96l-5.63 4.09 2.47 6.62L22 24.24l-5.27 4.09 2.47-6.62-5.63-4.09h6.96L22 11z" fill="#FFC107" stroke="#FFB300" strokeWidth="1.2"/>
+                  
+                </svg>
+              </span>
+            </section>
+            {/* Start Game Button */}
+            <div className="action-buttons-container">
+              <button
+                className="start-button"
+                onClick={handleStartGame}
+                onKeyPress={(e) => handleKeyPress(e, handleStartGame)}
+                disabled={loading || !selectedBoardSize || !selectedLanguage}
+                aria-disabled={loading || !selectedBoardSize || !selectedLanguage}
+                tabIndex={0}
+              >
+                {loading ? '로딩 중...' : (!selectedBoardSize || !selectedLanguage ? '옵션을 모두 선택하세요' : 'ZenGo 시작')}
+              </button>
+              <button
+                className="back-button"
+                onClick={() => setUiState('intro')}
+                onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+                aria-label="인트로 화면으로 돌아가기"
+                tabIndex={0}
+              >
+                뒤로 가기
+              </button>
+            </div>
+            {/* ZenGo Myverse Modal */}
+            {showMyverseModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                <div className="bg-white rounded-2xl shadow-2xl px-6 md:px-12 py-8 md:py-12 w-full max-w-md relative flex flex-col items-center" style={{ boxShadow: '0 8px 40px 0 rgba(79,70,229,0.10), 0 2px 16px 0 rgba(96,165,250,0.10)' }}>
+                  <button
+                    className="absolute top-5 right-5 text-gray-400 hover:text-blue-600 text-2xl"
+                    onClick={() => setShowMyverseModal(false)}
+                    aria-label="닫기"
+                  >✕</button>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-xl font-extrabold text-blue-700">ZenGo</span>
+                    <span className="text-xl font-extrabold text-yellow-400">Myverse</span>
+                    <span className="ml-2 bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-bold border border-yellow-200">PREMIUM</span>
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4 leading-tight">
+                    지금 성장하세요
+                  </h2>
+                  <p className="text-base md:text-lg text-gray-700 text-center mb-6 leading-relaxed font-medium">
+                    좋은 글을 입력하고, 게임으로 즐기세요.
+                  </p>
+                  <ul className="w-full max-w-xs mx-auto flex flex-col gap-3 mb-10">
+                    <li className="text-base text-gray-600 font-medium text-center">중요한 문장, 감동적인 문장</li>
+                    <li className="text-base text-gray-600 font-medium text-center">새기고 싶은 문장</li>
+                    <li className="text-base text-gray-600 font-medium text-center">매일 1 문장씩 성장하세요 !</li>
+                  </ul>
+                  <button
+                    className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold text-base shadow hover:from-blue-600 hover:to-blue-800 transition cursor-not-allowed"
+                    disabled
+                  >
+                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20" className="inline-block mr-1" style={{ color: '#FBBF24' }}><path fill="#FBBF24" d="M10 2a4 4 0 0 1 4 4v2h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h1V6a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v2h4V6a2 2 0 0 0-2-2Zm-5 6v6h10v-6H5Z"/></svg>
+                    프리미엄 가입 (곧 오픈 예정)
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
+        </div>
       );
   }
 

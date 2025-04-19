@@ -1,30 +1,27 @@
-# Habitus33 - Fast Reading
+# Habitus33 - Brain Optimizer & Reading Habit System
 
-읽기능력 향상을 위한 인지증강 앱 서비스. 더 빠르게, 더 깊게, 더 오래 읽으세요.
+뇌 최적화와 독서 습관, 인지력 향상을 위한 신경과학 기반 SaaS. 단 16분, 몰입·집중·기억력을 완전히 새롭게 설계하세요.
 
 ## 프로젝트 소개
 
-Habitus33(Fast Reading)는 독서 능력 향상을 위한 웹 애플리케이션입니다. TT(Time Trial) 모드와 ZenGo 모드를 통해 사용자의 독서 속도, 집중력, 이해력, 메타인지 능력을 향상시킵니다.
+Habitus33는 신경과학 기반의 뇌 최적화 루틴, 독서 습관 트래킹, 인지 훈련(Brain Training) 등으로 사용자의 집중력·이해력·기억력·습관 형성을 지원하는 웹 서비스입니다.
 
-- **TT 모드**: 타이머 기반 집중 독서 시스템으로, 예열 → 독서 → 반추 3단계 학습 사이클을 통해 독서 효율성과 기억력을 향상
-- **ZenGo 모드**: 바둑에서 영감을 받은 인지 훈련으로, 집중력, 기억력, 메타 인지 능력을 다양한 모듈을 통해 훈련
+- **TS 모드**: (구 TT모드) 예열 → 본독서 → 반추 → 결과의 4단계 집중 독서 사이클. 각 단계별로 UX/로직 분리, 몰입 루틴 제공
+- **ZenGo 모드**: 다양한 인지 훈련 세션(기억력, 주의력, 논리력 등)과 피드백, 세션별 동적 라우팅 지원
+- **33일 루틴**: 습관 형성 및 트래킹, 마일스톤 관리
+- **독서 현황/통계/분석**: 대시보드, 분석, 리더보드, 여정, 공유 등 다양한 시각화와 피드백
 
-## 최근 업데이트 (2024.03)
+## 최근 업데이트 (2024.06)
 
 ### 새로운 기능
-- 책 정보 수정 페이지 개선
-  - 장르 선택 기능 (12개 카테고리)
-  - 독서 목적 설정 (정독, 다독, 발췌독, 복습, TT모드)
-  - TT모드 전용 읽기 속도 설정
-  - 현재 페이지 진행률 추적
-- 로컬 스토리지 기반 메타데이터 관리
-- 향상된 에러 처리 및 타임아웃 관리
-- 반응형 UI/UX 개선
+- TS모드(구 TT모드) 단계별 분리 및 UX 강화 (warmup/reading/review/result)
+- ZenGo 인지 훈련 세션별 동적 라우팅, 결과/피드백 강화
+- 도서 상세/수정/메모/추가 등 CRUD 세분화
+- 온보딩, 프로필 업그레이드, 공유 등 신규 플로우 추가
+- 글로벌 스타일, 애니메이션, 상태 관리, 보안/운영 강화
 
 ### 진행 중인 기능
-- 책 표지 이미지 업로드 (UI 구현 완료, 기능 구현 예정)
-- 독서 통계 대시보드
-- 소셜 기능
+- 소셜 기능, 커뮤니티, 고급 통계/분석, 알림 시스템 등
 
 ## 기술 스택
 
@@ -33,7 +30,7 @@ Habitus33(Fast Reading)는 독서 능력 향상을 위한 웹 애플리케이션
 - TypeScript
 - Redux Toolkit
 - TailwindCSS
-- Formik & Yup
+- framer-motion, Chart.js, react-hot-toast 등
 
 ### 백엔드
 - Node.js
@@ -44,13 +41,12 @@ Habitus33(Fast Reading)는 독서 능력 향상을 위한 웹 애플리케이션
 ## 주요 기능
 
 - 회원가입/로그인/초대코드 시스템
-- 도서 등록 및 관리
-- TT 모드 (예열-독서-반추)
-- ZenGo 모드 (다양한 인지 훈련 모듈)
-- 독서 메모 및 태그 관리
-- 독서 진행률 및 통계
-- 리더보드 및 성과 공유
-- 상장 및 뱃지 시스템
+- 도서 등록/상세/수정/메모/진행률 관리
+- TS 모드 (예열-본독서-반추-결과) 집중 루틴
+- ZenGo 모드 (인지 훈련 세션/결과/피드백)
+- 33일 습관 루틴 트래킹/마일스톤
+- 독서 통계/분석/리더보드/여정/공유
+- 온보딩, 프로필 업그레이드, 알림 등
 
 ## 설치 및 실행
 
@@ -86,47 +82,84 @@ JWT_SECRET=your_jwt_secret
 NEXT_PUBLIC_API_URL=http://localhost:3001/api
 ```
 
-## 디렉토리 구조
+## 디렉토리 구조 (2024.06 기준)
 
 ```
 habitus33/
 ├── frontend/                    # 💻 Next.js App Router 기반 사용자 앱
 │   ├── app/                    # 페이지 라우팅
-│   │   ├── auth/              # 인증 관련 페이지
-│   │   ├── books/             # 도서 관리 페이지
-│   │   ├── dashboard/         # 메인 대시보드
-│   │   ├── reading-session/   # 독서 세션 관리
-│   │   ├── ts/               # TT 모드 관련 페이지
-│   │   ├── zengo/            # ZenGo 모드 페이지
-│   │   ├── profile/          # 사용자 프로필
-│   │   ├── analytics/        # 독서 분석 페이지
-│   │   ├── journey/          # 독서 여정 페이지
-│   │   ├── leaderboard/      # 리더보드
-│   │   ├── share/            # 공유 기능
-│   │   ├── legal/           # 법적 문서
-│   │   └── dev/             # 개발자 도구
-│   ├── components/             # 공통 UI 컴포넌트
-│   │   ├── common/           # 재사용 가능한 기본 컴포넌트
-│   │   ├── books/            # 도서 관련 컴포넌트
-│   │   └── analytics/        # 분석 관련 컴포넌트
-│   ├── hooks/                  # 커스텀 훅
-│   ├── store/                  # Redux Toolkit
-│   ├── lib/                    # 유틸 함수
-│   │   ├── api/              # API 통합 모듈
-│   │   └── utils/            # 유틸리티 함수
-│   ├── styles/                 # Tailwind 설정 + 전역 테마 토큰
-│   ├── tests/                  # 테스트 파일
-│   └── public/                 # 정적 자산
+│   │   ├── auth/
+│   │   │   ├── register/
+│   │   │   │   └── page.tsx
+│   │   │   └── login/
+│   │   │       └── page.tsx
+│   │   ├── books/
+│   │   │   ├── page.tsx
+│   │   │   ├── [id]/
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── edit/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── notes/
+│   │   │   │       ├── new/
+│   │   │   │       │   └── page.tsx
+│   │   │   │       └── ...
+│   │   │   ├── new/
+│   │   │   └── add/
+│   │   ├── ts/               # TS 모드(집중 독서 루틴)
+│   │   │   ├── page.tsx      # 세션 설정/시작
+│   │   │   ├── warmup/
+│   │   │   │   └── page.tsx
+│   │   │   ├── reading/
+│   │   │   │   └── page.tsx
+│   │   │   ├── review/
+│   │   │   │   └── page.tsx
+│   │   │   └── result/
+│   │   │       └── page.tsx
+│   │   ├── zengo/            # ZenGo 인지 훈련
+│   │   │   ├── page.tsx
+│   │   │   ├── zengo.css
+│   │   │   ├── session/
+│   │   │   │   └── [id]/
+│   │   │   │       ├── page.tsx
+│   │   │   │       └── session.css
+│   │   │   └── results/
+│   │   ├── dashboard/
+│   │   │   └── page.tsx
+│   │   ├── reading-session/
+│   │   │   └── page.tsx
+│   │   ├── analytics/
+│   │   │   └── page.tsx
+│   │   ├── onboarding/
+│   │   │   └── page.tsx
+│   │   ├── profile/
+│   │   │   ├── page.tsx
+│   │   │   └── upgrade/
+│   │   │       └── page.tsx
+│   │   ├── journey/
+│   │   │   └── page.tsx
+│   │   ├── leaderboard/
+│   │   ├── share/
+│   │   │   └── [shareId]/
+│   │   ├── legal/
+│   │   └── dev/
+│   ├── components/
+│   ├── hooks/
+│   ├── store/
+│   ├── lib/
+│   ├── styles/
+│   ├── tests/
+│   └── public/
 │
 ├── backend/                    # 🔧 Express + MongoDB 기반 API 서버
 │   ├── src/
-│   │   ├── controllers/        # 기능별 컨트롤러
-│   │   ├── routes/             # 라우팅 (REST API 구조)
-│   │   ├── models/             # Mongoose 스키마
-│   │   ├── middlewares/        # 인증, 오류, 검증 등
-│   │   ├── utils/              # 유틸 함수
-│   │   ├── config/             # 환경 변수, DB 연결
-│   │   └── app.ts              # Express 앱 정의
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   ├── models/
+│   │   ├── middlewares/
+│   │   ├── utils/
+│   │   ├── config/
+│   │   └── app.ts
+...
 ```
 
 ## API 문서
@@ -162,4 +195,4 @@ API 문서는 [여기](docs/api.md)에서 확인하실 수 있습니다.
 
 ## 연락처
 
-개발자: 김개발 – developer@email.com 
+개발자: camelus – camelus.tedin@gmail.com

@@ -262,7 +262,7 @@ export default function TSReviewPage() {
                 name="summary"
                 value={reviewData.summary}
                 onChange={handleChange}
-                placeholder="읽은 내용을 10단어 내외로 요약해보세요"
+                placeholder="읽은 페이지를 다시 넘기며 10단어로 요약하세요."
                 rows={2}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
               />

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import AppLogo from '@/components/common/AppLogo';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -63,13 +63,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 p-4">
       <div className="w-full max-w-md p-8 space-y-8 bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20">
         <div className="text-center">
-          <Image
-            src="/images/logo.svg"
-            alt="habitus33 로고"
-            width={80}
-            height={80}
-            className="mx-auto"
-          />
+          <AppLogo className="mx-auto w-20 h-20" />
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
             회원가입
           </h2>

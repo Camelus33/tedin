@@ -1002,3 +1002,21 @@ a:focus-visible {
   }
 }
 
+/* Responsive status card for ZenGo board */
+.status-card-responsive {
+  position: absolute;
+  top: 32px;
+  left: 16px;
+  width: 120px;
+  z-index: 10;
+}
+@media (max-width: 600px) {
+  .status-card-responsive {
+    position: static;
+    width: 100%;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+  }
+}
+

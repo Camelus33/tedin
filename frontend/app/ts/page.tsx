@@ -440,13 +440,13 @@ export default function TSSetupPage() {
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="5">5분</option>
-                  <option value="10">10분</option>
+                  <option value="10">8분</option>
                   <option value="11">11분</option>
                   <option value="15">15분</option>
-                  <option value="20">20분</option>
-                  <option value="25">25분</option>
-                  <option value="30">30분</option>
-                  <option value="45">45분</option>
+                  <option value="20">19분</option>
+                  <option value="25">23분</option>
+                  <option value="30">27분</option>
+                  <option value="45">35분</option>
                   <option value="60">1시간</option>
                 </select>
               </div>

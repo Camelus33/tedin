@@ -9,6 +9,7 @@
  * - 교육적 가치 높음
  */
 
+/*
 const zengoProverbsEn7x7 = [
   // === 7x7 HARD (총 33개) ===
   {
@@ -514,4 +515,5 @@ const zengoProverbsEn7x7 = [
   // 이하 생략 - 총 33개까지 작성됨
 ];
 
-module.exports = zengoProverbsEn7x7; 
+module.exports = zengoProverbsEn7x7;
+*/ 

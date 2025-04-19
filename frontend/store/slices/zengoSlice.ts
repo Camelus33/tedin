@@ -296,6 +296,22 @@ export const retryContentThunk = createAsyncThunk<
     }
 );
 
+// Thunk to evaluate result and return the updated resultType (avoids stale closures)
+export const evaluateResultThunk = createAsyncThunk<
+  ResultType,
+  void,
+  { state: { zengoProverb: ZengoState } }
+>(
+  'zengoProverb/evaluateResultAndReturnType',
+  async (_, { dispatch, getState }) => {
+    // Run the existing reducer to set resultType
+    dispatch(evaluateResult());
+    // Retrieve and return the fresh resultType
+    const { resultType } = getState().zengoProverb;
+    return resultType as ResultType;
+  }
+);
+
 // --- Slice Definition --- 
 
 // Define ZengoState using imported types
@@ -336,6 +352,10 @@ const initialState: ZengoState = {
 const zengoProverbSlice = createSlice({
   name: 'zengoProverb',
   initialState,
+  // 게임결과 후처리 (반드시 주석에 남겨둬 깜빡하지 않기)
+  // 1. 엑셀런트: 어순과 위치를 모두 맞춘 경우 -> 다음 게임
+  // 2. 성공: 위치를 맞았으나 어순이 틀린 경우 -> [다음 게임] or [같은 문장 다른 위치]
+  // 3. 실패: 위치를 틀린 경우 -> [동일 게임 재실행]
   reducers: {
     // Reset game to initial state or settings state
     resetGame: (state, action: PayloadAction<{ onlyGameState?: boolean; preserveFlags?: boolean } | undefined>) => {

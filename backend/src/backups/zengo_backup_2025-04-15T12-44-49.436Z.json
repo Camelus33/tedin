@@ -1,0 +1,1563 @@
+[
+  {
+    "_id": "67f9c8e04ca10a80ceae7d42",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "티끌 모아 태산",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "티끌",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "모아",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      },
+      {
+        "word": "태산",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.935Z",
+    "updatedAt": "2025-04-12T01:58:56.935Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d44",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "고생 끝에 낙이 온다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "고생",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      },
+      {
+        "word": "끝에",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "낙이",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "온다",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.940Z",
+    "updatedAt": "2025-04-12T01:58:56.940Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d46",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "바늘 도둑이 소도둑 된다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "바늘",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "도둑이",
+        "coords": {
+          "x": 1,
+          "y": 0
+        }
+      },
+      {
+        "word": "소도둑",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "word": "된다",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.942Z",
+    "updatedAt": "2025-04-12T01:58:56.942Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d48",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "천리 길도 한 걸음부터",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "천리",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "길도",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      },
+      {
+        "word": "한",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "word": "걸음부터",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.944Z",
+    "updatedAt": "2025-04-12T01:58:56.944Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d4a",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "말을 아끼면 병 없다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "말을",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "아끼면",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "병",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "없다",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.947Z",
+    "updatedAt": "2025-04-12T01:58:56.947Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d4c",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "작은 고추가 맵다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "작은",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "고추가",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "맵다",
+        "coords": {
+          "x": 1,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.949Z",
+    "updatedAt": "2025-04-12T01:58:56.949Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d4e",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "빛 좋은 개살구",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "빛",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "좋은",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "개살구",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.950Z",
+    "updatedAt": "2025-04-12T01:58:56.950Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d50",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "제 코가 석자",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "제",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      },
+      {
+        "word": "코가",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "석자",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.952Z",
+    "updatedAt": "2025-04-12T01:58:56.952Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d52",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "누워서 떡 먹기",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "누워서",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "떡",
+        "coords": {
+          "x": 1,
+          "y": 0
+        }
+      },
+      {
+        "word": "먹기",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.954Z",
+    "updatedAt": "2025-04-12T01:58:56.954Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d54",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "등잔 밑이 어둡다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "등잔",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "밑이",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      },
+      {
+        "word": "어둡다",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.956Z",
+    "updatedAt": "2025-04-12T01:58:56.956Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d56",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "소 잃고 외양간",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "소",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "잃고",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "외양간",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.958Z",
+    "updatedAt": "2025-04-12T01:58:56.958Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d58",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "작은 고추가 맵다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "작은",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "고추가",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "맵다",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.959Z",
+    "updatedAt": "2025-04-12T01:58:56.959Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d5a",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "하늘의 별 따기",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "하늘의",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "별",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "word": "따기",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.960Z",
+    "updatedAt": "2025-04-12T01:58:56.960Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d5e",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "가는 날이 장날",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "가는",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "날이",
+        "coords": {
+          "x": 1,
+          "y": 0
+        }
+      },
+      {
+        "word": "장날",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:56.963Z",
+    "updatedAt": "2025-04-12T01:58:56.963Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d84",
+    "level": "5x5-medium",
+    "language": "ko",
+    "boardSize": 5,
+    "proverbText": "가랑비에 옷 젖는 줄 모른다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "가랑비에",
+        "coords": {
+          "x": 4,
+          "y": 2
+        }
+      },
+      {
+        "word": "옷",
+        "coords": {
+          "x": 2,
+          "y": 4
+        }
+      },
+      {
+        "word": "젖는",
+        "coords": {
+          "x": 1,
+          "y": 4
+        }
+      },
+      {
+        "word": "줄",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "모른다",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 9,
+    "initialDisplayTimeMs": 10000,
+    "targetTimeMs": 5000,
+    "createdAt": "2025-04-12T01:58:56.990Z",
+    "updatedAt": "2025-04-12T02:05:24.184Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d8a",
+    "level": "5x5-medium",
+    "language": "ko",
+    "boardSize": 5,
+    "proverbText": "가랑비에 옷 젖는 줄 모른다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "가랑비에",
+        "coords": {
+          "x": 3,
+          "y": 3
+        }
+      },
+      {
+        "word": "옷",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "젖는",
+        "coords": {
+          "x": 1,
+          "y": 4
+        }
+      },
+      {
+        "word": "줄",
+        "coords": {
+          "x": 3,
+          "y": 1
+        }
+      },
+      {
+        "word": "모른다",
+        "coords": {
+          "x": 3,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 9,
+    "initialDisplayTimeMs": 10000,
+    "targetTimeMs": 5000,
+    "createdAt": "2025-04-12T01:58:56.994Z",
+    "updatedAt": "2025-04-12T02:05:24.184Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d8c",
+    "level": "5x5-medium",
+    "language": "ko",
+    "boardSize": 5,
+    "proverbText": "고래 싸움에 새우 등 터진다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "고래",
+        "coords": {
+          "x": 0,
+          "y": 4
+        }
+      },
+      {
+        "word": "싸움에",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "새우",
+        "coords": {
+          "x": 4,
+          "y": 3
+        }
+      },
+      {
+        "word": "등",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "터진다",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 9,
+    "initialDisplayTimeMs": 10000,
+    "targetTimeMs": 5000,
+    "createdAt": "2025-04-12T01:58:56.995Z",
+    "updatedAt": "2025-04-12T02:05:24.184Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d8e",
+    "level": "5x5-medium",
+    "language": "ko",
+    "boardSize": 5,
+    "proverbText": "개구리 올챙이 적 생각 못 한다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "개구리",
+        "coords": {
+          "x": 3,
+          "y": 4
+        }
+      },
+      {
+        "word": "올챙이",
+        "coords": {
+          "x": 0,
+          "y": 3
+        }
+      },
+      {
+        "word": "적",
+        "coords": {
+          "x": 3,
+          "y": 2
+        }
+      },
+      {
+        "word": "생각",
+        "coords": {
+          "x": 2,
+          "y": 3
+        }
+      },
+      {
+        "word": "못",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "한다",
+        "coords": {
+          "x": 4,
+          "y": 3
+        }
+      }
+    ],
+    "totalWords": 6,
+    "totalAllowedStones": 9,
+    "initialDisplayTimeMs": 10000,
+    "targetTimeMs": 5000,
+    "createdAt": "2025-04-12T01:58:56.996Z",
+    "updatedAt": "2025-04-12T02:05:24.184Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d90",
+    "level": "5x5-medium",
+    "language": "ko",
+    "boardSize": 5,
+    "proverbText": "서당개 삼 년이면 풍월을 읊는다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "서당개",
+        "coords": {
+          "x": 2,
+          "y": 4
+        }
+      },
+      {
+        "word": "삼",
+        "coords": {
+          "x": 4,
+          "y": 2
+        }
+      },
+      {
+        "word": "년이면",
+        "coords": {
+          "x": 2,
+          "y": 3
+        }
+      },
+      {
+        "word": "풍월을",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "읊는다",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 5,
+    "totalAllowedStones": 9,
+    "initialDisplayTimeMs": 10000,
+    "targetTimeMs": 5000,
+    "createdAt": "2025-04-12T01:58:56.997Z",
+    "updatedAt": "2025-04-12T02:05:24.184Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e04ca10a80ceae7d92",
+    "level": "5x5-medium",
+    "language": "ko",
+    "boardSize": 5,
+    "proverbText": "하늘에서 내리는 비는 막을 수 없다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "하늘에서",
+        "coords": {
+          "x": 2,
+          "y": 4
+        }
+      },
+      {
+        "word": "내리는",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      },
+      {
+        "word": "비는",
+        "coords": {
+          "x": 1,
+          "y": 4
+        }
+      },
+      {
+        "word": "막을",
+        "coords": {
+          "x": 3,
+          "y": 0
+        }
+      },
+      {
+        "word": "수",
+        "coords": {
+          "x": 4,
+          "y": 2
+        }
+      },
+      {
+        "word": "없다",
+        "coords": {
+          "x": 4,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 6,
+    "totalAllowedStones": 9,
+    "initialDisplayTimeMs": 10000,
+    "targetTimeMs": 5000,
+    "createdAt": "2025-04-12T01:58:56.998Z",
+    "updatedAt": "2025-04-12T02:05:24.184Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7dcc",
+    "level": "7x7-hard",
+    "language": "ko",
+    "boardSize": 7,
+    "proverbText": "바늘 구멍으로 하늘을 보는 것과 같은 좁은 시야이다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "바늘",
+        "coords": {
+          "x": 5,
+          "y": 1
+        }
+      },
+      {
+        "word": "구멍으로",
+        "coords": {
+          "x": 5,
+          "y": 6
+        }
+      },
+      {
+        "word": "하늘을",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "보는",
+        "coords": {
+          "x": 6,
+          "y": 3
+        }
+      },
+      {
+        "word": "것과",
+        "coords": {
+          "x": 0,
+          "y": 3
+        }
+      },
+      {
+        "word": "같은",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "좁은",
+        "coords": {
+          "x": 0,
+          "y": 6
+        }
+      },
+      {
+        "word": "시야이다",
+        "coords": {
+          "x": 5,
+          "y": 5
+        }
+      }
+    ],
+    "totalWords": 8,
+    "totalAllowedStones": 12,
+    "initialDisplayTimeMs": 20000,
+    "targetTimeMs": 7000,
+    "createdAt": "2025-04-12T01:58:57.028Z",
+    "updatedAt": "2025-04-12T02:05:24.193Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7dce",
+    "level": "7x7-hard",
+    "language": "ko",
+    "boardSize": 7,
+    "proverbText": "사공이 많으면 배가 산으로 올라간다는 옛말을 명심하라",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "사공이",
+        "coords": {
+          "x": 3,
+          "y": 2
+        }
+      },
+      {
+        "word": "많으면",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "배가",
+        "coords": {
+          "x": 1,
+          "y": 5
+        }
+      },
+      {
+        "word": "산으로",
+        "coords": {
+          "x": 6,
+          "y": 6
+        }
+      },
+      {
+        "word": "올라간다는",
+        "coords": {
+          "x": 5,
+          "y": 1
+        }
+      },
+      {
+        "word": "옛말을",
+        "coords": {
+          "x": 6,
+          "y": 3
+        }
+      },
+      {
+        "word": "명심하라",
+        "coords": {
+          "x": 3,
+          "y": 5
+        }
+      }
+    ],
+    "totalWords": 7,
+    "totalAllowedStones": 12,
+    "initialDisplayTimeMs": 20000,
+    "targetTimeMs": 7000,
+    "createdAt": "2025-04-12T01:58:57.029Z",
+    "updatedAt": "2025-04-12T02:05:24.193Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7dd0",
+    "level": "7x7-hard",
+    "language": "ko",
+    "boardSize": 7,
+    "proverbText": "자라보고 놀란 가슴 솥뚜껑 보고 놀라는 것처럼 예민하다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "자라보고",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      },
+      {
+        "word": "놀란",
+        "coords": {
+          "x": 2,
+          "y": 3
+        }
+      },
+      {
+        "word": "가슴",
+        "coords": {
+          "x": 1,
+          "y": 5
+        }
+      },
+      {
+        "word": "솥뚜껑",
+        "coords": {
+          "x": 0,
+          "y": 4
+        }
+      },
+      {
+        "word": "보고",
+        "coords": {
+          "x": 4,
+          "y": 4
+        }
+      },
+      {
+        "word": "놀라는",
+        "coords": {
+          "x": 5,
+          "y": 2
+        }
+      },
+      {
+        "word": "것처럼",
+        "coords": {
+          "x": 6,
+          "y": 3
+        }
+      },
+      {
+        "word": "예민하다",
+        "coords": {
+          "x": 5,
+          "y": 6
+        }
+      }
+    ],
+    "totalWords": 8,
+    "totalAllowedStones": 12,
+    "initialDisplayTimeMs": 20000,
+    "targetTimeMs": 7000,
+    "createdAt": "2025-04-12T01:58:57.030Z",
+    "updatedAt": "2025-04-12T02:05:24.193Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e0c",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Less is more",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Less",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "word": "is",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      },
+      {
+        "word": "more",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.056Z",
+    "updatedAt": "2025-04-12T01:58:57.056Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e0e",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "No pain no gain",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "No",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "pain",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "no",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "word": "gain",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 4,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.056Z",
+    "updatedAt": "2025-04-12T01:58:57.056Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e14",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Live and learn",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Live",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "and",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "word": "learn",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.059Z",
+    "updatedAt": "2025-04-12T01:58:57.059Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e16",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Rest in peace",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Rest",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "in",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "peace",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.060Z",
+    "updatedAt": "2025-04-12T01:58:57.060Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e1a",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Like for like",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Like",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "word": "for",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "word": "like",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.062Z",
+    "updatedAt": "2025-04-12T01:58:57.062Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e20",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Face the facts",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Face",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "word": "the",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      },
+      {
+        "word": "facts",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.063Z",
+    "updatedAt": "2025-04-12T01:58:57.063Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e22",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Save for later",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Save",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "for",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      },
+      {
+        "word": "later",
+        "coords": {
+          "x": 1,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.064Z",
+    "updatedAt": "2025-04-12T01:58:57.064Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e28",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Walk the talk",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Walk",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "the",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "talk",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.066Z",
+    "updatedAt": "2025-04-12T01:58:57.066Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e2a",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Easy does it",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Easy",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "does",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "it",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.067Z",
+    "updatedAt": "2025-04-12T01:58:57.067Z",
+    "__v": 0
+  },
+  {
+    "_id": "67f9c8e14ca10a80ceae7e2c",
+    "level": "3x3-easy",
+    "language": "en",
+    "boardSize": 3,
+    "proverbText": "Time flies fast",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "Time",
+        "coords": {
+          "x": 2,
+          "y": 2
+        }
+      },
+      {
+        "word": "flies",
+        "coords": {
+          "x": 2,
+          "y": 1
+        }
+      },
+      {
+        "word": "fast",
+        "coords": {
+          "x": 0,
+          "y": 2
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 6,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 3000,
+    "createdAt": "2025-04-12T01:58:57.068Z",
+    "updatedAt": "2025-04-12T01:58:57.068Z",
+    "__v": 0
+  },
+  {
+    "_id": "67fe54c12e1a4c189cf2e329",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "낮말은 새가 듣는다",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "낮말은",
+        "coords": {
+          "x": 1,
+          "y": 1
+        }
+      },
+      {
+        "word": "새가",
+        "coords": {
+          "x": 1,
+          "y": 0
+        }
+      },
+      {
+        "word": "듣는다",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 8,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 30000,
+    "createdAt": "2025-04-15T12:44:49.411Z",
+    "updatedAt": "2025-04-15T12:44:49.411Z",
+    "__v": 0
+  },
+  {
+    "_id": "67fe54c12e1a4c189cf2e32d",
+    "level": "3x3-easy",
+    "language": "ko",
+    "boardSize": 3,
+    "proverbText": "꿈은 크게 가져라",
+    "goPatternName": "Basic Pattern",
+    "wordMappings": [
+      {
+        "word": "꿈은",
+        "coords": {
+          "x": 2,
+          "y": 0
+        }
+      },
+      {
+        "word": "크게",
+        "coords": {
+          "x": 0,
+          "y": 1
+        }
+      },
+      {
+        "word": "가져라",
+        "coords": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    ],
+    "totalWords": 3,
+    "totalAllowedStones": 8,
+    "initialDisplayTimeMs": 4000,
+    "targetTimeMs": 30000,
+    "createdAt": "2025-04-15T12:44:49.430Z",
+    "updatedAt": "2025-04-15T12:44:49.430Z",
+    "__v": 0
+  }
+]

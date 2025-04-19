@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type SessionData = {
   _id: string;
@@ -192,9 +193,7 @@ export default function TSReadingPage() {
 
         {/* Main reading area - stylish and minimal */}
         <div className="flex-1 flex flex-col justify-center items-center mb-8">
-          <div className="text-center mb-16">
-            <p className="text-lg text-slate-500 font-light italic">집중해서 읽으세요...</p>
-          </div>
+          <BreathingText />
           
           {/* Progress bar - animated gradient with changing color based on progress */}
           <div className="w-full bg-gray-100 rounded-full h-3 mb-4 shadow-inner overflow-hidden">
@@ -270,6 +269,56 @@ export default function TSReadingPage() {
           </div>
         </div>
       </div>
+      <CopyrightNotice />
+    </div>
+  );
+}
+
+function BreathingText() {
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    let fadeIn: NodeJS.Timeout;
+    let fadeOut: NodeJS.Timeout;
+    if (show) {
+      fadeIn = setTimeout(() => setShow(false), 3500); // 3.5초 표시
+    } else {
+      fadeOut = setTimeout(() => setShow(true), 7000); // 7초 사라짐
+    }
+    return () => {
+      clearTimeout(fadeIn);
+      clearTimeout(fadeOut);
+    };
+  }, [show]);
+
+  return (
+    <div style={{ minHeight: 40 }} className="mb-16">
+      <AnimatePresence>
+        {show && (
+          <motion.div
+            key="breath"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: show ? 3.5 : 7 }}
+            className="text-lg text-slate-500 font-light italic"
+          >
+            코로 깊게 마시고 길게 내쉬세요
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Copyright notice at bottom left
+function CopyrightNotice() {
+  return (
+    <div
+      style={{ position: 'fixed', left: 8, bottom: 8, zIndex: 30, pointerEvents: 'none' }}
+      className="text-[10px] text-gray-300 select-none opacity-70"
+    >
+      본 페이지의 모든 콘텐츠는 저작권법에 의해 보호되며  무단 복제, 배포를 원칙적으로 금합니다
     </div>
   );
 } 

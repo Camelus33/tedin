@@ -6,5 +6,11 @@
     "insert-zengo-proverbs": "node scripts/insert-zengo-proverbs.js",
     "validate-zengo-proverbs": "node scripts/insert-zengo-proverbs.js --validate-only",
     "check-duplicate-words": "node scripts/validate-duplicate-words.js"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.30.0",
+    "@react-three/fiber": "^8.13.7",
+    "@types/three": "^0.175.0",
+    "three": "^0.150.1"
   }
-} 
+}

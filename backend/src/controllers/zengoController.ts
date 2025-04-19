@@ -7,6 +7,57 @@ import ZengoSessionResult, { IZengoSessionResult } from '../models/ZengoSessionR
 import mongoose from 'mongoose';
 // import { koreanProverbs, englishProverbs } from '../scripts/data/expandedProverbs';
 
+// 강력한 일렬 방지 함수 추가
+function isColinear(positions: {x: number, y: number}[]): boolean {
+  if (positions.length < 3) return false;
+  for (let i = 0; i < positions.length - 2; i++) {
+    for (let j = i + 1; j < positions.length - 1; j++) {
+      for (let k = j + 1; k < positions.length; k++) {
+        const [a, b, c] = [positions[i], positions[j], positions[k]];
+        if ((b.x - a.x) * (c.y - a.y) === (b.y - a.y) * (c.x - a.x)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+function generateNonColinearPositions(count: number, size: number): Array<{x: number, y: number}> {
+  const allPositions: Array<{x: number, y: number}> = [];
+  for (let x = 0; x < size; x++) {
+    for (let y = 0; y < size; y++) {
+      allPositions.push({ x, y });
+    }
+  }
+  if (allPositions.length < count) {
+    throw new Error(`보드 크기(${size}x${size})보다 많은 좌표(${count})를 생성할 수 없습니다.`);
+  }
+  let attempts = 0;
+  while (attempts < 10000) {
+    for (let i = allPositions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allPositions[i], allPositions[j]] = [allPositions[j], allPositions[i]];
+    }
+    const candidate = allPositions.slice(0, count);
+    if (!isColinear(candidate)) {
+      return candidate;
+    }
+    attempts++;
+  }
+  throw new Error('일렬이 아닌 좌표 조합을 생성하는 데 실패했습니다.');
+}
+
+// 좌표 유효성 검사 함수 추가
+function validatePositions(wordMappings: { coords: { x: number, y: number } }[], boardSize: number) {
+  for (const mapping of wordMappings) {
+    const { x, y } = mapping.coords;
+    if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
+      throw new Error(`좌표가 바둑판 범위를 벗어났습니다: (${x}, ${y})`);
+    }
+  }
+}
+
 // 사용자의 모든 Zengo 활동 조회
 export const getUserZengo = async (req: Request, res: Response) => {
   try {
@@ -673,33 +724,16 @@ export const getProverbContent = async (req: Request, res: Response) => {
             // 보드 사이즈 결정
             let boardSize = existingContent.boardSize;
             
-            // 각 단어에 대한 고유 좌표 생성
-            function generateUniquePositions(count: number, size: number): Array<{x: number, y: number}> {
-              const positions: Array<{x: number, y: number}> = [];
-              const usedPositions = new Set<string>();
-              
-              while (positions.length < count) {
-                const x = Math.floor(Math.random() * size);
-                const y = Math.floor(Math.random() * size);
-                const posStr = `${x},${y}`;
-                
-                if (!usedPositions.has(posStr)) {
-                  usedPositions.add(posStr);
-                  positions.push({ x, y });
-                }
-              }
-              
-              return positions;
-            }
-            
-            // 단어 수에 맞는 새로운 좌표 생성
-            const wordPositions = generateUniquePositions(existingContent.wordMappings.length, boardSize);
+            // 단어 수에 맞는 새로운 좌표 생성 (일렬 방지)
+            const wordPositions = generateNonColinearPositions(existingContent.wordMappings.length, boardSize);
             
             // 기존 단어는 유지하고 좌표만 변경 (coords 필드 사용)
             const newWordMappings = existingContent.wordMappings.map((mapping, index) => ({
               word: mapping.word,
               coords: wordPositions[index] // coords 필드에 새 위치 할당
             }));
+            
+            validatePositions(newWordMappings, boardSize);
             
             // 기존 콘텐츠 복사 후 새 매핑으로 업데이트
             proverbContent = {
@@ -762,33 +796,16 @@ export const getProverbContent = async (req: Request, res: Response) => {
       // 보드 사이즈 결정
       let boardSize = randomProverb.boardSize;
       
-      // 각 단어에 대한 고유 좌표 생성
-      function generateUniquePositions(count: number, size: number): Array<{x: number, y: number}> {
-        const positions: Array<{x: number, y: number}> = [];
-        const usedPositions = new Set<string>();
-        
-        while (positions.length < count) {
-          const x = Math.floor(Math.random() * size);
-          const y = Math.floor(Math.random() * size);
-          const posStr = `${x},${y}`;
-          
-          if (!usedPositions.has(posStr)) {
-            usedPositions.add(posStr);
-            positions.push({ x, y });
-          }
-        }
-        
-        return positions;
-      }
-      
-      // 단어 수에 맞는 새로운 좌표 생성
-      const wordPositions = generateUniquePositions(randomProverb.wordMappings.length, boardSize);
+      // 단어 수에 맞는 새로운 좌표 생성 (일렬 방지)
+      const wordPositions = generateNonColinearPositions(randomProverb.wordMappings.length, boardSize);
       
       // 기존 단어는 유지하고 좌표만 변경 (coords 필드 사용)
       const newWordMappings = randomProverb.wordMappings.map((mapping, index) => ({
         word: mapping.word,
         coords: wordPositions[index] // coords 필드에 새 위치 할당
       }));
+      
+      validatePositions(newWordMappings, boardSize);
       
       // 기존 콘텐츠 복사 후 새 매핑으로 업데이트
       proverbContent = {
@@ -993,35 +1010,50 @@ export const regeneratePositions = async (req: Request, res: Response) => {
     }
     
     // 단어 위치 재생성 함수
-    function generateUniquePositions(count: number, boardSize: number): Array<{x: number, y: number}> {
-      const positions: Array<{x: number, y: number}> = [];
-      const usedPositions = new Set<string>();
-      
-      while (positions.length < count) {
-        const x = Math.floor(Math.random() * boardSize);
-        const y = Math.floor(Math.random() * boardSize);
-        const posStr = `${x},${y}`;
-        
-        if (!usedPositions.has(posStr)) {
-          usedPositions.add(posStr);
-          positions.push({ x, y });
+    function isColinear(positions: {x: number, y: number}[]): boolean {
+      if (positions.length < 2) return false;
+      const allX = positions.every(pos => pos.x === positions[0].x);
+      const allY = positions.every(pos => pos.y === positions[0].y);
+      const allDiag1 = positions.every(pos => (pos.x - pos.y) === (positions[0].x - positions[0].y));
+      const allDiag2 = positions.every(pos => (pos.x + pos.y) === (positions[0].x + positions[0].y));
+      return allX || allY || allDiag1 || allDiag2;
+    }
+    
+    function generateUniquePositions(count: number, size: number): Array<{x: number, y: number}> {
+      let attempts = 0;
+      while (attempts < 100) {
+        const positions: Array<{x: number, y: number}> = [];
+        const usedPositions = new Set<string>();
+        while (positions.length < count) {
+          const x = Math.floor(Math.random() * size);
+          const y = Math.floor(Math.random() * size);
+          const posStr = `${x},${y}`;
+          if (!usedPositions.has(posStr)) {
+            usedPositions.add(posStr);
+            positions.push({ x, y });
+          }
         }
+        if (!isColinear(positions)) {
+          return positions;
+        }
+        attempts++;
       }
-      
-      return positions;
+      throw new Error('랜덤 배치 100회 시도에도 일렬이 아닌 배치를 만들지 못했습니다.');
     }
     
     // 단어 수 확인
     const wordCount = content.wordMappings.length;
     
-    // 새 위치 생성
-    const newPositions = generateUniquePositions(wordCount, content.boardSize);
+    // 새 위치 생성 (일렬 방지)
+    const newPositions = generateNonColinearPositions(wordCount, content.boardSize);
     
     // 기존 단어와 순서는 유지하고 위치만 변경
     const newMappings = content.wordMappings.map((mapping, index) => ({
       word: mapping.word,
       coords: newPositions[index]
     }));
+    
+    validatePositions(newMappings, content.boardSize);
     
     // 새로운 컨텐츠 생성 (기존 _id 사용 안함)
     const updatedContent = {

@@ -204,7 +204,6 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
             <button className={styles.nextButton} onClick={onNextGame}>
               다음 게임
             </button>
-            <p className={styles.buttonDescription}>새로운 문장으로 게임을 시작합니다.</p>
           </div>
         )}
 
@@ -214,14 +213,12 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
               <button className={styles.nextButton} onClick={onNextGame}>
                 다음 게임
               </button>
-              <p className={styles.buttonDescription}>새로운 문장으로 게임을 시작합니다.</p>
             </div>
             
             <div className={styles.buttonContainer}>
               <button className={styles.retryButton} onClick={onRetrySameContent}>
                 같은 문장 다른 위치로 도전
               </button>
-              <p className={styles.buttonDescription}>같은 문장을 사용하지만 단어 위치를 새롭게 배치합니다.</p>
             </div>
           </>
         )}
@@ -231,7 +228,6 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
             <button className={styles.retryButton} onClick={onRetrySameContent}>
               같은 위치로 다시 도전하기
             </button>
-            <p className={styles.buttonDescription}>같은 문장과 동일한 단어 위치로 다시 도전합니다.</p>
           </div>
         )}
 
@@ -239,7 +235,6 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
           <button className={styles.backButton} onClick={onBackToIntro}>
             메인으로 돌아가기
           </button>
-          <p className={styles.buttonDescription}>게임 설정 화면으로 돌아갑니다.</p>
         </div>
       </div>
     </div>

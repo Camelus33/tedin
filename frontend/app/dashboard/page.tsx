@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/common/Button';
@@ -11,6 +11,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import CognitiveProfileContainer from '@/components/cognitive/CognitiveProfileContainer';
 import './styles/dashboard.css';
+import { FiHelpCircle } from 'react-icons/fi';
+import AppLogo from '@/components/common/AppLogo';
 
 // Chart.js 등록
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, RadialLinearScale, Title, Tooltip, Legend);
@@ -121,6 +123,8 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -225,6 +229,16 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, [router]);
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // 책 상태 도넛 차트 데이터 - 더 이상 사용하지 않음
 
   // 주간 독서 시간 차트 데이터
@@ -317,31 +331,7 @@ export default function DashboardPage() {
         <div className="container mx-auto max-w-6xl flex justify-between items-center">
           <div className="flex items-center space-x-3">
             {/* 앱 로고 - 33을 이용한 habit 상징 */}
-            <div className="relative w-11 h-11 flex items-center justify-center">
-              <svg viewBox="0 0 50 50" className="w-full h-full">
-                <defs>
-                  <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#4F46E5" />
-                    <stop offset="100%" stopColor="#9333EA" />
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M15,10 L15,40 M25,10 L25,40 M35,10 L35,40 M10,15 L40,15 M10,25 L40,25"
-                  stroke="url(#logo-gradient)"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                <path
-                  d="M10,35 L40,35"
-                  stroke="url(#logo-gradient)"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  strokeDasharray="30,10"
-                  fill="none"
-                />
-              </svg>
-            </div>
+            <AppLogo className="w-11 h-11" />
             
             {/* 앱 이름 */}
             <div>
@@ -424,8 +414,8 @@ export default function DashboardPage() {
               <div className="action-card-overlay"></div>
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <h2 className="text-3xl font-bold mb-3">TS 모드</h2>
-                  <p className="opacity-90 text-lg mb-6">더 빠르게 읽기 위한 전두엽자극 트레이닝</p>
+                  <h2 className="text-3xl font-bold mb-3">Time Sprint</h2>
+                  <p className="opacity-90 text-lg mb-6">집중력이 좋아집니다</p>
                   <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
                     <span className="relative z-10">바로 시작하기</span>
                     <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
@@ -440,8 +430,8 @@ export default function DashboardPage() {
               <div className="action-card-overlay"></div>
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <h2 className="text-3xl font-bold mb-3">ZenGo 트레이닝</h2>
-                  <p className="opacity-90 text-lg mb-6">더 오래 기억하기 위한 해마자극 트레이닝</p>
+                  <h2 className="text-3xl font-bold mb-3">ZenGo</h2>
+                  <p className="opacity-90 text-lg mb-6">기억력이 좋아집니다</p>
                   <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
                     <span className="relative z-10">트레이닝 시작</span>
                     <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
@@ -457,7 +447,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between relative z-10">
                 <div>
                   <h2 className="text-3xl font-bold mb-3">내 서재</h2>
-                  <p className="opacity-90 text-lg mb-6">읽고 있는 종이책을 등록하세요.</p>
+                  <p className="opacity-90 text-lg mb-6">책을 등록하고, 읽기 속도 변화를 자주 확인하세요</p>
                   <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
                     <span className="relative z-10">책 관리하기</span>
                     <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
@@ -477,13 +467,59 @@ export default function DashboardPage() {
         
         {/* 33일 루틴 트래커 */}
         {routineProgress && (
-          <div className="glass-card p-6 mb-10 animate-fadeIn">
+          <div className="glass-card p-6 mb-10 relative">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-[#6366F1]">33일 인지증강 루틴</h2>
+              <h2 className="text-xl font-bold text-[#6366F1] flex items-center space-x-2">
+                <span>33일 뇌속임 루틴</span>
+                <button
+                  onClick={() => router.push('/brain-hack-routine')}
+                  className="p-1 text-indigo-600 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  aria-label="유형 선택 도움말"
+                >
+                  <FiHelpCircle className="w-6 h-6" aria-hidden="true" />
+                </button>
+              </h2>
               <div className="bg-indigo-50 py-1 px-3 rounded-full">
                 <p className="text-xs font-semibold text-indigo-600">Day {routineProgress.currentDay} / 33</p>
               </div>
             </div>
+            
+            {/* 드롭다운 팝업 (애니메이션) */}
+            {dropdownOpen && (
+              <div
+                ref={dropdownRef}
+                className="absolute top-12 left-0 w-full sm:w-56 sm:left-6 bg-white rounded-xl shadow-xl ring-1 ring-gray-200 z-20 transform scale-95 origin-top-left animate-fadeIn transition ease-out duration-200"
+                role="menu"
+              >
+                <Link
+                  href="/brain-hack-routine"
+                  className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-indigo-50 transition focus:outline-none"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  뇌속임 루틴이란
+                </Link>
+                <ul className="divide-y divide-gray-100">
+                  {[
+                    { key: 'exam', label: '시험러(수험생)' },
+                    { key: 'selfDev', label: '자기계발러' },
+                    { key: 'attention', label: '집중 버거워러' },
+                    { key: 'memory', label: '망각 탈출러' },
+                  ].map(({ key, label }) => (
+                    <li key={key} role="none">
+                      <Link
+                        href={`/routine/${key}`}
+                        className="block px-4 py-3 text-sm text-gray-800 hover:bg-indigo-50 transition focus:outline-none"
+                        onClick={() => setDropdownOpen(false)}
+                        role="menuitem"
+                        tabIndex={0}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             
             {/* 프로그레스 바 */}
             <div className="progress-bar mb-10">
@@ -531,13 +567,8 @@ export default function DashboardPage() {
                 두 번째 마일스톤 달성! 절반을 향해!
               </p>
               <p className="text-sm text-gray-600 mt-2">
-                14일 연속 독서 중 - 습관 형성까지 19일 남았습니다
+                14일 연속 도전 중 - 습관 형성까지 19일 남았습니다
               </p>
-            </div>
-            
-            {/* 책 아이콘 */}
-            <div className="flex justify-end mt-2">
-              <span className="text-gray-200 text-2xl">📚</span>
             </div>
           </div>
         )}
