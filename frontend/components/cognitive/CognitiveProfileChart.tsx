@@ -42,7 +42,7 @@ const metricLabelsKo = {
   spatialCognition: '공간 인지력',
   attention: '주의력',
   patternRecognition: '패턴 인식',
-  cognitiveFlexibility: '인지적 유연성'
+  cognitiveFlexibility: '인지 유연성'
 };
 
 const CognitiveProfileChart: React.FC<CognitiveProfileChartProps> = ({ data, className = '' }) => {

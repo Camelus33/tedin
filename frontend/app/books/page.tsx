@@ -519,16 +519,6 @@ export default function BooksPage() {
                       )}
                     </div>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/reading-session?bookId=${book._id}`);
-                    }}
-                    className="flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-                  >
-                    계속 읽기
-                    <FiChevronRight size={16} className="ml-1" />
-                  </button>
                 </div>
               </div>
             ))}

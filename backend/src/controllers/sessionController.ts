@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Session from '../models/Session';
 import Book from '../models/Book';
+import Note from '../models/Note';
 
 // Helper function to calculate and update estimated reading time
 const updateEstimatedTime = async (bookId: string, userId: string) => {
@@ -207,6 +208,18 @@ export const completeSession = async (req: Request, res: Response) => {
     // 예상 완독 시간 업데이트 (추가)
     // 주의: session.bookId가 string/ObjectId 타입인지 확인 필요
     await updateEstimatedTime(session.bookId.toString(), userId); 
+
+    // TS 모드 반추 메모를 Note로 자동 생성
+    if (memo && memo.trim()) {
+      await Note.create({
+        userId: userId,
+        bookId: session.bookId,
+        originSession: session._id,
+        type: 'thought',
+        content: memo,
+        tags: (summary10words || '').trim().split(/\s+/).filter(Boolean),
+      });
+    }
 
     res.status(200).json(updatedSession);
   } catch (error) {

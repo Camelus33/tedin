@@ -607,7 +607,19 @@ const zengoProverbSlice = createSlice({
     },
     generateWordPlaceholders: (state) => {
         // ... 기존 코드 유지 ...
-    }
+    },
+    // New reducer to set content directly (for Myverse adapter)
+    setContent: (state, action: PayloadAction<ZengoProverbContent>) => {
+      state.currentContent = action.payload;
+      state.gameState = 'idle';
+      state.placedStones = [];
+      state.revealedWords = [];
+      state.usedStonesCount = 0;
+      state.startTime = null;
+      state.lastResult = null;
+      state.resultType = null;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -713,6 +725,7 @@ export const {
     evaluateResult,
     prepareNextGame,
     generateWordPlaceholders,
+    setContent,
 } = zengoProverbSlice.actions
 
 export default zengoProverbSlice.reducer 

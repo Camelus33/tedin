@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Button from '@/components/common/Button';
+import { AiOutlineEdit, AiOutlineQuestionCircle, AiOutlineArrowRight } from 'react-icons/ai';
+import { FiBook } from 'react-icons/fi';
 import useBooks from '@/hooks/useBooks';
+import TSNoteCard from '@/components/ts/TSNoteCard';
 
 // API base URL - this should match what's used elsewhere in the app
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -60,9 +63,7 @@ export default function BookDetailPage() {
   
   // Use custom hooks
   const { bookFetchState, fetchBookDetail } = useBooks();
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [activeTab, setActiveTab] = useState<'notes' | 'sessions'>('notes');
+  const [tsNotes, setTsNotes] = useState<Note[]>([]);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   
   // Destructure for cleaner access
@@ -84,83 +85,26 @@ export default function BookDetailPage() {
     loadBook();
   }, [bookId, fetchBookDetail]);
   
-  // Fetch notes and sessions when book is loaded
+  // Fetch TS 메모 when book is loaded
   useEffect(() => {
     if (!bookId || !book) return;
-    
-    const fetchRelatedData = async () => {
+    const fetchTSNotes = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) { router.push('/auth/login'); return; }
       try {
-        // Get auth token
-        const token = localStorage.getItem('token');
-        if (!token) {
-          router.push('/auth/login');
-          return;
-        }
-        
-        // Fetch notes and sessions in parallel
-        const [notesResponse, sessionsResponse] = await Promise.allSettled([
-          fetch(`${API_BASE_URL}/notes?bookId=${bookId}`, {
-            headers: { 'Authorization': `Bearer ${token}` },
-          }),
-          fetch(`${API_BASE_URL}/sessions?bookId=${bookId}`, {
-            headers: { 'Authorization': `Bearer ${token}` },
-          })
-        ]);
-        
-        // Process notes
-        if (notesResponse.status === 'fulfilled' && notesResponse.value.ok) {
-          try {
-            const notesData = await notesResponse.value.json();
-            console.log('Notes data:', notesData);
-            
-            if (Array.isArray(notesData)) {
-              setNotes(notesData);
-            } else if (notesData && Array.isArray(notesData.notes)) {
-              setNotes(notesData.notes);
-            } else {
-              setNotes([]);
-            }
-          } catch (error) {
-            console.error('Error parsing notes:', error);
-            setNotes([]);
-          }
-        } else {
-          console.log('Failed to load notes');
-          setNotes([]);
-        }
-        
-        // Process sessions
-        if (sessionsResponse.status === 'fulfilled' && sessionsResponse.value.ok) {
-          try {
-            const sessionsData = await sessionsResponse.value.json();
-            console.log('Sessions data:', sessionsData);
-            
-            if (Array.isArray(sessionsData)) {
-              setSessions(sessionsData);
-            } else if (sessionsData && Array.isArray(sessionsData.sessions)) {
-              setSessions(sessionsData.sessions);
-            } else {
-              setSessions([]);
-            }
-          } catch (error) {
-            console.error('Error parsing sessions:', error);
-            setSessions([]);
-          }
-        } else {
-          console.log('Failed to load sessions');
-          setSessions([]);
-        }
-      } catch (error: any) {
-        console.error('Error loading related data:', error);
-        // Don't display errors if it's just an abort error from unmounting
-        if (error.name !== 'AbortError') {
-          // Still keep the book data even if notes/sessions fail
-        }
+        const res = await fetch(
+          `${API_BASE_URL}/notes/book/${bookId}?originOnly=true`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = await res.json();
+        setTsNotes(Array.isArray(data) ? data : data.notes || []);
+      } catch (e) {
+        console.error('TS notes load error:', e);
+        setTsNotes([]);
       }
     };
-    
-    fetchRelatedData();
-  }, [bookId, router, book]);
+    fetchTSNotes();
+  }, [bookId, book]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR', {
@@ -288,249 +232,116 @@ export default function BookDetailPage() {
         </div>
         
         {/* Book Header */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-          <div className="p-6">
-            <div className="flex flex-col md:flex-row gap-6">
-              {/* Book Cover */}
-              <div className="w-full md:w-1/3 lg:w-1/4">
-                <div className="aspect-[2/3] bg-gray-100 rounded-lg overflow-hidden">
-                  {bookData.coverImage ? (
-                    <img
-                      src={bookData.coverImage}
-                      alt={bookData.title || '책 제목 없음'}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center w-full h-full text-gray-400">
-                      <span>표지 이미지 없음</span>
-                    </div>
-                  )}
-                </div>
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6 relative">
+          {/* Action Buttons group at top right */}
+          <div className="absolute top-4 right-4 flex space-x-2">
+            <Button variant="outline" size="default" className="px-6" onClick={handleEditBook} aria-label="책 정보 수정">
+              책 정보 수정
+            </Button>
+            <Button variant="default" size="default" className="px-6" onClick={handleStartReading} aria-label="TS 모드 진입">
+              TS 모드 진입
+            </Button>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
+            {/* Book Cover and placeholder */}
+            <div className="md:col-span-1 space-y-2 flex justify-center">
+              <div className="w-full max-w-[200px] md:max-w-[120px] aspect-[2/3] bg-gray-200 rounded-lg overflow-hidden">
+                {bookData.coverImage ? (
+                  <img
+                    src={bookData.coverImage}
+                    alt={bookData.title || '책 제목 없음'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg text-gray-400">
+                    <FiBook className="h-8 w-8 mb-2" />
+                    <span className="text-xs">표지 이미지 없음</span>
+                  </div>
+                )}
               </div>
-              
-              {/* Book Info */}
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-800 mb-2">{bookData.title || '제목 없음'}</h1>
-                <p className="text-gray-600 mb-4">{bookData.author || '저자 미상'}</p>
-                
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-6">
-                  <div>
-                    <span className="text-sm text-gray-500">장르</span>
-                    <p>{localMetadata?.genre || bookData.category || bookData.genre || '미분류'}</p>
+            </div>
+            {/* Book Info */}
+            <div className="md:col-span-3 space-y-3">
+              <h1 className="text-3xl font-bold text-gray-800 mb-1">{bookData.title || '제목 없음'}</h1>
+              <p className="text-lg text-gray-600 mb-4">{bookData.author || '저자 미상'}</p>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                {[
+                  ['장르', localMetadata?.genre || bookData.category || bookData.genre || '미분류'],
+                  ['독서 목적', localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal || '설정되지 않음'],
+                  ['총 페이지', (bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages}페이지` : '페이지 정보 없음'],
+                  ['등록일', bookData.createdAt ? formatDate(bookData.createdAt) : '등록일 정보 없음'],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-baseline space-x-2">
+                    <span className="text-sm text-gray-500">{label}</span>
+                    <span className="text-sm font-medium text-gray-800">{value}</span>
                   </div>
-                  <div>
-                    <span className="text-sm text-gray-500">독서 목적</span>
-                    <p>{localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal || '설정되지 않음'}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-500">총 페이지</span>
-                    <p>{(bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages}페이지` : '페이지 정보 없음'}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-500">등록일</span>
-                    <p>{bookData.createdAt ? formatDate(bookData.createdAt) : '등록일 정보 없음'}</p>
-                  </div>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>독서 진행률</span>
-                    <span className="font-medium">{getProgressPercentage()}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div 
-                      className="bg-indigo-600 h-2.5 rounded-full" 
+                ))}
+              </div>
+              {/* Progress Bar */}
+              <div className="flex items-center space-x-4" role="group" aria-label={`독서 진행률 ${getProgressPercentage()}%`}>
+                <div className="flex-1">
+                  <div className="bg-indigo-50 h-3 rounded-full overflow-hidden">
+                    <div
+                      className="bg-indigo-600 h-3 rounded-full transition-all duration-300"
                       style={{ width: `${getProgressPercentage()}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>현재 {bookData.currentPage || 0}페이지</span>
-                    <span>{bookData.totalPages || 0}페이지</span>
+                    />
                   </div>
                 </div>
-                
-                {/* Action Buttons */}
-                <div className="flex flex-wrap gap-3">
-                  <Button 
-                    variant="default" 
-                    className="flex-1"
-                    onClick={handleStartReading}
-                  >
-                    TS 모드로 읽기
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => router.push(`/zengo?bookId=${bookId}`)}
-                  >
-                    Zengo 모드
-                  </Button>
+                <div className="text-sm font-medium text-gray-800" aria-live="polite">
+                  {getProgressPercentage()}%
                 </div>
-                
-                {/* 책 관리 버튼 */}
-                <div className="flex gap-3 mt-3">
-                  <Button
-                    variant="ghost"
-                    className="flex-1 border border-gray-200"
-                    onClick={handleEditBook}
-                  >
-                    책 정보 수정
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="flex-1 text-red-600 border border-red-200 hover:bg-red-50"
-                    onClick={handleDeleteBook}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? '삭제 중...' : '책 삭제하기'}
-                  </Button>
+                <div className="text-sm text-gray-500">
+                  현재 {bookData.currentPage || 0} / {bookData.totalPages || 0} 페이지
                 </div>
               </div>
             </div>
           </div>
         </div>
         
-        {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="border-b border-gray-200">
-            <div className="flex">
-              <button
-                className={`px-6 py-3 text-sm font-medium ${
-                  activeTab === 'notes'
-                    ? 'border-b-2 border-indigo-500 text-indigo-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-                onClick={() => setActiveTab('notes')}
-              >
-                독서 메모
-              </button>
-              <button
-                className={`px-6 py-3 text-sm font-medium ${
-                  activeTab === 'sessions'
-                    ? 'border-b-2 border-indigo-500 text-indigo-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-                onClick={() => setActiveTab('sessions')}
-              >
-                세션 기록
-              </button>
+        {/* DIKW 피라미드 Section */}
+        <section className="mt-8 bg-gray-100 p-6 rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-3xl font-bold text-indigo-700">DIKW 피라미드 : 메모 진화 시스템</h2>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-1">
+                <span className="font-bold text-indigo-600">D</span>
+                <span>데이터</span>
+              </div>
+              <AiOutlineArrowRight className="text-gray-400" />
+              <div className="flex items-center space-x-1">
+                <span className="font-bold text-pink-500">I</span>
+                <span>정보</span>
+              </div>
+              <AiOutlineArrowRight className="text-gray-400" />
+              <div className="flex items-center space-x-1">
+                <span className="font-bold text-green-500">K</span>
+                <span>지식</span>
+              </div>
+              <AiOutlineArrowRight className="text-gray-400" />
+              <div className="flex items-center space-x-1">
+                <span className="font-bold text-yellow-500">W</span>
+                <span>지혜</span>
+              </div>
             </div>
           </div>
-          
-          <div className="p-6">
-            {activeTab === 'notes' ? (
-              <>
-                {notes.length === 0 ? (
-                  <div className="text-center p-8">
-                    <p className="text-gray-500 mb-4">아직 작성된 메모가 없습니다.</p>
-                    <Button 
-                      variant="outline"
-                      onClick={() => router.push(`/books/${bookId}/notes/new`)}
-                    >
-                      메모 작성하기
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {notes.map((note) => (
-                      <div key={note._id} className="border rounded-lg p-4 hover:shadow transition">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="inline-block px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                            {note.type === 'quote' ? '인용' : note.type === 'thought' ? '생각' : '질문'}
-                          </div>
-                          <div className="text-xs text-gray-500">{formatDate(note.createdAt)}</div>
-                        </div>
-                        <p className="text-gray-800 mb-2">{note.content}</p>
-                        {note.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {note.tags.map((tag, index) => (
-                              <span 
-                                key={index} 
-                                className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs"
-                              >
-                                #{tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    
-                    <div className="mt-4 text-center">
-                      <Button 
-                        variant="outline"
-                        onClick={() => router.push(`/books/${bookId}/notes/new`)}
-                      >
-                        새 메모 작성
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                {sessions.length === 0 ? (
-                  <div className="text-center p-8">
-                    <p className="text-gray-500 mb-4">아직 독서 세션 기록이 없습니다.</p>
-                    <Button 
-                      variant="outline"
-                      onClick={handleStartReading}
-                    >
-                      TS 모드 시작하기
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {sessions.map((session) => (
-                      <div key={session._id} className="border rounded-lg p-4 hover:shadow transition">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="text-sm font-medium">{formatDate(session.createdAt)}</div>
-                          {session.ppm && (
-                            <div className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs">
-                              {session.ppm.toFixed(1)} PPM
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="grid grid-cols-3 gap-4 mb-3">
-                          <div className="text-center">
-                            <div className="text-sm text-gray-500">시작 페이지</div>
-                            <div className="font-medium">{session.startPage}</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-sm text-gray-500">종료 페이지</div>
-                            <div className="font-medium">{session.actualEndPage || session.endPage}</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-sm text-gray-500">소요 시간</div>
-                            <div className="font-medium">{Math.round(session.durationSec / 60)}분</div>
-                          </div>
-                        </div>
-                        
-                        {session.memo && (
-                          <div className="mt-2">
-                            <div className="text-sm text-gray-500 mb-1">메모</div>
-                            <p className="text-gray-800">{session.memo}</p>
-                          </div>
-                        )}
-                        
-                        <div className="mt-3 text-right">
-                          <Button 
-                            variant="ghost" 
-                            onClick={() => router.push(`/ts/result?sessionId=${session._id}`)}
-                          >
-                            상세 보기
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
+          {tsNotes.length === 0 ? (
+            <p className="text-gray-500">아직 작성된 TS 반추 메모가 없습니다.</p>
+          ) : (
+            <div className="space-y-4">
+              {tsNotes.map((note) => (
+                <TSNoteCard
+                  key={note._id}
+                  note={note}
+                  onUpdate={(updated: Partial<Note>) =>
+                    setTsNotes((prev) =>
+                      prev.map((n) => (n._id === note._id ? { ...n, ...updated } : n))
+                    )
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

@@ -91,7 +91,7 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
   return (
     <div className={`bg-white rounded-xl shadow-md overflow-hidden ${className}`}>
       <div className="p-6">
-        <h2 className="text-2xl font-bold mb-6 text-center">인지 능력 측정</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">인지 능력 프로필</h2>
         
         {/* Time period selector */}
         <div className="flex justify-center mb-6">

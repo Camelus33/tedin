@@ -376,7 +376,9 @@ export const getCognitiveProfile = async (req: Request, res: Response): Promise<
     });
   } catch (error) {
     console.error('인지 능력 프로필 조회 중 오류 발생:', error);
-    res.status(500).json({ message: '서버 오류가 발생했습니다.', error });
+    // Avoid serializing Error object directly to JSON
+    const errMsg = error instanceof Error ? error.message : String(error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.', error: errMsg });
   }
 };
 

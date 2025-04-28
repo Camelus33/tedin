@@ -9,7 +9,7 @@ import RoutineSection from '../../components/common/RoutineSection';
 export default function BrainHackRoutinePage() {
   return (
     <PageContainer>
-      <PageTitle>뇌속임 루틴</PageTitle>
+      <PageTitle>뇌 최적화 루틴</PageTitle>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12 px-2 md:px-0">
         <QuickNavCard href="#exam" label="청소년·수험생" />
@@ -21,17 +21,17 @@ export default function BrainHackRoutinePage() {
       <RoutineSection
         id="exam"
         title="청소년·수험생"
-        quote={'"공부해야 하는 건 아는데 손이 안 가요."'}
+        quote={'"공부해야 하는데 집중이 안되요."'}
         items={[
           '매일 아침 TS 모드 딱 1번 → 속도를 눈으로 확인',
-          '화·목·토 Zengo 트레이닝 → 기억력 & 몰입력 훈련',
+          '화·목·토 Zengo 트레이닝 → 기억력 & 몰입력',
           "일요일엔 '내가 제일 빠르게 읽은 날'을 찾아 보상 회로 강화",
         ]}
       />
       <RoutineSection
         id="selfdev"
         title="대학생·직장인"
-        quote={'"책상에 앉아도 무엇부터 해야 할지 막막해요."'}
+        quote={'"책상에 앉으면 잡생각이 몰려와요."'}
         items={[
           '출근 전 7~15분 TS 모드 1회 → 집중 트리거 설정',
           '수·금 Zengo(3×3 영어) 1회 → 판단력 회복',
@@ -42,7 +42,7 @@ export default function BrainHackRoutinePage() {
       <RoutineSection
         id="memory"
         title="기억 강화형"
-        quote={'"읽고 나면 기억이 잘 안 나요."'}
+        quote={'"읽고 나면 곧바로 까먹어요."'}
         items={[
           '아침 TS + 감정 단어 1줄 요약 + 키워드 10개 작성',
           'ZenGo (3×3 → 5×5) 퍼즐 반복 → 기록 유지',

@@ -2,12 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS 변수 정의 제거 - Tailwind 설정으로 통합됨 */
+/* 
+:root {
+  --color-primary-from: #5C6BC0;
+  --color-primary-to: #AB47BC;
+  --color-secondary-from: #4CAF50;
+  --color-secondary-to: #2196F3;
+  --color-accent-from: #EC407A;
+  --color-accent-to: #E53935;
+}
+*/
+
 @layer base {
   html {
     @apply scroll-smooth;
   }
   body {
-    @apply bg-neutral-50 text-neutral-900 font-sans;
+    @apply bg-white text-neutral-900 font-sans leading-relaxed;
   }
 }
 
@@ -33,6 +45,17 @@
   }
   
   .input {
-    @apply block w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm;
+    @apply block w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:ring-1 focus:ring-accent-500 focus:border-accent-500 sm:text-sm;
+  }
+
+  /* Dashboard Action Card Gradients */
+  .action-card-primary {
+    background: linear-gradient(135deg, var(--color-primary-from), var(--color-primary-to));
+  }
+  .action-card-secondary {
+    background: linear-gradient(135deg, var(--color-secondary-from), var(--color-secondary-to));
+  }
+  .action-card-accent {
+    background: linear-gradient(135deg, var(--color-accent-from), var(--color-accent-to));
   }
 } 

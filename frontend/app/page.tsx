@@ -110,7 +110,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <p>'책상에 앉으면 잡생각이 몰려와요.'</p>
+              <p>'책상에 앉아도 집중이 안돼요.'</p>
               <p>'읽는 도중에 딴 생각이 많이나요'</p>
               <p>'방금 읽었는데 기억이 안나요'</p>
             </motion.div>
@@ -120,7 +120,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              이제, 당신의 뇌를 다시 깨울 시간입니다.
+              이제, 뇌를 다시 깨울 시간입니다.
             </motion.p>
             <motion.p
               className="text-lg text-gray-800 font-semibold"
@@ -162,7 +162,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              최상위 1% 학습자들이 활용하는 비밀: 전두엽과 해마를 동시에 활성화시키는 16분 집중 사이클이 8시간의 비효율적 공부를 대체합니다. habitus33는 신경과학 기반의 인지 회로 최적화 학습법을 실현합니다.
+              최상위 1%들이 활용하는 비밀: 전두엽과 해마를 동시에 활성화시키는 16분 집중 사이클이 비효율적 공부를 대체합니다. habitus33는 신경과학 기반의 인지 회로 최적화 학습법을 실현합니다.
             </motion.p>
             <div className="flex justify-center mt-10">
               <Link 
@@ -251,7 +251,7 @@ export default function LandingPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">중요한 순간, 머릿속이 하얘질 때</h3>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">중요한 순간, 떠오르지 않을 때</h3>
                   <div className="bg-gray-50 rounded-lg p-3 mb-3 italic text-gray-600 group-hover:bg-gray-100 transition-colors duration-300">
                     "또 이러네…"
                   </div>
@@ -287,7 +287,7 @@ export default function LandingPage() {
             </div>
                 <div>
                   <p className="text-xl font-medium text-gray-800 mb-4">
-                    "전에는 10분 이상 집중을 못했어요. 근데 Habitus33를 쓰고 나선, '11분'만 정해놓고 읽기 시작한 게 제 루틴의 전환점이었죠."
+                    "전에는 집중을 못했어요. 근데 Habitus33를 쓰고 나선, '11분'만 정해놓고 따라하기만 했어요."
                   </p>
                   
                   <ul className="mt-6 space-y-2 text-gray-700">
@@ -301,13 +301,13 @@ export default function LandingPage() {
                   <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                      3일 연속 후: "문장이 이해되기 시작했다"
+                      3일 연속 후: "문장이 기억되기 시작했다"
                 </li>
                     <li className="flex items-center">
                   <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                      3주 후: "이젠 공부가 가능해진 뇌를 갖게 된 느낌"
+                      3주 후: "이젠 공부가 가능해진 느낌"
                 </li>
               </ul>
                 </div>
@@ -411,7 +411,7 @@ export default function LandingPage() {
                   {/* 설명 */}
                   <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left">
                     <h3 className="text-xl font-bold text-indigo-800 mb-2 mt-2 md:mt-0">ZenGo 기억 착수</h3>
-                    <div className="text-base font-semibold text-indigo-600 mb-3">단기기억, 문장력, 공간지각, 논리적 순서화 등 다양한 인지 능력을 동시에 강화합니다.</div>
+                    <div className="text-base font-semibold text-indigo-600 mb-3">작업기억, 문해력, 공간지각, 순서추론 등 다양한 인지 능력을 동시에 강화합니다.</div>
                     <div className="text-indigo-700 font-semibold mb-2 text-base">제한 시간 내 단어와 위치를 기억하고<br className='md:hidden'/>순서대로 클릭하는 게임!</div>
                     <div className="text-gray-500 text-sm">예시: [단어] → [문장] → [위치] 기억, 순서대로 클릭!</div>
               </div>
@@ -428,7 +428,7 @@ export default function LandingPage() {
                   {/* 설명 */}
                   <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left">
                     <h3 className="text-xl font-bold text-indigo-800 mb-2 mt-2 md:mt-0">만다라트식 목표 완수</h3>
-                    <div className="text-base font-semibold text-indigo-600 mb-3">33일간 8가지 인지 능력을 향상시켜 목표완수에 필요한 에너지를 충전하세요.</div>
+                    <div className="text-base font-semibold text-indigo-600 mb-3">33일간 8가지 인지 능력을 모두 향상시킬 수 있습니다.</div>
                   </div>
             </div>
             </motion.div>
@@ -455,17 +455,17 @@ export default function LandingPage() {
               {/* 설명 영역 */}
               <div className="flex-1 p-8 md:p-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-700 to-blue-700 mb-6">
-                  뇌속임 학습법은 왜 인기일까요?
+                  뇌 최적화 학습법은 왜 인기일까요?
                 </h2>
                 <p className="text-lg text-gray-700 mb-4 leading-relaxed">
-                  <span className="font-semibold text-indigo-600">뇌속임 학습법</span>은 신경과학 기반의 루틴 설계로, 짧은 시간에 집중력과 기억력을 극대화하는 혁신적인 학습법입니다.<br />
+                  <span className="font-semibold text-indigo-600">뇌 최적화 학습법</span>은 신경과학 기반의 루틴 설계로, 짧은 시간에 작업기억을 극대화합니다.<br />
                   33일간 반복되는 습관화 과정을 통해 누구나 쉽게 몰입과 성취를 경험할 수 있습니다.
                 </p>
                 <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-5 mb-4">
-                  <h3 className="text-xl font-bold text-indigo-700 mb-2">뇌속임 루틴 적용 서비스 예시</h3>
+                  <h3 className="text-xl font-bold text-indigo-700 mb-2">뇌 최적화 루틴 적용 서비스 예시</h3>
                   <ul className="list-disc pl-5 text-gray-700 space-y-1">
-                    <li><span className="font-semibold text-purple-600">TS모드</span> – 16분 집중 독서 & 실시간 피드백</li>
-                    <li><span className="font-semibold text-blue-600">ZenGo</span> – 게임형 기억력 트레이닝</li>
+                    <li><span className="font-semibold text-purple-600">TS</span> – 16분 집중 독서 & 반추 독서 메모</li>
+                    <li><span className="font-semibold text-blue-600">ZenGo</span> – 바둑기반 기억 착수</li>
                     <li><span className="font-semibold text-indigo-600">33일 루틴 트래커</span> – 습관화와 성장 시각화</li>
                   </ul>
                 </div>
@@ -473,7 +473,7 @@ export default function LandingPage() {
                   href="/brain-hack-routine"
                   className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-full px-6 py-3 shadow hover:from-indigo-700 hover:to-purple-700 transition"
                 >
-                  뇌속임 루틴 더 알아보기
+                  뇌 최적화 루틴 더 알아보기
                 </Link>
               </div>
             </div>
@@ -495,7 +495,7 @@ export default function LandingPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900">TS 모드 – 집중 독서 루틴</h3>
+                  <h3 className="text-xl font-bold text-gray-900">TS – 집중 독서 루틴</h3>
           </div>
 
                 <ol className="space-y-3 mb-6">
@@ -513,7 +513,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 bg-indigo-100 text-indigo-700 rounded-full mr-2 font-bold">4</span>
-                    <span className="text-gray-700">반추 + 핵심 10단어 요약</span>
+                    <span className="text-gray-700">반추 + 1줄 메모 요약</span>
                   </li>
                   <li className="flex items-start">
                     <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 bg-indigo-100 text-indigo-700 rounded-full mr-2 font-bold">5</span>
@@ -536,7 +536,7 @@ export default function LandingPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
                 </svg>
               </div>
-                  <h3 className="text-xl font-bold text-gray-900">Zengo 모드 – 바둑판 기억 훈련</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Zengo – 바둑판 기억 착수</h3>
             </div>
 
                 <ol className="space-y-3 mb-6">
@@ -566,7 +566,7 @@ export default function LandingPage() {
                   <svg className="h-6 w-6 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                  <p className="font-medium text-base">정보 기억 → 판단력 향상 → 즉각 피드백 → 루틴화</p>
+                  <p className="font-medium text-base">작업 기억 → 판단력 향상 → 즉각 피드백 → 루틴화</p>
                 </div>
               </div>
             </div>
@@ -661,7 +661,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
             >
-              지금 당신의 뇌 학습 회로를 재설계할 시간입니다.
+              지금 당신의 뇌 학습 회로를 빌드업할 시간입니다.
             </motion.p>
             <motion.p 
               className="text-lg text-gray-400 mb-10"

@@ -87,4 +87,19 @@ export const updateSettings = async (req: Request, res: Response) => {
     console.error('Update settings error:', error);
     res.status(500).json({ error: '설정 업데이트 중 오류가 발생했습니다.' });
   }
+};
+
+// Search users by nickname (for group sharing)
+export const searchUsers = async (req: Request, res: Response) => {
+  try {
+    const q = (req.query.nickname as string) || '';
+    // Case-insensitive partial match on nickname
+    const users = await User.find({ nickname: { $regex: q, $options: 'i' } })
+      .limit(10)
+      .select('_id nickname');
+    res.status(200).json(users.map(u => ({ _id: u._id, nickname: u.nickname })));
+  } catch (error) {
+    console.error('Error searching users:', error);
+    res.status(500).json({ error: 'Failed to search users' });
+  }
 }; 

@@ -8,6 +8,23 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  /* Primary Gradient - Time Sprint (보라색 계열) */
+  --color-primary-from: #5C6BC0;
+  --color-primary-to:   #AB47BC;
+  /* Secondary Gradient - ZenGo (초록-파랑 계열) */
+  --color-secondary-from: #4CAF50;
+  --color-secondary-to:   #2196F3;
+  /* Accent Gradient - 내 서재 (핑크-레드 계열) */
+  --color-accent-from:   #EC407A;
+  --color-accent-to:     #E53935;
+
+  /* Card Styles */
+  --card-bg-color:     #FFFFFF;
+  --card-radius:       1rem;
+  --card-shadow:       0 2px 8px rgba(0,0,0,0.05);
+  --card-shadow-hover: 0 8px 16px rgba(0,0,0,0.1);
+  --card-padding:      1.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,4 +56,66 @@ body {
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+/* Card Component Base Style */
+.card {
+  background-color: var(--card-bg-color);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: var(--card-padding);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Gradient Text Utility */
+.gradient-text-primary {
+  background: linear-gradient(90deg, var(--color-primary-from), var(--color-primary-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.gradient-text-secondary {
+  background: linear-gradient(90deg, var(--color-secondary-from), var(--color-secondary-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.gradient-text-accent {
+  background: linear-gradient(90deg, var(--color-accent-from), var(--color-accent-to));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dashboard Action Card Styles */
+.action-card {
+  position: relative;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.action-card:hover {
+  transform: scale(1.03);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Gradient Backgrounds for Action Cards */
+.action-card-primary {
+  background: linear-gradient(135deg, var(--color-primary-from), var(--color-primary-to));
+}
+.action-card-secondary {
+  background: linear-gradient(135deg, var(--color-secondary-from), var(--color-secondary-to));
+}
+.action-card-accent {
+  background: linear-gradient(135deg, var(--color-accent-from), var(--color-accent-to));
+}
+
+/* Optional overlay effect inside action card */
+.action-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.05);
+  pointer-events: none;
 } 

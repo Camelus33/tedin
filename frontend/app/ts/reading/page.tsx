@@ -303,7 +303,7 @@ function BreathingText() {
             transition={{ duration: show ? 3.5 : 7 }}
             className="text-lg text-slate-500 font-light italic"
           >
-            코로 깊게 마시고 길게 내쉬세요
+            다음 문장을 떠올리며 빠르게 읽어보세요
           </motion.div>
         )}
       </AnimatePresence>

@@ -326,6 +326,9 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      {/* dashboard.css 스타일 적용을 위한 import */}
+      <style jsx global>{`@import url('/app/dashboard/styles/dashboard.css');`}</style>
+      
       {/* 고정 헤더 */}
       <header className="sticky top-0 z-10 glass-header py-4 px-4 animate-fadeIn">
         <div className="container mx-auto max-w-6xl flex justify-between items-center">
@@ -410,12 +413,13 @@ export default function DashboardPage() {
         {/* 주요 액션 버튼 영역 */}
         <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6 animate-slideUp">
           <Link href="/ts" className="block">
-            <div className="action-card bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl h-full">
+            <div className="action-card action-card-primary h-full">
               <div className="action-card-overlay"></div>
               <div className="flex items-center justify-between relative z-10">
                 <div>
                   <h2 className="text-3xl font-bold mb-3">Time Sprint</h2>
-                  <p className="opacity-90 text-lg mb-6">집중력이 좋아집니다</p>
+                  <p className="opacity-90 text-lg mb-6">읽기 속도를 측정해 드립니다</p>
+                  <p className="opacity-90 text-lg mb-6">긴 글 집중력이 유지됩니다</p>
                   <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
                     <span className="relative z-10">바로 시작하기</span>
                     <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
@@ -426,12 +430,13 @@ export default function DashboardPage() {
             </div>
           </Link>
           <Link href="/zengo" className="block">
-            <div className="action-card bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl h-full">
+            <div className="action-card action-card-secondary h-full">
               <div className="action-card-overlay"></div>
               <div className="flex items-center justify-between relative z-10">
                 <div>
                   <h2 className="text-3xl font-bold mb-3">ZenGo</h2>
-                  <p className="opacity-90 text-lg mb-6">기억력이 좋아집니다</p>
+                  <p className="opacity-90 text-lg mb-6">생생하게 떠올리는 연습을 하세요</p>
+                  <p className="opacity-90 text-lg mb-6">건망증이 점점 개선됩니다</p>
                   <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
                     <span className="relative z-10">트레이닝 시작</span>
                     <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
@@ -442,12 +447,13 @@ export default function DashboardPage() {
             </div>
           </Link>
           <Link href="/books" className="block">
-            <div className="action-card bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl h-full">
+            <div className="action-card action-card-accent h-full">
               <div className="action-card-overlay"></div>
               <div className="flex items-center justify-between relative z-10">
                 <div>
                   <h2 className="text-3xl font-bold mb-3">내 서재</h2>
-                  <p className="opacity-90 text-lg mb-6">책을 등록하고, 읽기 속도 변화를 자주 확인하세요</p>
+                  <p className="opacity-90 text-lg mb-6">책 등록 및 메모 관리</p>
+                  <p className="opacity-90 text-lg mb-6">읽기 속도 변화를 확인하세요</p>
                   <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
                     <span className="relative z-10">책 관리하기</span>
                     <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
@@ -470,7 +476,7 @@ export default function DashboardPage() {
           <div className="glass-card p-6 mb-10 relative">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-[#6366F1] flex items-center space-x-2">
-                <span>33일 뇌속임 루틴</span>
+                <span>33일 뇌 최적화 루틴</span>
                 <button
                   onClick={() => router.push('/brain-hack-routine')}
                   className="p-1 text-indigo-600 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
@@ -496,14 +502,14 @@ export default function DashboardPage() {
                   className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-indigo-50 transition focus:outline-none"
                   onClick={() => setDropdownOpen(false)}
                 >
-                  뇌속임 루틴이란
+                  뇌 최적화 루틴이란
                 </Link>
                 <ul className="divide-y divide-gray-100">
                   {[
-                    { key: 'exam', label: '시험러(수험생)' },
-                    { key: 'selfDev', label: '자기계발러' },
-                    { key: 'attention', label: '집중 버거워러' },
-                    { key: 'memory', label: '망각 탈출러' },
+                    { key: 'exam', label: '수험생' },
+                    { key: 'selfDev', label: '대학생' },
+                    { key: 'attention', label: '집중개선' },
+                    { key: 'memory', label: '기억개선' },
                   ].map(({ key, label }) => (
                     <li key={key} role="none">
                       <Link

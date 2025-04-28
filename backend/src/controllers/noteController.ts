@@ -85,7 +85,7 @@ export const updateNote = async (req: Request, res: Response) => {
   try {
     const { noteId } = req.params;
     const userId = req.user?.id;
-    const { type, content, tags } = req.body;
+    const { type, content, tags, importanceReason, momentContext, relatedKnowledge, mentalImage } = req.body;
 
     if (!userId) {
       return res.status(401).json({ message: '인증이 필요합니다.' });
@@ -103,6 +103,10 @@ export const updateNote = async (req: Request, res: Response) => {
     if (type !== undefined) updateData.type = type;
     if (content !== undefined) updateData.content = content;
     if (tags !== undefined) updateData.tags = tags;
+    if (importanceReason !== undefined) updateData.importanceReason = importanceReason;
+    if (momentContext !== undefined) updateData.momentContext = momentContext;
+    if (relatedKnowledge !== undefined) updateData.relatedKnowledge = relatedKnowledge;
+    if (mentalImage !== undefined) updateData.mentalImage = mentalImage;
 
     const updatedNote = await Note.findByIdAndUpdate(
       noteId,
@@ -147,12 +151,16 @@ export const getNotesByBook = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
     const userId = req.user?.id;
+    const originOnly = req.query.originOnly === 'true';
 
     if (!userId) {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    const notes = await Note.find({ userId, bookId })
+    // originOnly가 true일 때 TS 반추 메모만 필터링
+    const filter: any = { userId, bookId };
+    if (originOnly) filter.originSession = { $exists: true };
+    const notes = await Note.find(filter)
       .sort({ createdAt: -1 })
       .select('-__v');
 

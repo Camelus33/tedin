@@ -1,20 +1,24 @@
 import '@/styles/globals.css'
-import { Inter, Montserrat } from 'next/font/google'
+// import { Inter, Montserrat } from 'next/font/google' // 기존 폰트 임포트 제거
 import { Providers as ReduxProvider } from '@/store/provider'
 import { Providers } from './providers'
 import { Toaster } from 'react-hot-toast'
+import Head from 'next/head' // Head 임포트 추가
+// Import dashboard global styles for action cards
+import './dashboard/styles/dashboard.css';
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
+// 기존 폰트 설정 제거
+// const inter = Inter({
+//   subsets: ['latin'],
+//   display: 'swap',
+//   variable: '--font-inter',
+// })
 
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-montserrat',
-})
+// const montserrat = Montserrat({
+//   subsets: ['latin'],
+//   display: 'swap',
+//   variable: '--font-montserrat',
+// })
 
 export const metadata = {
   title: 'Habitus33 - 독서 생산성을 높이는 습관 시스템',
@@ -27,7 +31,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
+    // 기존 폰트 변수 클래스 제거
+    // <html lang="ko" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning> 
+    <html lang="ko" suppressHydrationWarning>
+      {/* Pretendard 폰트 링크 추가 */}
+      <Head>
+        <link
+          rel="stylesheet"
+          as="style"
+          crossOrigin="anonymous"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </Head>
       <body className="min-h-screen bg-white">
         <Providers>
           <ReduxProvider>

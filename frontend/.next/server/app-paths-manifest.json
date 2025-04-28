@@ -1,3 +1,9 @@
 {
-  "/page": "app/page.js"
+  "/not-found": "app/not-found.js",
+  "/reading-session/page": "app/reading-session/page.js",
+  "/page": "app/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/books/page": "app/books/page.js",
+  "/books/[id]/page": "app/books/[id]/page.js",
+  "/zengo/page": "app/zengo/page.js"
 }

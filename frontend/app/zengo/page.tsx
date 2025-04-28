@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -86,7 +86,19 @@ const isOrderCorrect = (placedStones: PlacedStone[], expectedOrder: { x: number,
   return allWordsInCorrectPosition && isSequentiallyCorrect;
 };
 
-export default function ZengoPage() {
+export interface ZengoPageProps {
+  initialUiState?: 'intro' | 'selection';
+  onNextGame?: () => void;
+  onRetrySameContent?: () => void;
+  onBackToIntro?: () => void;
+}
+
+export default function ZengoPage({
+  initialUiState,
+  onNextGame: customOnNextGame,
+  onRetrySameContent: customOnRetrySameContent,
+  onBackToIntro: customOnBackToIntro
+}: ZengoPageProps) {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { 
@@ -115,7 +127,7 @@ export default function ZengoPage() {
   const feedbackClearTimeouts = useRef<{ [key: string]: NodeJS.Timeout }>({}); // Ref for feedback clearing timeouts
 
   // Local state for managing UI flow (intro/selection) before game starts
-  const [uiState, setUiState] = useState<'intro' | 'selection'>('intro');
+  const [uiState, setUiState] = useState<'intro' | 'selection'>(initialUiState ?? 'intro');
   const [selectedBoardSize, setSelectedBoardSize] = useState<number>(3);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('ko'); // Default to Korean
   const [loading, setLoading] = useState(false); // Keep local loading for button state?
@@ -589,10 +601,10 @@ export default function ZengoPage() {
               </div>
               <div className="tutorial-text">
                 <h2>1. 단어 패턴 기억하기</h2>
-                <p>바둑판에 나타나는 단어들의 위치를 기억하세요. 이 단어들은 함께 모이면 의미 있는 명언이나 속담을 완성합니다.</p>
+                <p>바둑판에 나타나는 단어들의 위치를 기억하세요. 함께 모이면 의미 있는 명언이나 속담을 완성합니다</p>
                 <div className="tutorial-tip">
                   <span className="tip-icon">💡</span>
-                  <span className="tip-text">잠시 후 단어들이 사라지므로 위치와 순서를 잘 기억해두세요. 난이도가 높을수록 표시 시간이 짧아집니다.</span>
+                  <span className="tip-text">잠시 후 사라지므로 위치와 순서를 잘 기억해두세요</span>
                 </div>
               </div>
             </div>
@@ -643,10 +655,10 @@ export default function ZengoPage() {
               </div>
               <div className="tutorial-text">
                 <h2>3. 난이도별 두뇌 훈련</h2>
-                <p>3x3 초급부터 시작해 5x5 중급, 7x7 고급까지 도전하며 기억력을 향상시키세요. 해마 활성화를 통해 기억력과 집중력이 증강됩니다.</p>
+                <p>3x3 초급부터 시작해 5x5 중급, 7x7 고급까지 도전하며 기억력을 향상시키세요. 해마 활성화를 통해 작업기억력과 공간인지력이 증강됩니다.</p>
                 <div className="tutorial-tip">
                   <span className="tip-icon">💡</span>
-                  <span className="tip-text">정기적인 훈련을 통해 공간 인지 능력, 단기 기억력, 집중력이 향상됩니다. 다양한 언어로도 도전해보세요!</span>
+                  <span className="tip-text">정기적인 훈련을 통해 공간 인지 능력, 작업 기억력이 향상됩니다. 다양한 언어로도 도전해보세요!</span>
                 </div>
               </div>
             </div>
@@ -861,13 +873,13 @@ export default function ZengoPage() {
           // 결과 페이지 표시 (hasSubmitted 여부와 상관없이)
           return (
             <div className="zengo-container">
-              <ZengoResultPage 
+              <ZengoResultPage
                 result={lastResult}
                 resultType={resultType}
                 error={zengoError}
-                onNextGame={handleNextGame}
-                onRetrySameContent={handleRetrySameContent}
-                onBackToIntro={() => setUiState('intro')}
+                onNextGame={customOnNextGame ?? handleNextGame}
+                onRetrySameContent={customOnRetrySameContent ?? handleRetrySameContent}
+                onBackToIntro={customOnBackToIntro ?? (() => setUiState('intro'))}
               />
             </div>
           );
@@ -910,7 +922,7 @@ export default function ZengoPage() {
                 <div
                   className="level-card group cursor-pointer premium-myverse-card border-2 border-blue-400 relative flex flex-col items-center justify-center transition mx-auto"
                   style={{ minHeight: 0, minWidth: 0, background: 'linear-gradient(135deg, #4F46E5 0%, #60A5FA 100%)', color: '#fff', boxShadow: '0 4px 24px 0 rgba(96,165,250,0.12), 0 1.5px 8px 0 rgba(79,70,229,0.10)', alignSelf: 'center', justifySelf: 'center' }}
-                  onClick={() => setShowMyverseModal(true)}
+                  onClick={() => router.push('/myverse')}
                   tabIndex={0}
                   aria-label="ZenGo Myverse 프리미엄 에디션 자세히 보기"
                 >
@@ -920,7 +932,7 @@ export default function ZengoPage() {
                     <span className="ml-2 bg-blue-400 text-white px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold shadow border border-blue-300" style={{ letterSpacing: '0.01em', height: 'fit-content' }}>PREMIUM</span>
                   </div>
                   <div className="text-center font-semibold text-sm md:text-base mb-1 w-full" style={{ color: '#fff', wordBreak: 'keep-all', lineHeight: 1.3, maxWidth: '90%' }}>
-                    외우고 싶은 문장을 입력해 나 만의 ZenGo를 즐기세요
+                    입력하고 즐기세요. 곧바로 외워집니다
                   </div>
                   <div className="text-xs mb-2 w-full text-center" style={{ color: '#DBEAFE', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1.2, maxWidth: '90%' }}>
                     - 초대코드 / 유료가입 -
@@ -954,30 +966,30 @@ export default function ZengoPage() {
               </div>
               {!selectedLanguage && <p className="selection-guide">언어를 선택해주세요</p>}
             </section>
-            {/* 고급 트레이닝 섹션 */}
+            {/* 브랜디드 콘텐츠 섹션 */}
             <section className="settings-section rounded-2xl p-6 md:p-8 mb-6 shadow-xl"
               style={{ background: 'linear-gradient(90deg, #232946 0%, #1a237e 60%, #283593 100%)', position: 'relative' }}
             >
               <h3 className="text-2xl font-extrabold mb-2 text-white" style={{ color: '#fff', textShadow: '0 1px 8px rgba(30,40,80,0.18)' }}>
-                고급 트레이닝 33일 루틴 <span style={{ color: '#FFD600', fontWeight: 700, marginLeft: 4, fontSize: '1rem', letterSpacing: '-0.01em' }}>인지과학자 + 프로바둑기사 협업 독점콘텐츠</span>
+                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: 700, marginLeft: 4, fontSize: '1rem', letterSpacing: '-0.01em' }}>특허출원 브랜디드 프리미엄 콘텐츠</span>
               </h3>
               <div className="text-gray-200 text-sm md:text-base mb-4">
-                바둑 수읽기를 응용, 고급 시험에서 요구하는 긴 호흡의 문해력, 집중력, 언어추리력을 단계별로 향상시킬 수 있습니다.
+                직관적인 바둑 규칙을 적용해, 각종 시험합격에 필요한 개념 및 전문가의 합격비법을 외우기 쉽게 특수 제작한 콘텐츠입니다.
               </div>
               <div className="level-grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
-                  { size: '7x5', desc: '3분 모드' },
-                  { size: '9x7', desc: '5분 모드' },
-                  { size: '11x9', desc: '7분 모드' },
-                  { size: '13x11', desc: '9분 모드' },
+                  { size: '7x5', desc: '기본 암기' },
+                  { size: '9x7', desc: '요점 정리' },
+                  { size: '11x9', desc: '1장 요약' },
+                  { size: '13x11', desc: '대국 모드' },
                 ].map((item) => (
                   <div
                     key={item.size}
                     className="level-card cursor-pointer border-2 border-gray-300 hover:border-blue-400 transition flex flex-col items-center justify-center p-4 rounded-xl bg-white shadow-sm"
-                    onClick={() => alert('고급 트레이닝은 곧 오픈 예정입니다.')}
+                    onClick={() => alert('곧 오픈 예정입니다.')}
                     tabIndex={0}
                     role="button"
-                    aria-label={`고급 트레이닝 ${item.size}`}
+                    aria-label={`브랜디드 고급콘텐츠 ${item.size}`}
                   >
                     <div className="text-lg md:text-xl font-bold mb-1 text-gray-800">{item.size}</div>
                     <div className="text-xs md:text-sm text-gray-500 mb-1">{item.desc}</div>
@@ -1017,41 +1029,6 @@ export default function ZengoPage() {
                 뒤로 가기
               </button>
             </div>
-            {/* ZenGo Myverse Modal */}
-            {showMyverseModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                <div className="bg-white rounded-2xl shadow-2xl px-6 md:px-12 py-8 md:py-12 w-full max-w-md relative flex flex-col items-center" style={{ boxShadow: '0 8px 40px 0 rgba(79,70,229,0.10), 0 2px 16px 0 rgba(96,165,250,0.10)' }}>
-                  <button
-                    className="absolute top-5 right-5 text-gray-400 hover:text-blue-600 text-2xl"
-                    onClick={() => setShowMyverseModal(false)}
-                    aria-label="닫기"
-                  >✕</button>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-xl font-extrabold text-blue-700">ZenGo</span>
-                    <span className="text-xl font-extrabold text-yellow-400">Myverse</span>
-                    <span className="ml-2 bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs font-bold border border-yellow-200">PREMIUM</span>
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4 leading-tight">
-                    지금 성장하세요
-                  </h2>
-                  <p className="text-base md:text-lg text-gray-700 text-center mb-6 leading-relaxed font-medium">
-                    좋은 글을 입력하고, 게임으로 즐기세요.
-                  </p>
-                  <ul className="w-full max-w-xs mx-auto flex flex-col gap-3 mb-10">
-                    <li className="text-base text-gray-600 font-medium text-center">중요한 문장, 감동적인 문장</li>
-                    <li className="text-base text-gray-600 font-medium text-center">새기고 싶은 문장</li>
-                    <li className="text-base text-gray-600 font-medium text-center">매일 1 문장씩 성장하세요 !</li>
-                  </ul>
-                  <button
-                    className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold text-base shadow hover:from-blue-600 hover:to-blue-800 transition cursor-not-allowed"
-                    disabled
-                  >
-                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20" className="inline-block mr-1" style={{ color: '#FBBF24' }}><path fill="#FBBF24" d="M10 2a4 4 0 0 1 4 4v2h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h1V6a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v2h4V6a2 2 0 0 0-2-2Zm-5 6v6h10v-6H5Z"/></svg>
-                    프리미엄 가입 (곧 오픈 예정)
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       );

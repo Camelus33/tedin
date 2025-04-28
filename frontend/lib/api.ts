@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-// 베이스 URL을 8000번 포트로 변경
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// 베이스 URL을 상대 경로 /api로 변경 (Next.js 프록시 사용)
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Default timeout for all requests (ms)
 const DEFAULT_TIMEOUT = 10000; // 10 seconds
@@ -452,6 +452,91 @@ export const zengoProverbApi = {
     const response = await api.post('/zengo/session-result', dataToSend);
     return response.data; // Should match IZengoSessionResult structure
   },
+};
+
+// Collection API
+export const collectionsApi = {
+  getAll: async () => {
+    const response = await api.get('/collections');
+    return response.data;
+  },
+  // 컬렉션 메타데이터 단일 조회
+  getById: async (id: string) => {
+    const response = await api.get(`/collections/${id}`);
+    return response.data;
+  },
+  create: async (data: { name: string; type?: string; visibility?: string }) => {
+    const response = await api.post('/collections', data);
+    return response.data;
+  },
+  update: async (id: string, data: { name?: string; type?: string; visibility?: string }) => {
+    const response = await api.put(`/collections/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: string) => {
+    await api.delete(`/collections/${id}`);
+    return id;
+  },
+  // 공개 컬렉션 조회
+  getPublic: async () => {
+    const response = await api.get('/collections/public');
+    return response.data;
+  },
+};
+
+// Myverse Game API
+export const myverseApi = {
+  getByCollection: async (collectionId: string) => {
+    const response = await api.get(`/myverse/collections/${collectionId}/games`);
+    return response.data;
+  },
+  create: async (
+    collectionId: string,
+    payload: { title: string; inputText: string; wordMappings: any[]; boardSize: number; visibility?: string; sharedWith?: string[] }
+  ) => {
+    const response = await api.post(`/myverse/collections/${collectionId}/games`, payload);
+    return response.data;
+  },
+  getOne: async (gameId: string) => {
+    const response = await api.get(`/myverse/games/${gameId}`);
+    return response.data;
+  },
+  update: async (gameId: string, updates: Partial<any>) => {
+    const response = await api.put(`/myverse/games/${gameId}`, updates);
+    return response.data;
+  },
+  delete: async (gameId: string) => {
+    await api.delete(`/myverse/games/${gameId}`);
+    return gameId;
+  },
+  getShared: async (params?: { 
+    limit?: number;
+    cursor?: string;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+  }) => {
+    const response = await api.get('/myverse/games/shared', { params });
+    // 백엔드 응답 형식은 { games: IMyverseGame[], nextCursor: string | null } 이어야 함
+    return response.data;
+  },
+  getAccessible: async (params?: { 
+    limit?: number;
+    cursor?: string;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+  }) => {
+    const response = await api.get('/myverse/games/accessible', { params });
+    return response.data; // { games: IMyverseGame[], nextCursor: string | null }
+  },
+  getByType: async (type: string, params?: { 
+    limit?: number;
+    cursor?: string;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+  }) => {
+    const response = await api.get(`/myverse/games/type/${type}`, { params });
+    return response.data; // { games: IMyverseGame[], nextCursor: string | null }
+  }
 };
 
 export default api; 

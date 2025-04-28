@@ -7,6 +7,11 @@ export interface INote extends Document {
   content: string;
   tags: string[];
   createdAt: Date;
+  originSession?: mongoose.Types.ObjectId;
+  importanceReason?: string;
+  momentContext?: string;
+  relatedKnowledge?: string;
+  mentalImage?: string;
 }
 
 const NoteSchema: Schema = new Schema({
@@ -35,6 +40,35 @@ const NoteSchema: Schema = new Schema({
     type: [String],
     default: [],
   },
+  originSession: {
+    type: Schema.Types.ObjectId,
+    ref: 'Session',
+    default: null,
+  },
+  importanceReason: {
+    type: String,
+    trim: true,
+    maxlength: 1000,
+    default: '',
+  },
+  momentContext: {
+    type: String,
+    trim: true,
+    maxlength: 1000,
+    default: '',
+  },
+  relatedKnowledge: {
+    type: String,
+    trim: true,
+    maxlength: 1000,
+    default: '',
+  },
+  mentalImage: {
+    type: String,
+    trim: true,
+    maxlength: 1000,
+    default: '',
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -43,6 +77,7 @@ const NoteSchema: Schema = new Schema({
 
 // Add indexes for common queries
 NoteSchema.index({ userId: 1, bookId: 1 });
+NoteSchema.index({ userId: 1, bookId: 1, originSession: 1 });
 NoteSchema.index({ userId: 1, tags: 1 });
 NoteSchema.index({ content: 'text' });
 

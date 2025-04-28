@@ -1,5 +1,5 @@
 import express from 'express';
-import { getProfile, updateProfile, getSettings, updateSettings } from '../controllers/userController';
+import { getProfile, updateProfile, getSettings, updateSettings, searchUsers } from '../controllers/userController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -40,6 +40,9 @@ const settingsUpdateValidation = [
 
 // Get current user profile
 router.get('/profile', getProfile);
+
+// Search users by nickname
+router.get('/search', searchUsers);
 
 // Update user profile
 router.put(

@@ -20,6 +20,8 @@ import zengoRoutes from './routes/zengo';
 import leaderboardRoutes from './routes/leaderboard';
 import badgeRoutes from './routes/badges';
 import inviteRoutes from './routes/invites';
+import collectionRoutes from './routes/collections';
+import myverseGamesRoutes from './routes/myverseGames';
 
 // Initialize Express app
 const app: Express = express();
@@ -66,6 +68,8 @@ app.use('/api/zengo', zengoRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/badges', badgeRoutes);
 app.use('/api/invites', inviteRoutes);
+app.use('/api/collections', collectionRoutes);
+app.use('/api/myverse', myverseGamesRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
