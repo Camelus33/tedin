@@ -1,5 +1,5 @@
 import express from 'express';
-import { getProfile, updateProfile, getSettings, updateSettings, searchUsers } from '../controllers/userController';
+import { getProfile, updateProfile, getSettings, updateSettings, searchUsers, getUserStats } from '../controllers/userController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -20,22 +20,28 @@ const profileUpdateValidation = [
 
 // Validation for settings update
 const settingsUpdateValidation = [
-  body('goal')
+  body('goals')
+    .isArray({ min: 1 })
+    .withMessage('최소 하나 이상의 목표를 선택해야 합니다')
+    .bail()
+    .custom((arr) => arr.every((g: any) => ['focus', 'memory', 'exam'].includes(g)))
+    .withMessage('유효하지 않은 목표가 포함되어 있습니다'),
+  body('memorySpanScore')
     .optional()
-    .isIn(['speed', 'comprehension', 'memorization', 'exam'])
-    .withMessage('유효하지 않은 목표입니다'),
-  body('genre')
+    .isInt({ min: 0, max: 100 })
+    .withMessage('유효하지 않은 기억력 점수입니다'),
+  body('attentionScore')
+    .optional()
+    .isInt({ min: 0, max: 100 })
+    .withMessage('유효하지 않은 집중력 점수입니다'),
+  body('notificationTime')
     .optional()
     .isString()
-    .withMessage('유효하지 않은 장르입니다'),
-  body('focusDuration')
-    .optional()
-    .isInt({ min: 7, max: 25 })
-    .withMessage('집중 시간은 7분에서 25분 사이여야 합니다'),
-  body('warmupEnabled')
+    .withMessage('유효하지 않은 알림 시간입니다'),
+  body('communityInterest')
     .optional()
     .isBoolean()
-    .withMessage('예열 활성화 여부는 boolean 값이어야 합니다'),
+    .withMessage('유효하지 않은 커뮤니티 참여 여부입니다'),
 ];
 
 // Get current user profile
@@ -43,6 +49,9 @@ router.get('/profile', getProfile);
 
 // Search users by nickname
 router.get('/search', searchUsers);
+
+// Get user statistics
+router.get('/me/stats', getUserStats);
 
 // Update user profile
 router.put(

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 const benefits = [
   { label: "집중 시간", before: 6, after: 21, unit: "분", afterText: "21분+ 유지" },
-  { label: "독서 속도(PPM)", before: 1.3, after: 2.8, unit: "", afterText: "2.8 이상" },
+  { label: "읽기 처리 속도(PPM)", before: 1.3, after: 2.8, unit: "", afterText: "2.8 이상" },
   { label: "기억 회상률", before: 61, after: 91, unit: "%", afterText: "91% 이상" },
   { label: "과제 완료율", before: 58, after: 95, unit: "%", afterText: "95%+" },
   { label: "자가효능감 점수", before: 3.4, after: 8.2, unit: "/10", afterText: "8.2/10" },

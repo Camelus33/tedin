@@ -10,9 +10,43 @@ import { zengo as zengoApi } from '@/lib/api';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import CognitiveProfileContainer from '@/components/cognitive/CognitiveProfileContainer';
-import './styles/dashboard.css';
-import { FiHelpCircle } from 'react-icons/fi';
+import { FiHelpCircle, FiBook } from 'react-icons/fi';
+import { BookOpenIcon } from '@heroicons/react/24/outline';
 import AppLogo from '@/components/common/AppLogo';
+
+// Cyber Theme Definition (Added)
+const cyberTheme = {
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400',
+  bgPrimary: 'bg-gray-900',
+  bgSecondary: 'bg-gray-800',
+  cardBg: 'bg-gray-800/60',
+  borderPrimary: 'border-cyan-500',
+  borderSecondary: 'border-purple-500',
+  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
+  textMuted: 'text-gray-400',
+  textLight: 'text-gray-300',
+  inputBg: 'bg-gray-700/50',
+  inputBorder: 'border-gray-600',
+  inputFocusBorder: 'focus:border-cyan-500',
+  inputFocusRing: 'focus:ring-cyan-500/50',
+  progressBarBg: 'bg-gray-700',
+  progressFg: 'bg-gradient-to-r from-cyan-500 to-purple-500',
+  buttonPrimaryBg: 'bg-cyan-600',
+  buttonPrimaryHoverBg: 'hover:bg-cyan-700',
+  buttonSecondaryBg: 'bg-gray-700/50',
+  buttonSecondaryHoverBg: 'hover:bg-gray-600/50',
+  buttonOutlineBorder: 'border-cyan-500',
+  buttonOutlineText: 'text-cyan-400',
+  buttonOutlineHoverBg: 'hover:bg-cyan-500/10',
+  buttonDisabledBg: 'bg-gray-600',
+  errorText: 'text-red-400',
+  errorBorder: 'border-red-500/50',
+  menuBg: 'bg-gray-700',
+  menuItemHover: 'hover:bg-gray-600',
+  tooltipBg: 'bg-gray-700',
+  tooltipText: 'text-gray-200',
+};
 
 // Chart.js 등록
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, RadialLinearScale, Title, Tooltip, Legend);
@@ -31,32 +65,19 @@ type Book = {
   avgPpm?: number | null;
 };
 
-type ReadingSession = {
-  _id: string;
-  bookId: string;
-  bookTitle: string;
-  date: string;
-  duration: number;
-  pagesRead: number;
-};
+// 사용하지 않는 ReadingSession 타입 제거 가능
+// type ReadingSession = { ... };
 
-type ReadingStats = {
+// *** 사용하지 않는 ReadingStats 타입 제거 ***
+// type ReadingStats = { ... };
+
+// --- 새로 정의할 사용자 통계 타입 ---
+interface UserDashboardStats {
+  recentPpm: number | null;
+  totalTsTime: number; // 초 단위
+  totalZengoCount: number;
   totalBooks: number;
-  booksCompleted: number;
-  totalPagesRead: number;
-  totalReadingTime: number;
-  readingStreak: number;
-  dailyReadingGoal: number;
-  weeklyReadingSessions: {
-    day: string;
-    minutes: number;
-  }[];
-  avgReadingSpeed?: number;
-  readingImprovements?: {
-    speed: number;
-    comprehension: number;
-  };
-};
+}
 
 // 젠고 통계 타입 정의
 type ZengoStats = {
@@ -100,26 +121,23 @@ type ZengoStats = {
   };
 };
 
-// 33일 루틴 타입 정의
-type RoutineProgress = {
+// Routine API 응답 타입 정의
+type RoutineData = {
   currentDay: number;
   totalDays: number;
-  streakDays: number;
-  milestones: {
-    day: number;
-    achieved: boolean;
-    title: string;
-  }[];
+  consecutiveStreak: number;
+  todayTask: string;
+  todayTsExecuted: boolean;
+  todayZengoCompleted: boolean;
 };
 
 export default function DashboardPage() {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
   const [currentBooks, setCurrentBooks] = useState<Book[]>([]);
-  const [recentSessions, setRecentSessions] = useState<ReadingSession[]>([]);
-  const [stats, setStats] = useState<ReadingStats | null>(null);
+  const [stats, setStats] = useState<UserDashboardStats | null>(null);
   const [zengoStats, setZengoStats] = useState<ZengoStats | null>(null);
-  const [routineProgress, setRoutineProgress] = useState<RoutineProgress | null>(null);
+  const [routineData, setRoutineData] = useState<RoutineData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(false);
@@ -155,42 +173,42 @@ export default function DashboardPage() {
         }
         setCurrentBooks(readingBooks);
 
-        // Fetch reading stats (가상 데이터로 대체)
-        setStats({
-          totalBooks: 12,
-          booksCompleted: 5,
-          totalPagesRead: 1823,
-          totalReadingTime: 3250, // 분 단위
-          readingStreak: 7,
-          dailyReadingGoal: 30, // 분 단위
-          weeklyReadingSessions: [
-            { day: '월', minutes: 35 },
-            { day: '화', minutes: 40 },
-            { day: '수', minutes: 25 },
-            { day: '목', minutes: 45 },
-            { day: '금', minutes: 10 },
-            { day: '토', minutes: 60 },
-            { day: '일', minutes: 30 },
-          ],
-          avgReadingSpeed: 35, // 페이지/시간
-          readingImprovements: {
-            speed: 12, // % 증가
-            comprehension: 8, // % 증가
-          }
+        // --- Fetch user stats from the new API endpoint --- (수정된 부분)
+        const statsResponse = await fetch('http://localhost:8000/api/users/me/stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
         });
+        if (!statsResponse.ok) throw new Error('사용자 통계 로딩 실패');
+        const statsData: UserDashboardStats = await statsResponse.json();
+        console.log('Fetched Stats Data:', statsData);
+        setStats(statsData); // API 응답으로 상태 업데이트
+        // --- 가상 데이터 제거됨 --- 
         
-        // 33일 루틴 데이터 (가상 데이터)
-        setRoutineProgress({
-          currentDay: 14,
-          totalDays: 33,
-          streakDays: 14,
-          milestones: [
-            { day: 7, achieved: true, title: '첫 주 완료' },
-            { day: 14, achieved: true, title: '2주 달성' },
-            { day: 21, achieved: false, title: '3주 차 도전' },
-            { day: 33, achieved: false, title: '습관 형성 완료' },
-          ]
-        });
+        // --- Fetch Routine Data using direct fetch --- 
+        try {
+          const routineResponse = await fetch('http://localhost:8000/api/routines/current', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (!routineResponse.ok) {
+            if (routineResponse.status === 404) {
+               console.log('No active routine found.');
+               setRoutineData(null); // Set to null explicitly if no routine
+            } else {
+               // Throw error to be caught by the outer catch block
+               throw new Error(`루틴 정보 로딩 실패: ${routineResponse.statusText}`);
+            }
+          } else {
+             const routineJson: RoutineData = await routineResponse.json();
+             setRoutineData(routineJson); 
+             console.log('Routine data fetched:', routineJson);
+          }
+        } catch (routineError: any) {
+          // Catch errors specific to the routine fetch (like network error)
+          console.error('Error fetching routine data:', routineError);
+          setRoutineData(null); // Set to null on error
+          // We might not want to set the global error state here, 
+          // just log it or show a specific message in the routine section.
+        }
+        // --- End Fetch Routine Data --- 
         
         // Fetch zengo stats
         try {
@@ -223,11 +241,12 @@ export default function DashboardPage() {
         console.error('Dashboard data loading failed:', e);
         setError('데이터를 불러올 수 없습니다');
         setIsLoading(false);
+        setRoutineData(null); // Ensure routine data is null on general error
       }
     };
 
     fetchDashboardData();
-  }, [router]);
+  }, [router, user]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -241,23 +260,49 @@ export default function DashboardPage() {
 
   // 책 상태 도넛 차트 데이터 - 더 이상 사용하지 않음
 
-  // 주간 독서 시간 차트 데이터
-  const weeklyReadingData = {
-    labels: stats?.weeklyReadingSessions.map(session => session.day) || [],
-    datasets: [
-      {
-        label: '독서 시간 (분)',
-        data: stats?.weeklyReadingSessions.map(session => session.minutes) || [],
-        borderColor: '#6366F1',
-        backgroundColor: 'rgba(99, 102, 241, 0.2)',
-        borderWidth: 2,
-        tension: 0.3,
-        fill: true,
-      },
-    ],
-  };
+  // 주간 독서 시간 차트 데이터 (데이터 구조 변경으로 잠시 주석 처리 또는 제거 필요)
+  // const weeklyChartData = {
+  //   labels: stats?.weeklyReadingSessions?.map(session => session.day) || [],
+  //   datasets: [
+  //     {
+  //       label: '주간 독서 시간 (분)',
+  //       data: stats?.weeklyReadingSessions?.map(session => session.minutes) || [],
+  //       borderColor: 'rgb(79, 70, 229)',
+  //       backgroundColor: 'rgba(79, 70, 229, 0.5)',
+  //     },
+  //   ],
+  // };
 
-  // Zengo 인지능력 레이더 차트는 컴포넌트로 대체
+  // 독서 성과 개선 차트 (데이터 구조 변경으로 잠시 주석 처리 또는 제거 필요)
+  // const improvementChartData = {
+  //   labels: ['읽기 속도 (%)', '이해력 (%)'],
+  //   datasets: [
+  //     {
+  //       label: '독서 성과 개선율',
+  //       data: [
+  //         stats?.readingImprovements?.speed || 0,
+  //         stats?.readingImprovements?.comprehension || 0,
+  //       ],
+  //       backgroundColor: [
+  //         'rgba(139, 92, 246, 0.6)',
+  //         'rgba(29, 78, 216, 0.6)',
+  //       ],
+  //       borderColor: [
+  //         'rgba(139, 92, 246, 1)',
+  //         'rgba(29, 78, 216, 1)',
+  //       ],
+  //       borderWidth: 1,
+  //     },
+  //   ],
+  // };
+
+  // 독서 목표 달성률
+  // const goalCompletionRate = stats?.totalReadingTime && stats?.dailyReadingGoal 
+  //   ? Math.min(((stats.totalReadingTime / 7) / stats.dailyReadingGoal) * 100, 100) 
+  //   : 0;
+
+  // 젠고 기술 점수 데이터
+  // ... existing code ...
 
   const handleLogout = () => {
     // 모든 가능한 토큰 키 제거
@@ -324,80 +369,85 @@ export default function DashboardPage() {
     return result.trim() + " 후 완독 예상";
   };
 
+  // Helper function to get dynamic motivation message based on current day
+  const getMilestoneMessage = (currentDay: number | undefined): string => {
+    if (currentDay === undefined || currentDay === null) {
+      // Handle case where routine data is not loaded yet or no active routine
+      return "루틴 정보를 불러오는 중..." // Or a default message like "새로운 루틴을 시작해보세요!"
+    }
+    if (currentDay >= 33) return "🎉 습관 형성 완료! 축하합니다!";
+    if (currentDay >= 28) return "🏁 마지막 주! 거의 다 왔어요!"; // Added a message for the last week
+    if (currentDay >= 21) return "🏃 3주차 도전! 꾸준함이 중요해요!";
+    if (currentDay >= 14) return "💪 2주 달성! 절반을 넘어섰습니다!";
+    if (currentDay >= 7) return "👍 첫 주 완료! 잘하고 있어요!";
+    return "🌱 첫 주 도전 시작! 화이팅!";
+  };
+
+  // 총 TS 시간 포맷 함수 (초 -> 시간 분)
+  const formatTsTime = (seconds: number | null | undefined): string => {
+    // 입력값 유효성 검사 추가
+    if (typeof seconds !== 'number' || isNaN(seconds) || seconds < 0) {
+      return '0분'; // 유효하지 않은 경우 0분 또는 '-' 표시
+    }
+    if (seconds === 0) return '0분'; // 0초일 경우 0분 표시
+    if (seconds < 60) return `${seconds}초`; // 60초 미만은 초 단위 표시
+
+    const totalMinutes = Math.floor(seconds / 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    if (hours === 0) return `${minutes}분`;
+    return `${hours}시간 ${minutes}분`;
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-soft">
-      {/* dashboard.css 스타일 적용을 위한 import */}
-      <style jsx global>{`@import url('/app/dashboard/styles/dashboard.css');`}</style>
-      
-      {/* 고정 헤더 */}
-      <header className="sticky top-0 z-10 glass-header py-4 px-4 animate-fadeIn">
+    <div className={`min-h-screen ${cyberTheme.gradient}`}> {/* Applied theme gradient */}
+      {/* 고정 헤더 - 배경색 변경 */}
+      <header className={`sticky top-0 z-10 glass-header py-4 px-4 animate-fadeIn ${cyberTheme.bgSecondary}`}>
         <div className="container mx-auto max-w-6xl flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            {/* 앱 로고 - 33을 이용한 habit 상징 */}
-            <AppLogo className="w-11 h-11" />
-            
-            {/* 앱 이름 */}
+          <Link href="/dashboard" className="flex items-center space-x-3 group">
+            <AppLogo className="w-11 h-11 group-hover:opacity-90 transition-opacity" />
             <div>
-              <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 font-extrabold text-2xl tracking-tight">
+              <h1 className={`font-orbitron font-extrabold text-2xl tracking-tight text-white group-hover:text-cyan-300 transition-colors`}> 
                 Habitus33
               </h1>
-              <p className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500 text-xs font-medium tracking-wider">
-                READ FAST
+              <p className={`text-xs font-medium tracking-wider text-white`}> 
+                Upgrade Your Brain
               </p>
             </div>
-          </div>
+          </Link>
           
           {/* 사용자 프로필 */}
           <div className="flex items-center gap-4">
             <div className="flex items-center">
               <div className="mr-3 text-right">
-                <p className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                <p className={`font-medium text-white`}> 
                   {user?.nickname || '사용자'}
                 </p>
-                <p className="text-xs text-gray-500">
-                  {stats?.readingStreak ? 
-                    `${stats.readingStreak}일째 읽는 중` : 
-                    user?.email ? user.email.split('@')[0] : '독서 습관 만들기'}
+                <p className={`text-xs font-medium tracking-wider text-white`}> 
+                  Speed↑ Capacity↑ Duration↑
                 </p>
               </div>
               <div className="relative">
                 <div 
-                  className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer shadow-md overflow-hidden"
+                  className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer shadow-md overflow-hidden border-2 border-purple-500/50" 
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                 >
                   {user?.profileImage ? (
-                    <img 
-                      src={user.profileImage} 
-                      alt={user?.nickname || '사용자'}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={user.profileImage} alt={user?.nickname || '사용자'} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <div className="w-full h-full bg-gradient-to-br from-cyan-600 to-purple-600 flex items-center justify-center"> 
                       <span className="text-white font-semibold">{user?.nickname?.charAt(0) || '?'}</span>
                     </div>
                   )}
                 </div>
                 {profileMenuOpen && (
                   <>
-                    <div 
-                      className="fixed inset-0 z-40"
-                      onClick={() => setProfileMenuOpen(false)}
-                    ></div>
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 transition-all duration-300 transform origin-top-right">
-                      <Link 
-                        href="/profile" 
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 transition-colors"
-                        onClick={() => setProfileMenuOpen(false)}
-                      >
+                    <div className="fixed inset-0 z-40" onClick={() => setProfileMenuOpen(false)}></div>
+                    <div className={`absolute right-0 mt-2 w-48 ${cyberTheme.menuBg} rounded-md shadow-lg py-1 z-50 transition-all duration-300 transform origin-top-right border ${cyberTheme.inputBorder}`}> 
+                      <Link href="/profile" className={`block px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} transition-colors`} onClick={() => setProfileMenuOpen(false)}>
                         프로필 설정
                       </Link>
-                      <button 
-                        onClick={() => {
-                          setProfileMenuOpen(false);
-                          handleLogout();
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 transition-colors"
-                      >
+                      <button onClick={() => { setProfileMenuOpen(false); handleLogout(); }} className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} transition-colors`}>
                         로그아웃
                       </button>
                     </div>
@@ -410,56 +460,57 @@ export default function DashboardPage() {
       </header>
 
       <div className="container mx-auto max-w-6xl py-8 px-4">
-        {/* 주요 액션 버튼 영역 */}
+        {/* 주요 액션 버튼 영역 - Applying CyberTheme styles */}
         <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6 animate-slideUp">
+          {/* Time Sprint Card */}
           <Link href="/ts" className="block">
-            <div className="action-card action-card-primary h-full">
-              <div className="action-card-overlay"></div>
-              <div className="flex items-center justify-between relative z-10">
-                <div>
-                  <h2 className="text-3xl font-bold mb-3">Time Sprint</h2>
-                  <p className="opacity-90 text-lg mb-6">읽기 속도를 측정해 드립니다</p>
-                  <p className="opacity-90 text-lg mb-6">긴 글 집중력이 유지됩니다</p>
-                  <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
-                    <span className="relative z-10">바로 시작하기</span>
-                    <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
-                  </div>
-                </div>
-                <div className="action-card-emoji">📚</div>
+            <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-cyan-500/30 hover:border-cyan-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
+              <div>
+                <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>Time Sprint</h2> {/* Theme text */}
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>정보 처리 속도 측정</p> {/* Revised Text & Theme */}
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 빠르고 정확하게 기억하게 됩니다</p> {/* Theme text */}
               </div>
+              <div className="mt-6">
+                 <button className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
+                    Speed 측정 {/* Revised Text */} 
+                 </button>
+              </div>
+              {/* Removed emoji div */}
             </div>
           </Link>
+          {/* ZenGo Card */}
           <Link href="/zengo" className="block">
-            <div className="action-card action-card-secondary h-full">
-              <div className="action-card-overlay"></div>
-              <div className="flex items-center justify-between relative z-10">
-                <div>
-                  <h2 className="text-3xl font-bold mb-3">ZenGo</h2>
-                  <p className="opacity-90 text-lg mb-6">생생하게 떠올리는 연습을 하세요</p>
-                  <p className="opacity-90 text-lg mb-6">건망증이 점점 개선됩니다</p>
-                  <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
-                    <span className="relative z-10">트레이닝 시작</span>
-                    <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
-                  </div>
-                </div>
-                <div className="action-card-emoji">🧠</div>
-              </div>
+            <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
+               <div>
+                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo</h2> {/* Theme text */} 
+                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>정보 처리 용량 측정</p> {/* Revised Text & Theme */} 
+                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 많이, 더 오래 기억하게 됩니다</p> {/* Theme text */} 
+               </div>
+               <div className="mt-6">
+                 <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
+                   Capacity 측정 {/* Revised Text */} 
+                 </button>
+               </div>
+               {/* Removed emoji div */}
             </div>
           </Link>
-          <Link href="/books" className="block">
-            <div className="action-card action-card-accent h-full">
-              <div className="action-card-overlay"></div>
-              <div className="flex items-center justify-between relative z-10">
-                <div>
-                  <h2 className="text-3xl font-bold mb-3">내 서재</h2>
-                  <p className="opacity-90 text-lg mb-6">책 등록 및 메모 관리</p>
-                  <p className="opacity-90 text-lg mb-6">읽기 속도 변화를 확인하세요</p>
-                  <div className="mt-4 inline-block bg-white/20 rounded-full px-4 py-2 text-sm font-medium relative overflow-hidden group">
-                    <span className="relative z-10">책 관리하기</span>
-                    <span className="absolute bottom-0 left-0 w-0 h-full bg-white/30 transition-all duration-300 group-hover:w-full"></span>
-                  </div>
-                </div>
-                <div className="action-card-emoji">📖</div>
+          {/* Myverse Card (was: 내 서재) */}
+          <Link href="/myverse" className="block">
+            <div className={`relative h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-emerald-400/30 hover:border-emerald-400/80 flex flex-col justify-between`}> {/* Neon green cybernetic theme */}
+              {/* PREMIUM 뱃지 */}
+              <div className="absolute top-4 right-4 z-10 pointer-events-none select-none">
+                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px] shadow-lg border border-white/30 tracking-widest uppercase animate-premium-wave" style={{letterSpacing:'0.08em', backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>PREMIUM</span>
+              </div>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>DIY ZenGo로 외우고. 지인에게 공유하세요</p>
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>꼭 외워야 할 것들, 이제 안심하세요</p>
+              </div>
+              <div className="mt-6">
+                <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
+                  <span className="relative z-10 font-barlow uppercase tracking-wider">Myverse 이동 (유료)</span>
+                  <span className="cyber-rect-anim pointer-events-none absolute inset-0 rounded-lg"></span>
+                </button>
               </div>
             </div>
           </Link>
@@ -472,161 +523,181 @@ export default function DashboardPage() {
         )}
         
         {/* 33일 루틴 트래커 */}
-        {routineProgress && (
-          <div className="glass-card p-6 mb-10 relative">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-[#6366F1] flex items-center space-x-2">
-                <span>33일 뇌 최적화 루틴</span>
+        {routineData ? (
+          <div className="relative p-6 mb-10 rounded-2xl border border-slate-700/80 ring-1 ring-slate-500/30 shadow-2xl bg-gradient-to-br from-gray-950 via-slate-900 to-gray-800 overflow-hidden">
+            {/* metallic noise/texture SVG 배경 */}
+            <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 400 120" fill="none">
+              <filter id="metallicNoise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" result="turb"/><feColorMatrix type="saturate" values="0.2"/><feComponentTransfer><feFuncA type="linear" slope="0.2"/></feComponentTransfer></filter>
+              <rect width="400" height="120" fill="#fff" filter="url(#metallicNoise)"/>
+            </svg>
+            <div className="flex justify-between items-center mb-4 relative z-10">
+              <h2 className="text-xl font-orbitron font-bold text-cyan-300 flex items-center space-x-2 drop-shadow-sm">
+                <span>33일 피드백 루프</span>
                 <button
                   onClick={() => router.push('/brain-hack-routine')}
-                  className="p-1 text-indigo-600 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="p-1 text-slate-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 rounded-full font-barlow"
                   aria-label="유형 선택 도움말"
                 >
                   <FiHelpCircle className="w-6 h-6" aria-hidden="true" />
                 </button>
               </h2>
-              <div className="bg-indigo-50 py-1 px-3 rounded-full">
-                <p className="text-xs font-semibold text-indigo-600">Day {routineProgress.currentDay} / 33</p>
-              </div>
-            </div>
-            
-            {/* 드롭다운 팝업 (애니메이션) */}
-            {dropdownOpen && (
-              <div
-                ref={dropdownRef}
-                className="absolute top-12 left-0 w-full sm:w-56 sm:left-6 bg-white rounded-xl shadow-xl ring-1 ring-gray-200 z-20 transform scale-95 origin-top-left animate-fadeIn transition ease-out duration-200"
-                role="menu"
-              >
-                <Link
-                  href="/brain-hack-routine"
-                  className="block px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-indigo-50 transition focus:outline-none"
-                  onClick={() => setDropdownOpen(false)}
+              <div className="bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 py-1 px-4 rounded-full flex items-center space-x-2 border border-slate-600 shadow-md">
+                <p className="text-xs font-semibold text-slate-200"> 
+                  Day {routineData.currentDay} / 33
+                </p>
+                <span 
+                  className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-300' : 'text-slate-500'}`}
+                  title={routineData?.todayTsExecuted ? "오늘 TS 실행 완료!" : "오늘 TS 실행 미완료"}
                 >
-                  뇌 최적화 루틴이란
-                </Link>
-                <ul className="divide-y divide-gray-100">
-                  {[
-                    { key: 'exam', label: '수험생' },
-                    { key: 'selfDev', label: '대학생' },
-                    { key: 'attention', label: '집중개선' },
-                    { key: 'memory', label: '기억개선' },
-                  ].map(({ key, label }) => (
-                    <li key={key} role="none">
-                      <Link
-                        href={`/routine/${key}`}
-                        className="block px-4 py-3 text-sm text-gray-800 hover:bg-indigo-50 transition focus:outline-none"
-                        onClick={() => setDropdownOpen(false)}
-                        role="menuitem"
-                        tabIndex={0}
-                      >
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {/* 프로그레스 바 */}
-            <div className="progress-bar mb-10">
-              <div
-                className="progress-bar-fill"
-                style={{ width: `${(routineProgress.currentDay / routineProgress.totalDays) * 100}%` }}
-              >
-                <div className="progress-bar-shine"></div>
-              </div>
-              <div className="absolute top-0 right-0 h-full flex items-center">
-                <span className="text-xs font-medium text-gray-600 mr-1">
-                  {Math.round((routineProgress.currentDay / routineProgress.totalDays) * 100)}%
+                  ⚡
+                </span>
+                <span 
+                  className={`text-sm ${routineData?.todayZengoCompleted ? 'text-emerald-300' : 'text-slate-500'}`}
+                  title={routineData?.todayZengoCompleted ? "오늘 ZenGo 완료!" : "오늘 ZenGo 미완료"}
+                >
+                  🧠
                 </span>
               </div>
             </div>
-            
-            {/* 마일스톤 영역 */}
-            <div className="relative mb-8">
-              {/* 마일스톤 연결선 */}
-              <div className="absolute top-5 left-0 right-0 h-[1px] bg-gray-200 z-0"></div>
-              
-              {/* 마일스톤 포인트 */}
-              <div className="flex justify-between relative z-10">
-                {routineProgress.milestones.map((milestone, index) => (
-                  <div key={index} className="flex flex-col items-center">
-                    <div className={`milestone-circle ${
-                      milestone.achieved 
-                        ? 'milestone-circle-completed' 
-                        : 'milestone-circle-pending'
-                    }`}>
-                      {milestone.achieved ? '✓' : index + 1}
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xs font-semibold text-gray-700">{milestone.title}</div>
-                      <div className="text-xs text-gray-500">Day {milestone.day}</div>
-                    </div>
-                  </div>
-                ))}
+            <div className="mb-6 relative h-2 z-10">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 rounded-full overflow-hidden"></div>
+              <div
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-cyan-400 via-slate-200 to-cyan-300 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${(routineData.currentDay / 33) * 100}%` }}
+              >
+                {/* reflection overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent rounded-full mix-blend-screen" />
+              </div>
+              <div className="absolute top-[-20px] right-0 flex items-center">
+                <span className="text-xs font-medium text-slate-200"> 
+                  {Math.round((routineData.currentDay / 33) * 100)}%
+                </span>
               </div>
             </div>
-            
-            {/* 동기부여 메시지 */}
-            <div className="motivation-message mt-6">
-              <p className="motivation-title">
-                두 번째 마일스톤 달성! 절반을 향해!
+            <div className="mt-6 text-center relative z-10">
+              <p className="text-lg font-semibold text-emerald-300"> 
+                {getMilestoneMessage(routineData?.currentDay)}
               </p>
-              <p className="text-sm text-gray-600 mt-2">
-                14일 연속 도전 중 - 습관 형성까지 19일 남았습니다
+              <p className="text-sm text-slate-200 mt-2">
+                <span className="font-medium text-cyan-300">{routineData?.consecutiveStreak || 0}일</span> 연속 도전 중 🔥 - 
+                습관 형성까지 <span className="font-medium text-cyan-300">{33 - (routineData?.currentDay || 0)}일</span> 남았습니다
               </p>
             </div>
+          </div>
+        ) : (
+          <div className="p-6 mb-10 text-center rounded-2xl border border-slate-700/80 ring-1 ring-slate-500/30 shadow-2xl bg-gradient-to-br from-gray-950 via-slate-900 to-gray-800 overflow-hidden relative">
+            <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 400 120" fill="none">
+              <filter id="metallicNoise2"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" result="turb"/><feColorMatrix type="saturate" values="0.2"/><feComponentTransfer><feFuncA type="linear" slope="0.2"/></feComponentTransfer></filter>
+              <rect width="400" height="120" fill="#fff" filter="url(#metallicNoise2)"/>
+            </svg>
+            <p className="text-slate-400 mb-4">진행 중인 33일 루틴이 없습니다.</p>
           </div>
         )}
         
-        {/* 요약 통계 */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10 animate-fadeIn">
-          <div className="glass-card p-5 md:p-6">
-            <div className="flex items-center mb-3">
-              <div className="stats-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                </svg>
+        {/* 통계 요약 카드 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
+          {/* 정보 처리 속도 */}
+          <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-blue-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
+            {/* 사이버 패턴 SVG 배경 - 파랑 계열 */}
+            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
+              <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern1)" />
+              <defs>
+                <linearGradient id="cyberPattern1" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#0ea5e9" />
+                  <stop offset="1" stopColor="#6366f1" />
+                </linearGradient>
+              </defs>
+              <line x1="10" y1="10" x2="190" y2="10" stroke="#38bdf8" strokeWidth="1" />
+              <circle cx="50" cy="30" r="8" stroke="#818cf8" strokeWidth="1" fill="none" />
+            </svg>
+            <div className="relative flex items-center space-x-4">
+              <div className="bg-white/70 rounded-full p-3">
+                {/* Heroicons solid ClockIcon */}
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
-              <h3 className="text-sm font-medium text-gray-500">평균 읽기속도</h3>
+              <div>
+                <p className="text-sm text-gray-200 mb-1">정보 처리 속도</p>
+                <p className="text-xl font-bold text-blue-400">{stats?.recentPpm ? `${stats.recentPpm} PPM` : '-'}</p>
+              </div>
             </div>
-            <p className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{stats?.avgReadingSpeed || 0} PPM</p>
           </div>
-          
-          <div className="glass-card p-5 md:p-6">
-            <div className="flex items-center mb-3">
-              <div className="stats-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-14a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                </svg>
+
+          {/* 총 Time Sprint */}
+          <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-indigo-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
+            {/* 사이버 패턴 SVG 배경 - 인디고 계열 */}
+            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
+              <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern2)" />
+              <defs>
+                <linearGradient id="cyberPattern2" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#6366f1" />
+                  <stop offset="1" stopColor="#0ea5e9" />
+                </linearGradient>
+              </defs>
+              <rect x="30" y="20" width="40" height="10" stroke="#6366f1" strokeWidth="1" fill="none" />
+              <line x1="60" y1="40" x2="160" y2="40" stroke="#818cf8" strokeWidth="1" />
+            </svg>
+            <div className="relative flex items-center space-x-4">
+              <div className="bg-white/70 rounded-full p-3">
+                {/* Heroicons solid BoltIcon */}
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
               </div>
-              <h3 className="text-sm font-medium text-gray-500">총 읽기 시간</h3>
+              <div>
+                <p className="text-sm text-gray-200 mb-1">총 Time Sprint</p>
+                <p className="text-xl font-bold text-indigo-400">{stats ? formatTsTime(stats.totalTsTime) : '-'}</p>
+              </div>
             </div>
-            <p className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{formatReadingTime(stats?.totalReadingTime || 0)}</p>
           </div>
-          
-          <div className="glass-card p-5 md:p-6">
-            <div className="flex items-center mb-3">
-              <div className="stats-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                </svg>
+
+          {/* 총 ZenGo */}
+          <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-green-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
+            {/* 사이버 패턴 SVG 배경 - 그린 계열 */}
+            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
+              <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern3)" />
+              <defs>
+                <linearGradient id="cyberPattern3" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#22c55e" />
+                  <stop offset="1" stopColor="#0ea5e9" />
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="30" r="18" stroke="#22c55e" strokeWidth="1" fill="none" />
+              <rect x="140" y="10" width="30" height="8" stroke="#0ea5e9" strokeWidth="1" fill="none" />
+            </svg>
+            <div className="relative flex items-center space-x-4">
+              <div className="bg-white/70 rounded-full p-3">
+                {/* Heroicons solid FaceSmileIcon */}
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Zm4.28 2.53a.75.75 0 0 1 1.06.22A3.25 3.25 0 0 0 12 16.25a3.25 3.25 0 0 0 1.91-1.5.75.75 0 1 1 1.28.78A4.75 4.75 0 0 1 12 17.75a4.75 4.75 0 0 1-3.19-1.47.75.75 0 0 1 .22-1.06ZM9.25 10a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75A.75.75 0 0 1 9.25 10Zm5.5 0a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd"/></svg>
               </div>
-              <h3 className="text-sm font-medium text-gray-500">총 젠고시간</h3>
+              <div>
+                <p className="text-sm text-gray-200 mb-1">총 ZenGo</p>
+                <p className="text-xl font-bold text-green-400">{stats ? `${stats.totalZengoCount}회` : '-'}</p>
+              </div>
             </div>
-            <p className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{zengoStats?.totalActivities || 0}회</p>
           </div>
-          
-          <div className="glass-card p-5 md:p-6">
-            <div className="flex items-center mb-3">
-              <div className="stats-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                </svg>
+
+          {/* 총 등록 도서 */}
+          <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-purple-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
+            {/* 사이버 패턴 SVG 배경 - 퍼플 계열 */}
+            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
+              <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern4)" />
+              <defs>
+                <linearGradient id="cyberPattern4" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#a21caf" />
+                  <stop offset="1" stopColor="#818cf8" />
+                </linearGradient>
+              </defs>
+              <rect x="60" y="20" width="30" height="15" stroke="#a21caf" strokeWidth="1" fill="none" />
+              <circle cx="160" cy="30" r="10" stroke="#818cf8" strokeWidth="1" fill="none" />
+            </svg>
+            <div className="relative flex items-center space-x-4">
+              <div className="bg-white/70 rounded-full p-3">
+                {/* Heroicons solid BookOpenIcon */}
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
               </div>
-              <h3 className="text-sm font-medium text-gray-500">총 독서량</h3>
+              <div>
+                <p className="text-sm text-gray-200 mb-1">총 등록 도서</p>
+                <p className="text-xl font-bold text-purple-400">{stats ? `${stats.totalBooks}권` : '-'}</p>
+              </div>
             </div>
-            <p className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{stats?.totalPagesRead || 0} 페이지</p>
           </div>
         </div>
         
@@ -663,8 +734,8 @@ export default function DashboardPage() {
 
                   return (
                     <Link href={`/books/${book._id}`} key={book._id} className="block">
-                      <div className="book-item">
-                        <div className="w-20 h-28 relative bg-gray-100 flex-shrink-0 rounded shadow-sm book-cover">
+                      <div className="book-item flex items-start">
+                        <div className="w-20 h-auto aspect-[2/3] relative bg-gray-700/50 flex-shrink-0 rounded shadow-sm book-cover">
                           {book.coverImage ? (
                             <img
                               src={book.coverImage}
@@ -672,37 +743,34 @@ export default function DashboardPage() {
                               className="object-cover w-full h-full rounded"
                             />
                           ) : (
-                            <div className="flex items-center justify-center w-full h-full text-gray-400 text-xs">
-                              <span>이미지 없음</span>
+                            <div className="flex items-center justify-center w-full h-full text-gray-400">
+                              <FiBook className="w-8 h-8" /> 
                             </div>
                           )}
                         </div>
-                        <div className="ml-5 flex-1">
-                          <h3 className="font-semibold text-lg">{book.title}</h3>
-                          <p className="text-gray-600 text-sm mb-3">{book.author}</p>
+                        <div className="ml-5 flex-1 min-w-0">
+                          <h3 className={`font-bold text-lg text-indigo-400 truncate`} title={book.title}>{book.title}</h3>
+                          <p className={`${cyberTheme.textMuted} text-sm mb-3 truncate`} title={book.author}>{book.author}</p>
                           <div className="flex items-center mb-2">
-                            <div className="w-full progress-bar">
+                            <div className={`w-full h-1.5 ${cyberTheme.progressBarBg} rounded-full overflow-hidden`}>
                               <div 
-                                className={`progress-bar-fill ${progress >= 75 ? 'bg-gradient-to-r from-emerald-500 to-green-500' : ''}`}
+                                className={`h-full ${cyberTheme.progressFg} rounded-full`} 
                                 style={{ width: `${progress}%` }}
                               >
-                                <div className="progress-bar-shine"></div>
                               </div>
                             </div>
-                            <span className="ml-3 text-xs font-medium text-gray-600">
+                            <span className={`ml-3 text-xs font-medium ${cyberTheme.textMuted}`}> 
                               {book.currentPage}/{book.totalPages} ({progress}%)
                             </span>
                           </div>
-                          {/* 예상 완독 시간 표시 (수정) */} 
                           {book.status !== 'completed' && estimatedTimeString && (
-                            <p className="text-xs text-indigo-600 font-medium mt-1"> 
+                            <p className={`text-xs ${cyberTheme.secondary} font-medium mt-1`}>
                               {estimatedTimeString}
                             </p>
                           )}
-                           {/* PPM 데이터 없는 경우 안내 (선택적) */}
                            {book.status !== 'completed' && !book.estimatedRemainingMinutes && book.currentPage < book.totalPages && (
-                             <p className="text-xs text-gray-500 mt-1">
-                               TS 세션으로 예상 완독 시간을 확인해보세요
+                             <p className={`text-xs ${cyberTheme.textMuted} mt-1`}> 
+                               TS로 예상 완독 시간을 확인해보세요
                              </p>
                            )}
                         </div>
@@ -712,16 +780,6 @@ export default function DashboardPage() {
                 })}
               </div>
             )}
-            
-            <div className="mt-8 flex justify-center">
-              <Button 
-                href="/books/new" 
-                variant="default"
-                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-md action-button"
-              >
-                새 책 추가하기
-              </Button>
-            </div>
           </div>
           
           {/* 오른쪽: 인지 능력 측정 (기존 '내 서재 현황' 대체) */}
@@ -734,6 +792,63 @@ export default function DashboardPage() {
         * {
           font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
           letter-spacing: -0.02em;
+        }
+        @keyframes premium-wave {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-premium-wave {
+          animation: premium-wave 2.5s linear infinite;
+          background-size: 200% 200%;
+          background-clip: padding-box;
+          -webkit-background-clip: padding-box;
+        }
+        @keyframes cyber-wave {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-cyber-wave {
+          animation: cyber-wave 2.5s linear infinite;
+          background-size: 200% 200%;
+          background-clip: padding-box;
+          -webkit-background-clip: padding-box;
+        }
+        @keyframes cyber-rect-move {
+          0%, 100% {
+            border-top-color: #22d3ee;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+          }
+          25% {
+            border-top-color: transparent;
+            border-right-color: #a21caf;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+          }
+          50% {
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: #059669;
+            border-left-color: transparent;
+          }
+          75% {
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            border-left-color: #7c3aed;
+          }
+        }
+        .cyber-rect-anim {
+          border-width: 2px;
+          border-style: solid;
+          border-radius: 0.5rem;
+          border-color: transparent;
+          animation: cyber-rect-move 2s linear infinite;
+          box-shadow: 0 0 8px 2px rgba(34,211,238,0.3);
+          pointer-events: none;
         }
       `}</style>
     </div>

@@ -120,13 +120,13 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ onCancel, onSuccess, in
 
         <div>
           <label htmlFor="collectionDesc" className="block text-sm font-medium text-neutral-700 mb-1">
-            설명
+            설명 <span className="text-feedback-error">*</span>
           </label>
           <textarea
             id="collectionDesc"
             rows={3}
             className="block w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:ring-accent focus:border-accent sm:text-sm resize-none"
-            placeholder="컬렉션에 대한 간단한 설명 (선택 사항)"
+            placeholder="컬렉션에 대한 간단한 설명 (필수)"
             value={description}
             onChange={e => setDescription(e.target.value)}
           />

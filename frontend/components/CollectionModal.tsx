@@ -60,13 +60,13 @@ const CollectionModal: React.FC<CollectionModalProps> = ({ onClose, onSubmit }) 
           </select>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-1">설명</label>
+          <label className="block text-gray-700 mb-1">설명 <span className="text-feedback-error">*</span></label>
           <input
             type="text"
             className="w-full px-3 py-2 border rounded"
             value={description}
             onChange={e => setDescription(e.target.value)}
-            placeholder="간단한 설명을 입력하세요"
+            placeholder="간단한 설명을 입력하세요 (필수)"
           />
         </div>
         <div className="flex justify-end">

@@ -6,6 +6,32 @@ import Button from '@/components/common/Button';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import Spinner from '@/components/ui/Spinner';
+import { Cog6ToothIcon, PlayIcon } from '@heroicons/react/24/outline';
+
+// 테마 색상 정의 (다른 페이지와 일관성 유지)
+const cyberTheme = {
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400',
+  bgPrimary: 'bg-gray-900',
+  bgSecondary: 'bg-gray-800',
+  cardBg: 'bg-gray-800/60', 
+  borderPrimary: 'border-cyan-500',
+  borderSecondary: 'border-purple-500',
+  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
+  textMuted: 'text-gray-400',
+  textLight: 'text-gray-300',
+  inputBg: 'bg-gray-700/50', // 입력 필드 배경
+  inputBorder: 'border-gray-600',
+  inputFocusBorder: 'focus:border-cyan-500',
+  inputFocusRing: 'focus:ring-cyan-500/50',
+  buttonPrimaryBg: 'bg-cyan-500',
+  buttonPrimaryHoverBg: 'hover:bg-cyan-600',
+  buttonDisabledBg: 'disabled:bg-gray-500',
+  buttonOutlineBorder: 'border-gray-300',
+  buttonOutlineText: 'text-gray-300',
+  buttonOutlineHoverBg: 'hover:bg-gray-200',
+  errorText: 'text-red-400',
+};
 
 type Book = {
   _id: string;
@@ -28,7 +54,6 @@ export default function TSSetupPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [isStarting, setIsStarting] = useState<boolean>(false);
-  // New state for book source option
   const [bookSource, setBookSource] = useState<'library' | 'new'>('library');
   
   // Redux 스토어에서 user 정보 가져오기 (auth가 아닌 user 슬라이스 사용)
@@ -83,7 +108,7 @@ export default function TSSetupPage() {
         console.log('API 응답 상태:', response.status);
         
         if (!response.ok) {
-          throw new Error(`책 목록을 불러오는 데 실패했습니다 (${response.status})`);
+          throw new Error(`내 서재 목록을 가져오는 데 문제가 생겼어요 (${response.status})`);
         }
 
         const data = await response.json();
@@ -167,7 +192,7 @@ export default function TSSetupPage() {
             setError('서버 연결 실패, 테스트 데이터를 사용합니다');
           } else {
             // 캐시된 책 목록이 없는 경우 에러 표시
-            setError(err.message || '책 목록을 불러오는 데 실패했습니다');
+            setError(err.message || '내 서재 목록을 가져오는 데 문제가 생겼어요');
             setBookSource('new');
           }
         } else {
@@ -212,13 +237,14 @@ export default function TSSetupPage() {
       
       // If user selected "new book" option, redirect to book creation page
       if (bookSource === 'new') {
+        console.log('새 책 정보 입력 페이지로 이동');
         router.push('/books/new');
         return;
       }
       
       // Validate book selection
       if (!selectedBookId) {
-        setError('독서할 책을 선택해주세요');
+        setError('읽을 책을 선택해주세요');
         return;
       }
       
@@ -240,7 +266,7 @@ export default function TSSetupPage() {
       });
 
       if (!response.ok) {
-        throw new Error(`세션 생성에 실패했습니다 (${response.status})`);
+        throw new Error(`읽기 속도 측정 시작에 문제가 생겼어요 (${response.status})`);
       }
 
       const data = await response.json();
@@ -254,7 +280,7 @@ export default function TSSetupPage() {
       }
     } catch (err: any) {
       console.error('세션 시작 오류:', err);
-      setError(err.message || '세션 시작에 실패했습니다');
+      setError(err.message || '읽기 속도 측정 시작에 문제가 생겼어요');
     } finally {
       setIsStarting(false);
     }
@@ -262,216 +288,141 @@ export default function TSSetupPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-50">
-        <Spinner size="lg" />
+      <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
+        <Spinner size="lg" color="cyan" />
+        <p className={`mt-4 ${cyberTheme.textMuted}`}>내 서재 정보 가져오는 중...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 p-4">
-      <div className="container mx-auto max-w-md">
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h1 className="text-2xl font-bold text-center mb-6">TS 모드 설정</h1>
-          
-          {error && (
-            <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4">
-              {error}
-            </div>
-          )}
-          
-          {/* Book source selector */}
-          <div className="mb-6">
-            <div className="flex w-full rounded-lg border border-gray-200 overflow-hidden mb-2">
-              <button
-                type="button"
-                onClick={() => setBookSource('library')}
-                className={`flex-1 py-3 text-center ${
-                  bookSource === 'library'
-                    ? 'bg-indigo-500 text-white font-medium'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                내 서재에서 선택
-              </button>
-              <button
-                type="button"
-                onClick={() => setBookSource('new')}
-                className={`flex-1 py-3 text-center ${
-                  bookSource === 'new'
-                    ? 'bg-indigo-500 text-white font-medium'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                새 책 추가하기
-              </button>
-            </div>
-            
-            {bookSource === 'library' && books.length === 0 && (
-              <div className="text-center py-6 px-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <p className="text-yellow-700 mb-4">서재에 등록된 책이 없습니다.</p>
-                <Button
-                  onClick={() => setBookSource('new')}
-                  variant="outline"
-                  size="sm"
-                >
-                  새 책 추가하기
-                </Button>
-              </div>
-            )}
+    <div className={`min-h-screen ${cyberTheme.gradient} flex items-center justify-center p-4 md:p-6`}>
+      <div className={`w-full max-w-2xl ${cyberTheme.cardBg} p-6 rounded-lg shadow-xl border ${cyberTheme.borderSecondary}/30`}>
+        <div className="flex flex-col space-y-4">
+          <div>
+            <h1 className={`text-2xl font-bold mb-2 ${cyberTheme.primary} flex items-center gap-2`}> 
+              <Cog6ToothIcon className="h-6 w-6" />
+              Time Sprint 설정
+            </h1>
+            <p className={`${cyberTheme.textMuted} text-sm mb-4`}>
+              읽을 범위를 설정하고, 측정을 시작하세요.
+            </p>
           </div>
 
-          {bookSource === 'new' ? (
-            <div className="text-center p-4">
-              <p className="mb-4">새 책을 추가하고 TS 모드를 시작합니다.</p>
-              <Button
-                onClick={() => router.push('/books/new')}
-                variant="default"
-                fullWidth
+          <div>
+            <label htmlFor="book-select" className={`block text-sm font-medium mb-1 ${cyberTheme.textLight}`}>1. 어떤 기억을 활성화할까요? (책 선택)</label>
+            <div className="flex items-center gap-2 mt-1">
+              <select
+                id="book-select"
+                value={selectedBookId}
+                onChange={handleBookChange}
+                disabled={isLoading || bookSource === 'new'}
+                className={`flex-grow ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                새 책 등록하기
+                {books.length === 0 && <option value="" disabled>로딩 중...</option>}
+                {books.map((book) => (
+                  <option key={book._id} value={book._id}>
+                    {book.title} ({book.author})
+                  </option>
+                ))}
+              </select>
+              <Button 
+                 variant="outline"
+                 size="sm" 
+                 onClick={() => router.push('/books/new')}
+                 className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border whitespace-nowrap`}
+              >
+                새 책 추가
               </Button>
             </div>
-          ) : books.length > 0 ? (
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  독서할 책 선택
-                </label>
-                {/* 책 선택을 위한 스크롤 가능한 컨테이너로 변경 */}
-                <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg shadow-inner">
-                  {books.map((book) => (
-                    <div
-                      key={book._id}
-                      onClick={() => {
-                        setSelectedBookId(book._id);
-                        setStartPage(book.currentPage);
-                        setEndPage(Math.min(book.currentPage + 10, book.totalPages));
-                      }}
-                      className={`p-3 cursor-pointer border-b border-gray-100 hover:bg-indigo-50 transition-colors ${
-                        selectedBookId === book._id ? 'bg-indigo-100 border-l-4 border-l-indigo-500' : ''
-                      }`}
-                    >
-                      <h3 className="font-bold text-gray-900">{book.title}</h3>
-                      <div className="flex justify-between items-center mt-1">
-                        <p className="text-sm text-gray-600">{book.author}</p>
-                        <span className="text-xs bg-gray-100 text-gray-700 py-1 px-2 rounded-full">
-                          {book.currentPage} / {book.totalPages} 페이지
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="startPage" className="block text-sm font-medium text-gray-700 mb-1">
-                    시작 페이지
-                  </label>
-                  <input
-                    id="startPage"
-                    type="number"
-                    min={1}
-                    max={selectedBook?.totalPages || 1}
-                    value={startPage}
-                    onChange={(e) => setStartPage(Number(e.target.value))}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="endPage" className="block text-sm font-medium text-gray-700 mb-1">
-                    목표 페이지
-                  </label>
-                  <input
-                    id="endPage"
-                    type="number"
-                    min={startPage}
-                    max={selectedBook?.totalPages || 1}
-                    value={endPage}
-                    onChange={(e) => setEndPage(Number(e.target.value))}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
+          <div className="space-y-2">
+            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>2. 어디부터 어디까지 읽을까요? (페이지 범위)</h2>
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              <div className="flex-1 w-full">
+                <label htmlFor="start-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>시작 페이지</label>
+                <input
+                  type="number"
+                  id="start-page"
+                  value={startPage}
+                  onChange={(e) => setStartPage(Number(e.target.value))}
+                  min="1"
+                  max={selectedBook?.totalPages || 1}
+                  className={`w-full ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
+                  aria-describedby="page-range-hint"
+                />
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  예열 훈련
-                </label>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center">
-                    <input
-                      id="warmup-yes"
-                      type="radio"
-                      name="warmup"
-                      checked={enableWarmup}
-                      onChange={() => setEnableWarmup(true)}
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    <label htmlFor="warmup-yes" className="ml-2 text-sm text-gray-700">
-                      예열 사용 (2분)
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      id="warmup-no"
-                      type="radio"
-                      name="warmup"
-                      checked={!enableWarmup}
-                      onChange={() => setEnableWarmup(false)}
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    <label htmlFor="warmup-no" className="ml-2 text-sm text-gray-700">
-                      바로 시작
-                    </label>
-                  </div>
-                </div>
+              <span className={`text-lg font-medium ${cyberTheme.textMuted} sm:mt-4`}>~</span>
+              <div className="flex-1 w-full">
+                <label htmlFor="end-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>종료 페이지</label>
+                <input
+                  type="number"
+                  id="end-page"
+                  value={endPage}
+                  onChange={(e) => setEndPage(Number(e.target.value))}
+                  min={startPage}
+                  max={selectedBook?.totalPages || 10}
+                  className={`w-full ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
+                  aria-describedby="page-range-hint"
+                />
               </div>
+            </div>
+            <p id="page-range-hint" className={`text-xs ${cyberTheme.textMuted}`}> 
+              현재 선택: {selectedBook?.title || '책 없음'} (총 {selectedBook?.totalPages || '-'} 페이지, 현재 {selectedBook?.currentPage || '-'} 페이지)
+            </p>
+          </div>
 
-              <div>
-                <label htmlFor="focusDuration" className="block text-sm font-medium text-gray-700 mb-1">
-                  집중 시간
-                </label>
-                <select
-                  id="focusDuration"
-                  value={focusDuration}
-                  onChange={(e) => setFocusDuration(Number(e.target.value))}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="5">5분</option>
-                  <option value="10">8분</option>
-                  <option value="11">11분</option>
-                  <option value="15">15분</option>
-                  <option value="20">19분</option>
-                  <option value="25">23분</option>
-                  <option value="30">27분</option>
-                  <option value="45">35분</option>
-                  <option value="60">1시간</option>
-                </select>
-              </div>
-
-              <Button
+          <div className="space-y-2">
+            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>3. 추가 설정</h2>
+            <div className="flex items-center justify-between py-1">
+              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>속독 팁 활성화 (뇌 준비 운동)</label>
+              <button
+                id="warmup-toggle"
                 type="button"
-                onClick={handleStartSession}
-                variant="default"
-                fullWidth
-                disabled={isStarting}
+                role="switch"
+                aria-checked={enableWarmup}
+                onClick={() => setEnableWarmup(!enableWarmup)}
+                className={`${enableWarmup ? cyberTheme.buttonPrimaryBg : 'bg-gray-600'} relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800`}
               >
-                {isStarting ? '세션 시작 중...' : '세션 시작하기'}
-              </Button>
-            </form>
-          ) : (
-            <div className="text-center p-4">
-              <p className="mb-4">등록된 책이 없습니다. 새 책을 추가해주세요.</p>
-              <Button
-                onClick={() => setBookSource('new')}
-                variant="default"
-              >
-                책 등록하기
-              </Button>
+                <span className="sr-only">속독 팁 활성화</span>
+                <span aria-hidden="true" className={`${enableWarmup ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}></span>
+              </button>
             </div>
-          )}
+            <div className="py-1">
+              <label htmlFor="focus-duration" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>읽는 시간 설정 (분)</label>
+              <div className="flex items-center gap-2 mt-1">
+                 <input
+                    type="range"
+                    id="focus-duration"
+                    min="5"
+                    max="16"
+                    step="1"
+                    value={focusDuration}
+                    onChange={(e) => setFocusDuration(Number(e.target.value))}
+                    className="w-full h-1.5 bg-gray-600 rounded-lg appearance-none cursor-pointer range-sm accent-cyan-500 flex-grow"
+                 />
+                 <span className={`text-sm font-medium ${cyberTheme.textLight} w-8 text-right`}>{focusDuration}분</span>
+              </div>
+            </div>
+          </div>
+
+          {error && <p className={`text-sm ${cyberTheme.errorText} text-center`}>{error}</p>}
+          
+          <div className="mt-4">
+            <Button
+              onClick={handleStartSession}
+              disabled={isStarting || isLoading || !selectedBookId}
+              className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${cyberTheme.buttonDisabledBg}`}
+            >
+              {isStarting ? (
+                <Spinner size="sm" color="white" /> 
+              ) : (
+                <PlayIcon className="h-5 w-5" />
+              )}
+              측정 시작 ({endPage - startPage + 1} 페이지)
+            </Button>
+          </div>
         </div>
       </div>
     </div>

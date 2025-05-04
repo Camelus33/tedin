@@ -30,6 +30,10 @@ class ApiClient {
       headers.set('Authorization', `Bearer ${token}`);
     }
 
+    // Prevent caching to avoid 304 Not Modified
+    headers.set('Cache-Control', 'no-cache');
+    headers.set('Pragma', 'no-cache');
+
     const config: RequestInit = {
       ...options,
       headers,

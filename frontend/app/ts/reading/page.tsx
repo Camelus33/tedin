@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PauseIcon, PlayIcon, StopIcon, ExclamationTriangleIcon } from '@heroicons/react/24/solid';
+import Spinner from '@/components/ui/Spinner';
 
 type SessionData = {
   _id: string;
@@ -15,6 +17,24 @@ type SessionData = {
   startPage: number;
   endPage: number;
   durationSec: number;
+};
+
+// 테마 색상 정의 (일관성 유지)
+const cyberTheme = {
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400',
+  bgPrimary: 'bg-gray-900',
+  bgSecondary: 'bg-gray-800',
+  cardBg: 'bg-gray-800/60',
+  borderPrimary: 'border-cyan-500',
+  borderSecondary: 'border-purple-500',
+  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
+  textMuted: 'text-gray-400',
+  textLight: 'text-gray-300',
+  progressBarBg: 'bg-gray-700', // 진행률 바 배경
+  progressGradientStart: '#06b6d4', // cyan-500
+  progressGradientMid: '#8b5cf6', // purple-500
+  progressGradientEnd: '#ec4899', // pink-500 (경고)
 };
 
 export default function TSReadingPage() {
@@ -119,23 +139,27 @@ export default function TSReadingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-50">
-        <p>세션 정보 로딩 중...</p>
+      <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
+        <Spinner size="lg" color="cyan" />
+        <p className={`mt-4 ${cyberTheme.textMuted}`}>피드백 루프 실행 준비 중...</p>
       </div>
     );
   }
 
   if (error || !sessionData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4">
-        <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-red-600 mb-4">오류 발생</h1>
-          <p className="mb-6">{error || '세션 정보를 찾을 수 없습니다.'}</p>
+      <div className={`min-h-screen flex items-center justify-center ${cyberTheme.gradient} p-4`}>
+        <div className={`bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full border border-red-500/50`}>
+          <h1 className="text-xl font-bold text-red-400 mb-4 flex items-center">
+            <ExclamationTriangleIcon className="h-6 w-6 mr-2" /> 오류 발생
+          </h1>
+          <p className={`mb-6 ${cyberTheme.textMuted}`}>{error || '세션 정보를 찾을 수 없습니다.'}</p>
           <Button
             href="/ts"
-            variant="default"
+            variant="outline"
+            className={`w-full !border-red-500/50 !text-red-400 hover:!bg-red-900/30`}
           >
-            돌아가기
+            루프 설정으로 돌아가기
           </Button>
         </div>
       </div>
@@ -143,171 +167,92 @@ export default function TSReadingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 flex flex-col">
-      <div className="container mx-auto max-w-md flex-1 flex flex-col">
+    <div className={`min-h-screen ${cyberTheme.gradient} p-4 flex flex-col text-gray-200`}>
+      <div className="container mx-auto max-w-xl flex-1 flex flex-col">
         {/* Reading header - modern design with subtle shadow */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-6 border border-white/50 transition-all">
-          <div className="flex justify-between items-center">
+        <div className={`${cyberTheme.cardBg} rounded-xl shadow-lg p-6 mb-8 border ${cyberTheme.inputBorder}`}>
+          <div className="flex justify-between items-start gap-4">
             <div>
-              <h1 className="font-bold text-xl text-slate-800">{sessionData.bookId.title}</h1>
-              <p className="text-sm text-slate-500 mt-1">{sessionData.startPage} - {sessionData.endPage} 페이지</p>
+              <h1 className={`font-bold text-xl ${cyberTheme.textLight}`}>{sessionData.bookId.title}</h1>
+              <p className={`text-sm ${cyberTheme.textMuted} mt-1`}>({sessionData.startPage} - {sessionData.endPage} 페이지)</p>
+              <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>작업 기억 처리 중...</p>
             </div>
-            {/* Timer with dynamic color based on time remaining */}
-            <div className={`text-center p-3 rounded-xl border shadow-inner transition-all ${
-              progressPercentage < 33
-                ? "bg-gradient-to-r from-indigo-100 to-blue-100 border-indigo-200/50"
-                : progressPercentage < 66
-                  ? "bg-gradient-to-r from-blue-100 to-amber-100 border-blue-200/50"
-                  : progressPercentage < 80
-                    ? "bg-gradient-to-r from-amber-100 to-orange-100 border-amber-200/50"
-                    : "bg-gradient-to-r from-orange-100 to-red-100 border-orange-200/50"
-            } ${
-              // Pulse animation when time is running low (less than 20% remaining)
-              progressPercentage > 80 ? "animate-pulse" : ""
-            }`}>
+            
+            <div className={`text-center p-3 rounded-lg border ${cyberTheme.inputBorder} bg-gray-900/50 shadow-inner min-w-[120px]`}>
               <div 
-                className={`text-3xl font-mono font-bold transition-colors ${
-                  progressPercentage < 33
-                    ? "bg-gradient-to-br from-indigo-700 to-blue-700 bg-clip-text text-transparent"
-                    : progressPercentage < 66
-                      ? "bg-gradient-to-br from-blue-700 to-amber-600 bg-clip-text text-transparent"
-                      : progressPercentage < 80
-                        ? "bg-gradient-to-br from-amber-600 to-orange-600 bg-clip-text text-transparent"
-                        : "bg-gradient-to-br from-orange-600 to-red-600 bg-clip-text text-transparent"
+                className={`text-3xl font-mono font-bold transition-colors ${ 
+                  progressPercentage < 80 ? cyberTheme.textLight : 'text-red-400 animate-pulse' 
                 }`}
               >
                 {formatTime(timeRemaining)}
-                {/* Add warning indicators when time is running low */}
-                {progressPercentage > 80 && (
-                  <span className="ml-2 inline-flex items-center text-sm animate-bounce text-red-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                  </span>
-                )}
               </div>
-              <div className="text-xs text-slate-500 mt-1">남은 시간</div>
+              <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>루프 잔여 시간</div>
+              
+              <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-1.5 mt-2 overflow-hidden`}>
+                <div 
+                  className={`h-1.5 rounded-full transition-all duration-500 bg-gradient-to-r`}
+                  style={{ 
+                    width: `${progressPercentage}%`,
+                    backgroundImage: `linear-gradient(to right, ${cyberTheme.progressGradientStart}, ${progressPercentage > 50 ? cyberTheme.progressGradientMid : cyberTheme.progressGradientStart}, ${progressPercentage > 80 ? cyberTheme.progressGradientEnd : cyberTheme.progressGradientMid})`
+                  }}
+                ></div>
+              </div>
+              <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>처리 진행률: {Math.round(progressPercentage)}%</div>
             </div>
           </div>
         </div>
 
         {/* Main reading area - stylish and minimal */}
-        <div className="flex-1 flex flex-col justify-center items-center mb-8">
+        <div className="flex-1 flex flex-col justify-center items-center mb-10">
           <BreathingText />
-          
-          {/* Progress bar - animated gradient with changing color based on progress */}
-          <div className="w-full bg-gray-100 rounded-full h-3 mb-4 shadow-inner overflow-hidden">
-            {/* Dynamic color based on progress */}
-            <div 
-              className={`h-3 rounded-full transition-all duration-500 relative`}
-              style={{ 
-                width: `${progressPercentage}%`,
-                background: progressPercentage < 33 
-                  ? 'linear-gradient(to right, #3b82f6, #4f46e5)' // Blue to indigo (start)
-                  : progressPercentage < 66 
-                    ? 'linear-gradient(to right, #4f46e5, #f59e0b)' // Indigo to amber (middle)
-                    : 'linear-gradient(to right, #f59e0b, #ef4444)' // Amber to red (end)
-              }}
-            >
-              {progressPercentage > 5 && (
-                <div className={`absolute inset-0 ${
-                  progressPercentage > 80 
-                    ? "bg-white/30 animate-pulse" 
-                    : "bg-white/20 animate-pulse"
-                }`}></div>
-              )}
-            </div>
-          </div>
-          <p className={`text-sm font-medium mb-16 ${
-            progressPercentage < 80 
-              ? "text-slate-500" 
-              : "text-red-500 font-bold"
-          }`}>
-            진행률: {Math.round(progressPercentage)}%
-            {progressPercentage > 80 && (
-              <span className="ml-2 text-red-500 animate-pulse">마무리할 시간입니다!</span>
-            )}
-          </p>
-          
-          {/* Controls - styled buttons */}
-          <div className="flex space-x-6">
-            <button
-              type="button"
-              onClick={handlePauseResume}
-              className={`px-5 py-3 rounded-xl font-medium transition-all duration-300 flex items-center ${
-                isPaused 
-                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-200 hover:shadow-emerald-300 hover:-translate-y-0.5"
-                  : "bg-white text-slate-600 border border-slate-200 shadow hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5"
-              }`}
-            >
-              {isPaused ? (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  </svg>
-                  재개하기
-                </>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  일시정지
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={handleFinishEarly}
-              className="px-5 py-3 bg-white/80 text-slate-500 rounded-xl border border-slate-200 font-medium transition-all hover:bg-white hover:text-slate-700 hover:shadow-md hover:-translate-y-0.5 duration-300 flex items-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              독서 종료
-            </button>
-          </div>
+        </div>
+
+        {/* Controls - styled buttons */}
+        <div className="flex justify-center space-x-6 mb-6">
+          <Button
+            type="button"
+            onClick={handlePauseResume}
+            variant="outline"
+            className={`!px-6 !py-3 !rounded-xl !font-medium flex items-center transition-all !border-gray-600 ${ 
+              isPaused 
+                ? `!bg-emerald-600/80 !text-white !border-emerald-500 hover:!bg-emerald-700/80` 
+                : `${cyberTheme.cardBg} ${cyberTheme.textLight} hover:!border-gray-500 hover:!text-white` 
+            }`}
+          >
+            {isPaused ? <PlayIcon className="h-5 w-5 mr-2" /> : <PauseIcon className="h-5 w-5 mr-2" />}
+            {isPaused ? '루프 재개' : '루프 일시정지'}
+          </Button>
+          <Button
+            type="button"
+            onClick={handleFinishEarly}
+            variant="outline"
+            className={`!px-6 !py-3 !rounded-xl !font-medium flex items-center transition-all !border-red-500/50 ${cyberTheme.cardBg} !text-red-400 hover:!bg-red-900/30 hover:!border-red-600/50`}
+          >
+            <StopIcon className="h-5 w-5 mr-2" />
+            처리 완료 (수동 종료)
+          </Button>
         </div>
       </div>
-      <CopyrightNotice />
     </div>
   );
 }
 
 function BreathingText() {
-  const [show, setShow] = useState(true);
-
-  useEffect(() => {
-    let fadeIn: NodeJS.Timeout;
-    let fadeOut: NodeJS.Timeout;
-    if (show) {
-      fadeIn = setTimeout(() => setShow(false), 3500); // 3.5초 표시
-    } else {
-      fadeOut = setTimeout(() => setShow(true), 7000); // 7초 사라짐
-    }
-    return () => {
-      clearTimeout(fadeIn);
-      clearTimeout(fadeOut);
-    };
-  }, [show]);
-
   return (
-    <div style={{ minHeight: 40 }} className="mb-16">
-      <AnimatePresence>
-        {show && (
-          <motion.div
-            key="breath"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: show ? 3.5 : 7 }}
-            className="text-lg text-slate-500 font-light italic"
-          >
-            다음 문장을 떠올리며 빠르게 읽어보세요
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    <motion.div
+      className={`text-5xl font-bold mb-10 ${cyberTheme.textMuted}`}
+      initial={{ opacity: 0.3 }}
+      animate={{
+        opacity: [0.3, 0.8, 0.3], // 숨쉬는 효과
+      }}
+      transition={{
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    >
+      코로 깊게 호흡하세요.
+    </motion.div>
   );
 }
 

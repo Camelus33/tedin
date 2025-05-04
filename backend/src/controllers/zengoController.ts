@@ -4,7 +4,11 @@ import User from '../models/User';
 import Badge from '../models/Badge';
 import ZengoProverbContent, { IZengoProverbContent } from '../models/ZengoProverbContent';
 import ZengoSessionResult, { IZengoSessionResult } from '../models/ZengoSessionResult';
-import mongoose from 'mongoose';
+import UserStats from '../models/UserStats';
+import mongoose, { Types } from 'mongoose';
+import { routineService } from '../services/routineService';
+import { calculateCognitiveMetrics } from '../utils/cognitiveMetrics';
+import { processCommonSessionResultTasks } from '../services/sessionResultService';
 // import { koreanProverbs, englishProverbs } from '../scripts/data/expandedProverbs';
 
 // 강력한 일렬 방지 함수 추가
@@ -297,7 +301,7 @@ export const getCognitiveProfile = async (req: Request, res: Response): Promise<
         currentProfile: {
           hippocampusActivation: 0,
           workingMemory: 0,
-          spatialCognition: 0,
+          processingSpeed: 0,
           attention: 0,
           patternRecognition: 0,
           cognitiveFlexibility: 0
@@ -306,49 +310,6 @@ export const getCognitiveProfile = async (req: Request, res: Response): Promise<
       });
       return;
     }
-
-    // 기준에 따른 인지 능력 점수 계산
-    const calculateCognitiveMetrics = (result: any) => {
-      const { 
-        correctPlacements, 
-        incorrectPlacements, 
-        usedStonesCount, 
-        timeTakenMs,
-        completedSuccessfully,
-        orderCorrect
-      } = result;
-
-      // 정확도 기반 계산
-      const accuracy = correctPlacements / (correctPlacements + incorrectPlacements) * 100 || 0;
-      
-      // 시간 효율성 (지수 곡선으로 최적 시간 범위를 평가)
-      const timeEfficiencyScore = Math.max(0, 100 - Math.min(100, timeTakenMs / 60000 * 100));
-      
-      // 각 인지 능력 메트릭 계산
-      return {
-        // 해마 활성화 (정확도 + 완료 여부 기반)
-        hippocampusActivation: Math.round(accuracy * 0.7 + (completedSuccessfully ? 30 : 0)),
-        
-        // 작업 기억력 (정확도 + 오류율 역산)
-        workingMemory: Math.round(accuracy * 0.6 + Math.max(0, (1 - incorrectPlacements / (correctPlacements || 1)) * 40)),
-        
-        // 공간 인지력 (정확한 배치 + 패턴 인식)
-        spatialCognition: Math.round(correctPlacements / (usedStonesCount || 1) * 100),
-        
-        // 주의력 (시간 효율성 + 정확도)
-        attention: Math.round(timeEfficiencyScore * 0.5 + accuracy * 0.5),
-        
-        // 패턴 인식 (순서 정확성 + 정확한 배치)
-        patternRecognition: Math.round((orderCorrect ? 60 : 30) + accuracy * 0.4),
-        
-        // 인지적 유연성 (완료성 + 효율성)
-        cognitiveFlexibility: Math.round(
-          (completedSuccessfully ? 50 : 20) + 
-          timeEfficiencyScore * 0.3 + 
-          accuracy * 0.2
-        )
-      };
-    };
 
     // 시계열 데이터 생성 (각 세션별)
     const historicalData = sessionResults.map(result => {
@@ -362,12 +323,12 @@ export const getCognitiveProfile = async (req: Request, res: Response): Promise<
     // 최신 프로필 계산 (가장 최근 3개 세션의 평균)
     const recentSessions = sessionResults.slice(0, 3);
     const currentProfile = {
-      hippocampusActivation: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).hippocampusActivation, 0) / recentSessions.length),
-      workingMemory: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).workingMemory, 0) / recentSessions.length),
-      spatialCognition: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).spatialCognition, 0) / recentSessions.length),
-      attention: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).attention, 0) / recentSessions.length),
-      patternRecognition: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).patternRecognition, 0) / recentSessions.length),
-      cognitiveFlexibility: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).cognitiveFlexibility, 0) / recentSessions.length)
+      hippocampusActivation: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).hippocampusActivation, 0) / recentSessions.length) || 0,
+      workingMemory: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).workingMemory, 0) / recentSessions.length) || 0,
+      processingSpeed: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).processingSpeed, 0) / recentSessions.length) || 0,
+      attention: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).attention, 0) / recentSessions.length) || 0,
+      patternRecognition: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).patternRecognition, 0) / recentSessions.length) || 0,
+      cognitiveFlexibility: Math.round(recentSessions.reduce((sum, session) => sum + calculateCognitiveMetrics(session).cognitiveFlexibility, 0) / recentSessions.length) || 0
     };
 
     res.status(200).json({
@@ -837,160 +798,99 @@ export const getProverbContent = async (req: Request, res: Response) => {
 
 // Zengo 게임 세션 결과 저장 (명세서 v3.0 기반)
 export const saveSessionResult = async (req: Request, res: Response) => {
+  const userId = req.user?.id as Types.ObjectId | string | undefined; // Get userId
+  const { 
+    contentId, 
+    level, 
+    language, 
+    usedStonesCount, 
+    correctPlacements, 
+    incorrectPlacements, 
+    timeTakenMs, 
+    completedSuccessfully, 
+    resultType // New field: EXCELLENT, SUCCESS, FAIL
+  } = req.body;
+
+  if (!userId) {
+    return res.status(401).json({ message: '인증이 필요합니다.' });
+  }
+
+  // Validate if contentId exists (keep this validation for standard Zengo)
   try {
-    console.log('결과 제출 데이터 수신 전체:', JSON.stringify(req.body));
-    
-    const { 
-      contentId, 
-      level, 
-      language, 
-      usedStonesCount, 
-      correctPlacements, 
-      incorrectPlacements, 
-      timeTakenMs, 
-      completedSuccessfully, 
-      orderCorrect,            // 어순 정확성 추가
-      placementOrder,          // 배치 순서 추가
-      resultType: clientResultType // 클라이언트 제출 결과 타입
-    } = req.body;
-
-    console.log('파싱된 필수 필드:', { 
-      contentId, 
-      level, 
-      language, 
-      usedStonesCount, 
-      correctPlacements, 
-      incorrectPlacements, 
-      timeTakenMs, 
-      completedSuccessfully, 
-      orderCorrect,
-      placementOrder,
-      clientResultType
-    });
-
-    // 필수 필드 검증
-    if (!contentId || !level || !language || 
-        usedStonesCount === undefined || 
-        correctPlacements === undefined || 
-        incorrectPlacements === undefined || 
-        timeTakenMs === undefined || 
-        completedSuccessfully === undefined) {
-      console.error('필수 필드 누락:', { 
-        contentId, level, language, usedStonesCount, 
-        correctPlacements, incorrectPlacements, 
-        timeTakenMs, completedSuccessfully, clientResultType 
-      });
-      return res.status(400).json({ 
-        message: 'Missing required fields', 
-        details: 'contentId, level, language, usedStonesCount, correctPlacements, incorrectPlacements, timeTakenMs, and completedSuccessfully are required'
-      });
+    const contentExists = await ZengoProverbContent.findById(contentId);
+    if (!contentExists) {
+      // This case should ideally not happen for standard Zengo if content is fetched correctly
+      return res.status(404).json({ message: '제공된 contentId에 해당하는 콘텐츠를 찾을 수 없습니다.' });
     }
+  } catch (error) {
+    console.error('콘텐츠 ID 검증 중 오류 발생:', error);
+    return res.status(500).json({ message: '콘텐츠 검증 중 서버 오류가 발생했습니다.' });
+  }
 
-    // userId 가져오기 (인증된 경우) 또는 임시 ID 사용
-    const userId = req.user?.id || '6400000000000000000000001'; // 인증이 없는 경우 더미 ID 사용
+  // Calculate score before creating the result document
+  const score = calculateScore(); // Keep the helper function locally or move it too if preferred
 
-    // contentId가 유효한 ObjectId 형식인지 검증
-    const { ObjectId } = require('mongodb');
-    let objectId;
-    try {
-      objectId = new ObjectId(contentId);
-    } catch (err) {
-      console.error(`세션 결과 저장 중 유효하지 않은 ObjectId 형식 발견: ${contentId}`);
-      return res.status(400).json({ 
-        message: 'Invalid contentId format',
-        details: 'The contentId must be a valid MongoDB ObjectId'
-      });
-    }
+  const newResult = new ZengoSessionResult({
+    userId,
+    contentId, // Standard Zengo content ID
+    level,
+    language,
+    usedStonesCount,
+    correctPlacements,
+    incorrectPlacements,
+    timeTakenMs,
+    completedSuccessfully,
+    resultType: resultType || (completedSuccessfully ? 'SUCCESS' : 'FAIL'),
+    score: score,
+  });
 
-    // 서버 측에서 독립적으로 결과 타입 판정
-    let serverResultType = 'FAIL';
-    
-    if (completedSuccessfully) {
-      // 위치 정확도 검증
-      const perfectPositionAccuracy = correctPlacements === usedStonesCount || 
-                                     (usedStonesCount - correctPlacements <= 1); // 최대 1번 오류 허용
-      
-      // 어순과 위치 정확도 모두 고려한 판정
-      if (perfectPositionAccuracy && orderCorrect) {
-        serverResultType = 'EXCELLENT'; // 위치와 어순 모두 정확
-      } else if (perfectPositionAccuracy) {
-        serverResultType = 'SUCCESS'; // 위치는 정확하나 어순이 부정확
-      }
-    }
-    
-    // 로깅 및 결과 타입 불일치 처리
-    if (clientResultType !== serverResultType) {
-      console.log(`결과 타입 불일치 - 클라이언트: ${clientResultType}, 서버: ${serverResultType}`);
-    }
-    
-    // 최종 결과 타입은 서버에서 결정
-    const finalResultType = serverResultType;
-    
-    // 점수 계산 로직 보강 (어순 반영)
-    const calculateScore = (): number => {
-      if (!completedSuccessfully) return 0;
-      
-      const baseScore = 100; // 기본 점수
-      const accuracyBonus = (correctPlacements / usedStonesCount) * 50; // 위치 정확도 보너스
-      const orderBonus = orderCorrect ? 25 : 0; // 어순 보너스
-      
-      return Math.floor(baseScore + accuracyBonus + orderBonus);
-    };
-    
-    const score = calculateScore();
+  try {
+    // 1. Save the session result
+    const savedResult = await newResult.save();
 
-    // 새 활동 데이터 생성
-    const newActivity = new ZengoSessionResult({
+    // 2. Process common tasks using the service function
+    const { earnedNewBadge, newBadge } = await processCommonSessionResultTasks(
       userId,
-      contentId: objectId,
-      level,
-      language,
-      usedStonesCount,
-      correctPlacements,
-      incorrectPlacements,
-      timeTakenMs,
-      completedSuccessfully,
-      resultType: finalResultType,
-      orderCorrect: orderCorrect || false,
-      placementOrder: placementOrder || [],
-      score
-    });
+      savedResult,
+      level, // Pass level needed for stats
+      completedSuccessfully // Pass completion status needed for routine
+    );
 
-    // MongoDB에 저장
-    await newActivity.save();
-    console.log(`Zengo 활동 저장 성공:`, { 
-      id: newActivity._id,
-      contentId,
-      level,
-      language,
-      resultType: finalResultType,
-      orderCorrect,
-      score
-    });
-
-    // 결과 성공적으로 저장됨을 응답
-    res.status(201).json({ 
-      message: 'Zengo activity saved successfully',
-      activityId: newActivity._id,
-      resultType: finalResultType, // 서버가 결정한 결과 타입 반환
-      score
-    });
-
-  } catch (error: any) {
-    console.error('Zengo 활동 저장 중 오류 발생:', error);
-    
-    // 오류 유형에 따른 응답
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({
-        message: 'Validation error',
-        details: error.message
-      });
+    // 3. Send Response (simplified using service results)
+    if (earnedNewBadge && newBadge) {
+        return res.status(201).json({ 
+          message: '세션 결과가 저장되었고 새로운 배지를 획득했습니다!', 
+          result: savedResult,
+          score: savedResult.score, // Include score from saved result
+          newBadge: newBadge 
+        });
+    } else {
+        res.status(201).json({ 
+            message: '세션 결과가 성공적으로 저장되었습니다.', 
+            result: savedResult, 
+            score: savedResult.score // Include score from saved result
+        });
     }
-    
-    res.status(500).json({ 
-      message: 'Error saving Zengo activity',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    });
+
+  } catch (error) {
+    console.error('Zengo 세션 결과 저장/처리 중 오류 발생:', error);
+    // Consider more specific error handling based on where the error occurred
+    res.status(500).json({ message: '세션 결과 처리 중 서버 오류가 발생했습니다.' });
+  }
+
+  // Helper function to calculate score (can stay here or be moved)
+  function calculateScore(): number {
+    let baseScore = correctPlacements * 10; 
+    baseScore -= incorrectPlacements * 5; 
+    const timePenalty = Math.max(0, Math.floor(timeTakenMs / 1000 / 10)); 
+    baseScore -= timePenalty;
+    const finalResultType = resultType || (completedSuccessfully ? 'SUCCESS' : 'FAIL');
+    if (finalResultType === 'EXCELLENT') {
+      baseScore += 20; 
+    } else if (!completedSuccessfully) {
+        return 0; 
+    }
+    return Math.max(0, Math.min(Math.round(baseScore), 100));
   }
 };
 

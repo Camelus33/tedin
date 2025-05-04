@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import Session from '../models/Session';
 import Book from '../models/Book';
 import Note from '../models/Note';
+import { routineService } from '../services/routineService';
+import UserStats from '../models/UserStats';
 
 // Helper function to calculate and update estimated reading time
 const updateEstimatedTime = async (bookId: string, userId: string) => {
@@ -145,15 +147,15 @@ export const createSession = async (req: Request, res: Response) => {
 
 // 세션 완료
 export const completeSession = async (req: Request, res: Response) => {
+  const { sessionId } = req.params;
+  const userId = req.user?.id;
+  const { actualEndPage, durationSec, ppm, memo, summary10words, selfRating } = req.body;
+
+  if (!userId) {
+    return res.status(401).json({ message: '인증이 필요합니다.' });
+  }
+
   try {
-    const { sessionId } = req.params;
-    const userId = req.user?.id;
-    const { actualEndPage, durationSec, ppm, memo, summary10words, selfRating } = req.body;
-
-    if (!userId) {
-      return res.status(401).json({ message: '인증이 필요합니다.' });
-    }
-
     const session = await Session.findOne({ _id: sessionId, userId });
 
     if (!session) {
@@ -164,7 +166,7 @@ export const completeSession = async (req: Request, res: Response) => {
       return res.status(400).json({ message: '이미 완료되었거나 취소된 세션입니다.' });
     }
 
-    // 세션 완료 처리
+    // 1. 세션 완료 처리
     const updatedSession = await Session.findByIdAndUpdate(
       sessionId,
       { 
@@ -183,7 +185,13 @@ export const completeSession = async (req: Request, res: Response) => {
     .populate('bookId')
     .select('-__v');
 
-    // 책 진행 상태 업데이트
+    // Check if session was successfully updated
+    if (!updatedSession) {
+        // This case might be redundant if findOne check passed, but good for safety
+        return res.status(404).json({ message: '세션 업데이트 중 오류 발생.' });
+    }
+
+    // 2. 책 진행 상태 업데이트
     const book = await Book.findById(session.bookId);
     let finalCurrentPage = book ? book.currentPage : 0;
     if (book) {
@@ -205,11 +213,11 @@ export const completeSession = async (req: Request, res: Response) => {
       );
     }
 
-    // 예상 완독 시간 업데이트 (추가)
-    // 주의: session.bookId가 string/ObjectId 타입인지 확인 필요
-    await updateEstimatedTime(session.bookId.toString(), userId); 
+    // 3. 예상 완독 시간 업데이트
+    // Make sure userId is in the correct format if needed by updateEstimatedTime
+    await updateEstimatedTime(session.bookId.toString(), userId.toString()); 
 
-    // TS 모드 반추 메모를 Note로 자동 생성
+    // 4. TS 모드 반추 메모를 Note로 자동 생성
     if (memo && memo.trim()) {
       await Note.create({
         userId: userId,
@@ -221,9 +229,34 @@ export const completeSession = async (req: Request, res: Response) => {
       });
     }
 
+    // 5. Update routine status (fire and forget, log errors)
+    if (updatedSession.mode === 'TS') { // Only update for TS sessions
+      try {
+        await routineService.updateTodaysActivity(userId, 'ts');
+      } catch (routineError) {
+        console.error(`[completeSession] Failed to update TS routine status for user ${userId}:`, routineError);
+        // Do not throw error here, as the main session completion was successful
+      }
+    }
+
+    // 6. Update UserStats with total TS duration (Added)
+    if (updatedSession.mode === 'TS' && updatedSession.durationSec > 0) {
+      try {
+        await UserStats.findOneAndUpdate(
+          { userId }, // find by userId
+          { $inc: { totalTsDurationSec: updatedSession.durationSec } }, // increment the duration
+          { upsert: true, new: true, setDefaultsOnInsert: true } // options: create if not exists
+        );
+      } catch (statsError) {
+        // Log error but don't block the main response
+        console.error(`[completeSession] UserStats 업데이트 실패 (userId: ${userId}):`, statsError);
+      }
+    }
+
     res.status(200).json(updatedSession);
   } catch (error) {
     console.error('세션 완료 처리 중 오류 발생:', error);
+    // Send a generic error message, or potentially more specific based on error type
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 };

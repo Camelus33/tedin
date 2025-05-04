@@ -5,15 +5,17 @@ import { RootState } from '../store'; // Assuming store is one level up
 import { 
     ZengoProverbContent, 
     ZengoSessionResult, 
+    IMyVerseSessionResult,
     GameState, 
     PlacedStone,
     BoardStoneData 
 } from '../../src/types/zengo'; // Adjust path if necessary
 import axios from 'axios';
+import { myverseApi } from '@/lib/api'; // Import myverseApi for the new endpoint
 
 // API URL 설정
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api',  // 명시적으로 백엔드 서버 주소 지정
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api',  // 명시적으로 백엔드 서버 주소 지정
   headers: {
     'Content-Type': 'application/json'
   },
@@ -106,83 +108,108 @@ export const fetchContentThunk = createAsyncThunk<
 );
 
 export const submitResultThunk = createAsyncThunk<
-    ZengoSessionResult,
+    // Return type can be either standard or MyVerse result
+    ZengoSessionResult | IMyVerseSessionResult,
     void,
     { state: { zengoProverb: ZengoState }, rejectValue: string }
 >(
     'zengoProverb/submitResult',
     async (_, { getState, rejectWithValue }) => {
         const { zengoProverb } = getState();
-        
-        if (!zengoProverb.currentContent || !zengoProverb.startTime) {
+        const { currentContent, startTime, revealedWords, resultType, placedStones, usedStonesCount } = zengoProverb;
+
+        if (!currentContent || !startTime) {
             return rejectWithValue('No active game session');
         }
-        
-        // 게임 데이터 계산
-        const timeTakenMs = Date.now() - zengoProverb.startTime;
-        const completedSuccessfully = 
-            zengoProverb.revealedWords.length === zengoProverb.currentContent.totalWords;
-        
-        // evaluateResult에서 이미 resultType이 설정되었으므로 해당 값을 사용
-        const { resultType } = zengoProverb;
-        
         if (!resultType) {
             return rejectWithValue('결과 타입이 설정되지 않았습니다');
         }
-        
-        // 어순 정확성 계산
-        const correctPlacedStones = zengoProverb.placedStones.filter(stone => stone.correct);
-        const wordMappings = zengoProverb.currentContent.wordMappings;
-        
-        // 단어 배치 순서 확인 - 결과 타입에 따라 결정
-        // EXCELLENT일 때만 orderCorrect=true, 그 외는 false
-        const orderCorrect = resultType === 'EXCELLENT';
-        
-        console.log(`결과 제출 데이터 준비: resultType=${resultType}, orderCorrect=${orderCorrect}`);
-        
-        // 플레이스먼트 순서 추출
-        const placementOrder = correctPlacedStones
-            .filter(stone => stone.placementIndex !== undefined)
-            .sort((a, b) => (a.placementIndex || 0) - (b.placementIndex || 0))
-            .map(stone => {
-                // 원래 단어 위치에서의 인덱스 찾기
-                const index = wordMappings.findIndex(wm => 
-                    wm.coords.x === stone.x && wm.coords.y === stone.y);
-                return index;
-            });
-        
-        const requestData = {
-            contentId: zengoProverb.currentContent._id,
-            level: zengoProverb.currentContent.level,
-            language: zengoProverb.currentContent.language,
-            timeTakenMs,
-            correctPlacements: correctPlacedStones.length,
-            incorrectPlacements: zengoProverb.placedStones.filter(stone => !stone.correct).length,
-            usedStonesCount: zengoProverb.usedStonesCount,
-            completedSuccessfully,
-            orderCorrect,                 // 어순 정확성 추가
-            placementOrder,               // 배치 순서 추가
-            resultType,
-        };
-        
-        console.log('세션 결과 제출 데이터:', requestData);
-        
+
+        // --- 공통 데이터 계산 --- 
+        const timeTakenMs = Date.now() - startTime;
+        const completedSuccessfully =
+            revealedWords.length === currentContent.totalWords;
+        const correctPlacedStones = placedStones.filter(stone => stone.correct);
+        const incorrectPlacementsCount = placedStones.filter(stone => !stone.correct).length;
+        const orderCorrect = resultType === 'EXCELLENT'; // 어순 정확성은 결과 타입으로 판단
+
+        // --- 게임 타입 식별 --- 
+        // level 문자열에 '-myverse' 또는 '-custom'이 포함되어 있는지 확인 (더 나은 방법이 있다면 수정)
+        const isMyVerse = currentContent.level.includes('-myverse') || currentContent.level.includes('-custom');
+        console.log(`게임 타입 식별: isMyVerse=${isMyVerse} (level: ${currentContent.level})`);
+
         try {
-            const response = await apiClient.post<ZengoSessionResult>('/zengo/session-result', requestData);
-            console.log('세션 결과 제출 성공:', response.data);
-            
-            // 서버에서 결과 타입이 변경되었을 수 있으므로 서버 응답의 resultType 사용
-            if ('resultType' in response.data && response.data.resultType && response.data.resultType !== resultType) {
-                console.log(`결과 타입 변경: ${resultType} → ${response.data.resultType} (서버 판정)`);
+            let responseData: ZengoSessionResult | IMyVerseSessionResult;
+
+            if (isMyVerse) {
+                // --- MyVerse 결과 제출 --- 
+                // Ensure collectionId from currentContent is included in the payload
+                if (!currentContent.collectionId) {
+                    console.error('MyVerse 게임 결과 제출 실패: collectionId가 currentContent에 없습니다.');
+                    return rejectWithValue('MyVerse 게임 정보에 collectionId가 누락되었습니다.');
+                }
+                const myVersePayload = {
+                    myVerseGameId: currentContent._id,
+                    collectionId: currentContent.collectionId, // Add collectionId from content state
+                    level: currentContent.level,
+                    language: currentContent.language,
+                    timeTakenMs,
+                    correctPlacements: correctPlacedStones.length,
+                    incorrectPlacements: incorrectPlacementsCount,
+                    usedStonesCount,
+                    completedSuccessfully,
+                    resultType,
+                };
+                console.log('MyVerse 세션 결과 제출 데이터:', myVersePayload);
+                responseData = await myverseApi.submitResult(myVersePayload);
+                console.log('MyVerse 세션 결과 제출 성공:', responseData);
+
+            } else {
+                // --- Standard/Original Zengo 결과 제출 --- 
+                const standardPayload = {
+                    contentId: currentContent._id,
+                    level: currentContent.level,
+                    language: currentContent.language,
+                    timeTakenMs,
+                    correctPlacements: correctPlacedStones.length,
+                    incorrectPlacements: incorrectPlacementsCount,
+                    usedStonesCount,
+                    completedSuccessfully,
+                    orderCorrect, // Standard Zengo는 어순 정확성 포함 가능성 있음
+                    resultType,
+                    // placementOrder 계산 (Standard Zengo에 필요 시)
+                    placementOrder: correctPlacedStones
+                        .filter(stone => stone.placementIndex !== undefined)
+                        .sort((a, b) => (a.placementIndex || 0) - (b.placementIndex || 0))
+                        .map(stone => {
+                            const index = currentContent.wordMappings.findIndex(wm =>
+                                wm.coords.x === stone.x && wm.coords.y === stone.y);
+                            return index;
+                        })
+                };
+                console.log('Standard 세션 결과 제출 데이터:', standardPayload);
+                // Use apiClient directly as before for the standard endpoint
+                const response = await apiClient.post<ZengoSessionResult>('/zengo/session-result', standardPayload);
+                responseData = response.data;
+                console.log('Standard 세션 결과 제출 성공:', responseData);
             }
-            
-            return response.data;
+
+            // 서버 응답의 resultType 사용 (선택적)
+            if ('resultType' in responseData && responseData.resultType && responseData.resultType !== resultType) {
+                console.log(`결과 타입 변경: ${resultType} → ${responseData.resultType} (서버 판정)`);
+                // dispatch(setResultType(responseData.resultType)); // Optionally update state based on server response
+            }
+
+            return responseData; // Return the combined type
+
         } catch (error) {
             console.error('세션 결과 제출 실패:', error);
             if (axios.isAxiosError(error)) {
                 console.error('응답 상태:', error.response?.status);
                 console.error('응답 데이터:', error.response?.data);
-                return rejectWithValue(`API 오류: ${error.response?.status} - ${JSON.stringify(error.response?.data)}`);
+                // Construct error message from backend response if available
+                const errorMsg = error.response?.data?.message || JSON.stringify(error.response?.data);
+                return rejectWithValue(`API 오류: ${error.response?.status} - ${errorMsg}`);
             }
             if (error instanceof Error) {
                 return rejectWithValue(error.message);
@@ -326,11 +353,14 @@ interface ZengoState {
   usedStonesCount: number;
   startTime: number | null;
   // Result & Error Handling
-  lastResult: ZengoSessionResult | null; // Uses imported type
+  lastResult: ZengoSessionResult | IMyVerseSessionResult | null; // Uses imported type
   resultType: ResultType; // 결과 타입 (EXCELLENT, SUCCESS, FAIL)
   shouldKeepContent: boolean; // 같은 컨텐츠 유지 여부
   shouldKeepPositions: boolean; // 같은 위치 유지 여부
   error: string | null;
+  // Add a flag to explicitly track if the current game is MyVerse
+  // This should be set when content is loaded (e.g., in setContent reducer)
+  isMyVerseGame: boolean; 
 }
 
 const initialState: ZengoState = {
@@ -347,6 +377,7 @@ const initialState: ZengoState = {
   shouldKeepContent: false,
   shouldKeepPositions: false,
   error: null,
+  isMyVerseGame: false, // Default to false
 };
 
 const zengoProverbSlice = createSlice({
@@ -619,6 +650,9 @@ const zengoProverbSlice = createSlice({
       state.lastResult = null;
       state.resultType = null;
       state.error = null;
+      // ** Determine if it's a MyVerse game when content is set **
+      state.isMyVerseGame = action.payload.level.includes('-myverse') || action.payload.level.includes('-custom');
+      console.log(`Content set: ID=${action.payload._id}, isMyVerse=${state.isMyVerseGame}`);
     },
   },
   extraReducers: (builder) => {
@@ -637,6 +671,8 @@ const zengoProverbSlice = createSlice({
         state.usedStonesCount = 0;
         state.startTime = null;
         state.error = null;
+        state.isMyVerseGame = action.payload.level.includes('-myverse') || action.payload.level.includes('-custom');
+        console.log(`Content loaded via Thunk: ID=${action.payload._id}, isMyVerse=${state.isMyVerseGame}`);
       })
       .addCase(fetchContentThunk.rejected, (state, action) => {
         state.gameState = 'idle';
@@ -648,26 +684,12 @@ const zengoProverbSlice = createSlice({
         console.log('제출 대기 중...', { prevState: state.gameState });
         state.error = null;
       })
-      .addCase(submitResultThunk.fulfilled, (state, action: PayloadAction<ZengoSessionResult>) => {
+      .addCase(submitResultThunk.fulfilled, (state, action: PayloadAction<ZengoSessionResult | IMyVerseSessionResult>) => {
         // 게임 상태는 evaluateResult에서 이미 설정했으므로 변경하지 않음
         
         // 백엔드 응답에는 activityId, score만 포함되어 있음
         // 나머지 필요한 데이터는 현재 상태에서 보존
-        state.lastResult = {
-          _id: action.payload.activityId || action.payload._id || '',
-          userId: '',  // 백엔드에서 관리
-          contentId: state.currentContent?._id || '',
-          level: state.currentContent?.level || '',
-          language: state.currentContent?.language || '',
-          usedStonesCount: state.usedStonesCount,
-          correctPlacements: state.placedStones.filter(stone => stone.correct).length,
-          incorrectPlacements: state.placedStones.filter(stone => !stone.correct).length,
-          timeTakenMs: state.startTime ? Date.now() - state.startTime : 0,
-          completedSuccessfully: state.revealedWords.length === state.currentContent?.totalWords,
-          score: action.payload.score || 0,
-          earnedBadgeIds: [],
-          createdAt: new Date().toISOString()
-        };
+        state.lastResult = action.payload;
         
         state.error = null;
         console.log('결과 제출 성공:', { 
@@ -693,6 +715,8 @@ const zengoProverbSlice = createSlice({
         state.currentContent = action.payload;
         state.gameState = 'showing';
         state.error = null;
+        state.isMyVerseGame = action.payload.level.includes('-myverse') || action.payload.level.includes('-custom');
+        console.log(`Positions regenerated & content set: ID=${action.payload._id}, isMyVerse=${state.isMyVerseGame}`);
       })
       .addCase(regeneratePositionsThunk.rejected, (state, action) => {
         state.gameState = 'idle';

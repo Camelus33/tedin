@@ -11,12 +11,10 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "@react-three/drei": "^9.74.15",
-    "@react-three/fiber": "^8.12.0",
     "@reduxjs/toolkit": "^1.9.5",
-    "@types/three": "^0.175.0",
     "axios": "^1.4.0",
     "chart.js": "^4.3.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "class-variance-authority": "^0.6.0",
     "classnames": "^2.5.1",
     "clsx": "^1.2.1",
@@ -32,7 +30,6 @@
     "react-redux": "^8.1.0",
     "scheduler": "^0.26.0",
     "tailwind-merge": "^1.13.0",
-    "three": "^0.149.0",
     "yup": "^1.2.0"
   },
   "devDependencies": {

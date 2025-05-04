@@ -22,9 +22,11 @@ import badgeRoutes from './routes/badges';
 import inviteRoutes from './routes/invites';
 import collectionRoutes from './routes/collections';
 import myverseGamesRoutes from './routes/myverseGames';
+import routineRoutes from './routes/routineRoutes';
 
 // Initialize Express app
 const app: Express = express();
+app.disable('etag');
 const PORT = process.env.PORT || 8000;
 
 // Connect to MongoDB
@@ -70,6 +72,7 @@ app.use('/api/badges', badgeRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use('/api/collections', collectionRoutes);
 app.use('/api/myverse', myverseGamesRoutes);
+app.use('/api/routines', routineRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

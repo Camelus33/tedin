@@ -9,6 +9,15 @@ export interface IUser extends Document {
   trialEndsAt: Date;
   roles: string[];
   createdAt: Date;
+  preferences: {
+    goals?: Array<'focus'|'memory'|'exam'>;
+    memorySpanScore?: number;
+    attentionScore?: number;
+    recommendedZenGoLevels?: string[];
+    recommendedTsDuration?: number;
+    notificationTime?: string;
+    communityInterest?: boolean;
+  };
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -48,6 +57,10 @@ const UserSchema: Schema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  preferences: {
+    type: Schema.Types.Mixed,
+    default: {}
   },
 });
 

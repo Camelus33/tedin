@@ -12,13 +12,14 @@ export interface ZengoProverbContent {
     totalAllowedStones: number;
     initialDisplayTimeMs: number;
     targetTimeMs?: number;
+    collectionId?: string; // Optional: Add collection ID for MyVerse content
 }
 
-// Interface based on backend's IZengoSessionResult
+// Interface based on backend's IZengoSessionResult (Standard/Original Zengo)
 export interface ZengoSessionResult {
     _id: string;
     userId: string;
-    contentId: string;
+    contentId: string; // ID of the standard Zengo content
     level: string;
     language: string;
     usedStonesCount: number;
@@ -30,6 +31,26 @@ export interface ZengoSessionResult {
     earnedBadgeIds?: string[];
     createdAt: string;
     activityId?: string;
+    resultType: 'EXCELLENT' | 'SUCCESS' | 'FAIL'; // Added based on backend model
+}
+
+// Interface for MyVerse session results
+export interface IMyVerseSessionResult {
+    _id: string;
+    userId: string;
+    myVerseGameId: string; // ID of the specific MyVerse game played
+    collectionId: string; // ID of the collection it belongs to
+    level: string;
+    language: string;
+    usedStonesCount: number;
+    correctPlacements: number;
+    incorrectPlacements: number;
+    timeTakenMs: number;
+    completedSuccessfully: boolean;
+    score: number;
+    earnedBadgeIds?: string[]; // Keep consistent if applicable
+    createdAt: string;
+    resultType: 'EXCELLENT' | 'SUCCESS' | 'FAIL';
 }
 
 // Game State type used in Redux slice

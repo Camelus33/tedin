@@ -580,7 +580,7 @@ export default function ZengoPage({
     <div className="zengo-container">
       <div className="zengo-intro">
         <h1 className="intro-title">ZenGo : 기억 착수<br />
-          <span className="intro-subtitle">바둑과 인지과학의 만남</span>
+          <span className="intro-subtitle">바둑판에 나타나는 단어들을 기억하세요</span>
         </h1>
         
         {/* 세로 스크롤 방식 튜토리얼 섹션 */}
@@ -591,17 +591,17 @@ export default function ZengoPage({
               <div className="tutorial-image">
                 <div className="animation-board">
                   <div className="mini-board">
-                    <div className="mini-stone">기억</div>
-                    <div className="mini-stone">은</div>
-                    <div className="mini-stone">반복</div>
-                    <div className="mini-stone">의</div>
-                    <div className="mini-stone">어머니</div>
+                    <div className="mini-stone">계속</div>
+                    <div className="mini-stone">떠올리면</div>
+                    <div className="mini-stone">기억이</div>
+                    <div className="mini-stone">오래</div>
+                    <div className="mini-stone">갑니다</div>
                   </div>
                 </div>
               </div>
               <div className="tutorial-text">
-                <h2>1. 단어 패턴 기억하기</h2>
-                <p>바둑판에 나타나는 단어들의 위치를 기억하세요. 함께 모이면 의미 있는 명언이나 속담을 완성합니다</p>
+                <h2>1. 단어 패턴 떠올리기</h2>
+                <p>바둑판에 나타나는 단어들의 위치와 순서. 함께 모이면 명언이 완성됩니다</p>
                 <div className="tutorial-tip">
                   <span className="tip-icon">💡</span>
                   <span className="tip-text">잠시 후 사라지므로 위치와 순서를 잘 기억해두세요</span>
@@ -622,14 +622,14 @@ export default function ZengoPage({
                   <div className="mini-board memory-phase">
                     <div className="mini-stone empty"></div>
                     <div className="mini-stone empty"></div>
-                    <div className="mini-stone placing">반복</div>
+                    <div className="mini-stone placing">장소</div>
                     <div className="mini-stone empty"></div>
-                    <div className="mini-stone placed">기억</div>
+                    <div className="mini-stone placed">연상</div>
                   </div>
                 </div>
               </div>
               <div className="tutorial-text">
-                <h2>2. 기억을 바탕으로 돌 놓기</h2>
+                <h2>2. 장소를 연상하고 돌 놓기</h2>
                 <p>단어가 사라진 후, 기억한 위치에 돌을 놓아보세요. 정확한 위치에 놓으면 해당 단어가 다시 나타납니다.</p>
                 <div className="tutorial-tip">
                   <span className="tip-icon">💡</span>
@@ -654,11 +654,11 @@ export default function ZengoPage({
                 </div>
               </div>
               <div className="tutorial-text">
-                <h2>3. 난이도별 두뇌 훈련</h2>
-                <p>3x3 초급부터 시작해 5x5 중급, 7x7 고급까지 도전하며 기억력을 향상시키세요. 해마 활성화를 통해 작업기억력과 공간인지력이 증강됩니다.</p>
+                <h2>3. 목표 기억 사이즈별 도전</h2>
+                <p>3x3 초급부터 시작해 5x5 중급, 7x7 고급까지 도전하세요. 기억판의 사이즈가 점점 커집니다.</p>
                 <div className="tutorial-tip">
                   <span className="tip-icon">💡</span>
-                  <span className="tip-text">정기적인 훈련을 통해 공간 인지 능력, 작업 기억력이 향상됩니다. 다양한 언어로도 도전해보세요!</span>
+                  <span className="tip-text">향상된 기억력을 외국어 학습에 활용해 보세요!</span>
                 </div>
               </div>
             </div>
@@ -671,7 +671,7 @@ export default function ZengoPage({
           onKeyPress={(e) => handleKeyPress(e, () => setUiState('selection'))}
           tabIndex={0}
         >
-          ZenGo 시작하기
+          ZenGo 기억 착수 시작
         </button>
       </div>
     </div>
@@ -842,7 +842,7 @@ export default function ZengoPage({
                     />
                   </div>
                   <div className="mt-2 text-[10px] text-gray-300 select-none opacity-70 text-center">
-                    본 페이지의 모든 콘텐츠는 저작권법에 의해 보호되며  무단 복제, 배포를 원칙적으로 금합니다
+                    본 페이지의 콘텐츠는 저작권법에 의해 보호되며  무단 복제, 배포 및 AI학습 사용을 금합니다
                   </div>
                 </div>
               </div>
@@ -889,17 +889,17 @@ export default function ZengoPage({
       return (
         <div className="zengo-container">
           <div className="zengo-selector">
-            <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo 설정</h2>
+            <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo World</h2>
             <p className="settings-intro">
-              레벨과 언어를 선택하고 시작하세요
+              자신의 성장 목표에 맞는 기억판 사이즈와 목표 언어를 선택하세요
             </p>
             {/* 보드 크기 선택 + Myverse 카드 */}
             <section className="settings-section">
-              <h3>재밌게 즐기세요</h3>
+              <h3>기억판 사이즈 선택</h3>
               <div className="level-grid" role="radiogroup" aria-label="레벨 선택">
-                {[{ size: 3, label: '초급', desc: '기억력 기초 - 5분 세션 권장', icon: '🔰' },
-                  { size: 5, label: '중급', desc: '집중력 강화 - 10분 세션 권장', icon: '⭐' },
-                  { size: 7, label: '고급', desc: '공간 지각력 - 15분 세션 권장', icon: '🏆' }
+                {[{ size: 3, label: '초급', desc: '기초 - 3단어 문장', icon: '🔰' },
+                  { size: 5, label: '중급', desc: '숙달 - 5단어 문장', icon: '⭐' },
+                  { size: 7, label: '고급', desc: '도전 - 7단어 문장', icon: '🏆' }
                 ].map(level => (
                   <div
                     key={level.size}
@@ -920,31 +920,51 @@ export default function ZengoPage({
                 ))}
                 {/* ZenGo Myverse Premium Edition Card (as a level card) */}
                 <div
-                  className="level-card group cursor-pointer premium-myverse-card border-2 border-blue-400 relative flex flex-col items-center justify-center transition mx-auto"
-                  style={{ minHeight: 0, minWidth: 0, background: 'linear-gradient(135deg, #4F46E5 0%, #60A5FA 100%)', color: '#fff', boxShadow: '0 4px 24px 0 rgba(96,165,250,0.12), 0 1.5px 8px 0 rgba(79,70,229,0.10)', alignSelf: 'center', justifySelf: 'center' }}
+                  className="level-card group cursor-pointer premium-myverse-card relative flex flex-col items-center justify-center transition mx-auto cyber-card"
+                  style={{
+                    minHeight: 0,
+                    minWidth: 0,
+                    background: 'linear-gradient(135deg, #0a1020 0%, #1e293b 40%, #38bdf8 80%, #a78bfa 100%)',
+                    color: '#fff',
+                    boxShadow: '0 0 32px #1e293bcc, 0 0 12px #38bdf8cc, 0 0 4px #a78bfa99',
+                    border: '2.5px solid #38bdf8',
+                    borderRadius: '18px',
+                    fontFamily: 'Orbitron, Exo, Roboto Mono, sans-serif',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    alignSelf: 'center',
+                    justifySelf: 'center',
+                  }}
                   onClick={() => router.push('/myverse')}
                   tabIndex={0}
                   aria-label="ZenGo Myverse 프리미엄 에디션 자세히 보기"
                 >
-                  <div className="flex items-center gap-2 mb-1 mt-1 w-full justify-center">
-                    <span className="text-sm md:text-lg font-extrabold" style={{ color: '#fff', letterSpacing: '-0.02em' }}>ZenGo</span>
-                    <span className="text-sm md:text-lg font-extrabold" style={{ color: '#FBBF24', letterSpacing: '-0.02em' }}>Myverse</span>
-                    <span className="ml-2 bg-blue-400 text-white px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold shadow border border-blue-300" style={{ letterSpacing: '0.01em', height: 'fit-content' }}>PREMIUM</span>
+                  {/* 사이버 회로 SVG 배경 (옵션) */}
+                  <svg style={{position:'absolute',inset:0,opacity:0.13,zIndex:0}} width="100%" height="100%" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="10" width="300" height="100" rx="18" stroke="#38bdf8" strokeDasharray="8 6" strokeWidth="1.5"/>
+                    <circle cx="60" cy="60" r="18" stroke="#a78bfa" strokeWidth="1.2"/>
+                    <circle cx="260" cy="60" r="18" stroke="#a78bfa" strokeWidth="1.2"/>
+                    <path d="M78 60 H242" stroke="#38bdf8" strokeWidth="1.2" strokeDasharray="4 4"/>
+                  </svg>
+                  <div className="flex items-center gap-2 mb-1 mt-1 w-full justify-center" style={{zIndex:1}}>
+                    <span className="cyber-title text-sm md:text-lg font-extrabold" style={{ color: '#38bdf8', letterSpacing: '0.04em', textShadow: '0 0 8px #38bdf8cc' }}>ZenGo</span>
+                    <span className="cyber-title text-sm md:text-lg font-extrabold" style={{ color: '#a78bfa', letterSpacing: '0.04em', textShadow: '0 0 8px #a78bfa' }}>Myverse</span>
+                    <span className="cyber-premium ml-2 bg-gradient-to-r from-purple-400 to-cyan-400 text-white px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold shadow border border-blue-300" style={{ letterSpacing: '0.01em', height: 'fit-content', background: 'linear-gradient(90deg, #a78bfa, #38bdf8)', boxShadow: '0 0 8px #a78bfa99' }}>PREMIUM</span>
                   </div>
-                  <div className="text-center font-semibold text-sm md:text-base mb-1 w-full" style={{ color: '#fff', wordBreak: 'keep-all', lineHeight: 1.3, maxWidth: '90%' }}>
-                    입력하고 즐기세요. 곧바로 외워집니다
+                  <div className="text-center font-semibold text-sm md:text-base mb-1 w-full" style={{ color: '#fff', wordBreak: 'keep-all', lineHeight: 1.3, maxWidth: '90%', zIndex:1 }}>
+                    입력하고 바로 외우세요
                   </div>
-                  <div className="text-xs mb-2 w-full text-center" style={{ color: '#DBEAFE', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1.2, maxWidth: '90%' }}>
-                    - 초대코드 / 유료가입 -
+                  <div className="text-xs mb-2 w-full text-center" style={{ color: '#DBEAFE', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1.2, maxWidth: '90%', zIndex:1 }}>
+                    - 유료구독 -
                   </div>
-                  <div className="mt-2 text-xs font-bold group-hover:underline" style={{ color: '#fff', letterSpacing: '0.01em' }}>자세히 보기 &gt;</div>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 rounded-2xl pointer-events-none transition" style={{ background: 'linear-gradient(135deg, #60A5FA 0%, #4F46E5 100%)' }} />
+                  <div className="mt-2 text-xs font-bold group-hover:underline" style={{ color: '#fff', letterSpacing: '0.01em', zIndex:1 }}>자세히 보기 &gt;</div>
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 rounded-2xl pointer-events-none transition" style={{ background: 'linear-gradient(135deg, #38bdf8 0%, #a78bfa 100%)', zIndex:2 }} />
                 </div>
               </div>
             </section>
             {/* 언어 선택 */}
             <section className="settings-section">
-              <h3>언어를 선택하세요</h3>
+              <h3>목표 언어 선택</h3>
               <div className="language-grid" role="radiogroup" aria-label="언어 선택">
                 {[{ code: 'ko', name: '한국어', flag: '🇰🇷' },
                   { code: 'en', name: 'English', flag: '🇺🇸' }
@@ -967,33 +987,49 @@ export default function ZengoPage({
               {!selectedLanguage && <p className="selection-guide">언어를 선택해주세요</p>}
             </section>
             {/* 브랜디드 콘텐츠 섹션 */}
-            <section className="settings-section rounded-2xl p-6 md:p-8 mb-6 shadow-xl"
-              style={{ background: 'linear-gradient(90deg, #232946 0%, #1a237e 60%, #283593 100%)', position: 'relative' }}
+            <section className="settings-section rounded-2xl p-6 md:p-8 mb-6"
+              style={{ background: 'linear-gradient(90deg, #0a1020 0%, #1e293b 60%, #232946 100%)', position: 'relative', boxShadow: '0 2px 8px #1e293b44' }}
             >
-              <h3 className="text-2xl font-extrabold mb-2 text-white" style={{ color: '#fff', textShadow: '0 1px 8px rgba(30,40,80,0.18)' }}>
-                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: 700, marginLeft: 4, fontSize: '1rem', letterSpacing: '-0.01em' }}>특허출원 브랜디드 프리미엄 콘텐츠</span>
+              <h3 className="text-2xl font-extrabold mb-2 text-white" style={{ color: '#fff', textShadow: '0 1px 8px #38bdf833' }}>
+                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: 700, marginLeft: 4, fontSize: '1rem', letterSpacing: '-0.01em' }}>독점계약 브랜디드 유료콘텐츠</span>
               </h3>
               <div className="text-gray-200 text-sm md:text-base mb-4">
-                직관적인 바둑 규칙을 적용해, 각종 시험합격에 필요한 개념 및 전문가의 합격비법을 외우기 쉽게 특수 제작한 콘텐츠입니다.
+                수험생 전용 공간 - 각 분야 최고 전문가의 시험대비 콘텐츠를 게임으로 즐기고 성장하세요. (수능, 고시, 자격, 취업, 면접, 외국어 등)
               </div>
               <div className="level-grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
-                  { size: '7x5', desc: '기본 암기' },
-                  { size: '9x7', desc: '요점 정리' },
-                  { size: '11x9', desc: '1장 요약' },
-                  { size: '13x11', desc: '대국 모드' },
+                  { size: '7x5', desc: '요점 정리', color: '#38bdf8', grad: 'linear-gradient(135deg, #0a1020 0%, #38bdf8 80%, #a78bfa 100%)' },
+                  { size: '9x7', desc: '암기 노트', color: '#a78bfa', grad: 'linear-gradient(135deg, #0a1020 0%, #a78bfa 80%, #38bdf8 100%)' },
+                  { size: '11x9', desc: '커닝 페이퍼', color: '#f472b6', grad: 'linear-gradient(135deg, #0a1020 0%, #f472b6 80%, #38bdf8 100%)' },
+                  { size: '13x11', desc: '암기 배틀', color: '#5eead4', grad: 'linear-gradient(135deg, #0a1020 0%, #5eead4 80%, #a78bfa 100%)' },
                 ].map((item) => (
                   <div
                     key={item.size}
-                    className="level-card cursor-pointer border-2 border-gray-300 hover:border-blue-400 transition flex flex-col items-center justify-center p-4 rounded-xl bg-white shadow-sm"
+                    className="level-card cursor-pointer border-2 transition flex flex-col items-center justify-center p-4 rounded-xl relative cyber-card"
+                    style={{
+                      background: item.grad,
+                      color: '#fff',
+                      border: `2.5px solid ${item.color}`,
+                      boxShadow: `0 0 8px ${item.color}44`,
+                      fontFamily: 'Orbitron, Exo, Roboto Mono, sans-serif',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
                     onClick={() => alert('곧 오픈 예정입니다.')}
                     tabIndex={0}
                     role="button"
                     aria-label={`브랜디드 고급콘텐츠 ${item.size}`}
                   >
-                    <div className="text-lg md:text-xl font-bold mb-1 text-gray-800">{item.size}</div>
-                    <div className="text-xs md:text-sm text-gray-500 mb-1">{item.desc}</div>
-                    <div className="text-xs text-gray-400">흑돌/백돌 기억 착수</div>
+                    {/* 사이버 회로 SVG 배경 (각 카드 컬러에 맞게) */}
+                    <svg style={{position:'absolute',inset:0,opacity:0.13,zIndex:0}} width="100%" height="100%" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="10" y="10" width="300" height="100" rx="18" stroke={item.color} strokeDasharray="8 6" strokeWidth="1.5"/>
+                      <circle cx="60" cy="60" r="18" stroke={item.color} strokeWidth="1.2"/>
+                      <circle cx="260" cy="60" r="18" stroke={item.color} strokeWidth="1.2"/>
+                      <path d="M78 60 H242" stroke={item.color} strokeWidth="1.2" strokeDasharray="4 4"/>
+                    </svg>
+                    <div className="text-lg md:text-xl font-bold mb-1" style={{ color: item.color, zIndex:1, textShadow: `0 0 8px ${item.color}` }}>{item.size}</div>
+                    <div className="text-xs md:text-sm mb-1" style={{ color: '#fff', zIndex:1 }}>{item.desc}</div>
+                    <div className="text-xs" style={{ color: '#e0e7ef', zIndex:1 }}>흑돌/백돌 동시 사용</div>
                   </div>
                 ))}
               </div>
@@ -1003,7 +1039,6 @@ export default function ZengoPage({
                   <circle cx="22" cy="22" r="20" fill="#FFD600" stroke="#FFB300" strokeWidth="3"/>
                   <circle cx="22" cy="22" r="14" fill="#FFF8E1" stroke="#FFECB3" strokeWidth="2"/>
                   <path d="M22 11l2.47 6.62h6.96l-5.63 4.09 2.47 6.62L22 24.24l-5.27 4.09 2.47-6.62-5.63-4.09h6.96L22 11z" fill="#FFC107" stroke="#FFB300" strokeWidth="1.2"/>
-                  
                 </svg>
               </span>
             </section>

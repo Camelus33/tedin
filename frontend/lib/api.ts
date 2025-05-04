@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { IMyVerseSessionResult } from '@/src/types/zengo'; // Corrected import path
 
 // 베이스 URL을 상대 경로 /api로 변경 (Next.js 프록시 사용)
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -417,40 +418,34 @@ export const invites = {
   },
 };
 
+// Type definition for the data sent to the MyVerse result endpoint
+interface SubmitMyVerseResultPayload {
+  myVerseGameId: string;
+  collectionId?: string;
+  level: string;
+  language?: string;
+  usedStonesCount: number;
+  correctPlacements: number;
+  incorrectPlacements: number;
+  timeTakenMs: number;
+  completedSuccessfully: boolean;
+  resultType: 'EXCELLENT' | 'SUCCESS' | 'FAIL';
+}
+
 // Zengo Proverb Game API (NEW)
 export const zengoProverbApi = {
-  /**
-   * Fetches the content for a specific Zengo proverb level and language.
-   * GET /api/zengo/proverb-content
-   */
-  getContent: async (level: string, language: string) => {
-    return withRetry(async () => {
-      const response = await api.get('/zengo/proverb-content', {
-        params: { level, lang: language }, // Backend expects 'lang' query param
+  fetchContent: async (params: { level: string; lang: string; contentId?: string; reshuffle?: boolean }) => {
+      const queryParams = new URLSearchParams({
+          level: params.level,
+          lang: params.lang,
+          reshuffle: params.reshuffle ? 'true' : 'false',
+          random: Date.now().toString()
       });
-      return response.data; // Should match IZengoProverbContent structure
-    });
-  },
-
-  /**
-   * Saves the result of a completed Zengo proverb session.
-   * POST /api/zengo/session-result
-   */
-  saveResult: async (resultData: {
-    contentId: string;
-    level: string;
-    language: string;
-    usedStonesCount: number;
-    correctPlacements: number;
-    incorrectPlacements: number;
-    timeTakenMs: number;
-    completedSuccessfully: boolean;
-    // Score is calculated backend, not sent from frontend
-  }) => {
-    // Ensure score is not sent, it's calculated server-side
-    const { score, ...dataToSend } = resultData as any;
-    const response = await api.post('/zengo/session-result', dataToSend);
-    return response.data; // Should match IZengoSessionResult structure
+      if (params.contentId) {
+          queryParams.append('contentId', params.contentId);
+      }
+      const response = await api.get(`/zengo/proverb-content?${queryParams.toString()}`);
+      return response.data;
   },
 };
 
@@ -536,7 +531,21 @@ export const myverseApi = {
   }) => {
     const response = await api.get(`/myverse/games/type/${type}`, { params });
     return response.data; // { games: IMyverseGame[], nextCursor: string | null }
-  }
+  },
+  /**
+   * Submits the result of a MyVerse game session.
+   */
+  submitResult: async (data: SubmitMyVerseResultPayload): Promise<IMyVerseSessionResult> => {
+    console.log('[API Call] Submitting MyVerse result:', data);
+    try {
+      const response = await api.post<IMyVerseSessionResult>('/myverse/session-result', data);
+      console.log('[API Success] MyVerse result submitted:', response.data);
+      return response.data;
+    } catch (error) {
+        console.error('[API Error] Failed to submit MyVerse result:', error);
+        throw error;
+    }
+  },
 };
 
 export default api; 

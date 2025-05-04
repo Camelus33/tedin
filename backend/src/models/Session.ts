@@ -84,5 +84,8 @@ const SessionSchema: Schema = new Schema({
 SessionSchema.index({ userId: 1, bookId: 1 });
 SessionSchema.index({ userId: 1, status: 1 });
 SessionSchema.index({ createdAt: -1 });
+SessionSchema.index({ userId: 1, createdAt: -1 }); // Index for fetching user sessions sorted by date
+// Added index for efficient querying of recent PPM for a user's TS sessions
+SessionSchema.index({ userId: 1, mode: 1, status: 1, createdAt: -1, ppm: 1 });
 
 export default mongoose.model<ISession>('Session', SessionSchema); 

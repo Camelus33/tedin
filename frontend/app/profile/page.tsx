@@ -250,20 +250,23 @@ export default function ProfilePage() {
             ) : (
               <div className="flex space-x-2">
                 <Button 
-                  variant="ghost" 
+                  variant="default"
+                  onClick={handleSaveProfile}
+                  loading={isSaving}
+                >
+                  저장
+                </Button>
+                <Button 
+                  variant="outline" 
                   onClick={() => {
                     setIsEditing(false);
                     setEditNickname(profile.nickname);
+                    setProfileImage(null); // Reset image selection on cancel
+                    setProfileImagePreview(profile.profileImage || null);
                   }}
+                  disabled={isSaving}
                 >
                   취소
-                </Button>
-                <Button 
-                  variant="default" 
-                  onClick={handleSaveProfile}
-                  disabled={isSaving || !editNickname.trim() || editNickname === profile.nickname}
-                >
-                  {isSaving ? '저장 중...' : '저장'}
                 </Button>
               </div>
             )}
@@ -380,57 +383,34 @@ export default function ProfilePage() {
         {/* Subscription Card */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <h2 className="text-lg font-medium mb-4">구독 정보</h2>
-          <div className="p-4 bg-indigo-50 rounded-lg mb-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-medium text-indigo-700">무료 체험 중</h3>
-                <p className="text-sm text-gray-600">남은 기간: {formatDate(profile.trialEndsAt)}까지</p>
-              </div>
-              <Button 
-                variant="default"
-                onClick={() => router.push('/profile/upgrade')}
-              >
-                업그레이드
-              </Button>
+          <div className="bg-blue-50 rounded-lg p-4 flex justify-between items-center">
+            <div>
+              <p className="font-semibold text-blue-800">무료 체험 중</p>
+              <p className="text-sm text-gray-600">
+                남은 기간: {profile.trialEndsAt ? formatDate(profile.trialEndsAt) : '정보 없음'}까지
+              </p>
             </div>
+            <Button 
+              variant="default"
+              onClick={() => router.push('/profile/upgrade')}
+            >
+              업그레이드
+            </Button>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600 mt-4">
             프리미엄 구독으로 업그레이드하면 무제한 독서 세션, Zengo 모드 전체 해제, 고급 분석 등의 혜택을 누릴 수 있습니다.
           </p>
         </div>
         
         {/* Actions */}
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <div className="space-y-3">
-            <Button
-              variant="outline"
-              fullWidth
-              onClick={() => router.push('/legal/terms')}
-            >
-              이용약관
-            </Button>
-            <Button
-              variant="outline"
-              fullWidth
-              onClick={() => router.push('/legal/privacy')}
-            >
-              개인정보처리방침
-            </Button>
-            <Button
-              variant="outline"
-              fullWidth
-              onClick={() => router.push('/legal/support')}
-            >
-              고객센터
-            </Button>
-            <Button
-              variant="danger" // Note: This variant might not exist - you might need to add it to Button component
-              fullWidth
-              onClick={logout}
-            >
-              로그아웃
-            </Button>
-          </div>
+          <Button 
+            variant="danger" 
+            className="w-full"
+            onClick={logout}
+          >
+            로그아웃
+          </Button>
         </div>
       </div>
     </div>

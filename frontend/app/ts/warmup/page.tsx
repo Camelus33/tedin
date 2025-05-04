@@ -3,30 +3,67 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
+import Spinner from '@/components/ui/Spinner';
+import { InformationCircleIcon, CheckCircleIcon, XCircleIcon, LightBulbIcon, ClockIcon, ChevronRightIcon, ArrowRightOnRectangleIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline';
+
+// Cyber Theme Definition (Consistent with other TS pages)
+const cyberTheme = {
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400',
+  bgPrimary: 'bg-gray-900',
+  bgSecondary: 'bg-gray-800',
+  cardBg: 'bg-gray-800/60',
+  borderPrimary: 'border-cyan-500',
+  borderSecondary: 'border-purple-500',
+  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
+  textMuted: 'text-gray-400',
+  textLight: 'text-gray-300',
+  inputBg: 'bg-gray-700/50',
+  inputBorder: 'border-gray-600',
+  inputFocusBorder: 'focus:border-cyan-500',
+  inputFocusRing: 'focus:ring-cyan-500/50',
+  progressBarBg: 'bg-gray-700',
+  progressFg: 'bg-cyan-500',
+  buttonPrimaryBg: 'bg-cyan-600',
+  buttonPrimaryHoverBg: 'hover:bg-cyan-700',
+  buttonSecondaryBg: 'bg-gray-700/50',
+  buttonSecondaryHoverBg: 'hover:bg-gray-600/50',
+  buttonDisabledBg: 'bg-gray-600',
+  tipBg: 'bg-gray-700/80',
+  tipBorder: 'border-gray-500/50',
+  tipIcon: 'text-yellow-400',
+  errorText: 'text-red-400',
+  errorBorder: 'border-red-500/50',
+};
 
 // Types for warmup exercises
 type Exercise = {
-  type: string;  // 'technique', 'subvocalization', 'metaguiding', 'skimming', 'comprehension' 등 새로운 타입 허용
+  type: string;
   title: string;
   description: string;
-  content: string;
+  content: string | React.ReactNode; // Allow ReactNode for styled content
   question: string;
   options?: string[];
   correctAnswer?: string | string[];
-  tip?: string;  // 학습 팁 추가
+  tip?: string;
 };
+
+// Stimuli for new Information Updating task
+const updateStimuli = [5, 8, 2];
 
 export default function TSWarmupPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('sessionId');
-  
+
   const [timeLeft, setTimeLeft] = useState<number>(120); // 2 minutes
   const [currentExercise, setCurrentExercise] = useState<number>(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, string | string[]>>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [showTip, setShowTip] = useState(false);
+  const [showMemoryStimulus, setShowMemoryStimulus] = useState(true); // State for timed WM task
+  const [stimulusStep, setStimulusStep] = useState<number>(0); // State for Information Updating steps
 
   // Format seconds into MM:SS
   const formatTime = (seconds: number) => {
@@ -35,98 +72,145 @@ export default function TSWarmupPage() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Sample warmup exercises
+  // Exercises focusing on cognitive priming for reading speed - Engaging & Challenging
   const exercises: Exercise[] = [
     {
-      type: 'technique',
-      title: '시선 확장법 훈련',
-      description: '한 번에 더 넓은 영역을 인식하는 능력을 키우는 훈련입니다. 이 기술은 독서 속도를 2-3배 높여줍니다.',
-      content: '아래 텍스트를 한 눈에 빠르게 인식해보세요. 텍스트를 단어 단위로 읽지 말고, 3-4개 단어를 한 덩어리로 보는 연습을 합니다.\n\n인간의 뇌는 | 놀라운 능력을 가지고 있어 | 여러 단어를 | 동시에 처리할 수 있습니다. | 시선 확장법을 | 꾸준히 연습하면 | 독서 속도와 | 이해력이 함께 | 높아질 수 있습니다.',
-      question: '위 텍스트에서 총 몇 개의 단어 그룹이 있나요?',
-      options: ['7개', '8개', '9개', '10개'],
-      correctAnswer: '9개',
-      tip: '글을 읽을 때 한 단어씩 읽지 말고 의미 단위로 묶어 읽으세요. 이는 전두엽이 정보를 더 효율적으로 처리하게 합니다.'
-    },
-    {
-      type: 'subvocalization',
-      title: '내적 발성 줄이기',
-      description: '머릿속으로 소리내어 읽는 습관(내적 발성)을 줄이면 읽기 속도가 크게 향상됩니다.',
-      content: '다음 문장을 읽되, 머릿속에서 소리내어 읽지 말고 시각적으로만 이해해보세요.\n\n텍스트를 읽을 때 내적 발성을 사용하면 말하는 속도(분당 150-200단어)로 제한됩니다. 하지만 뇌는 분당 400-700단어까지 처리할 수 있는 능력이 있습니다. 내적 발성을 줄이면 독서 속도가 2-3배 향상될 수 있습니다.',
-      question: '내적 발성 없이 읽을 때 처리 가능한 최대 단어 수(분당)는?',
-      options: ['200-300단어', '400-700단어', '800-1000단어', '1000단어 이상'],
-      correctAnswer: '400-700단어',
-      tip: '텍스트를 정보의 흐름으로 바라보고, 단어의 모양과 패턴을 시각적으로 인식하세요. 이것은 해마를 더 효과적으로 활성화시킵니다.'
-    },
-    {
-      type: 'metaguiding',
-      title: '시선 유도법',
-      description: '효과적인 시선 이동을 통해 읽기 효율성을 높이는 기술입니다.',
-      content: '아래 텍스트를 읽을 때 손가락이나 포인터로 텍스트를 따라가며 읽어보세요. 이 때 포인터를 일정한 속도로 움직이며, 시선이 포인터를 따라가도록 합니다.\n\n→ 시선 유도법은 독서 중 집중력을 높이고 시선이 되돌아가는 것을 방지합니다.\n→ 이 방법은 속독 전문가들이 가장 추천하는 기본 기술입니다.\n→ 처음에는 익숙하지 않을 수 있지만, 연습하면 자연스러워집니다.\n→ 디지털 기기에서는 마우스 커서나 키보드 화살표를 활용할 수 있습니다.',
-      question: '시선 유도법의 주요 효과는 무엇인가요?',
-      options: ['어려운 단어 이해 능력 향상', '문법 구조 파악 능력 향상', '집중력 강화와 시선 회귀 방지', '장시간 독서 시 눈의 피로 감소'],
-      correctAnswer: '집중력 강화와 시선 회귀 방지',
-      tip: '시선 유도는 전두엽의 집중 영역을 자극하여 정보 처리 효율을 높입니다. 규칙적인 움직임이 뇌의 리듬을 최적화합니다.'
-    },
-    {
-      type: 'skimming',
-      title: '스키밍(훑어읽기) 기술',
-      description: '많은 정보에서 핵심만 빠르게 파악하는 기술을 익혀보세요.',
-      content: '다음 문단을 15초 안에 훑어읽고 핵심 정보를 파악해보세요.\n\n인공지능(AI)은 21세기 기술 혁명의 중심입니다. 머신러닝 알고리즘의 발전으로 데이터 분석, 패턴 인식, 자연어 처리 능력이 비약적으로 향상되었습니다. 딥러닝은 특히 이미지 인식과 음성 인식 분야에서 혁신적인 성과를 이루었으며, 이는 자율주행 자동차, 의료 진단, 번역 서비스 등 다양한 산업에 응용되고 있습니다. 그러나 AI의 급속한 발전은 윤리적, 사회적 문제도 제기하고 있어 규제와 윤리 지침의 중요성이 강조되고 있습니다.',
-      question: '이 문단의 핵심 주제는 무엇인가요?',
-      options: ['자율주행 기술의 발전', 'AI의 발전과 그 영향', '딥러닝의 기술적 원리', 'AI 규제의 필요성'],
-      correctAnswer: 'AI의 발전과 그 영향',
-      tip: '스키밍은 첫 문장, 마지막 문장, 강조된 키워드에 집중하는 방식입니다. 이 방법은 대뇌피질의 패턴 인식 능력을 활용합니다.'
-    },
-    {
-      type: 'comprehension',
-      title: '이해력 유지 기술',
-      description: '속독하면서도 이해력을 유지하는 방법을 배워봅시다.',
-      content: '다음 문단을 빠르게 읽으면서 내용을 정확히 이해해보세요.\n\n효과적인 독서는 단순히 빠르게 읽는 것이 아니라, 내용을 효율적으로 이해하고 기억하는 것입니다. 속독 시 이해력을 유지하기 위한 핵심 전략은 다음과 같습니다. 첫째, 사전 스캐닝으로 전체 구조를 파악합니다. 둘째, 질문을 미리 생성하여 목적을 가지고 읽습니다. 셋째, 중요 정보를 시각화하여 기억에 정착시킵니다. 넷째, 정기적으로 짧게 내용을 요약합니다. 이 네 가지 전략을 함께 사용하면 읽기 속도를 높이면서도 이해도를 유지할 수 있습니다.',
-      question: '속독 시 이해력 유지를 위한 전략으로 언급되지 않은 것은?',
-      options: ['사전 스캐닝', '질문 생성', '정보 시각화', '반복 읽기'],
-      correctAnswer: '반복 읽기',
-      tip: '독서 후 핵심 내용을 자신의 말로 정리해보세요. 이 과정은 해마의 장기 기억 전환 과정을 촉진시킵니다.'
-    }
+        type: 'input_calibration',
+        title: '한눈에 보기', // Engaging Title
+        description: '동물 친구들이 한 줄로 지나가요! 눈 한번 깜빡! 할 때 얼마나 많은 친구들을 볼 수 있는지 연습해요. 눈을 덜 움직이면 글도 빨리 읽을 수 있답니다!', // Simple Desc + Speed Link
+        content: '토끼 원숭이 코끼리 | 사자 호랑이 기린 팬더 | 고양이 강아지 다람쥐 햄스터 곰', // Longer, Engaging Content
+        question: '동물 이름 덩어리(| 기준)가 모두 몇 개 인가요?', // Challenging Q
+        options: ['1개', '2개', '3개', '4개'], // Options
+        correctAnswer: '3개', // Answer
+        tip: '글자를 한 덩어리로 보는 연습! 눈이 멈추는 횟수가 줄면 읽는 속도가 쑥쑥 올라가요!' // Strict Speed Tip
+      },
+      {
+        type: 'target_focus',
+        title: '규칙 찾기', // Engaging Title
+        description: '보물 지도에 숨겨진 X 표시를 빨리 찾아보세요! 중요한 표시만 콕 집어내는 연습을 하면 글 읽을 때도 핵심 내용을 놓치지 않아요.', // Simple Desc
+        content: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z A B C D E F G H I J K L M N O P Q R S T U V W Y Z A B C D E F G H I J K L M N O P Q R S T U V W Y Z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z A T U K J H G F E D M Z P Q S V', // Longer, Challenging Content
+        question: '보물 지도에서 X 표시는 모두 몇 개 찾았나요?', // Challenging Q
+        options: ['1개', '2개', '3개', '4개'], // Options
+        correctAnswer: '2개', // Answer
+        tip: '다른 글자는 무시! 목표(X)만 찾는 연습이에요. 책 읽을 때도 중요한 단어만 빠르게 찾으면 속도가 올라가요.' // Strict Speed Tip
+      },
+      {
+        type: 'info_update',
+        title: '잔상 기억하기', // Engaging Title
+        description: '과일 바구니에 과일이 계속 바뀌어요. 마지막에 남은 과일을 기억해야 해요! 변하는 내용을 따라가는 연습은 빠른 읽기에 꼭 필요해요.', // Simple Desc + Speed Link
+        // JS Logic will need to handle displaying this sequence: [사과] -> [사과, 바나나] -> [바나나, 포도] -> [포도, 딸기]
+        // For now, represent final state conceptually in content for structure
+        content: (
+            <div className="text-center p-4 min-h-[80px] flex items-center justify-center">
+                {stimulusStep < 4 ? (
+                     <p className="mb-2 text-sm ${cyberTheme.textMuted}">과일 바구니 변화 ({stimulusStep + 1}/4): [과일 표시 로직 필요]</p>
+                 ) : (
+                     <p className="text-sm ${cyberTheme.textMuted}">(과일 바구니 변화 완료)</p>
+                 )}
+             </div>
+        ),
+        question: '바구니에 마지막으로 남은 과일은 무엇과 무엇이었나요?', // Challenging Q
+        options: ['사과, 바나나', '바나나, 포도', '포도, 딸기', '딸기, 사과'], // Options
+        correctAnswer: '포도, 딸기', // Answer
+        tip: '내용이 계속 바뀌어도 바로바로 따라가는 연습! 이렇게 하면 글 읽을 때 막히지 않고 빠르게 다음으로 넘어갈 수 있어요.' // Strict Speed Tip
+      },
+      {
+        type: 'memory_capacity',
+        title: '순서 기억하기', // Engaging Title
+        description: '마법사가 알려주는 주문이에요! 아주 잠깐 보이니까 집중해서 순서대로 외워야 해요.', // Simple Desc
+        // JS logic needs to show this longer string for 3 seconds
+        content: showMemoryStimulus ? (
+            <div className="text-center p-4">
+                <p className="mb-2 text-sm ${cyberTheme.textMuted}">3초 후 사라집니다! 주문을 외우세요:</p>
+                <p className="font-mono text-xl font-bold ${cyberTheme.primary}">아브라카다브라 알라카잠 수리수리 마수리</p> {/* Longer Stimulus */}
+            </div>
+        ) : (
+            <div className="text-center p-4 text-sm ${cyberTheme.textMuted}">(주문이 사라졌어요!)</div>
+        ),
+        question: '마법사가 알려준 주문의 *마지막* 부분은 무엇이었나요?', // Challenging Q
+        options: ['아브라카다브라', '알라카잠', '수리수리', '마수리'], // Options
+        correctAnswer: '마수리', // Answer
+        tip: '방금 본 걸 잘 기억하면, 읽던 곳으로 다시 돌아갈 필요가 없어져서 읽는 시간이 줄어들어요!' // Strict Speed Tip
+      },
+      {
+        type: 'inhibition',
+        title: '인지부조화 경험하기', // Engaging Title
+        description: '오늘은 반대로 말하는 날! 글자의 뜻 말고, 글자가 쓰인 색깔을 말해야 해요. 헷갈려도 참고 색깔만! 빠르게!', // Simple Desc
+        // JS logic needs to show word 노랑 in green color
+        content: (
+            <div className="text-center p-4">
+                <p className="mb-2 text-sm ${cyberTheme.textMuted}">이 글자는 무슨 색깔로 쓰여 있나요?</p>
+                <p className="text-3xl font-bold" style={{ color: 'green' }}>노랑</p> {/* Word 노랑(yellow) in green */}
+            </div>
+        ),
+        question: '글자는 무슨 색깔로 쓰여 있었나요?', // Challenging Q
+        options: ['노랑', '초록', '파랑', '빨강'], // Options
+        correctAnswer: '초록', // Answer is the COLOR green
+        tip: '느리게 읽는 습관을 꾹 참고! 목표(색깔 보기!)에만 집중하는 연습이에요. 이렇게 딴생각 스위치를 꺼야 읽는 속도가 빨라져요!' // Strict Speed Tip
+      }
   ];
 
   // Timer logic
   useEffect(() => {
-    if (isLoading || timeLeft <= 0) {
-      return;
-    }
-
+    if (isLoading || timeLeft <= 0) return;
     const timerId = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerId);
-          // Automatically go to reading page when timer ends
           handleFinishWarmup();
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timerId);
   }, [isLoading, timeLeft]);
 
+  // Loading simulation
   useEffect(() => {
-    // Simulate loading exercise data
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearInterval(loadingTimer);
+    const loadingTimer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(loadingTimer);
   }, []);
 
+  // Effect for timed memory stimulus
+  useEffect(() => {
+    if (exercises[currentExercise]?.type === 'memory_capacity' && showMemoryStimulus) {
+      const memoryTimer = setTimeout(() => {
+        setShowMemoryStimulus(false);
+      }, 3000);
+      return () => clearTimeout(memoryTimer);
+    }
+  }, [currentExercise, showMemoryStimulus]);
+
+  // Effect for Information Updating Stimulus Steps
+  useEffect(() => {
+    let timerId: NodeJS.Timeout | undefined;
+    const maxSteps = 4; // Corresponds to [사과] -> [사과, 바나나] -> [바나나, 포도] -> [포도, 딸기]
+    if (exercises[currentExercise]?.type === 'info_update' && stimulusStep < maxSteps) {
+       timerId = setTimeout(() => {
+         setStimulusStep(prevStep => prevStep + 1);
+       }, 1500);
+    }
+    return () => clearTimeout(timerId);
+  }, [currentExercise, stimulusStep]);
+
+  // Reset memory stimulus visibility when exercise changes
+  useEffect(() => {
+      setShowMemoryStimulus(true);
+      setStimulusStep(0);
+      setShowTip(false);
+      // Reset answer for the new exercise if needed, depends on desired UX
+      // setUserAnswers(prev => ({ ...prev, [currentExercise]: undefined }));
+  }, [currentExercise]);
+
+
   const handleAnswerSelect = (answer: string | string[]) => {
-    setUserAnswers(prev => ({
-      ...prev,
-      [currentExercise]: answer
-    }));
+    setUserAnswers(prev => ({ ...prev, [currentExercise]: answer }));
+    setShowTip(false); // Hide tip when an answer is selected
   };
 
   const handleNext = () => {
+    setShowTip(false); // Hide tip when moving to next exercise
     if (currentExercise < exercises.length - 1) {
       setCurrentExercise(currentExercise + 1);
     } else {
@@ -136,7 +220,6 @@ export default function TSWarmupPage() {
 
   const handleFinishWarmup = useCallback(() => {
     if (!sessionId) return;
-    // Navigate to reading page with session ID
     router.push(`/ts/reading?sessionId=${sessionId}`);
   }, [sessionId, router]);
 
@@ -146,166 +229,172 @@ export default function TSWarmupPage() {
 
   const exercise = exercises[currentExercise];
 
-  if (isLoading) {
+  // Loading State UI
+  if (isLoading || !exercise) { // Added !exercise check
     return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-50">
-        <p>예열 훈련 준비 중...</p>
+      <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
+        <Spinner size="lg" color="cyan" />
+        <p className={`mt-4 ${cyberTheme.textMuted}`}>인지 시스템 활성화 준비 중...</p>
       </div>
     );
   }
 
+  // Error State UI
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4">
-        <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-red-600 mb-4">오류 발생</h1>
-          <p className="mb-6">{error}</p>
+      <div className={`min-h-screen flex items-center justify-center ${cyberTheme.gradient} p-4`}>
+        <div className={`${cyberTheme.cardBg} rounded-xl shadow-lg p-5 max-w-md w-full border ${cyberTheme.errorBorder}`}>
+          <h1 className={`text-xl font-bold ${cyberTheme.errorText} mb-3 flex items-center`}>
+            <XCircleIcon className="h-6 w-6 mr-2" /> 오류 발생
+          </h1>
+          <p className={`mb-4 text-sm ${cyberTheme.textMuted}`}>{error || '훈련 데이터를 불러오는 데 실패했습니다.'}</p>
           <Button
             href="/ts"
-            variant="default"
+            variant="outline"
+            className={`w-full !text-sm !py-2 !border-red-500/50 !text-red-400 hover:!bg-red-900/30`}
           >
-            돌아가기
+            <ArrowUturnLeftIcon className="h-4 w-4 mr-2" />
+            루프 설정으로 돌아가기
           </Button>
         </div>
       </div>
     );
   }
 
+  // Main Warmup UI - Compacted Layout
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-white p-4 sm:p-6">
-      <div className="container mx-auto max-w-xl">
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-4 border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-xl font-bold text-gray-800">예열 훈련</h1>
-            <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-xl">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-              </svg>
-              <div>
-                <div className="text-lg font-mono font-bold text-blue-700">{formatTime(timeLeft)}</div>
-                <div className="text-xs text-blue-500">남은 시간</div>
-              </div>
-            </div>
-          </div>
+    <div className={`min-h-screen ${cyberTheme.gradient} py-4 px-2 sm:px-4 ${cyberTheme.textLight}`}>
+      <div className="container mx-auto max-w-lg"> {/* Reduced max-width */}
 
-          <div className="relative mb-2">
-            <div className="h-2 bg-gray-200 rounded-full">
-              <div 
-                className="h-2 bg-blue-500 rounded-full" 
-                style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
-              ></div>
+        {/* Header Section - Compact */}
+        <div className={`${cyberTheme.cardBg} rounded-lg shadow-md p-3 mb-3 border ${cyberTheme.inputBorder} flex justify-between items-center`}>
+            <h1 className={`text-base sm:text-lg font-bold ${cyberTheme.textLight} truncate pr-2`}>활성화: {currentExercise + 1}. {exercise.title}</h1>
+            {/* Timer & Progress Section - Compact */}
+            <div className={`flex items-center gap-3 p-2 rounded ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} shadow-inner`}>
+                {/* Timer */}
+                <div className="flex items-center gap-1 text-center">
+                    <ClockIcon className={`h-4 w-4 ${cyberTheme.primary}`} />
+                    <div>
+                        <div className={`text-sm font-mono font-bold ${cyberTheme.textLight}`}>{formatTime(timeLeft)}</div>
+                    </div>
+                </div>
+                {/* Progress Bar */}
+                <div className="w-16 sm:w-20">
+                    <div className={`h-1.5 ${cyberTheme.progressBarBg} rounded-full overflow-hidden`}>
+                        <div
+                            className={`h-1.5 ${cyberTheme.progressFg} rounded-full transition-all duration-300 ease-in-out`}
+                            style={{ width: `${((currentExercise + 1) / exercises.length) * 100}%` }}
+                        ></div>
+                    </div>
+                    <div className={`mt-0.5 text-[10px] text-right ${cyberTheme.textMuted}`}>
+                        {currentExercise + 1}/{exercises.length}
+                    </div>
+                </div>
             </div>
-            <div className="mt-1 text-xs text-right text-gray-500">
-              {currentExercise + 1} / {exercises.length}
-            </div>
-          </div>
+        </div>
 
-          <div className="bg-indigo-50 rounded-xl p-5 mb-6 border border-indigo-100">
-            <h2 className="font-bold text-lg text-indigo-800 mb-2">{exercise.title}</h2>
-            <p className="text-sm text-indigo-700 mb-5 leading-relaxed">{exercise.description}</p>
-            <div className="bg-white p-4 rounded-xl border border-indigo-100 mb-4 shadow-sm overflow-auto max-h-60">
-              <p className="text-gray-800 whitespace-pre-wrap break-words">{exercise.content}</p>
-            </div>
-            <p className="font-medium text-gray-800">{exercise.question}</p>
-            {exercise.tip && (
-              <div className="mt-4">
-                <button 
+        {/* Exercise Section - Compact */}
+        <div className={`${cyberTheme.cardBg} rounded-lg shadow-md p-4 mb-3 border ${cyberTheme.inputBorder}`}>
+           {/* Description - Kept short */}
+           <p className={`text-xs sm:text-sm ${cyberTheme.textMuted} mb-3 leading-relaxed`}>{exercise.description}</p>
+
+           {/* Exercise Content Box */}
+           {/* Needs adjustment to render fruit sequence based on stimulusStep */}
+           <div className={`${cyberTheme.inputBg} p-3 rounded border ${cyberTheme.inputBorder} mb-3 shadow-sm overflow-auto min-h-[60px] max-h-48 flex items-center justify-center`}>
+              {/* Conditional rendering for info_update based on stimulusStep */} 
+              {exercise.type === 'info_update' && (
+                 <div className="text-center p-4">
+                 {stimulusStep === 0 && <p className="font-mono text-xl font-bold ${cyberTheme.primary}">[사과]</p>}
+                 {stimulusStep === 1 && <p className="font-mono text-xl font-bold ${cyberTheme.primary}">[사과, 바나나]</p>}
+                 {stimulusStep === 2 && <p className="font-mono text-xl font-bold ${cyberTheme.primary}">[바나나, 포도]</p>}
+                 {stimulusStep === 3 && <p className="font-mono text-xl font-bold ${cyberTheme.primary}">[포도, 딸기]</p>}
+                 {stimulusStep >= 4 && <p className="text-sm ${cyberTheme.textMuted}">(과일 바구니 변화 완료)</p>}
+                 </div>
+              )}
+              {/* Render other exercise types */}
+              {exercise.type !== 'info_update' && (
+                typeof exercise.content === 'string' ? (
+                  <p className={`${cyberTheme.textLight} text-sm whitespace-pre-wrap break-words font-mono tracking-widest`}>{exercise.content}</p>
+                ) : (
+                  <div className={`${cyberTheme.textLight} text-sm w-full`}>{exercise.content}</div>
+                )
+              )}
+           </div>
+
+           <p className={`font-medium text-sm ${cyberTheme.textLight} mb-3`}>{exercise.question}</p>
+
+           {/* Tip Section - Reduced margin */}
+           {exercise.tip && (
+              <div className="mb-4">
+                <button
                   onClick={handleToggleTip}
-                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center"
+                  className={`${cyberTheme.primary} hover:text-cyan-300 text-xs font-medium flex items-center transition-colors`}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                  <span>{showTip ? '팁 숨기기' : '팁 보기'}</span>
+                  <LightBulbIcon className={`h-3.5 w-3.5 mr-1 ${cyberTheme.tipIcon}`} />
+                  <span>{showTip ? '원리 숨기기' : '어떻게 속도가 빨라지나요?'}</span>
                 </button>
                 {showTip && (
-                  <div className="mt-2 p-3 bg-yellow-50 border border-yellow-100 rounded-lg">
-                    <p className="text-sm text-yellow-800">{exercise.tip}</p>
+                  <div className={`mt-1.5 p-2 ${cyberTheme.tipBg} border ${cyberTheme.tipBorder} rounded`}>
+                    <p className={`text-xs ${cyberTheme.textLight}`}>{exercise.tip}</p>
                   </div>
                 )}
               </div>
-            )}
-          </div>
+           )}
 
-          {exercise.type === 'wordSpotting' || exercise.type === 'wordCounting' ? (
-            <div className="space-y-3 mb-6">
-              {exercise.options?.map((option, index) => (
+           {/* Answer Options - Horizontal Layout */}
+           <div className="flex flex-wrap gap-2 mb-4">
+             {/* Options mapping - disable logic needs adjustment for info_update */}
+            {exercise.options?.map((option, index) => {
+              const isSelected = userAnswers[currentExercise] === option;
+              // Determine if options should be disabled for info_update task
+              const isInfoUpdateTask = exercise.type === 'info_update';
+              const isInfoUpdateComplete = stimulusStep >= 4; // Step count should match maxSteps
+              const disableOptions = isInfoUpdateTask && !isInfoUpdateComplete;
+
+              return (
                 <button
                   key={index}
                   onClick={() => handleAnswerSelect(option)}
-                  className={`w-full p-4 rounded-xl text-left transition-all ${
-                    userAnswers[currentExercise] === option
-                      ? 'bg-indigo-600 text-white shadow-md'
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200'
-                  }`}
+                  className={`p-2 px-3 rounded text-left transition-all border flex items-center justify-center text-xs sm:text-sm flex-grow sm:flex-grow-0 ${
+                    isSelected
+                      ? `${cyberTheme.buttonPrimaryBg} text-white ${cyberTheme.borderPrimary} shadow-sm`
+                      : `${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textLight} ${cyberTheme.inputBorder}`
+                  } ${disableOptions ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={disableOptions}
                 >
-                  {option}
+                  <span>{option}</span>
+                  {isSelected && <CheckCircleIcon className="h-4 w-4 text-white ml-2" />}
                 </button>
-              ))}
-            </div>
-          ) : (
-            <div className="mb-6">
-              <div className="flex flex-wrap gap-2">
-                {exercise.options?.map((option, index) => {
-                  const isSelected = Array.isArray(userAnswers[currentExercise]) 
-                    ? (userAnswers[currentExercise] as string[]).includes(option)
-                    : false;
-                  
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        // Toggle selection for multiselect
-                        const currentSelections = Array.isArray(userAnswers[currentExercise])
-                          ? [...userAnswers[currentExercise] as string[]]
-                          : [];
-                          
-                        if (isSelected) {
-                          handleAnswerSelect(currentSelections.filter(item => item !== option));
-                        } else {
-                          handleAnswerSelect([...currentSelections, option]);
-                        }
-                      }}
-                      className={`px-4 py-3 rounded-xl transition-all ${
-                        isSelected
-                          ? 'bg-indigo-600 text-white shadow-md'
-                          : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200'
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-xs text-gray-500 mt-2 italic">여러 개 선택 가능합니다</p>
-            </div>
-          )}
+              );
+            })}
+           </div>
+        </div>
 
-          <div className="flex justify-between pt-2">
-            <button
+        {/* Navigation Buttons - Compact */}
+        <div className="flex justify-between items-center pt-1">
+           <Button
+              type="button"
               onClick={handleFinishWarmup}
-              className="text-gray-500 hover:text-gray-700 text-sm font-medium flex items-center transition-colors"
-            >
-              <span>건너뛰기</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
-            <button
+              variant="ghost"
+              className={`!text-gray-500 hover:!text-gray-400 !text-xs !px-2 !py-1`}
+           >
+              <ArrowRightOnRectangleIcon className="h-3.5 w-3.5 mr-0.5" />
+              건너뛰기
+           </Button>
+           <Button
+              type="button"
               onClick={handleNext}
-              disabled={!userAnswers[currentExercise]}
-              className={`px-6 py-2.5 rounded-xl font-medium flex items-center ${
-                userAnswers[currentExercise]
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              } transition-colors`}
-            >
-              <span>{currentExercise < exercises.length - 1 ? '다음' : '완료'}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
+              disabled={!userAnswers[currentExercise] || isLoading || (exercise.type === 'info_update' && stimulusStep < 4)} // Use maxSteps
+              loading={isLoading}
+              className={`!px-4 !py-2 !rounded !text-xs sm:text-sm !font-medium flex items-center justify-center transition-colors ${
+                !userAnswers[currentExercise] || (exercise.type === 'info_update' && stimulusStep < 4) // Use maxSteps
+                ? `${cyberTheme.buttonDisabledBg} !text-gray-400 cursor-not-allowed opacity-50`
+                : `${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white shadow-sm`
+              }`}
+           >
+              <span>{currentExercise < exercises.length - 1 ? '다음 단계' : '루프 시작'}</span>
+              <ChevronRightIcon className="h-4 w-4 ml-1" />
+           </Button>
         </div>
       </div>
     </div>

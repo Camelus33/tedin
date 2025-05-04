@@ -8,9 +8,12 @@
     "check-duplicate-words": "node scripts/validate-duplicate-words.js"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@react-three/drei": "^9.30.0",
     "@react-three/fiber": "^8.13.7",
     "@types/three": "^0.175.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "lucide-react": "^0.503.0",
     "three": "^0.150.1"
   }
 }

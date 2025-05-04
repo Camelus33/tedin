@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { AxiosError } from 'axios';
 import CognitiveProfileChart from './CognitiveProfileChart';
-import CognitiveTimeSeriesChart from './CognitiveTimeSeriesChart';
 
 // API response interface
 interface CognitiveProfileResponse {
   currentProfile: {
     hippocampusActivation: number;
     workingMemory: number;
-    spatialCognition: number;
+    processingSpeed: number;
     attention: number;
     patternRecognition: number;
     cognitiveFlexibility: number;
@@ -20,7 +20,7 @@ interface CognitiveProfileResponse {
     metrics: {
       hippocampusActivation: number;
       workingMemory: number;
-      spatialCognition: number;
+      processingSpeed: number;
       attention: number;
       patternRecognition: number;
       cognitiveFlexibility: number;
@@ -42,37 +42,59 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
 
   // Fetch cognitive profile data from the API
   useEffect(() => {
+    const controller = new AbortController();
     const fetchCognitiveProfile = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const token = localStorage.getItem('token');
         if (!token) {
           setError('인증이 필요합니다');
-          setIsLoading(false);
           return;
         }
 
         const response = await axios.get<CognitiveProfileResponse>(
           `/api/zengo/cognitive-profile?period=${timePeriod}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
+            signal: controller.signal,
           }
         );
 
+        // Log the successful response data
+        console.log('Fetched Cognitive Profile Data:', response.data);
         setProfileData(response.data);
       } catch (err) {
         console.error('인지 능력 프로필 데이터 가져오기 실패:', err);
-        setError('데이터를 불러오는 중 오류가 발생했습니다');
+        if (axios.isAxiosError(err)) {
+          if (err.code === 'ERR_CANCELED') {
+            return;
+          }
+          if (err.response) {
+            if (err.response.status === 401) {
+              setError('인증이 필요합니다');
+            } else if (err.response.status >= 500) {
+              setError('서버 오류가 발생했습니다');
+            } else {
+              setError('데이터를 불러오는 중 오류가 발생했습니다');
+            }
+          } else {
+            setError('네트워크 연결을 확인하세요');
+          }
+        } else {
+          setError('알 수 없는 오류가 발생했습니다');
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCognitiveProfile();
+    const handler = setTimeout(fetchCognitiveProfile, 200);
+    return () => {
+      clearTimeout(handler);
+      controller.abort();
+    };
   }, [timePeriod]);
 
   // Placeholder empty data for when no data is available
@@ -80,7 +102,7 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
     currentProfile: {
       hippocampusActivation: 0,
       workingMemory: 0,
-      spatialCognition: 0,
+      processingSpeed: 0,
       attention: 0,
       patternRecognition: 0,
       cognitiveFlexibility: 0,
@@ -90,32 +112,39 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
 
   return (
     <div className={`bg-white rounded-xl shadow-md overflow-hidden ${className}`}>
-      <div className="p-6">
-        <h2 className="text-2xl font-bold mb-6 text-center">인지 능력 프로필</h2>
+      <div className="p-6 md:p-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">정보 처리 역량 분석</h2>
+        <p className="text-sm text-gray-500 mb-6 text-center">매번 변화하는 자신을 관찰하세요</p>
         
         {/* Time period selector */}
         <div className="flex justify-center mb-6">
           <div className="inline-flex rounded-md shadow-sm">
-            {['week', 'month', 'year', 'all'].map((period) => (
+            {[
+              { key: 'week', label: '1주' },
+              { key: 'month', label: '1개월' },
+              { key: 'year', label: '1년' },
+              { key: 'all', label: '전체' },
+            ].map((period, index, arr) => (
               <button
-                key={period}
+                key={period.key}
                 type="button"
-                className={`px-4 py-2 text-sm font-medium ${
-                  timePeriod === period
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                } ${
-                  period === 'week'
-                    ? 'rounded-l-lg'
-                    : period === 'all'
-                    ? 'rounded-r-lg'
-                    : ''
-                } border border-gray-300`}
-                onClick={() => setTimePeriod(period as 'all' | 'week' | 'month' | 'year')}
+                className={`px-3 py-1 text-sm font-medium border border-gray-200 
+                  transition-colors duration-150 
+                  ${
+                    timePeriod === period.key
+                      ? 'bg-indigo-600 text-white z-10 ring-1 ring-indigo-600'
+                      : 'bg-white text-indigo-700 hover:bg-indigo-50'
+                  }
+                  ${
+                    index === 0 ? 'rounded-l-md' : ''
+                  }
+                  ${
+                    index === arr.length - 1 ? 'rounded-r-md' : ''
+                  }
+                `}
+                onClick={() => setTimePeriod(period.key as 'all' | 'week' | 'month' | 'year')}
               >
-                {period === 'week' ? '1주' : 
-                 period === 'month' ? '1개월' : 
-                 period === 'year' ? '1년' : '전체'}
+                {period.label}
               </button>
             ))}
           </div>
@@ -131,24 +160,10 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
           <div className="space-y-8">
             {/* Cognitive Profile Radar Chart */}
             <div>
-              <h3 className="text-lg font-semibold mb-3 text-center">인지 능력 프로필</h3>
               <CognitiveProfileChart 
                 data={profileData?.currentProfile || emptyProfileData.currentProfile} 
+                previousData={profileData?.historicalData && profileData.historicalData.length > 1 ? profileData.historicalData[profileData.historicalData.length - 2]?.metrics : undefined}
               />
-            </div>
-            
-            {/* Cognitive Metrics Time Series */}
-            <div>
-              <h3 className="text-lg font-semibold mb-3 text-center">인지 능력 변화 추이</h3>
-              {profileData?.historicalData?.length ? (
-                <CognitiveTimeSeriesChart 
-                  data={profileData.historicalData} 
-                />
-              ) : (
-                <div className="text-center text-gray-500 py-8">
-                  데이터가 충분하지 않습니다. 제고(Zengo) 게임을 더 플레이하여 데이터를 쌓아보세요.
-                </div>
-              )}
             </div>
           </div>
         )}

@@ -2,6 +2,10 @@ import { Request, Response } from 'express';
 import MyverseGame, { IMyverseGame } from '../models/MyverseGame';
 import Collection from '../models/Collection';
 import mongoose from 'mongoose';
+import { Types } from 'mongoose';
+import { validationResult } from 'express-validator';
+import MyVerseSessionResult from '../models/MyVerseSessionResult';
+import { processCommonSessionResultTasks } from '../services/sessionResultService';
 
 // Helper function for cursor-based pagination
 const applyPagination = async (
@@ -104,16 +108,57 @@ export const createMyverseGame = async (req: Request, res: Response) => {
   try {
     const userId = req.user._id;
     const { collectionId } = req.params;
-    const { title, inputText, wordMappings, boardSize, visibility, sharedWith } = req.body;
+    const { title, description, inputText, wordMappings, boardSize, visibility, sharedWith, tags } = req.body;
+
+    // === 유효성 검사 ===
+    // 제목
+    if (!title || title.length < 2 || title.length > 50) {
+      return res.status(400).json({ error: '제목은 2~50자여야 합니다.' });
+    }
+    // 설명
+    if (!description || description.length < 10 || description.length > 300) {
+      return res.status(400).json({ error: '설명은 10~300자여야 합니다.' });
+    }
+    // inputText(문장)
+    const words = (inputText || '').trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return res.status(400).json({ error: '암기할 단어/문장을 입력해 주세요.' });
+    if (words.length > 9) return res.status(400).json({ error: '최대 9개까지 입력할 수 있습니다.' });
+    if (new Set(words).size !== words.length) return res.status(400).json({ error: '중복된 단어가 있습니다.' });
+    for (const w of words) {
+      if (w.length < 1 || w.length > 20) return res.status(400).json({ error: '각 단어는 1~20자여야 합니다.' });
+      if (!/^[가-힣a-zA-Z0-9]+$/.test(w)) return res.status(400).json({ error: '특수문자 없이 한글, 영문, 숫자만 입력해 주세요.' });
+    }
+    // tags
+    if (tags) {
+      if (!Array.isArray(tags) || tags.length > 20) {
+        return res.status(400).json({ error: '태그는 최대 20개까지 입력할 수 있습니다.' });
+      }
+      const tagSet = new Set();
+      for (const tag of tags) {
+        if (typeof tag !== 'string' || tag.length < 1 || tag.length > 20) {
+          return res.status(400).json({ error: '각 태그는 1~20자여야 합니다.' });
+        }
+        if (!/^[가-힣a-zA-Z0-9]+$/.test(tag)) {
+          return res.status(400).json({ error: '태그에는 특수문자를 사용할 수 없습니다.' });
+        }
+        if (tagSet.has(tag)) {
+          return res.status(400).json({ error: `중복된 태그가 있습니다: ${tag}` });
+        }
+        tagSet.add(tag);
+      }
+    }
+
     const newGame = new MyverseGame({
       collectionId: collectionId,
       owner: userId,
       title,
+      description,
       inputText,
       wordMappings,
       boardSize,
       visibility: visibility || 'private',
-      sharedWith: visibility === 'group' ? sharedWith || [] : []
+      sharedWith: visibility === 'group' ? sharedWith || [] : [],
+      tags: tags || []
     });
     const saved = await newGame.save();
     res.status(201).json(saved);
@@ -156,6 +201,41 @@ export const updateMyverseGame = async (req: Request, res: Response) => {
       return res.status(400).json({ error: '유효하지 않은 게임 ID입니다.' });
     }
     const updateData = req.body;
+    // === 유효성 검사 ===
+    if (updateData.title && (updateData.title.length < 2 || updateData.title.length > 50)) {
+      return res.status(400).json({ error: '제목은 2~50자여야 합니다.' });
+    }
+    if (updateData.description && (updateData.description.length < 10 || updateData.description.length > 300)) {
+      return res.status(400).json({ error: '설명은 10~300자여야 합니다.' });
+    }
+    if (updateData.inputText) {
+      const words = (updateData.inputText || '').trim().split(/\s+/).filter(Boolean);
+      if (words.length === 0) return res.status(400).json({ error: '암기할 단어/문장을 입력해 주세요.' });
+      if (words.length > 9) return res.status(400).json({ error: '최대 9개까지 입력할 수 있습니다.' });
+      if (new Set(words).size !== words.length) return res.status(400).json({ error: '중복된 단어가 있습니다.' });
+      for (const w of words) {
+        if (w.length < 1 || w.length > 20) return res.status(400).json({ error: '각 단어는 1~20자여야 합니다.' });
+        if (!/^[가-힣a-zA-Z0-9]+$/.test(w)) return res.status(400).json({ error: '특수문자 없이 한글, 영문, 숫자만 입력해 주세요.' });
+      }
+    }
+    if (updateData.tags) {
+      if (!Array.isArray(updateData.tags) || updateData.tags.length > 20) {
+        return res.status(400).json({ error: '태그는 최대 20개까지 입력할 수 있습니다.' });
+      }
+      const tagSet = new Set();
+      for (const tag of updateData.tags) {
+        if (typeof tag !== 'string' || tag.length < 1 || tag.length > 20) {
+          return res.status(400).json({ error: '각 태그는 1~20자여야 합니다.' });
+        }
+        if (!/^[가-힣a-zA-Z0-9]+$/.test(tag)) {
+          return res.status(400).json({ error: '태그에는 특수문자를 사용할 수 없습니다.' });
+        }
+        if (tagSet.has(tag)) {
+          return res.status(400).json({ error: `중복된 태그가 있습니다: ${tag}` });
+        }
+        tagSet.add(tag);
+      }
+    }
     const game = await MyverseGame.findById(gameId);
     if (!game) return res.status(404).json({ error: 'Game not found' });
     if (game.owner.toString() !== userId.toString()) {
@@ -281,5 +361,118 @@ export const getSharedGames = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching shared games:', error);
     res.status(500).json({ error: 'Failed to fetch shared games' });
+  }
+};
+
+/**
+ * Saves the result of a MyVerse game session.
+ */
+export const saveMyVerseSessionResult = async (req: Request, res: Response) => {
+  // 1. Validate request body (consider adding express-validator rules in the route)
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const userId = req.user?.id as Types.ObjectId | string | undefined;
+  const {
+    myVerseGameId, // Expecting this ID instead of contentId
+    collectionId, // Collection ID might be needed for context or future features
+    level, // e.g., "5x5-myverse"
+    language,
+    usedStonesCount,
+    correctPlacements,
+    incorrectPlacements,
+    timeTakenMs,
+    completedSuccessfully,
+    resultType // EXCELLENT, SUCCESS, FAIL
+  } = req.body;
+
+  if (!userId) {
+    return res.status(401).json({ message: '인증이 필요합니다.' });
+  }
+
+  // Optional: Verify the MyVerse game exists (helps prevent saving results for deleted games)
+  try {
+    const gameExists = await MyverseGame.findById(myVerseGameId);
+    if (!gameExists) {
+        return res.status(404).json({ message: '해당 MyVerse 게임을 찾을 수 없습니다.' });
+    }
+    // Optional: Check if the user owns or has access to this game/collection if needed
+  } catch (error) {
+    console.error('MyVerse 게임 ID 검증 중 오류 발생:', error);
+    return res.status(500).json({ message: 'MyVerse 게임 검증 중 서버 오류가 발생했습니다.' });
+  }
+
+  // 2. Calculate score (Using a similar logic as standard Zengo for now)
+  // You might want to adjust scoring specifically for MyVerse later.
+  const score = calculateMyVerseScore(); // Use a helper or inline calculation
+
+  // 3. Create new MyVerse session result document
+  const newResult = new MyVerseSessionResult({
+    userId,
+    myVerseGameId,
+    collectionId, // Store collectionId if provided
+    level,
+    language,
+    usedStonesCount,
+    correctPlacements,
+    incorrectPlacements,
+    timeTakenMs,
+    completedSuccessfully,
+    resultType: resultType || (completedSuccessfully ? 'SUCCESS' : 'FAIL'),
+    score,
+  });
+
+  try {
+    // 4. Save the MyVerse session result
+    const savedResult = await newResult.save();
+
+    // 5. Process common tasks using the service function
+    // Note: processCommonSessionResultTasks currently updates Zengo-specific stats.
+    // You might need to adapt the service or UserStats model if you want separate MyVerse stats.
+    const { earnedNewBadge, newBadge } = await processCommonSessionResultTasks(
+      userId,
+      savedResult, // Pass the saved MyVerse result (ensure type compatibility or adjust service)
+      level,       // Pass level
+      completedSuccessfully // Pass completion status
+    );
+
+    // 6. Send Response
+    if (earnedNewBadge && newBadge) {
+      return res.status(201).json({
+        message: 'MyVerse 세션 결과가 저장되었고 새로운 배지를 획득했습니다!',
+        result: savedResult,
+        score: savedResult.score,
+        newBadge: newBadge
+      });
+    } else {
+      res.status(201).json({
+        message: 'MyVerse 세션 결과가 성공적으로 저장되었습니다.',
+        result: savedResult,
+        score: savedResult.score
+      });
+    }
+
+  } catch (error) {
+    console.error('MyVerse 세션 결과 저장/처리 중 오류 발생:', error);
+    res.status(500).json({ message: 'MyVerse 세션 결과 처리 중 서버 오류가 발생했습니다.' });
+  }
+
+  // Helper function for MyVerse score calculation (can be refined)
+  function calculateMyVerseScore(): number {
+    let baseScore = correctPlacements * 10;
+    baseScore -= incorrectPlacements * 5;
+    const timePenalty = Math.max(0, Math.floor(timeTakenMs / 1000 / 10));
+    baseScore -= timePenalty;
+    const finalResultType = resultType || (completedSuccessfully ? 'SUCCESS' : 'FAIL');
+    if (finalResultType === 'EXCELLENT') {
+      baseScore += 20; // Bonus for perfect play
+    }
+    // Fail results get 0 score
+    if (!completedSuccessfully) {
+        return 0;
+    }
+    return Math.max(0, Math.min(Math.round(baseScore), 100)); // Clamp between 0 and 100
   }
 }; 

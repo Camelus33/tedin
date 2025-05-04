@@ -127,7 +127,7 @@ const CollectionCard: React.FC<CollectionCardProps> = ({ collection }) => {
             value={editedDescription}
             onChange={e => setEditedDescription(e.target.value)}
             disabled={loading}
-            placeholder="컬렉션 설명을 입력하세요 (선택)"
+            placeholder="컬렉션 설명을 입력하세요 (필수)"
           />
           {error && <p className="text-feedback-error text-sm">{error}</p>}
           <div className="flex justify-end space-x-2">

@@ -199,37 +199,37 @@ export default function NewBookPage() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 py-6 px-2 sm:px-4 text-gray-200 font-sans">
+      <div className="max-w-2xl mx-auto">
         {/* 헤더 */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <Link 
             href="/books" 
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center text-cyan-400 hover:text-cyan-300 transition-colors text-xs font-mono"
           >
-            <FiArrowLeft className="mr-2" />
+            <FiArrowLeft className="mr-1" />
             <span>도서 목록으로 돌아가기</span>
           </Link>
         </div>
         
         {/* 메인 카드 */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">새 책 등록</h1>
+        <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-cyan-500/10 border border-cyan-500/40 p-4">
+          <h1 className="text-xl font-bold text-cyan-300 mb-3 font-orbitron tracking-wide">새 책 등록</h1>
           
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md mb-6">
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="bg-red-900/30 border-l-4 border-red-500 p-2 rounded-md mb-3">
+              <p className="text-xs text-red-300">{error}</p>
             </div>
           )}
           
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {/* 왼쪽 컬럼: 텍스트 필드 */}
-              <div className="space-y-6">
+              <div className="space-y-3">
                 {/* 제목 */}
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                    제목 <span className="text-red-500">*</span>
+                  <label htmlFor="title" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                    제목 <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -238,15 +238,15 @@ export default function NewBookPage() {
                     value={formData.title}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
                     placeholder="책 제목을 입력하세요"
                   />
                 </div>
                 
                 {/* 저자 */}
                 <div>
-                  <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-1">
-                    저자 <span className="text-red-500">*</span>
+                  <label htmlFor="author" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                    저자 <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -255,15 +255,15 @@ export default function NewBookPage() {
                     value={formData.author}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
                     placeholder="저자 이름을 입력하세요"
                   />
                 </div>
                 
                 {/* 장르 */}
                 <div>
-                  <label htmlFor="genre" className="block text-sm font-medium text-gray-700 mb-1">
-                    장르 <span className="text-red-500">*</span>
+                  <label htmlFor="genre" className="block text-xs font-semibold text-purple-300 mb-0.5 font-barlow">
+                    장르 <span className="text-red-400">*</span>
                   </label>
                   <select
                     id="genre"
@@ -271,7 +271,7 @@ export default function NewBookPage() {
                     value={formData.genre}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none"
+                    className="w-full px-3 py-2 border border-purple-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-purple-400/60 focus:border-purple-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all appearance-none"
                   >
                     <option value="">장르 선택</option>
                     {genres.map((genre) => (
@@ -284,8 +284,8 @@ export default function NewBookPage() {
                 
                 {/* 총 페이지 수 */}
                 <div>
-                  <label htmlFor="totalPages" className="block text-sm font-medium text-gray-700 mb-1">
-                    총 페이지 수 <span className="text-red-500">*</span>
+                  <label htmlFor="totalPages" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                    총 페이지 수 <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -294,31 +294,34 @@ export default function NewBookPage() {
                     value={formData.totalPages}
                     onChange={handleNumberInput}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
                     placeholder="책의 총 페이지 수"
                   />
                 </div>
                 
                 {/* 읽는 목적 */}
                 <div>
-                  <label htmlFor="readingPurpose" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="readingPurpose" className="block text-xs font-semibold text-emerald-300 mb-0.5 font-barlow">
                     읽는 목적
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
                     {readingPurposes.map((purpose) => (
                       <div
                         key={purpose.id}
                         className={`
-                          p-3 rounded-lg border cursor-pointer transition-all
+                          p-1 rounded border cursor-pointer transition-all text-[11px] font-mono
                           ${formData.readingPurpose === purpose.id 
-                            ? "border-indigo-500 bg-indigo-50" 
-                            : "border-gray-200 hover:border-indigo-200"
+                            ? "border-emerald-400 bg-emerald-900/20 text-emerald-200" 
+                            : "border-gray-600 hover:border-emerald-400 bg-gray-800/60 text-gray-300 hover:text-emerald-200"
                           }
                         `}
                         onClick={() => setFormData({ ...formData, readingPurpose: purpose.id })}
+                        tabIndex={0}
+                        role="button"
+                        aria-pressed={formData.readingPurpose === purpose.id}
                       >
-                        <h4 className="font-medium text-sm">{purpose.name}</h4>
-                        <p className="text-xs text-gray-500 mt-1">{purpose.description}</p>
+                        <h4 className="font-bold text-[11px] mb-0 font-barlow">{purpose.name}</h4>
+                        <p className="text-[10px] m-0 font-mono">{purpose.description}</p>
                       </div>
                     ))}
                   </div>
@@ -326,7 +329,7 @@ export default function NewBookPage() {
                 
                 {/* 현재 읽은 페이지 */}
                 <div>
-                  <label htmlFor="currentPage" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="currentPage" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
                     현재 페이지
                   </label>
                   <input
@@ -335,21 +338,21 @@ export default function NewBookPage() {
                     name="currentPage"
                     value={formData.currentPage}
                     onChange={handleNumberInput}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
                     placeholder="이미 읽은 페이지가 있다면 입력하세요"
                   />
                 </div>
               </div>
               
               {/* 오른쪽 컬럼: 이미지 업로드 */}
-              <div className="flex flex-col items-center justify-start space-y-4">
+              <div className="flex flex-col items-center justify-start space-y-2">
                 <div className="w-full text-center">
-                  <label className="block text-sm font-medium text-gray-700 mb-4">
+                  <label className="block text-xs font-semibold text-cyan-300 mb-2 font-barlow">
                     표지 이미지
                   </label>
                   
                   {coverImage ? (
-                    <div className="relative w-48 h-64 mx-auto">
+                    <div className="relative w-32 h-44 mx-auto border-2 border-cyan-500/40 rounded-md bg-gray-900/60 shadow-cyan-500/10">
                       <Image
                         src={coverImage}
                         alt="Book cover preview"
@@ -359,19 +362,19 @@ export default function NewBookPage() {
                       <button
                         type="button"
                         onClick={clearCoverImage}
-                        className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                        className="absolute -top-2 -right-2 bg-red-700 text-white rounded-full p-1 shadow-md hover:bg-red-500 transition-colors border border-red-400"
                       >
-                        <FiX size={16} />
+                        <FiX size={14} />
                       </button>
                     </div>
                   ) : (
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-48 h-64 mx-auto border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 transition-colors"
+                      className="w-32 h-44 mx-auto border-2 border-dashed border-cyan-500/40 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-cyan-400 bg-gray-900/60 transition-colors"
                     >
-                      <FiUpload size={32} className="text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-500">클릭하여 업로드</p>
-                      <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP</p>
+                      <FiUpload size={24} className="text-cyan-400 mb-1" />
+                      <p className="text-xs text-cyan-300">클릭하여 업로드</p>
+                      <p className="text-[10px] text-cyan-500 mt-0.5">JPG, PNG, WebP</p>
                     </div>
                   )}
                   
@@ -384,29 +387,29 @@ export default function NewBookPage() {
                   />
                   
                   {isUploading && (
-                    <p className="text-sm text-indigo-600 mt-2">업로드 중...</p>
+                    <p className="text-xs text-cyan-400 mt-1">업로드 중...</p>
                   )}
                 </div>
                 
-                <div className="bg-indigo-50 rounded-lg p-4 w-full text-sm text-indigo-700">
+                <div className="bg-cyan-900/30 rounded-md p-2 w-full text-[11px] text-cyan-300 border border-cyan-500/20">
                   <p>💡 표지 이미지는 선택사항입니다. 업로드하지 않으면 제목과 저자 정보로 표지가 생성됩니다.</p>
                 </div>
               </div>
             </div>
             
             {/* 버튼 영역 */}
-            <div className="flex justify-end space-x-4 pt-4 border-t border-gray-100">
+            <div className="flex justify-end space-x-2 pt-2 border-t border-cyan-500/20">
               <button
                 type="button"
                 onClick={() => router.push("/books")}
-                className="px-6 py-3 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-cyan-500/40 rounded-lg font-medium text-cyan-300 hover:bg-cyan-900/30 text-xs transition-colors font-mono"
               >
                 취소
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-70"
+                className="px-4 py-2 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-400 hover:from-cyan-400 hover:to-purple-400 text-white font-bold rounded-lg shadow-cyan-500/20 hover:shadow-cyan-400/30 text-xs transition-all disabled:opacity-70 font-orbitron tracking-wide"
               >
                 {isSubmitting ? "등록 중..." : "책 등록하기"}
               </button>
