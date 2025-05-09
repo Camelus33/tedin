@@ -9,7 +9,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
+  const [nickname, setNickname] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ export default function RegisterPage() {
         body: JSON.stringify({ 
           email, 
           password, 
-          name,
+          nickname,
           inviteCode: inviteCode.trim() || undefined 
         }),
       });
@@ -44,7 +44,7 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || '회원가입에 실패했습니다');
+        throw new Error(data.error || data.message || '회원가입에 실패했습니다');
       }
 
       // 토큰 저장
@@ -53,6 +53,7 @@ export default function RegisterPage() {
       // 회원가입 성공시 온보딩 페이지로 이동
       router.push('/onboarding');
     } catch (err: any) {
+      console.error('Registration error:', err);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -95,19 +96,19 @@ export default function RegisterPage() {
             </div>
             
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 mb-1">
                 닉네임
               </label>
               <input
-                id="name"
-                name="name"
+                id="nickname"
+                name="nickname"
                 type="text"
-                autoComplete="name"
+                autoComplete="nickname"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                 placeholder="닉네임"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
               />
             </div>
             

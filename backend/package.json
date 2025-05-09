@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node dist/app.js",
-    "dev": "ts-node --transpile-only src/app.ts",
-    "dev:watch": "nodemon --exec ts-node --transpile-only src/app.ts",
+    "dev": "PORT=8000 ts-node --transpile-only src/app.ts",
+    "dev:watch": "PORT=8000 nodemon --exec ts-node --transpile-only src/app.ts",
     "build": "tsc",
     "test": "jest",
     "clean-zengo-data": "ts-node src/scripts/cleanAndUseExpandedData.ts",

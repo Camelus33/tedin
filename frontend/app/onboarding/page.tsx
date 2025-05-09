@@ -34,7 +34,7 @@ export default function OnboardingPage() {
   const handleNext = async () => {
     if (step < 4) {
       setStep(step + 1);
-    } else {
+    } else if (step === 4) {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
@@ -57,6 +57,9 @@ export default function OnboardingPage() {
       } finally {
         setLoading(false);
       }
+    } else if (step === 5) {
+      // 온보딩 완료 시 대시보드로 이동
+      router.push("/dashboard");
     }
   };
 
@@ -75,7 +78,7 @@ export default function OnboardingPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         {/* Debug: show internal state */}
-        <pre className="text-xs text-red-500 mb-2">{JSON.stringify({ step, memorySpanScore, attentionScore })}</pre>
+        {/* <pre className="text-xs text-red-500 mb-2">{JSON.stringify({ step, memorySpanScore, attentionScore })}</pre> */}
         <div className="flex justify-center mb-4">
           <AppLogo className="w-9 h-9" />
         </div>

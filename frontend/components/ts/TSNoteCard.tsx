@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 export interface TSNote {
@@ -9,23 +9,30 @@ export interface TSNote {
   momentContext?: string;
   relatedKnowledge?: string;
   mentalImage?: string;
+  nickname?: string;
 }
 
 type TSNoteCardProps = {
   note: TSNote;
   onUpdate: (updated: Partial<TSNote>) => void;
+  onFlashcardConvert?: (note: TSNote) => void;
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-export default function TSNoteCard({ note, onUpdate }: TSNoteCardProps) {
+export default function TSNoteCard({ note, onUpdate, onFlashcardConvert }: TSNoteCardProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [fields, setFields] = useState<{ [K in keyof Omit<TSNote, '_id' | 'content' | 'tags'>]: string }>({
+  const [fields, setFields] = useState<{ [K in keyof Omit<TSNote, '_id' | 'content' | 'tags' | 'nickname'>]: string }>({
     importanceReason: note.importanceReason || '',
     momentContext: note.momentContext || '',
     relatedKnowledge: note.relatedKnowledge || '',
     mentalImage: note.mentalImage || '',
   });
+  const [currentStep, setCurrentStep] = useState(1);
+
+  useEffect(() => {
+    if (!isOpen) setCurrentStep(1);
+  }, [isOpen]);
 
   const questions: { key: keyof typeof fields; label: string }[] = [
     { key: 'importanceReason', label: '이 문장을 쓸 때, 주위 분위기는 조용했나요?' },
@@ -93,7 +100,7 @@ export default function TSNoteCard({ note, onUpdate }: TSNoteCardProps) {
         <div className="flex-1">
           <blockquote className="text-xl italic text-indigo-700 leading-relaxed mb-2">
             “{note.content}”
-            <footer className="block text-sm text-gray-500 mt-2">— 사용자이름</footer>
+            <footer className="block text-sm text-gray-500 mt-2">— {note.nickname || '사용자'}</footer>
           </blockquote>
           <div className="flex flex-wrap gap-1">
             {note.tags.map((tag, i) => (
@@ -103,11 +110,24 @@ export default function TSNoteCard({ note, onUpdate }: TSNoteCardProps) {
             ))}
           </div>
         </div>
-        <button type="button" className="text-gray-400 hover:text-gray-600 ml-4">✎</button>
+        <div className="flex flex-col items-center ml-4 gap-2">
+          <button type="button" className="text-gray-400 hover:text-gray-600" aria-label="메모 편집">✎</button>
+          {onFlashcardConvert && (
+            <button
+              type="button"
+              className="text-purple-400 hover:text-purple-600 text-xs border border-purple-300 rounded px-2 py-1 mt-1"
+              aria-label="플래시카드 변환"
+              onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }}
+            >
+              플래시카드 변환
+            </button>
+          )}
+        </div>
       </div>
       {isOpen && (
         <div className="mt-4 space-y-6">
           {questions.map(({ key, label }, idx) => {
+            if (idx + 1 > currentStep) return null;
             const lblId = `lbl-${note._id}-${key}`;
             return (
               <div
@@ -141,15 +161,44 @@ export default function TSNoteCard({ note, onUpdate }: TSNoteCardProps) {
                   value={fields[key] || ''}
                   onChange={(e) => handleChange(key, e.target.value)}
                   onBlur={() => handleBlur(key)}
-                  className="w-full p-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 italic leading-relaxed"
+                  className="w-full p-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 text-gray-900 leading-relaxed"
                   rows={2}
                   placeholder={placeholderMap[key]}
                 />
+                {/* Step-by-step 버튼 */}
+                {idx + 1 === currentStep && (
+                  <div className="flex justify-end mt-2">
+                    {currentStep < questions.length ? (
+                      <button
+                        type="button"
+                        className="px-4 py-1 bg-cyan-600 text-white rounded hover:bg-cyan-700 disabled:opacity-50"
+                        disabled={!fields[key]?.trim()}
+                        onClick={() => setCurrentStep((s) => s + 1)}
+                      >
+                        다음
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="px-4 py-1 bg-emerald-600 text-white rounded hover:bg-emerald-700 disabled:opacity-50"
+                        disabled={Object.values(fields).some((v) => !v.trim())}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        완료
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       )}
+      <style jsx>{`
+        textarea::placeholder {
+          font-style: italic;
+        }
+      `}</style>
     </div>
   );
 } 

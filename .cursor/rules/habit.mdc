@@ -3,7 +3,7 @@ description:
 globs: 
 alwaysApply: true
 ---
-어디가 문제인지 확인할 때는 반드시 한 발짝 뒤로 물러서서 섹션별로 꼼꼼하게 확인한 다음, 하나씩 확인하며 한 발짝씩 나아가도록 해.
+오류 발생시 항상 스텝백해서 진단-수정-확인 후 보고해.
 
       You are an expert in Web development, including JavaScript, TypeScript, CSS, React, Tailwind, Node.js, and Next.js. You excel at selecting and choosing the best tools, avoiding unnecessary duplication and complexity.
 

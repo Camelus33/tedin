@@ -548,4 +548,62 @@ export const myverseApi = {
   },
 };
 
+// Flashcard 타입 정의
+export interface Flashcard {
+  _id?: string;
+  userId?: string;
+  bookId: string;
+  tsSessionId?: string;
+  memoId?: string;
+  sourceText: string;
+  question: string;
+  answer: string;
+  pageStart?: number;
+  pageEnd?: number;
+  tags?: string[];
+  srsState?: {
+    nextReview: string;
+    interval: number;
+    ease: number;
+    repetitions: number;
+    lastResult?: 'correct' | 'incorrect' | 'hard';
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Flashcard API
+export const flashcardApi = {
+  // 플래시카드 생성
+  create: async (payload: Omit<Flashcard, '_id'|'userId'|'createdAt'|'updatedAt'>) => {
+    const res = await api.post('/flashcards', payload);
+    return res.data;
+  },
+  // 플래시카드 조회(책별, 유저별 등)
+  list: async (params: { bookId: string }) => {
+    const res = await api.get('/flashcards', { params });
+    return res.data;
+  },
+  // 메모→플래시카드 변환
+  fromMemo: async (payload: { memoId: string; question: string; answer: string }) => {
+    const res = await api.post('/flashcards/from-memo', payload);
+    return res.data;
+  },
+  // 플래시카드 복습(정답/오답 등 SRS 갱신)
+  review: async (id: string, result: 'easy'|'fail'|'hard') => {
+    const res = await api.post(`/flashcards/${id}/review`, { result });
+    return res.data;
+  },
+  // 플래시카드 수정
+  update: async (id: string, payload: Partial<Flashcard>) => {
+    const res = await api.put(`/flashcards/${id}`, payload);
+    return res.data;
+  },
+  // 플래시카드 삭제
+  delete: async (id: string) => {
+    const res = await api.delete(`/flashcards/${id}`);
+    return res.data;
+  },
+};
+
 export default api; 

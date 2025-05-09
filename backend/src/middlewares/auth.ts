@@ -20,20 +20,6 @@ declare global {
  */
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // 개발 환경에서 인증 우회 옵션
-    if (process.env.BYPASS_AUTH === 'true') {
-      console.log('인증 우회됨 - BYPASS_AUTH=true');
-      // 유효한 MongoDB ObjectId 형식 사용 (24자 16진수 문자열)
-      const validObjectId = '507f1f77bcf86cd799439011';
-      req.user = { 
-        _id: validObjectId, 
-        id: validObjectId,
-        email: 'dev@example.com',
-        roles: ['user', 'admin'] // 관리자 권한 추가
-      };
-      return next();
-    }
-
     // 토큰 소스 확인 (쿠키 또는 헤더)
     let token: string | undefined;
     
@@ -48,38 +34,62 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
       token = authHeader.split(' ')[1];
     }
     
-    // 토큰이 없는 경우
-    if (!token) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`인증 실패 (토큰 없음): ${req.method} ${req.path}`);
+    // 토큰 검증 및 사용자 확인
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { userId: string, email: string };
+        
+        // 개발 환경에서 admin@example.com 인증 우회 (이메일 확인)
+        if (process.env.BYPASS_AUTH === 'true' && decoded.email === 'admin@example.com') {
+          console.log('관리자 계정 인증 우회 - admin@example.com');
+          const validObjectId = '507f1f77bcf86cd799439011';
+          req.user = { 
+            _id: validObjectId, 
+            id: validObjectId,
+            email: 'admin@example.com',
+            roles: ['user', 'admin']
+          };
+          return next();
+        }
+        
+        // 다른 사용자는 정상적인 인증 프로세스 진행
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+          return res.status(401).json({ error: '유효하지 않은 사용자입니다.' });
+        }
+        
+        // 사용자 정보 요청에 추가
+        req.user = user;
+        next();
+      } catch (error: any) {
+        // 토큰 만료 처리
+        if (error.name === 'TokenExpiredError') {
+          return res.status(401).json({ 
+            error: '인증이 만료되었습니다. 다시 로그인해주세요.', 
+            code: 'TOKEN_EXPIRED'
+          });
+        }
+        
+        // 기타 토큰 오류
+        return res.status(401).json({ error: '유효하지 않은 인증 정보입니다.' });
       }
+    } else {
+      // 개발 환경에서만 기본 관리자 계정으로 인증 우회 (토큰 없을 때)
+      if (process.env.BYPASS_AUTH === 'true') {
+        console.log('개발 환경 인증 우회 - 토큰 없음');
+        // 유효한 MongoDB ObjectId 형식 사용 (24자 16진수 문자열)
+        const validObjectId = '507f1f77bcf86cd799439011';
+        req.user = { 
+          _id: validObjectId, 
+          id: validObjectId,
+          email: 'admin@example.com',
+          roles: ['user', 'admin']
+        };
+        return next();
+      }
+      
+      // 토큰이 없는 경우 (프로덕션 및 개발 환경에서 BYPASS_AUTH가 false일 때)
       return res.status(401).json({ error: '인증이 필요합니다.' });
-    }
-    
-    // 토큰 검증
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-      
-      // 사용자 찾기
-      const user = await User.findById(decoded.userId);
-      if (!user) {
-        return res.status(401).json({ error: '유효하지 않은 사용자입니다.' });
-      }
-      
-      // 사용자 정보 요청에 추가
-      req.user = user;
-      next();
-    } catch (error: any) {
-      // 토큰 만료 처리
-      if (error.name === 'TokenExpiredError') {
-        return res.status(401).json({ 
-          error: '인증이 만료되었습니다. 다시 로그인해주세요.', 
-          code: 'TOKEN_EXPIRED'
-        });
-      }
-      
-      // 기타 토큰 오류
-      return res.status(401).json({ error: '유효하지 않은 인증 정보입니다.' });
     }
   } catch (error: any) {
     console.error('인증 처리 중 오류:', error);

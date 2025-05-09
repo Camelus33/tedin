@@ -3,6 +3,7 @@ import { getProfile, updateProfile, getSettings, updateSettings, searchUsers, ge
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
+import User from '../models/User';
 
 const router = express.Router();
 
@@ -71,5 +72,18 @@ router.put(
   validateRequest,
   updateSettings
 );
+
+// 여러 사용자 ID로 닉네임 정보 조회
+router.get('/bulk', async (req, res) => {
+  try {
+    const ids = (req.query.ids as string || '').split(',').filter(Boolean);
+    if (!ids.length) return res.json([]);
+    // _id와 nickname만 반환
+    const users = await User.find({ _id: { $in: ids } }).select('_id nickname');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: '사용자 정보 조회 중 오류가 발생했습니다.' });
+  }
+});
 
 export default router; 

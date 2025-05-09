@@ -23,6 +23,7 @@ import inviteRoutes from './routes/invites';
 import collectionRoutes from './routes/collections';
 import myverseGamesRoutes from './routes/myverseGames';
 import routineRoutes from './routes/routineRoutes';
+import flashcardRoutes from './routes/flashcards';
 
 // Initialize Express app
 const app: Express = express();
@@ -43,7 +44,7 @@ mongoose.connect(MONGODB_URI)
 // CORS Configuration
 const corsOptions = {
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
   credentials: true
 };
@@ -73,6 +74,7 @@ app.use('/api/invites', inviteRoutes);
 app.use('/api/collections', collectionRoutes);
 app.use('/api/myverse', myverseGamesRoutes);
 app.use('/api/routines', routineRoutes);
+app.use('/api/flashcards', flashcardRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

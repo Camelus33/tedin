@@ -8,6 +8,8 @@ import { FiBook } from 'react-icons/fi';
 import useBooks from '@/hooks/useBooks';
 import TSNoteCard from '@/components/ts/TSNoteCard';
 import Spinner from '@/components/ui/Spinner';
+import FlashcardDeck from '@/components/flashcard/FlashcardDeck';
+import FlashcardForm from '@/components/flashcard/FlashcardForm';
 
 // API base URL - this should match what's used elsewhere in the app
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -101,6 +103,10 @@ export default function BookDetailPage() {
   const { bookFetchState, fetchBookDetail } = useBooks();
   const [tsNotes, setTsNotes] = useState<Note[]>([]);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [flashcardFormNote, setFlashcardFormNote] = useState<Note | null>(null);
+  const [flashcardDeckKey, setFlashcardDeckKey] = useState(0); // Deck 강제 리렌더용
+  const [activeTab, setActiveTab] = useState<'memo' | 'flashcard'>('memo');
+  const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false);
   
   // Destructure for cleaner access
   const { isLoading, error, book } = bookFetchState;
@@ -344,137 +350,205 @@ export default function BookDetailPage() {
           </div>
         </div>
         
-        {/* Memo Evolution Section - Cybernetic Feedback Loop 개선버전 */}
-        <section className={`mt-8 ${cyberTheme.bgSecondary} p-4 md:p-6 rounded-lg border ${cyberTheme.borderPrimary}/30`}>
-          <div className="flex flex-col md:flex-row gap-8 mb-3">
-            {/* 왼쪽: 타이틀/설명 */}
-            <div className="flex-1 min-w-0">
-              <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">메모 진화: 지식성장 피드백루프</h2>
-              <span className="text-xs text-gray-400 font-medium block mb-2">관찰-기록-성찰-조정-적용-창발의 순환, 그리고 자기주도적 성장</span>
-              <p className="text-base font-semibold text-cyan-300 mb-2">기억과 지식은 순환하며 진화한다.</p>
-              <p className="text-sm text-gray-400 leading-relaxed mb-2">
-                기억과 지식은 <strong className="text-cyan-300">관찰-기록-성찰-조정-적용</strong>의 순환을 거치며,<br/>
-                피드백을 통해 점점 더 깊고 넓게 진화합니다.<br/>
-                이 순환의 끝에서 우리는 <strong className="text-emerald-300">새로운 통찰(창발)</strong>을 얻고,<br/>
-                다시 관찰로 돌아가 더 높은 차원의 발견을 이룹니다.<br/>
-                이것이 <strong className="text-purple-300">사이버네틱스 피드백루프</strong>, 그리고 진정한 진화의 본질입니다.
-              </p>
-            </div>
-            {/* 오른쪽: 단계별 카드 grid */}
-            <div className="flex-1 min-w-0">
-              {(() => {
-                // 네온/사이버틱 6단계 그라디언트 팔레트
-                const gradientColors = [
-                  {
-                    bg: 'bg-[#00eaff]/30', // 1 네온 블루
-                    badge: 'text-[#00eaff] border-[#00eaff]',
-                  },
-                  {
-                    bg: 'bg-[#00ffd0]/30', // 2 네온 민트
-                    badge: 'text-[#00ffd0] border-[#00ffd0]',
-                  },
-                  {
-                    bg: 'bg-[#00ff85]/30', // 3 네온 그린
-                    badge: 'text-[#00ff85] border-[#00ff85]',
-                  },
-                  {
-                    bg: 'bg-[#aaff00]/30', // 4 네온 라임
-                    badge: 'text-[#aaff00] border-[#aaff00]',
-                  },
-                  {
-                    bg: 'bg-[#ffd600]/30', // 5 네온 옐로우
-                    badge: 'text-[#ffd600] border-[#ffd600]',
-                  },
-                  {
-                    bg: 'bg-[#ff00c8]/30', // 6 네온 핑크
-                    badge: 'text-[#ff00c8] border-[#ff00c8]',
-                  },
-                ];
-                const stages = [
-                  {
-                    title: '관찰',
-                    desc: '새로움에 주의를 기울입니다.',
-                  },
-                  {
-                    title: '기록',
-                    desc: '중요함을 메모로 외부화합니다.',
-                  },
-                  {
-                    title: '성찰',
-                    desc: '질문 후, 의미를 부여합니다.',
-                  },
-                  {
-                    title: '조정',
-                    desc: '연결 - 재구성 -새로운 시각',
-                  },
-                  {
-                    title: '적용',
-                    desc: '실제 자신의 삶에 활용',
-                  },
-                  {
-                    title: '창발',
-                    desc: 'Aha! ',
-                    extra: <span className="text-gray-400">(예: "이거 였구나!"라는 통찰)</span>,
-                  },
-                ];
-                // 시계방향 배치 인덱스: 1 2 / 6 3 / 5 4
-                const clockwiseOrder = [0, 1, 5, 2, 4, 3];
-                // 2열 3행으로 배치
-                const grid = [
-                  [clockwiseOrder[0], clockwiseOrder[1]], // 1 2
-                  [clockwiseOrder[2], clockwiseOrder[3]], // 6 3
-                  [clockwiseOrder[4], clockwiseOrder[5]], // 5 4
-                ];
-                return (
-                  <div className="grid grid-rows-3 grid-cols-2 gap-2">
-                    {grid.flat().map((stageIdx, pos) => {
-                      const stage = stages[stageIdx];
-                      const color = gradientColors[stageIdx];
-                      return (
-                        <div key={stage.title} className={`rounded-lg ${color.bg} p-2 shadow text-xs flex items-start gap-2`}>
-                          {/* Step Number Badge */}
-                          <span
-                            className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs border-2 ${color.badge} bg-gray-900/70 mr-1`}
-                            aria-label={`단계 ${stageIdx + 1}`}
-                          >
-                            {stageIdx + 1}
-                          </span>
-                          <div>
-                            <span className={`font-bold ${color.badge}`}>{stage.title}</span>
-                            <p className="mt-1 text-gray-200 text-[10px] leading-tight">
-                              {stage.desc} {stage.extra || null}
-                            </p>
+        {/* 탭 버튼 */}
+        <div className="flex gap-2 mb-4">
+          <button
+            className={`px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors ${activeTab === 'memo' ? 'border-cyan-400 text-cyan-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-cyan-200'}`}
+            onClick={() => setActiveTab('memo')}
+          >
+            메모진화
+          </button>
+          <button
+            className={`px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors ${activeTab === 'flashcard' ? 'border-purple-400 text-purple-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-purple-200'}`}
+            onClick={() => setActiveTab('flashcard')}
+          >
+            플래시카드
+          </button>
+        </div>
+        {/* 탭별 컨테이너 */}
+        {activeTab === 'memo' && (
+          <section className={`mt-0 ${cyberTheme.bgSecondary} p-4 md:p-6 rounded-lg border ${cyberTheme.borderPrimary}/30`}>
+            <div className="flex flex-col md:flex-row gap-8 mb-3">
+              {/* 왼쪽: 타이틀/설명 */}
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">메모 진화: 지식성장 피드백루프</h2>
+                <span className="text-xs text-gray-400 font-medium block mb-2">관찰-기록-성찰-조정-적용-창발의 순환, 그리고 자기주도적 성장</span>
+                <p className="text-base font-semibold text-cyan-300 mb-2">기억과 지식은 순환하며 진화한다.</p>
+                <p className="text-sm text-gray-400 leading-relaxed mb-2">
+                  기억과 지식은 <strong className="text-cyan-300">관찰-기록-성찰-조정-적용</strong>의 순환을 거치며,<br/>
+                  피드백을 통해 점점 더 깊고 넓게 진화합니다.<br/>
+                  이 순환의 끝에서 우리는 <strong className="text-emerald-300">새로운 통찰(창발)</strong>을 얻고,<br/>
+                  다시 관찰로 돌아가 더 높은 차원의 발견을 이룹니다.<br/>
+                  이것이 <strong className="text-purple-300">사이버네틱스 피드백루프</strong>, 그리고 진정한 진화의 본질입니다.
+                </p>
+              </div>
+              {/* 오른쪽: 단계별 카드 grid */}
+              <div className="flex-1 min-w-0">
+                {(() => {
+                  // 네온/사이버틱 6단계 그라디언트 팔레트
+                  const gradientColors = [
+                    {
+                      bg: 'bg-[#00eaff]/30', // 1 네온 블루
+                      badge: 'text-[#00eaff] border-[#00eaff]',
+                    },
+                    {
+                      bg: 'bg-[#00ffd0]/30', // 2 네온 민트
+                      badge: 'text-[#00ffd0] border-[#00ffd0]',
+                    },
+                    {
+                      bg: 'bg-[#00ff85]/30', // 3 네온 그린
+                      badge: 'text-[#00ff85] border-[#00ff85]',
+                    },
+                    {
+                      bg: 'bg-[#aaff00]/30', // 4 네온 라임
+                      badge: 'text-[#aaff00] border-[#aaff00]',
+                    },
+                    {
+                      bg: 'bg-[#ffd600]/30', // 5 네온 옐로우
+                      badge: 'text-[#ffd600] border-[#ffd600]',
+                    },
+                    {
+                      bg: 'bg-[#ff00c8]/30', // 6 네온 핑크
+                      badge: 'text-[#ff00c8] border-[#ff00c8]',
+                    },
+                  ];
+                  const stages = [
+                    {
+                      title: '관찰',
+                      desc: '새로움에 주의를 기울입니다.',
+                    },
+                    {
+                      title: '기록',
+                      desc: '중요함을 메모로 외부화합니다.',
+                    },
+                    {
+                      title: '성찰',
+                      desc: '질문 후, 의미를 부여합니다.',
+                    },
+                    {
+                      title: '조정',
+                      desc: '연결 - 재구성 -새로운 시각',
+                    },
+                    {
+                      title: '적용',
+                      desc: '실제 자신의 삶에 활용',
+                    },
+                    {
+                      title: '창발',
+                      desc: 'Aha! ',
+                      extra: <span className="text-gray-400">(예: "이거 였구나!"라는 통찰)</span>,
+                    },
+                  ];
+                  // 시계방향 배치 인덱스: 1 2 / 6 3 / 5 4
+                  const clockwiseOrder = [0, 1, 5, 2, 4, 3];
+                  // 2열 3행으로 배치
+                  const grid = [
+                    [clockwiseOrder[0], clockwiseOrder[1]], // 1 2
+                    [clockwiseOrder[2], clockwiseOrder[3]], // 6 3
+                    [clockwiseOrder[4], clockwiseOrder[5]], // 5 4
+                  ];
+                  return (
+                    <div className="grid grid-rows-3 grid-cols-2 gap-2">
+                      {grid.flat().map((stageIdx, pos) => {
+                        const stage = stages[stageIdx];
+                        const color = gradientColors[stageIdx];
+                        return (
+                          <div key={stage.title} className={`rounded-lg ${color.bg} p-2 shadow text-xs flex items-start gap-2`}>
+                            {/* Step Number Badge */}
+                            <span
+                              className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs border-2 ${color.badge} bg-gray-900/70 mr-1`}
+                              aria-label={`단계 ${stageIdx + 1}`}
+                            >
+                              {stageIdx + 1}
+                            </span>
+                            <div>
+                              <span className={`font-bold ${color.badge}`}>{stage.title}</span>
+                              <p className="mt-1 text-gray-200 text-[10px] leading-tight">
+                                {stage.desc} {stage.extra || null}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })()}
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
-          </div>
 
-          {/* Notes List */}
-          {tsNotes.length === 0 ? (
-            <p className={`${cyberTheme.textMuted} text-center py-4`}>활성화된 기억 데이터가 없습니다. TS 루프를 시작하여 메모를 생성하세요.</p>
-          ) : (
-            <div className={`space-y-4 border-t ${cyberTheme.inputBorder} pt-4`}>
-              {tsNotes.map((note) => (
-                <div key={note._id} className={`${cyberTheme.cardBg} p-3 rounded-md border ${cyberTheme.inputBorder}`}>
-                  <TSNoteCard
-                    note={note}
-                    onUpdate={(updated: Partial<Note>) =>
-                      setTsNotes((prev) =>
-                        prev.map((n) => (n._id === note._id ? { ...n, ...updated } : n))
-                      )
-                    }
+            {/* Notes List */}
+            {tsNotes.length === 0 ? (
+              <p className={`${cyberTheme.textMuted} text-center py-4`}>활성화된 기억 데이터가 없습니다. TS 루프를 시작하여 메모를 생성하세요.</p>
+            ) : (
+              <div className={`space-y-4 border-t ${cyberTheme.inputBorder} pt-4`}>
+                {tsNotes.map((note) => (
+                  <div key={note._id} className={`${cyberTheme.cardBg} p-3 rounded-md border ${cyberTheme.inputBorder}`}>
+                    <TSNoteCard
+                      note={note}
+                      onUpdate={(updated: Partial<Note>) =>
+                        setTsNotes((prev) =>
+                          prev.map((n) => (n._id === note._id ? { ...n, ...updated } : n))
+                        )
+                      }
+                      onFlashcardConvert={(n) => {
+                        setFlashcardFormNote({
+                          _id: n._id,
+                          content: n.content,
+                          type: 'quote',
+                          tags: n.tags || [],
+                          createdAt: '',
+                        });
+                        setActiveTab('flashcard');
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+        {activeTab === 'flashcard' && (
+          <>
+            {/* Flashcard 생성 폼 (모달/인라인) */}
+            {flashcardFormNote && (
+              <FlashcardForm
+                note={flashcardFormNote}
+                bookId={bookId}
+                onCreated={() => {
+                  setFlashcardFormNote(null);
+                  setFlashcardDeckKey((k) => k + 1);
+                }}
+                onCancel={() => setFlashcardFormNote(null)}
+              />
+            )}
+            {/* Flashcard Deck Section */}
+            <section className="mt-0 bg-gray-900/80 p-4 md:p-6 rounded-lg border border-cyan-500/30">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl md:text-2xl font-bold text-purple-400">플래시카드 : 기억 회상</h2>
+                <button
+                  className="px-3 py-1 rounded bg-cyan-700 text-white text-xs hover:bg-cyan-800 font-semibold ml-4"
+                  onClick={() => setShowNewFlashcardForm((v) => !v)}
+                >
+                  NEW
+                </button>
+              </div>
+              <p className="text-sm text-gray-400 mb-4">읽은 내용을 직접 질문으로 바꾼 플래시카드로 기억을 강화하세요.</p>
+              {showNewFlashcardForm && (
+                <div className="mb-4">
+                  <FlashcardForm
+                    bookId={bookId}
+                    onCreated={() => {
+                      setShowNewFlashcardForm(false);
+                      setFlashcardDeckKey((k) => k + 1);
+                    }}
+                    onCancel={() => setShowNewFlashcardForm(false)}
                   />
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
-
+              )}
+              <FlashcardDeck bookId={bookId} key={flashcardDeckKey} />
+            </section>
+          </>
+        )}
         {/* Optional: Delete Button at the bottom? */}
         <div className="mt-8 flex justify-end">
           <Button

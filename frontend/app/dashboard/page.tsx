@@ -7,12 +7,17 @@ import Button from '@/components/common/Button';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, RadialLinearScale } from 'chart.js';
 import { Doughnut, Line, Radar } from 'react-chartjs-2';
 import { zengo as zengoApi } from '@/lib/api';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import CognitiveProfileContainer from '@/components/cognitive/CognitiveProfileContainer';
 import { FiHelpCircle, FiBook } from 'react-icons/fi';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import AppLogo from '@/components/common/AppLogo';
+import { loginSuccess } from '@/store/slices/userSlice';
+import { user as userApi } from '@/lib/api';
+
+// === API BASE URL 환경변수 적용 ===
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // Cyber Theme Definition (Added)
 const cyberTheme = {
@@ -61,7 +66,7 @@ type Book = {
   currentPage: number;
   genre: string;
   status: 'reading' | 'completed';
-  estimatedRemainingMinutes?: number | null;
+  estimatedRemainingMinutes?: number | null; // optional, can be null
   avgPpm?: number | null;
 };
 
@@ -143,110 +148,134 @@ export default function DashboardPage() {
   const [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
+
+  // 기존 useEffect 내부 fetchDashboardData를 바깥으로 분리
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/auth/login');
+        return;
+      }
+
+      // 현재 읽고 있는 책 목록 조회 (백엔드에서 예상 시간 포함)
+      // *** 중요: 백엔드 API가 /api/books?status=reading 응답에 estimatedRemainingMinutes를 포함하도록 수정되었다고 가정 ***
+      const booksResponse = await fetch(`${API_BASE_URL}/books?status=reading`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!booksResponse.ok) throw new Error('책 목록 로딩 실패');
+      const booksData = await booksResponse.json();
+      
+      let readingBooks: Book[] = [];
+      if (Array.isArray(booksData.books)) { // 응답 구조가 { books: [] } 일 경우
+          readingBooks = booksData.books.slice(0, 3);
+      } else if (Array.isArray(booksData)) { // 응답 구조가 [] 일 경우
+          readingBooks = booksData.slice(0, 3);
+      } else {
+          console.error('API 응답 books 배열 없음:', booksData);
+      }
+      setCurrentBooks(readingBooks);
+
+      // --- Fetch user stats from the new API endpoint --- (수정된 부분)
+      const statsResponse = await fetch(`${API_BASE_URL}/users/me/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!statsResponse.ok) throw new Error('사용자 통계 로딩 실패');
+      const statsData: UserDashboardStats = await statsResponse.json();
+      console.log('Fetched Stats Data:', statsData);
+      setStats(statsData); // API 응답으로 상태 업데이트
+      // --- 가상 데이터 제거됨 --- 
+      
+      // --- Fetch Routine Data using direct fetch --- 
+      try {
+        const routineResponse = await fetch(`${API_BASE_URL}/routines/current`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!routineResponse.ok) {
+          if (routineResponse.status === 404) {
+             console.log('No active routine found.');
+             setRoutineData(null); // Set to null explicitly if no routine
+          } else {
+             // Throw error to be caught by the outer catch block
+             throw new Error(`루틴 정보 로딩 실패: ${routineResponse.statusText}`);
+          }
+        } else {
+           const routineJson: RoutineData = await routineResponse.json();
+           setRoutineData(routineJson); 
+           console.log('Routine data fetched:', routineJson);
+        }
+      } catch (routineError: any) {
+        // Catch errors specific to the routine fetch (like network error)
+        console.error('Error fetching routine data:', routineError);
+        setRoutineData(null); // Set to null on error
+        // We might not want to set the global error state here, 
+        // just log it or show a specific message in the routine section.
+      }
+      // --- End Fetch Routine Data --- 
+      
+      // Fetch zengo stats
+      try {
+        const zengoData = await zengoApi.getUserStats();
+        setZengoStats(zengoData);
+      } catch (zengoError) {
+        console.error('Error fetching Zengo stats:', zengoError);
+        // 가상 데이터로 대체
+        setZengoStats({
+          totalActivities: 8,
+          averageScores: {
+            overall: 78,
+            memory: 72,
+            attention: 85,
+            reasoning: 68,
+            creativity: 75
+          }
+        });
+        // Notify user that fallback data is shown
+        console.warn('Zengo 통계 데이터를 불러오지 못해 기본 통계가 표시됩니다.');
+      }
+
+      // 안전한 유저 데이터 확인
+      if (!user?.nickname) {
+        console.log("사용자 데이터가 없거나 불완전함. 기본값 사용");
+      }
+      
+      // 인지 능력 프로필은 별도 컴포넌트에서 처리
+
+      setIsLoading(false);
+    } catch (e) {
+      console.error('Dashboard data loading failed:', e);
+      setError('데이터를 불러올 수 없습니다');
+      setIsLoading(false);
+      setRoutineData(null); // Ensure routine data is null on general error
+    }
+  };
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      setIsLoading(true);
-      setError('');
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          router.push('/auth/login');
-          return;
-        }
-
-        // 현재 읽고 있는 책 목록 조회 (백엔드에서 예상 시간 포함)
-        // *** 중요: 백엔드 API가 /api/books?status=reading 응답에 estimatedRemainingMinutes를 포함하도록 수정되었다고 가정 ***
-        const booksResponse = await fetch('http://localhost:8000/api/books?status=reading', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!booksResponse.ok) throw new Error('책 목록 로딩 실패');
-        const booksData = await booksResponse.json();
-        
-        let readingBooks: Book[] = [];
-        if (Array.isArray(booksData.books)) { // 응답 구조가 { books: [] } 일 경우
-            readingBooks = booksData.books.slice(0, 3);
-        } else if (Array.isArray(booksData)) { // 응답 구조가 [] 일 경우
-            readingBooks = booksData.slice(0, 3);
-        } else {
-            console.error('API 응답 books 배열 없음:', booksData);
-        }
-        setCurrentBooks(readingBooks);
-
-        // --- Fetch user stats from the new API endpoint --- (수정된 부분)
-        const statsResponse = await fetch('http://localhost:8000/api/users/me/stats', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!statsResponse.ok) throw new Error('사용자 통계 로딩 실패');
-        const statsData: UserDashboardStats = await statsResponse.json();
-        console.log('Fetched Stats Data:', statsData);
-        setStats(statsData); // API 응답으로 상태 업데이트
-        // --- 가상 데이터 제거됨 --- 
-        
-        // --- Fetch Routine Data using direct fetch --- 
-        try {
-          const routineResponse = await fetch('http://localhost:8000/api/routines/current', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (!routineResponse.ok) {
-            if (routineResponse.status === 404) {
-               console.log('No active routine found.');
-               setRoutineData(null); // Set to null explicitly if no routine
-            } else {
-               // Throw error to be caught by the outer catch block
-               throw new Error(`루틴 정보 로딩 실패: ${routineResponse.statusText}`);
-            }
-          } else {
-             const routineJson: RoutineData = await routineResponse.json();
-             setRoutineData(routineJson); 
-             console.log('Routine data fetched:', routineJson);
-          }
-        } catch (routineError: any) {
-          // Catch errors specific to the routine fetch (like network error)
-          console.error('Error fetching routine data:', routineError);
-          setRoutineData(null); // Set to null on error
-          // We might not want to set the global error state here, 
-          // just log it or show a specific message in the routine section.
-        }
-        // --- End Fetch Routine Data --- 
-        
-        // Fetch zengo stats
-        try {
-          const zengoData = await zengoApi.getUserStats();
-          setZengoStats(zengoData);
-        } catch (zengoError) {
-          console.error('Error fetching Zengo stats:', zengoError);
-          // 가상 데이터로 대체
-          setZengoStats({
-            totalActivities: 8,
-            averageScores: {
-              overall: 78,
-              memory: 72,
-              attention: 85,
-              reasoning: 68,
-              creativity: 75
-            }
-          });
-        }
-
-        // 안전한 유저 데이터 확인
-        if (!user?.nickname) {
-          console.log("사용자 데이터가 없거나 불완전함. 기본값 사용");
-        }
-        
-        // 인지 능력 프로필은 별도 컴포넌트에서 처리
-
-        setIsLoading(false);
-      } catch (e) {
-        console.error('Dashboard data loading failed:', e);
-        setError('데이터를 불러올 수 없습니다');
-        setIsLoading(false);
-        setRoutineData(null); // Ensure routine data is null on general error
-      }
-    };
-
     fetchDashboardData();
   }, [router, user]);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const profile = await userApi.getProfile();
+        dispatch(loginSuccess({
+          id: profile.id,
+          email: profile.email,
+          nickname: profile.nickname,
+          token: localStorage.getItem('token') || '',
+          profileImage: profile.profileImage || '',
+          trialEndsAt: profile.trialEndsAt || '',
+          inviteCode: profile.inviteCode || '',
+        }));
+      } catch (e) {
+        // 에러 처리 (예: 로그아웃)
+      }
+    }
+    fetchProfile();
+  }, [dispatch]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -467,8 +496,8 @@ export default function DashboardPage() {
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-cyan-500/30 hover:border-cyan-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
               <div>
                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>Time Sprint</h2> {/* Theme text */}
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>정보 처리 속도 측정</p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 빠르고 정확하게 기억하게 됩니다</p> {/* Theme text */}
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>읽기 순발력 체크</p> {/* Revised Text & Theme */}
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>책,논문,각종 문서를 등록하고 빠르게 읽으세요</p> {/* Theme text */}
               </div>
               <div className="mt-6">
                  <button className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
@@ -483,8 +512,8 @@ export default function DashboardPage() {
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
                <div>
                  <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo</h2> {/* Theme text */} 
-                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>정보 처리 용량 측정</p> {/* Revised Text & Theme */} 
-                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 많이, 더 오래 기억하게 됩니다</p> {/* Theme text */} 
+                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>작업 기억량 체크</p> {/* Revised Text & Theme */} 
+                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>머리에서 떠올리는 양과 시간을 확인해보세요</p> {/* Theme text */} 
                </div>
                <div className="mt-6">
                  <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
@@ -503,12 +532,12 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>DIY ZenGo로 외우고. 지인에게 공유하세요</p>
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>꼭 외워야 할 것들, 이제 안심하세요</p>
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>입력하고 외우고 공유하세요</p>
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>내가 만든 ZenGo. 이제 건망증과 작별할 시간입니다</p>
               </div>
               <div className="mt-6">
                 <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
-                  <span className="relative z-10 font-barlow uppercase tracking-wider">Myverse 이동 (유료)</span>
+                  <span className="relative z-10 font-barlow uppercase tracking-wider">Myverse 이동 (유료가입)</span>
                   <span className="cyber-rect-anim pointer-events-none absolute inset-0 rounded-lg"></span>
                 </button>
               </div>
@@ -531,32 +560,41 @@ export default function DashboardPage() {
               <rect width="400" height="120" fill="#fff" filter="url(#metallicNoise)"/>
             </svg>
             <div className="flex justify-between items-center mb-4 relative z-10">
-              <h2 className="text-xl font-orbitron font-bold text-cyan-300 flex items-center space-x-2 drop-shadow-sm">
-                <span>33일 피드백 루프</span>
-                <button
-                  onClick={() => router.push('/brain-hack-routine')}
-                  className="p-1 text-slate-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 rounded-full font-barlow"
-                  aria-label="유형 선택 도움말"
-                >
-                  <FiHelpCircle className="w-6 h-6" aria-hidden="true" />
-                </button>
-              </h2>
-              <div className="bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 py-1 px-4 rounded-full flex items-center space-x-2 border border-slate-600 shadow-md">
-                <p className="text-xs font-semibold text-slate-200"> 
-                  Day {routineData.currentDay} / 33
-                </p>
-                <span 
-                  className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-300' : 'text-slate-500'}`}
-                  title={routineData?.todayTsExecuted ? "오늘 TS 실행 완료!" : "오늘 TS 실행 미완료"}
-                >
-                  ⚡
-                </span>
-                <span 
-                  className={`text-sm ${routineData?.todayZengoCompleted ? 'text-emerald-300' : 'text-slate-500'}`}
-                  title={routineData?.todayZengoCompleted ? "오늘 ZenGo 완료!" : "오늘 ZenGo 미완료"}
-                >
-                  🧠
-                </span>
+              <div className="flex flex-row items-center w-full">
+                <div className="flex-1 flex justify-start">
+                  <h2 className="text-xl font-orbitron font-bold text-cyan-300 drop-shadow-sm">
+                    33일 피드백 루프
+                  </h2>
+                </div>
+                <div className="flex-1 flex justify-center">
+                  <button
+                    onClick={() => router.push('/brain-hack-routine')}
+                    className="min-w-[200px] px-8 py-3 rounded-xl border-2 border-slate-400 bg-white text-gray-900 font-bold text-lg transition-all duration-400 ease-[cubic-bezier(.4,0,.2,1)] hover:bg-gradient-to-r hover:from-cyan-400 hover:via-fuchsia-600 hover:to-purple-800 hover:text-white hover:border-cyan-500 hover:shadow-2xl hover:scale-105 focus:bg-gradient-to-r focus:from-cyan-500 focus:via-fuchsia-700 focus:to-purple-900 focus:text-white focus:border-cyan-600 focus:shadow-2xl focus:scale-105 active:bg-purple-900 active:text-white active:scale-100 outline-none"
+                    aria-label="나에게 맞는 루프 찾기"
+                    type="button"
+                  >
+                    나에게 맞는 루프 찾기
+                  </button>
+                </div>
+                <div className="flex-1 flex justify-end">
+                  <div className="bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 py-1 px-4 rounded-full flex items-center space-x-2 border border-slate-600 shadow-md">
+                    <p className="text-xs font-semibold text-slate-200"> 
+                      Day {routineData.currentDay} / 33
+                    </p>
+                    <span 
+                      className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-300' : 'text-slate-500'}`}
+                      title={routineData?.todayTsExecuted ? "오늘 TS 실행 완료!" : "오늘 TS 실행 미완료"}
+                    >
+                      ⚡
+                    </span>
+                    <span 
+                      className={`text-sm ${routineData?.todayZengoCompleted ? 'text-emerald-300' : 'text-slate-500'}`}
+                      title={routineData?.todayZengoCompleted ? "오늘 ZenGo 완료!" : "오늘 ZenGo 미완료"}
+                    >
+                      🧠
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="mb-6 relative h-2 z-10">
@@ -591,6 +629,33 @@ export default function DashboardPage() {
               <rect width="400" height="120" fill="#fff" filter="url(#metallicNoise2)"/>
             </svg>
             <p className="text-slate-400 mb-4">진행 중인 33일 루틴이 없습니다.</p>
+            <button
+              className="mt-2 px-6 py-2 bg-cyan-600 text-white rounded-lg font-bold hover:bg-cyan-700 transition disabled:opacity-60"
+              onClick={async () => {
+                setIsLoading(true);
+                setError('');
+                try {
+                  const token = localStorage.getItem('token');
+                  const res = await fetch(`${API_BASE_URL}/routines`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ goal: '뇌 최적화 루틴' })
+                  });
+                  if (!res.ok) throw new Error('루틴 생성에 실패했습니다');
+                  await fetchDashboardData();
+                } catch (e) {
+                  setError('루틴 생성에 실패했습니다');
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? '루틴 생성 중...' : '루틴 시작'}
+            </button>
           </div>
         )}
         
@@ -849,6 +914,31 @@ export default function DashboardPage() {
           animation: cyber-rect-move 2s linear infinite;
           box-shadow: 0 0 8px 2px rgba(34,211,238,0.3);
           pointer-events: none;
+        }
+        @keyframes cyber-glow {
+          0% {
+            border-image-source: linear-gradient(270deg, #22d3ee, #818cf8, #a21caf, #22d3ee);
+            filter: drop-shadow(0 0 6px #22d3ee88);
+          }
+          50% {
+            border-image-source: linear-gradient(90deg, #a21caf, #22d3ee, #818cf8, #a21caf);
+            filter: drop-shadow(0 0 12px #818cf888);
+          }
+          100% {
+            border-image-source: linear-gradient(270deg, #22d3ee, #818cf8, #a21caf, #22d3ee);
+            filter: drop-shadow(0 0 6px #22d3ee88);
+          }
+        }
+        .animate-cyber-glow {
+          border-width: 2px;
+          border-style: solid;
+          border-radius: 9999px;
+          border-image: linear-gradient(270deg, #22d3ee, #818cf8, #a21caf, #22d3ee) 1;
+          animation: cyber-glow 2.5s linear infinite;
+          box-shadow: 0 0 12px 2px #22d3ee44, 0 0 24px 4px #818cf844;
+        }
+        .three-d-btn-text {
+          text-shadow: 0 2px 8px #0ff3, 0 1px 0 #2228;
         }
       `}</style>
     </div>
