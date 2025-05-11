@@ -9,7 +9,8 @@ import {
   getSharedGames,
   getAccessibleGames,
   getGamesByType,
-  saveMyVerseSessionResult
+  saveMyVerseSessionResult,
+  getSentGames
 } from '../controllers/myverseGameController';
 import { body, query, param } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -29,6 +30,9 @@ router.get('/games/type/:type', getGamesByType);
 
 // Shared games
 router.get('/games/shared', getSharedGames);
+
+// Sent games
+router.get('/games/sent', getSentGames);
 
 // Single game CRUD
 router.get('/games/:gameId', getMyverseGame);

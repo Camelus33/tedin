@@ -28,6 +28,10 @@ const bookAddValidation = [
   body('category')
     .optional()
     .trim(),
+  body('readingPurpose')
+    .optional()
+    .isIn(['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'])
+    .withMessage('읽는 목적이 올바르지 않습니다.'),
 ];
 
 // Validation for updating book progress

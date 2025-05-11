@@ -9,6 +9,21 @@ import './results.css';
 import { zengo as zengoApi } from '@/lib/api';
 import { BoardSize } from '@/src/types/zengo';
 
+// [젠고 기본 결과 처리 및 인지능력 프로필 반영 가이드]
+// - 본 페이지는 젠고 기본(오리지널) 모드의 게임 결과를 시각화/요약/공유하는 역할을 합니다.
+// - 사용자가 게임을 완료하면, 결과는 백엔드(/api/zengo/:id/complete)로 저장되고, ZengoSessionResult에 기록됩니다.
+// - 저장된 결과는 인지능력 프로필(/api/zengo/cognitive-profile) API에서 집계되어, 대시보드/통계/리더보드 등에서 시계열 및 현재 프로필로 시각화됩니다.
+// - 인지능력 프로필은 최근 N회(기본 3회) 결과의 평균값(hippocampusActivation, workingMemory, processingSpeed, attention, patternRecognition, cognitiveFlexibility 등)으로 산출됩니다.
+// - calculateCognitiveMetrics 유틸에서 각 세션 결과를 기반으로 주요 인지 지표를 산출하며, 프론트엔드 CognitiveProfileContainer 등에서 시각화됩니다.
+// - Myverse/오리지널/마이버스 등 모드별 데이터는 절대 혼용되지 않으며, 오직 젠고 기본 결과만 인지능력 프로필에 반영됩니다.
+// - 유지보수 시 결과 저장, 프로필 집계, 시각화(대시보드/통계) 연계 구조를 반드시 함께 점검하세요.
+
+// [ZenGo 모드 분리 원칙]
+// ZenGo는 세 가지 모드(젠고 기본, 젠고 마이버스, 젠고 오리지널/브랜디드)를 별도로 운영합니다.
+// - 각 모드는 게임 콘텐츠(문제, 기록, 통계 등)와 데이터 모델/저장소/API가 절대 섞이지 않으며, UI/컴포넌트 일부만 공유합니다.
+// - Myverse 콘텐츠가 오리지널/기본에 노출되거나, 오리지널/기본 콘텐츠가 Myverse에 노출되는 일은 없어야 합니다.
+// - 이 원칙을 위반하는 데이터/로직/호출/UI 혼용은 금지합니다.
+
 // 젠고 결과 페이지
 export default function ZengoResults() {
   const router = useRouter();

@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { ResultType } from '@/store/slices/zengoSlice';
-import { ZengoSessionResult } from '@/src/types/zengo';
+import { ZengoSessionResult, IMyVerseSessionResult } from '@/src/types/zengo';
 import styles from './ZengoResultPage.module.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 
 interface ZengoResultPageProps {
-  result: ZengoSessionResult | null;
+  result: ZengoSessionResult | IMyVerseSessionResult | null;
   resultType: ResultType;
   error: string | null;
   wordOrderCorrect?: boolean | null;

@@ -33,6 +33,13 @@ interface CognitiveProfileContainerProps {
   className?: string;
 }
 
+// [인지능력 프로필 데이터 집계/연계 가이드]
+// - 본 컴포넌트는 /api/zengo/cognitive-profile API를 통해 젠고 기본(오리지널) 모드의 결과만을 집계/시각화합니다.
+// - Myverse/오리지널/마이버스 등 모드별 데이터는 절대 혼용되지 않으며, 오직 젠고 기본 결과만 인지능력 프로필에 반영됩니다.
+// - 프로필은 최근 N회(기본 3회) 결과의 평균값(hippocampusActivation, workingMemory, processingSpeed, attention, patternRecognition, cognitiveFlexibility 등)으로 산출됩니다.
+// - calculateCognitiveMetrics 유틸에서 각 세션 결과를 기반으로 주요 인지 지표를 산출합니다.
+// - 유지보수 시 결과 저장, 프로필 집계, 시각화(대시보드/통계) 연계 구조를 반드시 함께 점검하세요.
+
 const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ className = '' }) => {
   // State for cognitive profile data
   const [profileData, setProfileData] = useState<CognitiveProfileResponse | null>(null);
@@ -113,8 +120,8 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
   return (
     <div className={`bg-white rounded-xl shadow-md overflow-hidden ${className}`}>
       <div className="p-6 md:p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">정보 처리 역량 분석</h2>
-        <p className="text-sm text-gray-500 mb-6 text-center">매번 변화하는 자신을 관찰하세요</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">인지능력 모니터링</h2>
+        <p className="text-sm text-gray-500 mb-6 text-center">자신의 현재 상태를 체크하고 행동하세요</p>
         
         {/* Time period selector */}
         <div className="flex justify-center mb-6">

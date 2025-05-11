@@ -13,6 +13,7 @@ export interface IBook extends Document {
   completionPercentage: number;
   estimatedRemainingMinutes?: number | null;
   avgPpm?: number | null;
+  readingPurpose?: 'exam_prep' | 'practical_knowledge' | 'humanities_self_reflection' | 'reading_pleasure' | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,6 +74,11 @@ const BookSchema: Schema = new Schema(
     },
     avgPpm: {
       type: Number,
+      default: null,
+    },
+    readingPurpose: {
+      type: String,
+      enum: ['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'],
       default: null,
     },
   },

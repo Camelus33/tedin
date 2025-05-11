@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { myverseApi } from '@/lib/api';
 import api from '@/lib/api';
 import Button from '@/components/common/Button';
-import { XMarkIcon, UserPlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, UserPlusIcon, MagnifyingGlassIcon, PencilSquareIcon, InformationCircleIcon, GlobeAltIcon, TagIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 
 interface MyverseGame {
@@ -230,7 +230,9 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="gameTitle" className="block text-sm font-semibold text-neutral-800 mb-1">제목</label>
+          <label htmlFor="gameTitle" className="block text-sm font-semibold text-neutral-800 mb-1">
+            제목
+          </label>
           <input
             id="gameTitle"
             type="text"
@@ -243,7 +245,10 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
           />
         </div>
         <div>
-          <label htmlFor="gameDescription" className="block text-sm font-semibold text-neutral-800 mb-1">만든 이유</label>
+          <label htmlFor="gameDescription" className="block text-sm font-semibold text-neutral-800 mb-1 flex items-center">
+            <InformationCircleIcon className="h-5 w-5 text-neutral-800 mr-1" aria-hidden="true" />
+            <span className="sr-only">만든 이유</span>
+          </label>
           <textarea
             id="gameDescription"
             className="block w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm text-sm focus:ring-accent focus:border-accent placeholder:text-neutral-400 transition resize-none min-h-[40px] max-h-[80px]"
@@ -256,7 +261,10 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
           />
         </div>
         <div>
-          <label htmlFor="gameText" className="block text-sm font-semibold text-neutral-800 mb-1">게임 입력</label>
+          <label htmlFor="gameText" className="block text-sm font-semibold text-neutral-800 mb-1 flex items-center">
+            <PencilSquareIcon className="h-5 w-5 text-neutral-800 mr-1" aria-hidden="true" />
+            <span className="sr-only">게임 입력</span>
+          </label>
           <textarea
             id="gameText"
             className="block w-full px-3 py-2 bg-violet-50 border border-violet-200 rounded-lg shadow-sm text-lg font-bold focus:ring-accent focus:border-accent placeholder:text-neutral-400 transition resize-none min-h-[48px] max-h-[80px]"
@@ -271,7 +279,10 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
         </div>
         <div className="flex flex-row gap-2 items-end">
           <div className="flex-1 min-w-0">
-            <label className="block text-sm font-semibold text-neutral-800 mb-1">공개 설정</label>
+            <label className="block text-sm font-semibold text-neutral-800 mb-1 flex items-center">
+              <GlobeAltIcon className="h-5 w-5 text-neutral-800 mr-1" aria-hidden="true" />
+              <span className="sr-only">공개 설정</span>
+            </label>
             <div className="flex gap-1">
               {[
                 { value: 'private', label: '비공개' },
@@ -294,7 +305,10 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
             </div>
           </div>
           <div className="flex-1 min-w-[160px]">
-            <label htmlFor="tagsInput" className="block text-sm font-semibold text-neutral-800 mb-1">태그(선택)</label>
+            <label htmlFor="tagsInput" className="block text-sm font-semibold text-neutral-800 mb-1 flex items-center">
+              <TagIcon className="h-5 w-5 text-neutral-800 mr-1" aria-hidden="true" />
+              <span className="sr-only">태그(선택)</span>
+            </label>
             <input
               id="tagsInput"
               type="text"

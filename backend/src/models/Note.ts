@@ -12,6 +12,11 @@ export interface INote extends Document {
   momentContext?: string;
   relatedKnowledge?: string;
   mentalImage?: string;
+  relatedLinks?: Array<{
+    type: 'book' | 'paper' | 'youtube' | 'media' | 'website';
+    url: string;
+    reason?: string;
+  }>;
 }
 
 const NoteSchema: Schema = new Schema({
@@ -68,6 +73,28 @@ const NoteSchema: Schema = new Schema({
     trim: true,
     maxlength: 1000,
     default: '',
+  },
+  relatedLinks: {
+    type: [
+      {
+        type: {
+          type: String,
+          enum: ['book', 'paper', 'youtube', 'media', 'website'],
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
+        reason: {
+          type: String,
+          trim: true,
+          maxlength: 1000,
+          default: '',
+        },
+      },
+    ],
+    default: [],
   },
   createdAt: {
     type: Date,

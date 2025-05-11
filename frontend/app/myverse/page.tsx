@@ -1,3 +1,9 @@
+// [ZenGo 모드 분리 원칙]
+// ZenGo는 세 가지 모드(젠고 기본, 젠고 마이버스, 젠고 오리지널/브랜디드)를 별도로 운영합니다.
+// - 각 모드는 게임 콘텐츠(문제, 기록, 통계 등)와 데이터 모델/저장소/API가 절대 섞이지 않으며, UI/컴포넌트 일부만 공유합니다.
+// - Myverse 콘텐츠가 오리지널/기본에 노출되거나, 오리지널/기본 콘텐츠가 Myverse에 노출되는 일은 없어야 합니다.
+// - 이 원칙을 위반하는 데이터/로직/호출/UI 혼용은 금지합니다.
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -18,6 +24,8 @@ import CollectionForm from '../../components/CollectionForm';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import HabitusIcon from '@/components/HabitusIcon';
 import CountdownModal from '@/components/CountdownModal';
+
+// [Zengo Myverse] 그룹공유는 사실상 친구공유 기능을 겸함. 그룹 = 친구 네트워크로 간주하며, 그룹 내 공유가 곧 친구에게 게임을 공유하는 것과 동일한 UX를 제공함.
 
 // Cyber Theme Definition (Copied from Dashboard)
 const cyberTheme = {
@@ -140,6 +148,12 @@ export default function MyversePage() {
   const [selectedGame, setSelectedGame] = useState<any | null>(null);
   const [showCountdown, setShowCountdown] = useState(false);
 
+  // '내가 보낸 게임' 탭 상태 복원
+  const [sentGames, setSentGames] = useState<MyverseGameData[]>([]);
+  const [isSentLoading, setIsSentLoading] = useState(false);
+  const [sentError, setSentError] = useState('');
+  const [sentNextCursor, setSentNextCursor] = useState<string | null>(null);
+
   // 컬렉션 데이터 로드 함수 정의
   const fetchData = async () => {
     // 컬렉션 로딩 상태 관리 (필요시 추가)
@@ -224,6 +238,33 @@ export default function MyversePage() {
     }
   };
 
+  // 내가 보낸 게임 데이터 로드 함수
+  const fetchSentGames = async (cursor?: string) => {
+    if (!cursor) {
+      setIsSentLoading(true);
+      setSentError('');
+      setSentGames([]); // 첫 페이지 로드 시 기존 목록 비움
+    }
+    try {
+      const params = { limit: 12, cursor };
+      const result = await myverseApi.getSent(params);
+      setSentGames(prev => cursor ? [...prev, ...result.games] : result.games);
+      setSentNextCursor(result.nextCursor);
+    } catch (err: any) {
+      console.error('내가 보낸 게임 불러오기 실패:', err);
+      // '유효하지 않은 게임 ID입니다.' 오류는 게임 없음 상태로 간주
+      const msg = err.message || '';
+      if (msg.includes('유효하지 않은 게임 ID')) {
+        setSentError('');
+        setSentGames([]);
+      } else {
+        setSentError(msg || '내가 보낸 게임을 불러오는 중 오류가 발생했습니다.');
+      }
+    } finally {
+      if (!cursor) setIsSentLoading(false);
+    }
+  };
+
   // 컬렉션 데이터는 페이지 로드 시 한 번만 로드하고 유지
   useEffect(() => {
     fetchData();
@@ -249,6 +290,13 @@ export default function MyversePage() {
     }
   }, [activeTab]);
 
+  // '내가 보낸 게임' 데이터 로드 useEffect
+  useEffect(() => {
+    if (activeTab === 'sentGames') {
+      fetchSentGames();
+    }
+  }, [activeTab]);
+
   // 페이지네이션 핸들러 복원
   const handleLoadMoreAccessible = () => {
     if (accessibleNextCursor) {
@@ -268,6 +316,14 @@ export default function MyversePage() {
     if (sharedNextCursor) {
       setIsSharedLoading(true); // 로딩 상태 추가
       fetchSharedGames(sharedNextCursor);
+    }
+  };
+
+  // Load more for sent games
+  const handleLoadMoreSent = () => {
+    if (sentNextCursor) {
+      setIsSentLoading(true);
+      fetchSentGames(sentNextCursor);
     }
   };
 
@@ -717,28 +773,59 @@ export default function MyversePage() {
           )}
           {activeTab === 'sentGames' && (
             <section className="flex-1">
-              {/*
-                [내가 보낸 게임] 섹션 개발 가이드
-                1. 목적: 내가 만든 게임 중 실제로 타인에게 공유(그룹공개)한 모든 게임을 한눈에 확인
-                2. 데이터: MyverseGame에서 owner == 내 ID && sharedWith.length > 0 조건으로 조회
-                3. UI 구성:
-                  - 상단: 전체 요약 표 (누구에게 몇 개의 게임을 보냈는지)
-                  - 하단: 게임 리스트 (각 게임카드에 공유 대상자 닉네임/아바타 등 표시)
-                  - (선택) 공유 취소/추가, 필터/검색 등 부가 기능
-                4. API:
-                  - /api/myverse/games/sent (내가 보낸 게임 목록, sharedWith populate)
-                  - (선택) /api/myverse/games/sent/summary (사용자별 집계)
-                5. 개발 단계:
-                  - 1) 백엔드 API 구현 → 2) 프론트엔드 fetch/상태 관리 → 3) UI/컴포넌트 구현
-                  - 4) 전체 시나리오별 테스트 및 UX 개선
-                6. 보안/운영:
-                  - 본인만 자신의 '내가 보낸 게임'을 볼 수 있도록 인증 필요
-                  - 개인정보(닉네임, 아바타 등) 노출 범위 검토
-              */}
-              <div className="text-center py-16 border border-dashed border-neutral-300 rounded-lg">
-                <p className="text-neutral-500">[내가 보낸 게임] 섹션 - 개발 예정<br />
-                  (상세 개발 가이드는 코드 주석 참고)</p>
-              </div>
+              <h2 className="text-lg font-semibold text-neutral-DEFAULT mb-4">
+                내가 보낸 게임
+                {!isSentLoading && (
+                  <span className="text-base font-normal text-neutral-500 ml-2">
+                    ({sentGames.length})
+                  </span>
+                )}
+              </h2>
+              {isSentLoading && sentGames.length === 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {[...Array(8)].map((_, i) => (
+                    <div key={i} className="animate-pulse bg-white h-40 rounded-lg shadow-md" />
+                  ))}
+                </div>
+              ) : sentError ? (
+                <div className="bg-feedback-error/10 text-feedback-error p-4 rounded-lg">{sentError}</div>
+              ) : sentGames.length === 0 ? (
+                <div className="text-center py-12 text-neutral-500">
+                  <p>아직 보낸 게임이 없습니다.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {sentGames.map((game, index) => (
+                      <motion.div
+                        key={game._id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                      >
+                        <GameCard
+                          game={game}
+                          onEditClick={handleEditGame}
+                          onDeleteClick={handleDeleteGame}
+                          onClick={() => handleGameCardClick(game)}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                  {sentNextCursor && (
+                    <div className="mt-8 text-center">
+                      <Button
+                        variant="secondary"
+                        onClick={handleLoadMoreSent}
+                        disabled={isSentLoading}
+                        loading={isSentLoading && sentGames.length > 0}
+                      >
+                        더보기
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
             </section>
           )}
           {activeTab === 'exploreGames' && (

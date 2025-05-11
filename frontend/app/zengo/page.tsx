@@ -26,6 +26,12 @@ import ZengoStatusDisplay from '@/components/zengo/ZengoStatusDisplay';
 import ZengoResultPage from '@/components/zengo/ZengoResultPage';
 import { BoardStoneData, PlacedStone, BoardSize, InteractionMode } from '@/src/types/zengo';
 
+// [ZenGo 모드 분리 원칙]
+// ZenGo는 세 가지 모드(젠고 기본, 젠고 마이버스, 젠고 오리지널/브랜디드)를 별도로 운영합니다.
+// - 각 모드는 게임 콘텐츠(문제, 기록, 통계 등)와 데이터 모델/저장소/API가 절대 섞이지 않으며, UI/컴포넌트 일부만 공유합니다.
+// - Myverse 콘텐츠가 오리지널/기본에 노출되거나, 오리지널/기본 콘텐츠가 Myverse에 노출되는 일은 없어야 합니다.
+// - 이 원칙을 위반하는 데이터/로직/호출/UI 혼용은 금지합니다.
+
 // Helper to map size to level string (adjust as needed)
 const mapSizeToLevel = (size: number): string => {
   if (size === 3) return '3x3-easy';
@@ -382,9 +388,11 @@ export default function ZengoPage({
   // 다음 게임으로 진행하는 함수 
   const handleNextGame = async () => {
     setHasSubmitted(false);
+    // isMyVerseGame 플래그를 명확히 사용
+    const isMyVerseGame = currentContent?.level?.includes('-myverse') || currentContent?.level?.includes('-custom');
     const level = mapSizeToLevel(selectedBoardSize);
     const language = selectedLanguage;
-    console.log('다음 게임 시작...', { level, language });
+    console.log('다음 게임 시작...', { level, language, isMyVerseGame });
     try {
       // 1. 결과 평가 및 최신 resultType 획득
       const rt = await dispatch(evaluateResultThunk()).unwrap();
@@ -392,10 +400,16 @@ export default function ZengoPage({
       dispatch(prepareNextGame({ keepContent: false, keepPositions: false }));
       // 3. 게임 상태 초기화 (플래그만 보존)
       dispatch(resetGame({ preserveFlags: true }));
-      // 4. 새 설정 적용 및 콘텐츠 로드
-      dispatch(setSettings({ level, language }));
-      await dispatch(fetchContentThunk({ level, language, reshuffleWords: true })).unwrap();
-      console.log('다음 게임 준비 완료:', rt);
+      // 4. MyVerse/기본 분기
+      if (isMyVerseGame && currentContent?.collectionId) {
+        // MyVerse: 현재 collection 내 다음 게임으로 라우팅 (MyVerse adapter에서 처리)
+        router.push(`/myverse/games/${currentContent._id}?next=1`); // next=1은 예시, 실제 nextGame 로직은 myverse adapter에서 처리
+      } else {
+        // 기본: 새 설정 적용 및 콘텐츠 로드
+        dispatch(setSettings({ level, language }));
+        await dispatch(fetchContentThunk({ level, language, reshuffleWords: true })).unwrap();
+        console.log('다음 게임 준비 완료:', rt);
+      }
     } catch (error) {
       console.error('다음 게임 준비 실패:', error);
       dispatch(resetGame({ preserveFlags: false }));

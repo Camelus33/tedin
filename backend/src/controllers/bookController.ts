@@ -97,7 +97,7 @@ export const addBook = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    const { title, author, totalPages, isbn, coverImage, category } = req.body;
+    const { title, author, totalPages, isbn, coverImage, category, readingPurpose } = req.body;
 
     const newBook = new Book({
       userId,
@@ -110,6 +110,7 @@ export const addBook = async (req: Request, res: Response) => {
       category,
       status: 'not_started', // 기본값: 시작 전
       completionPercentage: 0,
+      readingPurpose,
     });
 
     const savedBook = await newBook.save();

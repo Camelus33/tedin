@@ -6,6 +6,7 @@ import { AppDispatch } from '@/store/store';
 import { clearStoneFeedback } from '@/store/slices/zengoSlice';
 import './ZengoBoard.css';
 import { BoardStoneData, BoardSize, InteractionMode } from '@/src/types/zengo';
+import { splitStoneText } from '@/src/utils/splitStoneText';
 
 // Stone component - extracted to prevent re-renders
 const Stone = React.memo(({ stone, cellSize, boardSize }: { stone: BoardStoneData; cellSize?: number; boardSize: number }) => {
@@ -13,8 +14,19 @@ const Stone = React.memo(({ stone, cellSize, boardSize }: { stone: BoardStoneDat
     return null; // 안전하게 null 반환
   }
   
+  // Split stone.value into lines based on length requirements
+  const valueStr = String(stone.value);
+  const lines = useMemo(() => splitStoneText(valueStr), [valueStr]);
+  // If text exceeds 10 chars, do not render this stone
+  if (lines.length === 0) {
+    return null;
+  }
+  
+  // Calculate stone size and dynamic font size based on line count
   const sizeFactor = boardSize > 3 ? 0.7 : 0.6;
-  const fontFactor = 0.16;
+  const baseFontFactor = 0.16;
+  const shrinkMultiplier = 1 - (lines.length - 1) * 0.2; // 1 line:1, 2 lines:0.8, 3 lines:0.6
+  const fontFactor = baseFontFactor * shrinkMultiplier;
   const style = cellSize
     ? {
         width: `${cellSize * sizeFactor}px`,
@@ -30,8 +42,11 @@ const Stone = React.memo(({ stone, cellSize, boardSize }: { stone: BoardStoneDat
         ${stone.memoryPhase ? 'memory-phase' : ''}
         ${stone.feedback ? stone.feedback : ''}`}
       style={style}
+      aria-label={valueStr}
     >
-      {stone.value}
+      {lines.map((line, idx) => (
+        <div key={idx}>{line}</div>
+      ))}
     </div>
   );
 });

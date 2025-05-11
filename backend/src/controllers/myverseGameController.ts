@@ -364,6 +364,32 @@ export const getSharedGames = async (req: Request, res: Response) => {
   }
 };
 
+// Get games sent by the authenticated user (owner with at least one sharedWith)
+export const getSentGames = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user._id;
+    const { limit = '10', cursor, sortBy = 'updatedAt', order = 'desc' } = req.query;
+
+    const query: mongoose.FilterQuery<IMyverseGame> = {
+      owner: userId,
+      sharedWith: { $exists: true, $ne: [] }
+    };
+
+    const result = await applyPagination(
+      query,
+      sortBy as string,
+      order as 'asc' | 'desc',
+      parseInt(limit as string, 10),
+      cursor as string
+    );
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error fetching sent games:', error);
+    res.status(500).json({ error: 'Failed to fetch sent games' });
+  }
+};
+
 /**
  * Saves the result of a MyVerse game session.
  */

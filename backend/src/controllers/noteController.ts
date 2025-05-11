@@ -85,7 +85,7 @@ export const updateNote = async (req: Request, res: Response) => {
   try {
     const { noteId } = req.params;
     const userId = req.user?.id;
-    const { type, content, tags, importanceReason, momentContext, relatedKnowledge, mentalImage } = req.body;
+    const { type, content, tags, importanceReason, momentContext, relatedKnowledge, mentalImage, relatedLinks } = req.body;
 
     if (!userId) {
       return res.status(401).json({ message: '인증이 필요합니다.' });
@@ -107,6 +107,7 @@ export const updateNote = async (req: Request, res: Response) => {
     if (momentContext !== undefined) updateData.momentContext = momentContext;
     if (relatedKnowledge !== undefined) updateData.relatedKnowledge = relatedKnowledge;
     if (mentalImage !== undefined) updateData.mentalImage = mentalImage;
+    if (relatedLinks !== undefined) updateData.relatedLinks = relatedLinks;
 
     const updatedNote = await Note.findByIdAndUpdate(
       noteId,

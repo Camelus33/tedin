@@ -32,6 +32,7 @@ const PORT = process.env.PORT || 8000;
 
 // Connect to MongoDB
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/habitus33';
+console.log('MongoDB URI:', MONGODB_URI);
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');

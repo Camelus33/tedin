@@ -28,11 +28,10 @@ const genres = [
 
 // 독서 목적 옵션
 const readingPurposes = [
-  { id: "intensive", name: "정독", description: "깊이 있는 이해와 분석을 위한 꼼꼼한 독서" },
-  { id: "extensive", name: "다독", description: "넓은 지식 습득을 위한 빠른 독서" },
-  { id: "scanning", name: "발췌독", description: "필요한 정보만 선별적으로 읽기" },
-  { id: "review", name: "복습", description: "이미 읽은 책의 주요 내용 복습" },
-  { id: "ts_mode", name: "TS모드", description: "시간 기반 속독 방식" }
+  { id: "exam_prep", name: "시험/인증 대비", description: "시험 합격, 자격 취득, 평가 대비" },
+  { id: "practical_knowledge", name: "실무지식/기술 습득", description: "업무, 프로젝트, 실전 적용" },
+  { id: "humanities_self_reflection", name: "인문 소양/자기 성찰", description: "사고력, 가치관, 내적 성장" },
+  { id: "reading_pleasure", name: "읽는 재미", description: "감동, 즐거움, 스트레스 해소" }
 ];
 
 export default function EditBookPage() {

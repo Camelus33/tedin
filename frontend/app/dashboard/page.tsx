@@ -16,9 +16,6 @@ import AppLogo from '@/components/common/AppLogo';
 import { loginSuccess } from '@/store/slices/userSlice';
 import { user as userApi } from '@/lib/api';
 
-// === API BASE URL 환경변수 적용 ===
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-
 // Cyber Theme Definition (Added)
 const cyberTheme = {
   primary: 'text-cyan-400',
@@ -163,7 +160,7 @@ export default function DashboardPage() {
 
       // 현재 읽고 있는 책 목록 조회 (백엔드에서 예상 시간 포함)
       // *** 중요: 백엔드 API가 /api/books?status=reading 응답에 estimatedRemainingMinutes를 포함하도록 수정되었다고 가정 ***
-      const booksResponse = await fetch(`${API_BASE_URL}/books?status=reading`, {
+      const booksResponse = await fetch('http://localhost:8000/api/books?status=reading', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!booksResponse.ok) throw new Error('책 목록 로딩 실패');
@@ -180,7 +177,7 @@ export default function DashboardPage() {
       setCurrentBooks(readingBooks);
 
       // --- Fetch user stats from the new API endpoint --- (수정된 부분)
-      const statsResponse = await fetch(`${API_BASE_URL}/users/me/stats`, {
+      const statsResponse = await fetch('http://localhost:8000/api/users/me/stats', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!statsResponse.ok) throw new Error('사용자 통계 로딩 실패');
@@ -191,7 +188,7 @@ export default function DashboardPage() {
       
       // --- Fetch Routine Data using direct fetch --- 
       try {
-        const routineResponse = await fetch(`${API_BASE_URL}/routines/current`, {
+        const routineResponse = await fetch('http://localhost:8000/api/routines/current', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!routineResponse.ok) {
@@ -512,8 +509,8 @@ export default function DashboardPage() {
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
                <div>
                  <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo</h2> {/* Theme text */} 
-                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>작업 기억량 체크</p> {/* Revised Text & Theme */} 
-                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>머리에서 떠올리는 양과 시간을 확인해보세요</p> {/* Theme text */} 
+                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>기억 가용량 / 반응력 체크</p> {/* Revised Text & Theme */} 
+                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>학습,업무 중 틈틈이 실행하여 능력을 끌어올리세요</p> {/* Theme text */} 
                </div>
                <div className="mt-6">
                  <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
@@ -636,7 +633,7 @@ export default function DashboardPage() {
                 setError('');
                 try {
                   const token = localStorage.getItem('token');
-                  const res = await fetch(`${API_BASE_URL}/routines`, {
+                  const res = await fetch('http://localhost:8000/api/routines', {
                     method: 'POST',
                     headers: {
                       'Authorization': `Bearer ${token}`,
@@ -681,8 +678,10 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">정보 처리 속도</p>
-                <p className="text-xl font-bold text-blue-400">{stats?.recentPpm ? `${stats.recentPpm} PPM` : '-'}</p>
+                <p className="text-sm text-gray-200 mb-1">나의 읽기 순발력</p>
+                <p className="text-xl font-bold text-blue-400">
+                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(2)} PPM` : '-'}
+                </p>
               </div>
             </div>
           </div>
@@ -759,7 +758,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">총 등록 도서</p>
+                <p className="text-sm text-gray-200 mb-1">내가 등록한 책</p>
                 <p className="text-xl font-bold text-purple-400">{stats ? `${stats.totalBooks}권` : '-'}</p>
               </div>
             </div>

@@ -532,6 +532,16 @@ export const myverseApi = {
     const response = await api.get(`/myverse/games/type/${type}`, { params });
     return response.data; // { games: IMyverseGame[], nextCursor: string | null }
   },
+  // Sent games (games shared by this user)
+  getSent: async (params?: { 
+    limit?: number;
+    cursor?: string;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+  }) => {
+    const response = await api.get('/myverse/games/sent', { params });
+    return response.data; // { games: IMyverseGame[], nextCursor: string | null }
+  },
   /**
    * Submits the result of a MyVerse game session.
    */
