@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/common/Button';
 import { myverseApi, collectionsApi } from '@/lib/api';
@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import CollectionCard from '@/components/CollectionCard';
 import AppLogo from '@/components/common/AppLogo';
+import NotificationBell from '@/components/common/NotificationBell';
 import { AcademicCapIcon, BookOpenIcon, BriefcaseIcon, SunIcon, PlusIcon, TagIcon, SquaresPlusIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameCard from '@/components/GameCard';
@@ -109,6 +110,7 @@ const categoryColorMap: { [key: string]: string } = {
 const defaultCategoryColor = cyberTheme.textLight;
 
 export default function MyversePage() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
   const [activeTab, setActiveTab] = useState('myCollections');
@@ -153,6 +155,14 @@ export default function MyversePage() {
   const [isSentLoading, setIsSentLoading] = useState(false);
   const [sentError, setSentError] = useState('');
   const [sentNextCursor, setSentNextCursor] = useState<string | null>(null);
+
+  // Initialize active tab, default to 'myCollections'
+  useEffect(() => {
+    const paramTab = searchParams.get('tab');
+    if (paramTab === 'myCollections' || paramTab === 'sharedGames' || paramTab === 'sentGames' || paramTab === 'exploreGames') {
+      setActiveTab(paramTab);
+    }
+  }, [searchParams]);
 
   // 컬렉션 데이터 로드 함수 정의
   const fetchData = async () => {
@@ -430,6 +440,7 @@ export default function MyversePage() {
             </div>
           </Link>
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <div className="flex items-center">
               <div className="mr-3 text-right">
                 <p className={`font-semibold ${cyberTheme.textLight}`}>

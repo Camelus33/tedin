@@ -19,23 +19,34 @@ const connectDB = async () => {
 // Update display times for 5x5-medium and 7x7-hard levels
 const updateDisplayTimes = async () => {
   try {
-    // Update 5x5-medium to 10 seconds (10000ms)
-    const medium5x5Result = await ZengoProverbContent.updateMany(
-      { level: '5x5-medium' },
-      { $set: { initialDisplayTimeMs: 10000 } }
-    );
-    
-    console.log(`Updated 5x5-medium display times to 10 seconds (${medium5x5Result.modifiedCount} documents modified)`);
-    
-    // Update 7x7-hard to 20 seconds (20000ms)
-    const hard7x7Result = await ZengoProverbContent.updateMany(
-      { level: '7x7-hard' },
-      { $set: { initialDisplayTimeMs: 20000 } }
-    );
-    
-    console.log(`Updated 7x7-hard display times to 20 seconds (${hard7x7Result.modifiedCount} documents modified)`);
-    
-    console.log('Display time update completed successfully!');
+    const levels = [
+      { level: '3x3-easy', displayMs: 3000, extraStones: 1 },
+      { level: '5x5-medium', displayMs: 8000, extraStones: 2 },
+      { level: '7x7-hard', displayMs: 15000, extraStones: 4 },
+    ];
+    for (const { level, displayMs, extraStones } of levels) {
+      // Update display time
+      const dmResult = await ZengoProverbContent.updateMany(
+        { level },
+        { $set: { initialDisplayTimeMs: displayMs } }
+      );
+      console.log(`Updated ${level} display to ${displayMs}ms (${dmResult.modifiedCount} docs)`);
+      // Update totalAllowedStones based on wordMappings length
+      const docs = await ZengoProverbContent.find({ level });
+      let modifiedCount = 0;
+      for (const doc of docs) {
+        const newAllowed = (doc.wordMappings.length || doc.totalWords) + extraStones;
+        if (doc.totalAllowedStones !== newAllowed) {
+          await ZengoProverbContent.updateOne(
+            { _id: doc._id },
+            { $set: { totalAllowedStones: newAllowed } }
+          );
+          modifiedCount++;
+        }
+      }
+      console.log(`Updated ${level} allowed stones to wordCount+${extraStones} (${modifiedCount} docs)`);
+    }
+    console.log('Display time and allowed stones update completed successfully!');
   } catch (error) {
     console.error('Error updating display times:', error);
   } finally {

@@ -13,6 +13,7 @@ import CognitiveProfileContainer from '@/components/cognitive/CognitiveProfileCo
 import { FiHelpCircle, FiBook } from 'react-icons/fi';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import AppLogo from '@/components/common/AppLogo';
+import NotificationBell from '@/components/common/NotificationBell';
 import { loginSuccess } from '@/store/slices/userSlice';
 import { user as userApi } from '@/lib/api';
 
@@ -442,15 +443,13 @@ export default function DashboardPage() {
             </div>
           </Link>
           
-          {/* 사용자 프로필 */}
+          {/* 알림 및 사용자 프로필 */}
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <div className="flex items-center">
               <div className="mr-3 text-right">
                 <p className={`font-medium text-white`}> 
                   {user?.nickname || '사용자'}
-                </p>
-                <p className={`text-xs font-medium tracking-wider text-white`}> 
-                  Speed↑ Capacity↑ Duration↑
                 </p>
               </div>
               <div className="relative">

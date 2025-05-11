@@ -22,6 +22,8 @@ public/models/.DS_Store
 .env.*
 frontend/.env*
 backend/.env*
+!frontend/.env.example
+!backend/.env.example
 
 # Editor/IDE
 .vscode/

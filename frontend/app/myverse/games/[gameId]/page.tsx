@@ -19,7 +19,8 @@ interface AdapterProps {
 export default function Page({ params: { gameId } }: AdapterProps) {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const [gameData, setGameData] = useState<{ _id: string; collectionId: string } | null>(null);
+  // Include visibility to detect shared games
+  const [gameData, setGameData] = useState<{ _id: string; collectionId: string; visibility?: 'private' | 'public' | 'group' } | null>(null);
 
   useEffect(() => {
     async function init() {
@@ -108,7 +109,13 @@ export default function Page({ params: { gameId } }: AdapterProps) {
   // 콜렉션 페이지로 돌아가기
   const handleBackToCollection = () => {
     if (gameData) {
-      router.push(`/myverse/${gameData.collectionId}`);
+      // If this game is a 'group' (shared) game, navigate to the Shared Games tab
+      if (gameData.visibility === 'group') {
+        router.push('/myverse?tab=sharedGames');
+      } else {
+        // Otherwise return to its original collection page
+        router.push(`/myverse/${gameData.collectionId}`);
+      }
     }
   };
 

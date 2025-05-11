@@ -24,6 +24,7 @@ import collectionRoutes from './routes/collections';
 import myverseGamesRoutes from './routes/myverseGames';
 import routineRoutes from './routes/routineRoutes';
 import flashcardRoutes from './routes/flashcards';
+import notificationRoutes from './routes/notifications';
 
 // Initialize Express app
 const app: Express = express();
@@ -76,6 +77,7 @@ app.use('/api/collections', collectionRoutes);
 app.use('/api/myverse', myverseGamesRoutes);
 app.use('/api/routines', routineRoutes);
 app.use('/api/flashcards', flashcardRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

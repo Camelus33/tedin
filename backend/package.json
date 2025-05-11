@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "fix-zengo-word-counts": "ts-node src/scripts/fixZengoWordCounts.ts",
     "start": "node dist/app.js",
     "dev": "PORT=8000 ts-node --transpile-only src/app.ts",
     "dev:watch": "PORT=8000 nodemon --exec ts-node --transpile-only src/app.ts",

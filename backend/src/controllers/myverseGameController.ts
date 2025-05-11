@@ -6,6 +6,7 @@ import { Types } from 'mongoose';
 import { validationResult } from 'express-validator';
 import MyVerseSessionResult from '../models/MyVerseSessionResult';
 import { processCommonSessionResultTasks } from '../services/sessionResultService';
+import Notification from '../models/Notification';
 
 // Helper function for cursor-based pagination
 const applyPagination = async (
@@ -161,6 +162,24 @@ export const createMyverseGame = async (req: Request, res: Response) => {
       tags: tags || []
     });
     const saved = await newGame.save();
+    // Shared 그룹일 경우, 수신자에게 알림 생성
+    if (saved.visibility === 'group' && Array.isArray(saved.sharedWith)) {
+      const senderNickname = (req.user as any).nickname || '사용자';
+      const message = `${senderNickname}님이 게임을 공유했습니다.`;
+      saved.sharedWith.forEach(async (recipientId) => {
+        try {
+          await Notification.create({
+            userId: recipientId,
+            senderId: userId,
+            gameId: saved._id,
+            type: 'game_shared',
+            message,
+          });
+        } catch (err) {
+          console.error('알림 생성 실패:', err);
+        }
+      });
+    }
     res.status(201).json(saved);
   } catch (error) {
     console.error('Error creating game:', error);

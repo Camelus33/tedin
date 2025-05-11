@@ -121,6 +121,7 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
       });
       if (res.ok) {
         onUpdate({ [activeTab]: inputValue });
+        setFields(prev => ({ ...prev, [activeTab]: inputValue }));
         setSaveSuccess(true);
       } else {
         // 에러 처리 필요시 추가
