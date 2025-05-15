@@ -14,31 +14,41 @@ export interface TSNote {
   nickname?: string;
 }
 
+// TS 세션 상세 정보 타입 (백엔드 ISession 모델 기반)
+export interface TSSessionDetails {
+  createdAtISO?: string;    // Session.createdAt (ISO 문자열로 변환된 값)
+  durationSeconds?: number; // Session.durationSec
+  startPage?: number;       // Session.startPage
+  actualEndPage?: number;   // Session.actualEndPage
+  targetPage?: number;      // Session.endPage (목표 종료 페이지로 사용)
+  ppm?: number;             // Session.ppm
+}
+
 // 목적별 4단계 질문/가이드/placeholder 매핑
 const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder: string }>> = {
   exam_prep: [
-    { question: '이 부분이 시험/인증에 왜 중요하다고 느꼈나요?', placeholder: '이 개념은 자주 출제된다, 시험에서 헷갈리기 쉬운 부분' },
-    { question: '실제 시험 문제로 나온다면 어떻게 출제될까요?', placeholder: '이론 설명형, 사례 적용형, OX 문제 등' },
-    { question: '이 내용을 내 언어로 요약하거나, 암기 팁을 만들어 보세요.', placeholder: '공식 암기법, 키워드 연결, 그림 그리기' },
-    { question: '시험 직전, 이 내용을 어떻게 복습할 계획인가요?', placeholder: '플래시카드, 요약노트, 친구에게 설명' },
+    { question: '방금 읽은 이 부분에서, 무엇때문에 중요하거나 특히 기억해야 한다고 느꼈나요?', placeholder: '이 개념은 자주 출제된다, 시험에서 헷갈리기 쉬운 부분' },
+    { question: '이 메모(또는 방금 읽은 내용)가 실제 시험 문제로 출제된다면 어떤 모습일까요?', placeholder: '이론 설명형, 사례 적용형, OX 문제 등' },
+    { question: '방금 읽은 내용은 이미 알고 있는 어떤 것을 연상시키나요? ', placeholder: '강의, 노트 필기, 문제집 등' },
+    { question: '이 부분의 학습이 이 책 전체 흐름에서 어떤 의미를 가지며, 이를 완벽히 이해하기 위해 어떤 것이 더 필요할까요?', placeholder: '플래시카드, 요약노트, 친구에게 설명' },
   ],
   practical_knowledge: [
-    { question: '이 내용이 내 실무/업무에 어떻게 적용될 수 있나요?', placeholder: '프로젝트에 바로 쓸 수 있다, 업무 자동화에 활용' },
-    { question: '실제로 적용한다면 어떤 문제가 생길 수 있나요?', placeholder: '현장 상황, 리소스 부족, 협업 이슈' },
-    { question: '내 경험/기존 지식과 어떻게 연결되나요?', placeholder: '이전 프로젝트, 다른 툴과의 차이' },
-    { question: '내 업무에 바로 적용하기 위한 액션 플랜을 적어보세요.', placeholder: '내일 회의 때 공유, 샘플 코드 작성' },
+    { question: '방금 읽은 이 기술/정보에서, 현재 업무/프로젝트에 즉시 적용할 만한 아이디어나 개선점을 발견했나요?', placeholder: '프로젝트에 바로 쓸 수 있다, 업무 자동화에 활용' },
+    { question: '이 메모(또는 방금 읽은 내용)를 실제 업무에 적용하는 구체적인 절차나 예상되는 상황(제약, 협업)을 그려본다면?', placeholder: '현장 상황, 리소스 부족, 협업 이슈' },
+    { question: '방금 읽은 이 새로운 지식이 기존의 업무 경험이나 보유 기술과 어떻게 연결되어 시너지/차이점을 만들 수 있을까요?', placeholder: '이전 프로젝트, 다른 툴과의 차이' },
+    { question: '이 부분의 지식 습득이 당신의 전문성 향상에 어떤 의미를 주며, 실제 업무에 적용하기 위한 첫 단계는 무엇일까요?', placeholder: '내일 회의 때 공유, 샘플 코드 작성' },
   ],
   humanities_self_reflection: [
-    { question: '이 부분이 내 생각/가치관에 어떤 영향을 주었나요?', placeholder: '새로운 시각, 내 신념과의 충돌' },
-    { question: '이 내용을 내 삶/경험과 연결해 본다면?', placeholder: '과거 경험, 가족/사회와의 관계' },
-    { question: '이 책의 메시지가 내게 주는 의미는 무엇인가요?', placeholder: '삶의 방향, 내면의 변화' },
-    { question: '앞으로 내 삶에 어떻게 적용/실천할 수 있을까요?', placeholder: '일상에서 실천, 주변에 추천' },
+    { question: '방금 읽은 이 구절/내용을 접했을 때, 어떤 감정이나 생각이 가장 먼저 들었나요? 기존 가치관에 영향을 주었나요?', placeholder: '새로운 시각, 내 신념과의 충돌' },
+    { question: '이 메모(또는 방금 읽은 내용)와 관련된 당신의 개인적인 경험이나 삶의 특정 장면이 있다면 무엇인가요?', placeholder: '과거 경험, 가족/사회와의 관계' },
+    { question: '방금 읽은 이 부분과 유사한 주제를 다룬 다른 책, 영화, 예술 작품이나, 연관된 철학적/역사적 개념이 떠오르나요?', placeholder: '삶의 방향, 내면의 변화' },
+    { question: '이 부분을 통해 얻은 깨달음이나 통찰이 당신의 삶에 어떤 새로운 의미를 더해주며, 앞으로 어떤 생각/행동의 변화로 이어질 수 있을까요?', placeholder: '일상에서 실천, 주변에 추천' },
   ],
   reading_pleasure: [
-    { question: '이 부분이 왜 재미있거나 인상적이었나요?', placeholder: '반전, 유머, 감동적인 장면' },
-    { question: '가장 기억에 남는 장면/대사/캐릭터는?', placeholder: '주인공의 한마디, 명장면' },
-    { question: '이 책을 다른 사람에게 추천한다면 뭐라고 말할까요?', placeholder: '이 책의 매력, 추천 포인트' },
-    { question: '이 책을 읽고 느낀 감정/생각을 자유롭게 적어보세요.', placeholder: '여운, 아쉬움, 다음 권 기대' },
+    { question: '방금 읽은 이 부분에서, 어떤 점(문장, 묘사, 사건) 때문에 즉각적으로 흥미나 감동을 느꼈나요?', placeholder: '반전, 유머, 감동적인 장면' },
+    { question: '이 메모(또는 방금 읽은 내용)와 관련하여 가장 생생하게 떠오르는 장면, 대사, 또는 캐릭터의 모습은 무엇인가요?', placeholder: '주인공의 한마디, 명장면' },
+    { question: '방금 읽은 이 부분의 내용/분위기가 당신의 다른 경험(독서, 영화 감상 등)과 연결되어 더 큰 재미나 특별한 느낌을 주었나요?', placeholder: '이 책의 매력, 추천 포인트' },
+    { question: '이 부분을 통해 느낀 즐거움/감동이 당신에게 어떤 여운을 남겼으며, 이 책의 어떤 매력을 다른 사람에게 이야기하고 싶나요?', placeholder: '여운, 아쉬움, 다음 권 기대' },
   ],
 };
 
@@ -48,6 +58,7 @@ type TSNoteCardProps = {
   onFlashcardConvert?: (note: TSNote) => void;
   onRelatedLinks?: (note: TSNote) => void;
   readingPurpose?: string;
+  sessionDetails?: TSSessionDetails; // 기존 sessionInfo 대체
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -67,7 +78,42 @@ const tabColorMap = [
   { color: '#E67E22', ring: '#E67E22' }, // 딥 앰버 오렌지
 ];
 
-export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelatedLinks, readingPurpose }: TSNoteCardProps) {
+// Helper 함수들
+const formatSessionCreatedAt = (isoString?: string): string => {
+  if (!isoString) return '정보 없음';
+  const date = new Date(isoString);
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+};
+
+const formatSessionDuration = (seconds?: number): string => {
+  if (seconds === undefined || seconds < 0) return '정보 없음';
+  if (seconds === 0) return '0분';
+  const totalMinutes = Math.floor(seconds / 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  let durationString = "";
+  if (h > 0) durationString += `${h}시간 `;
+  if (m > 0 || h === 0) durationString += `${m}분`; // 0시간일때도 분은 표시
+  return durationString.trim();
+};
+
+const formatSessionPageProgress = (start?: number, actualEnd?: number, targetEnd?: number): string => {
+  if (start === undefined) return '정보 없음';
+  let progress = `${start}p`;
+  if (actualEnd !== undefined) {
+    progress += ` ~ ${actualEnd}p`;
+  } else if (targetEnd !== undefined) {
+    progress += ` (목표: ${targetEnd}p)`;
+  }
+  return progress;
+};
+
+const formatPPM = (ppm?: number): string => {
+  if (ppm === undefined) return '정보 없음';
+  return `분당 ${ppm.toFixed(1)} 페이지`;
+};
+
+export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelatedLinks, readingPurpose, sessionDetails }: TSNoteCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [fields, setFields] = useState<{ [K in keyof Omit<TSNote, '_id' | 'content' | 'tags' | 'nickname'>]: string }>({
     importanceReason: note.importanceReason || '',
@@ -81,8 +127,8 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
   const tabList = [
     { key: 'importanceReason', label: '읽던 순간' },
     { key: 'momentContext', label: '떠오른 장면' },
-    { key: 'relatedKnowledge', label: '연결된 지식' },
-    { key: 'mentalImage', label: '내게 온 의미' },
+    { key: 'relatedKnowledge', label: '연상된 지식' },
+    { key: 'mentalImage', label: '받아들인 의미' },
   ];
   const [activeTab, setActiveTab] = useState(tabList[0].key);
 
@@ -139,8 +185,8 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
   const questions: { key: keyof typeof fields; label: string }[] = [
     { key: 'importanceReason', label: '이 문장을 쓸 때, 주위 분위기는 조용했나요?' },
     { key: 'momentContext', label: '이 문장을 쓸 때, 어떤 장면이 그려지나요?' },
-    { key: 'relatedKnowledge', label: '이 문장은 어떤 지식과 연결할 수 있나요?' },
-    { key: 'mentalImage', label: '왜 이 문장이 중요했나요?' },
+    { key: 'relatedKnowledge', label: '이 문장은 어떤 지식을 연상시키나요?' },
+    { key: 'mentalImage', label: '왜 이 문장을 선택했나요?' },
   ];
 
   const toggleOpen = () => setIsOpen((prev) => !prev);
@@ -182,15 +228,51 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
 
   // Effect description for tooltip per question
   const effectDescriptionMap: Record<keyof typeof fields, string> = {
-    importanceReason: '상황 의존 학습 효과↑',
-    momentContext: '시각적 상상으로 기억 강화↑',
-    relatedKnowledge: '유의미 연결망 강화↑',
-    mentalImage: '심층 처리(Elaboration) 효과↑',
+    importanceReason: '상황 연상 효과↑',
+    momentContext: '시각적 기억 강화↑',
+    relatedKnowledge: '연결망 강화↑',
+    mentalImage: '심층 처리 효과↑',
   };
 
   return (
     <div className="bg-indigo-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow" role="region" aria-label="TS 메모 카드">
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-center">
+        {/* Left column container for TS Info and Diamond button */}
+        <div className="flex flex-col items-center gap-y-2 mr-4">
+            {/* TS 세션 정보 버튼 및 툴팁 */}
+            {sessionDetails && (
+              <div className="relative group w-full">
+                <button
+                  type="button"
+                  className="h-9 px-3 py-1.5 flex items-center justify-center text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors shadow-sm font-semibold w-full"
+                >
+                  TS info
+                </button>
+                <div
+                  className="absolute top-full left-0 mt-1 w-64 p-3 bg-indigo-700 text-indigo-100 text-xs rounded-md shadow-xl 
+                             opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 leading-relaxed whitespace-normal"
+                >
+                  <div className="font-semibold text-white mb-1 border-b border-indigo-500 pb-1">세션 요약</div>
+                  <div><strong className="text-indigo-200">독서 일시</strong> <span className="font-medium">{formatSessionCreatedAt(sessionDetails.createdAtISO)}</span></div>
+                  <div><strong className="text-indigo-200">독서 시간</strong> <span className="font-medium">{formatSessionDuration(sessionDetails.durationSeconds)}</span></div>
+                  <div><strong className="text-indigo-200">독서 범위</strong> <span className="font-medium">{formatSessionPageProgress(sessionDetails.startPage, sessionDetails.actualEndPage, sessionDetails.targetPage)}</span></div>
+                  <div><strong className="text-indigo-200">독서 속도</strong> <span className="font-medium">{formatPPM(sessionDetails.ppm)}</span></div>
+                </div>
+              </div>
+            )}
+            {/* 다이아몬드 아이콘 (좌측 하단) */}
+            <div className="relative group p-1.5 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-200 hover:from-indigo-200 hover:to-indigo-300 border border-indigo-300 shadow-sm hover:shadow-md transition-all flex items-center justify-center">
+                <GiCutDiamond
+                  className="text-indigo-600 drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)] text-2xl cursor-pointer hover:text-pink-500 hover:drop-shadow-[0_1px_3px_rgba(236,72,153,0.6)] hover:scale-110 hover:brightness-125 transition-all"
+                  aria-label="Cut diamond"
+                  onClick={() => setIsOpen((prev) => !prev)}
+                />
+                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
+                  메모를 다듬어 다이아몬드로 만드세요.
+                </div>
+            </div>
+        </div>
+
         <div className="flex-1 w-full">
           <div className="w-full px-4">
             <span className="text-xl text-black font-sans font-medium tracking-tight leading-loose text-left align-middle border border-indigo-200 bg-indigo-100 rounded-md px-4 py-2 shadow-sm w-full block">
@@ -228,47 +310,36 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
             )}
           </div>
         </div>
-        <div className="flex flex-col items-center ml-4 gap-y-3">
-          {/* 다이아몬드 아이콘 */}
-          <div className="relative group">
-            <GiCutDiamond
-              className="text-blue-500 drop-shadow-md text-xl cursor-pointer hover:scale-110 hover:brightness-125 transition-transform"
-              aria-label="Cut diamond"
-              onClick={() => setIsOpen((prev) => !prev)}
-            />
-            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-              메모를 가공해 다이아몬드로 만드세요.
-            </div>
-          </div>
+        <div className="flex flex-col items-stretch ml-4 gap-y-2">
           {/* 플래시카드 버튼 */}
           {onFlashcardConvert && (
-            <div className="relative group w-full">
+            <div className="relative group w-full rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 border border-blue-300 shadow-sm hover:shadow-md transition-all">
               <button
                 type="button"
-                className="w-full px-2 py-0.5 bg-blue-500 text-white rounded text-xs font-semibold hover:bg-blue-600 transition-colors flex items-center justify-center shadow-sm"
+                className="h-9 w-full px-2 py-0.5 text-xs font-semibold transition-colors flex items-center justify-center"
                 aria-label="플래시카드 변환"
                 onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }}
               >
-                <QuestionMarkCircleIcon className="w-4 h-4" />
+                <QuestionMarkCircleIcon className="w-5 h-5 text-blue-700 group-hover:text-blue-800 transition-colors" />
               </button>
               <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                메모를 퀴즈로 만들어 자신의 지식으로 만드세요
+                퀴즈로 만들어 자기 것으로 만드세요
               </div>
             </div>
           )}
           {/* 관련링크 버튼 */}
           {onRelatedLinks && (
-            <div className="relative group w-full">
+            <div className="relative group w-full rounded-lg bg-gradient-to-br from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 border border-green-300 shadow-sm hover:shadow-md transition-all">
               <button
                 type="button"
-                className="w-full px-2 py-0.5 bg-green-500 text-white rounded text-xs font-semibold hover:bg-green-600 transition-colors flex items-center justify-center shadow-sm"
+                className="h-9 w-full px-2 py-0.5 text-xs font-semibold transition-colors flex items-center justify-center"
                 aria-label="관련링크 관리"
                 onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }}
               >
-                <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                <ArrowTopRightOnSquareIcon className="w-5 h-5 text-green-700 group-hover:text-green-800 transition-colors" />
               </button>
               <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                이 메모와 관련된 외부 자료를 연결하세요
+                이 메모와 관련된 외부 지식을 연결하세요
               </div>
             </div>
           )}
@@ -322,7 +393,7 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
               </span>
             ))}
           </div>
-          <span className="text-xs text-gray-400 italic ml-auto whitespace-nowrap">Uncut diamond from this book</span>
+          <span className="text-xs text-rose-500 italic ml-auto whitespace-nowrap">Uncut diamond from this book</span>
         </div>
       )}
       <style jsx>{`

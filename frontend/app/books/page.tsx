@@ -355,7 +355,7 @@ export default function BooksPage() {
             </button>
           </div>
           <p className={`text-sm ${cyberTheme.textMuted}`}>
-            당신의 지식과 기억을 관리하고, 메모와 반복 학습을 통해 작업 기억의 지속 시간을 늘려보세요.
+            당신이 읽고 있는 모든 것을 등록하고 관리하세요. 책, 논문, 수험서, 학습자료, 문서 등
           </p>
         </div>
 

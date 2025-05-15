@@ -25,6 +25,7 @@ import ZengoBoard from '@/components/zengo/ZengoBoard';
 import ZengoStatusDisplay from '@/components/zengo/ZengoStatusDisplay';
 import ZengoResultPage from '@/components/zengo/ZengoResultPage';
 import { BoardStoneData, PlacedStone, BoardSize, InteractionMode } from '@/src/types/zengo';
+import { LightBulbIcon, FireIcon, QuestionMarkCircleIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 // [ZenGo 모드 분리 원칙]
 // ZenGo는 세 가지 모드(젠고 기본, 젠고 마이버스, 젠고 오리지널/브랜디드)를 별도로 운영합니다.
@@ -136,6 +137,8 @@ export default function ZengoPage({
   const [uiState, setUiState] = useState<'intro' | 'selection'>(initialUiState ?? 'intro');
   const [selectedBoardSize, setSelectedBoardSize] = useState<number>(3);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('ko'); // Default to Korean
+  const categories = ['수능·학교시험','외국어·편입','공무원·고시','자격증','취업·면접','적성·승진','실무·숙련 팁','기타'];
+  const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
   const [loading, setLoading] = useState(false); // Keep local loading for button state?
 
   // Track if word order was correct
@@ -1005,17 +1008,35 @@ export default function ZengoPage({
               style={{ background: 'linear-gradient(90deg, #0a1020 0%, #1e293b 60%, #232946 100%)', position: 'relative', boxShadow: '0 2px 8px #1e293b44' }}
             >
               <h3 className="text-2xl font-extrabold mb-2 text-white" style={{ color: '#fff', textShadow: '0 1px 8px #38bdf833' }}>
-                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: 700, marginLeft: 4, fontSize: '1rem', letterSpacing: '-0.01em' }}>독점계약 브랜디드 유료콘텐츠</span>
+                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: 700, marginLeft: 4, fontSize: '1rem', letterSpacing: '-0.01em' }}>암기공식·합격비결 오픈마켓</span>
               </h3>
               <div className="text-gray-200 text-sm md:text-base mb-4">
-                수험생 전용 공간 - 각 분야 최고 전문가의 시험대비 콘텐츠를 게임으로 즐기고 성장하세요. (수능, 고시, 자격, 취업, 면접, 외국어 등)
+                딱 이것만! 이제 합격에 필요한 모든 것을 사고 팔 수 있습니다. 합격/만점을 인증하고 자신의 노하우를 담은 ZenGo로 수익화하세요.
               </div>
+              {/* Categories Tabs */}
+              <nav role="tablist" aria-label="콘텐츠 카테고리" className="bg-neutral-900/10 rounded-lg px-4 py-2 flex overflow-x-auto space-x-6 border-b border-neutral-600 mb-6 md:justify-center">
+                {categories.map(cat => (
+                  <div key={cat} className="relative group">
+                    <button
+                      role="tab"
+                      aria-selected={selectedCategory === cat}
+                      tabIndex={selectedCategory === cat ? 0 : -1}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`uppercase font-medium tracking-wide px-5 py-3 text-sm transition-colors duration-200 ease-in-out ${selectedCategory === cat ? 'text-white border-b-4 border-primary-500' : 'text-white/60 hover:text-white hover:bg-white/10'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500`}>
+                      {cat}
+                    </button>
+                    <div className="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/80 text-white text-xs whitespace-nowrap rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                      추후 공개
+                    </div>
+                  </div>
+                ))}
+              </nav>
               <div className="level-grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
-                  { size: '7x5', desc: '요점 정리', color: '#38bdf8', grad: 'linear-gradient(135deg, #0a1020 0%, #38bdf8 80%, #a78bfa 100%)' },
-                  { size: '9x7', desc: '암기 노트', color: '#a78bfa', grad: 'linear-gradient(135deg, #0a1020 0%, #a78bfa 80%, #38bdf8 100%)' },
-                  { size: '11x9', desc: '커닝 페이퍼', color: '#f472b6', grad: 'linear-gradient(135deg, #0a1020 0%, #f472b6 80%, #38bdf8 100%)' },
-                  { size: '13x11', desc: '암기 배틀', color: '#5eead4', grad: 'linear-gradient(135deg, #0a1020 0%, #5eead4 80%, #a78bfa 100%)' },
+                  { size: '7x5', desc: '핵심 이론', slogan: '알맹이만 콕콕', icon: LightBulbIcon, color: '#6366F1', grad: 'linear-gradient(135deg, #4338CA 0%, #6366F1 100%)' },
+                  { size: '9x7', desc: '최다 빈출', slogan: '자주 나오는 것만', icon: FireIcon, color: '#3B82F6', grad: 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)' },
+                  { size: '11x9', desc: '예상 문제', slogan: '이번에는 요거', icon: QuestionMarkCircleIcon, color: '#10B981', grad: 'linear-gradient(135deg, #047857 0%, #10B981 100%)' },
+                  { size: '13x11', desc: '한장 요약', slogan: '하루 전 벼락치기', icon: DocumentTextIcon, color: '#EC4899', grad: 'linear-gradient(135deg, #9D174D 0%, #EC4899 100%)' },
                 ].map((item) => (
                   <div
                     key={item.size}
@@ -1032,7 +1053,7 @@ export default function ZengoPage({
                     onClick={() => alert('곧 오픈 예정입니다.')}
                     tabIndex={0}
                     role="button"
-                    aria-label={`브랜디드 고급콘텐츠 ${item.size}`}
+                    aria-label={`브랜디드 콘텐츠 ${item.desc}`}
                   >
                     {/* 사이버 회로 SVG 배경 (각 카드 컬러에 맞게) */}
                     <svg style={{position:'absolute',inset:0,opacity:0.13,zIndex:0}} width="100%" height="100%" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1041,9 +1062,11 @@ export default function ZengoPage({
                       <circle cx="260" cy="60" r="18" stroke={item.color} strokeWidth="1.2"/>
                       <path d="M78 60 H242" stroke={item.color} strokeWidth="1.2" strokeDasharray="4 4"/>
                     </svg>
-                    <div className="text-lg md:text-xl font-bold mb-1" style={{ color: item.color, zIndex:1, textShadow: `0 0 8px ${item.color}` }}>{item.size}</div>
+                    <div className="mb-1 p-1.5 rounded-full bg-white/20 z-10">
+                      <item.icon className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-md" />
+                    </div>
                     <div className="text-xs md:text-sm mb-1" style={{ color: '#fff', zIndex:1 }}>{item.desc}</div>
-                    <div className="text-xs" style={{ color: '#e0e7ef', zIndex:1 }}>흑돌/백돌 동시 사용</div>
+                    <div className="text-xs" style={{ color: '#e0e7ef', zIndex:1 }}>{item.slogan}</div>
                   </div>
                 ))}
               </div>

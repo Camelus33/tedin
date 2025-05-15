@@ -120,8 +120,8 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
   return (
     <div className={`bg-white rounded-xl shadow-md overflow-hidden ${className}`}>
       <div className="p-6 md:p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">인지능력 모니터링</h2>
-        <p className="text-sm text-gray-500 mb-6 text-center">자신의 현재 상태를 체크하고 행동하세요</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">나의 상태</h2>
+        <p className="text-sm text-gray-500 mb-6 text-center">확인 후, 학습 및 업무의 진척도를 점검하세요 </p>
         
         {/* Time period selector */}
         <div className="flex justify-center mb-6">

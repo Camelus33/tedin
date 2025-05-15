@@ -1,17 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { AiOutlineEdit, AiOutlineQuestionCircle, AiOutlineArrowRight, AiOutlineInfoCircle, AiOutlineEye } from 'react-icons/ai';
 import { FiBook } from 'react-icons/fi';
 import useBooks from '@/hooks/useBooks';
 import TSNoteCard from '@/components/ts/TSNoteCard';
+import { TSSessionDetails } from '@/components/ts/TSNoteCard';
 import Spinner from '@/components/ui/Spinner';
 import FlashcardDeck from '@/components/flashcard/FlashcardDeck';
 import FlashcardForm from '@/components/flashcard/FlashcardForm';
-import { LinkIcon } from '@heroicons/react/24/outline';
-import { BookOpenIcon, DocumentTextIcon, PlayCircleIcon, NewspaperIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import { DocumentTextIcon, BookOpenIcon, PlayCircleIcon, NewspaperIcon } from '@heroicons/react/24/outline';
+import { ShareIcon } from '@heroicons/react/24/solid';
+import { AiFillYoutube } from 'react-icons/ai';
 
 // API base URL - this should match what's used elsewhere in the app
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -90,6 +92,11 @@ type Note = {
   type: 'quote' | 'thought' | 'question';
   tags: string[];
   createdAt: string;
+  originSession?: string;
+  importanceReason?: string;
+  momentContext?: string;
+  relatedKnowledge?: string;
+  mentalImage?: string;
 };
 
 type Session = {
@@ -98,10 +105,15 @@ type Session = {
   endPage: number;
   actualEndPage?: number;
   durationSec: number;
-  memo?: string;
   ppm?: number;
-  selfRating?: number;
   createdAt: string;
+};
+
+// RelatedLink 타입 정의
+type RelatedLink = {
+  type: 'bookAndPaper' | 'youtube' | 'sns' | 'media' | 'noteApp';
+  url: string;
+  reason: string;
 };
 
 export default function BookDetailPage() {
@@ -112,6 +124,8 @@ export default function BookDetailPage() {
   // Use custom hooks
   const { bookFetchState, fetchBookDetail } = useBooks();
   const [tsNotes, setTsNotes] = useState<Note[]>([]);
+  const [tsSessions, setTsSessions] = useState<Session[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState<boolean>(true);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [flashcardFormNote, setFlashcardFormNote] = useState<Note | null>(null);
   const [flashcardDeckKey, setFlashcardDeckKey] = useState(0); // Deck 강제 리렌더용
@@ -120,14 +134,14 @@ export default function BookDetailPage() {
   const [selectedRelatedNote, setSelectedRelatedNote] = useState<Note | null>(null);
   
   // 관련 링크 탭용 상태
-  const relatedLinkTabs = [
-    { key: 'book', label: '관련 도서', icon: BookOpenIcon, tooltip: '관련 도서(온라인서점)' },
-    { key: 'paper', label: '관련 논문', icon: DocumentTextIcon, tooltip: '관련 논문/학술자료' },
-    { key: 'youtube', label: '유튜브', icon: PlayCircleIcon, tooltip: '관련 유튜브 영상' },
-    { key: 'media', label: '언론·방송·매체', icon: NewspaperIcon, tooltip: '관련 기사/방송/매체' },
-    { key: 'website', label: '웹사이트', icon: GlobeAltIcon, tooltip: '관련 웹사이트' },
+  const relatedLinkTabs: { key: RelatedLink['type']; label: string; icon: React.ComponentType<any>; tooltip: string; }[] = [
+    { key: 'bookAndPaper', label: '책과 논문',        icon: BookOpenIcon,      tooltip: '관련있는 책, 논문의 링크' },
+    { key: 'youtube',      label: '유튜브',          icon: AiFillYoutube,     tooltip: '관련 유튜브 영상'       },
+    { key: 'sns',          label: 'SNS',             icon: ShareIcon,         tooltip: '관련 있는 인스타그램, X(구 트위터), 페이스북, 쓰레드, 레딧 등의 링크' },
+    { key: 'media',        label: '언론·방송·매체',    icon: NewspaperIcon,     tooltip: '관련 기사/방송/매체'   },
+    { key: 'noteApp',      label: '노트앱 연동',      icon: DocumentTextIcon,  tooltip: '노션, 옵시디언 등 자신의 관련 페이지 링크' },
   ];
-  const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState('book');
+  const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState<'bookAndPaper' | 'youtube' | 'sns' | 'media' | 'noteApp'>('bookAndPaper');
   
   // 관련 링크 입력 상태
   const [linkUrl, setLinkUrl] = useState('');
@@ -135,13 +149,6 @@ export default function BookDetailPage() {
 
   // 관련 링크 리스트 로컬 상태 (selectedRelatedNote별로 관리)
   const [relatedLinksMap, setRelatedLinksMap] = useState<Record<string, RelatedLink[]>>({});
-
-  // RelatedLink 타입 정의
-  type RelatedLink = {
-    type: 'book' | 'paper' | 'youtube' | 'media' | 'website';
-    url: string;
-    reason: string;
-  };
 
   // 탭 전환/노트 변경 시 입력값 초기화
   useEffect(() => {
@@ -236,36 +243,60 @@ export default function BookDetailPage() {
     loadBook();
   }, [bookId, fetchBookDetail]);
   
-  // Fetch TS 메모 when book is loaded
+  // Fetch TS 메모 and TS 세션 when book is loaded
   useEffect(() => {
     if (!bookId || !book) return;
-    const fetchTSNotes = async () => {
+    
+    const fetchData = async () => {
       const token = localStorage.getItem('token');
       if (!token) { router.push('/auth/login'); return; }
+
+      // Fetch TS Notes
       try {
-        const res = await fetch(
+        const notesRes = await fetch(
           `${API_BASE_URL}/notes/book/${bookId}?originOnly=true`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        const data = await res.json();
-        const notes = Array.isArray(data) ? data : data.notes || [];
-        setTsNotes(notes);
-        // relatedLinksMap 동기화
+        if (!notesRes.ok) throw new Error('Failed to fetch TS notes');
+        const notesData = await notesRes.json();
+        setTsNotes(Array.isArray(notesData) ? notesData : notesData.notes || []);
+        // relatedLinksMap 동기화 로직은 그대로 유지
         const linksMap: Record<string, RelatedLink[]> = {};
-        notes.forEach((n: any) => {
+        (Array.isArray(notesData) ? notesData : notesData.notes || []).forEach((n: any) => {
           if (n.relatedLinks && Array.isArray(n.relatedLinks)) {
             linksMap[n._id] = n.relatedLinks;
           }
         });
         setRelatedLinksMap(linksMap);
+
       } catch (e) {
         console.error('TS notes load error:', e);
         setTsNotes([]);
         setRelatedLinksMap({});
       }
+
+      // Fetch TS Sessions for the book
+      setSessionsLoading(true);
+      try {
+        // 백엔드 라우터 설정에 따라 URL 수정 필요 (예: /api/sessions/book/${bookId})
+        const sessionsRes = await fetch(
+          `${API_BASE_URL}/sessions/book/${bookId}`, 
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!sessionsRes.ok) throw new Error('Failed to fetch TS sessions for book');
+        const sessionsData = await sessionsRes.json();
+        setTsSessions(Array.isArray(sessionsData) ? sessionsData : sessionsData.sessions || []);
+      } catch (e) {
+        console.error('TS sessions for book load error:', e);
+        setTsSessions([]);
+      } finally {
+        setSessionsLoading(false);
+      }
     };
-    fetchTSNotes();
-  }, [bookId, book, router]);
+
+    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookId, book, router]); // fetchBookDetail 제거 (book 객체 변경 시 실행으로 충분)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR', {
@@ -334,22 +365,22 @@ export default function BookDetailPage() {
   };
 
   // 탭별 placeholder 매핑
-  const linkPlaceholderMap: Record<string, string> = {
-    book: '이 메모와 관련 있다고 생각하는 책의 온라인서점 링크를 입력하세요',
-    paper: '이 메모와 관련 있는 논문의 DOI 또는 논문 링크를 입력하세요',
-    youtube: '이 메모와 관련 있는 유튜브 영상의 URL을 입력하세요',
-    media: '이 메모와 관련 있는 기사/방송/매체의 URL을 입력하세요',
-    website: '이 메모와 관련 있는 웹사이트의 URL을 입력하세요',
+  const linkPlaceholderMap: Record<RelatedLink['type'], string> = {
+    bookAndPaper: '이 메모와 관련 있는 책 또는 논문의 온라인 링크를 입력하세요',
+    youtube:      '이 메모와 관련 있는 유튜브 영상의 URL을 입력하세요',
+    sns:          '이 메모와 관련 있는 SNS 게시물(URL)을 입력하세요',
+    media:        '이 메모와 관련 있는 기사/방송/매체의 URL을 입력하세요',
+    noteApp:      '노션·옵시디언 페이지 링크를 입력하세요',
   };
-  const reasonPlaceholderMap: Record<string, string> = {
-    book: '무엇때문에 이 책과 관련있다고 생각했나요?',
-    paper: '이 논문이 왜 관련 있다고 생각했나요?',
-    youtube: '이 영상이 왜 관련 있다고 생각했나요?',
-    media: '이 매체가 왜 관련 있다고 생각했나요?',
-    website: '이 웹사이트가 왜 관련 있다고 생각했나요?',
+  const reasonPlaceholderMap: Record<RelatedLink['type'], string> = {
+    bookAndPaper: '이 링크가 왜 책 또는 논문과 관련 있다고 생각했나요?',
+    youtube:      '이 영상이 왜 관련 있다고 생각했나요?',
+    sns:          '이 링크가 왜 SNS 게시물과 관련 있다고 생각했나요?',
+    media:        '이 매체가 왜 관련 있다고 생각했나요?',
+    noteApp:      '이 링크가 왜 노트앱 페이지와 관련 있다고 생각했나요?',
   };
 
-  if (isLoading) {
+  if (isLoading || sessionsLoading) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${cyberTheme.gradient}`}>
         <Spinner size="lg" color="cyan" />
@@ -514,8 +545,8 @@ export default function BookDetailPage() {
             <div className="flex flex-col md:flex-row gap-12 mb-3">
               {/* 왼쪽: 타이틀/설명 */}
               <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">메모진화: 실전 활용 메모</h2>
-                <span className="text-xs text-gray-400 font-medium block mb-2">단순 기록을 넘어, 실제 성장에 바로 쓰는 메모</span>
+                <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">메모진화 - Think Beyond</h2>
+                <span className="text-xs text-gray-400 font-medium block mb-2">단순 기록을 넘어, 실제 도움이 되는 메모</span>
                 <p className="text-sm text-cyan-300 mb-2 font-semibold">메모진화 시스템은 중요한 정보와 생각을 단계별로 정리해, 학습·업무·성장에 바로 활용할 수 있게 돕습니다.</p>
                 <ul className="text-xs text-gray-400 leading-relaxed list-disc pl-4 space-y-1">
                   <li>핵심을 빠르게 기록하세요.</li>
@@ -632,40 +663,48 @@ export default function BookDetailPage() {
               <p className={`${cyberTheme.textMuted} text-center py-4`}>활성화된 기억 데이터가 없습니다. TS 루프를 시작하여 메모를 생성하세요.</p>
             ) : (
               <div className={`space-y-4 border-t ${cyberTheme.inputBorder} pt-4`}>
-                {tsNotes.map((note) => (
-                  <div key={note._id} className={`${cyberTheme.cardBg} p-3 rounded-md border ${cyberTheme.inputBorder}`}>
-                    <TSNoteCard
-                      note={note}
-                      readingPurpose={bookData.readingPurpose || bookData.readingGoal}
-                      onUpdate={(updated: Partial<Note>) =>
-                        setTsNotes((prev) =>
-                          prev.map((n) => (n._id === note._id ? { ...n, ...updated } : n))
-                        )
-                      }
-                      onFlashcardConvert={(n) => {
-                        setFlashcardFormNote({
-                          _id: n._id,
-                          content: n.content,
-                          type: 'quote',
-                          tags: n.tags || [],
-                          createdAt: '',
-                        });
-                        setActiveTab('flashcard');
-                      }}
-                      onRelatedLinks={(n) => {
-                        // Note 타입에 맞게 변환
-                        setSelectedRelatedNote({
-                          _id: n._id,
-                          content: n.content,
-                          tags: n.tags || [],
-                          type: 'quote', // 기본값
-                          createdAt: '', // 기본값
-                        });
-                        setActiveTab('relatedLinks');
-                      }}
-                    />
-                  </div>
-                ))}
+                {tsNotes.map((note) => {
+                  // 해당 노트의 originSession ID로 tsSessions 목록에서 일치하는 세션 찾기
+                  const noteSession = tsSessions.find(session => session._id === note.originSession);
+
+                  let sessionDetailsForCard: TSSessionDetails | undefined = undefined;
+                  
+                  if (noteSession) {
+                    sessionDetailsForCard = {
+                      createdAtISO: noteSession.createdAt,    // 백엔드에서 ISO 문자열로 제공 가정
+                      durationSeconds: noteSession.durationSec,
+                      startPage: noteSession.startPage,
+                      actualEndPage: noteSession.actualEndPage,
+                      targetPage: noteSession.endPage,       // ISession.endPage가 목표 페이지
+                      ppm: noteSession.ppm
+                    };
+                  }
+
+                  return (
+                    <div key={note._id} className={`${cyberTheme.cardBg} p-3 rounded-md border ${cyberTheme.inputBorder}`}>
+                      <TSNoteCard
+                        note={note}
+                        readingPurpose={bookData.readingPurpose || 'humanities_self_reflection'}
+                        onUpdate={(updatedFields) => {
+                          const updatedNotes = tsNotes.map(n =>
+                            n._id === note._id ? { ...n, ...updatedFields } : n
+                          );
+                          setTsNotes(updatedNotes);
+                        }}
+                        onFlashcardConvert={(targetNote) => {
+                          setFlashcardFormNote(targetNote as any);
+                          setShowNewFlashcardForm(true);
+                          setActiveTab('flashcard');
+                        }}
+                        onRelatedLinks={(targetNote) => {
+                          setSelectedRelatedNote(targetNote as any);
+                          setActiveTab('relatedLinks');
+                        }}
+                        sessionDetails={sessionDetailsForCard}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
           </section>

@@ -534,7 +534,7 @@ export default function MyversePage() {
               className={`whitespace-nowrap pb-3 pt-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ${activeTab === 'exploreGames' ? 'border-accent text-accent' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'}`}
               disabled
             >
-              공개 게임 탐색 - 곧 오픈
+              나의 스터디 클랜 - 곧 오픈 예정
             </button>
           </nav>
         </div>
