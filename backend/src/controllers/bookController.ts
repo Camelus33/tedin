@@ -97,22 +97,36 @@ export const addBook = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    const { title, author, totalPages, isbn, coverImage, category, readingPurpose } = req.body;
+    // Text fields from FormData (req.body will contain them)
+    const { title, author, totalPages, currentPage, isbn, category, readingPurpose } = req.body;
+    
+    // 업로드된 파일 정보는 req.file 에서 가져옴
+    const coverImageFile = req.file as Express.Multer.File;
 
-    const newBook = new Book({
+    const newBookData: any = {
       userId,
       title,
       author,
-      totalPages,
-      currentPage: 0,
+      totalPages: parseInt(totalPages, 10), // FormData는 문자열로 전달하므로 숫자로 변환
+      currentPage: currentPage ? parseInt(currentPage, 10) : 0, // FormData는 문자열로 전달하므로 숫자로 변환
       isbn,
-      coverImage,
       category,
       status: 'not_started', // 기본값: 시작 전
       completionPercentage: 0,
       readingPurpose,
-    });
+    };
 
+    if (coverImageFile) {
+      // 실제 저장된 파일 경로 또는 URL을 저장. Express.static 등으로 접근 가능하게 해야 함.
+      // 예: 'uploads/coverImage-1678886400000-123456789.jpg'
+      // 클라우드 스토리지 사용 시, 업로드 후 받은 URL을 저장.
+      newBookData.coverImage = coverImageFile.path; 
+    } else {
+      // 이미지가 없는 경우 기본값 또는 null 처리 (현재 스키마는 string, 빈 문자열 가능)
+      newBookData.coverImage = ''; // 또는 기본 이미지 경로
+    }
+
+    const newBook = new Book(newBookData);
     const savedBook = await newBook.save();
     
     // 사용자의 책 컬렉션에 추가

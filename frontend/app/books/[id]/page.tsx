@@ -135,11 +135,11 @@ export default function BookDetailPage() {
   
   // 관련 링크 탭용 상태
   const relatedLinkTabs: { key: RelatedLink['type']; label: string; icon: React.ComponentType<any>; tooltip: string; }[] = [
-    { key: 'bookAndPaper', label: '책과 논문',        icon: BookOpenIcon,      tooltip: '관련있는 책, 논문의 링크' },
-    { key: 'youtube',      label: '유튜브',          icon: AiFillYoutube,     tooltip: '관련 유튜브 영상'       },
-    { key: 'sns',          label: 'SNS',             icon: ShareIcon,         tooltip: '관련 있는 인스타그램, X(구 트위터), 페이스북, 쓰레드, 레딧 등의 링크' },
-    { key: 'media',        label: '언론·방송·매체',    icon: NewspaperIcon,     tooltip: '관련 기사/방송/매체'   },
-    { key: 'noteApp',      label: '노트앱 연동',      icon: DocumentTextIcon,  tooltip: '노션, 옵시디언 등 자신의 관련 페이지 링크' },
+    { key: 'bookAndPaper', label: '책과 논문',        icon: BookOpenIcon,      tooltip: '책, 논문 연결' },
+    { key: 'youtube',      label: '유튜브',          icon: AiFillYoutube,     tooltip: '유튜브 영상'       },
+    { key: 'sns',          label: 'SNS',             icon: ShareIcon,         tooltip: '인스타그램, X(구 트위터) 등 SNS 연결' },
+    { key: 'media',        label: '언론·기사·매체',    icon: NewspaperIcon,     tooltip: '언론 및 매체 기사 연결'   },
+    { key: 'noteApp',      label: '노트앱',      icon: DocumentTextIcon,  tooltip: '노션, 옵시디언 등 노트App과 연결' },
   ];
   const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState<'bookAndPaper' | 'youtube' | 'sns' | 'media' | 'noteApp'>('bookAndPaper');
   
@@ -370,14 +370,14 @@ export default function BookDetailPage() {
     youtube:      '이 메모와 관련 있는 유튜브 영상의 URL을 입력하세요',
     sns:          '이 메모와 관련 있는 SNS 게시물(URL)을 입력하세요',
     media:        '이 메모와 관련 있는 기사/방송/매체의 URL을 입력하세요',
-    noteApp:      '노션·옵시디언 페이지 링크를 입력하세요',
+    noteApp:      '노션·옵시디언 등 노트앱 링크를 입력하세요',
   };
   const reasonPlaceholderMap: Record<RelatedLink['type'], string> = {
     bookAndPaper: '이 링크가 왜 책 또는 논문과 관련 있다고 생각했나요?',
     youtube:      '이 영상이 왜 관련 있다고 생각했나요?',
     sns:          '이 링크가 왜 SNS 게시물과 관련 있다고 생각했나요?',
     media:        '이 매체가 왜 관련 있다고 생각했나요?',
-    noteApp:      '이 링크가 왜 노트앱 페이지와 관련 있다고 생각했나요?',
+    noteApp:      '이 링크가 왜 노트앱과 관련 있다고 생각했나요?',
   };
 
   if (isLoading || sessionsLoading) {
@@ -400,7 +400,7 @@ export default function BookDetailPage() {
             variant="default"
             className={`w-full text-white`}
           >
-            기억 저장소 목록으로
+            내 서재 목록으로
           </Button>
         </div>
       </div>
@@ -455,10 +455,10 @@ export default function BookDetailPage() {
               variant="default"
               size="sm"
               onClick={handleStartReading}
-              aria-label="TS 모드 진입"
+              aria-label="TS 모드 시작"
               className={`text-white`}
             >
-              TS 모드 진입
+              TS 모드 시작
             </Button>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
@@ -546,8 +546,8 @@ export default function BookDetailPage() {
               {/* 왼쪽: 타이틀/설명 */}
               <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
                 <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">메모진화 - Think Beyond</h2>
-                <span className="text-xs text-gray-400 font-medium block mb-2">단순 기록을 넘어, 실제 도움이 되는 메모</span>
-                <p className="text-sm text-cyan-300 mb-2 font-semibold">메모진화 시스템은 중요한 정보와 생각을 단계별로 정리해, 학습·업무·성장에 바로 활용할 수 있게 돕습니다.</p>
+                <span className="text-xs text-gray-400 font-medium block mb-2">단순 기록을 넘어, 실제 성장에 직결되는 메모</span>
+                <p className="text-sm text-cyan-300 mb-2 font-semibold">메모진화 시스템은 1줄 메모를 입체적으로 증강해, 학습·업무·성장에 바로 활용할 수 있게 돕습니다.</p>
                 <ul className="text-xs text-gray-400 leading-relaxed list-disc pl-4 space-y-1">
                   <li>핵심을 빠르게 기록하세요.</li>
                   <li>왜 중요한지, 어떻게 쓸지 한 줄로 남기세요.</li>
@@ -616,7 +616,7 @@ export default function BookDetailPage() {
                     {
                       title: '창발',
                       desc: 'Aha! ',
-                      extra: <span className="text-gray-400">(예: "이거 였구나!"라는 통찰)</span>,
+                      extra: <span className="text-gray-400">("이거 였구나!")</span>,
                     },
                   ];
                   // 시계방향 배치 인덱스: 1 2 / 6 3 / 5 4
@@ -660,7 +660,7 @@ export default function BookDetailPage() {
 
             {/* Notes List */}
             {tsNotes.length === 0 ? (
-              <p className={`${cyberTheme.textMuted} text-center py-4`}>활성화된 기억 데이터가 없습니다. TS 루프를 시작하여 메모를 생성하세요.</p>
+              <p className={`${cyberTheme.textMuted} text-center py-4`}>활성화된 메모가 없습니다. TS를 시작하여 메모를 생성하세요.</p>
             ) : (
               <div className={`space-y-4 border-t ${cyberTheme.inputBorder} pt-4`}>
                 {tsNotes.map((note) => {
@@ -717,11 +717,11 @@ export default function BookDetailPage() {
                 {/* 좌측: 설명 */}
                 <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
                   <h2 className="text-xl font-bold text-green-300 mb-1">지식연결: 지식의 연결고리</h2>
-                  <span className="text-xs text-gray-300 block mb-2">메모와 외부 자료(책, 논문, 영상 등)를 연결해 지식의 폭을 넓히세요.</span>
+                  <span className="text-xs text-gray-300 block mb-2">메모와 연결해 지식의 세계로 진입하세요.</span>
                   <ul className="text-xs text-gray-300 list-disc pl-4 space-y-1">
-                    <li>중요한 자료를 메모와 함께 한눈에 관리하세요.</li>
+                    <li>떠오르는 지식을 함께 관리하세요.</li>
                     <li>탭을 눌러 자료 유형별로 정리할 수 있습니다.</li>
-                    <li>링크와 이유를 남기면, 나중에 쉽게 참고할 수 있습니다.</li>
+                    <li>링크와 이유를 남겨 나중에 쉽게 찾으세요</li>
                   </ul>
                 </div>
                 {/* 우측: 도해식 flow */}
@@ -743,7 +743,7 @@ export default function BookDetailPage() {
                         <svg xmlns='http://www.w3.org/2000/svg' className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.828 14.828a4 4 0 010-5.656m1.415-1.415a6 6 0 010 8.486m-1.415-1.415a4 4 0 010-5.656' /></svg>
                       </span>
                       <span className="text-xs text-green-200 mt-1">지식연결</span>
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">외부 자료와 연결</div>
+                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">다른 지식과 연결</div>
                     </div>
                     {/* 화살표 */}
                     <span className="text-2xl text-cyan-400">→</span>
@@ -798,7 +798,7 @@ export default function BookDetailPage() {
                     />
                     <input
                       className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
-                      placeholder={reasonPlaceholderMap[activeRelatedLinkTab] || '링크 배경/이유를 간단히 입력'}
+                      placeholder={reasonPlaceholderMap[activeRelatedLinkTab] || '링크한 배경/이유를 간단히 입력'}
                       value={linkReason}
                       onChange={e => setLinkReason(e.target.value)}
                     />
@@ -863,7 +863,7 @@ export default function BookDetailPage() {
             {/* Flashcard Deck Section */}
             <section className="mt-0 bg-gray-900/80 p-4 md:p-6 rounded-lg border border-cyan-500/30">
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl md:text-2xl font-bold text-purple-400">플래시카드 : 기억 회상</h2>
+                <h2 className="text-xl md:text-2xl font-bold text-purple-400">플래시카드 : 오답 노트</h2>
                 <button
                   className="px-3 py-1 rounded bg-cyan-700 text-white text-xs hover:bg-cyan-800 font-semibold ml-4"
                   onClick={() => setShowNewFlashcardForm((v) => !v)}
@@ -871,7 +871,7 @@ export default function BookDetailPage() {
                   NEW
                 </button>
               </div>
-              <p className="text-sm text-gray-400 mb-4">읽은 내용을 직접 질문으로 바꾼 플래시카드로 기억을 강화하세요.</p>
+              <p className="text-sm text-gray-400 mb-4">1줄 메모를 질문으로 바꾸고, 오해 방지를 위한 답변을 작성하세요</p>
               {showNewFlashcardForm && (
                 <div className="mb-4">
                   <FlashcardForm

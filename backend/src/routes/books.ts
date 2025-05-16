@@ -3,8 +3,47 @@ import { getUserBooks, getBookById, addBook, updateBookProgress, removeBook } fr
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
+import multer, { FileFilterCallback } from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
+
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, '../../uploads'); // Adjust path as needed, assumes routes folder is in src/
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+  destination: function (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
+    cb(null, uploadDir);
+  },
+  filename: function (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
+    // Sanitize filename and ensure uniqueness
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const extension = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + extension);
+  }
+});
+
+const fileFilter = (req: express.Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    // Pass an error to cb if the file is not an image
+    cb(new Error('이미지 파일만 업로드 가능합니다.'));
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: fileFilter
+});
 
 // All book routes require authentication
 router.use(authenticate);
@@ -55,6 +94,8 @@ router.get('/:bookId', getBookById);
 // Add a new book
 router.post(
   '/',
+  authenticate,
+  upload.single('coverImage'),
   bookAddValidation,
   validateRequest,
   addBook

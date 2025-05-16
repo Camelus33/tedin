@@ -36,4 +36,11 @@ backend/.env*
 # Misc
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log* 
+yarn-error.log*
+
+# Backup files
+*.bak
+*.swp
+
+# Zip files
+*.zip 

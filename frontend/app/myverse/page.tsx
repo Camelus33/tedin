@@ -435,7 +435,7 @@ export default function MyversePage() {
                 Habitus33
               </h1>
               <p className={`text-xs font-medium tracking-wider ${cyberTheme.textMuted}`}>
-                Upgrade Your Brain
+                Sharpen Your Mind
               </p>
             </div>
           </Link>

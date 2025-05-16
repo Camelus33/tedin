@@ -8,6 +8,7 @@ import { FiArrowLeft, FiUpload, FiX } from "react-icons/fi";
 
 // 장르 옵션
 const genres = [
+  { id: "study_exam_prep", name: "학습/수험서" },
   { id: "fiction", name: "소설" },
   { id: "non-fiction", name: "비소설" },
   { id: "self-development", name: "자기계발" },
@@ -24,10 +25,10 @@ const genres = [
 
 // 독서 목적 옵션
 const readingPurposes = [
-  { id: "exam_prep", name: "시험/인증 대비", description: "시험 합격, 자격 취득, 평가 대비" },
-  { id: "practical_knowledge", name: "실무지식/기술 습득", description: "업무, 프로젝트, 실전 적용" },
-  { id: "humanities_self_reflection", name: "인문 소양/자기 성찰", description: "사고력, 가치관, 내적 성장" },
-  { id: "reading_pleasure", name: "읽는 재미", description: "감동, 즐거움, 스트레스 해소" }
+  { id: "exam_prep", name: "시험/인증 대비", description: "시험 합격, 자격 취득, 평가 대비 (예: 학습/시험대비, 기술 서적)" },
+  { id: "practical_knowledge", name: "실무지식/기술 습득", description: "업무, 프로젝트, 실전 적용 (예: 기술, 과학, 경영/경제, 전문 비소설)" },
+  { id: "humanities_self_reflection", name: "인문 소양/자기 성찰", description: "사고력, 가치관, 내적 성장 (예: 철학, 역사, 심리학, 자기계발, 에세이)" },
+  { id: "reading_pleasure", name: "읽는 재미", description: "감동, 즐거움, 스트레스 해소 (예: 소설, 에세이, 전기/회고록, 예술)" }
 ];
 
 export default function NewBookPage() {
@@ -46,6 +47,7 @@ export default function NewBookPage() {
   
   // 이미지 프리뷰
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   
   // 폼 제출 상태
@@ -90,6 +92,7 @@ export default function NewBookPage() {
     const reader = new FileReader();
     reader.onload = (e) => {
       setCoverImage(e.target?.result as string);
+      setCoverImageFile(file);
       setIsUploading(false);
     };
     reader.readAsDataURL(file);
@@ -97,6 +100,7 @@ export default function NewBookPage() {
   
   const clearCoverImage = () => {
     setCoverImage(null);
+    setCoverImageFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -121,33 +125,33 @@ export default function NewBookPage() {
         return;
       }
       
-      console.log("폼 데이터:", formData);
+      // FormData 생성
+      const apiFormData = new FormData();
+      apiFormData.append('title', formData.title.trim());
+      apiFormData.append('author', formData.author.trim());
+      apiFormData.append('totalPages', formData.totalPages); // 백엔드에서 parseInt 필요
+      apiFormData.append('currentPage', formData.currentPage || '0');
+      apiFormData.append('category', formData.genre || ''); // genre 필드를 category로 매핑. 빈 문자열로 전송
       
-      // JSON 형식으로 데이터 전송
-      const bookData: any = {
-        title: formData.title.trim(),
-        author: formData.author.trim(),
-        totalPages: parseInt(formData.totalPages), // 문자열에서 숫자로 변환
-        currentPage: parseInt(formData.currentPage) || 0,
-        category: formData.genre || null, // genre 필드를 category로 매핑
-      };
-      
-      // 선택적 필드는 있을 때만 추가
       if (formData.readingPurpose) {
-        bookData.readingPurpose = formData.readingPurpose;
+        apiFormData.append('readingPurpose', formData.readingPurpose);
       }
-      
-      console.log("전송할 데이터:", bookData);
+
+      // 이미지 파일이 있으면 FormData에 추가
+      if (coverImageFile) {
+        apiFormData.append('coverImage', coverImageFile); // 'coverImage'는 백엔드에서 받을 필드명
+      }
+
+      console.log("전송할 FormData:", apiFormData); // FormData 내용을 직접 로깅하기는 어려움
       console.log("전송 토큰:", token.substring(0, 10) + "...");
       
       // API 요청 - 백엔드 포트(8000)로 전송
-      const response = await fetch("http://localhost:8000/api/books", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify(bookData)
+        body: apiFormData // FormData 객체 전달
       });
       
       console.log("API 응답 상태:", response.status);
@@ -304,24 +308,36 @@ export default function NewBookPage() {
                   <label htmlFor="readingPurpose" className="block text-xs font-semibold text-emerald-300 mb-0.5 font-barlow">
                     읽는 목적
                   </label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-1">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {readingPurposes.map((purpose) => (
-                      <div
-                        key={purpose.id}
-                        className={`
-                          p-1 rounded border cursor-pointer transition-all text-[11px] font-mono
-                          ${formData.readingPurpose === purpose.id 
-                            ? "border-emerald-400 bg-emerald-900/20 text-emerald-200" 
-                            : "border-gray-600 hover:border-emerald-400 bg-gray-800/60 text-gray-300 hover:text-emerald-200"
-                          }
-                        `}
-                        onClick={() => setFormData({ ...formData, readingPurpose: purpose.id })}
-                        tabIndex={0}
-                        role="button"
-                        aria-pressed={formData.readingPurpose === purpose.id}
-                      >
-                        <h4 className="font-bold text-[11px] mb-0 font-barlow">{purpose.name}</h4>
-                        <p className="text-[10px] m-0 font-mono">{purpose.description}</p>
+                      <div key={purpose.id} className="relative group">
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, readingPurpose: purpose.id })}
+                          className={`
+                            w-full p-2 rounded border text-xs font-mono transition-all
+                            ${formData.readingPurpose === purpose.id 
+                              ? "border-emerald-400 bg-emerald-700/30 text-emerald-200 ring-1 ring-emerald-300"
+                              : "border-gray-600 hover:border-emerald-500 bg-gray-700/60 text-gray-300 hover:text-emerald-300"
+                            }
+                          `}
+                          aria-pressed={formData.readingPurpose === purpose.id}
+                        >
+                          <span className="truncate block">{purpose.name}</span>
+                        </button>
+                        {/* 툴팁: group-hover 시 보이도록 설정 */}
+                        <div 
+                          className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs p-2 
+                                     bg-gray-900 text-gray-200 text-[10px] rounded-md shadow-lg 
+                                     opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out z-10 
+                                     pointer-events-none group-hover:pointer-events-auto"
+                        >
+                          {purpose.description}
+                           {/* 툴팁 꼬리 */}
+                          <div className="absolute left-1/2 transform -translate-x-1/2 top-full w-0 h-0 
+                                        border-x-4 border-x-transparent border-t-4 border-t-gray-900">
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>

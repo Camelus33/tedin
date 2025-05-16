@@ -438,7 +438,7 @@ export default function DashboardPage() {
                 Habitus33
               </h1>
               <p className={`text-xs font-medium tracking-wider text-white`}> 
-                Upgrade Your Brain
+                Sharpen Your Mind
               </p>
             </div>
           </Link>
@@ -493,7 +493,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>Time Sprint</h2> {/* Theme text */}
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>읽기 집중력 체크</p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>흩어진 초점을 한 곳으로 모으세요</p> {/* Theme text */}
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 높은 수준의 독서 및 학습 효율을 달성하세요 </p> {/* Theme text */}
               </div>
               <div className="mt-6">
                  <button className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
@@ -508,8 +508,8 @@ export default function DashboardPage() {
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
                <div>
                  <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo</h2> {/* Theme text */} 
-                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>순간 기억력 체크</p> {/* Revised Text & Theme */} 
-                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>느려진 뇌를 다시 돌리세요</p> {/* Theme text */} 
+                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>작업 기억력 체크</p> {/* Revised Text & Theme */} 
+                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 선명하고 오래가는 기억력을 달성하세요</p> {/* Theme text */} 
                </div>
                <div className="mt-6">
                  <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
@@ -559,17 +559,17 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-orbitron font-bold text-cyan-300 drop-shadow-sm">
-                    33일 피드백 루프
+                    매일 11분, 33일 후 놀라운 변화
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
                     className="min-w-[200px] px-8 py-3 rounded-xl border-2 border-slate-400 bg-white text-gray-900 font-bold text-lg transition-all duration-400 ease-[cubic-bezier(.4,0,.2,1)] hover:bg-gradient-to-r hover:from-cyan-400 hover:via-fuchsia-600 hover:to-purple-800 hover:text-white hover:border-cyan-500 hover:shadow-2xl hover:scale-105 focus:bg-gradient-to-r focus:from-cyan-500 focus:via-fuchsia-700 focus:to-purple-900 focus:text-white focus:border-cyan-600 focus:shadow-2xl focus:scale-105 active:bg-purple-900 active:text-white active:scale-100 outline-none"
-                    aria-label="나에게 맞는 루프 찾기"
+                    aria-label="Find Your Routine"
                     type="button"
                   >
-                    나에게 맞는 루프 찾기
+                    Find Your Routine
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
@@ -769,7 +769,7 @@ export default function DashboardPage() {
           {/* 왼쪽: 현재 읽고 있는 책 */}
           <div className="glass-card p-8">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">현재 읽고 있는 책</h2>
+              <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">현재 읽고 있는 ...</h2>
               <Button 
                 href="/books" 
                 variant="outline"

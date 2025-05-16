@@ -12,6 +12,10 @@ interface Game {
   description?: string;
   type?: string;
   updatedAt?: string;
+  owner?: { // 게임 소유자 정보 (공유한 사람으로 간주)
+    _id: string;
+    nickname: string;
+  };
 }
 
 interface GameCardProps {
@@ -36,6 +40,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, collectionId, onEditClick, on
   const maxStars = 5;
   const stars = Math.min(Math.ceil(difficulty / 2), maxStars);
   const updated = game.updatedAt ? new Date(game.updatedAt).toLocaleDateString() : '';
+  const ownerNickname = game.owner?.nickname; // 소유자 닉네임 가져오기
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -83,6 +88,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, collectionId, onEditClick, on
         <div className="text-xs text-gray-500 mb-2 line-clamp-2 min-h-[32px]">
           {game.description ? game.description : `예시: ${mainWords}${words.length > 3 ? '...' : ''}`}
         </div>
+        {ownerNickname && (
+          <div className="text-xs text-gray-400 mb-1">
+            보낸 사람: <span className="font-medium text-gray-500">{ownerNickname}</span>
+          </div>
+        )}
         <div className="flex items-center gap-1 mb-2">
           {[...Array(stars)].map((_, i) => <span key={i} className="text-yellow-400">★</span>)}
           {[...Array(maxStars - stars)].map((_, i) => <span key={i} className="text-gray-300">★</span>)}

@@ -25,7 +25,7 @@ import ZengoBoard from '@/components/zengo/ZengoBoard';
 import ZengoStatusDisplay from '@/components/zengo/ZengoStatusDisplay';
 import ZengoResultPage from '@/components/zengo/ZengoResultPage';
 import { BoardStoneData, PlacedStone, BoardSize, InteractionMode } from '@/src/types/zengo';
-import { LightBulbIcon, FireIcon, QuestionMarkCircleIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { LightBulbIcon, FireIcon, QuestionMarkCircleIcon, DocumentTextIcon, UserIcon, ArrowTrendingUpIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 
 // [ZenGo 모드 분리 원칙]
 // ZenGo는 세 가지 모드(젠고 기본, 젠고 마이버스, 젠고 오리지널/브랜디드)를 별도로 운영합니다.
@@ -143,6 +143,19 @@ export default function ZengoPage({
 
   // Track if word order was correct
   const [wordOrderCorrect, setWordOrderCorrect] = useState<boolean | null>(null);
+
+  // Animation state for Original cards
+  const [originalCardsVisible, setOriginalCardsVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation for Original cards shortly after component mounts or uiState changes to selection
+    if (uiState === 'selection') {
+      const timer = setTimeout(() => {
+        setOriginalCardsVisible(true);
+      }, 100); // Slight delay to ensure elements are rendered
+      return () => clearTimeout(timer);
+    }
+  }, [uiState]);
 
   // Reset Redux state when component mounts or user returns to intro
   useEffect(() => {
@@ -635,8 +648,8 @@ export default function ZengoPage({
           <section className="tutorial-section">
             <div className="tutorial-content">
               <div className="tutorial-image">
-                <div className="animation-board">
-                  <div className="mini-board memory-phase">
+                <div className="animation-board memory-phase">
+                  <div className="mini-board">
                     <div className="mini-stone empty"></div>
                     <div className="mini-stone empty"></div>
                     <div className="mini-stone placing">장소</div>
@@ -906,112 +919,66 @@ export default function ZengoPage({
       return (
         <div className="zengo-container">
           <div className="zengo-selector">
-            <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo World</h2>
+            <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo Game</h2>
             <p className="settings-intro">
-              자신의 성장 목표에 맞는 기억판 사이즈와 목표 언어를 선택하세요
+              자신의 성장 목표에 맞는 메모리보드 사이즈와 목표 언어를 선택하세요
             </p>
             {/* 보드 크기 선택 + Myverse 카드 */}
             <section className="settings-section">
-              <h3>기억판 사이즈 선택</h3>
-              <div className="level-grid" role="radiogroup" aria-label="레벨 선택">
-                {[{ size: 3, label: '초급', desc: '기초 - 3단어 문장', icon: '🔰' },
-                  { size: 5, label: '중급', desc: '숙달 - 5단어 문장', icon: '⭐' },
-                  { size: 7, label: '고급', desc: '도전 - 7단어 문장', icon: '🏆' }
+              <h3 className="text-xl font-semibold text-gray-700 mb-6">메모리보드</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" role="radiogroup" aria-label="레벨 선택">
+                {[{ size: 3, desc: '매일 꾸준히 해 보세요', IconComponent: UserIcon },
+                  { size: 5, desc: '점점 더 쉬워집니다', IconComponent: ArrowTrendingUpIcon },
+                  { size: 7, desc: '성취감을 느껴 보세요', IconComponent: RocketLaunchIcon }
                 ].map(level => (
                   <div
                     key={level.size}
-                    className={`level-card ${selectedBoardSize === level.size ? 'selected' : ''}`}
+                    className={`p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg flex flex-col items-center justify-center text-center ${selectedBoardSize === level.size ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
                     onClick={() => setSelectedBoardSize(level.size)}
                     onKeyPress={(e) => handleKeyPress(e, () => setSelectedBoardSize(level.size))}
                     role="radio"
                     aria-checked={selectedBoardSize === level.size}
                     tabIndex={0}
                   >
-                    <div className="level-header">
-                      <span className="level-icon">{level.icon}</span>
-                      <h4>{`${level.size}x${level.size} ${level.label}`}</h4>
-                    </div>
-                    <p className="level-desc">{level.desc}</p>
-                    {selectedBoardSize === level.size && <div className="selection-indicator"></div>}
+                    <level.IconComponent className="w-12 h-12 text-primary-600 mb-3" />
+                    <h4 className="text-3xl font-bold text-gray-800 mb-2">{`${level.size}x${level.size}`}</h4>
+                    <p className="text-sm text-gray-600">{level.desc}</p>
                   </div>
                 ))}
-                {/* ZenGo Myverse Premium Edition Card (as a level card) */}
-                <div
-                  className="level-card group cursor-pointer premium-myverse-card relative flex flex-col items-center justify-center transition mx-auto cyber-card"
-                  style={{
-                    minHeight: 0,
-                    minWidth: 0,
-                    background: 'linear-gradient(135deg, #0a1020 0%, #1e293b 40%, #38bdf8 80%, #a78bfa 100%)',
-                    color: '#fff',
-                    boxShadow: '0 0 32px #1e293bcc, 0 0 12px #38bdf8cc, 0 0 4px #a78bfa99',
-                    border: '2.5px solid #38bdf8',
-                    borderRadius: '18px',
-                    fontFamily: 'Orbitron, Exo, Roboto Mono, sans-serif',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    alignSelf: 'center',
-                    justifySelf: 'center',
-                  }}
-                  onClick={() => router.push('/myverse')}
-                  tabIndex={0}
-                  aria-label="ZenGo Myverse 프리미엄 에디션 자세히 보기"
-                >
-                  {/* 사이버 회로 SVG 배경 (옵션) */}
-                  <svg style={{position:'absolute',inset:0,opacity:0.13,zIndex:0}} width="100%" height="100%" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="10" y="10" width="300" height="100" rx="18" stroke="#38bdf8" strokeDasharray="8 6" strokeWidth="1.5"/>
-                    <circle cx="60" cy="60" r="18" stroke="#a78bfa" strokeWidth="1.2"/>
-                    <circle cx="260" cy="60" r="18" stroke="#a78bfa" strokeWidth="1.2"/>
-                    <path d="M78 60 H242" stroke="#38bdf8" strokeWidth="1.2" strokeDasharray="4 4"/>
-                  </svg>
-                  <div className="flex items-center gap-2 mb-1 mt-1 w-full justify-center" style={{zIndex:1}}>
-                    <span className="cyber-title text-sm md:text-lg font-extrabold" style={{ color: '#38bdf8', letterSpacing: '0.04em', textShadow: '0 0 8px #38bdf8cc' }}>ZenGo</span>
-                    <span className="cyber-title text-sm md:text-lg font-extrabold" style={{ color: '#a78bfa', letterSpacing: '0.04em', textShadow: '0 0 8px #a78bfa' }}>Myverse</span>
-                    <span className="cyber-premium ml-2 bg-gradient-to-r from-purple-400 to-cyan-400 text-white px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold shadow border border-blue-300" style={{ letterSpacing: '0.01em', height: 'fit-content', background: 'linear-gradient(90deg, #a78bfa, #38bdf8)', boxShadow: '0 0 8px #a78bfa99' }}>PREMIUM</span>
-                  </div>
-                  <div className="text-center font-semibold text-sm md:text-base mb-1 w-full" style={{ color: '#fff', wordBreak: 'keep-all', lineHeight: 1.3, maxWidth: '90%', zIndex:1 }}>
-                    입력하고 바로 외우세요
-                  </div>
-                  <div className="text-xs mb-2 w-full text-center" style={{ color: '#DBEAFE', fontWeight: 500, letterSpacing: '0.01em', lineHeight: 1.2, maxWidth: '90%', zIndex:1 }}>
-                    - 유료구독 -
-                  </div>
-                  <div className="mt-2 text-xs font-bold group-hover:underline" style={{ color: '#fff', letterSpacing: '0.01em', zIndex:1 }}>자세히 보기 &gt;</div>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 rounded-2xl pointer-events-none transition" style={{ background: 'linear-gradient(135deg, #38bdf8 0%, #a78bfa 100%)', zIndex:2 }} />
-                </div>
               </div>
             </section>
             {/* 언어 선택 */}
             <section className="settings-section">
-              <h3>목표 언어 선택</h3>
-              <div className="language-grid" role="radiogroup" aria-label="언어 선택">
+              <h3 className="text-xl font-semibold text-gray-700 mb-6">목표 언어</h3>
+              <div className="flex flex-wrap gap-4 mb-8" role="radiogroup" aria-label="언어 선택">
                 {[{ code: 'ko', name: '한국어', flag: '🇰🇷' },
                   { code: 'en', name: 'English', flag: '🇺🇸' }
                 ].map(lang => (
                   <div
                     key={lang.code}
-                    className={`language-card ${selectedLanguage === lang.code ? 'selected' : ''}`}
+                    className={`flex items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg ${selectedLanguage === lang.code ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
                     onClick={() => setSelectedLanguage(lang.code)}
                     onKeyPress={(e) => handleKeyPress(e, () => setSelectedLanguage(lang.code))}
                     role="radio"
                     aria-checked={selectedLanguage === lang.code}
                     tabIndex={0}
                   >
-                    <span className="language-flag">{lang.flag}</span>
-                    <span className="language-name">{lang.name}</span>
-                    {selectedLanguage === lang.code && <div className="selection-indicator"></div>}
+                    <span className="text-3xl mr-3">{lang.flag}</span>
+                    <span className="text-md font-medium text-gray-800">{lang.name}</span>
                   </div>
                 ))}
               </div>
-              {!selectedLanguage && <p className="selection-guide">언어를 선택해주세요</p>}
+              {!selectedLanguage && <p className="text-sm text-red-500 selection-guide">언어를 선택해주세요</p>}
             </section>
             {/* 브랜디드 콘텐츠 섹션 */}
-            <section className="settings-section rounded-2xl p-6 md:p-8 mb-6"
+            <section className="settings-section rounded-2xl p-8 md:p-10 mb-6"
               style={{ background: 'linear-gradient(90deg, #0a1020 0%, #1e293b 60%, #232946 100%)', position: 'relative', boxShadow: '0 2px 8px #1e293b44' }}
             >
-              <h3 className="text-2xl font-extrabold mb-2 text-white" style={{ color: '#fff', textShadow: '0 1px 8px #38bdf833' }}>
-                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: 700, marginLeft: 4, fontSize: '1rem', letterSpacing: '-0.01em' }}>암기공식·합격비결 오픈마켓</span>
+              <h3 className="text-2xl font-extrabold mb-4 text-white" style={{ color: '#fff', textShadow: '0 1px 8px #38bdf833' }}>
+                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: '600', marginLeft: '0.25rem', fontSize: '0.9rem', letterSpacing: '-0.01em' }}>암기공식·합격비결 오픈마켓</span>
               </h3>
-              <div className="text-gray-200 text-sm md:text-base mb-4">
-                딱 이것만! 이제 합격에 필요한 모든 것을 사고 팔 수 있습니다. 합격/만점을 인증하고 자신의 노하우를 담은 ZenGo로 수익화하세요.
+              <div className="text-gray-300 text-sm md:text-base mb-6 leading-relaxed">
+                이제 합격에 필요한 모든 것을 사고 팔 수 있습니다. 고득점 노하우를 담은 자신의 <span style={{ color: '#38BDF8', fontWeight: 'bold' }}>ZenGo</span>로 수익을 창출하세요.
               </div>
               {/* Categories Tabs */}
               <nav role="tablist" aria-label="콘텐츠 카테고리" className="bg-neutral-900/10 rounded-lg px-4 py-2 flex overflow-x-auto space-x-6 border-b border-neutral-600 mb-6 md:justify-center">
@@ -1022,10 +989,10 @@ export default function ZengoPage({
                       aria-selected={selectedCategory === cat}
                       tabIndex={selectedCategory === cat ? 0 : -1}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`uppercase font-medium tracking-wide px-5 py-3 text-sm transition-colors duration-200 ease-in-out ${selectedCategory === cat ? 'text-white border-b-4 border-primary-500' : 'text-white/60 hover:text-white hover:bg-white/10'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500`}>
+                      className={`uppercase font-medium tracking-wide px-5 py-3 text-sm transition-all duration-200 ease-in-out ${selectedCategory === cat ? 'text-white border-b-2 border-primary-500' : 'text-neutral-400 hover:text-white hover:bg-neutral-700/60'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500`}>
                       {cat}
                     </button>
-                    <div className="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-black/80 text-white text-xs whitespace-nowrap rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    <div className="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-700 text-neutral-200 text-xs whitespace-nowrap rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                       추후 공개
                     </div>
                   </div>
@@ -1033,46 +1000,80 @@ export default function ZengoPage({
               </nav>
               <div className="level-grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
-                  { size: '7x5', desc: '핵심 이론', slogan: '알맹이만 콕콕', icon: LightBulbIcon, color: '#6366F1', grad: 'linear-gradient(135deg, #4338CA 0%, #6366F1 100%)' },
-                  { size: '9x7', desc: '최다 빈출', slogan: '자주 나오는 것만', icon: FireIcon, color: '#3B82F6', grad: 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)' },
-                  { size: '11x9', desc: '예상 문제', slogan: '이번에는 요거', icon: QuestionMarkCircleIcon, color: '#10B981', grad: 'linear-gradient(135deg, #047857 0%, #10B981 100%)' },
-                  { size: '13x11', desc: '한장 요약', slogan: '하루 전 벼락치기', icon: DocumentTextIcon, color: '#EC4899', grad: 'linear-gradient(135deg, #9D174D 0%, #EC4899 100%)' },
-                ].map((item) => (
+                  { title: '단권화 노트', slogan: '알맹이만 콕콕', icon: LightBulbIcon, color: '#6366F1', gradFrom: '#4F46E5', gradTo: '#7C3AED', tag: '핵심요약' },
+                  { title: '시험 족보', slogan: '꼭 나오는 것만', icon: FireIcon, color: '#3B82F6', gradFrom: '#2563EB', gradTo: '#60A5FA', tag: '기출기반' },
+                  { title: '예상 적중', slogan: '이번엔 이 문제', icon: QuestionMarkCircleIcon, color: '#10B981', gradFrom: '#059669', gradTo: '#34D399', tag: '실전대비' },
+                  { title: '한장 요약', slogan: '벼락치기 완벽', icon: DocumentTextIcon, color: '#EC4899', gradFrom: '#DB2777', gradTo: '#F472B6', tag: '막판정리' },
+                ].map((item, index) => (
                   <div
-                    key={item.size}
-                    className="level-card cursor-pointer border-2 transition flex flex-col items-center justify-center p-4 rounded-xl relative cyber-card"
+                    key={item.title}
+                    className={`group relative flex flex-col items-center justify-between p-4 md:p-5 rounded-xl overflow-hidden cursor-pointer transform transition-all duration-1000 ease-out hover:scale-105 hover:shadow-2xl ${originalCardsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
                     style={{
-                      background: item.grad,
+                      background: `linear-gradient(145deg, ${item.gradFrom} 0%, ${item.gradTo} 100%)`,
                       color: '#fff',
-                      border: `2.5px solid ${item.color}`,
-                      boxShadow: `0 0 8px ${item.color}44`,
-                      fontFamily: 'Orbitron, Exo, Roboto Mono, sans-serif',
-                      position: 'relative',
-                      overflow: 'hidden',
+                      border: `2px solid ${item.color}`,
+                      boxShadow: `0 6px 12px ${item.color}55, 0 2px 6px ${item.color}33`,
+                      fontFamily: "'Noto Sans KR', Orbitron, Exo, 'Roboto Mono', sans-serif",
+                      minHeight: '200px',
+                      position: 'relative', // For pseudo-element positioning
+                      transitionDelay: originalCardsVisible ? `${index * 150}ms` : '0ms', // 지연 시간 증가
                     }}
-                    onClick={() => alert('곧 오픈 예정입니다.')}
+                    onClick={() => alert(`${item.title} - Coming Soon!`)}
                     tabIndex={0}
                     role="button"
-                    aria-label={`브랜디드 콘텐츠 ${item.desc}`}
+                    aria-label={`오픈마켓 ${item.title}: ${item.slogan}`}
                   >
-                    {/* 사이버 회로 SVG 배경 (각 카드 컬러에 맞게) */}
-                    <svg style={{position:'absolute',inset:0,opacity:0.13,zIndex:0}} width="100%" height="100%" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="10" y="10" width="300" height="100" rx="18" stroke={item.color} strokeDasharray="8 6" strokeWidth="1.5"/>
-                      <circle cx="60" cy="60" r="18" stroke={item.color} strokeWidth="1.2"/>
-                      <circle cx="260" cy="60" r="18" stroke={item.color} strokeWidth="1.2"/>
-                      <path d="M78 60 H242" stroke={item.color} strokeWidth="1.2" strokeDasharray="4 4"/>
-                    </svg>
-                    <div className="mb-1 p-1.5 rounded-full bg-white/20 z-10">
-                      <item.icon className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-md" />
+                    {/* Tag */}
+                    <span className="absolute top-3 right-3 bg-white/20 text-white text-[10px] md:text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
+                      {item.tag}
+                    </span>
+                    
+                    {/* Icon and Title */}
+                    <div className="text-center w-full mt-2" style={{ position: 'relative', zIndex: 1 }}>
+                      <div className="mb-2 md:mb-3 p-2 md:p-2.5 rounded-full bg-white/25 inline-block shadow-md">
+                        <item.icon className="w-8 h-8 md:w-10 md:h-10 text-white drop-shadow-lg group-hover:text-yellow-300 transition-colors duration-200 ease-in-out" />
+                      </div>
+                      <h4 className="text-sm md:text-base font-bold mb-1" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>{item.title}</h4>
+                      <p className="text-xs md:text-sm text-indigo-100" style={{ opacity: 0.85 }}>{item.slogan}</p>
                     </div>
-                    <div className="text-xs md:text-sm mb-1" style={{ color: '#fff', zIndex:1 }}>{item.desc}</div>
-                    <div className="text-xs" style={{ color: '#e0e7ef', zIndex:1 }}>{item.slogan}</div>
+
+                    {/* CTA Button Placeholder */}
+                    <button 
+                      className="mt-3 md:mt-4 w-full text-center py-2 px-3 text-xs md:text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out opacity-90 group-hover:opacity-100"
+                      style={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)', 
+                        color: '#fff',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        backdropFilter: 'blur(4px)',
+                        zIndex: 1, // Ensure button is above the pattern
+                      }}
+                      onClick={(e) => { e.stopPropagation(); alert(`${item.title} - 콘텐츠 보기 (준비중)`); }}
+                    >
+                      콘텐츠 보기
+                    </button>
+                    
+                    {/* Subtle Circuit Pattern Overlay */}
+                    <div
+                      className="absolute inset-0 w-full h-full opacity-50 transition-opacity duration-300 pointer-events-none group-hover:opacity-75"
+                      style={{
+                        backgroundImage: `
+                          linear-gradient(to right, ${item.color}88 1px, transparent 1px),
+                          linear-gradient(to bottom, ${item.color}88 1px, transparent 1px)
+                        `,
+                        backgroundSize: '20px 20px', 
+                        zIndex: 0, 
+                      }}
+                    />
                   </div>
                 ))}
               </div>
               {/* Gold badge at top-right */}
-              <span style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }} aria-label="프리미엄 골드 배지">
-                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <span 
+                className="absolute top-4 right-4 z-10 transform transition-all duration-200 ease-in-out hover:scale-110 hover:rotate-3 cursor-pointer group"
+                style={{ zIndex: 2 }} // zIndex는 style prop으로 유지
+                aria-label="프리미엄 골드 배지"
+              >
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-md group-hover:drop-shadow-xl">
                   <circle cx="22" cy="22" r="20" fill="#FFD600" stroke="#FFB300" strokeWidth="3"/>
                   <circle cx="22" cy="22" r="14" fill="#FFF8E1" stroke="#FFECB3" strokeWidth="2"/>
                   <path d="M22 11l2.47 6.62h6.96l-5.63 4.09 2.47 6.62L22 24.24l-5.27 4.09 2.47-6.62-5.63-4.09h6.96L22 11z" fill="#FFC107" stroke="#FFB300" strokeWidth="1.2"/>
