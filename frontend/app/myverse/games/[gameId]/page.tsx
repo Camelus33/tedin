@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@/store/store';
-import { setSettings, setContent, startGame } from '@/store/slices/zengoSlice';
-import ZengoPage from '@/app/zengo/page';
+import { setSettings, setContent, startGame, placeStone } from '@/store/slices/zengoSlice';
+import { RootState } from '@/store/store';
+import ZengoBoard from '@/components/zengo/ZengoBoard';
 import { myverseApi } from '@/lib/api';
-import type { ZengoProverbContent } from '@/src/types/zengo';
+import type { ZengoProverbContent, GameState, BoardStoneData, InteractionMode as BoardInteractionMode, BoardSize } from '@/src/types/zengo';
 import { useRouter } from 'next/navigation';
 
 // Add type alias for word mappings
@@ -19,8 +20,12 @@ interface AdapterProps {
 export default function Page({ params: { gameId } }: AdapterProps) {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  // Include visibility to detect shared games
   const [gameData, setGameData] = useState<{ _id: string; collectionId: string; visibility?: 'private' | 'public' | 'group' } | null>(null);
+
+  const { currentContent, gameState } = useSelector((state: RootState) => ({
+    currentContent: state.zengoProverb.currentContent,
+    gameState: state.zengoProverb.gameState,
+  }));
 
   useEffect(() => {
     async function init() {
@@ -154,7 +159,72 @@ export default function Page({ params: { gameId } }: AdapterProps) {
     }
   };
 
+  const handleBoardClick = (position: [number, number]) => {
+    if (interactionModeForBoard === 'click') {
+      dispatch(placeStone({ x: position[0], y: position[1] }));
+    }
+  };
+
+  // Derived states for ZengoBoard
+  const interactionModeForBoard = useMemo((): BoardInteractionMode => {
+    if (gameState === 'playing') return 'click';
+    if (gameState === 'showing' || gameState === 'finished_success' || gameState === 'finished_fail') return 'view';
+    return 'view'; // Default to view or disabled
+  }, [gameState]);
+
+  const isShowingForBoard = useMemo(() => {
+    return gameState === 'showing';
+  }, [gameState]);
+
+  const stoneMapForBoard = useMemo((): BoardStoneData[] => {
+    if (!currentContent?.wordMappings) return [];
+    return currentContent.wordMappings.map(mapping => ({
+      position: [mapping.coords.x, mapping.coords.y],
+      value: mapping.word,
+      color: 'black', // Default stone color
+      visible: gameState === 'showing', // Only visible during 'showing' phase
+      // Other fields like isNew, feedback, isHiding, memoryPhase, order can be added if needed by ZengoBoard
+    }));
+  }, [currentContent, gameState]);
+
+  // Game End Logic
+  useEffect(() => {
+    if (gameState === 'finished_success' || gameState === 'finished_fail') { 
+      console.log('Game has ended. State:', gameState);
+      // Result UI is now part of the return statement
+    }
+  }, [gameState]); // Removed unused dependencies
+
+  if (!currentContent) { 
+    return <div className="flex items-center justify-center min-h-screen">Loading game data...</div>;
+  }
+  
+  if (!currentContent.boardSize) { // Check specifically for boardSize after currentContent is loaded
+    return <div className="flex items-center justify-center min-h-screen">Loading board configuration...</div>;
+  }
+
   return (
-    <ZengoPage />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <ZengoBoard
+        boardSize={currentContent.boardSize as BoardSize}
+        stoneMap={stoneMapForBoard}
+        interactionMode={interactionModeForBoard}
+        onIntersectionClick={handleBoardClick}
+        isShowing={isShowingForBoard}
+      />
+      {(gameState === 'finished_success' || gameState === 'finished_fail') && (
+        <div className="mt-4 p-4 bg-white rounded shadow-md text-center">
+          <h3 className="text-xl font-semibold mb-2">Game Over!</h3>
+          <p className="mb-1">Status: {gameState === 'finished_success' ? '성공' : '실패'}</p>
+          {/* TODO: Display score from state.zengoProverb.lastResult?.score or similar */}
+          {/* <p>Score: {useSelector((state: RootState) => state.zengoProverb.lastResult?.score)}</p> */}
+          <div className="mt-3 space-x-2">
+            <button onClick={handleRetrySameContent} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Retry Game</button>
+            <button onClick={handleNextGame} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Next Game</button>
+            <button onClick={handleBackToCollection} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">Back to Collection</button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 } 

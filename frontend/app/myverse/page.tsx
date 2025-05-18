@@ -9,6 +9,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Button from '@/components/common/Button';
 import { myverseApi, collectionsApi } from '@/lib/api';
 import { useSelector } from 'react-redux';
@@ -19,15 +20,14 @@ import NotificationBell from '@/components/common/NotificationBell';
 import { AcademicCapIcon, BookOpenIcon, BriefcaseIcon, SunIcon, PlusIcon, TagIcon, SquaresPlusIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameCard from '@/components/GameCard';
-import CollectionGameForm from './[collectionId]/CollectionGameForm';
 import { toast } from 'react-hot-toast';
-import CollectionForm from '../../components/CollectionForm';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import HabitusIcon from '@/components/HabitusIcon';
-import CountdownModal from '@/components/CountdownModal';
-import { Game, GameOwner } from '@/src/types/game';
 
-// [Zengo Myverse] 그룹공유는 사실상 친구공유 기능을 겸함. 그룹 = 친구 네트워크로 간주하며, 그룹 내 공유가 곧 친구에게 게임을 공유하는 것과 동일한 UX를 제공함.
+// Dynamically import modal components
+const CountdownModal = dynamic(() => import('@/components/CountdownModal'), { ssr: false });
+const CollectionGameForm = dynamic(() => import('./[collectionId]/CollectionGameForm'), { ssr: false });
+const CollectionForm = dynamic(() => import('../../components/CollectionForm'), { ssr: false });
 
 // Cyber Theme Definition (Copied from Dashboard)
 const cyberTheme = {
@@ -73,6 +73,23 @@ interface Collection {
   type?: string; // category 대신 type 사용 (백엔드 모델과 일치 가정)
 }
 
+// 게임 데이터 타입 정의 (이전에 있었는지 확인, 없다면 추가)
+interface MyverseGameData {
+  _id: string;
+  title: string;
+  inputText: string;
+  description?: string;
+  type?: string; // 'myverse' 또는 'zengo' 등
+  updatedAt?: string;
+  owner?: { nickname: string };
+  collectionId?: { _id: string; name: string; type: string };
+  // CollectionGameForm의 MyverseGame 타입과 필요한 필드 동기화 필요
+  wordMappings?: { word: string; coords: { x: number; y: number } }[];
+  boardSize?: number;
+  visibility?: 'private' | 'public' | 'group';
+  sharedWith?: string[];
+}
+
 // 임시 카테고리 정의
 const collectionCategories = [
   { id: 'all', label: '전체', Icon: TagIcon },
@@ -93,17 +110,6 @@ const categoryColorMap: { [key: string]: string } = {
 // Default color for categories not in the map (if any)
 const defaultCategoryColor = cyberTheme.textLight;
 
-// Helper function to extract collection ID string
-const getCollectionIdString = (collectionId: string | { _id: string; name: string; type?: string } | undefined): string => {
-  if (typeof collectionId === 'string') {
-    return collectionId;
-  }
-  if (typeof collectionId === 'object' && collectionId !== null && collectionId._id) {
-    return collectionId._id;
-  }
-  return ''; 
-};
-
 export default function MyversePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -116,19 +122,19 @@ export default function MyversePage() {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   // '내 컬렉션' 탭 > '전체보기' 상태 복원
-  const [accessibleGames, setAccessibleGames] = useState<Game[]>([]);
+  const [accessibleGames, setAccessibleGames] = useState<MyverseGameData[]>([]);
   const [isAccessibleLoading, setIsAccessibleLoading] = useState(false);
   const [accessibleError, setAccessibleError] = useState('');
   const [accessibleNextCursor, setAccessibleNextCursor] = useState<string | null>(null);
 
   // '공유받은 게임' 탭 상태 복원
-  const [sharedGames, setSharedGames] = useState<Game[]>([]);
+  const [sharedGames, setSharedGames] = useState<MyverseGameData[]>([]);
   const [isSharedLoading, setIsSharedLoading] = useState(false);
   const [sharedError, setSharedError] = useState('');
   const [sharedNextCursor, setSharedNextCursor] = useState<string | null>(null);
 
   // '내 컬렉션' 탭 > 특정 카테고리 선택 상태 복원
-  const [categoryGames, setCategoryGames] = useState<Game[]>([]);
+  const [categoryGames, setCategoryGames] = useState<MyverseGameData[]>([]);
   const [isCategoryLoading, setIsCategoryLoading] = useState(false);
   const [categoryError, setCategoryError] = useState('');
   const [categoryNextCursor, setCategoryNextCursor] = useState<string | null>(null);
@@ -139,14 +145,14 @@ export default function MyversePage() {
   const [showCreateCollectionModal, setShowCreateCollectionModal] = useState(false);
   // 게임 수정 모달 상태 추가
   const [showEditGameModal, setShowEditGameModal] = useState(false);
-  const [editingGameData, setEditingGameData] = useState<Game | null>(null);
+  const [editingGameData, setEditingGameData] = useState<MyverseGameData | null>(null);
 
   // 추가된 상태
   const [selectedGame, setSelectedGame] = useState<any | null>(null);
   const [showCountdown, setShowCountdown] = useState(false);
 
   // '내가 보낸 게임' 탭 상태 복원
-  const [sentGames, setSentGames] = useState<Game[]>([]);
+  const [sentGames, setSentGames] = useState<MyverseGameData[]>([]);
   const [isSentLoading, setIsSentLoading] = useState(false);
   const [sentError, setSentError] = useState('');
   const [sentNextCursor, setSentNextCursor] = useState<string | null>(null);
@@ -187,31 +193,7 @@ export default function MyversePage() {
     try {
       const params = { limit: 12, cursor };
       const result = await myverseApi.getAccessible(params);
-      // API 응답(result.games)을 Game[] 타입으로 변환
-      const processedGames: Game[] = result.games.map((apiGame: any) => { // apiGame 타입을 any로 임시 처리. 실제 API 응답 타입 사용 권장
-        const ownerData = apiGame.owner 
-          ? { nickname: apiGame.owner.nickname, _id: apiGame.owner._id || `${apiGame._id}-${apiGame.owner.nickname}` } // owner._id가 없으면 임시 ID 생성
-          : undefined;
-        return {
-          _id: apiGame._id, // 필수 필드
-          title: apiGame.title, // 필수 필드
-          inputText: apiGame.inputText, // 필수 필드
-          description: apiGame.description,
-          type: apiGame.type,
-          updatedAt: apiGame.updatedAt,
-          owner: ownerData,
-          collectionId: apiGame.collectionId,
-          wordMappings: apiGame.wordMappings,
-          boardSize: apiGame.boardSize,
-          visibility: apiGame.visibility,
-          sharedWith: apiGame.sharedWith,
-          totalWords: apiGame.totalWords,
-          totalAllowedStones: apiGame.totalAllowedStones,
-          initialDisplayTimeMs: apiGame.initialDisplayTimeMs,
-          // id: apiGame.id, // API 응답에 id 필드가 있다면 포함
-        };
-      });
-      setAccessibleGames(prev => cursor ? [...prev, ...processedGames] : processedGames);
+      setAccessibleGames(prev => cursor ? [...prev, ...result.games] : result.games);
       setAccessibleNextCursor(result.nextCursor);
     } catch (err: any) {
       console.error('접근 가능 게임 불러오기 실패:', err);
@@ -233,16 +215,7 @@ export default function MyversePage() {
     try {
       const params = { limit: 12, cursor };
       const result = await myverseApi.getByType(category, params);
-      const processedGames: Game[] = result.games.map((apiGame: any) => { // apiGame 타입을 any로 임시 처리
-        const ownerData = apiGame.owner
-          ? { nickname: apiGame.owner.nickname, _id: apiGame.owner._id || `${apiGame._id}-${apiGame.owner.nickname}` }
-          : undefined;
-        return {
-          ...apiGame,
-          owner: ownerData,
-        };
-      });
-      setCategoryGames(prev => cursor ? [...prev, ...processedGames] : processedGames);
+      setCategoryGames(prev => cursor ? [...prev, ...result.games] : result.games);
       setCategoryNextCursor(result.nextCursor);
     } catch (err: any) {
       console.error(`'${category}' 카테고리 게임 불러오기 실패:`, err);
@@ -264,16 +237,7 @@ export default function MyversePage() {
     try {
       const params = { limit: 12, cursor };
       const result = await myverseApi.getShared(params);
-      const processedGames: Game[] = result.games.map((apiGame: any) => { // apiGame 타입을 any로 임시 처리
-        const ownerData = apiGame.owner
-          ? { nickname: apiGame.owner.nickname, _id: apiGame.owner._id || `${apiGame._id}-${apiGame.owner.nickname}` }
-          : undefined;
-        return {
-          ...apiGame,
-          owner: ownerData,
-        };
-      });
-      setSharedGames(prev => cursor ? [...prev, ...processedGames] : processedGames);
+      setSharedGames(prev => cursor ? [...prev, ...result.games] : result.games);
       setSharedNextCursor(result.nextCursor);
     } catch (err: any) {
       console.error('공유 게임 불러오기 실패:', err);
@@ -295,17 +259,7 @@ export default function MyversePage() {
     try {
       const params = { limit: 12, cursor };
       const result = await myverseApi.getSent(params);
-      const processedGames: Game[] = result.games.map((apiGame: any) => { // apiGame 타입을 any로 임시 처리
-        const ownerData = apiGame.owner 
-          ? { nickname: apiGame.owner.nickname, _id: apiGame.owner._id || `${apiGame._id}-${apiGame.owner.nickname}` }
-          : undefined;
-        return {
-          ...apiGame,
-          owner: ownerData,
-          // 필요한 경우 다른 필드들도 Game 타입에 맞게 변환/추가
-        };
-      });
-      setSentGames(prev => cursor ? [...prev, ...processedGames] : processedGames);
+      setSentGames(prev => cursor ? [...prev, ...result.games] : result.games);
       setSentNextCursor(result.nextCursor);
     } catch (err: any) {
       console.error('내가 보낸 게임 불러오기 실패:', err);
@@ -414,7 +368,7 @@ export default function MyversePage() {
 
   // 게임 수정 핸들러 구현
   const handleEditGame = (gameId: string) => {
-    let gameToEdit: Game | undefined;
+    let gameToEdit: MyverseGameData | undefined;
     // 현재 활성 탭/카테고리에 따라 적절한 목록에서 게임 찾기
     if (activeTab === 'myCollections') {
       if (selectedCategory === 'all') {
@@ -975,7 +929,7 @@ export default function MyversePage() {
               transition={{ duration: 0.2 }}
             >
               <CollectionGameForm
-                collectionId={getCollectionIdString(editingGameData.collectionId)}
+                collectionId={editingGameData.collectionId?._id || ''}
                 initialData={editingGameData as any}
                 onCancel={() => {
                   setShowEditGameModal(false);

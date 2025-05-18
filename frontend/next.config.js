@@ -1,7 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  compiler: {
+    removeConsole: true,
+  },
   images: {
-    domains: ['via.placeholder.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '**',
+      },
+    ],
   },
   // API 프록시 설정 강화
   async rewrites() {
