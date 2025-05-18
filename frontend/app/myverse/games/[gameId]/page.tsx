@@ -155,11 +155,6 @@ export default function Page({ params: { gameId } }: AdapterProps) {
   };
 
   return (
-    <ZengoPage
-      initialUiState="selection"
-      onNextGame={handleNextGame}
-      onRetrySameContent={handleRetrySameContent}
-      onBackToIntro={handleBackToCollection}
-    />
+    <ZengoPage />
   );
 } 
