@@ -31,6 +31,10 @@ const cyberTheme = {
   gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
   textMuted: 'text-gray-400',
   textLight: 'text-gray-300',
+  inputBg: 'bg-gray-700/50',
+  inputBorder: 'border-gray-600',
+  inputFocusBorder: 'focus:border-cyan-500',
+  inputFocusRing: 'focus:ring-cyan-500/50',
   progressBarBg: 'bg-gray-700', // 진행률 바 배경
   progressGradientStart: '#06b6d4', // cyan-500
   progressGradientMid: '#8b5cf6', // purple-500
