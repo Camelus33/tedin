@@ -23,45 +23,12 @@ import GameCard from '@/components/GameCard';
 import { toast } from 'react-hot-toast';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import HabitusIcon from '@/components/HabitusIcon';
+import { cyberTheme } from '@/src/styles/theme'; // Import centralized theme
 
 // Dynamically import modal components
 const CountdownModal = dynamic(() => import('@/components/CountdownModal'), { ssr: false });
 const CollectionGameForm = dynamic(() => import('./[collectionId]/CollectionGameForm'), { ssr: false });
 const CollectionForm = dynamic(() => import('../../components/CollectionForm'), { ssr: false });
-
-// Cyber Theme Definition (Copied from Dashboard)
-const cyberTheme = {
-  primary: 'text-cyan-400',
-  secondary: 'text-purple-400',
-  bgPrimary: 'bg-gray-900',
-  bgSecondary: 'bg-gray-800',
-  cardBg: 'bg-gray-800/60',
-  borderPrimary: 'border-cyan-500',
-  borderSecondary: 'border-purple-500',
-  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
-  textMuted: 'text-gray-400',
-  textLight: 'text-gray-300',
-  inputBg: 'bg-gray-700/50',
-  inputBorder: 'border-gray-600',
-  inputFocusBorder: 'focus:border-cyan-500',
-  inputFocusRing: 'focus:ring-cyan-500/50',
-  progressBarBg: 'bg-gray-700',
-  progressFg: 'bg-gradient-to-r from-cyan-500 to-purple-500',
-  buttonPrimaryBg: 'bg-cyan-600',
-  buttonPrimaryHoverBg: 'hover:bg-cyan-700',
-  buttonSecondaryBg: 'bg-gray-700/50',
-  buttonSecondaryHoverBg: 'hover:bg-gray-600/50',
-  buttonOutlineBorder: 'border-cyan-500',
-  buttonOutlineText: 'text-cyan-400',
-  buttonOutlineHoverBg: 'hover:bg-cyan-500/10',
-  buttonDisabledBg: 'bg-gray-600',
-  errorText: 'text-red-400',
-  errorBorder: 'border-red-500/50',
-  menuBg: 'bg-gray-700',
-  menuItemHover: 'hover:bg-gray-600',
-  tooltipBg: 'bg-gray-700',
-  tooltipText: 'text-gray-200',
-};
 
 // 타입 정의
 interface Collection {

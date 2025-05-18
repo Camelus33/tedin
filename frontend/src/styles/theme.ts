@@ -1,0 +1,35 @@
+export const cyberTheme = {
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400',
+  bgPrimary: 'bg-gray-900',
+  bgSecondary: 'bg-gray-800',
+  cardBg: 'bg-gray-800/60',
+  borderPrimary: 'border-cyan-500',
+  borderSecondary: 'border-purple-500',
+  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
+  textMuted: 'text-gray-400',
+  textLight: 'text-gray-300',
+  inputBg: 'bg-gray-700/50',
+  inputBorder: 'border-gray-600',
+  inputFocusBorder: 'focus:border-cyan-500',
+  inputFocusRing: 'focus:ring-cyan-500/50',
+  progressBarBg: 'bg-gray-700',
+  progressFg: 'bg-gradient-to-r from-cyan-500 to-purple-500', // from myverse
+  progressGradientStart: '#06b6d4', // from ts/reading
+  progressGradientMid: '#8b5cf6',   // from ts/reading
+  progressGradientEnd: '#ec4899',   // from ts/reading
+  buttonPrimaryBg: 'bg-cyan-600',
+  buttonPrimaryHoverBg: 'hover:bg-cyan-700',
+  buttonSecondaryBg: 'bg-gray-700/50',
+  buttonSecondaryHoverBg: 'hover:bg-gray-600/50',
+  buttonOutlineBorder: 'border-cyan-500',
+  buttonOutlineText: 'text-cyan-400',
+  buttonOutlineHoverBg: 'hover:bg-cyan-500/10',
+  buttonDisabledBg: 'bg-gray-600',
+  errorText: 'text-red-400',
+  errorBorder: 'border-red-500/50',
+  menuBg: 'bg-gray-700',
+  menuItemHover: 'hover:bg-gray-600',
+  tooltipBg: 'bg-gray-700',
+  tooltipText: 'text-gray-200',
+}; 

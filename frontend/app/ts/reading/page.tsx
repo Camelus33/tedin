@@ -6,6 +6,7 @@ import Button from '@/components/common/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PauseIcon, PlayIcon, StopIcon, ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import Spinner from '@/components/ui/Spinner';
+import { cyberTheme } from '@/src/styles/theme';
 
 type SessionData = {
   _id: string;
@@ -17,28 +18,9 @@ type SessionData = {
   startPage: number;
   endPage: number;
   durationSec: number;
-};
-
-// 테마 색상 정의 (일관성 유지)
-const cyberTheme = {
-  primary: 'text-cyan-400',
-  secondary: 'text-purple-400',
-  bgPrimary: 'bg-gray-900',
-  bgSecondary: 'bg-gray-800',
-  cardBg: 'bg-gray-800/60',
-  borderPrimary: 'border-cyan-500',
-  borderSecondary: 'border-purple-500',
-  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
-  textMuted: 'text-gray-400',
-  textLight: 'text-gray-300',
-  inputBg: 'bg-gray-700/50',
-  inputBorder: 'border-gray-600',
-  inputFocusBorder: 'focus:border-cyan-500',
-  inputFocusRing: 'focus:ring-cyan-500/50',
-  progressBarBg: 'bg-gray-700', // 진행률 바 배경
-  progressGradientStart: '#06b6d4', // cyan-500
-  progressGradientMid: '#8b5cf6', // purple-500
-  progressGradientEnd: '#ec4899', // pink-500 (경고)
+  progressGradientStart: '#06b6d4';
+  progressGradientMid: '#8b5cf6';
+  progressGradientEnd: '#ec4899';
 };
 
 export default function TSReadingPage() {
