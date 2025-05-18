@@ -93,19 +93,21 @@ const isOrderCorrect = (placedStones: PlacedStone[], expectedOrder: { x: number,
   return allWordsInCorrectPosition && isSequentiallyCorrect;
 };
 
-export interface ZengoPageProps {
-  initialUiState?: 'intro' | 'selection';
-  onNextGame?: () => void;
-  onRetrySameContent?: () => void;
-  onBackToIntro?: () => void;
-}
+// export interface ZengoPageProps {
+//   initialUiState?: 'intro' | 'selection';
+//   onNextGame?: () => void;
+//   onRetrySameContent?: () => void;
+//   onBackToIntro?: () => void;
+// }
 
-export default function ZengoPage({
-  initialUiState,
-  onNextGame: customOnNextGame,
-  onRetrySameContent: customOnRetrySameContent,
-  onBackToIntro: customOnBackToIntro
-}: ZengoPageProps) {
+export default function ZengoPage(
+  // {
+  //   initialUiState,
+  //   onNextGame: customOnNextGame,
+  //   onRetrySameContent: customOnRetrySameContent,
+  //   onBackToIntro: customOnBackToIntro
+  // }: ZengoPageProps
+) {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { 
@@ -134,7 +136,8 @@ export default function ZengoPage({
   const feedbackClearTimeouts = useRef<{ [key: string]: NodeJS.Timeout }>({}); // Ref for feedback clearing timeouts
 
   // Local state for managing UI flow (intro/selection) before game starts
-  const [uiState, setUiState] = useState<'intro' | 'selection'>(initialUiState ?? 'intro');
+  // ZengoPageProps에서 오던 initialUiState를 임시로 'intro'로 설정
+  const [uiState, setUiState] = useState<'intro' | 'selection'>('intro');
   const [selectedBoardSize, setSelectedBoardSize] = useState<number>(3);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('ko'); // Default to Korean
   const categories = [
@@ -916,9 +919,9 @@ export default function ZengoPage({
                 result={lastResult}
                 resultType={resultType}
                 error={zengoError}
-                onNextGame={customOnNextGame ?? handleNextGame}
-                onRetrySameContent={customOnRetrySameContent ?? handleRetrySameContent}
-                onBackToIntro={customOnBackToIntro ?? (() => setUiState('intro'))}
+                onNextGame={handleNextGame}
+                onRetrySameContent={handleRetrySameContent}
+                onBackToIntro={() => setUiState('intro')}
               />
             </div>
           );
