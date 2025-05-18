@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { IMyVerseSessionResult } from '@/src/types/zengo'; // Corrected import path
 
-// 베이스 URL을 상대 경로 /api로 변경 (Next.js 프록시 사용)
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+// 베이스 URL을 API 호스트로 변경
+const API_HOST = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'; // Changed variable name and removed /api from fallback
 
 // Default timeout for all requests (ms)
 const DEFAULT_TIMEOUT = 10000; // 10 seconds
@@ -19,7 +19,7 @@ export const API_ERRORS = {
 
 // Create axios instance with configuration
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: `${API_HOST}/api`, // Prepended /api to the host
   headers: {
     'Content-Type': 'application/json',
   },

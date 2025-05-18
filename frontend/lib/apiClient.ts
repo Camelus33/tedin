@@ -1,7 +1,7 @@
 import { toast } from 'react-hot-toast';
 import { apiDebug, debugLogger } from './debug';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 /**
  * Base API client for making HTTP requests
@@ -42,7 +42,7 @@ class ApiClient {
     // 개발 환경에서는 디버그 래퍼 사용
     if (process.env.NODE_ENV === 'development') {
       try {
-        const url = `${API_BASE_URL}${endpoint}`;
+        const url = `${API_BASE_URL}/api${endpoint}`;
         return await apiDebug.logApiRequest(url, config, 'apiClient');
       } catch (error: any) {
         const errorMessage = error.message || '서버와 통신 중 오류가 발생했습니다.';
@@ -52,7 +52,7 @@ class ApiClient {
     } else {
       // 프로덕션 환경에서는 기존 방식 사용
       try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        const response = await fetch(`${API_BASE_URL}/api${endpoint}`, config);
         const data = await response.json();
 
         if (!response.ok) {
