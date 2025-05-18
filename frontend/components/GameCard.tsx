@@ -2,24 +2,25 @@ import React from 'react';
 import Link from 'next/link';
 import { PlayIcon } from '@heroicons/react/24/solid';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { Game } from '@/src/types/game'; // 공용 Game 타입 import
 
 // Define the Game interface based on the actual structure
-interface Game {
-  id?: string;
-  _id: string;
-  title: string;
-  inputText: string;
-  description?: string;
-  type?: string;
-  updatedAt?: string;
-  owner?: { // 게임 소유자 정보 (공유한 사람으로 간주)
-    _id: string;
-    nickname: string;
-  };
-}
+// interface Game {
+//   id?: string;
+//   _id: string;
+//   title: string;
+//   inputText: string;
+//   description?: string;
+//   type?: string;
+//   updatedAt?: string;
+//   owner?: { // 게임 소유자 정보 (공유한 사람으로 간주)
+//     _id?: string;
+//     nickname: string;
+//   };
+// }
 
 interface GameCardProps {
-  game: Game & { wordMappings?: { word: string }[]; updatedAt?: string };
+  game: Game & { wordMappings?: { word: string }[]; updatedAt?: string }; // Game 타입을 공용 타입으로 사용
   collectionId?: string;
   onEditClick?: (gameId: string) => void;
   onDeleteClick?: (gameId: string) => void;

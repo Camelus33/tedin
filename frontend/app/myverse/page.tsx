@@ -25,6 +25,7 @@ import CollectionForm from '../../components/CollectionForm';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import HabitusIcon from '@/components/HabitusIcon';
 import CountdownModal from '@/components/CountdownModal';
+import { Game, GameOwner } from '@/src/types/game';
 
 // [Zengo Myverse] 그룹공유는 사실상 친구공유 기능을 겸함. 그룹 = 친구 네트워크로 간주하며, 그룹 내 공유가 곧 친구에게 게임을 공유하는 것과 동일한 UX를 제공함.
 
@@ -70,31 +71,6 @@ interface Collection {
   title?: string;
   description?: string;
   type?: string; // category 대신 type 사용 (백엔드 모델과 일치 가정)
-}
-
-// GameOwner 및 Game 인터페이스를 임시로 여기에 정의 (실제로는 src/types/game.ts 등에서 가져와야 함)
-export interface GameOwner {
-  _id?: string;
-  nickname: string;
-}
-
-export interface Game {
-  _id: string;
-  id?: string;
-  title: string;
-  inputText: string;
-  description?: string;
-  type?: string;
-  updatedAt?: string;
-  owner?: GameOwner;
-  collectionId?: string | { _id: string; name: string; type?: string };
-  wordMappings?: { word: string; coords?: { x: number; y: number } }[];
-  boardSize?: number;
-  visibility?: 'private' | 'public' | 'group';
-  sharedWith?: string[];
-  totalWords?: number;
-  totalAllowedStones?: number;
-  initialDisplayTimeMs?: number;
 }
 
 // 임시 카테고리 정의
