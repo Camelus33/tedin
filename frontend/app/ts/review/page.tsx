@@ -280,20 +280,20 @@ export default function TSReviewPage() {
               rows={3}
               value={reviewData.memo}
               onChange={handleChange}
-              placeholder="읽으면서 떠오른 생각이나 느낌을 자유롭게 적어보세요."
+              placeholder="인상깊은 문장 혹은 떠오른 생각을 적어보세요."
               className={`w-full p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
             />
           </div>
 
           <div>
-            <label htmlFor="summary" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>10단어 요약하기</label>
+            <label htmlFor="summary" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>주제어 도출</label>
             <input
               type="text"
               id="summary"
               name="summary"
               value={reviewData.summary}
               onChange={handleChange}
-              placeholder="읽은 내용의 핵심을 10단어 내외로 요약해 보세요."
+              placeholder="읽은 내용을 10단어 이내로 간추려 보세요"
               className={`w-full p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
             />
           </div>

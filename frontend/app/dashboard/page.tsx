@@ -491,9 +491,9 @@ export default function DashboardPage() {
           <Link href="/ts" className="block">
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-cyan-500/30 hover:border-cyan-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
               <div>
-                <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>Time Sprint</h2> {/* Theme text */}
+                <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>TS : Micro-Reading</h2> {/* Theme text */}
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>읽기 집중력 체크</p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 높은 수준의 독서 및 학습 효율을 달성하세요 </p> {/* Theme text */}
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>잘게 쪼갠 분단위 읽기로 지루함을 극복하세요 </p> {/* Theme text */}
               </div>
               <div className="mt-6">
                  <button className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
@@ -507,7 +507,7 @@ export default function DashboardPage() {
           <Link href="/zengo" className="block">
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
                <div>
-                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo</h2> {/* Theme text */} 
+                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo : Work Memory</h2> {/* Theme text */} 
                  <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>작업 기억력 체크</p> {/* Revised Text & Theme */} 
                  <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 선명하고 오래가는 기억력을 달성하세요</p> {/* Theme text */} 
                </div>
@@ -559,7 +559,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-orbitron font-bold text-cyan-300 drop-shadow-sm">
-                    매일 11분, 33일 후 놀라운 변화
+                    매일 11분씩 3회, 33일 후 놀라운 성장
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
@@ -569,7 +569,7 @@ export default function DashboardPage() {
                     aria-label="Find Your Routine"
                     type="button"
                   >
-                    Find Your Routine
+                    Sharpen Your Brain
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
@@ -732,7 +732,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-200 mb-1">총 ZenGo</p>
-                <p className="text-xl font-bold text-green-400">{stats ? `${stats.totalZengoCount}회` : '-'}</p>
+                <p className="text-xl font-bold text-green-400">{stats ? `${stats.totalZengoCount}점` : '-'}</p>
               </div>
             </div>
           </div>

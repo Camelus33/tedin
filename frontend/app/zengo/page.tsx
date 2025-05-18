@@ -137,7 +137,16 @@ export default function ZengoPage({
   const [uiState, setUiState] = useState<'intro' | 'selection'>(initialUiState ?? 'intro');
   const [selectedBoardSize, setSelectedBoardSize] = useState<number>(3);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('ko'); // Default to Korean
-  const categories = ['수능·학교시험','외국어·편입','공무원·고시','자격증','취업·면접','적성·승진','실무·숙련 팁','기타'];
+  const categories = [
+    "수능·시험",
+    "외국어·편입",
+    "대학교 시험",
+    "유학·면접",
+    "취업·자격증",
+    "공무원·고시",
+    "직무별 노하우",
+    "전문가 컨설팅"
+  ];
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
   const [loading, setLoading] = useState(false); // Keep local loading for button state?
 
@@ -975,10 +984,10 @@ export default function ZengoPage({
               style={{ background: 'linear-gradient(90deg, #0a1020 0%, #1e293b 60%, #232946 100%)', position: 'relative', boxShadow: '0 2px 8px #1e293b44' }}
             >
               <h3 className="text-2xl font-extrabold mb-4 text-white" style={{ color: '#fff', textShadow: '0 1px 8px #38bdf833' }}>
-                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: '600', marginLeft: '0.25rem', fontSize: '0.9rem', letterSpacing: '-0.01em' }}>암기공식·합격비결 오픈마켓</span>
+                ZenGo 오리지널 <span style={{ color: '#FFD600', fontWeight: '600', marginLeft: '0.25rem', fontSize: '0.9rem', letterSpacing: '-0.01em' }}>암기비결·고수 노하우 오픈마켓</span>
               </h3>
               <div className="text-gray-300 text-sm md:text-base mb-6 leading-relaxed">
-                이제 합격에 필요한 모든 것을 사고 팔 수 있습니다. 고득점 노하우를 담은 자신의 <span style={{ color: '#38BDF8', fontWeight: 'bold' }}>ZenGo</span>로 수익을 창출하세요.
+                이제 학습에 필요한 모든 걸 사고 팔 수 있습니다. 각 분야 고수의 노하우를 담은 <span style={{ color: '#38BDF8', fontWeight: 'bold' }}>ZenGo</span>로 경쟁에서 이기세요
               </div>
               {/* Categories Tabs */}
               <nav role="tablist" aria-label="콘텐츠 카테고리" className="bg-neutral-900/10 rounded-lg px-4 py-2 flex overflow-x-auto space-x-6 border-b border-neutral-600 mb-6 md:justify-center">
@@ -989,7 +998,7 @@ export default function ZengoPage({
                       aria-selected={selectedCategory === cat}
                       tabIndex={selectedCategory === cat ? 0 : -1}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`uppercase font-medium tracking-wide px-5 py-3 text-sm transition-all duration-200 ease-in-out ${selectedCategory === cat ? 'text-white border-b-2 border-primary-500' : 'text-neutral-400 hover:text-white hover:bg-neutral-700/60'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500`}>
+                      className={`uppercase font-medium tracking-wide px-5 py-3 text-xs transition-all duration-200 ease-in-out ${selectedCategory === cat ? 'text-white border-b-2 border-primary-500' : 'text-neutral-400 hover:text-white hover:bg-neutral-700/60'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500`}>
                       {cat}
                     </button>
                     <div className="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-700 text-neutral-200 text-xs whitespace-nowrap rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
@@ -1003,7 +1012,7 @@ export default function ZengoPage({
                   { title: '단권화 노트', slogan: '알맹이만 콕콕', icon: LightBulbIcon, color: '#6366F1', gradFrom: '#4F46E5', gradTo: '#7C3AED', tag: '핵심요약' },
                   { title: '시험 족보', slogan: '꼭 나오는 것만', icon: FireIcon, color: '#3B82F6', gradFrom: '#2563EB', gradTo: '#60A5FA', tag: '기출기반' },
                   { title: '예상 적중', slogan: '이번엔 이 문제', icon: QuestionMarkCircleIcon, color: '#10B981', gradFrom: '#059669', gradTo: '#34D399', tag: '실전대비' },
-                  { title: '한장 요약', slogan: '벼락치기 완벽', icon: DocumentTextIcon, color: '#EC4899', gradFrom: '#DB2777', gradTo: '#F472B6', tag: '막판정리' },
+                  { title: '한장 요약', slogan: '시험 직전', icon: DocumentTextIcon, color: '#EC4899', gradFrom: '#DB2777', gradTo: '#F472B6', tag: '막판정리' },
                 ].map((item, index) => (
                   <div
                     key={item.title}

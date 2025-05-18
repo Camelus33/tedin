@@ -18,6 +18,13 @@ import {
   BeakerIcon as Activity, // Activity 대신 비커 아이콘 사용 (실험/실행 의미)
   CpuChipIcon, // Brain 대신 CPU 칩 아이콘 사용 (처리 의미)
   AdjustmentsHorizontalIcon, // <-- ensure this is imported
+  // Micro-Reading 도식화 및 설명용 아이콘 추가
+  BookOpenIcon,
+  PencilSquareIcon,
+  ArrowPathIcon,
+  Cog6ToothIcon,
+  SparklesIcon, // 기대 효과에 사용 (긍정적 변화)
+  InformationCircleIcon, // 툴팁 아이콘으로 활용
 } from '@heroicons/react/24/outline';
 
 import Section from '../../components/common/Section';
@@ -376,14 +383,183 @@ function UniversalFeedbackLoopsSection() {
 // --- /Universal Feedback Loops Section ---
 
 export default function CyberneticsFeedbackLoopPage() {
+  const [hoveredDiagramStep, setHoveredDiagramStep] = useState<number | null>(null);
+  const [hoveredUtility, setHoveredUtility] = useState<number | null>(null);
+  const [hoveredEffect, setHoveredEffect] = useState<number | null>(null);
+
+  const diagramSteps = [
+    { title: "1. 목표 설정", description: "('3분 내 1페이지 이해' 등<br/>구체적이고 측정 가능하게)", icon: Target },
+    { title: "2. 몰입 독서 ", description: "(<Highlight color={cyberTheme.primary}>TS 모드</Highlight> 활용,<br/>방해 요소 완벽 차단)", icon: BookOpenIcon },
+    { title: "3. 정보 인출", description: "(주제어, 핵심 메모, 질문<br/>신속하게 기록)", icon: PencilSquareIcon },
+    { title: "4. 자기 성찰", description: "(이해도, 집중도, 속도 분석<br/>TS 모드 데이터 기반)", icon: ChartBarIcon },
+    { title: "5. 다음 설계", description: "(피드백 기반 전략 수정,<br/>목표 미세 조정)", icon: Cog6ToothIcon },
+  ];
+
+  const utilityItems = [
+    {
+      icon: AcademicCapIcon,
+      title: "공부할 게 너무 많아요",
+      description: "시험 범위가 방대하고 집중이 어렵나요? Micro-Reading은 <Highlight color={cyberTheme.secondary}>학습 효율을 극대화</Highlight>하는 당신의 도구입니다. 짧은 시간 초고도 집중으로 핵심 내용을 빠르게 흡수하고, 즉각적인 피드백으로 <Highlight color={cyberTheme.primary}>이해도를 점검</Highlight>하며 자신감을 키우세요. <Highlight color={cyberTheme.secondary}>전략적 학습</Highlight>으로 목표를 달성하고 지적으로 성장하세요.",
+    },
+    {
+      icon: BriefcaseIcon,
+      title: "읽어야 할 문서가 산더미에요",
+      description: "매일 쏟아지는 보고서와 문서의 홍수 속에서 핵심 파악이 어렵나요? Micro-Reading은 정보 과부하 시대 직장인의 <Highlight color={cyberTheme.secondary}>필수 업무 능력</Highlight>입니다. 제한된 시간 내 필요한 내용만 신속하게 추출하고, 명확한 이해로 <Highlight color={cyberTheme.primary}>업무 통찰력</Highlight>을 길러 효율을 극대화하세요. 더 이상 야근 없는 저녁 있는 삶을 만드세요.",
+    },
+    {
+      icon: BookOpenIcon,
+      title: "읽고 싶은데 너무 두꺼워요",
+      description: "마음속 고전 목록은 길지만, 방대한 분량에 도전이 망설여지시나요? Micro-Reading은 독서에 대한 <Highlight color={cyberTheme.secondary}>심리적 부담을 낮추고</Highlight>, 짧은 호흡으로 <Highlight color={cyberTheme.primary}>꾸준한 독서 습관</Highlight>을 만들어줍니다. 두꺼운 고전도 잘게 쪼개어 음미하며 <Highlight color={cyberTheme.secondary}>깊이 있는 사유와 지적 만족감</Highlight>을 통해 삶의 풍요로움을 경험하세요.",
+    },
+    {
+      icon: Cog6ToothIcon,
+      title: "읽어야 하는데 너무 어려워요",
+      description: "생소한 용어와 복잡한 개념으로 가득 찬 전문서적 앞에서 좌절한 경험이 있나요? Micro-Reading은 <Highlight color={cyberTheme.secondary}>어떤 난해한 지식이라도 체계적으로 정복</Highlight>하도록 돕는 <Highlight color={cyberTheme.primary}>학습 내비게이션</Highlight>입니다. 복잡한 정보를 소단위로 나누어 집중 학습하고, 즉각적인 피드백으로 소화하며 <Highlight color={cyberTheme.secondary}>실무 적용 역량</Highlight>을 키워 전문가로 거듭나세요.",
+    },
+  ];
+
+  const effectItems = [
+    {
+      icon: BoltIcon,
+      title: "멍했던 뇌가 깨어납니다",
+      description: "집중하려 해도 금방 딴생각에 빠지나요? Micro-Reading은 짧고 명확한 목표 달성이 주는 성취감으로 <Highlight color={cyberTheme.secondary}>뇌의 집중 스위치를 켭니다</Highlight>. 이전과 다른 <Highlight color={cyberTheme.primary}>깊은 몰입의 세계</Highlight>로 당신을 안내하여, 방해 요소를 차단하고 정보에 온전히 집중하는 놀라운 경험을 선사합니다. 더 이상 '책만 펴면 딴생각'은 없습니다.",
+    },
+    {
+      icon: CpuChipIcon,
+      title: "이해가 되기 시작합니다",
+      description: "분명히 읽었는데, 돌아서면 내용이 기억나지 않아 답답하셨죠? Micro-Reading은 단순 암기를 넘어, 능동적 정보처리와 반복적 인출 연습으로 <Highlight color={cyberTheme.secondary}>지식을 당신의 것으로 만듭니다</Highlight>. TS 모드의 <Highlight color={cyberTheme.primary}>주제어 도출 및 메모 작성</Highlight>은 정보에 의미를 부여하여 <Highlight color={cyberTheme.secondary}>활용 가능한 지혜</Highlight>로 발전시키고, 장기기억으로 저장합니다.",
+    },
+    {
+      icon: ChartBarIcon,
+      title: "지적 성장이 느껴집니다",
+      description: "같은 시간을 투자해도 결과가 다른 이유는 무엇일까요? 바로 <Highlight color={cyberTheme.secondary}>학습 과정을 통제하는 메타인지 능력</Highlight> 차이입니다. Habitus33의 TS 모드가 제공하는 데이터 피드백은 당신의 학습을 분석하여 <Highlight color={cyberTheme.primary}>강점과 약점을 객관적으로 파악</Highlight>하도록 돕습니다. 스스로 학습 전략을 조율하며 '공부머리'가 트이는 성장을 경험하세요.",
+    },
+    {
+      icon: SparklesIcon,
+      title: "읽는 속도가 빨라집니다",
+      description: "혹시 새해 '독서' 목표가 매번 작심삼일로 끝나지는 않으셨나요? Micro-Reading은 매일의 작은 성공으로 <Highlight color={cyberTheme.secondary}>독서에 대한 긍정적 감정</Highlight>을 심어줍니다. 지루함 대신 <Highlight color={cyberTheme.primary}>즉각적인 피드백과 성취감</Highlight>을 통해 독서 자체의 즐거움을 찾고, 평생 학습의 가장 든든한 습관을 만들어갈 수 있습니다.",
+    },
+  ];
+
   return (
-    <PageContainer className={`${cyberTheme.gradient} text-gray-200 min-h-screen`}>
-      <PageTitle className={`!text-white mb-10`}>나에게 맞는 루프 찾기</PageTitle>
+    <PageContainer className={`${cyberTheme.gradient} text-gray-200 min-h-screen py-16 px-4 md:px-6`}>
+      <PageTitle className={`text-4xl md:text-5xl font-bold mb-12 text-center ${cyberTheme.primary}`}>
+        사이버네틱스
+        <span className={`block text-xl md:text-2xl font-normal ${cyberTheme.textMuted} mt-3`}>Habitus33 시스템의 작동 원리</span>
+      </PageTitle>
 
-      {/* NEW: High-level feedback loop scenarios */}
+      <SectionWrapper className={`${cyberTheme.bgSecondary} rounded-xl shadow-2xl`} id="micro-reading-intro">
+        <SectionTitle 
+          title="TS : Micro-Reading"
+          icon={LightBulbIcon} 
+          color={cyberTheme.primary} 
+        />
+        
+        <SectionParagraph>
+          
+          Habitus33의 <Highlight color={cyberTheme.primary}>TS 모드</Highlight>를 관통하는 핵심 엔진, 바로 <Highlight color={cyberTheme.secondary}>Micro-Reading</Highlight>입니다. 이는 단순히 책장을 빠르게 넘기는 속독과는 차원이 다른, <Highlight color={cyberTheme.primary}>인지과학 기반의 정교한 독서 전략</Highlight>입니다. 마치 최정상급 운동선수가 과학적인 인터벌 트레이닝(HIIT)으로 경기 능력을 극한까지 끌어올리듯, Micro-Reading은 사용자의 두뇌가 정보를 가장 효율적으로 처리하고 깊이 있는 학습이 가능하도록 설계되었습니다. 핵심은 <Highlight color={cyberTheme.secondary}>짧은 단위의 명확한 목표 설정</Highlight>과 <Highlight color={cyberTheme.secondary}>초고도 몰입 독서</Highlight>, 그리고 세션 직후 이어지는 <Highlight color={cyberTheme.secondary}>즉각적인 독서 메모</Highlight>의 반복 사이클입니다.
+        </SectionParagraph>
+
+        <div className="my-12 p-6 md:p-8 bg-gray-900/60 rounded-2xl shadow-xl border border-cyan-600/40">
+          <h3 className={`text-2xl md:text-3xl font-semibold mb-8 text-center ${cyberTheme.primary} flex items-center justify-center`}>
+            <ArrowPathIcon className="h-8 w-8 md:h-9 md:w-9 mr-3 animate-spin-slow" />
+            5단계 선순환 피드백 루프
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 md:gap-4 items-start">
+            {diagramSteps.map((step, index) => {
+              const IconComponent = step.icon; // 각 스텝의 아이콘 컴포넌트 할당
+              return (
+                <div 
+                  key={index}
+                  className="relative flex flex-col items-center text-center p-3 bg-gray-800/50 rounded-lg min-h-[120px] justify-center cursor-pointer" 
+                  onMouseEnter={() => setHoveredDiagramStep(index)}
+                  onMouseLeave={() => setHoveredDiagramStep(null)}
+                >
+                  <IconComponent className={`h-10 w-10 mb-2 ${cyberTheme.secondary}`} />
+                  <p className="font-semibold text-md text-gray-100" dangerouslySetInnerHTML={{ __html: step.title }} />
+                  {hoveredDiagramStep === index && (
+                    <div className="absolute bottom-full mb-2 w-max max-w-xs p-3 bg-gray-700 text-gray-100 text-xs rounded-md shadow-lg z-20 leading-snug" dangerouslySetInnerHTML={{ __html: step.description }} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <p className={`${cyberTheme.textLight} text-sm text-center mt-8 leading-relaxed`}>
+            Habitus33의 <Highlight color={cyberTheme.primary}>TS 모드</Highlight>는 이 5단계 루프를 유기적으로 지원하며, 반복적인 훈련을 통해 독서 능력 뿐 아니라 <Highlight color={cyberTheme.secondary}>메타인지</Highlight> 능력까지 극적으로 향상시킵니다.
+          </p>
+        </div>
+
+        <SectionParagraph>
+          <BoltIcon className="inline-block h-6 w-6 mr-2 text-purple-400 align-middle" />
+          Micro-Reading의 진정한 위력은 <Highlight color={cyberTheme.primary}>지속적이고 즉각적인 셀프 피드백</Highlight> 시스템에 있습니다. 매 TS 모드 세션 종료 시, Habitus33은 사용자의 이해도, 집중 시간, 독서 속도 등 핵심 성과 지표를 <Highlight color={cyberTheme.secondary}>객관적인 데이터로 명확히 제시</Highlight>합니다. 이 데이터 기반의 성찰 과정은 독서 시 흔히 발생하는 <Highlight color={cyberTheme.primary}>지루함과 정신적 방황을 효과적으로 차단</Highlight>하고, 매 순간 <Highlight color={cyberTheme.secondary}>학습의 주도권을 사용자에게 부여</Highlight>합니다. 이는 단순한 기능이 아닌, <Highlight color={cyberTheme.primary}>사이버네틱스 피드백 루프</Highlight>의 정교한 시스템적 구현이며, 사용자는 마치 노련한 항해사가 첨단 항법 장치를 사용하듯 자신의 학습 여정을 능동적으로 설계하고 최적의 성장 경로로 나아갈 수 있도록 지원합니다.
+        </SectionParagraph>
+
+        <div className="mt-12 grid md:grid-cols-2 gap-x-10 gap-y-8">
+          <div>
+            <h4 className={`text-2xl font-semibold mb-5 ${cyberTheme.primary} flex items-center`}>
+              <BriefcaseIcon className="h-7 w-7 mr-3" />
+              이럴 때 활용하세요
+            </h4>
+            <ul className={`list-none ${cyberTheme.textLight} space-y-1`}>
+              {utilityItems.map((item, index) => {
+                const IconComponent = item.icon; // 각 항목의 아이콘 컴포넌트 할당
+                return (
+                  <li 
+                    key={index} 
+                    className="relative flex items-start py-2 cursor-pointer" 
+                    onMouseEnter={() => setHoveredUtility(index)}
+                    onMouseLeave={() => setHoveredUtility(null)}
+                  >
+                    <IconComponent className="h-6 w-6 mr-3 mt-1 text-cyan-400 flex-shrink-0" />
+                    <div className="flex-1">
+                      <strong className="font-semibold" dangerouslySetInnerHTML={{ __html: item.title }} />
+                      {hoveredUtility === index && (
+                        <div className="absolute left-0 top-full mt-2 w-full max-w-md p-3 bg-gray-700 text-gray-100 text-sm rounded-md shadow-lg z-20 leading-relaxed" dangerouslySetInnerHTML={{ __html: item.description }} />
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <div>
+            <h4 className={`text-2xl font-semibold mb-5 ${cyberTheme.primary} flex items-center`}>
+              <SparklesIcon className="h-7 w-7 mr-3" />
+              이렇게 바뀝니다
+            </h4>
+            <ul className={`list-none ${cyberTheme.textLight} space-y-1`}>
+              {effectItems.map((item, index) => {
+                const IconComponent = item.icon; // IconComponent를 여기서 다시 명확히 선언합니다.
+                if (!IconComponent) { // 혹시 모를 상황에 대비한 방어 코드 (실제 ReferenceError와는 무관할 수 있음)
+                  console.error(`Error: IconComponent is undefined for effectItem at index ${index}:`, item);
+                  return <li key={index} className="text-red-500">Error: Icon missing for {item.title}</li>;
+                }
+                return (
+                  <li 
+                    key={index} 
+                    className="relative flex items-start py-2 cursor-pointer" 
+                    onMouseEnter={() => setHoveredEffect(index)}
+                    onMouseLeave={() => setHoveredEffect(null)}
+                  >
+                    <IconComponent className="h-6 w-6 mr-3 mt-1 text-purple-400 flex-shrink-0" />
+                    <div className="flex-1">
+                      <strong className="font-semibold" dangerouslySetInnerHTML={{ __html: item.title }} />
+                      {hoveredEffect === index && (
+                        <div className="absolute left-0 top-full mt-2 w-full max-w-md p-3 bg-gray-700 text-gray-100 text-sm rounded-md shadow-lg z-20 leading-relaxed" dangerouslySetInnerHTML={{ __html: item.description }} />
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+
+      </SectionWrapper>
+
+      {/* 기존 다른 섹션들 (UniversalFeedbackLoopsSection, UserTypeTabs 등) */}
       <UniversalFeedbackLoopsSection />
-
-      {/* 섹션 1: ZenGo 퓨처셀프 */}
+      <hr className={`my-16 border-t ${cyberTheme.hrBorder} max-w-4xl mx-auto`} />
       <Section
         id="user-types"
         title="목표에 맞는 루프를 선택하세요"
@@ -395,10 +571,7 @@ export default function CyberneticsFeedbackLoopPage() {
         </div>
         <UserTypeTabs />
       </Section>
-
-      <hr className={`my-16 border-t ${cyberTheme.hrBorder} max-w-4xl mx-auto`} /> {/* 구분선 여백 증가 */} 
-
-      {/* 섹션 2: 사이버네틱스 */}
+      <hr className={`my-16 border-t ${cyberTheme.hrBorder} max-w-4xl mx-auto`} />
       <Section
         id="cybernetics"
         className={`${cyberTheme.bgSecondary} rounded-lg shadow-xl`}
@@ -430,10 +603,7 @@ export default function CyberneticsFeedbackLoopPage() {
           Habitus33은 <Highlight color={cyberTheme.primary}>TS 모드</Highlight>의 즉각적인 처리 속도 피드백과 <Highlight color={cyberTheme.secondary}>ZenGo</Highlight>의 작업 기억 부하 조절 훈련을 통해, 당신의 <Highlight color={cyberTheme.primary}>전전두엽</Highlight>을 활성화하고 이 피드백 루프를 강화합니다. 결과적으로 <Highlight color={cyberTheme.secondary}>작업 기억의 속도와 용량/지속 시간</Highlight>이 눈에 띄게 향상됩니다.
         </SectionParagraph>
       </Section>
-
-      <hr className={`my-16 border-t ${cyberTheme.hrBorder} max-w-4xl mx-auto`} /> {/* 구분선 여백 증가 */} 
-
-      {/* 섹션 3: 대시보드 링크 */}
+      <hr className={`my-16 border-t ${cyberTheme.hrBorder} max-w-4xl mx-auto`} /> 
       <Section
         id="dashboard-link"
         className="text-center"
@@ -445,7 +615,6 @@ export default function CyberneticsFeedbackLoopPage() {
            대시보드에서 당신의 성장을 직접 확인하세요!
          </SectionParagraph>
         <Link href="/dashboard" className={`inline-flex items-center ${cyberTheme.primary} font-medium hover:underline text-lg`}>
-          {/* Gauge 아이콘 임시 제거 (오류 방지) */}
           대시보드 이동
         </Link>
       </Section>
