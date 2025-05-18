@@ -15,5 +15,8 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "lucide-react": "^0.503.0",
     "three": "^0.150.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.18"
   }
 }
