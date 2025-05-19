@@ -308,6 +308,39 @@ export const cancelSession = async (req: Request, res: Response) => {
   }
 };
 
+// Activate a pending session (warmup -> active)
+export const activateSession = async (req: Request, res: Response) => {
+  const { sessionId } = req.params;
+  const userId = req.user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ message: '인증이 필요합니다.' });
+  }
+
+  try {
+    const session = await Session.findOne({ _id: sessionId, userId });
+    if (!session) {
+      return res.status(404).json({ message: '해당 세션을 찾을 수 없습니다.' });
+    }
+    if (session.status !== 'pending') {
+      return res.status(400).json({ message: '이미 활성화되었거나 완료된 세션입니다.' });
+    }
+
+    const updated = await Session.findByIdAndUpdate(
+      sessionId,
+      { status: 'active' },
+      { new: true }
+    )
+    .populate('bookId')
+    .select('-__v');
+
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error('세션 활성화 중 오류 발생:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
 // 책별 세션 조회
 export const getSessionsByBook = async (req: Request, res: Response) => {
   try {

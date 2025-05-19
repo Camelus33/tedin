@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import Spinner from '@/components/ui/Spinner';
 import { InformationCircleIcon, CheckCircleIcon, XCircleIcon, LightBulbIcon, ClockIcon, ChevronRightIcon, ArrowRightOnRectangleIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline';
+import api from '@/lib/api';
 
 // Cyber Theme Definition (Consistent with other TS pages)
 const cyberTheme = {
@@ -218,12 +219,19 @@ export default function TSWarmupPage() {
     }
   };
 
-  const handleFinishWarmup = useCallback(() => {
+  const handleFinishWarmup = useCallback(async () => {
     if (!sessionId) return;
-    // TODO: Send warmup results to backend
-    // Example: await fetch('/api/ts/warmup-complete', { method: 'POST', body: JSON.stringify({ sessionId, answers: userAnswers, timeLeft }) });
+    try {
+      // Activate the session (warmup -> active)
+      await api.put(`/sessions/${sessionId}/activate`);
+    } catch (error) {
+      console.error('세션 활성화 오류', error);
+      alert('세션을 활성화하는 중 오류가 발생했습니다.');
+      return;
+    }
+    // Navigate to reading stage
     router.push(`/ts/reading?sessionId=${sessionId}`);
-  }, [sessionId, router, userAnswers, timeLeft]); // Added userAnswers and timeLeft to dependencies
+  }, [sessionId, router]);
 
   const handleToggleTip = () => {
     setShowTip(prev => !prev);

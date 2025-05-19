@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface Book {
+  _id: string;
   id: string;
   title: string;
   author: string;
@@ -50,17 +51,17 @@ export const bookSlice = createSlice({
       state.books.push(action.payload);
     },
     updateBook: (state, action: PayloadAction<Book>) => {
-      const index = state.books.findIndex(book => book.id === action.payload.id);
+      const index = state.books.findIndex(book => book._id === action.payload._id);
       if (index !== -1) {
         state.books[index] = action.payload;
-        if (state.currentBook && state.currentBook.id === action.payload.id) {
+        if (state.currentBook && state.currentBook._id === action.payload._id) {
           state.currentBook = action.payload;
         }
       }
     },
     removeBook: (state, action: PayloadAction<string>) => {
-      state.books = state.books.filter(book => book.id !== action.payload);
-      if (state.currentBook && state.currentBook.id === action.payload) {
+      state.books = state.books.filter(book => book._id !== action.payload);
+      if (state.currentBook && state.currentBook._id === action.payload) {
         state.currentBook = null;
       }
     },

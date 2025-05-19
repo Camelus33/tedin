@@ -62,20 +62,26 @@ export default function TSReadingPage() {
 
         console.log('세션 데이터 로드:', data);
         
-        // durationSec이 없거나 0인 경우 기본값(10분) 사용
+        // Validate session data exists
         if (!data) {
           throw new Error('유효한 세션 데이터가 없습니다.');
         }
         
         // 기본 시간 설정 (10분 = 600초)
         const defaultDuration = 600;
-        const sessionData = {
+        // Adjust for legacy minutes values: if durationSec < 60, assume it's in minutes
+        let incomingDuration = data.durationSec || defaultDuration;
+        if (incomingDuration > 0 && incomingDuration < 60) {
+          console.warn(`Adjusting legacy durationSec (${incomingDuration}) from minutes to seconds.`);
+          incomingDuration = incomingDuration * 60;
+        }
+        const adjustedData = {
           ...data,
-          durationSec: data.durationSec || defaultDuration
+          durationSec: incomingDuration
         };
         
-        setSessionData(sessionData);
-        setTimeRemaining(sessionData.durationSec);
+        setSessionData(adjustedData);
+        setTimeRemaining(incomingDuration);
       } catch (err: any) {
         setError(err.message);
       } finally {

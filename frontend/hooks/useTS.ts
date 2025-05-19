@@ -57,17 +57,16 @@ export default function useTS({ book }: UseTSProps = {}) {
   // Initialize a new TS session
   const initSession = useCallback(async (startPage: number, endPage: number, warmup: boolean) => {
     try {
-      if (!book) {
-        throw new Error('책을 선택해주세요');
+      if (!book || !book._id) {
+        throw new Error('책 정보가 올바르지 않습니다 (ID 누락)');
       }
       
       // Create a pending session in the backend
       const response = await sessions.create({
-        bookId: book.id,
+        bookId: book._id,
         mode: 'TS',
         startPage,
         endPage,
-        status: 'pending',
       });
       
       // Start the session in Redux

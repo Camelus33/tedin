@@ -5,7 +5,8 @@ import {
   createSession, 
   completeSession, 
   cancelSession, 
-  getSessionsByBook 
+  getSessionsByBook, 
+  activateSession 
 } from '../controllers/sessionController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
@@ -86,5 +87,8 @@ router.put(
 
 // Cancel a session
 router.put('/:sessionId/cancel', cancelSession);
+
+// Activate a pending session after warmup
+router.put('/:sessionId/activate', activateSession);
 
 export default router; 
