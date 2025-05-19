@@ -273,7 +273,7 @@ export default function TSSetupPage() {
         warmup: enableWarmup,
         mode: "TS",
       };
-      const res = await api.post("/api/sessions", payload, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post("/sessions", payload, { headers: { Authorization: `Bearer ${token}` } });
       const newSession = res.data;
       if (!newSession || !newSession._id) {
         setError("세션 생성 실패");
@@ -282,7 +282,7 @@ export default function TSSetupPage() {
       }
       // 세션이 실제로 DB에 반영됐는지 GET으로 확인
       try {
-        const getRes = await api.get(`/api/sessions/${newSession._id}`, { headers: { Authorization: `Bearer ${token}` } });
+        const getRes = await api.get(`/sessions/${newSession._id}`, { headers: { Authorization: `Bearer ${token}` } });
         if (getRes.data && getRes.data._id) {
           // durationSec sanity check
           if (getRes.data.durationSec < 60) {
