@@ -4,12 +4,14 @@
 // - Myverse 콘텐츠가 오리지널/기본에 노출되거나, 오리지널/기본 콘텐츠가 Myverse에 노출되는 일은 없어야 합니다.
 // - 이 원칙을 위반하는 데이터/로직/호출/UI 혼용은 금지합니다.
 
+export const dynamic = 'force-dynamic';
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import dynamicComponent from 'next/dynamic';
 import Button from '@/components/common/Button';
 import { myverseApi, collectionsApi } from '@/lib/api';
 import { useSelector } from 'react-redux';
@@ -26,9 +28,9 @@ import HabitusIcon from '@/components/HabitusIcon';
 import { cyberTheme } from '@/src/styles/theme'; // Import centralized theme
 
 // Dynamically import modal components
-const CountdownModal = dynamic(() => import('@/components/CountdownModal'), { ssr: false });
-const CollectionGameForm = dynamic(() => import('./[collectionId]/CollectionGameForm'), { ssr: false });
-const CollectionForm = dynamic(() => import('../../components/CollectionForm'), { ssr: false });
+const CountdownModal = dynamicComponent(() => import('@/components/CountdownModal'), { ssr: false });
+const CollectionGameForm = dynamicComponent(() => import('./[collectionId]/CollectionGameForm'), { ssr: false });
+const CollectionForm = dynamicComponent(() => import('../../components/CollectionForm'), { ssr: false });
 
 // 타입 정의
 interface Collection {
