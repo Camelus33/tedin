@@ -81,7 +81,7 @@ export const fetchContentThunk = createAsyncThunk<
             }
             
             // API 요청 URL 구성
-            const endpoint = `/zengo/proverb-content?${params.toString()}`;
+            const endpoint = `/api/zengo/proverb-content?${params.toString()}`;
             console.log('API 요청 URL:', endpoint);
             
             const response = await apiClient.get<ZengoProverbContent>(endpoint);
@@ -199,7 +199,7 @@ export const submitResultThunk = createAsyncThunk<
                 };
                 console.log('Standard 세션 결과 제출 데이터:', standardPayload);
                 // Use apiClient directly as before for the standard endpoint
-                const response = await apiClient.post<ZengoSessionResult>('/zengo/session-result', standardPayload);
+                const response = await apiClient.post<ZengoSessionResult>('/api/zengo/session-result', standardPayload);
                 responseData = response.data;
                 console.log('Standard 세션 결과 제출 성공:', responseData);
             }
@@ -260,7 +260,7 @@ export const regeneratePositionsThunk = createAsyncThunk<
             const randomTimestamp = Date.now();
             
             // 주의: baseURL이 이미 'http://localhost:8000/api'이므로 '/api/' 중복 제거
-            const url = `/zengo/proverb-content?level=${level}&lang=${language}&contentId=${contentId}&reshuffle=true&random=${randomTimestamp}`;
+            const url = `/api/zengo/proverb-content?level=${level}&lang=${language}&contentId=${contentId}&reshuffle=true&random=${randomTimestamp}`;
             console.log('위치 재생성 요청 URL:', url);
             
             const response = await apiClient.get<ZengoProverbContent>(url);
@@ -311,7 +311,7 @@ export const retryContentThunk = createAsyncThunk<
             });
             
             // 주의: baseURL이 이미 'http://localhost:8000/api'이므로 '/api/' 중복 제거
-            const endpoint = `/zengo/proverb-content?${params}`;
+            const endpoint = `/api/zengo/proverb-content?${params}`;
             console.log('콘텐츠 재시도 API 요청:', endpoint);
             
             const response = await apiClient.get<ZengoProverbContent>(endpoint);
