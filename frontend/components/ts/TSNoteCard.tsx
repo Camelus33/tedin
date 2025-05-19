@@ -249,8 +249,7 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
                   TS info
                 </button>
                 <div
-                  className="absolute top-full left-0 mt-1 w-64 p-3 bg-indigo-700 text-indigo-100 text-xs rounded-md shadow-xl 
-                             opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 leading-relaxed whitespace-normal"
+                  className="absolute top-full left-0 mt-1 w-64 p-3 bg-indigo-700 text-indigo-100 text-xs rounded-md shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 leading-relaxed whitespace-normal"
                 >
                   <div className="font-semibold text-white mb-1 border-b border-indigo-500 pb-1">세션 요약</div>
                   <div><strong className="text-indigo-200">독서 일시</strong> <span className="font-medium">{formatSessionCreatedAt(sessionDetails.createdAtISO)}</span></div>
