@@ -10,6 +10,7 @@ import { myverseApi } from '@/lib/api';
 import type { ZengoProverbContent, GameState, BoardStoneData, InteractionMode as BoardInteractionMode, BoardSize } from '@/src/types/zengo';
 import { useRouter, useParams } from 'next/navigation';
 import ZengoStatusDisplay from '@/components/zengo/ZengoStatusDisplay';
+import ZengoResultPage from '@/components/zengo/ZengoResultPage';
 
 // Add type alias for word mappings
 type WordMapping = ZengoProverbContent['wordMappings'][0];
@@ -29,6 +30,58 @@ export default function Page() {
     startTime: state.zengoProverb.startTime,
     revealedWords: state.zengoProverb.revealedWords,
   }));
+
+  // stoneMapForBoard 생성 로직을 젠고 기본과 동일하게 리팩터링
+  // showing 상태: 단어가 보임, playing 상태: 돌이 사라짐, placedStones에 따라 돌/피드백 표시
+  const placedStones = useSelector((state: RootState) => state.zengoProverb.placedStones);
+  const lastResult = useSelector((state: RootState) => state.zengoProverb.lastResult);
+  const resultType = useSelector((state: RootState) => state.zengoProverb.resultType);
+
+  const stoneMapForBoard = useMemo((): BoardStoneData[] => {
+    if (!currentContent?.wordMappings) return [];
+    const map = new Map<string, BoardStoneData>();
+    // showing 상태: 단어가 보임
+    if (gameState === 'showing') {
+      currentContent.wordMappings.forEach(mapping => {
+        const key = `${mapping.coords.x},${mapping.coords.y}`;
+        map.set(key, {
+          position: [mapping.coords.x, mapping.coords.y],
+          value: mapping.word,
+          color: 'black',
+          visible: true,
+        });
+      });
+    }
+    // playing 상태: placedStones에 따라 돌/피드백 표시
+    if (gameState === 'playing' || gameState === 'finished_success' || gameState === 'finished_fail') {
+      placedStones.forEach((placed, idx) => {
+        const key = `${placed.x},${placed.y}`;
+        let value: string | number = '';
+        let color: 'black' | 'white' = 'black';
+        const feedback = placed.correct === true ? 'correct' : (placed.correct === false ? 'incorrect' : undefined);
+        // 정답 위치에 단어 표시, 오답은 X 표시
+        const originalWordMapping = currentContent.wordMappings.find(
+          m => m && m.coords && m.coords.x === placed.x && m.coords.y === placed.y
+        );
+        if (originalWordMapping && placed.correct) {
+          value = originalWordMapping.word;
+          color = 'black';
+        } else if (placed.correct === false) {
+          value = 'X';
+          color = 'white';
+        }
+        map.set(key, {
+          position: [placed.x, placed.y],
+          value,
+          color,
+          visible: true,
+          isNew: idx === placedStones.length - 1,
+          feedback,
+        });
+      });
+    }
+    return Array.from(map.values());
+  }, [currentContent, gameState, placedStones]);
 
   useEffect(() => {
     async function init() {
@@ -208,17 +261,6 @@ export default function Page() {
     return gameState === 'showing';
   }, [gameState]);
 
-  const stoneMapForBoard = useMemo((): BoardStoneData[] => {
-    if (!currentContent?.wordMappings) return [];
-    return currentContent.wordMappings.map(mapping => ({
-      position: [mapping.coords.x, mapping.coords.y],
-      value: mapping.word,
-      color: 'black', // Default stone color
-      visible: gameState === 'showing', // Only visible during 'showing' phase
-      // Other fields like isNew, feedback, isHiding, memoryPhase, order can be added if needed by ZengoBoard
-    }));
-  }, [currentContent, gameState]);
-
   // Game End Logic
   useEffect(() => {
     if (gameState === 'finished_success' || gameState === 'finished_fail') { 
@@ -235,16 +277,11 @@ export default function Page() {
     return <div className="flex items-center justify-center min-h-screen">Loading board configuration...</div>;
   }
 
+  // 젠고 기본과 동일한 레이아웃: 바둑판 좌측 상단에 상태 카드, 우측에 보드
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <ZengoBoard
-        boardSize={currentContent.boardSize as BoardSize}
-        stoneMap={stoneMapForBoard}
-        interactionMode={interactionModeForBoard}
-        onIntersectionClick={handleBoardClick}
-        isShowing={isShowingForBoard}
-      />
-      <div className="mt-4 w-full max-w-xs">
+    <div className="zengo-container flex flex-row items-start justify-center min-h-screen bg-gray-100 p-4 relative">
+      {/* 상태/타이머 UI: 바둑판 좌측 상단에 고정 */}
+      <div className="absolute left-0 top-0 mt-8 ml-8 z-10">
         <ZengoStatusDisplay
           usedStonesCount={usedStonesCount}
           totalAllowedStones={currentContent.totalAllowedStones}
@@ -252,17 +289,27 @@ export default function Page() {
           gameState={gameState}
         />
       </div>
-      {(gameState === 'finished_success' || gameState === 'finished_fail') && (
-        <div className="mt-4 p-4 bg-white rounded shadow-md text-center">
-          <h3 className="text-xl font-semibold mb-2">Game Over!</h3>
-          <p className="mb-1">Status: {gameState === 'finished_success' ? '성공' : '실패'}</p>
-          {/* TODO: Display score from state.zengoProverb.lastResult?.score or similar */}
-          {/* <p>Score: {useSelector((state: RootState) => state.zengoProverb.lastResult?.score)}</p> */}
-          <div className="mt-3 space-x-2">
-            <button onClick={handleRetrySameContent} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">Retry Game</button>
-            <button onClick={handleNextGame} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">Next Game</button>
-            <button onClick={handleBackToCollection} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors">Back to Collection</button>
-          </div>
+      {/* 바둑판 */}
+      <div className="flex flex-col items-center justify-center w-full">
+        <ZengoBoard
+          boardSize={currentContent.boardSize as BoardSize}
+          stoneMap={stoneMapForBoard}
+          interactionMode={interactionModeForBoard}
+          onIntersectionClick={handleBoardClick}
+          isShowing={isShowingForBoard}
+        />
+      </div>
+      {/* 게임 종료 시 젠고 기본과 동일한 결과 페이지 표시 */}
+      {(gameState === 'finished_success' || gameState === 'finished_fail' || gameState === 'submitting') && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-20">
+          <ZengoResultPage
+            result={lastResult}
+            resultType={resultType}
+            error={null}
+            onNextGame={handleNextGame}
+            onRetrySameContent={handleRetrySameContent}
+            onBackToIntro={handleBackToCollection}
+          />
         </div>
       )}
     </div>
