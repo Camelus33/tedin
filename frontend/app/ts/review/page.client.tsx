@@ -6,6 +6,7 @@ import Button from '@/components/common/Button';
 import Spinner from '@/components/ui/Spinner';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { ClockIcon, ExclamationTriangleIcon, ArrowUturnLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import api from '@/lib/api';
 
 // Cyber Theme Definition (Consistent with other TS pages)
 const cyberTheme = {
@@ -84,24 +85,14 @@ export default function TSReviewPage() {
       }
 
       try {
-        const response = await fetch(`/api/sessions/${sessionId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('세션 정보를 불러오는 데 실패했습니다.');
-        }
-
-        const data = await response.json();
+        const res = await api.get(`/sessions/${sessionId}`);
+        const data = res.data;
         console.log('세션 데이터 로드:', data);
         
         if (!data) {
           throw new Error('유효한 세션 데이터가 없습니다.');
         }
         
-        // 백엔드에서 반환하는 구조에 맞게 사용
         setSessionData(data);
         setReviewData(prev => ({
           ...prev,
@@ -178,28 +169,14 @@ export default function TSReviewPage() {
         durationSec: validDurationSec,
         ppm,
       });
-
-      const response = await fetch(`/api/sessions/${sessionId}/complete`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          actualEndPage: reviewData.actualEndPage,
-          memo: reviewData.memo,
-          summary10words: reviewData.summary.split(/\s+/).slice(0, 10).join(' '),
-          selfRating: reviewData.selfRating,
-          durationSec: validDurationSec,
-          ppm,
-        }),
+      await api.put(`/sessions/${sessionId}/complete`, {
+        actualEndPage: reviewData.actualEndPage,
+        memo: reviewData.memo,
+        summary10words: reviewData.summary.split(/\s+/).slice(0, 10).join(' '),
+        selfRating: reviewData.selfRating,
+        durationSec: validDurationSec,
+        ppm,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('서버 응답 오류:', errorData);
-        throw new Error(errorData.message || '리뷰 제출에 실패했습니다.');
-      }
 
       // Navigate to results page
       router.push(`/ts/result?sessionId=${sessionId}`);

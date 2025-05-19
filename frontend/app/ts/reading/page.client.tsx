@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PauseIcon, PlayIcon, StopIcon, ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import Spinner from '@/components/ui/Spinner';
 import { cyberTheme } from '@/src/styles/theme';
+import api from '@/lib/api';
 
 type SessionData = {
   _id: string;
@@ -56,17 +57,9 @@ export default function TSReadingPage() {
       }
 
       try {
-        const response = await fetch(`/api/sessions/${sessionId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const res = await api.get(`/sessions/${sessionId}`);
+        const data = res.data;
 
-        if (!response.ok) {
-          throw new Error('세션 정보를 불러오는 데 실패했습니다.');
-        }
-
-        const data = await response.json();
         console.log('세션 데이터 로드:', data);
         
         // durationSec이 없거나 0인 경우 기본값(10분) 사용
