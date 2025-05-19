@@ -8,16 +8,13 @@ import { RootState } from '@/store/store';
 import ZengoBoard from '@/components/zengo/ZengoBoard';
 import { myverseApi } from '@/lib/api';
 import type { ZengoProverbContent, GameState, BoardStoneData, InteractionMode as BoardInteractionMode, BoardSize } from '@/src/types/zengo';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
 // Add type alias for word mappings
 type WordMapping = ZengoProverbContent['wordMappings'][0];
 
-interface AdapterProps {
-  params: { gameId: string };
-}
-
-export default function Page({ params: { gameId } }: AdapterProps) {
+export default function Page() {
+  const { gameId } = useParams() as { gameId: string };
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [gameData, setGameData] = useState<{ _id: string; collectionId: string; visibility?: 'private' | 'public' | 'group' } | null>(null);
