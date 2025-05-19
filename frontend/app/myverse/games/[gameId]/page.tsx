@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@/store/store';
-import { setSettings, setContent, startGame, placeStone } from '@/store/slices/zengoSlice';
+import { setSettings, setContent, startGame, placeStone, hideWords, evaluateResultThunk, submitResultThunk } from '@/store/slices/zengoSlice';
 import { RootState } from '@/store/store';
 import ZengoBoard from '@/components/zengo/ZengoBoard';
 import { myverseApi } from '@/lib/api';
@@ -19,12 +19,15 @@ export default function Page() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [gameData, setGameData] = useState<{ _id: string; collectionId: string; visibility?: 'private' | 'public' | 'group' } | null>(null);
+  // 로컬 상태: 결과 제출 중복 방지를 위한 플래그
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const { currentContent, gameState, usedStonesCount, startTime } = useSelector((state: RootState) => ({
+  const { currentContent, gameState, usedStonesCount, startTime, revealedWords } = useSelector((state: RootState) => ({
     currentContent: state.zengoProverb.currentContent,
     gameState: state.zengoProverb.gameState,
     usedStonesCount: state.zengoProverb.usedStonesCount,
     startTime: state.zengoProverb.startTime,
+    revealedWords: state.zengoProverb.revealedWords,
   }));
 
   useEffect(() => {
@@ -53,6 +56,35 @@ export default function Page() {
     }
     init();
   }, [dispatch, gameId]);
+
+  // 자동 단어 숨김 타이머:
+  // showing 상태가 되면 initialDisplayTimeMs 만큼 대기 후 hideWords 액션을 디스패치하여 단어를 숨기고 playing 상태로 전환
+  useEffect(() => {
+    if (gameState === 'showing' && currentContent) {
+      const timer = setTimeout(() => {
+        dispatch(hideWords());
+      }, currentContent.initialDisplayTimeMs);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState, currentContent, dispatch]);
+
+  // 게임 종료 감지 및 결과 처리:
+  // playing 상태에서 단어 찾기 또는 돌 소진 조건을 판정한 뒤,
+  // evaluateResultThunk로 최종 결과를 평가하고 submitResultThunk로 서버에 제출
+  useEffect(() => {
+    if (gameState === 'playing' && currentContent && !hasSubmitted) {
+      const success = currentContent.wordMappings.length === revealedWords.length;
+      const failed = usedStonesCount >= currentContent.totalAllowedStones && !success;
+      if (success || failed) {
+        // 결과 평가(Thunk) 호출
+        dispatch(evaluateResultThunk()).then(() => {
+          // 평가 완료 후 서버에 결과 제출
+          dispatch(submitResultThunk());
+          setHasSubmitted(true);
+        });
+      }
+    }
+  }, [gameState, currentContent, revealedWords, usedStonesCount, dispatch, hasSubmitted]);
 
   // 현재 게임 기준으로 같은 콜렉션 내 다음 게임 실행
   const handleNextGame = async () => {
