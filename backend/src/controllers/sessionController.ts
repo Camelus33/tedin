@@ -108,7 +108,7 @@ export const createSession = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    const { bookId, mode, startPage, endPage, durationSec } = req.body;
+    const { bookId, mode, startPage, endPage, durationSec, warmup } = req.body;
 
     // 책이 존재하는지 확인
     const book = await Book.findOne({ _id: bookId, userId });
@@ -116,12 +116,15 @@ export const createSession = async (req: Request, res: Response) => {
       return res.status(404).json({ message: '해당 책을 찾을 수 없습니다.' });
     }
 
+    // durationSec 보정 로직
     let durationSecRaw = durationSec || 0;
     let durationSecFinal = durationSecRaw;
     if (durationSecRaw > 0 && durationSecRaw <= 100) {
-      // 분 단위로 잘못 들어온 경우로 간주, 60을 곱해 초 단위로 변환
       durationSecFinal = durationSecRaw * 60;
     }
+
+    // warmup 플래그에 따라 초기 상태 결정
+    const initialStatus = warmup ? 'pending' : 'active';
 
     const newSession = new Session({
       userId,
@@ -130,7 +133,7 @@ export const createSession = async (req: Request, res: Response) => {
       startPage,
       endPage,
       durationSec: durationSecFinal,
-      status: 'active',
+      status: initialStatus,
     });
 
     const savedSession = await newSession.save();

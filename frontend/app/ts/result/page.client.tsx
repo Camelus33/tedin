@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/common/Button';
+import api from '@/lib/api';
 
 type SessionResult = {
   _id: string;
@@ -52,34 +53,19 @@ export default function TSResultPage() {
 
       try {
         // Fetch session data with results
-        const sessionResponse = await fetch(`/api/sessions/${sessionId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-
-        if (!sessionResponse.ok) {
-          throw new Error('세션 결과를 불러오는 데 실패했습니다.');
-        }
-
-        const sessionData = await sessionResponse.json();
+        const sessionRes = await api.get(`/sessions/${sessionId}`);
+        const sessionData = sessionRes.data;
         console.log('세션 결과 데이터:', sessionData); // 디버깅용 로그 추가
         
         // 백엔드에서 직접 세션 데이터를 반환하는 것으로 수정
         setSessionResult(sessionData);
 
         // Fetch badges earned from this session
-        const badgesResponse = await fetch(`/api/badges?sessionId=${sessionId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-
-        if (badgesResponse.ok) {
-          const badgesData = await badgesResponse.json();
-          setBadges(badgesData.badges || []);
-        } else {
-          console.log('뱃지 정보를 가져오는데 실패했습니다:', badgesResponse.status);
+        try {
+          const badgesRes = await api.get(`/badges?sessionId=${sessionId}`);
+          setBadges(badgesRes.data.badges || []);
+        } catch {
+          console.log('뱃지 정보를 가져오는데 실패했습니다.');
           setBadges([]);
         }
       } catch (err: any) {
