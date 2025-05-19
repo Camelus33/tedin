@@ -4,9 +4,9 @@
 // - Myverse 콘텐츠가 오리지널/기본에 노출되거나, 오리지널/기본 콘텐츠가 Myverse에 노출되는 일은 없어야 합니다.
 // - 이 원칙을 위반하는 데이터/로직/호출/UI 혼용은 금지합니다.
 
-export const dynamic = 'force-dynamic';
-
 'use client';
+
+export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
