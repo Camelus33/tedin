@@ -14,9 +14,10 @@ import FlashcardForm from '@/components/flashcard/FlashcardForm';
 import { DocumentTextIcon, BookOpenIcon, PlayCircleIcon, NewspaperIcon } from '@heroicons/react/24/outline';
 import { ShareIcon } from '@heroicons/react/24/solid';
 import { AiFillYoutube } from 'react-icons/ai';
+import api from '@/lib/api'; // Added import for central api instance
 
-// API base URL - this should match what's used elsewhere in the app
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// API base URL - this should match what's used elsewhere in the app (REMOVING THIS)
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'; // Commented out
 
 // Cyber Theme Definition (Copied from books/page.tsx)
 const cyberTheme = {
@@ -180,15 +181,10 @@ export default function BookDetailPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('로그인 필요');
-      const res = await fetch(`${API_BASE_URL}/notes/${noteId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ relatedLinks: updatedLinks }),
-      });
-      if (!res.ok) throw new Error('서버 저장 실패');
+      const res = await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
+
+      // Original logic for checking res.ok might need adjustment for axios response
+      // if (!res.ok) throw new Error('서버 저장 실패');
       // 성공 피드백
       // alert('관련 링크가 저장되었습니다.');
     } catch (err) {
@@ -209,15 +205,10 @@ export default function BookDetailPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('로그인 필요');
-      const res = await fetch(`${API_BASE_URL}/notes/${noteId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ relatedLinks: updatedLinks }),
-      });
-      if (!res.ok) throw new Error('서버 저장 실패');
+      const res = await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
+
+      // Original logic for checking res.ok might need adjustment for axios response
+      // if (!res.ok) throw new Error('서버 저장 실패');
       // alert('관련 링크가 삭제되었습니다.');
     } catch (err) {
       alert('관련 링크 삭제 중 오류 발생: ' + (err as any).message);
@@ -248,55 +239,47 @@ export default function BookDetailPage() {
     if (!bookId || !book) return;
     
     const fetchData = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) { router.push('/auth/login'); return; }
+      // const token = localStorage.getItem('token'); // Handled by interceptor
+      // if (!token) { router.push('/auth/login'); return; }
 
       // Fetch TS Notes
       try {
-        const notesRes = await fetch(
-          `${API_BASE_URL}/notes/book/${bookId}?originOnly=true`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (!notesRes.ok) throw new Error('Failed to fetch TS notes');
-        const notesData = await notesRes.json();
-        setTsNotes(Array.isArray(notesData) ? notesData : notesData.notes || []);
-        // relatedLinksMap 동기화 로직은 그대로 유지
-        const linksMap: Record<string, RelatedLink[]> = {};
-        (Array.isArray(notesData) ? notesData : notesData.notes || []).forEach((n: any) => {
-          if (n.relatedLinks && Array.isArray(n.relatedLinks)) {
-            linksMap[n._id] = n.relatedLinks;
-          }
-        });
-        setRelatedLinksMap(linksMap);
-
-      } catch (e) {
-        console.error('TS notes load error:', e);
-        setTsNotes([]);
-        setRelatedLinksMap({});
+        // const notesRes = await fetch(
+        //   `${API_BASE_URL}/notes/book/${bookId}?originOnly=true`,
+        //   { headers: { Authorization: `Bearer ${token}` } }
+        // );
+        // if (!notesRes.ok) throw new Error('TS 메모를 불러오는 데 실패했습니다.');
+        // const notesData = await notesRes.json();
+        const notesData = await api.get(`/notes/book/${bookId}?originOnly=true`); // Use api.get
+        setTsNotes(notesData.data || []); // axios wraps in .data
+      } catch (err) {
+        console.error('TS 메모 로딩 오류:', err);
+        setTsNotes([]); // Clear or set to empty on error
       }
 
-      // Fetch TS Sessions for the book
+      // Fetch TS Sessions
       setSessionsLoading(true);
       try {
-        // 백엔드 라우터 설정에 따라 URL 수정 필요 (예: /api/sessions/book/${bookId})
-        const sessionsRes = await fetch(
-          `${API_BASE_URL}/sessions/book/${bookId}`, 
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (!sessionsRes.ok) throw new Error('Failed to fetch TS sessions for book');
-        const sessionsData = await sessionsRes.json();
-        setTsSessions(Array.isArray(sessionsData) ? sessionsData : sessionsData.sessions || []);
-      } catch (e) {
-        console.error('TS sessions for book load error:', e);
+        // const sessionsRes = await fetch(
+        //   `${API_BASE_URL}/sessions/book/${bookId}`,
+        //   { headers: { Authorization: `Bearer ${token}` } }
+        // );
+        // if (!sessionsRes.ok) throw new Error('TS 세션 정보를 불러오는 데 실패했습니다.');
+        // const sessionsData = await sessionsRes.json();
+        const sessionsData = await api.get(`/sessions/book/${bookId}`); // Use api.get
+        setTsSessions(sessionsData.data || []); // axios wraps in .data
+      } catch (err) {
+        console.error('TS 세션 로딩 오류:', err);
         setTsSessions([]);
       } finally {
         setSessionsLoading(false);
       }
     };
-
-    fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookId, book, router]); // fetchBookDetail 제거 (book 객체 변경 시 실행으로 충분)
+    
+    if (bookId && book) {
+      fetchData();
+    }
+  }, [bookId, book, router]); // Added router to dependencies due to its use in token check (though token check is now commented out)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR', {
@@ -320,42 +303,43 @@ export default function BookDetailPage() {
   };
 
   const handleStartReading = () => {
-    router.push(`/ts?bookId=${bookId}`);
+    router.push(`/ts-setup?bookId=${bookId}`);
   };
 
-  // 책 삭제 처리 함수
   const handleDeleteBook = async () => {
-    if (!confirm('정말로 이 책을 삭제하시겠습니까? 연관된 메모도 함께 삭제됩니다.')) {
-      return;
-    }
+    if (!bookId) return;
+    if (window.confirm('이 책과 관련된 모든 TS 메모, 세션 기록이 삭제됩니다. 정말 삭제하시겠습니까?')) {
+      setIsDeleting(true);
+      try {
+        // const token = localStorage.getItem('token'); // Handled by interceptor
+        // if (!token) {
+        //   router.push('/auth/login');
+        //   setIsDeleting(false);
+        //   return;
+        // }
+        // await fetch(`${API_BASE_URL}/books/${bookId}`, { // API_BASE_URL and direct fetch removed
+        //   method: 'DELETE',
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // });
+        
+        // Assuming you have imported `books as booksApi` from `@/lib/api`
+        // If not, you might need to use `api.delete(`/books/${bookId}`)` directly.
+        // For consistency with other book operations, using booksApi is preferred if available.
+        // Let's check if `booksApi` is available in this file scope. If not, we will use `api.delete`.
+        // From previous reads, `useBooks` is used, which itself uses booksApi. 
+        // However, to be safe and explicit, we can import `books as booksApi` or just use `api`.
+        // Since `api` is already imported, we will use `api.delete` for simplicity here.
+        await api.delete(`/books/${bookId}`);
 
-    setIsDeleting(true);
-    
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/auth/login');
-        return;
+        alert('책이 성공적으로 삭제되었습니다.');
+        router.push('/books'); // Redirect to the main book list
+      } catch (err) {
+        console.error('책 삭제 오류:', err);
+        alert('책을 삭제하는 중 오류가 발생했습니다: ' + (err as any).message);
+        setIsDeleting(false);
       }
-
-      const response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('책 삭제 실패');
-      }
-
-      alert('책이 삭제되었습니다.');
-      router.push('/books');
-    } catch (err: any) {
-      alert(`오류: ${err.message}`);
-      console.error('책 삭제 오류:', err);
-    } finally {
-      setIsDeleting(false);
     }
   };
 

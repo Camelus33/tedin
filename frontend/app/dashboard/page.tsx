@@ -17,6 +17,8 @@ import NotificationBell from '@/components/common/NotificationBell';
 import { loginSuccess } from '@/store/slices/userSlice';
 import { apiClient } from '@/lib/apiClient';
 import { books as booksApi, user as userApi /*, zengo as zengoApi */ } from '@/lib/api';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts';
+import api from '@/lib/api';
 
 // Cyber Theme Definition (Added)
 const cyberTheme = {
@@ -179,21 +181,17 @@ export default function DashboardPage() {
       setStats(statsData);
       
       // 루틴 정보 조회
-      try {
-        const routineJson: RoutineData | null = await apiClient.get('/routines/current').catch(err => {
-          if (err.message && err.message.includes('404') || err.response?.status === 404) {
-            console.log('No active routine found.');
-            return null;
-          }
-          throw err;
-        });
-        setRoutineData(routineJson);
-        if (routineJson) {
-          console.log('Routine data fetched:', routineJson);
-        }
-      } catch (routineError: any) {
-        console.error('Error fetching routine data:', routineError);
-        setRoutineData(null);
+      const routinePromise = api.get('/routines/current');
+
+      // Promise.all로 병렬 처리
+      const [profileRes, routineRes] = await Promise.all([
+        userApi.getProfile(),
+        routinePromise,
+      ]);
+
+      setRoutineData(routineRes.data);
+      if (routineRes.data) {
+        console.log('Routine data fetched:', routineRes.data);
       }
 
       // Fetch zengo stats
@@ -404,6 +402,21 @@ export default function DashboardPage() {
     const minutes = totalMinutes % 60;
     if (hours === 0) return `${minutes}분`;
     return `${hours}시간 ${minutes}분`;
+  };
+
+  const fetchRoutines = async () => {
+    if (isLoading) return; // Prevent multiple fetches
+    setIsLoading(true);
+    try {
+      const res = await api.get('/routines'); // Authorization is handled by interceptor
+      const data = res.data; // For axios, data is in res.data
+      setRoutineData(data);
+    } catch (error) {
+      console.error('Error fetching routine data:', error);
+      setRoutineData(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -621,7 +634,7 @@ export default function DashboardPage() {
                     body: JSON.stringify({ goal: '뇌 최적화 루틴' })
                   });
                   if (!res.ok) throw new Error('루틴 생성에 실패했습니다');
-                  await fetchDashboardData();
+                  await fetchRoutines();
                 } catch (e) {
                   setError('루틴 생성에 실패했습니다');
                 } finally {

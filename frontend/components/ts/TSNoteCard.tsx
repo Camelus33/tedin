@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon } from '@heroicons/react/24/solid';
+import api from '@/lib/api'; // Import the central api instance
 
 export interface TSNote {
   _id: string;
@@ -60,8 +61,6 @@ type TSNoteCardProps = {
   readingPurpose?: string;
   sessionDetails?: TSSessionDetails; // 기존 sessionInfo 대체
 };
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 const tabIconMap = [
   { icon: LightBulbIcon, color: 'text-blue-500', ring: 'ring-blue-200' },
@@ -155,23 +154,12 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
     setIsSaving(true);
     setSaveSuccess(false);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-      const res = await fetch(`${API_BASE_URL}/notes/${note._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ [activeTab]: inputValue }),
-      });
-      if (res.ok) {
-        onUpdate({ [activeTab]: inputValue });
-        setFields(prev => ({ ...prev, [activeTab]: inputValue }));
-        setSaveSuccess(true);
-      } else {
-        // 에러 처리 필요시 추가
-      }
+      const res = await api.put(`/notes/${note._id}`, { [activeTab]: inputValue });
+      onUpdate({ [activeTab]: inputValue });
+      setFields(prev => ({ ...prev, [activeTab]: inputValue }));
+      setSaveSuccess(true);
+    } catch (err) {
+      console.error('Error saving note (handleSave):', err);
     } finally {
       setIsSaving(false);
       setTimeout(() => setSaveSuccess(false), 1200);
@@ -198,23 +186,10 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
   const handleBlur = async (key: keyof typeof fields) => {
     const value = (fields[key] || '').trim();
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-      const res = await fetch(`${API_BASE_URL}/notes/${note._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ [key]: value }),
-      });
-      if (res.ok) {
-        onUpdate({ [key]: value });
-      } else {
-        console.error('Failed to update field', key);
-      }
+      await api.put(`/notes/${note._id}`, { [key]: value });
+      onUpdate({ [key]: value });
     } catch (err) {
-      console.error('Error updating note:', err);
+      console.error('Error updating note (handleBlur):', err);
     }
   };
 

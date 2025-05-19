@@ -38,8 +38,8 @@ const cyberTheme = {
   menuItemHover: 'hover:bg-gray-600',
 };
 
-// API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// API base URL (This will be removed)
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // Book Type (Keep as is)
 interface Book {
@@ -115,35 +115,37 @@ export default function BooksPage() {
       }, 15000);
       
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/auth/login");
-          return;
-        }
+        // const token = localStorage.getItem("token"); // Handled by api.ts interceptor
+        // if (!token) {
+        //   router.push("/auth/login");
+        //   return;
+        // }
 
-        console.log('Fetching books from API...');
-        const response = await fetch(`${API_BASE_URL}/books`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          signal: controller.current.signal
-        });
-
-        console.log('Book list API response status:', response.status);
-
-        if (!response.ok) {
-          throw new Error(`기억 저장소 정보를 불러오는 데 실패했습니다. 상태: ${response.status}`);
-        }
-
-        let data;
-        try {
-          data = await response.json();
-          console.log('Book list data received:', data);
-        } catch (e) {
-          console.error('Error parsing API response:', e);
-          throw new Error('서버 응답을 처리하는 데 실패했습니다. 잘못된 데이터 형식');
-        }
+        console.log('Fetching books from API via booksApi.getAll()...');
+        // const response = await fetch(`${API_BASE_URL}/books`, { // API_BASE_URL and direct fetch removed
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        //   signal: controller.current.signal
+        // });
         
+        // console.log('Book list API response status:', response.status);
+
+        // if (!response.ok) {
+        //   throw new Error(`기억 저장소 정보를 불러오는 데 실패했습니다. 상태: ${response.status}`);
+        // }
+
+        // let data;
+        // try {
+        //   data = await response.json();
+        //   console.log('Book list data received:', data);
+        // } catch (e) {
+        //   console.error('Error parsing API response:', e);
+        //   throw new Error('서버 응답을 처리하는 데 실패했습니다. 잘못된 데이터 형식');
+        // }
+        
+        const data = await booksApi.getAll({ signal: controller.current?.signal }); // Use booksApi.getAll
+
         let booksData: Book[] = [];
         
         if (Array.isArray(data)) {
@@ -244,34 +246,23 @@ export default function BooksPage() {
     }
     
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/auth/login');
-        return;
-      }
+      // const token = localStorage.getItem('token'); // Handled by api.ts interceptor
+      // if (!token) {
+      //   router.push('/auth/login');
+      //   return;
+      // }
+      // await fetch(`${API_BASE_URL}/books/${bookId}`, { // API_BASE_URL and direct fetch removed
+      //   method: 'DELETE',
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
+      await booksApi.delete(bookId); // Use booksApi.delete
 
-      setIsLoading(true);
-      const response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('기억 저장소 항목 삭제 실패');
-      }
-
-      alert('기억 저장소 항목이 성공적으로 삭제되었습니다.');
-      setBooks(books.filter(book => book._id !== bookId));
-      const newBooks = books.filter(b => b._id !== bookId);
-      const filtered = newBooks.filter(
-        (book) =>
-          book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          book.author.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      applySort(filtered);
-      setShowMenu(null);
+      // Optimistic update or refetch
+      setBooks((prevBooks) => prevBooks.filter((book) => book._id !== bookId));
+      setFilteredBooks((prevBooks) => prevBooks.filter((book) => book._id !== bookId));
+      console.log(`Book with ID ${bookId} deleted.`);
     } catch (err: any) {
       alert(`오류 발생: ${err.message}`);
       console.error('기억 저장소 항목 삭제 오류:', err);

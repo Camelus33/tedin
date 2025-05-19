@@ -234,16 +234,16 @@ export const user = {
 
 // Books API
 export const books = {
-  getAll: async () => {
+  getAll: async (options?: { signal?: AbortSignal }) => {
     return withRetry(async () => {
-      const response = await api.get('/books');
+      const response = await api.get('/books', { signal: options?.signal });
       return response.data;
     });
   },
   
-  getById: async (id: string) => {
+  getById: async (id: string, options?: { signal?: AbortSignal }) => {
     return withRetry(async () => {
-      const response = await api.get(`/books/${id}`);
+      const response = await api.get(`/books/${id}`, { signal: options?.signal });
       return response.data;
     });
   },

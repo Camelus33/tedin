@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import Spinner from '@/components/ui/Spinner';
 import { Cog6ToothIcon, PlayIcon } from '@heroicons/react/24/outline';
+import api from '@/lib/api'; // Import the central api instance
 
 // 테마 색상 정의 (다른 페이지와 일관성 유지)
 const cyberTheme = {
@@ -95,23 +96,18 @@ export default function TSSetupPage() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10초 타임아웃
         
-        const response = await fetch('http://localhost:8000/api/books', {
+        const response = await api.get('/books', {
+          signal: controller.signal,
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Cache-Control': 'no-cache', // 캐시 방지
+            'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
-          },
-          signal: controller.signal
+          }
         });
 
         clearTimeout(timeoutId);
         console.log('API 응답 상태:', response.status);
         
-        if (!response.ok) {
-          throw new Error(`내 서재 목록을 가져오는 데 문제가 생겼어요 (${response.status})`);
-        }
-
-        const data = await response.json();
+        const data = response.data;
         console.log('받은 데이터 구조:', JSON.stringify(data).substring(0, 200));
         console.log('데이터 타입:', Array.isArray(data) ? '배열' : typeof data);
         if (typeof data === 'object') {
@@ -232,6 +228,7 @@ export default function TSSetupPage() {
       const token = localStorage.getItem('token');
       if (!token) {
         setError('로그인이 필요합니다');
+        setIsStarting(false);
         return;
       }
       
@@ -245,39 +242,41 @@ export default function TSSetupPage() {
       // Validate book selection
       if (!selectedBookId) {
         setError('읽을 책을 선택해주세요');
+        setIsStarting(false);
         return;
       }
       
-      // Create a new session
-      const response = await fetch('http://localhost:8000/api/sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          bookId: selectedBookId,
-          mode: 'TS',
-          startPage,
-          endPage,
-          durationSec: focusDuration * 60,
-          status: 'pending',
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`읽기 속도 측정 시작에 문제가 생겼어요 (${response.status})`);
+      if (!selectedBook) {
+        setError('선택된 책 정보를 찾을 수 없습니다');
+        setIsStarting(false);
+        return;
       }
+      
+      // API 요청
+      const sessionData = {
+        bookId: selectedBookId,
+        startPage,
+        endPage,
+        duration: focusDuration * 60, // 분을 초로 변환
+        warmupEnabled: enableWarmup,
+        // 기타 필요한 데이터 추가
+      };
 
-      const data = await response.json();
-      console.log('세션 생성 성공:', data);
+      console.log('Time Sprint 세션 시작 요청:', sessionData);
 
-      // Navigate to the appropriate next page
-      if (enableWarmup) {
-        router.push(`/ts/warmup?sessionId=${data._id}`);
+      const response = await api.post('/sessions', sessionData); // Use api.post
+
+      const newSession = response.data; // For axios, data is in response.data
+      console.log('세션 생성 성공:', newSession);
+      
+      // 세션 ID를 사용하여 TS 진행 페이지로 이동
+      if (newSession && newSession._id) {
+        router.push(`/ts/session/${newSession._id}`);
       } else {
-        router.push(`/ts/reading?sessionId=${data._id}`);
+        console.error("세션 ID를 받지 못했습니다:", newSession);
+        throw new Error("세션이 시작되었지만 ID를 받지 못했습니다.");
       }
+
     } catch (err: any) {
       console.error('세션 시작 오류:', err);
       setError(err.message || '읽기 속도 측정 시작에 문제가 생겼어요');

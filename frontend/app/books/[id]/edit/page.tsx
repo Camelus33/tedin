@@ -8,7 +8,7 @@ import Button from '@/components/common/Button';
 import { books as booksApi } from '@/lib/api';
 
 // API base URL - this should match what's used elsewhere in the app
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // 장르 옵션
 const genres = [
@@ -119,51 +119,51 @@ export default function EditBookPage() {
         }
 
         // Fallback to direct fetch if booksApi fails
-        const response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          signal,
-        });
+        // const response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
+        //   headers: {
+        //     'Authorization': `Bearer ${token}`,
+        //   },
+        //   signal,
+        // });
 
-        clearTimeout(timeoutId);
+        // clearTimeout(timeoutId);
 
-        if (!response.ok) {
-          throw new Error(`책 정보를 불러오는 데 실패했습니다. Status: ${response.status}`);
-        }
+        // if (!response.ok) {
+        //   throw new Error(`책 정보를 불러오는 데 실패했습니다. Status: ${response.status}`);
+        // }
 
-        let bookData;
-        try {
-          bookData = await response.json();
-        } catch (jsonErr) {
-          console.error('Book JSON 파싱 오류:', jsonErr);
-          throw new Error('서버 응답을 처리하는 데 실패했습니다.');
-        }
+        // let bookData;
+        // try {
+        //   bookData = await response.json();
+        // } catch (jsonErr) {
+        //   console.error('Book JSON 파싱 오류:', jsonErr);
+        //   throw new Error('서버 응답을 처리하는 데 실패했습니다.');
+        // }
         
-        // 백엔드에서 반환하는 데이터 구조에 맞게 처리
-        const book = bookData && bookData._id ? bookData : (bookData && bookData.book ? bookData.book : null);
+        // // 백엔드에서 반환하는 데이터 구조에 맞게 처리
+        // const book = bookData && bookData._id ? bookData : (bookData && bookData.book ? bookData.book : null);
         
-        if (!book) {
-          throw new Error('책 데이터 형식이 올바르지 않습니다.');
-        }
+        // if (!book) {
+        //   throw new Error('책 데이터 형식이 올바르지 않습니다.');
+        // }
         
-        // 폼 데이터 설정
-        if (isMounted) {
-          setFormData({
-            title: book.title || "",
-            author: book.author || "",
-            genre: book.category || book.genre || "",
-            totalPages: book.totalPages?.toString() || "",
-            readingPurpose: book.readingPurpose || book.readingGoal || "",
-            currentPage: book.currentPage?.toString() || "0",
-            readingSpeed: book.readingSpeed?.toString() || ""
-          });
+        // // 폼 데이터 설정
+        // if (isMounted) {
+        //   setFormData({
+        //     title: book.title || "",
+        //     author: book.author || "",
+        //     genre: book.category || book.genre || "",
+        //     totalPages: book.totalPages?.toString() || "",
+        //     readingPurpose: book.readingPurpose || book.readingGoal || "",
+        //     currentPage: book.currentPage?.toString() || "0",
+        //     readingSpeed: book.readingSpeed?.toString() || ""
+        //   });
           
-          // 커버 이미지 설정
-          if (book.coverImage) {
-            setCoverImage(book.coverImage);
-          }
-        }
+        //   // 커버 이미지 설정
+        //   if (book.coverImage) {
+        //     setCoverImage(book.coverImage);
+        //   }
+        // }
       } catch (err: any) {
         if (err.name === 'AbortError') {
           console.log('Fetch aborted');
@@ -304,28 +304,34 @@ export default function EditBookPage() {
         return;
       } catch (apiError) {
         console.error('Error updating book with booksApi:', apiError);
-        // Continue to fallback if booksApi fails
+        // Fallback to direct fetch if booksApi fails (REMOVING THIS BLOCK)
+        // setError(`Failed to update book: ${apiError instanceof Error ? apiError.message : 'Unknown API error'}`);
+        // The finally block will set isSubmitting to false.
+        // No need to re-throw or call another fetch here if booksApi is the source of truth.
+        // If booksApi.update fails, the error should be shown to the user.
+        // The outer catch block will handle setting the error message.
+        throw apiError; // Re-throw the error from booksApi to be caught by the outer try-catch
       }
       
-      // Fallback to direct fetch if booksApi fails
-      const response = await fetch(`${API_BASE_URL}/books/${bookId}/progress`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(progressData)
-      });
+      // Fallback to direct fetch if booksApi fails (REMOVING THIS ENTIRE BLOCK)
+      // const response = await fetch(`${API_BASE_URL}/books/${bookId}/progress`, {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${token}`
+      //   },
+      //   body: JSON.stringify(progressData)
+      // });
       
-      if (!response.ok) {
-        console.error('Fetch error status:', response.status);
-        console.error('Response text:', await response.text());
-        throw new Error(`Error updating book: ${response.status} ${response.statusText}`);
-      }
+      // if (!response.ok) {
+      //   console.error('Fetch error status:', response.status);
+      //   console.error('Response text:', await response.text());
+      //   throw new Error(`Error updating book: ${response.status} ${response.statusText}`);
+      // }
       
-      const data = await response.json();
-      console.log('Book updated successfully via fetch:', data);
-      router.push(`/books/${bookId}`);
+      // const data = await response.json();
+      // console.log('Book updated successfully via fetch:', data);
+      // router.push(`/books/${bookId}`);
     } catch (error) {
       console.error('Error updating book:', error);
       setError(`Failed to update book: ${error instanceof Error ? error.message : 'Unknown error'}`);
