@@ -14,12 +14,22 @@ import axios from 'axios';
 import { myverseApi } from '@/lib/api'; // Import myverseApi for the new endpoint
 
 // API URL 설정
+const apiUrl = process.env.NEXT_PUBLIC_API_URL; // 올바른 환경 변수 이름 사용
+if (!apiUrl) {
+  // 환경 변수가 설정되지 않은 경우, 빌드나 실행 시점에 명확한 에러를 발생시킴
+  throw new Error(
+    "CRITICAL: NEXT_PUBLIC_API_URL is not defined. " +
+    "Please set this environment variable in your Vercel project settings (or .env.local for local development) " +
+    "to the base URL of your backend API (e.g., https://habitus33-api.onrender.com)."
+  );
+}
+
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api',  // 명시적으로 백엔드 서버 주소 지정
+  baseURL: apiUrl, // 수정된 환경 변수 값 사용
   headers: {
     'Content-Type': 'application/json'
   },
-  withCredentials: true // CORS 인증 정보 전송 활성화
+  withCredentials: true
 });
 
 // Request interceptor to add auth token from localStorage
