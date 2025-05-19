@@ -624,16 +624,7 @@ export default function DashboardPage() {
                 setIsLoading(true);
                 setError('');
                 try {
-                  const token = localStorage.getItem('token');
-                  const res = await fetch('http://localhost:8000/api/routines', {
-                    method: 'POST',
-                    headers: {
-                      'Authorization': `Bearer ${token}`,
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ goal: '뇌 최적화 루틴' })
-                  });
-                  if (!res.ok) throw new Error('루틴 생성에 실패했습니다');
+                  await api.post('/routines', { goal: '뇌 최적화 루틴' });
                   await fetchRoutines();
                 } catch (e) {
                   setError('루틴 생성에 실패했습니다');

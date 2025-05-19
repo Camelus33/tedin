@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   compiler: {
-    removeConsole: true,
+    removeConsole: process.env.NODE_ENV === 'production',
   },
   images: {
     remotePatterns: [
@@ -16,20 +16,23 @@ const nextConfig = {
   },
   // API 프록시 설정 강화
   async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:8000/api/:path*', // 백엔드 API 서버 주소로 프록시
-        // 추가 설정으로 안정성 향상
-        has: [
-          {
-            type: 'header',
-            key: 'accept',
-            value: '(.*)',
-          },
-        ],
-      }
-    ]
+    if (process.env.NODE_ENV === 'development') {
+      return [
+        {
+          source: '/api/:path*',
+          destination: `${process.env.LOCAL_BACKEND_URL || 'http://localhost:8000'}/api/:path*`,
+          // destination: 'http://localhost:8000/api/:path*', // 기존 방식 유지 시
+          has: [
+            {
+              type: 'header',
+              key: 'accept',
+              value: '(.*)',
+            },
+          ],
+        },
+      ];
+    }
+    return []; // 프로덕션 환경에서는 rewrites 없음
   },
   // 백엔드 연결 문제 시 오류 페이지 표시 방지
   onDemandEntries: {
