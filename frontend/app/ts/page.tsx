@@ -228,39 +228,28 @@ export default function TSSetupPage() {
   const handleStartSession = async () => {
     try {
       setIsStarting(true);
-      setError('');
-      
-      // 서버 사이드 렌더링 확인
-      if (typeof window === 'undefined') return;
-      
-      const token = localStorage.getItem('token');
+      setError("");
+      if (typeof window === "undefined") return;
+      const token = localStorage.getItem("token");
       if (!token) {
-        setError('로그인이 필요합니다');
+        setError("로그인이 필요합니다");
         setIsStarting(false);
         return;
       }
-      
-      // If user selected "new book" option, redirect to book creation page
-      if (bookSource === 'new') {
-        console.log('새 책 정보 입력 페이지로 이동');
-        router.push('/books/new');
+      if (bookSource === "new") {
+        router.push("/books/new");
         return;
       }
-      
-      // Validate book selection
       if (!selectedBookId) {
-        setError('읽을 책을 선택해주세요');
+        setError("읽을 책을 선택해주세요");
         setIsStarting(false);
         return;
       }
-      
       if (!selectedBook) {
         setError('선택된 책 정보를 찾을 수 없습니다');
         setIsStarting(false);
         return;
       }
-
-      // 논리적 유효성 검사 추가
       if (startPage >= endPage) {
         setError('시작 페이지는 종료 페이지보다 작아야 합니다.');
         setIsStarting(false);
@@ -276,36 +265,41 @@ export default function TSSetupPage() {
         setIsStarting(false);
         return;
       }
-
-      // API 요청 (mode, durationSec 필드 추가)
-      const sessionData = {
+      const payload = {
         bookId: selectedBookId,
-        mode: 'TS',
         startPage,
         endPage,
-        durationSec: focusDuration * 60,
-        warmupEnabled: enableWarmup,
+        focusDuration,
+        warmup: enableWarmup,
+        mode: "TS",
       };
-
-      console.log('Time Sprint 세션 시작 요청:', sessionData);
-
-      const response = await api.post('/sessions', sessionData); // Use api.post
-
-      const newSession = response.data; // For axios, data is in response.data
-      console.log('세션 생성 성공:', newSession);
-      
-      // 세션 ID를 사용하여 TS 진행 페이지로 이동
-      if (newSession && newSession._id) {
-        router.push(`/ts/session/${newSession._id}`);
-      } else {
-        console.error("세션 ID를 받지 못했습니다:", newSession);
-        throw new Error("세션이 시작되었지만 ID를 받지 못했습니다.");
+      const res = await api.post("/api/sessions", payload, { headers: { Authorization: `Bearer ${token}` } });
+      const newSession = res.data;
+      if (!newSession || !newSession._id) {
+        setError("세션 생성 실패");
+        setIsStarting(false);
+        return;
       }
-
+      // 세션이 실제로 DB에 반영됐는지 GET으로 확인
+      try {
+        const getRes = await api.get(`/api/sessions/${newSession._id}`, { headers: { Authorization: `Bearer ${token}` } });
+        if (getRes.data && getRes.data._id) {
+          // durationSec sanity check
+          if (getRes.data.durationSec < 60) {
+            setError("세션 집중 시간이 비정상적으로 짧게 저장되었습니다. 다시 시도해 주세요.");
+            setIsStarting(false);
+            return;
+          }
+          router.push(`/ts/session/${newSession._id}`);
+        } else {
+          setError("세션 생성 후 조회 실패");
+        }
+      } catch (err) {
+        setError("세션 생성 후 조회 실패(404)");
+      }
+      setIsStarting(false);
     } catch (err: any) {
-      console.error('세션 시작 오류:', err);
-      setError(err.message || '읽기 속도 측정 시작에 문제가 생겼어요');
-    } finally {
+      setError(err?.response?.data?.error || "세션 시작 중 오류 발생");
       setIsStarting(false);
     }
   };
@@ -342,121 +336,121 @@ export default function TSSetupPage() {
           ) : (
             // 기존 드롭다운 및 설정 UI 렌더링
             <>
-              <div>
-                <label htmlFor="book-select" className={`block text-sm font-medium mb-1 ${cyberTheme.textLight}`}>1. 어떤 기억을 활성화할까요? (책 선택)</label>
-                <div className="flex items-center gap-2 mt-1">
-                  <select
-                    id="book-select"
-                    value={selectedBookId}
-                    onChange={handleBookChange}
-                    disabled={isLoading || bookSource === 'new'}
-                    className={`flex-grow ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    {books.map((book) => (
+          <div>
+            <label htmlFor="book-select" className={`block text-sm font-medium mb-1 ${cyberTheme.textLight}`}>1. 어떤 기억을 활성화할까요? (책 선택)</label>
+            <div className="flex items-center gap-2 mt-1">
+              <select
+                id="book-select"
+                value={selectedBookId}
+                onChange={handleBookChange}
+                disabled={isLoading || bookSource === 'new'}
+                className={`flex-grow ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {books.map((book) => (
                       book._id && (
-                        <option key={book._id} value={book._id}>
-                          {book.title} ({book.author})
-                        </option>
+                  <option key={book._id} value={book._id}>
+                    {book.title} ({book.author})
+                  </option>
                       )
-                    ))}
-                  </select>
-                  <Button 
-                     variant="outline"
-                     size="sm" 
-                     onClick={() => router.push('/books/new')}
-                     className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border whitespace-nowrap`}
-                  >
-                    새 책 추가
-                  </Button>
-                </div>
-              </div>
+                ))}
+              </select>
+              <Button 
+                 variant="outline"
+                 size="sm" 
+                 onClick={() => router.push('/books/new')}
+                 className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border whitespace-nowrap`}
+              >
+                새 책 추가
+              </Button>
+            </div>
+          </div>
 
-              <div className="space-y-2">
-                <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>2. 어디부터 어디까지 읽을까요? (페이지 범위)</h2>
-                <div className="flex flex-col sm:flex-row items-center gap-2">
-                  <div className="flex-1 w-full">
-                    <label htmlFor="start-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>시작 페이지</label>
-                    <input
-                      type="number"
-                      id="start-page"
-                      value={startPage}
-                      onChange={(e) => setStartPage(Number(e.target.value))}
-                      min="1"
-                      max={selectedBook?.totalPages || 1}
-                      className={`w-full ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
-                      aria-describedby="page-range-hint"
-                    />
-                  </div>
-                  <span className={`text-lg font-medium ${cyberTheme.textMuted} sm:mt-4`}>~</span>
-                  <div className="flex-1 w-full">
-                    <label htmlFor="end-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>종료 페이지</label>
-                    <input
-                      type="number"
-                      id="end-page"
-                      value={endPage}
-                      onChange={(e) => setEndPage(Number(e.target.value))}
-                      min={startPage}
-                      max={selectedBook?.totalPages || 10}
-                      className={`w-full ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
-                      aria-describedby="page-range-hint"
-                    />
-                  </div>
-                </div>
-                <p id="page-range-hint" className={`text-xs ${cyberTheme.textMuted}`}> 
-                  현재 선택: {selectedBook?.title || '책 없음'} (총 {selectedBook?.totalPages || '-'} 페이지, 현재 {selectedBook?.currentPage || '-'} 페이지)
-                </p>
+          <div className="space-y-2">
+            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>2. 어디부터 어디까지 읽을까요? (페이지 범위)</h2>
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              <div className="flex-1 w-full">
+                <label htmlFor="start-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>시작 페이지</label>
+                <input
+                  type="number"
+                  id="start-page"
+                  value={startPage}
+                  onChange={(e) => setStartPage(Number(e.target.value))}
+                  min="1"
+                  max={selectedBook?.totalPages || 1}
+                  className={`w-full ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
+                  aria-describedby="page-range-hint"
+                />
               </div>
+              <span className={`text-lg font-medium ${cyberTheme.textMuted} sm:mt-4`}>~</span>
+              <div className="flex-1 w-full">
+                <label htmlFor="end-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>종료 페이지</label>
+                <input
+                  type="number"
+                  id="end-page"
+                  value={endPage}
+                  onChange={(e) => setEndPage(Number(e.target.value))}
+                  min={startPage}
+                  max={selectedBook?.totalPages || 10}
+                  className={`w-full ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
+                  aria-describedby="page-range-hint"
+                />
+              </div>
+            </div>
+            <p id="page-range-hint" className={`text-xs ${cyberTheme.textMuted}`}> 
+              현재 선택: {selectedBook?.title || '책 없음'} (총 {selectedBook?.totalPages || '-'} 페이지, 현재 {selectedBook?.currentPage || '-'} 페이지)
+            </p>
+          </div>
 
-              <div className="space-y-2">
-                <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>3. 추가 설정</h2>
-                <div className="flex items-center justify-between py-1">
-                  <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>속독 팁 활성화 (뇌 준비 운동)</label>
-                  <button
-                    id="warmup-toggle"
-                    type="button"
-                    role="switch"
-                    aria-checked={enableWarmup}
-                    onClick={() => setEnableWarmup(!enableWarmup)}
-                    className={`${enableWarmup ? cyberTheme.buttonPrimaryBg : 'bg-gray-600'} relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800`}
-                  >
-                    <span className="sr-only">속독 팁 활성화</span>
-                    <span aria-hidden="true" className={`${enableWarmup ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}></span>
-                  </button>
-                </div>
-                <div className="py-1">
-                  <label htmlFor="focus-duration" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>읽는 시간 설정 (분)</label>
-                  <div className="flex items-center gap-2 mt-1">
-                     <input
-                        type="range"
-                        id="focus-duration"
-                        min="5"
-                        max="16"
-                        step="1"
-                        value={focusDuration}
-                        onChange={(e) => setFocusDuration(Number(e.target.value))}
-                        className="w-full h-1.5 bg-gray-600 rounded-lg appearance-none cursor-pointer range-sm accent-cyan-500 flex-grow"
-                     />
-                     <span className={`text-sm font-medium ${cyberTheme.textLight} w-8 text-right`}>{focusDuration}분</span>
-                  </div>
-                </div>
+          <div className="space-y-2">
+            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>3. 추가 설정</h2>
+            <div className="flex items-center justify-between py-1">
+              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>속독 팁 활성화 (뇌 준비 운동)</label>
+              <button
+                id="warmup-toggle"
+                type="button"
+                role="switch"
+                aria-checked={enableWarmup}
+                onClick={() => setEnableWarmup(!enableWarmup)}
+                className={`${enableWarmup ? cyberTheme.buttonPrimaryBg : 'bg-gray-600'} relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800`}
+              >
+                <span className="sr-only">속독 팁 활성화</span>
+                <span aria-hidden="true" className={`${enableWarmup ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}></span>
+              </button>
+            </div>
+            <div className="py-1">
+              <label htmlFor="focus-duration" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>읽는 시간 설정 (분)</label>
+              <div className="flex items-center gap-2 mt-1">
+                 <input
+                    type="range"
+                    id="focus-duration"
+                    min="5"
+                    max="16"
+                    step="1"
+                    value={focusDuration}
+                    onChange={(e) => setFocusDuration(Number(e.target.value))}
+                    className="w-full h-1.5 bg-gray-600 rounded-lg appearance-none cursor-pointer range-sm accent-cyan-500 flex-grow"
+                 />
+                 <span className={`text-sm font-medium ${cyberTheme.textLight} w-8 text-right`}>{focusDuration}분</span>
               </div>
+            </div>
+          </div>
 
-              {error && <p className={`text-sm ${cyberTheme.errorText} text-center`}>{error}</p>}
-              
-              <div className="mt-4">
-                <Button
-                  onClick={handleStartSession}
-                  disabled={isStarting || isLoading || !selectedBookId}
-                  className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${cyberTheme.buttonDisabledBg}`}
-                >
-                  {isStarting ? (
-                    <Spinner size="sm" color="white" /> 
-                  ) : (
-                    <PlayIcon className="h-5 w-5" />
-                  )}
-                  측정 시작 ({endPage - startPage + 1} 페이지)
-                </Button>
-              </div>
+          {error && <p className={`text-sm ${cyberTheme.errorText} text-center`}>{error}</p>}
+          
+          <div className="mt-4">
+            <Button
+              onClick={handleStartSession}
+              disabled={isStarting || isLoading || !selectedBookId}
+              className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${cyberTheme.buttonDisabledBg}`}
+            >
+              {isStarting ? (
+                <Spinner size="sm" color="white" /> 
+              ) : (
+                <PlayIcon className="h-5 w-5" />
+              )}
+              측정 시작 ({endPage - startPage + 1} 페이지)
+            </Button>
+          </div>
             </>
           )}
         </div>

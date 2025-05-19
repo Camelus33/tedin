@@ -116,18 +116,29 @@ export const createSession = async (req: Request, res: Response) => {
       return res.status(404).json({ message: '해당 책을 찾을 수 없습니다.' });
     }
 
+    let durationSecRaw = durationSec || 0;
+    let durationSecFinal = durationSecRaw;
+    if (durationSecRaw > 0 && durationSecRaw <= 100) {
+      // 분 단위로 잘못 들어온 경우로 간주, 60을 곱해 초 단위로 변환
+      durationSecFinal = durationSecRaw * 60;
+    }
+
     const newSession = new Session({
       userId,
       bookId,
       mode,
       startPage,
       endPage,
-      durationSec: durationSec || 0,
+      durationSec: durationSecFinal,
       status: 'active',
     });
 
     const savedSession = await newSession.save();
-    
+    // 실제 DB에 저장된 세션을 다시 조회
+    const confirmedSession = await Session.findById(savedSession._id);
+    if (!confirmedSession) {
+      return res.status(500).json({ message: '세션 생성 후 DB 조회 실패' });
+    }
     // 사용자의 책 현재 페이지 업데이트
     await Book.findByIdAndUpdate(
       bookId,
@@ -138,7 +149,7 @@ export const createSession = async (req: Request, res: Response) => {
       }
     );
 
-    res.status(201).json(savedSession);
+    res.status(201).json(confirmedSession);
   } catch (error) {
     console.error('세션 생성 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
