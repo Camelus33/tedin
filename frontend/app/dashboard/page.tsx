@@ -17,7 +17,7 @@ import NotificationBell from '@/components/common/NotificationBell';
 import { loginSuccess } from '@/store/slices/userSlice';
 import { apiClient } from '@/lib/apiClient';
 import { books as booksApi, user as userApi /*, zengo as zengoApi */ } from '@/lib/api';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts';
+// import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts'; // Commented out
 import api from '@/lib/api';
 
 // Cyber Theme Definition (Added)

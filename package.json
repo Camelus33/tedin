@@ -25,7 +25,6 @@
     "three": "^0.150.1"
   },
   "devDependencies": {
-    "@types/node": "^22.15.18",
-    "@types/recharts": "^2.0.0"
+    "@types/node": "^22.15.18"
   }
 }
