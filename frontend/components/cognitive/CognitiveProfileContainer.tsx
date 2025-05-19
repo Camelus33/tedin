@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { AxiosError } from 'axios';
 import CognitiveProfileChart from './CognitiveProfileChart';
+import { apiClient } from '@/lib/apiClient';
 
 // API response interface
 interface CognitiveProfileResponse {
@@ -55,42 +54,27 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
         setIsLoading(true);
         setError(null);
 
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('인증이 필요합니다');
-          return;
-        }
-
-        const response = await axios.get<CognitiveProfileResponse>(
-          `/api/zengo/cognitive-profile?period=${timePeriod}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            signal: controller.signal,
-          }
+        const responseData: CognitiveProfileResponse = await apiClient.get(
+          `/zengo/cognitive-profile?period=${timePeriod}`,
         );
 
         // Log the successful response data
-        console.log('Fetched Cognitive Profile Data:', response.data);
-        setProfileData(response.data);
-      } catch (err) {
+        console.log('Fetched Cognitive Profile Data:', responseData);
+        setProfileData(responseData);
+      } catch (err: any) {
         console.error('인지 능력 프로필 데이터 가져오기 실패:', err);
-        if (axios.isAxiosError(err)) {
-          if (err.code === 'ERR_CANCELED') {
-            return;
-          }
-          if (err.response) {
-            if (err.response.status === 401) {
-              setError('인증이 필요합니다');
-            } else if (err.response.status >= 500) {
-              setError('서버 오류가 발생했습니다');
-            } else {
-              setError('데이터를 불러오는 중 오류가 발생했습니다');
-            }
-          } else {
-            setError('네트워크 연결을 확인하세요');
-          }
+        if (err.name === 'AbortError') {
+          console.log('Cognitive profile fetch aborted');
+          return;
+        }
+        if (err.message && err.message.includes('인증')) {
+          setError('인증이 필요합니다');
+        } else if (err.message && err.message.includes('서버 오류')) {
+          setError('서버 오류가 발생했습니다');
+        } else if (err.message && err.message.includes('404')) {
+          setError('프로필 데이터를 찾을 수 없습니다.');
         } else {
-          setError('알 수 없는 오류가 발생했습니다');
+          setError('데이터를 불러오는 중 오류가 발생했습니다: ' + (err.message || '알 수 없는 오류'));
         }
       } finally {
         setIsLoading(false);

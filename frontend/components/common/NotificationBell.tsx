@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FiBell } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { apiClient } from '@/lib/apiClient';
 
 interface NotificationType {
   _id: string;
@@ -26,19 +27,14 @@ export default function NotificationBell() {
   const fetchNotifications = async () => {
     if (!token) return;
     try {
-      const res = await fetch('/api/notifications', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data: NotificationType[] = await res.json();
-        setNotifications(data);
-        setUnreadCount(data.filter(n => !n.isRead).length);
-      } else {
-        console.error('알림 로딩 실패:', res.status);
-      }
-    } catch (err) {
+      const data: NotificationType[] = await apiClient.get('/notifications');
+      setNotifications(data);
+      setUnreadCount(data.filter(n => !n.isRead).length);
+    } catch (err: any) {
       console.error('알림 로딩 에러', err);
-      toast.error('알림 로딩 실패');
+      if (!err.message || !err.message.includes('AbortError')) {
+        toast.error(err.message || '알림 로딩 실패');
+      }
     }
   };
 
@@ -53,10 +49,7 @@ export default function NotificationBell() {
   const handleNavigate = async (n: NotificationType) => {
     if (!token) return;
     try {
-      await fetch(`/api/notifications/${n._id}/read`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await apiClient.put(`/notifications/${n._id}/read`, {});
       router.push(`/myverse/games/${n.gameId}`);
       setOpen(false);
       fetchNotifications();

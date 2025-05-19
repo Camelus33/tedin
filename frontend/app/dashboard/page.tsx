@@ -15,7 +15,8 @@ import { BookOpenIcon } from '@heroicons/react/24/outline';
 import AppLogo from '@/components/common/AppLogo';
 import NotificationBell from '@/components/common/NotificationBell';
 import { loginSuccess } from '@/store/slices/userSlice';
-import { user as userApi } from '@/lib/api';
+import { apiClient } from '@/lib/apiClient';
+import { books as booksApi, user as userApi /*, zengo as zengoApi */ } from '@/lib/api';
 
 // Cyber Theme Definition (Added)
 const cyberTheme = {
@@ -159,68 +160,48 @@ export default function DashboardPage() {
         return;
       }
 
-      // 현재 읽고 있는 책 목록 조회 (백엔드에서 예상 시간 포함)
-      // *** 중요: 백엔드 API가 /api/books?status=reading 응답에 estimatedRemainingMinutes를 포함하도록 수정되었다고 가정 ***
-      const booksResponse = await fetch('http://localhost:8000/api/books?status=reading', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!booksResponse.ok) throw new Error('책 목록 로딩 실패');
-      const booksData = await booksResponse.json();
-      
+      // 현재 읽고 있는 책 목록 조회
+      const booksData = await apiClient.get('/books?status=reading');
+
       let readingBooks: Book[] = [];
-      if (Array.isArray(booksData.books)) { // 응답 구조가 { books: [] } 일 경우
+      if (booksData && Array.isArray(booksData.books)) {
           readingBooks = booksData.books.slice(0, 3);
-      } else if (Array.isArray(booksData)) { // 응답 구조가 [] 일 경우
+      } else if (booksData && Array.isArray(booksData)) {
           readingBooks = booksData.slice(0, 3);
       } else {
-          console.error('API 응답 books 배열 없음:', booksData);
+          console.error('API 응답 books 배열 없음 또는 booksData가 없음:', booksData);
       }
       setCurrentBooks(readingBooks);
 
-      // --- Fetch user stats from the new API endpoint --- (수정된 부분)
-      const statsResponse = await fetch('http://localhost:8000/api/users/me/stats', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!statsResponse.ok) throw new Error('사용자 통계 로딩 실패');
-      const statsData: UserDashboardStats = await statsResponse.json();
+      // 사용자 통계 조회
+      const statsData: UserDashboardStats = await apiClient.get('/users/me/stats');
       console.log('Fetched Stats Data:', statsData);
-      setStats(statsData); // API 응답으로 상태 업데이트
-      // --- 가상 데이터 제거됨 --- 
+      setStats(statsData);
       
-      // --- Fetch Routine Data using direct fetch --- 
+      // 루틴 정보 조회
       try {
-        const routineResponse = await fetch('http://localhost:8000/api/routines/current', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!routineResponse.ok) {
-          if (routineResponse.status === 404) {
-             console.log('No active routine found.');
-             setRoutineData(null); // Set to null explicitly if no routine
-          } else {
-             // Throw error to be caught by the outer catch block
-             throw new Error(`루틴 정보 로딩 실패: ${routineResponse.statusText}`);
+        const routineJson: RoutineData | null = await apiClient.get('/routines/current').catch(err => {
+          if (err.message && err.message.includes('404') || err.response?.status === 404) {
+            console.log('No active routine found.');
+            return null;
           }
-        } else {
-           const routineJson: RoutineData = await routineResponse.json();
-           setRoutineData(routineJson); 
-           console.log('Routine data fetched:', routineJson);
+          throw err;
+        });
+        setRoutineData(routineJson);
+        if (routineJson) {
+          console.log('Routine data fetched:', routineJson);
         }
       } catch (routineError: any) {
-        // Catch errors specific to the routine fetch (like network error)
         console.error('Error fetching routine data:', routineError);
-        setRoutineData(null); // Set to null on error
-        // We might not want to set the global error state here, 
-        // just log it or show a specific message in the routine section.
+        setRoutineData(null);
       }
-      // --- End Fetch Routine Data --- 
-      
+
       // Fetch zengo stats
       try {
-        const zengoData = await zengoApi.getUserStats();
+        const zengoData = await apiClient.get('/zengo/stats');
         setZengoStats(zengoData);
       } catch (zengoError) {
         console.error('Error fetching Zengo stats:', zengoError);
-        // 가상 데이터로 대체
         setZengoStats({
           totalActivities: 8,
           averageScores: {
@@ -231,7 +212,6 @@ export default function DashboardPage() {
             creativity: 75
           }
         });
-        // Notify user that fallback data is shown
         console.warn('Zengo 통계 데이터를 불러오지 못해 기본 통계가 표시됩니다.');
       }
 

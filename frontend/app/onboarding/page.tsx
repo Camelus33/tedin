@@ -6,6 +6,7 @@ import AppLogo from '@/components/common/AppLogo';
 import EvidenceSection from '@/components/common/EvidenceSection';
 import MemoryTest from '@/components/onboarding/MemoryTest';
 import AttentionTest from '@/components/onboarding/AttentionTest';
+import { apiClient } from '@/lib/apiClient';
 
 type Prefs = {
   memorySpanScore: number;
@@ -37,23 +38,14 @@ export default function OnboardingPage() {
     } else if (step === 4) {
       setLoading(true);
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/auth/login");
-          return;
-        }
-        const res = await fetch("/api/users/settings", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ goals, memorySpanScore, attentionScore, notificationTime, communityInterest }),
-        });
-        if (!res.ok) throw new Error("설정 저장 실패");
-        const data = await res.json();
+        const payload = { goals, memorySpanScore, attentionScore, notificationTime, communityInterest };
+        const data = await apiClient.put('/users/settings', payload);
+
         setPrefs(data.preferences);
         setStep(5);
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
-        router.push("/");
+        alert('설정 저장 중 오류가 발생했습니다: ' + (e.message || '알 수 없는 오류'));
       } finally {
         setLoading(false);
       }
