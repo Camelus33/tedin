@@ -211,36 +211,60 @@ export default function Page() {
 
   // 어순은 틀렸지만 모든 단어를 맞춘 경우 같은 문장 다른 위치로 재실행
   const handleRetrySameContent = async () => {
-    if (!gameData) return;
-    try {
-      // 최신 게임 데이터 가져오기
-      const game = await myverseApi.getOne(gameData._id);
-      // 좌표 섞기 (Fisher-Yates)
-      const originalMappings = game.wordMappings;
-      const coords = originalMappings.map((wm: WordMapping) => wm.coords);
-      for (let i = coords.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [coords[i], coords[j]] = [coords[j], coords[i]];
-      }
-      const shuffledMappings = originalMappings.map((wm: WordMapping, idx: number) => ({ ...wm, coords: coords[idx] }));
-      // 새로운 콘텐츠 객체 생성
-      const content: ZengoProverbContent = {
-        _id: game._id,
-        collectionId: game.collectionId,
-        level: `${game.boardSize}x${game.boardSize}-custom`,
-        language: 'ko',
-        boardSize: game.boardSize,
-        proverbText: game.inputText,
-        wordMappings: shuffledMappings,
-        totalWords: shuffledMappings.length,
-        totalAllowedStones: shuffledMappings.length + 2,
-        initialDisplayTimeMs: 3000,
-      };
-      dispatch(setContent(content));
-      dispatch(startGame());
-    } catch (error) {
-      console.error('Myverse 재실행 오류', error);
+    setHasSubmitted(false); // P2: Reset submission flag
+
+    if (!gameData || !currentContent) {
+      console.warn("Myverse 재실행 오류: 게임 데이터 또는 현재 콘텐츠 없음");
       alert('게임을 재시작하는 중 오류가 발생했습니다.');
+      return;
+    }
+
+    // P1: resultType에 따라 분기
+    if (resultType === 'FAIL') {
+      // 실패 시: 같은 위치로 다시 도전
+      // 필요한 게임 상태만 초기화하고 같은 콘텐츠로 게임 재시작
+      // zengoSlice에 placéStones, usedStonesCount, startTime, revealedWords 등을 리셋하는 액션 필요
+      // 예시: dispatch(resetGameAttempt()); 또는 startGame()이 이를 처리한다면 그대로 사용
+      console.log('Retrying MyVerse game (FAIL): Same content, same positions.');
+      // 중요: currentContent는 그대로 유지, wordMappings도 셔플하지 않음
+      // dispatch(setContent(currentContent)); // 콘텐츠는 이미 설정되어 있으므로 재설정 불필요할 수 있음
+      dispatch(startGame()); // startGame이 게임 상태(돌, 시간 등)를 초기화한다고 가정
+    } else if (resultType === 'SUCCESS') {
+      // 성공 시 (어순 틀림): 같은 문장, 다른 위치로 도전
+      console.log('Retrying MyVerse game (SUCCESS): Same content, new positions.');
+      try {
+        const game = await myverseApi.getOne(gameData._id); // Get original game data for shuffling
+        const originalMappings = game.wordMappings;
+        const coords = originalMappings.map((wm: WordMapping) => wm.coords);
+        // Fisher-Yates shuffle
+        for (let i = coords.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [coords[i], coords[j]] = [coords[j], coords[i]];
+        }
+        const shuffledMappings = originalMappings.map((wm: WordMapping, idx: number) => ({ ...wm, coords: coords[idx] }));
+        
+        const newShuffledContent: ZengoProverbContent = {
+          ...currentContent, // 기존 콘텐츠 정보 유지 (ID, collectionId, level, language, boardSize, proverbText 등)
+          _id: game._id, // Ensure _id is from the fetched game, though currentContent._id should be same
+          collectionId: game.collectionId, // Ensure collectionId is consistent
+          wordMappings: shuffledMappings,
+          // totalWords, totalAllowedStones, initialDisplayTimeMs 등은 currentContent에서 오거나,
+          // game.wordMappings.length 기준으로 재계산될 수 있음. 여기서는 currentContent 기반으로 유지.
+          totalWords: shuffledMappings.length, 
+          totalAllowedStones: shuffledMappings.length + currentContent.totalAllowedStones - currentContent.totalWords, // 비례적으로 조정 또는 고정값
+        };
+        dispatch(setContent(newShuffledContent));
+        dispatch(startGame());
+      } catch (error) {
+        console.error('Myverse 재실행 오류 (SUCCESS, shuffle):', error);
+        alert('게임을 재시작하는 중 오류가 발생했습니다.');
+      }
+    } else {
+      // 기타 경우 (예: EXCELLENT인데 재시도 버튼이 눌린 경우 - 현재 UI상으로는 발생 안 함)
+      // 기본적으로 새 게임을 시작하거나 컬렉션으로 돌아가는 등의 폴백 처리
+      console.warn(`Myverse 재실행: 예상치 못한 resultType (${resultType}). 컬렉션으로 돌아갑니다.`);
+      handleBackToCollection();
+      return;
     }
   };
 
