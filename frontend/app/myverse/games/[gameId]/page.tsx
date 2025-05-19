@@ -9,6 +9,7 @@ import ZengoBoard from '@/components/zengo/ZengoBoard';
 import { myverseApi } from '@/lib/api';
 import type { ZengoProverbContent, GameState, BoardStoneData, InteractionMode as BoardInteractionMode, BoardSize } from '@/src/types/zengo';
 import { useRouter, useParams } from 'next/navigation';
+import ZengoStatusDisplay from '@/components/zengo/ZengoStatusDisplay';
 
 // Add type alias for word mappings
 type WordMapping = ZengoProverbContent['wordMappings'][0];
@@ -19,9 +20,11 @@ export default function Page() {
   const router = useRouter();
   const [gameData, setGameData] = useState<{ _id: string; collectionId: string; visibility?: 'private' | 'public' | 'group' } | null>(null);
 
-  const { currentContent, gameState } = useSelector((state: RootState) => ({
+  const { currentContent, gameState, usedStonesCount, startTime } = useSelector((state: RootState) => ({
     currentContent: state.zengoProverb.currentContent,
     gameState: state.zengoProverb.gameState,
+    usedStonesCount: state.zengoProverb.usedStonesCount,
+    startTime: state.zengoProverb.startTime,
   }));
 
   useEffect(() => {
@@ -209,6 +212,14 @@ export default function Page() {
         onIntersectionClick={handleBoardClick}
         isShowing={isShowingForBoard}
       />
+      <div className="mt-4 w-full max-w-xs">
+        <ZengoStatusDisplay
+          usedStonesCount={usedStonesCount}
+          totalAllowedStones={currentContent.totalAllowedStones}
+          startTime={startTime}
+          gameState={gameState}
+        />
+      </div>
       {(gameState === 'finished_success' || gameState === 'finished_fail') && (
         <div className="mt-4 p-4 bg-white rounded shadow-md text-center">
           <h3 className="text-xl font-semibold mb-2">Game Over!</h3>
