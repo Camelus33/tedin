@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/common/Button';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, RadialLinearScale } from 'chart.js';
-import { Doughnut, Line, Radar } from 'react-chartjs-2';
+import { Doughnut, Line as RJSLine, Radar } from 'react-chartjs-2';
 import { zengo as zengoApi } from '@/lib/api';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
