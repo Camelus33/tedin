@@ -24,9 +24,10 @@ export default function SessionHubPage() {
     let isMounted = true;
     setLoading(true);
     setError("");
-    // 세션 정보 fetch
-    api.get(`/sessions/${sessionId}`)
-      .then((res) => {
+
+    const fetchSession = async (retry = 0) => {
+      try {
+        const res = await api.get(`/sessions/${sessionId}`);
         if (!isMounted) return;
         const session = res.data;
         if (!session || !session.status) {
@@ -42,11 +43,18 @@ export default function SessionHubPage() {
         }
         // 쿼리스트링으로 sessionId 전달
         router.replace(`/ts/${route}?sessionId=${sessionId}`);
-      })
-      .catch((err) => {
-        setError("세션 정보를 불러오는 데 실패했습니다.");
-        setLoading(false);
-      });
+      } catch (err: any) {
+        // 404면 재시도 (최대 3회, 지수 백오프)
+        if (err?.response?.status === 404 && retry < 3) {
+          const delay = 500 * Math.pow(2, retry); // 0.5s, 1s, 2s
+          setTimeout(() => fetchSession(retry + 1), delay);
+        } else {
+          setError("세션 정보를 불러오는 데 실패했습니다.");
+          setLoading(false);
+        }
+      }
+    };
+    fetchSession();
     return () => {
       isMounted = false;
     };
