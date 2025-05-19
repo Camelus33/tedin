@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AppLogo from '@/components/common/AppLogo';
+import { apiClient } from '@/lib/apiClient';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,22 +21,24 @@ export default function LoginPage() {
     try {
       console.log('로그인 시도:', { email, password });
       
-      // API URL을 직접 하드코딩하여 테스트
-      const response = await fetch('http://localhost:8000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      // API URL을 직접 하드코딩하여 테스트 -> apiClient 사용으로 변경
+      // const response = await fetch('http://localhost:8000/api/auth/login', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ email, password }),
+      // });
 
-      console.log('응답 상태:', response.status);
-      const data = await response.json();
-      console.log('응답 데이터:', data);
+      // console.log('응답 상태:', response.status);
+      // const data = await response.json();
+      // console.log('응답 데이터:', data);
 
-      if (!response.ok) {
-        throw new Error(data.error || '로그인에 실패했습니다');
-      }
+      // if (!response.ok) {
+      //   throw new Error(data.error || '로그인에 실패했습니다');
+      // }
+      
+      const data = await apiClient.post('/auth/login', { email, password });
 
       // Store token in localStorage
       localStorage.setItem('token', data.token);

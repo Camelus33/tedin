@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AppLogo from '@/components/common/AppLogo';
+import { apiClient } from '@/lib/apiClient';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -29,22 +30,16 @@ export default function RegisterPage() {
     }
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          email, 
-          password, 
-          nickname,
-          inviteCode: inviteCode.trim() || undefined 
-        }),
-      });
+      const postData = {
+        email,
+        password,
+        nickname,
+        inviteCode: inviteCode.trim() || undefined,
+      };
+      
+      const data = await apiClient.post('/auth/register', postData);
 
-      const data = await response.json();
-
-      if (!response.ok) {
+      if (!data || data.error) {
         throw new Error(data.error || data.message || '회원가입에 실패했습니다');
       }
 
