@@ -269,7 +269,7 @@ export default function TSSetupPage() {
         bookId: selectedBookId,
         startPage,
         endPage,
-        focusDuration,
+        durationSec: focusDuration * 60,
         warmup: enableWarmup,
         mode: "TS",
       };
