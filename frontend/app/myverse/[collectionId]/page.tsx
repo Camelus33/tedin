@@ -9,13 +9,9 @@ import Button from '@/components/common/Button';
 import { PlusIcon, PencilSquareIcon, TrashIcon, ArrowLeftIcon, AcademicCapIcon, BookOpenIcon, BriefcaseIcon, SunIcon, TagIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import CollectionForm from '@/components/CollectionForm';
 import HabitusIcon from '@/components/HabitusIcon';
-
-interface CollectionPageProps {
-  params: { collectionId: string };
-}
 
 interface MyverseGame {
   _id: string;
@@ -77,7 +73,8 @@ const sampleDataMap: Record<string, { title: string; description: string; inputT
   },
 };
 
-export default function Page({ params: { collectionId } }: CollectionPageProps) {
+export default function Page() {
+  const { collectionId } = useParams() as { collectionId: string };
   const [games, setGames] = useState<MyverseGame[] | undefined>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
