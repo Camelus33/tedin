@@ -146,7 +146,7 @@ export default function NewBookPage() {
       console.log("전송 토큰:", token.substring(0, 10) + "...");
       
       // API 요청 - 백엔드 포트(8000)로 전송
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/books`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
