@@ -10,13 +10,13 @@ import { splitStoneText } from '@/src/utils/splitStoneText';
 
 // Stone component - extracted to prevent re-renders
 const Stone = React.memo(({ stone, cellSize, boardSize }: { stone: BoardStoneData; cellSize?: number; boardSize: number }) => {
+  // Prepare stone value and lines unconditionally to follow hook rules
+  const valueStr = stone ? String(stone.value) : '';
+  const lines = useMemo(() => splitStoneText(valueStr), [valueStr]);
   if (!stone || !stone.color || stone.visible === undefined) {
     return null; // 안전하게 null 반환
   }
   
-  // Split stone.value into lines based on length requirements
-  const valueStr = String(stone.value);
-  const lines = useMemo(() => splitStoneText(valueStr), [valueStr]);
   // If text exceeds 10 chars, do not render this stone
   if (lines.length === 0) {
     return null;

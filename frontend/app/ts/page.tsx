@@ -1,7 +1,8 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -46,7 +47,6 @@ const LOCAL_STORAGE_BOOKS_KEY = 'habitus33_books_cache';
 
 export default function TSSetupPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<string>('');
   const [startPage, setStartPage] = useState<number>(1);
@@ -61,13 +61,15 @@ export default function TSSetupPage() {
   // Redux 스토어에서 user 정보 가져오기 (auth가 아닌 user 슬라이스 사용)
   const user = useSelector((state: RootState) => state.user?.isAuthenticated);
 
-  // Handle bookId query parameter
+  // Handle bookId query parameter from URL
   useEffect(() => {
-    const queryBookId = searchParams.get('bookId');
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const queryBookId = params.get('bookId');
     if (queryBookId) {
       setSelectedBookId(queryBookId);
     }
-  }, [searchParams, books]);
+  }, [books]);
 
   // Update start and end pages when a book is selected
   useEffect(() => {
