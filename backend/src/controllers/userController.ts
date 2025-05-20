@@ -121,40 +121,38 @@ export const getUserStats = async (req: Request, res: Response) => {
     if (!userId) {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
-    const userObjectId = new mongoose.Types.ObjectId(userId); // Convert to ObjectId
-
-    // Fetch data in parallel
-    const [latestSession, userStats, totalBooks] = await Promise.all([
-      // 1. Find the most recent completed TS session with a valid PPM
-      Session.findOne({
-        userId: userObjectId,
-        mode: 'TS',
-        status: 'completed',
-        ppm: { $ne: null, $gt: 0 } // Ensure PPM is valid
-      })
-      .sort({ createdAt: -1 }) // Sort by creation date descending
-      .select('ppm') // Select only the ppm field
-      .lean(), // Use lean for performance
-
-      // 2. Find user statistics
-      UserStats.findOne({ userId: userObjectId })
-      .select('totalTsDurationSec zengoPlayCount') // Select required fields
-      .lean(), // Use lean for performance
-
-      // 3. Count the total number of books for the user
-      Book.countDocuments({ userId: userObjectId })
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    // Calculate start of today for filtering
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    // Fetch relevant data in parallel
+    const [latestSession, userStats, totalBooks, todayTsCount, totalTsCount] = await Promise.all([
+      Session.findOne({ userId: userObjectId, mode: 'TS', status: 'completed', ppm: { $ne: null, $gt: 0 } })
+        .sort({ createdAt: -1 })
+        .select('ppm')
+        .lean(),
+      UserStats.findOne({ userId: userObjectId }).lean(),
+      Book.countDocuments({ userId: userObjectId }),
+      Session.countDocuments({ userId: userObjectId, mode: 'TS', status: 'completed', createdAt: { $gte: startOfToday } }),
+      Session.countDocuments({ userId: userObjectId, mode: 'TS', status: 'completed' }),
     ]);
-
-    // Combine results
-    const stats = {
-      recentPpm: latestSession ? latestSession.ppm : null,
-      totalTsTime: userStats ? userStats.totalTsDurationSec : 0,
-      totalZengoCount: userStats ? userStats.zengoPlayCount : 0,
-      totalBooks: totalBooks || 0, // countDocuments returns a number
+    // Compute today's ZenGo score from history
+    let todayZengoScore = 0;
+    if (userStats && Array.isArray(userStats.zengoPlayHistory)) {
+      todayZengoScore = userStats.zengoPlayHistory
+        .filter(h => h.playedAt >= startOfToday)
+        .reduce((sum, h) => sum + (h.score || 0), 0);
+    }
+    // Prepare response matching frontend expectations
+    const response = {
+      recentPpm: latestSession?.ppm ?? null,
+      todayTsCount,
+      totalTsCount,
+      todayZengoScore,
+      totalZengoScore: userStats?.zengoTotalScore ?? 0,
+      totalBooks: totalBooks || 0,
     };
-
-    res.status(200).json(stats);
-
+    res.status(200).json(response);
   } catch (error) {
     console.error('사용자 통계 조회 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
