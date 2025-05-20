@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showSocialNotice, setShowSocialNotice] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -90,10 +91,21 @@ export default function RegisterPage() {
                 autoComplete="email"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                placeholder="이메일 주소"
+                placeholder="e.g. example@gmail.com, example@naver.com"
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                title="올바른 이메일 형식으로 입력해주세요"
+                onBlur={() => {
+                  const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+                  if (email && !re.test(email)) {
+                    setEmailError('유효한 이메일 형식이 아닙니다.');
+                  } else {
+                    setEmailError('');
+                  }
+                }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              {emailError && <p className="text-sm text-red-600 mt-1">{emailError}</p>}
             </div>
             
             <div>
