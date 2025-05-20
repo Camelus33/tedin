@@ -677,7 +677,6 @@ export default function BookDetailPage() {
                         }}
                         onFlashcardConvert={(targetNote) => {
                           setFlashcardFormNote(targetNote as any);
-                          setShowNewFlashcardForm(true);
                           setActiveTab('flashcard');
                         }}
                         onRelatedLinks={(targetNote) => {
@@ -831,46 +830,31 @@ export default function BookDetailPage() {
           )
         )}
         {activeTab === 'flashcard' && (
-          <>
-            {/* Flashcard 생성 폼 (모달/인라인) */}
-            {flashcardFormNote && (
-              <FlashcardForm
-                note={flashcardFormNote}
-                bookId={bookId}
-                onCreated={() => {
-                  setFlashcardFormNote(null);
-                  setFlashcardDeckKey((k) => k + 1);
-                }}
-                onCancel={() => setFlashcardFormNote(null)}
-              />
-            )}
-            {/* Flashcard Deck Section */}
-            <section className="mt-0 bg-gray-900/80 p-4 md:p-6 rounded-lg border border-cyan-500/30">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl md:text-2xl font-bold text-purple-400">플래시카드 : 오답 노트</h2>
-                <button
-                  className="px-3 py-1 rounded bg-cyan-700 text-white text-xs hover:bg-cyan-800 font-semibold ml-4"
-                  onClick={() => setShowNewFlashcardForm((v) => !v)}
-                >
-                  NEW
-                </button>
+          <section className="mt-0 bg-gray-900/80 p-4 md:p-6 rounded-lg border border-cyan-500/30">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-purple-400">플래시카드 : 오답 노트</h2>
+              <button
+                className="px-3 py-1 rounded bg-cyan-700 text-white text-xs hover:bg-cyan-800 font-semibold ml-4"
+                onClick={() => setShowNewFlashcardForm((v) => !v)}
+              >
+                NEW
+              </button>
+            </div>
+            <p className="text-sm text-gray-400 mb-4">1줄 메모를 질문으로 바꾸고, 오해 방지를 위한 답변을 작성하세요</p>
+            {showNewFlashcardForm && (
+              <div className="mb-4">
+                <FlashcardForm
+                  bookId={bookId}
+                  onCreated={() => {
+                    setShowNewFlashcardForm(false);
+                    setFlashcardDeckKey((k) => k + 1);
+                  }}
+                  onCancel={() => setShowNewFlashcardForm(false)}
+                />
               </div>
-              <p className="text-sm text-gray-400 mb-4">1줄 메모를 질문으로 바꾸고, 오해 방지를 위한 답변을 작성하세요</p>
-              {showNewFlashcardForm && (
-                <div className="mb-4">
-                  <FlashcardForm
-                    bookId={bookId}
-                    onCreated={() => {
-                      setShowNewFlashcardForm(false);
-                      setFlashcardDeckKey((k) => k + 1);
-                    }}
-                    onCancel={() => setShowNewFlashcardForm(false)}
-                  />
-                </div>
-              )}
-              <FlashcardDeck bookId={bookId} key={flashcardDeckKey} />
-            </section>
-          </>
+            )}
+            <FlashcardDeck bookId={bookId} key={flashcardDeckKey} />
+          </section>
         )}
         {/* Optional: Delete Button at the bottom? */}
         <div className="mt-8 flex justify-end">
