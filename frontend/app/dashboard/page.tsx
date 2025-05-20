@@ -692,7 +692,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-200 mb-1">TS</p>
-                <p className="text-xl font-bold text-indigo-400">{stats ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
+                <p className="text-xl font-bold text-indigo-400">{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
               </div>
             </div>
           </div>
@@ -718,7 +718,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-200 mb-1">ZenGo</p>
-                <p className="text-xl font-bold text-green-400">{stats ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
+                <p className="text-xl font-bold text-green-400">{stats?.todayZengoScore != null && stats?.totalZengoScore != null ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
               </div>
             </div>
           </div>
