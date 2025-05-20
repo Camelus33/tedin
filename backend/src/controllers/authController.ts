@@ -19,6 +19,14 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
+    // Check if nickname already exists
+    const existingNick = await User.findOne({ nickname });
+    if (existingNick) {
+      return res.status(409).json({
+        error: '이미 사용 중인 닉네임입니다.'
+      });
+    }
+
     // Validate invite code if provided
     let inviteRecord = null;
     if (inviteCode) {
@@ -74,7 +82,11 @@ export const register = async (req: Request, res: Response) => {
       trialEndsAt: savedUser.trialEndsAt,
       token,
     });
-  } catch (error) {
+  } catch (error: any) {
+    // Handle duplicate-key error on nickname
+    if (error.code === 11000 && error.keyPattern?.nickname) {
+      return res.status(409).json({ error: '이미 사용 중인 닉네임입니다.' });
+    }
     console.error('Registration error:', error);
     res.status(500).json({ 
       error: '회원가입 처리 중 오류가 발생했습니다.' 
