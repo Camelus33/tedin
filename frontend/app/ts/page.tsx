@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -46,6 +46,7 @@ const LOCAL_STORAGE_BOOKS_KEY = 'habitus33_books_cache';
 
 export default function TSSetupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<string>('');
   const [startPage, setStartPage] = useState<number>(1);
@@ -59,6 +60,23 @@ export default function TSSetupPage() {
   
   // Redux 스토어에서 user 정보 가져오기 (auth가 아닌 user 슬라이스 사용)
   const user = useSelector((state: RootState) => state.user?.isAuthenticated);
+
+  // Handle bookId query parameter
+  useEffect(() => {
+    const queryBookId = searchParams.get('bookId');
+    if (queryBookId) {
+      setSelectedBookId(queryBookId);
+    }
+  }, [searchParams, books]);
+
+  // Update start and end pages when a book is selected
+  useEffect(() => {
+    const selectedBook = books.find(b => b._id === selectedBookId);
+    if (selectedBook) {
+      setStartPage(selectedBook.currentPage);
+      setEndPage(Math.min(selectedBook.currentPage + 10, selectedBook.totalPages));
+    }
+  }, [selectedBookId, books]);
 
   useEffect(() => {
     // 서버 사이드 렌더링 시 localStorage 접근 방지
@@ -290,8 +308,8 @@ export default function TSSetupPage() {
             setIsStarting(false);
             return;
           }
-          router.push(`/ts/session/${newSession._id}`);
-        } else {
+        router.push(`/ts/session/${newSession._id}`);
+      } else {
           setError("세션 생성 후 조회 실패");
         }
       } catch (err) {

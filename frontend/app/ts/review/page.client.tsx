@@ -170,12 +170,12 @@ export default function TSReviewPage() {
         ppm,
       });
       await api.put(`/sessions/${sessionId}/complete`, {
-        actualEndPage: reviewData.actualEndPage,
-        memo: reviewData.memo,
-        summary10words: reviewData.summary.split(/\s+/).slice(0, 10).join(' '),
-        selfRating: reviewData.selfRating,
-        durationSec: validDurationSec,
-        ppm,
+          actualEndPage: reviewData.actualEndPage,
+          memo: reviewData.memo,
+          summary10words: reviewData.summary.split(/\s+/).slice(0, 10).join(' '),
+          selfRating: reviewData.selfRating,
+          durationSec: validDurationSec,
+          ppm,
       });
 
       // Navigate to results page

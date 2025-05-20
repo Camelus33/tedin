@@ -167,8 +167,9 @@ export default function RegisterPage() {
                 id="inviteCode"
                 name="inviteCode"
                 type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                placeholder="초대 코드 (선택사항)"
+                disabled
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100 cursor-not-allowed transition-all duration-200"
+                placeholder="초대 코드는 아직 지원되지 않습니다."
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value)}
               />
