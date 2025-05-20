@@ -289,7 +289,7 @@ export default function TSWarmupPage() {
 
       {/* Main Content Area */}
       <main className="flex-grow container mx-auto p-4 md:p-6 lg:p-8 flex items-center justify-center">
-        <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl p-6 md:p-8 w-full max-w-2xl border ${cyberTheme.borderPrimary}`}>
+        <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl p-6 md:p-8 w-full max-w-xl sm:max-w-2xl border ${cyberTheme.borderPrimary}`}>
           
           {/* Progress Bar */}
           <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-2.5 mb-6`}>

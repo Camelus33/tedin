@@ -80,8 +80,10 @@ type Book = {
 // --- 새로 정의할 사용자 통계 타입 ---
 interface UserDashboardStats {
   recentPpm: number | null;
-  totalTsTime: number; // 초 단위
-  totalZengoCount: number;
+  todayTsCount: number;
+  totalTsCount: number;
+  todayZengoScore: number;
+  totalZengoScore: number;
   totalBooks: number;
 }
 
@@ -669,7 +671,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* 총 Time Sprint */}
+          {/* TS */}
           <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-indigo-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
             {/* 사이버 패턴 SVG 배경 - 인디고 계열 */}
             <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
@@ -689,13 +691,13 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">총 Time Sprint</p>
-                <p className="text-xl font-bold text-indigo-400">{stats ? formatTsTime(stats.totalTsTime) : '-'}</p>
+                <p className="text-sm text-gray-200 mb-1">TS</p>
+                <p className="text-xl font-bold text-indigo-400">{stats ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
               </div>
             </div>
           </div>
 
-          {/* 총 ZenGo */}
+          {/* ZenGo */}
           <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-green-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
             {/* 사이버 패턴 SVG 배경 - 그린 계열 */}
             <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
@@ -715,8 +717,8 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Zm4.28 2.53a.75.75 0 0 1 1.06.22A3.25 3.25 0 0 0 12 16.25a3.25 3.25 0 0 0 1.91-1.5.75.75 0 1 1 1.28.78A4.75 4.75 0 0 1 12 17.75a4.75 4.75 0 0 1-3.19-1.47.75.75 0 0 1 .22-1.06ZM9.25 10a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75A.75.75 0 0 1 9.25 10Zm5.5 0a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">총 ZenGo</p>
-                <p className="text-xl font-bold text-green-400">{stats ? `${stats.totalZengoCount}점` : '-'}</p>
+                <p className="text-sm text-gray-200 mb-1">ZenGo</p>
+                <p className="text-xl font-bold text-green-400">{stats ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
               </div>
             </div>
           </div>

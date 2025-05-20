@@ -125,7 +125,7 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
     else setTagsError('');
   }, [tagsInput]);
 
-  const isFormValid = !titleError && !descriptionError && !textError && !tagsError;
+  const isFormValid = !titleError && !textError && !tagsError;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -255,7 +255,6 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
             placeholder="10~300자, 예: 이 게임은 친구와 단어 암기 대결을 위해 만들었습니다."
             value={description}
             onChange={e => setDescription(e.target.value)}
-            required
             maxLength={300}
             rows={2}
           />
