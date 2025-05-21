@@ -14,15 +14,15 @@ export default function CoreFeaturesFreeSection() {
           <div className="flex items-start space-x-3 p-4 bg-white/50 rounded-lg">
             <FiCheckSquare className="w-6 h-6 text-emerald-600 mt-1 flex-shrink-0" />
             <div>
-              <h3 className="font-semibold text-lg text-gray-800 mb-1">능력 측정</h3>
-              <p className="text-gray-600 text-sm">TS 처리 속도 & ZenGo 처리 용량</p>
+              <h3 className="font-semibold text-lg text-gray-800 mb-1">AI 측정</h3>
+              <p className="text-gray-600 text-sm">처리 속도 & 처리 용량</p>
             </div>
           </div>
           <div className="flex items-start space-x-3 p-4 bg-white/50 rounded-lg">
             <FiCheckSquare className="w-6 h-6 text-emerald-600 mt-1 flex-shrink-0" />
             <div>
-              <h3 className="font-semibold text-lg text-gray-800 mb-1">상태 확인</h3>
-              <p className="text-gray-600 text-sm">33일 피드백 루프 설정</p>
+              <h3 className="font-semibold text-lg text-gray-800 mb-1">확인</h3>
+              <p className="text-gray-600 text-sm">33일 피드백 루프</p>
             </div>
           </div>
           <div className="flex items-start space-x-3 p-4 bg-white/50 rounded-lg">
@@ -37,7 +37,7 @@ export default function CoreFeaturesFreeSection() {
          <div className="inline-flex items-center justify-center p-3 px-6 bg-emerald-100 rounded-full mb-10">
             <FiGift className="w-6 h-6 text-emerald-700 mr-3" />
             <p className="font-bold text-emerald-800 text-lg md:text-xl">
-              핵심 기능은 평생 무료!
+              핵심 기능 평생 무료!
             </p>
           </div>
 

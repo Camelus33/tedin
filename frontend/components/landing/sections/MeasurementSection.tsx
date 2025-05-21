@@ -22,8 +22,8 @@ export default function MeasurementSection() {
              </div>
              {/* Responsive paragraph size */}
              <p className="text-sm md:text-base text-gray-600 flex-grow">
-               얼마나 빠르게 <strong className="text-indigo-700">페이지 단위로 정보를 흡수하고 처리하는지</strong> 측정하며, 
-               <strong className="text-indigo-700">당신의 정보 처리 속도</strong>를 확인해 보세요.
+               얼마나 빠르게 <strong className="text-indigo-700">페이지 단위로 정보를 흡수하는지</strong> 측정하며, 
+               <strong className="text-indigo-700">당신의 속도</strong>를 확인해 보세요.
              </p>
           </div>
 
@@ -36,8 +36,8 @@ export default function MeasurementSection() {
             </div>
              {/* Responsive paragraph size */}
             <p className="text-sm md:text-base text-gray-600 flex-grow">
-              한 번에 얼마나 많은 정보를 <strong className="text-emerald-700">기억 속에 붙잡아 둘 수 있는지</strong>, 바둑 원리를 활용한 게임으로 
-              <strong className="text-emerald-700">당신의 정보 처리 용량</strong>을 확인해 보세요.
+              한 번에 얼마나 많이 <strong className="text-emerald-700">기억 속에 붙잡아 둘 수 있는지</strong>, 바둑 원리를 활용한 게임으로 
+              <strong className="text-emerald-700">당신의 용량</strong>을 확인해 보세요.
             </p>
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function MeasurementSection() {
         {/* --- 아이콘 중심의 2x2 그리드 피드백 루프 설명 --- */}
         <div className="mt-16 pt-12 border-t border-gray-200">
           <h3 className="text-xl md:text-2xl font-semibold text-gray-800 mb-10 md:mb-12 text-center">
-            성장 가속 엔진: 피드백 루프
+            잠재력 가속 엔진 : 피드백 루프
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
@@ -60,7 +60,7 @@ export default function MeasurementSection() {
             {/* Card 1: 안정화 피드백 루프 (Balancing Loop) */}
             <div className="flex flex-col items-center text-center p-6 md:p-8 bg-white rounded-lg shadow-md border border-gray-100">
               <FiTarget className="w-12 h-12 text-blue-600 mb-4" />
-              <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-3">① 안정화 루프: 흔들리면 균형을 잡아줍니다</h4>
+              <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-3">① 안정화 루프</h4>
               <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
                 목표에서 멀어졌다고 느낄 때, <strong className="text-blue-700">다시 제자리로 돌아오도록</strong> 방향을 잡아주는 당신 안의 나침반입니다.
               </p>
@@ -72,7 +72,7 @@ export default function MeasurementSection() {
             {/* Card 2: 강화 피드백 루프 (Reinforcing Loop) */}
             <div className="flex flex-col items-center text-center p-6 md:p-8 bg-white rounded-lg shadow-md border border-gray-100">
               <FiTrendingUp className="w-12 h-12 text-purple-600 mb-4" />
-              <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-3">② 강화 루프: 작은 성공에 불을 붙입니다</h4>
+              <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-3">② 강화 루프 </h4>
               <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
                 작은 성취가 다음 행동을 이끌며, <strong className="text-purple-700">성장에 점점 가속도가 붙게</strong> 하는 당신 안의 엔진입니다.
               </p>
@@ -85,12 +85,12 @@ export default function MeasurementSection() {
 
            {/* 최종 요약 메시지 */}
            <p className="mt-12 text-center text-base md:text-lg text-gray-700 max-w-3xl mx-auto">
-             Habitus33은 이 <strong className="font-semibold text-indigo-700">두 가지 가속 엔진</strong>을 깨워,<strong className="font-semibold text-indigo-700"> 스스로 나아가는 힘</strong>을 자극합니다.
+             Habitus33은 이 <strong className="font-semibold text-indigo-700"> 가속 엔진</strong>을 깨워,<strong className="font-semibold text-indigo-700"> 잠재력</strong>을 계속 일깨웁니다
            </p>
 
            {/* Updated Quote */}
            <p className="mt-10 text-center text-xs md:text-sm text-gray-500 italic max-w-2xl mx-auto">
-             "시스템의 지혜에 귀 기울이면 더 편안하게 멀리 나아갈 수 있습니다."<br/>- 도넬라 메도우즈. MIT
+             "자신의 시스템에 귀 기울이면 더 편안하게 멀리 나아갈 수 있습니다."<br/>- 도넬라 메도우즈. MIT
            </p>
         </div>
         {/* --- 피드백 루프 설명 섹션 끝 --- */}

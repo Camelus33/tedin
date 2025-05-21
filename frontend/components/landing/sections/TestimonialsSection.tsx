@@ -32,7 +32,7 @@ export default function TestimonialsSection() {
           Habitus33으로 <span className="text-indigo-600">성공을 만드는</span>사람들
         </h2>
         <p className="text-lg md:text-xl text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-           막연한 노력에서 벗어나 선명하게 성장을 만드세요.
+           운에 기대지 말고 선명한 성장을 직접 만드세요.
         </p>
 
         <div className="grid md:grid-cols-3 gap-8">
