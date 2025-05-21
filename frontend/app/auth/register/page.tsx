@@ -169,7 +169,7 @@ export default function RegisterPage() {
                 type="text"
                 disabled
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100 cursor-not-allowed transition-all duration-200"
-                placeholder="초대 코드는 아직 지원되지 않습니다."
+                placeholder="초대 코드는 The 슘포시온 멤버쉽 회원에게 개별 발송됩니다."
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value)}
               />

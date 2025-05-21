@@ -98,7 +98,7 @@ export default function Page() {
           wordMappings: game.wordMappings,
           totalWords: game.wordMappings.length,
           totalAllowedStones: game.wordMappings.length + 2,
-          initialDisplayTimeMs: 15000,
+          initialDisplayTimeMs: 10000,
         };
         dispatch(setSettings({ level: content.level, language: content.language }));
         dispatch(setContent(content));

@@ -112,17 +112,22 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
   const boardContainerRef = useRef<HTMLDivElement>(null);
   const [feedbackStones, setFeedbackStones] = useState<BoardStoneData[]>([]);
   
-  // Initial board size: dynamic based on viewport width (80% of vw) with upper limits
-  const initialSize = useMemo(() => {
-    const vw = typeof window !== 'undefined' ? window.innerWidth : 800;
-    const maxSize = vw * 0.8;
-    if (boardSize === 3) return Math.min(maxSize, 400);   // 3x3: 조금 더 크게
-    if (boardSize === 5) return Math.min(maxSize, 500);
-    if (boardSize === 7) return Math.min(maxSize, 650);
-    return Math.min(maxSize, 350);
-  }, [boardSize]);
-  
-  const [boardWidthPx, setBoardWidthPx] = useState(initialSize);
+  // 모바일: w-full, max-w-[95vw], aspect-square, clamp() 등으로 완전 반응형
+  // PC/패드: 기존 크기 유지
+  const getResponsiveBoardSize = () => {
+    if (typeof window === 'undefined') return 400;
+    const vw = window.innerWidth;
+    if (vw <= 640) {
+      // 모바일: 거의 전체 화면 사용, 최대 95vw
+      return Math.max(220, Math.min(vw * 0.95, 400));
+    }
+    // PC/패드: 기존 상한 유지
+    if (boardSize === 3) return 400;
+    if (boardSize === 5) return 500;
+    if (boardSize === 7) return 650;
+    return 350;
+  };
+  const [boardWidthPx, setBoardWidthPx] = useState(getResponsiveBoardSize());
 
   const stonePositionMap = useMemo(() => {
     const map = new Map<string, BoardStoneData>();
@@ -194,11 +199,11 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
       }
       
       resizeTimer = setTimeout(() => {
-        setBoardWidthPx(calculateBoardSize());
+        setBoardWidthPx(getResponsiveBoardSize());
       }, 100);
     };
 
-    setBoardWidthPx(calculateBoardSize());
+    setBoardWidthPx(getResponsiveBoardSize());
     
     window.addEventListener('resize', handleResize);
     return () => {
@@ -207,7 +212,7 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
         clearTimeout(resizeTimer);
       }
     };
-  }, [calculateBoardSize]);
+  }, [boardSize]);
 
   const starPoints = useMemo(() => {
     if (boardSize === 19) {
@@ -263,8 +268,10 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
     return {
       gridTemplateColumns: `repeat(${boardSize}, 1fr)`,
       gridTemplateRows: `repeat(${boardSize}, 1fr)`,
-      width: `${boardWidthPx}px`,
-      height: `${boardWidthPx}px`,
+      width: '100%',
+      maxWidth: boardWidthPx,
+      height: boardWidthPx,
+      aspectRatio: '1 / 1',
     };
   }, [boardSize, boardWidthPx]);
 
@@ -288,10 +295,10 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
   const cellSize = boardWidthPx / boardSize;
 
   return (
-    <div className="board">
+    <div className="board w-full max-w-[95vw] sm:max-w-[650px] aspect-square mx-auto">
       <div
         ref={boardContainerRef}
-        className="zengo-board"
+        className="zengo-board w-full h-full aspect-square"
         style={gridTemplateStyle}
         data-board-size={boardSize}
       >

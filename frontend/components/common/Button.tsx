@@ -40,6 +40,17 @@ export interface ButtonProps
   loading?: boolean;
 }
 
+// 모바일 반응형: 600px 이하에서 버튼 크기/폰트/터치 영역 가변화
+const mobileButtonStyle = {
+  height: 'clamp(36px,8vw,44px)',
+  minWidth: 'clamp(80px,30vw,120px)',
+  fontSize: 'clamp(0.95rem,3vw,1.1rem)',
+  paddingLeft: 'clamp(12px,4vw,20px)',
+  paddingRight: 'clamp(12px,4vw,20px)',
+  paddingTop: 'clamp(6px,2vw,12px)',
+  paddingBottom: 'clamp(6px,2vw,12px)',
+};
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ 
     className, 
@@ -53,12 +64,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     children, 
     ...props 
   }, ref) => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
     if (href) {
       return (
         <Link 
           href={href}
           target={target}
           className={buttonVariants({ variant, size, fullWidth, className })}
+          style={isMobile ? mobileButtonStyle : undefined}
         >
           {loading ? (
             <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -75,6 +88,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         type="button"
         className={buttonVariants({ variant, size, fullWidth, className })}
+        style={isMobile ? mobileButtonStyle : undefined}
         ref={ref}
         disabled={disabled || loading}
         {...props}

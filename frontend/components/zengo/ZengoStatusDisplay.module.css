@@ -51,19 +51,20 @@
   .statusDisplayContainer {
     flex-direction: row;
     justify-content: space-around;
-    padding: 0.5rem;
+    padding: clamp(0.25rem, 2vw, 0.5rem);
   }
   
   .statusItem {
-    margin: 0.25rem;
-    min-width: 70px;
+    margin: 0.15rem;
+    min-width: 48px;
   }
   
   .label {
-    font-size: 0.75rem;
+    font-size: clamp(0.7rem, 2.5vw, 0.85rem);
   }
   
   .value {
-    font-size: 0.95rem;
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    min-height: 32px;
   }
 } 

@@ -320,7 +320,7 @@
 /* Responsive styles */
 @media (max-width: 600px) {
   .resultContainer {
-    padding: 1.5rem;
+    padding: clamp(0.5rem, 4vw, 1.5rem);
   }
   
   .detailsGrid {
@@ -328,11 +328,11 @@
   }
   
   .statusIcon {
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 7vw, 2.5rem);
   }
   
   .statusText {
-    font-size: 1.75rem;
+    font-size: clamp(1.1rem, 5vw, 1.75rem);
   }
   
   .actionButtons {
@@ -342,5 +342,8 @@
   .retryButton, .nextButton {
     width: 100%;
     margin-bottom: 0.5rem;
+    min-height: 44px; /* 터치 영역 보장 */
+    font-size: clamp(0.95rem, 3vw, 1.1rem);
   }
-} 
+}
+/* 모바일 가독성/터치성 강화: clamp, min-width, min-height 적용 (2024-04-17) */ 
