@@ -57,6 +57,7 @@ const SOUND_FILE_MAP: Record<string, string[]> = {
 
 // Exported function to play predefined sounds
 export const playSound = (type: 'place' | 'correct' | 'incorrect' | 'perfect') => {
+  console.log('[사운드] playSound 함수가 호출됨:', type);
   const files = SOUND_FILE_MAP[type];
   if (!files) return;
   let played = false;

@@ -891,6 +891,7 @@ export default function ZengoPage(
                     interactionMode={gameState === 'playing' ? 'click' : 'view'}
                     onIntersectionClick={(position: [number, number]) => {
                       if (gameState === 'playing') {
+                        playSound('place');
                         dispatch(placeStone({ x: position[0], y: position[1] }));
                       }
                     }}
