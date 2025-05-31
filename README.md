@@ -1,62 +1,55 @@
-# Habitus33 - Brain Optimizer & Reading Habit System
+# Habitus33 - Micro Reading & Memory Evolution Platform
 
-뇌 최적화와 독서 습관, 인지력 향상을 위한 신경과학 기반 SaaS. **실시간 인지 퍼포먼스 측정 및 조율을 위한 당신의 첫 번째 계기판입니다.**
+뇌 최적화와 문해력, 기억력, 지식 확장을 위한 신경과학 기반 SaaS.
+**마이크로 리딩, 메모진화, 기억력 게임, 오픈마켓, 사용자 제작 암기법까지!**
 
-> “측정은 변화의 시작이 아니라, 의식의 시작이다” - Habitus33
+> “읽고, 기록하고, 진화하라. 당신의 뇌는 매일 새로워질 수 있다.” - Habitus33
 
-## 프로젝트 소개 (2024.06 업데이트 기준)
+---
 
-Habitus33는 사용자의 뇌가 현재 어떤 상태인지 **실시간으로 측정**하고, 그에 맞게 스스로 학습 및 인지 활동 전략을 조절할 수 있도록 돕는 **신경과학 기반 인지 피드백 시스템**입니다. 우리는 뇌를 평가하거나 판단하지 않고, 사용자가 자신의 뇌 컨디션을 객관적으로 인지하고 최적의 지적 활동을 선택할 수 있도록 **'측정'**이라는 핵심 가치에 집중합니다.
+## 프로젝트 소개
 
-주요 기능으로는 TS 모드(정보 처리력 측정), ZenGo(작업 기억 및 인출력 측정), 내 서재(지식 체화도 측정), 33일 루틴(습관 형성 지원), 인지 대시보드(통합 분석 및 추천) 등이 있습니다.
+Habitus33는 사용자의 문해력과 기억력, 지식 확장을 극대화하는 **인지과학 기반 인지 성장 플랫폼**입니다.
+짧은 시간 집중 리딩, 메모의 진화, 기억력 게임, 지식 오픈마켓, 사용자 제작 암기법 등
+**실질적 변화와 성장**을 이끄는 혁신적 도구들을 제공합니다.
+
+---
+
+## 주요 기능
+
+### 1. 마이크로 리딩 (TS모드)
+- **설명:** 텍스트를 잘게 쪼개 제한시간 동안 읽으며, 4단계(예열-집중-반추-피드백)로 문해력을 극대화합니다.
+- **목표:** 짧은 시간 내 몰입 독서 → 정보 처리력 및 이해력 향상
+- **특징:** 실시간 타이머, 섹션별 진행, 반추 기록
+
+### 2. 메모진화
+- **설명:** 마이크로 리딩의 '반추기록'에서 작성한 1줄 메모를 발전시켜, 지식을 확장하고 기억을 강화합니다.
+- **목표:** 단순 메모 → 연결, 확장, 반복을 통한 장기 기억화
+- **특징:** 메모 간 연결, 진화 트리, SRS(반복 복습) 지원
+
+### 3. 젠고 기본
+- **설명:** 바둑판 기반 기억착수 게임으로, 작업 기억력(Working Memory) 증강을 목표로 합니다.
+- **목표:** 정보 임시 저장 및 활용 능력 강화
+- **특징:** 다양한 난이도, 실시간 피드백, 점수 시스템
+
+### 4. 젠고 오리지널
+- **설명:** 사용자의 '단권화노트'(지식 요약/정리본)를 사고팔 수 있는 오픈마켓입니다.
+- **목표:** 지식의 유통, 공유, 경제적 가치 창출
+- **특징:** 노트 등록/구매, 평점/리뷰, 큐레이션
+
+### 5. 젠고 마이버스
+- **설명:** 사용자가 직접 젠고 게임을 만들어 자신만의 암기법을 실천할 수 있습니다.
+- **목표:** 맞춤형 암기법 설계 및 실습
+- **특징:** 게임 커스터마이즈, 공유, 챌린지
+
+---
 
 ## 기술 스택
 
-### 프론트엔드
-- Next.js (App Router)
-- TypeScript
-- Redux Toolkit
-- TailwindCSS
-- framer-motion, Chart.js, react-hot-toast 등
+- **프론트엔드:** Next.js (App Router), TypeScript, Redux Toolkit, TailwindCSS, framer-motion, Chart.js 등
+- **백엔드:** Node.js, Express, MongoDB Atlas & Mongoose, JWT 인증
 
-### 백엔드
-- Node.js
-- Express
-- MongoDB Atlas & Mongoose (클라우드 DB 사용)
-- JWT 인증
-
-## 주요 기능: 측정 모듈 & 대시보드
-
-Habitus33의 핵심은 다양한 모듈을 통해 **실시간 인지 퍼포먼스를 측정**하고 **인지 대시보드**를 통해 통합적인 피드백을 제공하는 것입니다.
-
-1.  **📍 TS 모드 (정보 처리력 측정):**
-    *   **측정 지표:** 이해 기반 정보 처리 속도 (PPM), 반추 시간 등
-    *   **기능:** 4단계(예열-본독서-반추-피드백) 집중 독서 사이클을 통해 뇌가 정보를 의미 단위로 처리하는 속도를 측정합니다.
-    *   **가치:** 학습/업무 시작 전, **현재 뇌의 정보 처리력과 집중 준비 상태**를 파악하는 진입 시그널입니다.
-
-2.  **📍 ZenGo (기본) (작업 기억 측정):**
-    *   **측정 지표:** 위치/순서 정확도, 작업 기억 유지 시간 등
-    *   **기능:** 바둑판 기반 기억 착수 게임을 통해 정보를 일시적으로 붙잡아두는 힘(Working Memory)을 측정합니다. (3x3 ~ 7x7 난이도)
-    *   **가치:** 암기나 복잡한 문제 해결 전, **현재 뇌가 정보를 담을 수 있는 용량(슬롯 상태)**을 진단합니다.
-
-3.  **📍 ZenGo Myverse (기억 인출력 측정):**
-    *   **측정 지표:** 반응 속도, 반복 정답률, 인출 정확도 등
-    *   **기능:** 사용자가 직접 입력한 단어/개념/지식을 대상으로, ZenGo 방식을 활용하여 **기억 회로의 활성화 상태(인출 가능성)**를 측정합니다.
-    *   **가치:** 시험이나 발표 전, 특정 지식이 **현재 얼마나 잘 꺼내어지는 상태인지** 수치로 확인하는 개인화된 점검 도구입니다.
-
-4.  **📍 내 서재 (지식 체화도 측정):**
-    *   **측정 지표:** SRS 성공률, 정착 지식 비율, 망각 곡선 등
-    *   **기능:** TS 모드 등에서 생성된 메모를 플래시카드로 변환하고, SRS(Spaced Repetition System)를 통해 복습하며 **지식의 장기 기억 전환율(체화도)**를 측정합니다.
-    *   **가치:** 어떤 지식이 실제로 내 것이 되고 있는지, **지식의 생존율**을 정량적으로 평가합니다.
-
-5.  **🧠 인지 대시보드 (실시간 인지능력 현황 표시):**
-    *   **기능:** TS, ZenGo, Myverse, SRS 등 각 모듈에서 측정된 인지 지표(정보 처리력, 작업 기억, 인출력, 체화도)를 **실시간 또는 일간 단위로 통합하여 시각화**합니다.
-    *   **가치:** **"지금 내 뇌 상태로 가장 효과적인 활동은 무엇인가?"** 라는 질문에 대한 데이터 기반의 답변을 제공하여, 사용자가 스스로 최적의 학습/업무 전략을 선택하도록 돕습니다. (예: 작업 기억 상태 좋을 때 암기 집중, 처리력 높을 때 문서 작업 등)
-
-6.  **🗓️ 33일 루틴 (습관 형성 지원):**
-    *   **기능:** 특정 인지 능력 향상 또는 학습 습관 형성을 위한 목표를 설정하고 33일간 꾸준히 실천하도록 트래킹하고 지원합니다.
-    *   **가치:** 측정된 인지 상태를 바탕으로 설정된 목표 달성을 위한 **지속적인 행동 변화**를 유도합니다.
-
+---
 
 ## 설치 및 실행
 
@@ -64,7 +57,7 @@ Habitus33의 핵심은 다양한 모듈을 통해 **실시간 인지 퍼포먼�
 - Node.js v16 이상
 - MongoDB Atlas 계정 및 Connection String
 
-### 백엔드 설치 및 실행
+### 백엔드
 ```bash
 cd backend
 npm install
@@ -72,81 +65,162 @@ npm install
 npm run dev
 ```
 
-### 프론트엔드 설치 및 실행
+### 프론트엔드
 ```bash
 cd frontend
 npm install
 # .env.local 파일에 NEXT_PUBLIC_API_URL 등 환경 변수 설정 (필요시)
 npm run dev
 ```
-기본적으로 프론트엔드는 `http://localhost:3000`, 백엔드는 `http://localhost:8000` (또는 .env 설정 포트)에서 실행됩니다. 프론트엔드의 `next.config.js` 내 `rewrites` 설정을 통해 API 요청이 백엔드로 프록시됩니다.
+- 프론트엔드: `http://localhost:3000`
+- 백엔드: `http://localhost:8000` (또는 .env 설정 포트)
 
-## 환경 변수 설정
+---
+
+## 환경 변수
 
 ### 백엔드 (`backend/.env`)
 ```
-PORT=8000 # 백엔드 서버 포트 (예시)
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster-url>/habitus33?retryWrites=true&w=majority # MongoDB Atlas 연결 주소
-JWT_SECRET=your_production_secret # JWT 토큰 서명 시크릿 키
-# ADMIN_EMAIL=admin@example.com # (선택) 초기 어드민 계정 이메일
-# ADMIN_PASSWORD=adminpassword123 # (선택) 초기 어드민 계정 비밀번호
-# BYPASS_AUTH=true # (개발용) 인증 미들웨어 우회 여부
+PORT=8000
+MONGODB_URI=...
+JWT_SECRET=...
 ```
 
-### 프론트엔드 (`frontend/.env.local` - 필요한 경우)
+### 프론트엔드 (`frontend/.env.local`)
 ```
-# 백엔드 API 주소를 직접 호출해야 하는 경우 설정 (보통 next.config.js의 rewrites 사용)
 # NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ```
 
-## 디렉토리 구조 (주요 폴더 기준)
+---
+
+## 디렉토리 구조 (2024.06 기준, 상세 주석 포함)
 
 ```
 habitus33/
-├── frontend/                    # 💻 Next.js App Router 기반 사용자 앱
-│   ├── app/                    # 페이지 라우팅 및 UI
-│   │   ├── auth/             # 로그인, 회원가입 등
-│   │   ├── books/            # 📚 내 서재 (도서, 메모)
-│   │   ├── ts/               # 🔥 TS 모드 (집중 독서)
-│   │   ├── zengo/            # 🧠 ZenGo (인지 훈련)
-│   │   ├── brain-hack-routine/ # 🗓️ 33일 루틴 및 피드백 루프
-│   │   ├── dashboard/        # 📊 대시보드
-│   │   ├── profile/          # 사용자 프로필
-│   │   └── ...               # 기타 페이지 (리더보드, 통계, 설정 등)
-│   ├── components/             # 재사용 UI 컴포넌트
-│   ├── store/                  # Redux Toolkit 스토어
-│   ├── lib/                    # 유틸리티/헬퍼
-│   ├── hooks/                  # 커스텀 훅
-│   └── ...                     # 설정 파일 등
 │
-├── backend/                    # 🔧 Express + MongoDB 기반 API 서버
-│   ├── src/
-│   │   ├── controllers/      # 요청 처리 로직
-│   │   ├── models/           # MongoDB 스키마/모델
-│   │   ├── routes/           # API 엔드포인트 정의
-│   │   ├── services/         # 비즈니스 로직
-│   │   ├── middlewares/      # 인증 등 미들웨어
-│   │   ├── config/           # 설정 관련
-│   │   ├── utils/            # 유틸리티 함수
-│   │   └── app.ts            # Express 앱 설정/시작점
-│   ├── .env                    # 백엔드 환경 변수
-│   └── ...                     # 설정 파일 등
+├── README.md                # 프로젝트 소개 및 사용법 문서
+├── package.json             # 루트 패키지 매니저(워크스페이스/공통 의존성)
+├── package-lock.json        # 의존성 lock 파일
+├── .gitignore               # Git 관리 제외 파일 목록
+├── tsconfig.json            # TypeScript 공통 설정
 │
-├── .gitignore
-├── package.json                # 프로젝트 루트 (Workspaces 사용 가능)
-└── README.md                   # 본 문서
+├── app/                     # (루트) 앱 레벨 공통 코드/설정 (Next.js SSR 등)
+│   ├── api/                 # API 라우트(Next.js)
+│   ├── auth/                # 인증 관련 라우트
+│   └── ui/                  # 공통 UI 컴포넌트
+│
+├── public/                  # 정적 파일(이미지, 사운드 등)
+│   └── sounds/              # 효과음 등 오디오 파일
+│
+├── scripts/                 # 데이터 가공, 배치, 분석 등 유틸리티 스크립트
+│   ├── zengo-proverbs-*.js  # 젠고 게임용 속담 데이터/분석/변환 스크립트
+│   ├── check-zengo-data.js  # 젠고 데이터 검증
+│   ├── insert-zengo-proverbs.js # DB에 젠고 속담 삽입
+│   ├── ...                  # 기타 데이터 처리/백업/분석 스크립트
+│
+├── dump/                    # 데이터 백업, 임시 저장소
+│   └── habitus33/           # 백업 데이터 하위 폴더
+│
+├── backend/                 # Express + MongoDB 기반 API 서버
+│   ├── package.json         # 백엔드 의존성/스크립트
+│   ├── package-lock.json
+│   ├── tsconfig.json        # 백엔드 TypeScript 설정
+│   ├── .env                 # 백엔드 환경 변수(비공개)
+│   ├── app/                 # (신규) Next.js API 라우트/핸들러
+│   │   ├── api/             # 결제, 유저, 웹훅 등 API 엔드포인트
+│   │   │   ├── payments/    # 결제 관련 API (Stripe 등)
+│   │   │   ├── user/        # 유저 관련 API
+│   │   │   └── webhooks/    # 외부 서비스 웹훅
+│   │   └── lib/             # API 라우트용 라이브러리
+│   ├── src/                 # 핵심 서버 코드
+│   │   ├── app.ts           # Express 앱 진입점
+│   │   ├── database.ts      # DB 연결/설정
+│   │   ├── controllers/     # 각 도메인별 요청 처리 로직
+│   │   │   ├── zengoController.ts      # 젠고 게임/오리지널/마이버스
+│   │   │   ├── myverseGameController.ts# 마이버스(사용자 제작 게임)
+│   │   │   ├── noteController.ts       # 메모진화/노트
+│   │   │   ├── bookController.ts       # 도서/내서재
+│   │   │   ├── ...                     # 기타(유저, 세션, 루틴 등)
+│   │   ├── models/          # Mongoose 스키마/모델
+│   │   │   ├── Zengo.ts, MyverseGame.ts, Note.ts, ... # 각 도메인별 모델
+│   │   ├── routes/          # API 라우트 정의
+│   │   │   ├── zengo.ts, myverseGames.ts, notes.ts, ... # 각 도메인별 라우트
+│   │   ├── services/        # 비즈니스 로직/서비스 계층
+│   │   ├── middlewares/     # 인증, 권한 등 미들웨어
+│   │   ├── utils/           # 공통 유틸리티 함수
+│   │   ├── types/           # 타입 정의
+│   │   ├── scripts/         # 서버 데이터 마이그레이션/유틸
+│   │   └── backups/         # 서버 데이터 백업
+│   ├── prisma/              # Prisma ORM 스키마/마이그레이션
+│   │   └── schema.prisma
+│   └── scripts/             # 서버 데이터 초기화/마이그레이션 스크립트
+│
+├── frontend/                # Next.js 기반 사용자 앱(프론트엔드)
+│   ├── package.json         # 프론트엔드 의존성/스크립트
+│   ├── package-lock.json
+│   ├── tsconfig.json        # 프론트엔드 TypeScript 설정
+│   ├── .eslintrc.json       # 린트 설정
+│   ├── next.config.js       # Next.js 설정
+│   ├── tailwind.config.js   # TailwindCSS 설정
+│   ├── postcss.config.js    # PostCSS 설정
+│   ├── app/                 # App Router 기반 페이지/라우트(도메인별 폴더)
+│   │   ├── ts/              # 마이크로 리딩(TS모드)
+│   │   ├── zengo/           # 젠고 기본/오리지널/마이버스
+│   │   ├── books/           # 내 서재/도서
+│   │   ├── brain-hack-routine/ # 루틴/습관
+│   │   ├── dashboard/       # 인지 대시보드
+│   │   ├── profile/         # 사용자 프로필
+│   │   ├── reading-session/ # 리딩 세션
+│   │   ├── myverse/         # 마이버스(사용자 제작 게임)
+│   │   ├── share/           # 공유 기능
+│   │   ├── onboarding/      # 온보딩
+│   │   ├── notifications/   # 알림
+│   │   ├── analytics/       # 통계/분석
+│   │   └── ...              # 기타(약관, 정책 등)
+│   ├── components/          # 재사용 UI 컴포넌트(도메인별/공통)
+│   │   ├── ts/              # TS모드 관련 컴포넌트
+│   │   ├── zengo/           # 젠고 관련 컴포넌트
+│   │   ├── flashcard/       # 플래시카드
+│   │   ├── landing/         # 랜딩/소개
+│   │   ├── onboarding/      # 온보딩
+│   │   ├── common/          # 공통 UI
+│   │   ├── debug/           # 디버그/개발용
+│   │   ├── dev/             # 개발용
+│   │   ├── cognitive/       # 인지 관련
+│   │   └── ...              # 기타
+│   ├── store/               # Redux Toolkit 스토어/슬라이스
+│   │   ├── store.ts         # 스토어 설정
+│   │   ├── provider.tsx     # Provider 컴포넌트
+│   │   └── slices/          # 도메인별 슬라이스(book, zengo, myverse 등)
+│   ├── lib/                 # API 클라이언트, 유틸 함수 등
+│   ├── hooks/               # 커스텀 훅(useAuth, useBooks, useTS 등)
+│   ├── styles/              # 글로벌/모듈 CSS, Tailwind 등
+│   ├── public/              # 정적 파일(이미지 등)
+│   │   └── images/          # 이미지 리소스
+│   ├── scripts/             # 프론트엔드 유틸 스크립트
+│   └── src/                 # 타입, 유틸, 스타일 등(분리 관리)
+│       ├── types/           # 타입 정의(zengo 등)
+│       ├── utils/           # 유틸 함수
+│       └── styles/          # 테마 등 스타일
+│
+└── node_modules/            # 공통 의존성(루트/백엔드/프론트엔드)
 ```
 
-## 구현되었지만 아직 UI에 완전히 표시되지 않는 기능
+---
 
-- **플래시카드 시스템:** 백엔드 API 및 모델은 구현되었으나, 메모에서 플래시카드 자동 생성, SRS 학습 UI 등 프론트엔드 연동은 진행 중입니다.
-- **메모진화 시스템:** 개념은 존재하나, 메모 간의 구체적인 연결 시각화 및 지능형 관리 기능은 추후 구현될 예정입니다.
-- **ZenGo 오리지널:** 모드 자체는 계획되어 있으나, 실제 프리미엄 콘텐츠 제공은 시작되지 않았습니다.
-- **운영자/클랜장 고급 기능:** 일부 백엔드 기능은 존재하지만, 클랜 관리 대시보드, 맞춤 콘텐츠 상세 설정 등 프론트엔드 UI는 개발 진행 중입니다.
+## 구현/진행 중 기능
+
+- **젠고 오리지널 오픈마켓:** 노트 거래, 큐레이션, 평점 시스템 개발 중
+- **메모진화 트리 시각화:** 메모 간 연결 및 진화 경로 UI 개발 중
+- **사용자 제작 젠고 게임:** 커스터마이즈/공유 기능 확장 중
+
+---
 
 ## 기여하기
 
-(기여 방법에 대한 안내 추가 예정)
+(기여 방법 안내 예정)
+
+---
 
 ## 라이선스
 

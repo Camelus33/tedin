@@ -48,25 +48,28 @@ const playToneInternal = (
     }
 };
 
-// Exported function to play predefined sounds
-export const playSound = (type: 'place' | 'correct' | 'incorrect') => {
-    // Ensure AudioContext is initialized (might happen here or on first click)
-    initAudioContext(); 
+const SOUND_FILE_MAP: Record<string, string[]> = {
+  place: ['/sounds/stone-place.mp3', '/sounds/stone-place.ogg', '/sounds/stone-place.wav'],
+  correct: ['/sounds/correct.mp3', '/sounds/correct.ogg', '/sounds/correct.wav'],
+  incorrect: ['/sounds/incorrect.mp3', '/sounds/incorrect.ogg', '/sounds/incorrect.wav'],
+  perfect: ['/sounds/perfect.mp3', '/sounds/perfect.ogg', '/sounds/perfect.wav'], // perfect 사운드는 추후 파일 추가 필요
+};
 
-    switch (type) {
-        case 'place':
-            playToneInternal(440, 'sine', 0.08); // A4 note, short duration
+// Exported function to play predefined sounds
+export const playSound = (type: 'place' | 'correct' | 'incorrect' | 'perfect') => {
+    const files = SOUND_FILE_MAP[type];
+    if (!files) return;
+    let audio: HTMLAudioElement | null = null;
+    for (const src of files) {
+        audio = new Audio(src);
+        // 브라우저가 지원하는 첫 번째 포맷을 사용
+        if (audio.canPlayType('audio/mpeg') || audio.canPlayType('audio/ogg') || audio.canPlayType('audio/wav')) {
             break;
-        case 'correct':
-            playToneInternal(660, 'sine', 0.1); // E5 note
-            // Optional: Play a second higher tone shortly after for effect
-            // setTimeout(() => playToneInternal(880, 'sine', 0.05), 80);
-            break;
-        case 'incorrect':
-            playToneInternal(220, 'square', 0.15); // A3 note, square wave for harsher sound
-            break;
-        default:
-            break;
+        }
+    }
+    if (audio) {
+        audio.volume = 0.7; // 필요시 조정
+        audio.play();
     }
 };
 

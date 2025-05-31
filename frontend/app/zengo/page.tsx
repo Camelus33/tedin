@@ -26,6 +26,7 @@ import ZengoStatusDisplay from '@/components/zengo/ZengoStatusDisplay';
 import ZengoResultPage from '@/components/zengo/ZengoResultPage';
 import { BoardStoneData, PlacedStone, BoardSize, InteractionMode } from '@/src/types/zengo';
 import { LightBulbIcon, FireIcon, QuestionMarkCircleIcon, DocumentTextIcon, UserIcon, ArrowTrendingUpIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
+import { playSound } from '@/lib/audioUtils';
 
 // [ZenGo 모드 분리 원칙]
 // ZenGo는 세 가지 모드(젠고 기본, 젠고 마이버스, 젠고 오리지널/브랜디드)를 별도로 운영합니다.
@@ -613,6 +614,27 @@ export default function ZengoPage(
 
   // --- ZenGo Myverse Modal State ---
   const [showMyverseModal, setShowMyverseModal] = useState(false);
+
+  // 정답/오답/퍼펙트 사운드 연동 useEffect 추가 (placedStones, wordOrderCorrect 등 변화 시)
+  useEffect(() => {
+    if (gameState === 'playing' && currentContent) {
+      const correctPlacements = placedStones.filter(stone => stone.correct);
+      const allWordsCorrect = correctPlacements.length === currentContent.wordMappings.length;
+      if (allWordsCorrect) {
+        if (wordOrderCorrect) {
+          playSound('perfect'); // 퍼펙트 사운드
+        } else {
+          playSound('correct'); // 일반 정답 사운드
+        }
+      } else {
+        // 마지막 놓은 돌이 오답이면 오답 사운드
+        const lastPlaced = placedStones[placedStones.length - 1];
+        if (lastPlaced && lastPlaced.correct === false) {
+          playSound('incorrect');
+        }
+      }
+    }
+  }, [placedStones, wordOrderCorrect, gameState, currentContent]);
 
   // --- Render Logic --- 
 
