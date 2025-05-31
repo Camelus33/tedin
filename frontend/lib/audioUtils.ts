@@ -52,25 +52,34 @@ const SOUND_FILE_MAP: Record<string, string[]> = {
   place: ['/sounds/stone-place.mp3', '/sounds/stone-place.ogg', '/sounds/stone-place.wav'],
   correct: ['/sounds/correct.mp3', '/sounds/correct.ogg', '/sounds/correct.wav'],
   incorrect: ['/sounds/incorrect.mp3', '/sounds/incorrect.ogg', '/sounds/incorrect.wav'],
-  perfect: ['/sounds/perfect.mp3', '/sounds/perfect.ogg', '/sounds/perfect.wav'], // perfect 사운드는 추후 파일 추가 필요
+  perfect: ['/sounds/perfect.mp3', '/sounds/perfect.ogg', '/sounds/perfect.wav'],
 };
 
 // Exported function to play predefined sounds
 export const playSound = (type: 'place' | 'correct' | 'incorrect' | 'perfect') => {
-    const files = SOUND_FILE_MAP[type];
-    if (!files) return;
-    let audio: HTMLAudioElement | null = null;
-    for (const src of files) {
-        audio = new Audio(src);
-        // 브라우저가 지원하는 첫 번째 포맷을 사용
-        if (audio.canPlayType('audio/mpeg') || audio.canPlayType('audio/ogg') || audio.canPlayType('audio/wav')) {
-            break;
-        }
-    }
-    if (audio) {
-        audio.volume = 0.7; // 필요시 조정
-        audio.play();
-    }
+  const files = SOUND_FILE_MAP[type];
+  if (!files) return;
+  let played = false;
+  for (const src of files) {
+    const audio = new Audio(src);
+    audio.volume = 0.7;
+    audio.onerror = (e) => {
+      console.error(`[사운드] 파일을 못 불러왔어요:`, src, e);
+    };
+    audio.onplay = () => {
+      console.log(`[사운드] 재생 성공:`, src);
+    };
+    audio.onended = () => {
+      console.log(`[사운드] 재생 끝:`, src);
+    };
+    audio.play().then(() => {
+      played = true;
+    }).catch((err) => {
+      console.warn(`[사운드] 재생 실패:`, src, err);
+    });
+    // 한 번만 시도(여러 번 겹치지 않게)
+    break;
+  }
 };
 
 // Export a function to ensure context is started on user interaction
