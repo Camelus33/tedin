@@ -1,7 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { flashcardApi, Flashcard } from '@/lib/api';
 import { TSNote } from '@/components/ts/TSNoteCard';
 import { QuestionMarkCircleIcon, CheckCircleIcon, XCircleIcon, PlusCircleIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
+// Cyber Theme (FlashcardDeck과 일관성을 위해 정의)
+const cyberTheme = {
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400',
+  inputBg: 'bg-gray-700/50',
+  inputBorder: 'border-gray-600',
+  buttonPrimaryBg: 'bg-purple-600',
+  buttonPrimaryHoverBg: 'hover:bg-purple-700',
+  buttonSecondaryBg: 'bg-gray-600',
+  buttonSecondaryHoverBg: 'hover:bg-gray-500',
+  textLight: 'text-gray-200',
+  textMuted: 'text-gray-400',
+  errorText: 'text-red-400',
+  formBg: 'bg-gray-800/80', // Form 배경색 변경
+  labelColor: 'text-cyan-300',
+};
 
 // [TS메모카드→플래시카드 변환 연계 가이드]
 // - 이 컴포넌트는 TSNoteCard(메모진화 시스템)에서 플래시카드 변환(onFlashcardConvert) 요청 시 사용됩니다.
@@ -22,114 +42,135 @@ interface FlashcardFormProps {
   questionDefault?: string;
   answerDefault?: string;
   editId?: string;
+  isEditing?: boolean;
 }
 
-const FlashcardForm: React.FC<FlashcardFormProps> = ({ note, bookId, pageStart, pageEnd, onCreated, onCancel, questionDefault, answerDefault, editId }) => {
-  const [question, setQuestion] = useState(note ? note.content : questionDefault || '');
+const FlashcardForm: React.FC<FlashcardFormProps> = ({ note, bookId, pageStart, pageEnd, onCreated, onCancel, questionDefault, answerDefault, editId, isEditing }) => {
+  const [question, setQuestion] = useState(questionDefault || (note ? note.content : ''));
   const [answer, setAnswer] = useState(answerDefault || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setQuestion(questionDefault || (note ? note.content : ''));
+    setAnswer(answerDefault || '');
+  }, [questionDefault, answerDefault, note, isEditing]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!question.trim() || !answer.trim()) {
+      setError('질문과 답변을 모두 입력해주세요.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
       let card;
-      if (editId) {
-        card = await flashcardApi.update(editId, {
-          question,
-          answer,
-        });
-      } else if (note) {
+      const currentSourceText = note ? note.content : question;
+
+      // API 페이로드 명시적 구성
+      const apiPayload: {
+        bookId: string;
+        question: string;
+        answer: string;
+        sourceText: string;
+        tsNoteId?: string;
+        tsSessionId?: string;
+        pageStart?: number;
+        pageEnd?: number;
+      } = {
+        bookId,
+        question,
+        answer,
+        sourceText: currentSourceText,
+      };
+
+      if (note) {
+        apiPayload.tsNoteId = note._id;
+        if (note.originSession !== undefined) { // note.originSession 사용 및 undefined 체크
+          apiPayload.tsSessionId = note.originSession;
+        }
+      }
+      if (pageStart !== undefined) {
+        apiPayload.pageStart = pageStart;
+      }
+      if (pageEnd !== undefined) {
+        apiPayload.pageEnd = pageEnd;
+      }
+
+      if (isEditing && editId) {
+        card = await flashcardApi.update(editId, apiPayload); 
+      } else if (note) { // TSNote에서 새로 생성하는 경우 (isEditing=false, editId=null)
+        // fromMemo API는 다른 payload를 기대할 수 있으므로, 필요시 fromMemo용 payload 별도 구성
+        // 여기서는 question, answer만 사용하고 memoId를 전달하는 기존 방식을 유지
         card = await flashcardApi.fromMemo({
           memoId: note._id,
-          question,
-          answer,
+          question: apiPayload.question, // 사용자가 수정한 question 사용
+          answer: apiPayload.answer,   // 사용자가 입력한 answer 사용
         });
-      } else {
-        card = await flashcardApi.create({
-          bookId,
-          question,
-          answer,
-          sourceText: question,
-        });
+      } else { // 순수하게 새로 생성하는 경우
+        card = await flashcardApi.create(apiPayload);
       }
       onCreated(card);
     } catch (err: any) {
-      setError(err.message || '플래시카드 생성 실패');
+      setError(err.response?.data?.message || err.message || '플래시카드 처리 중 오류 발생');
     } finally {
       setLoading(false);
     }
   };
 
+  const formTitle = isEditing ? '플래시카드 수정' : '새 플래시카드 생성';
+  const submitButtonText = isEditing ? '변경사항 저장' : '플래시카드 생성';
+  const submitButtonIcon = isEditing ? <PencilSquareIcon className="h-5 w-5 mr-2" /> : <PlusCircleIcon className="h-5 w-5 mr-2" />;
+
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-2xl border-0 p-8 max-w-md mx-auto mt-8">
-      <div className="flex flex-col items-center mb-6">
-        <QuestionMarkCircleIcon className="w-10 h-10 text-indigo-700 mb-2" />
-        <h3 className="text-2xl font-bold text-indigo-800 mb-1 tracking-tight">{editId ? '플래시카드 수정' : '플래시카드 생성'}</h3>
-        {note && <div className="mb-2 text-xs text-gray-400 text-center">출처: "{note.content}"</div>}
-      </div>
-      <div className="mb-6 flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className={`p-6 rounded-lg shadow-xl ${cyberTheme.formBg} border border-gray-700/50`}>
+      <h3 className={`text-xl font-semibold ${cyberTheme.primary} mb-6 text-center`}>{formTitle}</h3>
+      
+      <div className="space-y-6 mb-6">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="relative group">
-              <QuestionMarkCircleIcon className="w-6 h-6 text-indigo-700" aria-label="질문(앞면)" />
-              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                질문(앞면): 플래시카드의 문제를 입력하세요
-              </div>
-            </div>
-          </div>
-          <input
-            type="text"
+          <label htmlFor="flashcard-question" className={`block text-sm font-medium ${cyberTheme.labelColor} mb-1.5`}>질문 (앞면)</label>
+          <Textarea
+            id="flashcard-question"
             value={question}
             onChange={e => setQuestion(e.target.value)}
-            className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
+            className={`w-full p-3 rounded-md ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} placeholder-gray-500 focus:border-purple-500 focus:ring-purple-500/50 min-h-[80px]`}
             placeholder="예: 이 개념의 핵심은 무엇인가요?"
             required
           />
         </div>
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="relative group">
-              <CheckCircleIcon className="w-6 h-6 text-green-600" aria-label="정답(뒷면)" />
-              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                정답(뒷면): 플래시카드의 답을 입력하세요
-              </div>
-            </div>
-          </div>
-          <input
-            type="text"
+          <label htmlFor="flashcard-answer" className={`block text-sm font-medium ${cyberTheme.labelColor} mb-1.5`}>정답 (뒷면)</label>
+          <Textarea
+            id="flashcard-answer"
             value={answer}
             onChange={e => setAnswer(e.target.value)}
-            className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
+            className={`w-full p-3 rounded-md ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} placeholder-gray-500 focus:border-purple-500 focus:ring-purple-500/50 min-h-[80px]`}
             placeholder="예: 기억법, 공식, 요약 등"
             required
           />
         </div>
       </div>
-      {error && <div className="text-red-500 mb-4 flex items-center gap-2"><span>⚠️</span>{error}</div>}
-      <div className="flex gap-3 justify-end mt-6">
-        <div className="relative group">
-          <button type="button" onClick={onCancel} aria-label="취소" title="취소" className="p-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition shadow-sm flex items-center justify-center">
-            <XCircleIcon className="w-6 h-6" />
-          </button>
-          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-            취소
-          </div>
-        </div>
-        <div className="relative group">
-          <button type="submit" disabled={loading} aria-label={editId ? '수정' : '생성'} title={editId ? '수정' : '생성'} className="p-2 rounded-lg bg-indigo-700 text-white font-bold shadow-md hover:bg-indigo-800 transition disabled:opacity-50 flex items-center justify-center">
-            {loading ? (
-              <span className="animate-spin mr-1">⏳</span>
-            ) : (
-              editId ? <PencilSquareIcon className="w-6 h-6" /> : <PlusCircleIcon className="w-6 h-6" />
-            )}
-          </button>
-          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-            {editId ? '수정' : '생성'}
-          </div>
-        </div>
+
+      {error && <p className={`text-sm ${cyberTheme.errorText} mb-4 text-center`}>{error}</p>}
+
+      <div className="flex gap-3 justify-end mt-8">
+        <Button 
+          type="button" 
+          onClick={onCancel} 
+          variant="outline"
+          className={`px-5 py-2 rounded-md border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-150`}
+        >
+          <XCircleIcon className="h-5 w-5 mr-2" /> 취소
+        </Button>
+        <Button 
+          type="submit" 
+          disabled={loading}
+          className={`px-5 py-2 rounded-md ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-semibold transition-colors duration-150 disabled:opacity-60 flex items-center`}
+        >
+          {loading ? <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></span> : submitButtonIcon}
+          {submitButtonText}
+        </Button>
       </div>
     </form>
   );

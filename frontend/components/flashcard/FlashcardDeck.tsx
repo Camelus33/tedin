@@ -1,6 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { flashcardApi, Flashcard, books } from '@/lib/api';
 import FlashcardForm from './FlashcardForm';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { EllipsisVerticalIcon, PencilIcon, TrashIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+
+const cyberTheme = {
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400',
+  cardBg: 'bg-gray-800/70',
+  inputBg: 'bg-gray-700/50',
+  inputBorder: 'border-gray-600',
+  buttonPrimaryBg: 'bg-purple-600',
+  buttonPrimaryHoverBg: 'hover:bg-purple-700',
+  textLight: 'text-gray-200',
+  textMuted: 'text-gray-400',
+  menuBg: 'bg-gray-700',
+  menuItemHover: 'hover:bg-gray-600',
+  borderPrimary: 'border-cyan-500',
+  borderSecondary: 'border-purple-500',
+  errorText: 'text-red-400',
+  successText: 'text-emerald-400',
+};
 
 interface FlashcardDeckProps {
   bookId: string;
@@ -10,22 +36,16 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [flipped, setFlipped] = useState<{ [id: string]: boolean }>({});
-  const [reviewing, setReviewing] = useState<{ [id: string]: boolean }>({});
-  const [reviewed, setReviewed] = useState<{ [id: string]: boolean }>({});
   const [bookTitle, setBookTitle] = useState<string>('');
-  const [userAnswers, setUserAnswers] = useState<{ [id: string]: string }>({});
-  const [answerChecked, setAnswerChecked] = useState<{ [id: string]: boolean }>({});
-  const [isCorrect, setIsCorrect] = useState<{ [id: string]: boolean }>({});
-  const [feedback, setFeedback] = useState<{ [id: string]: string }>({});
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
+  const [showAnswerFor, setShowAnswerFor] = useState<{ [id: string]: boolean }>({});
 
   const fetchDeck = () => {
     setLoading(true);
     flashcardApi.list({ bookId })
       .then((data) => {
         setFlashcards(Array.isArray(data) ? data : data.flashcards || []);
+        setShowAnswerFor({});
       })
       .catch((e) => setError(e.message || '플래시카드 불러오기 실패'))
       .finally(() => setLoading(false));
@@ -37,45 +57,17 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
     books.getById(bookId)
       .then((data) => setBookTitle(data.title || ''))
       .catch(() => setBookTitle(''));
-    // eslint-disable-next-line
   }, [bookId]);
 
-  const handleFlip = (id: string) => {
-    setFlipped((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggleShowAnswer = (id: string) => {
+    setShowAnswerFor(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleInputChange = (id: string, value: string) => {
-    setUserAnswers((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const handleCheckAnswer = (id: string, correctAnswer: string) => {
-    const userAnswer = (userAnswers[id] || '').trim();
-    const isAnswerCorrect = userAnswer.localeCompare(correctAnswer.trim(), undefined, { sensitivity: 'base' }) === 0;
-    setAnswerChecked((prev) => ({ ...prev, [id]: true }));
-    setIsCorrect((prev) => ({ ...prev, [id]: isAnswerCorrect }));
-    if (isAnswerCorrect) {
-      setFeedback((prev) => ({ ...prev, [id]: '정답입니다! 잘 기억해냈어요. 왜 이 답을 떠올릴 수 있었는지 10초간 떠올려보세요.' }));
-    } else {
-      setFeedback((prev) => ({ ...prev, [id]: '오답입니다. 정답을 다시 확인하고, 내가 왜 다른 답을 썼는지 생각해보세요. 다시 시도해도 좋아요!' }));
-    }
-  };
-
-  const handleBackToQuestion = (id: string) => {
-    setAnswerChecked((prev) => ({ ...prev, [id]: false }));
-    setUserAnswers((prev) => ({ ...prev, [id]: '' }));
-    setFeedback((prev) => ({ ...prev, [id]: '' }));
-    setIsCorrect((prev) => ({ ...prev, [id]: false }));
-    setFlipped((prev) => ({ ...prev, [id]: false }));
-  };
-
-  // 수정 저장 핸들러
   const handleEditSaved = () => {
     setEditingId(null);
-    setEditingCard(null);
     fetchDeck();
   };
 
-  // 삭제 핸들러
   const handleDelete = async (id: string) => {
     if (!window.confirm('정말로 이 플래시카드를 삭제하시겠습니까?')) return;
     try {
@@ -86,81 +78,84 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
     }
   };
 
-  if (loading) return <div className="text-cyan-400">플래시카드 불러오는 중...</div>;
-  if (error) return <div className="text-red-400">{error}</div>;
-  if (flashcards.length === 0) return <div className="text-gray-400">플래시카드가 없습니다.</div>;
-
+  if (loading) return <div className={`text-center py-10 ${cyberTheme.textMuted}`}>플래시카드 불러오는 중...</div>;
+  if (error) return <div className={`text-center py-10 ${cyberTheme.errorText}`}>{error}</div>;
+  
   return (
-    <div className="space-y-4 mt-4">
+    <div className="space-y-6 mt-6">
+      {flashcards.length === 0 && (
+        <div className={`text-center py-10 ${cyberTheme.textMuted}`}>플래시카드가 없습니다.</div>
+      )}
+
       {flashcards.map((card) => (
-        <div key={card._id} className="bg-gray-800/60 rounded-lg p-4 border border-cyan-500/30 relative">
-          {/* 수정/삭제 버튼 */}
-          <div className="absolute top-2 right-2 flex gap-1">
-            <button
-              className="px-2 py-0.5 rounded bg-gray-700 text-cyan-300 text-xs hover:bg-gray-600 border border-cyan-500/30"
-              onClick={() => {
-                setEditingId(card._id!);
-                setEditingCard(card);
-              }}
-            >수정</button>
-            <button
-              className="px-2 py-0.5 rounded bg-gray-700 text-red-300 text-xs hover:bg-gray-600 border border-red-500/30"
-              onClick={() => handleDelete(card._id!)}
-            >삭제</button>
+        <div key={card._id} className={`${cyberTheme.cardBg} rounded-xl p-5 shadow-lg border ${cyberTheme.borderPrimary}/20 relative transition-all duration-300 hover:shadow-cyan-500/20`}>
+          <div className="absolute top-3 right-3 z-10">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className={`text-gray-400 hover:text-cyan-300 p-1.5`}>
+                  <EllipsisVerticalIcon className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border ${cyberTheme.inputBorder}`}>
+                <DropdownMenuItem 
+                  onClick={() => {
+                    setEditingId(card._id!);
+                  }}
+                  className={`${cyberTheme.menuItemHover} ${cyberTheme.textLight} cursor-pointer flex items-center px-3 py-2 text-sm`}
+                >
+                  <PencilIcon className={`h-4 w-4 mr-2 ${cyberTheme.primary}`} /> 수정하기
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleDelete(card._id!)} 
+                  className={`${cyberTheme.menuItemHover} ${cyberTheme.errorText} hover:!text-red-300 cursor-pointer flex items-center px-3 py-2 text-sm`}
+                >
+                  <TrashIcon className="h-4 w-4 mr-2" /> 삭제하기
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          {/* 수정 모드 */}
+
           {editingId === card._id ? (
             <FlashcardForm
               bookId={bookId}
-              questionDefault={editingCard?.question}
-              answerDefault={editingCard?.answer}
+              questionDefault={card.question}
+              answerDefault={card.answer}
               onCreated={handleEditSaved}
-              onCancel={() => { setEditingId(null); setEditingCard(null); }}
+              onCancel={() => { setEditingId(null); }}
               editId={editingId}
+              isEditing
             />
           ) : (
-            <>
-              {/* 앞면: 질문, 답 입력, 확인 버튼 */}
-              {!flipped[card._id!] ? (
-                !answerChecked[card._id!] ? (
-                  <>
-                    <div className="font-bold text-cyan-300 mb-2 text-lg">Q. {card.question}</div>
-                    <div className="flex flex-row gap-2 items-center mb-2">
-                      <input
-                        type="text"
-                        value={userAnswers[card._id!] || ''}
-                        onChange={e => handleInputChange(card._id!, e.target.value)}
-                        className="w-2/3 max-w-lg p-2 rounded border border-cyan-500/30 bg-gray-800 text-white"
-                        placeholder="여기에 답을 입력하세요"
-                        onKeyDown={e => { if (e.key === 'Enter') handleCheckAnswer(card._id!, card.answer); }}
-                      />
-                      <button
-                        className="px-3 py-1 rounded bg-purple-700 text-white text-xs hover:bg-purple-800 shrink-0"
-                        onClick={() => handleCheckAnswer(card._id!, card.answer)}
-                        disabled={!userAnswers[card._id!] || userAnswers[card._id!].trim() === ''}
-                      >확인</button>
-                    </div>
-                  </>
-                ) : (
-                  // 답 체크 후: 정답/오답 피드백, 정답 표시, 질문으로 돌아가기
-                  <>
-                    <div className="font-bold text-cyan-300 mb-2 text-lg">Q. {card.question}</div>
-                    <div className={`mb-2 text-base ${isCorrect[card._id!] ? 'text-emerald-400' : 'text-red-400'}`}>{feedback[card._id!]}</div>
-                    <div className="text-gray-200 mb-2 text-base">정답: {card.answer}</div>
-                    <div className="text-xs text-gray-400 mb-2">
-                      책: <span className="text-cyan-200 font-semibold">{bookTitle || '(제목 정보 없음)'}</span>
-                      {card.pageStart && <> | p.{card.pageStart}{card.pageEnd ? `~${card.pageEnd}` : ''}</>}
-                      {card.sourceText && <> | "{card.sourceText}"</>}
-                      {card.tsSessionId && <> | TS 세션: {card.tsSessionId}</>}
-                    </div>
-                    <button
-                      className="px-2 py-1 rounded bg-gray-700 text-gray-200 text-xs hover:bg-gray-600 border border-gray-500"
-                      onClick={() => handleBackToQuestion(card._id!)}
-                    >질문으로 돌아가기</button>
-                  </>
-                )
-              ) : null}
-            </>
+            <div className="space-y-4">
+              <div className="flex items-start">
+                <span className={`font-semibold ${cyberTheme.primary} text-xl mr-2 mt-0.5`}>Q.</span>
+                <p className={`${cyberTheme.textLight} text-lg leading-relaxed break-words whitespace-pre-wrap`}>{card.question}</p>
+              </div>
+
+              {showAnswerFor[card._id!] && (
+                <div className="pt-3 border-t border-gray-700/50 mt-3">
+                  <div className="flex items-start">
+                    <span className={`font-semibold ${cyberTheme.secondary} text-xl mr-2 mt-0.5`}>A.</span>
+                    <p className={`${cyberTheme.textLight} text-lg leading-relaxed break-words whitespace-pre-wrap`}>{card.answer}</p>
+                  </div>
+                  <div className={`text-xs ${cyberTheme.textMuted} mt-2 pl-8`}>
+                    책: <span className={`${cyberTheme.secondary} font-medium`}>{bookTitle || '정보 없음'}</span>
+                    {card.pageStart && <> | 페이지: {card.pageStart}{card.pageEnd ? `-${card.pageEnd}` : ''}</>}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-4 flex justify-start">
+                <Button
+                  variant="outline"
+                  className={`px-4 py-2 rounded-md border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white text-sm transition-colors duration-150 flex items-center`}
+                  onClick={() => toggleShowAnswer(card._id!)}
+                >
+                  {showAnswerFor[card._id!] ? <EyeSlashIcon className="h-5 w-5 mr-2" /> : <EyeIcon className="h-5 w-5 mr-2" />}
+                  {showAnswerFor[card._id!] ? '정답 숨기기' : '정답 보기'}
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       ))}
