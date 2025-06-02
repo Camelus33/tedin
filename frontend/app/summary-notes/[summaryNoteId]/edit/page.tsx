@@ -415,10 +415,10 @@ export default function EditSummaryNotePage() {
                   }}
                   // onAddToCart is not relevant here as notes are already part of the summary
                 />
-                <div className="absolute top-2 right-2 flex flex-col space-y-1 z-10">
-                    <Button size="sm" variant="ghost" onClick={() => handleReorderNote(note._id, 'up')} disabled={index === 0} className="px-1 py-0.5 h-auto">▲</Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleReorderNote(note._id, 'down')} disabled={index === fetchedNotes.length - 1} className="px-1 py-0.5 h-auto">▼</Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleRemoveNoteFromSummary(note._id)} className="px-1 py-0.5 h-auto">✕</Button>
+                <div className="absolute top-12 right-2 flex flex-col space-y-1 z-10">
+                    <Button size="sm" variant="ghost" onClick={() => handleReorderNote(note._id, 'up')} disabled={index === 0} className="px-1 py-0.5 h-auto text-lg">▲</Button>
+                    <Button size="sm" variant="ghost" onClick={() => handleReorderNote(note._id, 'down')} disabled={index === fetchedNotes.length - 1} className="px-1 py-0.5 h-auto text-lg">▼</Button>
+                    <Button size="sm" variant="destructive" onClick={() => handleRemoveNoteFromSummary(note._id)} className="px-1 py-0.5 h-auto text-lg">✕</Button>
                 </div>
               </div>
             ))}
