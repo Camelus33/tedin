@@ -6,8 +6,7 @@ import Button from '@/components/common/Button';
 import { AiOutlineEdit, AiOutlineQuestionCircle, AiOutlineArrowRight, AiOutlineInfoCircle, AiOutlineEye } from 'react-icons/ai';
 import { FiBook } from 'react-icons/fi';
 import useBooks from '@/hooks/useBooks';
-import TSNoteCard from '@/components/ts/TSNoteCard';
-import { TSSessionDetails } from '@/components/ts/TSNoteCard';
+import TSNoteCard, { TSNote, TSSessionDetails } from '@/components/ts/TSNoteCard';
 import Spinner from '@/components/ui/Spinner';
 import FlashcardDeck from '@/components/flashcard/FlashcardDeck';
 import FlashcardForm from '@/components/flashcard/FlashcardForm';
@@ -15,6 +14,7 @@ import { DocumentTextIcon, BookOpenIcon, PlayCircleIcon, NewspaperIcon } from '@
 import { ShareIcon } from '@heroicons/react/24/solid';
 import { AiFillYoutube } from 'react-icons/ai';
 import api from '@/lib/api'; // Added import for central api instance
+import { useCartStore } from '@/store/cartStore'; // Uncommented
 
 // API base URL - this should match what's used elsewhere in the app (REMOVING THIS)
 // const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'; // Commented out
@@ -62,7 +62,11 @@ const readingPurposeLabels: Record<string, string> = {
   reading_pleasure: "읽는 재미"
 };
 
-// Define book interface that matches the structure from useBooks hook
+/**
+ * @interface BookWithId
+ * @description useBooks 훅에서 반환되는 Book 타입에 _id 필드를 명시적으로 포함하는 확장 인터페이스입니다.
+ *             기존 Book 타입이 id (string)를 가질 수 있으나, MongoDB의 _id와 일관성을 맞추기 위함입니다.
+ */
 interface BookWithId extends Omit<Book, 'id'> {
   _id: string;
   category?: string;
@@ -71,6 +75,10 @@ interface BookWithId extends Omit<Book, 'id'> {
   readingGoal?: string;
 }
 
+/**
+ * @interface Book (기존 타입)
+ * @description 책 정보를 나타내는 기본 인터페이스입니다.
+ */
 type Book = {
   _id: string;
   title: string;
@@ -87,19 +95,28 @@ type Book = {
   createdAt: string;
 };
 
-type Note = {
-  _id: string;
-  content: string;
-  type: 'quote' | 'thought' | 'question';
-  tags: string[];
-  createdAt: string;
-  originSession?: string;
-  importanceReason?: string;
-  momentContext?: string;
-  relatedKnowledge?: string;
-  mentalImage?: string;
-};
+/**
+ * @interface PageNote
+ * @description BookDetailPage 내에서 사용되는 노트(1줄 메모)의 타입 정의입니다.
+ * TSNoteCard 컴포넌트에서 요구하는 TSNote 인터페이스를 만족해야 하며 (특히 bookId 포함),
+ * 페이지 특화적인 추가 필드(type, createdAt, originSession 등)를 가질 수 있습니다.
+ * 이 페이지에서 API를 통해 가져온 노트 데이터는 이 타입으로 매핑됩니다.
+ */
+interface PageNote extends TSNote { 
+  type: 'quote' | 'thought' | 'question'; 
+  createdAt: string; 
+  originSession?: string; 
+  relatedLinks?: Array<{
+    type: 'bookAndPaper' | 'youtube' | 'sns' | 'media' | 'noteApp'; 
+    url: string;
+    reason?: string;
+  }>;
+}
 
+/**
+ * @interface Session
+ * @description TS 모드 세션 정보를 나타내는 타입 정의입니다.
+ */
 type Session = {
   _id: string;
   startPage: number;
@@ -110,29 +127,64 @@ type Session = {
   createdAt: string;
 };
 
-// RelatedLink 타입 정의
+/**
+ * @interface RelatedLink
+ * @description 노트에 연결된 관련 외부 링크의 정보를 나타내는 타입 정의입니다.
+ */
 type RelatedLink = {
   type: 'bookAndPaper' | 'youtube' | 'sns' | 'media' | 'noteApp';
   url: string;
-  reason: string;
+  reason?: string;
 };
 
+/**
+ * @page BookDetailPage
+ * @description 특정 책의 상세 정보, 관련 TS 노트 목록, TS 세션 정보 등을 표시하는 페이지 컴포넌트입니다.
+ * 사용자는 이 페이지에서 TS 노트를 확인하고, 해당 노트의 메모 진화 기능을 사용하거나,
+ * 노트를 지식 카트에 담거나, 플래시카드로 만들거나, 관련 외부 링크를 추가/관리할 수 있습니다.
+ * URL 경로의 `[id]` 파라미터를 통해 표시할 책을 식별합니다.
+ * 
+ * 주요 기능:
+ * - 책 상세 정보 표시 (커버 이미지, 제목, 저자, 진행도 등)
+ * - 해당 책의 1줄 메모(`TSNoteCard`) 목록 표시 및 메모 진화 기능 제공
+ * - 1줄 메모를 지식 카트에 추가 (`onAddToCart` 프롭을 `TSNoteCard`에 전달)
+ * - 1줄 메모를 플래시카드로 변환하는 기능
+ * - 1줄 메모에 관련 외부 지식 링크를 추가하고 관리하는 기능
+ * - TS 모드 시작 기능
+ * - 책 정보 수정 및 삭제 기능 (구현 예정 또는 부분 구현)
+ * 
+ * 상태 관리:
+ * - `book`: 현재 페이지에 표시될 책의 상세 정보 (`BookWithId` 타입).
+ * - `tsNotes`: 현재 책에 속한 1줄 메모 목록 (`PageNote[]` 타입).
+ * - `tsSessions`: 현재 책과 관련된 TS 모드 세션 목록 (`Session[]` 타입).
+ * - `cartItems`: Zustand 스토어(`useCartStore`)에서 가져온 현재 지식 카트 아이템 목록.
+ * - `activeTab`: 'memo', 'flashcard', 'relatedLinks' 탭 상태 관리.
+ * - 기타 UI 및 데이터 로딩 상태 (isLoading, sessionsLoading, isDeleting 등).
+ * 
+ * 데이터 페칭:
+ * - `useEffect` 훅을 사용하여 페이지 로드 시 `bookId`에 해당하는 책 상세 정보,
+ *   관련 TS 노트 목록, TS 세션 목록을 비동기적으로 가져옵니다.
+ * - 노트 업데이트, 카트 추가 등의 사용자 상호작용은 `api` 유틸리티를 통해 백엔드와 통신합니다.
+ */
 export default function BookDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const bookId = params.id as string;
+  const bookId = params.id as string; // URL 파라미터에서 현재 책의 ID를 가져옵니다.
   
-  // Use custom hooks
-  const { bookFetchState, fetchBookDetail } = useBooks();
-  const [tsNotes, setTsNotes] = useState<Note[]>([]);
-  const [tsSessions, setTsSessions] = useState<Session[]>([]);
-  const [sessionsLoading, setSessionsLoading] = useState<boolean>(true);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [flashcardFormNote, setFlashcardFormNote] = useState<Note | null>(null);
-  const [flashcardDeckKey, setFlashcardDeckKey] = useState(0); // Deck 강제 리렌더용
-  const [activeTab, setActiveTab] = useState<'memo' | 'flashcard' | 'relatedLinks'>('memo');
-  const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false);
-  const [selectedRelatedNote, setSelectedRelatedNote] = useState<Note | null>(null);
+  const { bookFetchState, fetchBookDetail } = useBooks(); // 책 정보 조회 커스텀 훅
+  const [tsNotes, setTsNotes] = useState<PageNote[]>([]); // 현재 책에 속한 TS 노트 목록 상태
+  const [tsSessions, setTsSessions] = useState<Session[]>([]); // 현재 책에 속한 TS 세션 목록 상태
+  const [sessionsLoading, setSessionsLoading] = useState<boolean>(true); // 세션 로딩 상태
+  const [isDeleting, setIsDeleting] = useState<boolean>(false); // 책 삭제 진행 상태
+  const [flashcardFormNote, setFlashcardFormNote] = useState<PageNote | null>(null); // 플래시카드 생성 폼에 전달될 노트
+  const [flashcardDeckKey, setFlashcardDeckKey] = useState(0); // 플래시카드 덱 강제 리렌더링을 위한 키
+  const [activeTab, setActiveTab] = useState<'memo' | 'flashcard' | 'relatedLinks'>('memo'); // 현재 활성화된 탭 (메모진화, 지식연결, 플래시카드)
+  const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false); // 새 플래시카드 수동 생성 폼 표시 여부
+  const [selectedRelatedNote, setSelectedRelatedNote] = useState<PageNote | null>(null); // 지식연결 탭에서 선택된 노트
+  
+  // localStorage에서 읽어온 책의 추가 메타데이터를 저장하는 상태입니다.
+  // 이 상태는 클라이언트 사이드에서만 업데이트됩니다.
+  const [localMetadata, setLocalMetadata] = useState<any>(null);
   
   // 관련 링크 탭용 상태
   const relatedLinkTabs: { key: RelatedLink['type']; label: string; icon: React.ComponentType<any>; tooltip: string; }[] = [
@@ -142,26 +194,20 @@ export default function BookDetailPage() {
     { key: 'media',        label: '언론·기사·매체',    icon: NewspaperIcon,     tooltip: '언론 및 매체 기사 연결'   },
     { key: 'noteApp',      label: '노트앱',      icon: DocumentTextIcon,  tooltip: '노션, 옵시디언 등 노트App과 연결' },
   ];
-  const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState<'bookAndPaper' | 'youtube' | 'sns' | 'media' | 'noteApp'>('bookAndPaper');
-  
-  // 관련 링크 입력 상태
+  const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState<RelatedLink['type']>(relatedLinkTabs[0].key);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkReason, setLinkReason] = useState('');
-
-  // 관련 링크 리스트 로컬 상태 (selectedRelatedNote별로 관리)
   const [relatedLinksMap, setRelatedLinksMap] = useState<Record<string, RelatedLink[]>>({});
 
-  // 탭 전환/노트 변경 시 입력값 초기화
   useEffect(() => {
     setLinkUrl('');
     setLinkReason('');
   }, [activeRelatedLinkTab, selectedRelatedNote]);
 
-  // 현재 노트의 관련 링크 리스트
   const currentLinks = selectedRelatedNote ? (relatedLinksMap[selectedRelatedNote._id] || []) : [];
   const filteredLinks = currentLinks.filter(l => l.type === activeRelatedLinkTab);
 
-  // 링크 추가
+  // 관련 링크 추가 핸들러
   const handleAddRelatedLink = async () => {
     if (!selectedRelatedNote || !linkUrl.trim()) return;
     const newLink: RelatedLink = {
@@ -171,103 +217,67 @@ export default function BookDetailPage() {
     };
     const noteId = selectedRelatedNote._id;
     const updatedLinks = [...(relatedLinksMap[noteId] || []), newLink];
-    setRelatedLinksMap(prev => ({
-      ...prev,
-      [noteId]: updatedLinks,
-    }));
+    setRelatedLinksMap(prev => ({ ...prev, [noteId]: updatedLinks }));
     setLinkUrl('');
     setLinkReason('');
-    // 서버 저장
     try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('로그인 필요');
-      const res = await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
-
-      // Original logic for checking res.ok might need adjustment for axios response
-      // if (!res.ok) throw new Error('서버 저장 실패');
-      // 성공 피드백
-      // alert('관련 링크가 저장되었습니다.');
+      await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
     } catch (err) {
       alert('관련 링크 저장 중 오류 발생: ' + (err as any).message);
     }
   };
 
-  // 링크 삭제
+  // 관련 링크 삭제 핸들러
   const handleDeleteRelatedLink = async (idx: number) => {
     if (!selectedRelatedNote) return;
     const noteId = selectedRelatedNote._id;
     const updatedLinks = (relatedLinksMap[noteId] || []).filter((_, i) => i !== idx);
-    setRelatedLinksMap(prev => ({
-      ...prev,
-      [noteId]: updatedLinks,
-    }));
-    // 서버 저장
+    setRelatedLinksMap(prev => ({ ...prev, [noteId]: updatedLinks }));
     try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('로그인 필요');
-      const res = await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
-
-      // Original logic for checking res.ok might need adjustment for axios response
-      // if (!res.ok) throw new Error('서버 저장 실패');
-      // alert('관련 링크가 삭제되었습니다.');
+      await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
     } catch (err) {
       alert('관련 링크 삭제 중 오류 발생: ' + (err as any).message);
     }
   };
   
-  // Destructure for cleaner access
-  const { isLoading, error, book } = bookFetchState;
+  const { isLoading, error, book } = bookFetchState; // 책 정보 로딩 상태, 오류, 데이터
+  // Zustand 스토어에서 카트 아이템 목록과 addToCart 액션을 가져옵니다.
+  const { items: cartItems, addToCart } = useCartStore();
   
-  // Fetch book and related data
   useEffect(() => {
-    // Exit if no book ID
     if (!bookId) return;
-    
     console.log('Fetching book detail for ID:', bookId);
-    
-    // Fetch the book 
     const loadBook = async () => {
-      // This will handle loading state internally
       await fetchBookDetail(bookId);
     };
-    
     loadBook();
   }, [bookId, fetchBookDetail]);
   
-  // Fetch TS 메모 and TS 세션 when book is loaded
+  // 책 정보(book)가 로드된 후, 해당 책의 TS 노트와 TS 세션 정보를 가져옵니다.
   useEffect(() => {
-    if (!bookId || !book) return;
+    if (!bookId || !book) return; // bookId나 book 객체가 없으면 API 호출 방지
     
     const fetchData = async () => {
-      // const token = localStorage.getItem('token'); // Handled by interceptor
-      // if (!token) { router.push('/auth/login'); return; }
-
-      // Fetch TS Notes
+      // TS 노트 (1줄 메모) 목록 가져오기 (originOnly=true는 TS 모드에서 생성된 원본 메모만 필터링)
       try {
-        // const notesRes = await fetch(
-        //   `${API_BASE_URL}/notes/book/${bookId}?originOnly=true`,
-        //   { headers: { Authorization: `Bearer ${token}` } }
-        // );
-        // if (!notesRes.ok) throw new Error('TS 메모를 불러오는 데 실패했습니다.');
-        // const notesData = await notesRes.json();
-        const notesData = await api.get(`/notes/book/${bookId}?originOnly=true`); // Use api.get
-        setTsNotes(notesData.data || []); // axios wraps in .data
+        const notesResponse = await api.get(`/notes/book/${bookId}?originOnly=true`);
+        // API 응답 데이터를 PageNote 타입으로 매핑하고, 각 노트에 현재 bookId를 명시적으로 주입합니다.
+        // 이는 TSNoteCard가 note.bookId를 필요로 하기 때문입니다.
+        const notesWithBookInfo: PageNote[] = (notesResponse.data || []).map((note: Omit<PageNote, 'bookId'>) => ({
+          ...note,
+          bookId: bookId, 
+        }));
+        setTsNotes(notesWithBookInfo);
       } catch (err) {
         console.error('TS 메모 로딩 오류:', err);
-        setTsNotes([]); // Clear or set to empty on error
+        setTsNotes([]); // 오류 발생 시 빈 배열로 설정
       }
 
-      // Fetch TS Sessions
+      // TS 세션 정보 가져오기
       setSessionsLoading(true);
       try {
-        // const sessionsRes = await fetch(
-        //   `${API_BASE_URL}/sessions/book/${bookId}`,
-        //   { headers: { Authorization: `Bearer ${token}` } }
-        // );
-        // if (!sessionsRes.ok) throw new Error('TS 세션 정보를 불러오는 데 실패했습니다.');
-        // const sessionsData = await sessionsRes.json();
-        const sessionsData = await api.get(`/sessions/book/${bookId}`); // Use api.get
-        setTsSessions(sessionsData.data || []); // axios wraps in .data
+        const sessionsResponse = await api.get(`/sessions/book/${bookId}`);
+        setTsSessions(sessionsResponse.data || []);
       } catch (err) {
         console.error('TS 세션 로딩 오류:', err);
         setTsSessions([]);
@@ -276,10 +286,36 @@ export default function BookDetailPage() {
       }
     };
     
-    if (bookId && book) {
-      fetchData();
+    fetchData();
+  }, [bookId, book, router]); // bookId 또는 book 객체가 변경될 때마다 실행
+
+  /**
+   * @effect 클라이언트 사이드에서 localStorage의 'book-metadata'를 읽어와 localMetadata 상태를 설정합니다.
+   * bookId가 변경될 때마다 실행되어 해당 책의 메타데이터를 로드합니다.
+   * 이 로직은 서버 사이드 렌더링 시 실행되지 않으며, 하이드레이션 오류를 방지합니다.
+   */
+  useEffect(() => {
+    // window 객체의 존재 여부로 클라이언트 사이드인지 확인 (더 명시적인 방법)
+    if (typeof window !== 'undefined' && bookId) {
+      try {
+        const bookMetadataStr = localStorage.getItem('book-metadata');
+        if (bookMetadataStr) {
+          const allMetadata = JSON.parse(bookMetadataStr);
+          if (allMetadata && allMetadata[bookId]) {
+            setLocalMetadata(allMetadata[bookId]);
+            // console.log('Loaded local metadata for book:', allMetadata[bookId]);
+          } else {
+            setLocalMetadata(null); // 해당 bookId에 대한 메타데이터가 없으면 null로 설정
+          }
+        } else {
+          setLocalMetadata(null); // 'book-metadata' 자체가 없으면 null로 설정
+        }
+      } catch (error) {
+        console.error('Error reading book metadata from localStorage:', error);
+        setLocalMetadata(null); // 오류 발생 시에도 null로 설정
+      }
     }
-  }, [bookId, book, router]); // Added router to dependencies due to its use in token check (though token check is now commented out)
+  }, [bookId]); // bookId가 변경될 때마다 실행 (클라이언트에서만)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ko-KR', {
@@ -291,15 +327,11 @@ export default function BookDetailPage() {
 
   const getProgressPercentage = () => {
     if (!book) return 0;
-    
-    // Check for valid values to avoid division by zero
     const bookData = book as unknown as BookWithId;
     const currentPage = typeof bookData.currentPage === 'number' ? bookData.currentPage : 0;
     const totalPages = typeof bookData.totalPages === 'number' && bookData.totalPages > 0 ? bookData.totalPages : 1;
-    
-    // Ensure percentage is between 0 and 100
     const percentage = Math.round((currentPage / totalPages) * 100);
-    return Math.min(Math.max(percentage, 0), 100); // Clamp between 0 and 100
+    return Math.min(Math.max(percentage, 0), 100);
   };
 
   const handleStartReading = () => {
@@ -311,30 +343,9 @@ export default function BookDetailPage() {
     if (window.confirm('이 책과 관련된 모든 TS 메모, 세션 기록이 삭제됩니다. 정말 삭제하시겠습니까?')) {
       setIsDeleting(true);
       try {
-        // const token = localStorage.getItem('token'); // Handled by interceptor
-        // if (!token) {
-        //   router.push('/auth/login');
-        //   setIsDeleting(false);
-        //   return;
-        // }
-        // await fetch(`${API_BASE_URL}/books/${bookId}`, { // API_BASE_URL and direct fetch removed
-        //   method: 'DELETE',
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   },
-        // });
-        
-        // Assuming you have imported `books as booksApi` from `@/lib/api`
-        // If not, you might need to use `api.delete(`/books/${bookId}`)` directly.
-        // For consistency with other book operations, using booksApi is preferred if available.
-        // Let's check if `booksApi` is available in this file scope. If not, we will use `api.delete`.
-        // From previous reads, `useBooks` is used, which itself uses booksApi. 
-        // However, to be safe and explicit, we can import `books as booksApi` or just use `api`.
-        // Since `api` is already imported, we will use `api.delete` for simplicity here.
         await api.delete(`/books/${bookId}`);
-
         alert('책이 성공적으로 삭제되었습니다.');
-        router.push('/books'); // Redirect to the main book list
+        router.push('/books');
       } catch (err) {
         console.error('책 삭제 오류:', err);
         alert('책을 삭제하는 중 오류가 발생했습니다: ' + (err as any).message);
@@ -343,25 +354,79 @@ export default function BookDetailPage() {
     }
   };
 
-  // 책 수정 페이지로 이동
   const handleEditBook = () => {
     router.push(`/books/${bookId}/edit`);
   };
 
-  // 탭별 placeholder 매핑
-  const linkPlaceholderMap: Record<RelatedLink['type'], string> = {
+  const linkPlaceholderMap: Partial<Record<RelatedLink['type'], string>> = {
     bookAndPaper: '이 메모와 관련 있는 책 또는 논문의 온라인 링크를 입력하세요',
     youtube:      '이 메모와 관련 있는 유튜브 영상의 URL을 입력하세요',
     sns:          '이 메모와 관련 있는 SNS 게시물(URL)을 입력하세요',
     media:        '이 메모와 관련 있는 기사/방송/매체의 URL을 입력하세요',
     noteApp:      '노션·옵시디언 등 노트앱 링크를 입력하세요',
   };
-  const reasonPlaceholderMap: Record<RelatedLink['type'], string> = {
+  const reasonPlaceholderMap: Partial<Record<RelatedLink['type'], string>> = {
     bookAndPaper: '이 링크가 왜 책 또는 논문과 관련 있다고 생각했나요?',
     youtube:      '이 영상이 왜 관련 있다고 생각했나요?',
     sns:          '이 링크가 왜 SNS 게시물과 관련 있다고 생각했나요?',
     media:        '이 매체가 왜 관련 있다고 생각했나요?',
     noteApp:      '이 링크가 왜 노트앱과 관련 있다고 생각했나요?',
+  };
+
+  /**
+   * @function handleNoteUpdate
+   * @description TSNoteCard 내부에서 1줄 메모의 내용(메모 진화 필드 등)이 변경되었을 때 호출되는 콜백 함수입니다.
+   * `tsNotes` 상태 배열에서 해당 노트를 찾아 변경된 내용으로 업데이트하고,
+   * "지식 연결" 탭에서 선택된 노트(`selectedRelatedNote`)도 동일한 노트라면 함께 업데이트합니다.
+   * @param {Partial<PageNote>} updatedNoteFields - 변경된 필드만 포함하는 부분적인 PageNote 객체 (반드시 _id 포함).
+   */
+  const handleNoteUpdate = (updatedNoteFields: Partial<PageNote>) => {
+    // tsNotes 상태를 업데이트합니다. 기존 노트 목록을 순회하며 ID가 일치하는 노트를 찾아 업데이트된 필드로 교체합니다.
+    setTsNotes(prevNotes =>
+      prevNotes.map(n => (n._id === updatedNoteFields._id ? { ...n, ...updatedNoteFields } : n))
+    );
+    // 만약 현재 "지식 연결" 탭에서 선택된 노트가 방금 업데이트된 노트와 동일하다면,
+    // selectedRelatedNote 상태도 최신 정보로 업데이트하여 UI 일관성을 유지합니다.
+    if (selectedRelatedNote && selectedRelatedNote._id === updatedNoteFields._id) {
+      setSelectedRelatedNote(prev => prev ? { ...prev, ...updatedNoteFields } : null);
+    }
+  };
+
+  /**
+   * @function handleAddToCartToStore
+   * @description `TSNoteCard`의 "지식 카트에 담기" 버튼 클릭 시 호출되는 콜백 함수입니다.
+   * Zustand 스토어(`useCartStore`)의 `addToCart` 액션을 호출하여 해당 노트를 카트에 추가합니다.
+   * 카트에 추가하기 전에 현재 페이지의 `book` 정보(특히 제목)가 로드되었는지 확인합니다.
+   * @param {string} noteId - 카트에 추가할 노트의 ID.
+   * @param {string} currentBookId - 노트가 속한 책의 ID (TSNoteCard에서 전달받음, 현재 페이지 bookId와 동일해야 함).
+   */
+  const handleAddToCartToStore = (noteId: string, currentBookId: string) => {
+    // 현재 페이지의 책(book) 정보와 카트에 추가하려는 노트(tsNotes에서 찾음) 정보를 가져옵니다.
+    const currentBook = book; // bookFetchState.book 에서 가져옴
+    const noteToAdd = tsNotes.find(n => n._id === noteId);
+
+    // 책 정보나 노트 정보가 없으면 오류를 발생시키거나 알림을 표시하고 함수를 종료합니다.
+    if (!currentBook || !currentBook.title) {
+      console.error('Book information is not loaded yet. Cannot add to cart.');
+      alert('책 정보가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+    if (!noteToAdd) {
+      console.error(`Note with ID ${noteId} not found in tsNotes. Cannot add to cart.`);
+      alert('카트에 추가하려는 노트를 찾을 수 없습니다.');
+      return;
+    }
+    
+    // Zustand 스토어의 addToCart 액션을 호출하여 아이템을 추가합니다.
+    // contentPreview는 노트 내용의 앞 50자로 설정합니다.
+    addToCart({
+      noteId: noteToAdd._id,
+      bookId: currentBookId, // TSNoteCard에서 전달받은 bookId 사용
+      bookTitle: currentBook.title,
+      contentPreview: noteToAdd.content.substring(0, 50) + (noteToAdd.content.length > 50 ? '...' : ''),
+    });
+    // 사용자에게 카트 추가 성공 알림을 표시합니다. (react-hot-toast 등 사용 가능)
+    alert(`'${noteToAdd.content.substring(0,20)}...' 메모가 지식 카트에 추가되었습니다.`);
   };
 
   if (isLoading || sessionsLoading) {
@@ -394,21 +459,6 @@ export default function BookDetailPage() {
   // Cast book to our expected type
   const bookData = book as unknown as BookWithId;
   
-  // Check if there's additional metadata in localStorage
-  let localMetadata: any = null;
-  try {
-    const bookMetadataStr = localStorage.getItem('book-metadata');
-    if (bookMetadataStr) {
-      const allMetadata = JSON.parse(bookMetadataStr);
-      if (allMetadata && allMetadata[bookId]) {
-        localMetadata = allMetadata[bookId];
-        console.log('Found local metadata for book:', localMetadata);
-      }
-    }
-  } catch (error) {
-    console.error('Error reading book metadata from localStorage:', error);
-  }
-
   return (
     <div className={`min-h-screen ${cyberTheme.gradient} p-4 md:p-6 ${cyberTheme.textLight}`}>
       <div className="container mx-auto max-w-4xl">
@@ -664,26 +714,29 @@ export default function BookDetailPage() {
                     };
                   }
 
+                  const isNoteInCart = cartItems.some(item => item.noteId === note._id);
+
                   return (
                     <div key={note._id} className={`${cyberTheme.cardBg} p-3 rounded-md border ${cyberTheme.inputBorder}`}>
                       <TSNoteCard
-                        note={note}
+                        note={note as TSNote}
                         readingPurpose={bookData.readingPurpose || 'humanities_self_reflection'}
-                        onUpdate={(updatedFields) => {
-                          const updatedNotes = tsNotes.map(n =>
-                            n._id === note._id ? { ...n, ...updatedFields } : n
-                          );
-                          setTsNotes(updatedNotes);
-                        }}
+                        onUpdate={(updatedFields) => handleNoteUpdate(updatedFields as Partial<PageNote>)}
                         onFlashcardConvert={(targetNote) => {
-                          setFlashcardFormNote(targetNote as any);
+                          setFlashcardFormNote(targetNote as PageNote);
                           setActiveTab('flashcard');
                         }}
                         onRelatedLinks={(targetNote) => {
-                          setSelectedRelatedNote(targetNote as any);
+                          setSelectedRelatedNote(targetNote as PageNote);
+                          setRelatedLinksMap(prev => ({
+                            ...prev,
+                            [(targetNote as PageNote)._id]: (targetNote as PageNote).relatedLinks || [],
+                          }));
                           setActiveTab('relatedLinks');
                         }}
                         sessionDetails={sessionDetailsForCard}
+                        onAddToCart={handleAddToCartToStore}
+                        isAddedToCart={isNoteInCart}
                       />
                     </div>
                   );

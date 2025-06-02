@@ -1,18 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
-import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon } from '@heroicons/react/24/solid';
+import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
 import api from '@/lib/api'; // Import the central api instance
 
+/**
+ * @interface TSNote
+ * @description TSNoteCard 컴포넌트에서 사용하는 1줄 메모(노트)의 기본 데이터 구조입니다.
+ * 이 구조는 백엔드의 Note 모델과 동기화되며, 추가적인 클라이언트 측 필드를 포함할 수 있습니다.
+ */
 export interface TSNote {
+  /** @property {string} _id - 노트의 고유 MongoDB ID. */
   _id: string;
+  /** 
+   * @property {string} bookId - 이 노트가 속한 책(Book)의 고유 ID.
+   * 지식 카트에 담을 때나, 특정 책에 종속된 노트를 필터링할 때 사용됩니다.
+   */
+  bookId: string;
+  /** @property {string} content - 1줄 메모의 핵심 내용. */
   content: string;
+  /** @property {string[]} tags - 노트와 관련된 태그 목록. */
   tags: string[];
+  /** @property {string} [importanceReason] - 메모 진화: 중요하다고 생각한 이유. */
   importanceReason?: string;
+  /** @property {string} [momentContext] - 메모 진화: 메모 작성 당시의 상황이나 맥락. */
   momentContext?: string;
+  /** @property {string} [relatedKnowledge] - 메모 진화: 관련된 기존 지식. */
   relatedKnowledge?: string;
+  /** @property {string} [mentalImage] - 메모 진홧: 떠오른 심상이나 아이디어. */
   mentalImage?: string;
+  /** @property {string} [nickname] - (사용자 정의) 노트에 대한 별칭. */
   nickname?: string;
+  // pageNum, sessionId 등 추가 필드가 백엔드 Note 모델에 있을 수 있으나, TSNoteCard에서 직접 사용되지 않으면 생략 가능.
 }
 
 // TS 세션 상세 정보 타입 (백엔드 ISession 모델 기반)
@@ -53,13 +72,49 @@ const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder
   ],
 };
 
+/**
+ * @interface TSNoteCardProps
+ * @description TSNoteCard 컴포넌트가 받는 프롭(props)들의 타입 정의입니다.
+ */
 type TSNoteCardProps = {
+  /** @property {TSNote} note - 표시하고 관리할 노트 객체. */
   note: TSNote;
+  /** 
+   * @property {(updated: Partial<TSNote>) => void} onUpdate 
+   * - 노트의 내용(메모 진화 필드 등)이 변경되었을 때 호출되는 콜백 함수입니다.
+   *   변경된 필드만 포함하는 부분적인 TSNote 객체를 인자로 받습니다.
+   *   부모 컴포넌트에서 이 콜백을 통해 상태를 동기화하거나 추가 작업을 수행할 수 있습니다.
+   */
   onUpdate: (updated: Partial<TSNote>) => void;
+  /** 
+   * @property {(note: TSNote) => void} [onFlashcardConvert]
+   * - (선택적) 플래시카드 변환 버튼 클릭 시 호출되는 콜백 함수입니다.
+   *   해당 노트 객체를 인자로 전달하여 부모 컴포넌트에서 플래시카드 생성 로직을 처리하도록 합니다.
+   */
   onFlashcardConvert?: (note: TSNote) => void;
+  /** 
+   * @property {(note: TSNote) => void} [onRelatedLinks]
+   * - (선택적) 관련 링크 관리 버튼 클릭 시 호출되는 콜백 함수입니다.
+   *   해당 노트 객체를 인자로 전달하여 부모 컴포넌트에서 관련 링크 관리 UI를 열도록 합니다.
+   */
   onRelatedLinks?: (note: TSNote) => void;
+  /** @property {string} [readingPurpose] - (선택적) 현재 독서 목적 (예: 'exam_prep'). 메모 진화 질문 세트를 선택하는 데 사용됩니다. */
   readingPurpose?: string;
-  sessionDetails?: TSSessionDetails; // 기존 sessionInfo 대체
+  /** @property {TSSessionDetails} [sessionDetails] - (선택적) 노트가 생성된 TS 세션의 상세 정보. 카드 좌측에 표시됩니다. */
+  sessionDetails?: TSSessionDetails;
+  /** 
+   * @property {(noteId: string, bookId: string) => void} [onAddToCart]
+   * - (선택적) "지식 카트에 담기" 버튼 클릭 시 호출되는 콜백 함수입니다.
+   *   해당 노트의 ID(noteId)와 책 ID(bookId)를 인자로 전달하여, 부모 컴포넌트에서 실제 카트 추가 로직을 수행합니다.
+   *   이 프롭이 제공되면 카트 담기 버튼이 활성화됩니다.
+   */
+  onAddToCart?: (noteId: string, bookId: string) => void;
+  /** 
+   * @property {boolean} [isAddedToCart]
+   * - (선택적) 해당 노트가 이미 지식 카트에 담겨있는지 여부를 나타내는 boolean 값입니다.
+   *   이 값에 따라 "지식 카트에 담기" 버튼의 아이콘 및 툴크 내용이 변경됩니다. (예: 🛒+ 또는 🛒✅)
+   */
+  isAddedToCart?: boolean;
 };
 
 const tabIconMap = [
@@ -112,9 +167,15 @@ const formatPPM = (ppm?: number): string => {
   return `분당 ${ppm.toFixed(1)} 페이지`;
 };
 
-export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelatedLinks, readingPurpose, sessionDetails }: TSNoteCardProps) {
+/**
+ * @component TSNoteCard
+ * @description 1줄 메모(노트)를 표시하고, 메모 진화(4단계 질문 답변), 플래시카드 변환, 관련 링크 관리,
+ *              지식 카트 담기 등의 기능을 제공하는 핵심 UI 컴포넌트입니다.
+ * @param {TSNoteCardProps} props - 컴포넌트가 받는 프롭들.
+ */
+export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelatedLinks, readingPurpose, sessionDetails, onAddToCart, isAddedToCart }: TSNoteCardProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [fields, setFields] = useState<{ [K in keyof Omit<TSNote, '_id' | 'content' | 'tags' | 'nickname'>]: string }>({
+  const [fields, setFields] = useState<{ [K in keyof Omit<TSNote, '_id' | 'bookId' | 'content' | 'tags' | 'nickname'>]: string }>({
     importanceReason: note.importanceReason || '',
     momentContext: note.momentContext || '',
     relatedKnowledge: note.relatedKnowledge || '',
@@ -154,8 +215,8 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
     setIsSaving(true);
     setSaveSuccess(false);
     try {
-      const res = await api.put(`/notes/${note._id}`, { [activeTab]: inputValue });
-      onUpdate({ [activeTab]: inputValue });
+      await api.put(`/notes/${note._id}`, { [activeTab]: inputValue });
+      onUpdate({ ...fields, [activeTab]: inputValue, _id: note._id, bookId: note.bookId, content: note.content, tags: note.tags });
       setFields(prev => ({ ...prev, [activeTab]: inputValue }));
       setSaveSuccess(true);
     } catch (err) {
@@ -187,7 +248,7 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
     const value = (fields[key] || '').trim();
     try {
       await api.put(`/notes/${note._id}`, { [key]: value });
-      onUpdate({ [key]: value });
+      onUpdate({ ...fields, [key]: value, _id: note._id, bookId: note.bookId, content: note.content, tags: note.tags });
     } catch (err) {
       console.error('Error updating note (handleBlur):', err);
     }
@@ -214,7 +275,7 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
       <div className="flex justify-between items-center">
         {/* Left column container for TS Info and Diamond button */}
         <div className="flex flex-col items-center gap-y-2 mr-4">
-            {/* TS 세션 정보 버튼 및 툴팁 */}
+            {/* TS 세션 정보 버튼 및 툴크 */}
             {sessionDetails && (
               <div className="relative group w-full">
                 <button
@@ -239,7 +300,7 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
                 <GiCutDiamond
                   className="text-indigo-600 drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)] text-2xl cursor-pointer hover:text-pink-500 hover:drop-shadow-[0_1px_3px_rgba(236,72,153,0.6)] hover:scale-110 hover:brightness-125 transition-all"
                   aria-label="Cut diamond"
-                  onClick={() => setIsOpen((prev) => !prev)}
+                  onClick={toggleOpen}
                 />
                 <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
                   메모를 다듬어 다이아몬드로 만드세요.
@@ -285,6 +346,26 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
           </div>
         </div>
         <div className="flex flex-col items-stretch ml-4 gap-y-2">
+          {/* 지식 카트 담기 버튼 */} 
+          {onAddToCart && (
+            <div className="relative group w-full rounded-lg bg-gradient-to-br from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 border border-yellow-300 shadow-sm hover:shadow-md transition-all">
+              <button
+                type="button"
+                className={`h-9 w-full px-2 py-0.5 text-xs font-semibold transition-colors flex items-center justify-center ${isAddedToCart ? 'text-yellow-700' : 'text-yellow-600'}`}
+                aria-label={isAddedToCart ? "카트에서 제거" : "지식 카트에 담기"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToCart(note._id, note.bookId);
+                }}
+              >
+                <ShoppingCartIcon className={`w-5 h-5 ${isAddedToCart ? 'text-yellow-700 fill-current' : 'text-yellow-600'} group-hover:text-yellow-800 transition-colors`} />
+                {isAddedToCart && <span className="ml-1 text-yellow-700 font-bold">🛒✅</span>} 
+              </button>
+              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
+                {isAddedToCart ? "이미 카트에 담겨있습니다" : "지식 카트에 추가"}
+              </div>
+            </div>
+          )}
           {/* 플래시카드 버튼 */}
           {onFlashcardConvert && (
             <div className="relative group w-full rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 border border-blue-300 shadow-sm hover:shadow-md transition-all">

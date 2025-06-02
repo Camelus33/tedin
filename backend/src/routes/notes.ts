@@ -6,7 +6,8 @@ import {
   updateNote, 
   deleteNote, 
   getNotesByBook, 
-  getNotesByTag 
+  getNotesByTag,
+  getNotesByIds
 } from '../controllers/noteController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
@@ -84,5 +85,8 @@ router.put(
 
 // Delete a note
 router.delete('/:noteId', deleteNote);
+
+// Batch get notes by IDs
+router.post('/batch', getNotesByIds);
 
 export default router; 

@@ -7,6 +7,7 @@ import Head from 'next/head' // Head 임포트 추가
 // Import dashboard global styles for action cards
 import './dashboard/styles/dashboard.css';
 import Footer from '@/components/common/Footer'; // Import the Footer component
+import CartUIManager from '@/components/cart/CartUIManager'; // Import CartUIManager
 
 // 기존 폰트 설정 제거
 // const inter = Inter({
@@ -50,6 +51,7 @@ export default function RootLayout({
             <div className="flex-grow">
               {children}
             </div>
+            <CartUIManager />
           </ReduxProvider>
           
           {/* 개발 환경에서만 디버그 패널 표시 */}

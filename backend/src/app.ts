@@ -25,6 +25,7 @@ import myverseGamesRoutes from './routes/myverseGames';
 import routineRoutes from './routes/routineRoutes';
 import flashcardRoutes from './routes/flashcards';
 import notificationRoutes from './routes/notifications';
+import summaryNoteRoutes from './routes/summaryNoteRoutes';
 
 // Initialize Express app
 const app: Express = express();
@@ -80,6 +81,7 @@ app.use('/api/myverse', myverseGamesRoutes);
 app.use('/api/routines', routineRoutes);
 app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/summary-notes', summaryNoteRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
