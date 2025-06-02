@@ -436,19 +436,14 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
           </div>
         </div>
       )}
-      {(note.tags && note.tags.length > 0) && (
-        <div className="flex flex-wrap items-center justify-between gap-y-2 mt-6 pt-2 border-t border-gray-200">
-          <div className="flex flex-wrap gap-2">
-            {note.tags.map((tag, i) => (
-              <span
-                key={i}
-                className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium border border-blue-100 shadow-sm"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
-          <span className="text-xs text-rose-500 italic ml-auto whitespace-nowrap">Uncut diamond from this book</span>
+      {/* 노트 태그 표시 */}
+      {note.tags && note.tags.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {note.tags.map((tag, index) => (
+            <span key={index} className="px-2 py-0.5 text-xs bg-gray-600/50 text-gray-300 rounded-full">
+              #{tag}
+            </span>
+          ))}
         </div>
       )}
       <style jsx>{`

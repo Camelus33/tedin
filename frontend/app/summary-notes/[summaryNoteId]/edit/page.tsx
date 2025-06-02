@@ -63,7 +63,7 @@ export default function EditSummaryNotePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notesLoading, setNotesLoading] = useState(false);
-  const [currentBookReadingPurpose, setCurrentBookReadingPurpose] = useState<string | undefined>(undefined);
+  const [currentBookReadingPurpose, setCurrentBookReadingPurpose] = useState<string | undefined>('humanities_self_reflection'); // Default purpose
 
   const fetchBookDetailsForPurpose = async (bookId: string) => {
     try {
@@ -141,6 +141,27 @@ export default function EditSummaryNotePage() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleNoteUpdate = (updatedFields: Partial<TSNote>) => {
+    setFetchedNotes(prevNotes => 
+      prevNotes.map(n => n._id === updatedFields._id ? {...n, ...updatedFields} : n)
+    );
+    // TODO: Consider if individual note updates should be persisted immediately 
+    // or saved with the entire summary note.
+    console.log('Note updated in local state:', updatedFields);
+  };
+
+  const handleConvertToFlashcard = (note: TSNote) => {
+    console.log('Request to convert note to flashcard:', note);
+    // Placeholder: Implement actual flashcard conversion logic or open a modal
+    alert(`플래시카드 변환 요청: ${note.content.substring(0,20)}...`);
+  };
+
+  const handleManageRelatedLinks = (note: TSNote) => {
+    console.log('Request to manage related links for note:', note);
+    // Placeholder: Implement actual related links management or open a modal
+    alert(`관련 링크 관리 요청: ${note.content.substring(0,20)}...`);
   };
 
   if (isLoading) {
@@ -226,10 +247,10 @@ export default function EditSummaryNotePage() {
                           <TSNoteCard 
                             note={note} 
                             readingPurpose={currentBookReadingPurpose}
-                            onUpdate={(updatedFields) => {
-                                const newFetchedNotes = fetchedNotes.map(n => n._id === updatedFields._id ? {...n, ...updatedFields} : n);
-                                setFetchedNotes(newFetchedNotes);
-                            }}
+                            onUpdate={handleNoteUpdate}
+                            onFlashcardConvert={handleConvertToFlashcard}
+                            onRelatedLinks={handleManageRelatedLinks}
+                            sessionDetails={undefined} // Example: No session details passed for now
                           />
                         </div>
                     ))}
