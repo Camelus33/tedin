@@ -3,6 +3,7 @@ import Book from '../models/Book';
 import User from '../models/User';
 import Session from '../models/Session';
 import mongoose from 'mongoose';
+import multer from 'multer';
 
 // Helper function to calculate and update estimated reading time (중복 방지 위해 다른 파일로 분리 가능)
 const updateEstimatedTime = async (bookId: string, userId: string) => {
@@ -98,39 +99,32 @@ export const addBook = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    // Text fields from FormData (req.body will contain them)
     const { title, author, totalPages, currentPage, isbn, category, readingPurpose } = req.body;
-    
-    // 업로드된 파일 정보는 req.file 에서 가져옴
     const coverImageFile = req.file as Express.Multer.File;
 
     const newBookData: any = {
       userId,
       title,
       author,
-      totalPages: parseInt(totalPages, 10), // FormData는 문자열로 전달하므로 숫자로 변환
-      currentPage: currentPage ? parseInt(currentPage, 10) : 0, // FormData는 문자열로 전달하므로 숫자로 변환
+      totalPages: parseInt(totalPages, 10),
+      currentPage: currentPage ? parseInt(currentPage, 10) : 0,
       isbn,
       category,
-      status: 'not_started', // 기본값: 시작 전
+      status: 'not_started',
       completionPercentage: 0,
       readingPurpose,
     };
 
-    if (coverImageFile) {
-      // 실제 저장된 파일 경로 또는 URL을 저장. Express.static 등으로 접근 가능하게 해야 함.
-      // 예: 'uploads/coverImage-1678886400000-123456789.jpg'
-      // 클라우드 스토리지 사용 시, 업로드 후 받은 URL을 저장.
-      newBookData.coverImage = coverImageFile.path; 
+    if (coverImageFile && coverImageFile.filename) {
+      const backendUrl = process.env.BACKEND_URL || 'https://habitus33-api.onrender.com';
+      newBookData.coverImage = `${backendUrl}/uploads/${coverImageFile.filename}`;
     } else {
-      // 이미지가 없는 경우 기본값 또는 null 처리 (현재 스키마는 string, 빈 문자열 가능)
-      newBookData.coverImage = ''; // 또는 기본 이미지 경로
+      newBookData.coverImage = ''; // 또는 기본 이미지 URL
     }
 
     const newBook = new Book(newBookData);
     const savedBook = await newBook.save();
     
-    // 사용자의 책 컬렉션에 추가
     await User.findByIdAndUpdate(
       userId,
       { $push: { books: savedBook._id } }
@@ -139,6 +133,9 @@ export const addBook = async (req: Request, res: Response) => {
     res.status(201).json(savedBook);
   } catch (error) {
     console.error('책 추가 중 오류 발생:', error);
+    if (error instanceof multer.MulterError) {
+        return res.status(400).json({ message: `파일 업로드 오류: ${error.message}` });
+    }
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 };
@@ -300,6 +297,61 @@ export const getBooksByIds = async (req: Request, res: Response) => {
     res.status(200).json(books);
   } catch (error) {
     console.error('배치 책 조회 중 오류 발생:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+// 책 정보 수정 함수 (updateBook 또는 유사한 이름)가 있다면, 
+// 해당 함수에서도 coverImage 처리 로직을 동일하게 수정해야 합니다.
+// 예를 들어, 아래와 같이 updateBook 함수가 있다고 가정하고 수정합니다.
+
+export const updateBook = async (req: Request, res: Response) => {
+  try {
+    const { bookId } = req.params;
+    const userId = req.user?.id;
+    const { title, author, totalPages, currentPage, isbn, category, readingPurpose, status } = req.body;
+    const coverImageFile = req.file as Express.Multer.File;
+
+    const book = await Book.findOne({ _id: bookId, userId });
+
+    if (!book) {
+      return res.status(404).json({ message: '책을 찾을 수 없거나 권한이 없습니다.' });
+    }
+
+    if (title) book.title = title;
+    if (author) book.author = author;
+    if (totalPages) book.totalPages = parseInt(totalPages, 10);
+    if (isbn) book.isbn = isbn;
+    if (category) book.category = category;
+    if (readingPurpose) book.readingPurpose = readingPurpose;
+    if (status) book.status = status;
+
+    if (coverImageFile && coverImageFile.filename) {
+      const backendUrl = process.env.BACKEND_URL || 'https://habitus33-api.onrender.com';
+      book.coverImage = `${backendUrl}/uploads/${coverImageFile.filename}`;
+    } else if (req.body.coverImage === '' || req.body.removeCoverImage === 'true') {
+      book.coverImage = '';
+    }
+
+    if (currentPage !== undefined && totalPages) {
+      const numCurrentPage = parseInt(currentPage, 10);
+      const numTotalPages = parseInt(totalPages, 10);
+      if (numCurrentPage >= 0 && numTotalPages > 0) {
+        book.currentPage = numCurrentPage;
+        book.completionPercentage = Math.round((numCurrentPage / numTotalPages) * 100);
+        if (numCurrentPage === numTotalPages) {
+          book.status = 'completed';
+        }
+      }
+    }    
+
+    const updatedBook = await book.save();
+    res.status(200).json(updatedBook);
+  } catch (error) {
+    console.error('책 정보 수정 중 오류 발생:', error);
+    if (error instanceof multer.MulterError) {
+        return res.status(400).json({ message: `파일 업로드 오류: ${error.message}` });
+    }
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 }; 

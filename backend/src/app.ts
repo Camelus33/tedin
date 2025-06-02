@@ -6,6 +6,7 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import path from 'path';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -65,6 +66,11 @@ app.use(helmet({
 }));
 app.use(compression());
 app.use(morgan('dev'));
+
+// Serve static files from the 'uploads' directory
+const uploadsPath = path.join(__dirname, '..', 'uploads');
+app.use('/uploads', express.static(uploadsPath));
+console.log(`Attempting to serve static files from: ${uploadsPath}`);
 
 // API routes
 app.use('/api/auth', authRoutes);
