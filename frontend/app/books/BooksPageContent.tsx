@@ -9,7 +9,7 @@ import { FiBook, FiClock, FiChevronRight, FiMoreVertical, FiList, FiCalendar, Fi
 import api, { books as booksApi } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
 import { Button } from '@/components/ui/button';
-import { EllipsisVerticalIcon as DotsVerticalIcon } from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon as DotsVerticalIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -81,7 +81,7 @@ interface SummaryNote {
 // Sort options type
 type SortByType = "title" | "date" | "progress";
 
-export default function BooksPageContent() { // Renamed function
+export default function BooksPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
@@ -99,6 +99,7 @@ export default function BooksPageContent() { // Renamed function
   const [summaryNotes, setSummaryNotes] = useState<SummaryNote[]>([]);
   const [summaryNotesLoading, setSummaryNotesLoading] = useState<boolean>(false);
   const [summaryNotesError, setSummaryNotesError] = useState<string>('');
+  const [filteredSummaryNotes, setFilteredSummaryNotes] = useState<SummaryNote[]>([]);
   
   const requestTimeout = useRef<NodeJS.Timeout | null>(null);
   const controller = useRef<AbortController | null>(null);
@@ -157,7 +158,9 @@ export default function BooksPageContent() { // Renamed function
     setSummaryNotesError('');
     try {
       const response = await api.get('/summary-notes/');
-      setSummaryNotes(response.data || []);
+      const notesData = response.data || [];
+      setSummaryNotes(notesData);
+      setFilteredSummaryNotes(notesData);
     } catch (err: any) {
       console.error('단권화 노트 로딩 오류:', err);
       setSummaryNotesError(err.response?.data?.message || err.message || '단권화 노트를 불러오는 중 오류 발생');
@@ -196,18 +199,31 @@ export default function BooksPageContent() { // Renamed function
   }, [activeTab, fetchBooks, fetchSummaryNotes]);
   
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      applySort(books);
-      return;
+    if (activeTab === 'books') {
+        if (!searchQuery.trim()) {
+            applySort(books);
+            return;
+        }
+        const filtered = books.filter(
+            (book) =>
+            book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            book.author.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        applySort(filtered);
+    } else if (activeTab === 'summaryNotes') {
+        if (!searchQuery.trim()) {
+            setFilteredSummaryNotes(summaryNotes);
+            return;
+        }
+        const filtered = summaryNotes.filter(
+            (note) =>
+            note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (note.description && note.description.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+        setFilteredSummaryNotes(filtered);
     }
-    const filtered = books.filter(
-      (book) =>
-        book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    applySort(filtered);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, books]); // applySort is memoized
+  }, [searchQuery, books, summaryNotes, activeTab]); // applySort is memoized for books
 
   const applySort = useCallback((booksToSort: Book[]) => {
     let sorted = [...booksToSort];
@@ -248,17 +264,18 @@ export default function BooksPageContent() { // Renamed function
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     if (diffDays <= 1) return "오늘 활성화";
     if (diffDays <= 7) return `${diffDays}일 전 활성화`;
-    return date.toLocaleDateString('ko-KR');
+    return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
   };
 
   const handleDeleteBook = async (bookId: string) => {
-    if (!confirm('정말로 이 기억 저장소 항목을 삭제하시겠습니까?')) return;
+    if (!window.confirm("이 책을 정말 삭제하시겠습니까? 관련된 노트와 데이터가 함께 삭제될 수 있습니다.")) return;
     try {
       await booksApi.delete(bookId);
-      setBooks((prevBooks) => prevBooks.filter((book) => book._id !== bookId));
-      // setFilteredBooks will be updated by useEffect reacting to books change
-    } catch (err: any) {
-      alert(`오류 발생: ${err.message}`);
+      setBooks(prev => prev.filter(b => b._id !== bookId));
+      setFilteredBooks(prev => prev.filter(b => b._id !== bookId));
+    } catch (err) {
+      console.error("Error deleting book:", err);
+      alert("책 삭제 중 오류가 발생했습니다.");
     }
   };
 
@@ -282,19 +299,14 @@ export default function BooksPageContent() { // Renamed function
   const handleAddBook = () => router.push("/books/new");
 
   const handleDeleteSummaryNoteFromList = async (summaryNoteId: string) => {
-    if (window.confirm('이 단권화 노트를 정말 삭제하시겠습니까? 연결된 1줄 메모는 삭제되지 않습니다.')) {
-      setSummaryNotesLoading(true); // Indicate loading state
-      try {
-        await api.delete(`/summary-notes/${summaryNoteId}`);
-        setSummaryNotes(prevSummaryNotes => prevSummaryNotes.filter(note => note._id !== summaryNoteId));
-        alert('단권화 노트가 성공적으로 삭제되었습니다.');
-      } catch (err: any) {
-        console.error('Failed to delete summary note from list:', err);
-        setSummaryNotesError(err.response?.data?.message || err.message || '단권화 노트 삭제 중 오류 발생');
-        alert(`단권화 노트 삭제 중 오류가 발생했습니다: ${err.response?.data?.message || err.message}`);
-      } finally {
-        setSummaryNotesLoading(false);
-      }
+    if (!window.confirm("이 단권화 노트를 정말 삭제하시겠습니까? 1줄 메모들은 삭제되지 않습니다.")) return;
+    try {
+      await api.delete(`/summary-notes/${summaryNoteId}`);
+      setSummaryNotes(prev => prev.filter(note => note._id !== summaryNoteId));
+      setFilteredSummaryNotes(prev => prev.filter(note => note._id !== summaryNoteId));
+    } catch (err) {
+      console.error("Error deleting summary note:", err);
+      alert("단권화 노트 삭제 중 오류가 발생했습니다.");
     }
   };
 
@@ -345,7 +357,7 @@ export default function BooksPageContent() { // Renamed function
         <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 ${cyberTheme.bgSecondary} rounded-lg`}>
           <div className="relative w-full sm:w-auto flex-grow">
             <AiOutlineSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${cyberTheme.textMuted}`} />
-            <input type="text" placeholder="기억 저장소에서 책 검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`} />
+            <input type="text" placeholder={activeTab === 'summaryNotes' ? "단권화 노트 제목, 내용 검색..." : "기억 저장소에서 책 검색..."} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`} />
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
              <div className="relative">
@@ -481,7 +493,7 @@ export default function BooksPageContent() { // Renamed function
             )}
             {!summaryNotesLoading && !summaryNotesError && summaryNotes.length > 0 && (
               <div className="space-y-4">
-                {summaryNotes.map(note => (
+                {filteredSummaryNotes.map(note => (
                   <div 
                     key={note._id} 
                     className={`p-5 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:shadow-purple-500/30 border ${cyberTheme.borderSecondary}/30 ${cyberTheme.cardBg}`}
@@ -496,22 +508,27 @@ export default function BooksPageContent() { // Renamed function
                         <p className={`text-xs ${cyberTheme.textMuted}`}>마지막 업데이트: {new Date(note.updatedAt).toLocaleDateString('ko-KR')}</p>
                       </div>
                       <div className="flex space-x-2 flex-shrink-0 ml-4">
-                        <Button 
-                          variant="outline"
-                          size="sm"
-                          onClick={() => router.push(`/summary-notes/${note._id}/edit`)}
-                          className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textLight} border-purple-500/50 hover:border-purple-400`}
-                        >
-                          <AiOutlineEdit className="mr-1.5" /> 수정
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          size="sm"
-                          onClick={() => handleDeleteSummaryNoteFromList(note._id)}
-                          disabled={summaryNotesLoading} // Disable button while any summary note operation is in progress
-                        >
-                          <AiOutlineDelete className="mr-1.5" /> 삭제
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className={`text-gray-400 hover:text-cyan-400 p-1.5`}>
+                              <DotsVerticalIcon className="h-5 w-5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.borderSecondary}`}>
+                            <DropdownMenuItem 
+                              onClick={() => router.push(`/summary-notes/${note._id}/edit`)} 
+                              className={`${cyberTheme.menuItemHover} ${cyberTheme.primary} cursor-pointer flex items-center`}
+                            >
+                              <PencilIcon className="h-4 w-4 mr-2" /> 수정하기
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteSummaryNoteFromList(note._id)} 
+                              className={`${cyberTheme.menuItemHover} text-red-400 hover:!text-red-400 cursor-pointer flex items-center`}
+                            >
+                              <TrashIcon className="h-4 w-4 mr-2" /> 삭제하기
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                   </div>
