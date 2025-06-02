@@ -95,7 +95,7 @@ export default function EditSummaryNotePage() {
         setDescription(summaryData.description);
 
         if (summaryData.orderedNoteIds && summaryData.orderedNoteIds.length > 0) {
-          const notesDetailsRes = await api.post('/notes/batch', { ids: summaryData.orderedNoteIds });
+          const notesDetailsRes = await api.post('/notes/batch', { noteIds: summaryData.orderedNoteIds });
           let notesData: FetchedNoteDetails[] = notesDetailsRes.data;
 
           // Fetch session details for each note if originSession exists
