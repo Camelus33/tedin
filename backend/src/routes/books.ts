@@ -10,7 +10,9 @@ import fs from 'fs';
 const router = express.Router();
 
 // Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '../../uploads'); // Adjust path as needed, assumes routes folder is in src/
+// const uploadDir = path.join(__dirname, '../../uploads'); // Adjust path as needed, assumes routes folder is in src/
+const uploadDir = path.resolve(process.cwd(), 'uploads');
+console.log(`[Multer] Upload directory configured to: ${uploadDir}`); // 경로 확인용 로그 추가
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }

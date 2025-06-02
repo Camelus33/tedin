@@ -46,11 +46,24 @@ mongoose.connect(MONGODB_URI)
   });
 
 // CORS Configuration
+const allowedOrigins = [
+  'https://habitus33.vercel.app', // 프로덕션 프론트엔드
+  'http://localhost:3000',      // 로컬 프론트엔드 개발 환경 (포트가 다르면 수정)
+  // 필요한 경우 다른 허용할 출처 추가
+];
+
 const corsOptions = {
-  origin: (origin, callback) => callback(null, true),
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // origin이 없거나 (예: 서버 간 요청, Postman 등) 허용된 출처 목록에 있으면 허용
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
-  credentials: true
+  credentials: true,
 };
 
 // Middleware
@@ -68,7 +81,7 @@ app.use(compression());
 app.use(morgan('dev'));
 
 // Serve static files from the 'uploads' directory
-const uploadsPath = path.join(__dirname, '..', 'uploads');
+const uploadsPath = path.resolve(process.cwd(), 'uploads');
 app.use('/uploads', express.static(uploadsPath));
 console.log(`Attempting to serve static files from: ${uploadsPath}`);
 
