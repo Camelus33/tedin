@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import api from '@/lib/api';
 import Spinner from '@/components/ui/Spinner';
-import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard'; // Assuming TSNoteCard can be used for display
+import TSNoteCard, { TSNote, TSSessionDetails } from '@/components/ts/TSNoteCard'; // Import TSSessionDetails
 import { Button } from '@/components/ui/button'; // Shadcn UI Button
 import { Input } from '@/components/ui/input'; // Shadcn UI Input
 import { Textarea } from '@/components/ui/textarea'; // Shadcn UI Textarea
@@ -18,11 +18,12 @@ interface SummaryNoteData {
   orderedNoteIds: string[];
   bookIds: string[];
   tags: string[];
+  userId?: string;
 }
 
 interface FetchedNoteDetails extends TSNote {
-  // Ensure TSNote properties are here, like _id, content, bookId etc.
-  // Add any other properties that come from the batch notes fetch if different from TSNote
+  originSession?: string; // Assuming backend sends originSession ID if not populated directly
+  sessionDetails?: TSSessionDetails; // To store fetched session details
 }
 
 // Cyber Theme (copied from other pages for consistency, consider centralizing)
@@ -58,6 +59,7 @@ export default function EditSummaryNotePage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [fetchedNotes, setFetchedNotes] = useState<FetchedNoteDetails[]>([]);
+  const [changedNoteIds, setChangedNoteIds] = useState<Set<string>>(new Set());
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -65,7 +67,7 @@ export default function EditSummaryNotePage() {
   const [notesLoading, setNotesLoading] = useState(false);
   const [currentBookReadingPurpose, setCurrentBookReadingPurpose] = useState<string | undefined>('humanities_self_reflection'); // Default purpose
 
-  const fetchBookDetailsForPurpose = async (bookId: string) => {
+  const fetchBookDetailsForPurpose = useCallback(async (bookId: string) => {
     try {
       // Assuming you have an API endpoint to get a single book's details
       const response = await api.get(`/books/${bookId}`); 
@@ -75,12 +77,13 @@ export default function EditSummaryNotePage() {
       console.error('Failed to fetch book details for reading purpose:', err);
       setCurrentBookReadingPurpose('humanities_self_reflection'); // Default on error
     }
-  };
+  }, []);
 
   const fetchSummaryNoteDetails = useCallback(async () => {
     if (!summaryNoteId) return;
     setIsLoading(true);
     setError(null);
+    setChangedNoteIds(new Set()); // Reset changed notes on full refresh
     try {
       const response = await api.get(`/summary-notes/${summaryNoteId}`);
       const data = response.data as SummaryNoteData;
@@ -90,8 +93,7 @@ export default function EditSummaryNotePage() {
       if (data.orderedNoteIds && data.orderedNoteIds.length > 0) {
         fetchNotesDetails(data.orderedNoteIds);
       }
-      if (data.bookIds && data.bookIds.length > 0) {
-        // Fetch reading purpose from the first associated book
+      if (data.bookIds && data.bookIds.length > 0 && !currentBookReadingPurpose) {
         fetchBookDetailsForPurpose(data.bookIds[0]);
       }
     } catch (err: any) {
@@ -100,7 +102,7 @@ export default function EditSummaryNotePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [summaryNoteId]);
+  }, [summaryNoteId, fetchBookDetailsForPurpose, currentBookReadingPurpose]);
 
   const fetchNotesDetails = async (noteIds: string[]) => {
     if (noteIds.length === 0) {
@@ -109,10 +111,40 @@ export default function EditSummaryNotePage() {
     }
     setNotesLoading(true);
     try {
-      const response = await api.post('/notes/batch', { noteIds });
-      setFetchedNotes(response.data || []); 
+      const notesResponse = await api.post('/notes/batch', { noteIds });
+      let notesData: FetchedNoteDetails[] = notesResponse.data || [];
+
+      // Fetch session details for each note that has an originSession ID
+      const notesWithSessionDetails = await Promise.all(
+        notesData.map(async (note) => {
+          if (note.originSession) {
+            try {
+              const sessionResponse = await api.get(`/sessions/${note.originSession}`);
+              const sessionData = sessionResponse.data;
+              // Transform sessionData to TSSessionDetails format if necessary
+              // Assuming sessionData already matches or can be directly used for TSSessionDetails relevant fields
+              return {
+                ...note,
+                sessionDetails: {
+                  createdAtISO: sessionData.createdAt, // Ensure this is ISO string
+                  durationSeconds: sessionData.durationSec,
+                  startPage: sessionData.startPage,
+                  actualEndPage: sessionData.actualEndPage,
+                  targetPage: sessionData.endPage, // Assuming 'endPage' is targetPage
+                  ppm: sessionData.ppm,
+                } as TSSessionDetails,
+              };
+            } catch (sessionErr) {
+              console.error(`Failed to fetch session details for note ${note._id} session ${note.originSession}:`, sessionErr);
+              return { ...note, sessionDetails: undefined }; // Keep note, but sessionDetails will be undefined
+            }
+          }
+          return note; // Note without originSession or if session fetch fails part way
+        })
+      );
+      setFetchedNotes(notesWithSessionDetails);
     } catch (err) {
-      console.error("Failed to fetch notes details:", err);
+      console.error("Failed to fetch notes details or their session details:", err);
     } finally {
       setNotesLoading(false);
     }
@@ -127,17 +159,33 @@ export default function EditSummaryNotePage() {
     setIsSaving(true);
     setError(null);
     try {
-      const updatedData = {
+      // 1. Save individual notes that have changed
+      const updateNotePromises = [];
+      for (const noteId of changedNoteIds) {
+        const noteToUpdate = fetchedNotes.find(n => n._id === noteId);
+        if (noteToUpdate) {
+          // Construct payload for note update - ensure only updatable fields are sent
+          const { _id, bookId, originSession, sessionDetails, ...updatableNoteFields } = noteToUpdate;
+          updateNotePromises.push(api.put(`/notes/${noteId}`, updatableNoteFields));
+        }
+      }
+      await Promise.all(updateNotePromises);
+      console.log('Successfully updated changed notes:', changedNoteIds);
+
+      // 2. Save the summary note itself (title, description)
+      const updatedSummaryData = {
         title,
         description,
-        orderedNoteIds: summaryNote.orderedNoteIds,
+        // orderedNoteIds are managed by cart, not directly here unless reordering is implemented
       };
-      await api.put(`/summary-notes/${summaryNoteId}`, updatedData);
+      await api.put(`/summary-notes/${summaryNoteId}`, updatedSummaryData);
+      
       alert('단권화 노트가 성공적으로 저장되었습니다.');
-      fetchSummaryNoteDetails(); // Refetch to show updated data on the same page
+      setChangedNoteIds(new Set()); // Clear changed notes after successful save
+      fetchSummaryNoteDetails(); // Refresh data to reflect changes
     } catch (err: any) {
-      console.error("Failed to save summary note:", err);
-      setError(err.response?.data?.message || "저장 중 오류가 발생했습니다.");
+      console.error("Failed to save summary note or individual notes:", err);
+      setError(err.response?.data?.message || "저장 중 오류가 발생했습니다. 일부 노트 변경사항이 저장되지 않았을 수 있습니다.");
     } finally {
       setIsSaving(false);
     }
@@ -147,9 +195,10 @@ export default function EditSummaryNotePage() {
     setFetchedNotes(prevNotes => 
       prevNotes.map(n => n._id === updatedFields._id ? {...n, ...updatedFields} : n)
     );
-    // TODO: Consider if individual note updates should be persisted immediately 
-    // or saved with the entire summary note.
-    console.log('Note updated in local state:', updatedFields);
+    if(updatedFields._id) {
+        setChangedNoteIds(prev => new Set(prev).add(updatedFields._id!));
+    }
+    console.log('Note updated in local state, changed IDs:', changedNoteIds);
   };
 
   const handleConvertToFlashcard = (note: TSNote) => {
@@ -250,7 +299,7 @@ export default function EditSummaryNotePage() {
                             onUpdate={handleNoteUpdate}
                             onFlashcardConvert={handleConvertToFlashcard}
                             onRelatedLinks={handleManageRelatedLinks}
-                            sessionDetails={undefined} // Example: No session details passed for now
+                            sessionDetails={note.sessionDetails}
                           />
                         </div>
                     ))}

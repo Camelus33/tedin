@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
-import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
+import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon } from '@heroicons/react/24/solid';
 import api from '@/lib/api'; // Import the central api instance
+
+// Define the structure for a single related link
+export interface RelatedLink {
+  type: 'book' | 'paper' | 'youtube' | 'media' | 'website';
+  url: string;
+  reason?: string;
+  _id?: string; // Optional: Mongoose might add an _id to subdocuments
+}
 
 /**
  * @interface TSNote
@@ -31,6 +39,8 @@ export interface TSNote {
   mentalImage?: string;
   /** @property {string} [nickname] - (사용자 정의) 노트에 대한 별칭. */
   nickname?: string;
+  /** @property {RelatedLink[]} [relatedLinks] - (백엔드 동기화) 관련된 외부 링크 목록. */
+  relatedLinks?: RelatedLink[];
   // pageNum, sessionId 등 추가 필드가 백엔드 Note 모델에 있을 수 있으나, TSNoteCard에서 직접 사용되지 않으면 생략 가능.
 }
 
@@ -167,6 +177,18 @@ const formatPPM = (ppm?: number): string => {
   return `분당 ${ppm.toFixed(1)} 페이지`;
 };
 
+// Helper to get link type icon
+const getLinkTypeIcon = (type: RelatedLink['type']) => {
+  switch (type) {
+    case 'book': return <PencilSquareIcon className="h-4 w-4 mr-1 inline-block text-blue-400" />;
+    case 'paper': return <PencilSquareIcon className="h-4 w-4 mr-1 inline-block text-green-400" />;
+    case 'youtube': return <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-1 inline-block text-red-400" />; // Or a specific YouTube icon
+    case 'media': return <PhotoIcon className="h-4 w-4 mr-1 inline-block text-purple-400" />;
+    case 'website': return <LinkIcon className="h-4 w-4 mr-1 inline-block text-gray-400" />;
+    default: return <LinkIcon className="h-4 w-4 mr-1 inline-block text-gray-400" />;
+  }
+};
+
 /**
  * @component TSNoteCard
  * @description 1줄 메모(노트)를 표시하고, 메모 진화(4단계 질문 답변), 플래시카드 변환, 관련 링크 관리,
@@ -175,12 +197,12 @@ const formatPPM = (ppm?: number): string => {
  */
 export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelatedLinks, readingPurpose, sessionDetails, onAddToCart, isAddedToCart }: TSNoteCardProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [fields, setFields] = useState<{ [K in keyof Omit<TSNote, '_id' | 'bookId' | 'content' | 'tags' | 'nickname'>]: string }>({
+  const [fields, setFields] = useState<{ [K in keyof Omit<TSNote, '_id' | 'bookId' | 'content' | 'tags' | 'nickname' | 'relatedLinks'>]: string }>(() => ({ // Added relatedLinks to Omit
     importanceReason: note.importanceReason || '',
     momentContext: note.momentContext || '',
     relatedKnowledge: note.relatedKnowledge || '',
     mentalImage: note.mentalImage || '',
-  });
+  }));
   const [currentStep, setCurrentStep] = useState(1);
 
   // 탭 제목: 읽던 순간, 떠오른 장면, 연결된 지식, 내게 온 의미
@@ -194,7 +216,18 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
 
   // 탭 순서: importanceReason, momentContext, relatedKnowledge, mentalImage
   const tabKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
-  // readingPurpose가 없거나 잘못된 값이면 humanities_self_reflection을 기본값으로 사용
+  
+  // Update fields state if note prop changes (e.g. parent re-fetches data)
+  useEffect(() => {
+    setFields({
+      importanceReason: note.importanceReason || '',
+      momentContext: note.momentContext || '',
+      relatedKnowledge: note.relatedKnowledge || '',
+      mentalImage: note.mentalImage || '',
+    });
+    // No need to update relatedLinks here as they are directly used from `note.relatedLinks` for display
+  }, [note.importanceReason, note.momentContext, note.relatedKnowledge, note.mentalImage]);
+
   const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
   const tabQuestions: Record<string, { question: string; placeholder: string }> = {
     importanceReason: prompts[0],
@@ -202,255 +235,243 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
     relatedKnowledge: prompts[2],
     mentalImage: prompts[3],
   };
-  const [inputValue, setInputValue] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  // 탭 변경 시 입력값 초기화 및 기존 값 반영
-  useEffect(() => {
-    setInputValue((fields as Record<string, string>)[activeTab] || '');
-    setSaveSuccess(false);
-  }, [activeTab, fields]);
-  // 저장 함수
+
   const handleSave = async () => {
-    setIsSaving(true);
-    setSaveSuccess(false);
-    try {
-      await api.put(`/notes/${note._id}`, { [activeTab]: inputValue });
-      onUpdate({ ...fields, [activeTab]: inputValue, _id: note._id, bookId: note.bookId, content: note.content, tags: note.tags });
-      setFields(prev => ({ ...prev, [activeTab]: inputValue }));
-      setSaveSuccess(true);
-    } catch (err) {
-      console.error('Error saving note (handleSave):', err);
-    } finally {
-      setIsSaving(false);
-      setTimeout(() => setSaveSuccess(false), 1200);
+    const updatedNotePartial: Partial<TSNote> = { _id: note._id, ...fields };
+    
+    // Send only changed fields to onUpdate
+    const changedFields: Partial<TSNote> = { _id: note._id };
+    let hasChanges = false;
+    for (const key of tabKeys) {
+      if (fields[key] !== (note[key] || '')) {
+        (changedFields as any)[key] = fields[key];
+        hasChanges = true;
+      }
     }
+
+    if (hasChanges) {
+      onUpdate(changedFields);
+    }
+    setIsOpen(false); 
   };
-
-  useEffect(() => {
-    if (!isOpen) setCurrentStep(1);
-  }, [isOpen]);
-
-  const questions: { key: keyof typeof fields; label: string }[] = [
-    { key: 'importanceReason', label: '이 문장을 쓸 때, 주위 분위기는 조용했나요?' },
-    { key: 'momentContext', label: '이 문장을 쓸 때, 어떤 장면이 그려지나요?' },
-    { key: 'relatedKnowledge', label: '이 문장은 어떤 지식을 연상시키나요?' },
-    { key: 'mentalImage', label: '왜 이 문장을 선택했나요?' },
-  ];
 
   const toggleOpen = () => setIsOpen((prev) => !prev);
 
   const handleChange = (key: keyof typeof fields, value: string) => {
     setFields((prev) => ({ ...prev, [key]: value }));
   };
-
+  
   const handleBlur = async (key: keyof typeof fields) => {
-    const value = (fields[key] || '').trim();
-    try {
-      await api.put(`/notes/${note._id}`, { [key]: value });
-      onUpdate({ ...fields, [key]: value, _id: note._id, bookId: note.bookId, content: note.content, tags: note.tags });
-    } catch (err) {
-      console.error('Error updating note (handleBlur):', err);
+    // Call onUpdate when a field loses focus and its content has actually changed
+    // from the original note prop
+    if (fields[key] !== (note[key] || '')) {
+        onUpdate({ _id: note._id, [key]: fields[key] });
     }
   };
 
-  // Map each field to a tailwind border color for the effect bar
-  const effectColorMap: Record<keyof typeof fields, string> = {
-    importanceReason: 'border-blue-500',
-    momentContext: 'border-purple-500',
-    relatedKnowledge: 'border-green-500',
-    mentalImage: 'border-orange-500',
+  const handleNext = () => {
+    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
+    if (currentIndex < tabKeys.length - 1) {
+      setActiveTab(tabKeys[currentIndex + 1]);
+    } else {
+      // If on the last tab, "Next" could become "Save" or cycle to first
+      handleSave(); 
+    }
   };
 
-  // Effect description for tooltip per question
-  const effectDescriptionMap: Record<keyof typeof fields, string> = {
-    importanceReason: '상황 연상 효과↑',
-    momentContext: '시각적 기억 강화↑',
-    relatedKnowledge: '연결망 강화↑',
-    mentalImage: '심층 처리 효과↑',
+  const handlePrev = () => {
+    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
+    if (currentIndex > 0) {
+      setActiveTab(tabKeys[currentIndex - 1]);
+    }
   };
+
+  // Ensure that sessionDetails object exists and has properties before trying to access them
+  const displaySessionCreatedAt = sessionDetails?.createdAtISO ? formatSessionCreatedAt(sessionDetails.createdAtISO) : '세션 정보 없음';
+  const displaySessionDuration = sessionDetails?.durationSeconds !== undefined ? formatSessionDuration(sessionDetails.durationSeconds) : '';
+  const displaySessionPageProgress = (sessionDetails?.startPage !== undefined || sessionDetails?.actualEndPage !== undefined || sessionDetails?.targetPage !== undefined) 
+                                    ? formatSessionPageProgress(sessionDetails.startPage, sessionDetails.actualEndPage, sessionDetails.targetPage) 
+                                    : '';
+  const displayPPM = sessionDetails?.ppm !== undefined ? formatPPM(sessionDetails.ppm) : '';
+
+
+  const renderSessionInfo = () => (
+    <div className="text-xs text-gray-400 mr-4 pr-4 border-r border-gray-700 min-w-[120px] max-w-[150px] flex-shrink-0">
+        <div className="font-semibold mb-1 text-gray-300">TS 정보</div>
+        <div>{displaySessionCreatedAt}</div>
+        {displaySessionDuration && <div>{displaySessionDuration}</div>}
+        {displaySessionPageProgress && <div>{displaySessionPageProgress}</div>}
+        {displayPPM && <div>{displayPPM}</div>}
+    </div>
+  );
 
   return (
-    <div className="bg-indigo-50 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow" role="region" aria-label="TS 메모 카드">
-      <div className="flex justify-between items-center">
-        {/* Left column container for TS Info and Diamond button */}
-        <div className="flex flex-col items-center gap-y-2 mr-4">
-            {/* TS 세션 정보 버튼 및 툴크 */}
-            {sessionDetails && (
-              <div className="relative group w-full">
-                <button
-                  type="button"
-                  className="h-9 px-3 py-1.5 flex items-center justify-center text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors shadow-sm font-semibold w-full"
-                >
-                  TS info
-                </button>
-                <div
-                  className="absolute top-full left-0 mt-1 w-64 p-3 bg-indigo-700 text-indigo-100 text-xs rounded-md shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 leading-relaxed whitespace-normal"
-                >
-                  <div className="font-semibold text-white mb-1 border-b border-indigo-500 pb-1">세션 요약</div>
-                  <div><strong className="text-indigo-200">독서 일시</strong> <span className="font-medium">{formatSessionCreatedAt(sessionDetails.createdAtISO)}</span></div>
-                  <div><strong className="text-indigo-200">독서 시간</strong> <span className="font-medium">{formatSessionDuration(sessionDetails.durationSeconds)}</span></div>
-                  <div><strong className="text-indigo-200">독서 범위</strong> <span className="font-medium">{formatSessionPageProgress(sessionDetails.startPage, sessionDetails.actualEndPage, sessionDetails.targetPage)}</span></div>
-                  <div><strong className="text-indigo-200">독서 속도</strong> <span className="font-medium">{formatPPM(sessionDetails.ppm)}</span></div>
-                </div>
-              </div>
-            )}
-            {/* 다이아몬드 아이콘 (좌측 하단) */}
-            <div className="relative group p-1.5 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-200 hover:from-indigo-200 hover:to-indigo-300 border border-indigo-300 shadow-sm hover:shadow-md transition-all flex items-center justify-center">
-                <GiCutDiamond
-                  className="text-indigo-600 drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)] text-2xl cursor-pointer hover:text-pink-500 hover:drop-shadow-[0_1px_3px_rgba(236,72,153,0.6)] hover:scale-110 hover:brightness-125 transition-all"
-                  aria-label="Cut diamond"
-                  onClick={toggleOpen}
-                />
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                  메모를 다듬어 다이아몬드로 만드세요.
-                </div>
-            </div>
-        </div>
+    <div className="bg-gray-800 bg-opacity-70 backdrop-blur-sm shadow-lg rounded-lg p-1 w-full max-w-2xl mx-auto border border-gray-700 hover:border-cyan-600/50 transition-all duration-300 ease-in-out">
+      <div className="flex">
+        {/* TS Session Info (Left Column) */}
+        {sessionDetails && renderSessionInfo()}
 
-        <div className="flex-1 w-full">
-          <div className="w-full px-4">
-            <span className="text-xl text-black font-sans font-medium tracking-tight leading-loose text-left align-middle border border-indigo-200 bg-indigo-100 rounded-md px-4 py-2 shadow-sm w-full block">
+        {/* Main Content (Right Column) */}
+        <div className="flex-grow p-4">
+          {/* Top Bar: Note Content and Action Buttons */}
+          <div className="flex justify-between items-start mb-3">
+            <p className="text-gray-100 text-base leading-relaxed break-words hyphens-auto mr-2 flex-grow" lang="ko">
               {note.content}
-            </span>
-            {isOpen && (
-              <div className="w-full grid grid-cols-4 gap-0 bg-gray-50 rounded-md shadow-sm mt-3 mb-2 border border-gray-100 overflow-hidden">
-                {tabList.map((tab, idx) => {
-                  const Icon = tabIconMap[idx].icon;
-                  const deep = tabColorMap[idx].color;
-                  const ring = tabColorMap[idx].ring;
-                  const isActive = activeTab === tab.key;
-                  return (
-                    <button
-                      key={tab.key}
-                      className={`w-full py-2 flex flex-col items-center justify-center font-semibold text-xs focus:outline-none transition-all border-r border-gray-100 last:border-r-0
-                        ${isActive ? 'shadow-lg -mb-1 z-10 ring-2' : 'bg-gray-50 opacity-90 hover:opacity-100 hover:scale-105'}
-                      `}
-                      style={{
-                        minHeight: 56,
-                        background: isActive ? deep + 'E6' : '#F8FAFC', // 90% 불투명 or 연회색
-                        color: isActive ? '#fff' : deep + 'CC', // 흰색 or 딥컬러 80% 투명도
-                        boxShadow: isActive ? `0 4px 16px 0 ${ring}55` : undefined,
-                        borderBottom: isActive ? `2.5px solid ${deep}` : undefined,
-                      }}
-                      onClick={() => setActiveTab(tab.key)}
-                      type="button"
-                    >
-                      <Icon className="w-5 h-5 mb-1" style={{ color: isActive ? '#fff' : deep + 'CC' }} />
-                      <span className="font-bold tracking-tight" style={{ color: isActive ? '#fff' : deep + 'CC' }}>{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            </p>
+            <div className="flex-shrink-0 flex items-center space-x-1">
+              {onFlashcardConvert && (
+                <button
+                    onClick={() => onFlashcardConvert(note)}
+                    className="p-1.5 text-gray-400 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 rounded-md transition-colors"
+                    title="플래시카드로 변환"
+                >
+                    <SparklesIcon className="h-5 w-5" />
+                </button>
+              )}
+              {onRelatedLinks && (
+                <button
+                    onClick={() => onRelatedLinks(note)}
+                    className="p-1.5 text-gray-400 hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-md transition-colors"
+                    title="관련 링크 관리"
+                >
+                    <LinkIcon className="h-5 w-5" />
+                </button>
+              )}
+              {onAddToCart && (
+                 <button
+                    onClick={() => onAddToCart(note._id, note.bookId)}
+                    className={`p-1.5 ${isAddedToCart ? 'text-cyan-400' : 'text-gray-400 hover:text-cyan-300'} focus:outline-none focus:ring-2 focus:ring-cyan-500/50 rounded-md transition-colors`}
+                    title={isAddedToCart ? "카트에서 제거" : "지식 카트에 담기"}
+                >
+                    <ShoppingCartIcon className={`h-5 w-5 ${isAddedToCart ? 'fill-current' : ''}`} />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="flex flex-col items-stretch ml-4 gap-y-2">
-          {/* 지식 카트 담기 버튼 */} 
-          {onAddToCart && (
-            <div className="relative group w-full rounded-lg bg-gradient-to-br from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 border border-yellow-300 shadow-sm hover:shadow-md transition-all">
-              <button
-                type="button"
-                className={`h-9 w-full px-2 py-0.5 text-xs font-semibold transition-colors flex items-center justify-center ${isAddedToCart ? 'text-yellow-700' : 'text-yellow-600'}`}
-                aria-label={isAddedToCart ? "카트에서 제거" : "지식 카트에 담기"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAddToCart(note._id, note.bookId);
-                }}
-              >
-                <ShoppingCartIcon className={`w-5 h-5 ${isAddedToCart ? 'text-yellow-700 fill-current' : 'text-yellow-600'} group-hover:text-yellow-800 transition-colors`} />
-                {isAddedToCart && <span className="ml-1 text-yellow-700 font-bold">🛒✅</span>} 
-              </button>
-              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                {isAddedToCart ? "이미 카트에 담겨있습니다" : "지식 카트에 추가"}
-              </div>
+
+          {/* Tags Display */}
+          {note.tags && note.tags.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-1.5">
+              {note.tags.map((tag, index) => (
+                <span key={index} className="px-2 py-0.5 bg-gray-700 text-xs text-gray-300 rounded-full flex items-center">
+                  <TagIcon className="h-3 w-3 mr-1 text-cyan-400" /> 
+                  {tag}
+                </span>
+              ))}
             </div>
           )}
-          {/* 플래시카드 버튼 */}
-          {onFlashcardConvert && (
-            <div className="relative group w-full rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 border border-blue-300 shadow-sm hover:shadow-md transition-all">
-              <button
-                type="button"
-                className="h-9 w-full px-2 py-0.5 text-xs font-semibold transition-colors flex items-center justify-center"
-                aria-label="플래시카드 변환"
-                onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }}
-              >
-                <QuestionMarkCircleIcon className="w-5 h-5 text-blue-700 group-hover:text-blue-800 transition-colors" />
-              </button>
-              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                퀴즈로 만들어 자기 것으로 만드세요
-              </div>
+          
+          {/* Display Related Links if they exist */}
+          {note.relatedLinks && note.relatedLinks.length > 0 && (
+            <div className="mb-4 mt-2 border-t border-gray-700 pt-3">
+              <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center">
+                <LinkIcon className="h-4 w-4 mr-2 text-green-400" />
+                관련 자료
+              </h4>
+              <ul className="space-y-1.5 pl-1">
+                {note.relatedLinks.map((link, index) => (
+                  <li key={link._id || index} className="text-xs group">
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-cyan-400 hover:text-cyan-300 hover:underline underline-offset-2 transition-colors items-center group"
+                    >
+                      {getLinkTypeIcon(link.type)}
+                      <span className="truncate group-hover:whitespace-normal group-hover:break-all">{link.url}</span>
+                    </a>
+                    {link.reason && (
+                      <p className="text-gray-500 pl-5 text-xxs italic truncate group-hover:whitespace-normal group-hover:break-all">
+                        ({link.reason})
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
-          {/* 관련링크 버튼 */}
-          {onRelatedLinks && (
-            <div className="relative group w-full rounded-lg bg-gradient-to-br from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 border border-green-300 shadow-sm hover:shadow-md transition-all">
-              <button
-                type="button"
-                className="h-9 w-full px-2 py-0.5 text-xs font-semibold transition-colors flex items-center justify-center"
-                aria-label="관련링크 관리"
-                onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }}
-              >
-                <ArrowTopRightOnSquareIcon className="w-5 h-5 text-green-700 group-hover:text-green-800 transition-colors" />
-              </button>
-              <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                이 메모와 관련된 외부 지식을 연결하세요
+
+
+          {/* Memo Evolution Toggle Button */}
+          <div className="text-right mt-2">
+             <button 
+                onClick={toggleOpen} 
+                className="px-3 py-1.5 text-xs bg-gray-700 hover:bg-gray-600/80 text-gray-300 rounded-md shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500/60 flex items-center justify-center ml-auto"
+            >
+                <PencilSquareIcon className={`h-4 w-4 mr-1.5 ${isOpen ? 'text-purple-400' : 'text-gray-400'}`} />
+                {isOpen ? '메모 진화 닫기' : '메모 진화'}
+            </button>
+          </div>
+
+          {/* Memo Evolution Section (Collapsible) */}
+          {isOpen && (
+            <div className="mt-4 p-4 bg-gray-900/50 rounded-lg border border-gray-700/70">
+              {/* Tabs for Memo Evolution Steps */}
+              <div className="mb-4 border-b border-gray-700 flex space-x-1">
+                {tabList.map((tab, index) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`px-3 py-2 text-xs font-medium rounded-t-md transition-colors
+                                ${activeTab === tab.key 
+                                  ? `${tabColorMap[index]?.color ? `text-white border-b-2` : 'bg-purple-600 text-white'}` 
+                                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'}`}
+                    style={activeTab === tab.key ? { borderColor: tabColorMap[index]?.color, color: tabColorMap[index]?.color } : {}}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Current Tab Content */}
+              <div>
+                <label htmlFor={activeTab} className="block text-sm font-medium text-gray-300 mb-1">
+                  {tabQuestions[activeTab]?.question || '질문'}
+                </label>
+                <textarea
+                  id={activeTab}
+                  name={activeTab}
+                  rows={3}
+                  className="mt-1 block w-full p-2.5 bg-gray-800/70 border border-gray-600 rounded-md shadow-sm text-gray-200 placeholder-gray-500 focus:ring-purple-500 focus:border-purple-500 text-sm transition-colors"
+                  placeholder={tabQuestions[activeTab]?.placeholder || '답변을 입력하세요...'}
+                  value={fields[activeTab as keyof typeof fields]}
+                  onChange={(e) => handleChange(activeTab as keyof typeof fields, e.target.value)}
+                  onBlur={() => handleBlur(activeTab as keyof typeof fields)}
+                />
+              </div>
+
+              {/* Navigation and Save Buttons */}
+              <div className="mt-5 flex justify-between items-center">
+                <button 
+                    onClick={handlePrev} 
+                    disabled={tabKeys.indexOf(activeTab as typeof tabKeys[number]) === 0}
+                    className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md disabled:opacity-50 transition-colors"
+                >
+                    이전
+                </button>
+                <div className="text-xs text-gray-500">
+                    {tabKeys.indexOf(activeTab as typeof tabKeys[number]) + 1} / {tabKeys.length} 단계
+                </div>
+                {tabKeys.indexOf(activeTab as typeof tabKeys[number]) === tabKeys.length - 1 ? (
+                     <button 
+                        onClick={handleSave} 
+                        className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors"
+                    >
+                        메모 진화 저장
+                    </button>
+                ) : (
+                    <button 
+                        onClick={handleNext} 
+                        className="px-4 py-2 text-sm bg-cyan-600 hover:bg-cyan-700 text-white rounded-md transition-colors"
+                    >
+                        다음
+                    </button>
+                )}
               </div>
             </div>
           )}
         </div>
       </div>
-      {isOpen && (
-        <div className="mt-4">
-          {/* 탭 바는 위에서 1줄 메모와 함께 정렬됨 */}
-          <div className="mt-4">
-            <div className="mb-2 text-base font-semibold text-gray-700 flex items-center gap-2">
-              {tabQuestions[activeTab].question}
-              {saveSuccess && <span className="text-green-500 text-sm">✔ 저장됨</span>}
-            </div>
-            <textarea
-              className="w-full p-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 text-gray-900 leading-relaxed mb-2"
-              rows={2}
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              placeholder={tabQuestions[activeTab].placeholder}
-              disabled={isSaving}
-            />
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className={`px-4 py-1 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50`}
-                onClick={handleSave}
-                disabled={isSaving || !inputValue.trim()}
-              >
-                {isSaving ? <span className="animate-spin mr-1">⏳</span> : null}
-                확인
-              </button>
-            </div>
-            {/* 저장된 메모 인라인 표시 */}
-            {(fields as Record<string, string>)[activeTab] && (
-              <div className="mt-3 text-sm text-gray-600 bg-gray-50 rounded p-2 border border-gray-100">
-                <span className="font-medium text-blue-700">저장된 메모:</span> {(fields as Record<string, string>)[activeTab]}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      {/* 노트 태그 표시 */}
-      {note.tags && note.tags.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {note.tags.map((tag, index) => (
-            <span key={index} className="px-2 py-0.5 text-xs bg-gray-600/50 text-gray-300 rounded-full">
-              #{tag}
-            </span>
-          ))}
-        </div>
-      )}
-      <style jsx>{`
-        textarea::placeholder {
-          font-style: italic;
-        }
-      `}</style>
     </div>
   );
 } 
