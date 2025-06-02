@@ -7,26 +7,35 @@ import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import fs from 'fs';
 
+console.log(`[BooksRoutes] Initializing book routes...`);
+console.log(`[BooksRoutes] Current working directory (cwd): ${process.cwd()}`);
+console.log(`[BooksRoutes] __dirname: ${__dirname}`);
+
 const router = express.Router();
 
 // Ensure uploads directory exists
-// const uploadDir = path.join(__dirname, '../../uploads'); // Adjust path as needed, assumes routes folder is in src/
 const uploadDir = path.resolve(process.cwd(), 'uploads');
-console.log(`[Multer] Upload directory configured to: ${uploadDir}`); // 경로 확인용 로그 추가
+console.log(`[BooksRoutes] Multer upload directory configured to (resolved path): ${uploadDir}`);
 if (!fs.existsSync(uploadDir)) {
+  console.log(`[BooksRoutes] Upload directory ${uploadDir} does not exist. Creating...`);
   fs.mkdirSync(uploadDir, { recursive: true });
+  console.log(`[BooksRoutes] Upload directory ${uploadDir} created.`);
+} else {
+  console.log(`[BooksRoutes] Upload directory ${uploadDir} already exists.`);
 }
 
 // Multer configuration for file uploads
 const storage = multer.diskStorage({
   destination: function (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
+    console.log(`[BooksRoutes-MulterDest] Destination function called. Calculated uploadDir: ${uploadDir}`);
     cb(null, uploadDir);
   },
   filename: function (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
-    // Sanitize filename and ensure uniqueness
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const extension = path.extname(file.originalname);
-    cb(null, file.fieldname + '-' + uniqueSuffix + extension);
+    const newFilename = file.fieldname + '-' + uniqueSuffix + extension;
+    console.log(`[BooksRoutes-MulterFilename] Filename function called. Generating filename: ${newFilename}`);
+    cb(null, newFilename);
   }
 });
 
@@ -46,6 +55,8 @@ const upload = multer({
   },
   fileFilter: fileFilter
 });
+
+console.log(`[BooksRoutes] Multer instance configured.`);
 
 // All book routes require authentication
 router.use(authenticate);

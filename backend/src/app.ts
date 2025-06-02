@@ -8,6 +8,10 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 
+console.log(`[App] Starting application...`);
+console.log(`[App] Current working directory (cwd): ${process.cwd()}`);
+console.log(`[App] __dirname: ${__dirname}`);
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -66,6 +70,8 @@ const corsOptions = {
   credentials: true,
 };
 
+console.log(`[App] CORS options configured.`);
+
 // Middleware
 app.use(cors(corsOptions));
 // Enable preflight for all routes
@@ -79,11 +85,12 @@ app.use(helmet({
 }));
 app.use(compression());
 app.use(morgan('dev'));
+console.log(`[App] Basic middleware (cors, json, urlencoded, etc.) configured.`);
 
 // Serve static files from the 'uploads' directory
 const uploadsPath = path.resolve(process.cwd(), 'uploads');
+console.log(`[App] Attempting to serve static files from resolved path: ${uploadsPath}`);
 app.use('/uploads', express.static(uploadsPath));
-console.log(`Attempting to serve static files from: ${uploadsPath}`);
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -101,6 +108,7 @@ app.use('/api/routines', routineRoutes);
 app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/summary-notes', summaryNoteRoutes);
+console.log(`[App] API routes configured.`);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -122,7 +130,8 @@ app.use((err: any, req: any, res: any, next: any) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`[App] Server is running on port ${PORT}`);
+  console.log(`[App] uploadsPath (at server start): ${uploadsPath}`);
 });
 
 export default app; 
