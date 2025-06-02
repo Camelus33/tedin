@@ -129,6 +129,34 @@ export const updateSummaryNote = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @function getSummaryNotesByUserId
+ * @description 현재 인증된 사용자의 모든 단권화 노트를 조회합니다.
+ * 생성일자 기준 내림차순으로 정렬하여 반환합니다.
+ * @param {Request} req - Express 요청 객체. 인증 미들웨어를 통해 req.user.id에 사용자 ID가 설정되어 있어야 함.
+ * @param {Response} res - Express 응답 객체.
+ * @returns {Promise<void>} 성공 시 200 상태 코드와 단권화 노트 목록(ISummaryNote[])을 JSON으로 반환합니다.
+ *                        사용자 인증 실패 또는 오류 발생 시 적절한 상태 코드와 메시지를 반환합니다.
+ */
+export const getSummaryNotesByUserId = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated for fetching summary notes' });
+    }
+
+    const summaryNotes: ISummaryNote[] = await SummaryNote.find({ userId })
+      .sort({ createdAt: -1 }) // 최신순 정렬
+      .exec();
+
+    res.status(200).json(summaryNotes);
+  } catch (error: any) {
+    console.error('[GetSummaryNotesByUserId Error]', error);
+    res.status(500).json({ message: 'Error fetching summary notes for user', error: error.message });
+  }
+};
+
 // (Placeholder for batch get notes - this might belong in noteController.ts)
 // GET /api/notes/batch - This is part of the plan but will be handled separately
 // to ensure it's in the correct controller (likely noteController.ts). 

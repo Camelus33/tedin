@@ -2,7 +2,8 @@ import express from 'express';
 import {
   createSummaryNote,
   getSummaryNoteById,
-  updateSummaryNote
+  updateSummaryNote,
+  getSummaryNotesByUserId
 } from '../controllers/summaryNoteController';
 import { authenticate } from '../middlewares/auth'; // 인증 미들웨어 임포트
 
@@ -14,6 +15,14 @@ const router = express.Router();
  * 인증 성공 시 req.user 객체에 사용자 정보가 포함됩니다.
  */
 router.use(authenticate);
+
+/**
+ * @route GET /api/summary-notes/
+ * @description 현재 인증된 사용자의 모든 단권화 노트를 조회합니다.
+ * @access Private (인증 필요)
+ * @handler summaryNoteController.getSummaryNotesByUserId
+ */
+router.get('/', getSummaryNotesByUserId);
 
 /**
  * @route POST /api/summary-notes/
