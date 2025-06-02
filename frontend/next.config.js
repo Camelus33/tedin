@@ -12,6 +12,12 @@ const nextConfig = {
         port: '',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'habitus33-api.onrender.com',
+        port: '',
+        pathname: '/uploads/**',
+      },
     ],
   },
   // API 프록시 설정 강화
