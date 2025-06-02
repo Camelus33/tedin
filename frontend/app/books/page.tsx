@@ -97,7 +97,6 @@ export default function BooksPage() {
   const sortButtonRef = useRef<HTMLButtonElement>(null);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
   
-  // 새로운 상태 변수들
   const [activeTab, setActiveTab] = useState<'books' | 'summaryNotes'>('books');
   const [summaryNotes, setSummaryNotes] = useState<SummaryNote[]>([]);
   const [summaryNotesLoading, setSummaryNotesLoading] = useState<boolean>(false);
@@ -107,93 +106,98 @@ export default function BooksPage() {
   const controller = useRef<AbortController | null>(null);
   const isMounted = useRef(true);
 
-  useEffect(() => {
-    isMounted.current = true;
-    
-    return () => {
-      isMounted.current = false;
-      if (controller.current) {
-        controller.current.abort();
-      }
-      if (requestTimeout.current) {
-        clearTimeout(requestTimeout.current);
-      }
-    };
-  }, []);
-
   const fetchBooks = useCallback(async () => {
-    if (controller.current) {
-      controller.current.abort();
-    }
-    if (requestTimeout.current) {
-      clearTimeout(requestTimeout.current);
-    }
-    
+    if (controller.current) controller.current.abort();
     controller.current = new AbortController();
+    
     setIsLoading(true);
     setError("");
     
+    if(requestTimeout.current) clearTimeout(requestTimeout.current);
     requestTimeout.current = setTimeout(() => {
-      if (controller.current) {
+      if (isMounted.current && controller.current) {
         controller.current.abort();
-        if (isMounted.current) {
-          setError("서버 응답 시간이 초과되었습니다. 네트워크 연결을 확인하거나 나중에 다시 시도해주세요.");
-          setIsLoading(false);
-        }
+        setError("서버 응답 시간이 초과되었습니다.");
+        setIsLoading(false);
       }
     }, 15000);
-    
-    try {
-      console.log('Fetching books from API via booksApi.getAll()...');
-      const data = await booksApi.getAll({ signal: controller.current?.signal });
 
+    try {
+      console.log('Fetching books from API...');
+      const data = await booksApi.getAll({ signal: controller.current?.signal });
       let booksData: Book[] = [];
       if (Array.isArray(data)) {
         booksData = data;
       } else if (data && Array.isArray(data.books)) {
         booksData = data.books;
       } else {
-        console.error('책 데이터 형식이 올바르지 않습니다:', data);
-        booksData = [];
+        console.error('Book data format is incorrect:', data);
+        throw new Error('수신된 책 데이터 형식이 올바르지 않습니다.');
       }
       
+      booksData.forEach(book => {
+        console.log(`Book: ${book.title}, Cover Image Path/URL: ${book.coverImage}`);
+      });
+
       if (isMounted.current) {
         setBooks(booksData);
         setFilteredBooks(booksData);
-        setIsLoading(false);
       }
     } catch (err: any) {
-      console.error('책 목록 로딩 오류:', err);
-      
       if (isMounted.current && err.name !== 'AbortError') {
+        console.error('Error loading books:', err);
         setError(err.message || "기억 저장소 정보를 불러오는 중 오류가 발생했습니다");
-        setIsLoading(false);
       }
     } finally {
-      if (requestTimeout.current) {
-        clearTimeout(requestTimeout.current);
-        requestTimeout.current = null;
-      }
+      if (isMounted.current) setIsLoading(false);
+      if(requestTimeout.current) clearTimeout(requestTimeout.current);
     }
-  }, [router]);
+  }, []);
+
+  const fetchSummaryNotes = useCallback(async () => {
+    setSummaryNotesLoading(true);
+    setSummaryNotesError('');
+    try {
+      const response = await api.get('/summary-notes/');
+      setSummaryNotes(response.data || []);
+    } catch (err: any) {
+      console.error('단권화 노트 로딩 오류:', err);
+      setSummaryNotesError(err.response?.data?.message || err.message || '단권화 노트를 불러오는 중 오류 발생');
+    } finally {
+      setSummaryNotesLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
+    isMounted.current = true;
+    if (activeTab === 'books') {
+      fetchBooks();
+    } else if (activeTab === 'summaryNotes') {
+      fetchSummaryNotes();
+    }
+    return () => {
+      isMounted.current = false;
+      if (controller.current) controller.current.abort();
+      if (requestTimeout.current) clearTimeout(requestTimeout.current);
+    };
+  }, [activeTab, fetchBooks, fetchSummaryNotes]);
+  
+  useEffect(() => {
     if (!searchQuery.trim()) {
-      setFilteredBooks(books);
+      applySort(books);
       return;
     }
-
     const filtered = books.filter(
       (book) =>
         book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         book.author.toLowerCase().includes(searchQuery.toLowerCase())
     );
     applySort(filtered);
-  }, [searchQuery, books, sortBy]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, books]); // applySort is memoized
 
-  const applySort = (booksToSort: Book[]) => {
+  const applySort = useCallback((booksToSort: Book[]) => {
     let sorted = [...booksToSort];
-    
     if (sortBy === "title") {
       sorted.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === "date") {
@@ -209,9 +213,8 @@ export default function BooksPage() {
         return progressB - progressA;
       });
     }
-    
     setFilteredBooks(sorted);
-  };
+  }, [sortBy]);
 
   const handleSortChange = (newSortBy: SortByType) => {
     setSortBy(newSortBy);
@@ -226,32 +229,23 @@ export default function BooksPage() {
 
   const formatLastRead = (dateString?: string): string => {
     if (!dateString) return "아직 읽지 않음";
-    
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
     if (diffDays <= 1) return "오늘 활성화";
     if (diffDays <= 7) return `${diffDays}일 전 활성화`;
     return date.toLocaleDateString('ko-KR');
   };
 
   const handleDeleteBook = async (bookId: string) => {
-    if (!confirm('정말로 이 기억 저장소 항목을 삭제하시겠습니까?')) {
-      return;
-    }
-    
+    if (!confirm('정말로 이 기억 저장소 항목을 삭제하시겠습니까?')) return;
     try {
       await booksApi.delete(bookId);
       setBooks((prevBooks) => prevBooks.filter((book) => book._id !== bookId));
-      setFilteredBooks((prevBooks) => prevBooks.filter((book) => book._id !== bookId));
-      console.log(`Book with ID ${bookId} deleted.`);
+      // setFilteredBooks will be updated by useEffect reacting to books change
     } catch (err: any) {
       alert(`오류 발생: ${err.message}`);
-      console.error('기억 저장소 항목 삭제 오류:', err);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -262,52 +256,17 @@ export default function BooksPage() {
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (showMenu) {
-        setShowMenu(null);
-      }
-      if (showSortOptions && 
-          sortButtonRef.current && !sortButtonRef.current.contains(event.target as Node) &&
-          sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+      if (showMenu) setShowMenu(null);
+      if (showSortOptions && sortButtonRef.current && !sortButtonRef.current.contains(event.target as Node) && sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
           setShowSortOptions(false);
       }
     };
-    
     document.addEventListener('mousedown', handleClickOutside);
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu, showSortOptions]);
 
-  const handleViewBookDetails = (bookId: string) => {
-    router.push(`/books/${bookId}`);
-  };
-
-  const handleAddBook = () => {
-    router.push("/books/new");
-  };
-
-  // 단권화 노트 목록 가져오기
-  const fetchSummaryNotes = useCallback(async () => {
-    setSummaryNotesLoading(true);
-    setSummaryNotesError('');
-    try {
-      console.log('Fetching summary notes from API...');
-      const response = await api.get('/summary-notes/'); // 백엔드 API 엔드포인트
-      setSummaryNotes(response.data || []);
-    } catch (err: any) {
-      console.error('단권화 노트 로딩 오류:', err);
-      setSummaryNotesError(err.response?.data?.message || err.message || '단권화 노트를 불러오는 중 오류 발생');
-    } finally {
-      setSummaryNotesLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (activeTab === 'summaryNotes') {
-      fetchSummaryNotes();
-    }
-  }, [activeTab, fetchSummaryNotes]);
+  const handleViewBookDetails = (bookId: string) => router.push(`/books/${bookId}`);
+  const handleAddBook = () => router.push("/books/new");
 
   const handleDeleteSummaryNote = async (summaryNoteId: string) => {
     if (window.confirm("정말로 이 단권화 노트를 삭제하시겠습니까?")) {
@@ -316,27 +275,33 @@ export default function BooksPage() {
         setSummaryNotes(prevNotes => prevNotes.filter(note => note._id !== summaryNoteId));
         alert("단권화 노트가 삭제되었습니다.");
       } catch (err: any) {
-        console.error("Failed to delete summary note:", err);
         setSummaryNotesError(err.response?.data?.message || "삭제 중 오류가 발생했습니다.");
-        alert("단권화 노트 삭제에 실패했습니다: " + (err.response?.data?.message || err.message));
+        alert("단권화 노트 삭제 실패: " + (err.response?.data?.message || err.message));
       }
     }
   };
 
-  if (isLoading) {
+  // Main loading state for the page, prioritizing books tab if both are potentially loading.
+  const pageIsLoading = activeTab === 'books' ? isLoading : summaryNotesLoading;
+  const currentError = activeTab === 'books' ? error : summaryNotesError;
+
+  if (pageIsLoading) {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
         <Spinner size="lg" color="cyan" />
-        <p className={`mt-4 ${cyberTheme.textLight}`}>기억 저장소 정보 로딩 중...</p>
+        <p className={`mt-4 ${cyberTheme.textLight}`}>
+          {activeTab === 'books' ? '기억 저장소 정보 로딩 중...' : '단권화 노트 로딩 중...'}
+        </p>
       </div>
     );
   }
 
-  if (error) {
+  if (currentError) {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
         <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl p-6 max-w-md w-full border ${cyberTheme.errorBorder} text-center`}>
-            <p className={`mb-4 ${cyberTheme.errorText}`}>{error}</p>
+            <p className={`mb-4 ${cyberTheme.errorText}`}>{currentError}</p>
+            <Button onClick={() => activeTab === 'books' ? fetchBooks() : fetchSummaryNotes()}>다시 시도</Button>
         </div>
       </div>
     );
@@ -353,59 +318,28 @@ export default function BooksPage() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-            <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>
-              내 서재
-            </h1>
-            <button
-              onClick={handleAddBook}
-              aria-label="새 책 등록"
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-medium transition-colors w-full sm:w-auto mt-3 sm:mt-0`}
-            >
-              <AiOutlinePlus className="h-5 w-5" />
-              <span>새 책 등록</span>
+            <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>내 서재</h1>
+            <button onClick={handleAddBook} aria-label="새 책 등록" className={`flex items-center gap-2 px-4 py-2 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-medium transition-colors w-full sm:w-auto mt-3 sm:mt-0`}>
+              <AiOutlinePlus className="h-5 w-5" /><span>새 책 등록</span>
             </button>
           </div>
-          <p className={`text-sm ${cyberTheme.textMuted}`}>
-            당신이 읽고 있는 모든 것을 등록하고 관리하세요. 책, 논문, 수험서, 학습자료, 문서 등
-          </p>
+          <p className={`text-sm ${cyberTheme.textMuted}`}>당신이 읽고 있는 모든 것을 등록하고 관리하세요. 책, 논문, 수험서, 학습자료, 문서 등</p>
         </div>
-
         <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 ${cyberTheme.bgSecondary} rounded-lg`}>
           <div className="relative w-full sm:w-auto flex-grow">
             <AiOutlineSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${cyberTheme.textMuted}`} />
-            <input
-              type="text"
-              placeholder="기억 저장소에서 책 검색..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
-            />
+            <input type="text" placeholder="기억 저장소에서 책 검색..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`} />
           </div>
-
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
              <div className="relative">
-                 <button
-                     ref={sortButtonRef}
-                     onClick={() => setShowSortOptions(!showSortOptions)}
-                     aria-label="정렬 기준 변경"
-                     className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textLight} transition-colors`}
-                 >
-                     <AiOutlineFilter className="h-5 w-5" />
-                     <span>{sortOptions.find(opt => opt.key === sortBy)?.label || '정렬'}</span>
+                 <button ref={sortButtonRef} onClick={() => setShowSortOptions(!showSortOptions)} aria-label="정렬 기준 변경" className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textLight} transition-colors`}>
+                     <AiOutlineFilter className="h-5 w-5" /><span>{sortOptions.find(opt => opt.key === sortBy)?.label || '정렬'}</span>
                  </button>
                  {showSortOptions && (
-                     <div
-                         ref={sortDropdownRef}
-                         className={`absolute right-0 mt-2 w-48 ${cyberTheme.menuBg} rounded-md shadow-lg z-10 border ${cyberTheme.inputBorder}`}
-                     >
+                     <div ref={sortDropdownRef} className={`absolute right-0 mt-2 w-48 ${cyberTheme.menuBg} rounded-md shadow-lg z-10 border ${cyberTheme.inputBorder}`}>
                          {sortOptions.map((option) => (
-                             <button
-                                 key={option.key}
-                                 onClick={() => handleSortChange(option.key)}
-                                 className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${cyberTheme.textLight} ${cyberTheme.menuItemHover} ${sortBy === option.key ? 'font-bold' : ''}`}
-                             >
-                                 <option.icon className="h-4 w-4" />
-                                 {option.label}
+                             <button key={option.key} onClick={() => handleSortChange(option.key)} className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${cyberTheme.textLight} ${cyberTheme.menuItemHover} ${sortBy === option.key ? 'font-bold' : ''}`}>
+                                 <option.icon className="h-4 w-4" />{option.label}
                              </button>
                          ))}
                      </div>
@@ -414,83 +348,72 @@ export default function BooksPage() {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="mb-6 flex border-b border-gray-700">
-          <button
-            onClick={() => setActiveTab('books')}
-            className={`py-3 px-5 font-semibold flex items-center gap-2 transition-colors ${activeTab === 'books' ? `${cyberTheme.primary} border-b-2 ${cyberTheme.borderPrimary}` : `${cyberTheme.textMuted} hover:text-cyan-300 border-b-2 border-transparent`}`}
-          >
-            <AiOutlineBook className="w-5 h-5" /> 내 서재 (책)
-          </button>
-          <button
-            onClick={() => setActiveTab('summaryNotes')}
-            className={`py-3 px-5 font-semibold flex items-center gap-2 transition-colors ${activeTab === 'summaryNotes' ? `${cyberTheme.primary} border-b-2 ${cyberTheme.borderPrimary}` : `${cyberTheme.textMuted} hover:text-cyan-300 border-b-2 border-transparent`}`}
-          >
-            <AiOutlineFileText className="w-5 h-5" /> 단권화 노트
-          </button>
+          <button onClick={() => setActiveTab('books')} className={`py-3 px-5 font-semibold flex items-center gap-2 transition-colors ${activeTab === 'books' ? `${cyberTheme.primary} border-b-2 ${cyberTheme.borderPrimary}` : `${cyberTheme.textMuted} hover:text-cyan-300 border-b-2 border-transparent`}
+            `}><AiOutlineBook className="w-5 h-5" /> 내 서재 (책)</button>
+          <button onClick={() => setActiveTab('summaryNotes')} className={`py-3 px-5 font-semibold flex items-center gap-2 transition-colors ${activeTab === 'summaryNotes' ? `${cyberTheme.primary} border-b-2 ${cyberTheme.borderPrimary}` : `${cyberTheme.textMuted} hover:text-cyan-300 border-b-2 border-transparent`}
+            `}><AiOutlineFileText className="w-5 h-5" /> 단권화 노트</button>
         </div>
 
-        {/* Content based on activeTab */}
         {activeTab === 'books' && (
           <>
             {filteredBooks.length === 0 && !isLoading ? (
-              <div className={`text-center py-10 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-lg`}>
-                해당하는 책이 없거나 아직 책을 추가하지 않았습니다.
-              </div>
+              <div className={`text-center py-10 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-lg`}>해당하는 책이 없거나 아직 책을 추가하지 않았습니다.</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {filteredBooks.map((book) => {
                   const progress = calculateProgress(book.currentPage, book.totalPages);
-                  return (
-                    <div
-                      key={book._id}
-                      onClick={() => handleViewBookDetails(book._id)}
-                      className={`relative ${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-cyan-500/30 border ${cyberTheme.inputBorder}`}
-                    >
-                      <button
-                        onClick={(e) => toggleMenu(book._id, e)}
-                        aria-label="기억 관리 메뉴"
-                        className={`absolute top-2 right-2 p-1.5 rounded-full ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted} z-10`}
-                      >
-                        <FiMoreVertical className="h-5 w-5" />
-                      </button>
+                  let imageSrc: string | null = null;
+                  if (book.coverImage && (book.coverImage.startsWith('http') || book.coverImage.startsWith('/'))) {
+                    imageSrc = book.coverImage;
+                  } else if (book.coverImage) {
+                    console.warn(`Invalid cover image path for book "${book.title}": ${book.coverImage}. Rendering placeholder.`);
+                  }
 
+                  return (
+                    <div key={book._id} onClick={() => handleViewBookDetails(book._id)} className={`relative ${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-cyan-500/30 border ${cyberTheme.inputBorder}`}>
+                      <button onClick={(e) => toggleMenu(book._id, e)} aria-label="기억 관리 메뉴" className={`absolute top-2 right-2 p-1.5 rounded-full ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted} z-10`}><FiMoreVertical className="h-5 w-5" /></button>
                       {showMenu === book._id && (
                         <div className={`action-menu absolute top-10 right-2 mt-1 w-36 ${cyberTheme.menuBg} rounded-md shadow-lg z-20 border ${cyberTheme.inputBorder}`}>
-                           <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}>
-                              <AiOutlineEdit className="h-4 w-4" /> 수정하기
-                           </Link>
-                           <button
-                             onClick={(e) => { e.stopPropagation(); handleDeleteBook(book._id); }}
-                             className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.errorText} ${cyberTheme.menuItemHover} flex items-center gap-2`}
-                           >
-                              <AiOutlineDelete className="h-4 w-4" /> 삭제하기
-                           </button>
+                           <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineEdit className="h-4 w-4" /> 수정하기</Link>
+                           <button onClick={(e) => { e.stopPropagation(); handleDeleteBook(book._id); }} className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.errorText} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineDelete className="h-4 w-4" /> 삭제하기</button>
                         </div>
                       )}
-
                       <div className={`w-full h-32 md:h-40 ${cyberTheme.inputBg} flex items-center justify-center ${cyberTheme.textMuted}`}>
-                        {book.coverImage ? (
-                          <Image src={book.coverImage} alt={book.title} width={100} height={150} className="object-cover w-full h-full" />
+                        {imageSrc ? (
+                          <Image 
+                            src={imageSrc} 
+                            alt={book.title} 
+                            width={100} height={150} 
+                            className="object-cover w-full h-full" 
+                            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                              console.error(`Failed to load image (onError event): ${imageSrc}`, e.currentTarget);
+                              // Attempt to hide the broken image by directly manipulating the style is not ideal for Next/Image.
+                              // Instead, we can trigger a re-render with imageSrc set to null or a placeholder path if we had such state per image.
+                              // For now, console logging is the primary action.
+                              (e.currentTarget as HTMLImageElement).style.display = 'none'; // Hide broken image icon as a quick fix
+                              const parent = e.currentTarget.parentElement;
+                              if (parent && !parent.querySelector('.placeholder-icon')) {
+                                const placeholder = document.createElement('div');
+                                placeholder.className = 'placeholder-icon'; // Add class for styling if needed
+                                placeholder.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-12 w-12"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>'; // Example SVG icon
+                                parent.appendChild(placeholder);
+                              }
+                            }}
+                          />
                         ) : (
-                          <FiBook className="h-12 w-12" />
+                          <FiBook className="h-12 w-12 placeholder-icon" /> // Added placeholder-icon class
                         )}
                       </div>
-
                       <div className="p-4">
                         <h2 className="font-bold text-base md:text-lg mb-1 truncate ${cyberTheme.textLight}" title={book.title}>{book.title}</h2>
                         <p className={`text-xs md:text-sm ${cyberTheme.textMuted} mb-3 truncate`} title={book.author}>{book.author}</p>
-
                         <div className="mb-2">
                           <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-1.5`}>
-                            <div
-                              className={`h-1.5 rounded-full ${cyberTheme.progressFg}`}
-                              style={{ width: `${progress}%` }}
-                            ></div>
+                            <div className={`h-1.5 rounded-full ${cyberTheme.progressFg}`} style={{ width: `${progress}%` }}></div>
                           </div>
                           <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>기억 저장: {progress}% ({book.currentPage}/{book.totalPages}쪽)</p>
                         </div>
-
                         <div className="flex items-center text-xs ${cyberTheme.textMuted}">
                           <FiClock className="h-3.5 w-3.5 mr-1" />
                           <span>최근 기억 활성화: {formatLastRead(book.lastReadAt)}</span>
@@ -503,7 +426,6 @@ export default function BooksPage() {
             )}
           </>
         )}
-
         {activeTab === 'summaryNotes' && (
           <>
             {summaryNotesLoading && (
@@ -517,7 +439,7 @@ export default function BooksPage() {
                 <p className={`${cyberTheme.errorText} font-semibold mb-2`}>오류 발생</p>
                 <p className={`${cyberTheme.textLight} text-sm`}>{summaryNotesError}</p>
                 <button
-                  onClick={() => { /* Add retry logic here if needed, e.g., refetch summary notes */ setActiveTab('summaryNotes'); const event = new Event('click'); document.dispatchEvent(event);}}
+                  onClick={() => { setActiveTab('summaryNotes'); fetchSummaryNotes();}}
                   className={`mt-4 py-2 px-4 rounded-lg ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} text-white font-semibold text-sm transition-colors`}
                 >
                   다시 시도
@@ -567,10 +489,7 @@ export default function BooksPage() {
                 <AiOutlineFileText className={`w-16 h-16 mx-auto mb-4 ${cyberTheme.textMuted}`} />
                 <p className={`text-lg ${cyberTheme.textLight} mb-2`}>아직 작성된 단권화 노트가 없습니다.</p>
                 <p className={`${cyberTheme.textMuted} mb-6`}>지식 카트의 메모들을 모아 첫 단권화 노트를 만들어보세요.</p>
-                <button
-                  onClick={() => router.push("/summary-notes/create")}
-                  className={`flex items-center gap-2 mx-auto py-2.5 px-6 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-semibold text-sm transition-colors`}
-                >
+                <button onClick={() => router.push("/summary-notes/create")} className={`flex items-center gap-2 mx-auto py-2.5 px-6 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-semibold text-sm transition-colors`}>
                   <AiOutlinePlus /> 새 단권화 노트 만들기
                 </button>
               </div>
