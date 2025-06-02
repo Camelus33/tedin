@@ -89,7 +89,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
 
       {flashcards.map((card) => (
         <div key={card._id} className={`${cyberTheme.cardBg} rounded-xl p-5 shadow-lg border ${cyberTheme.borderPrimary}/20 relative transition-all duration-300 hover:shadow-cyan-500/20`}>
-          <div className="absolute top-3 right-3 z-10">
+          <div className="absolute bottom-3 right-3 z-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className={`text-gray-400 hover:text-cyan-300 p-1.5`}>
