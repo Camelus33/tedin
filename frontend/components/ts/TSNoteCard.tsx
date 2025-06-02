@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AiOutlineQuestionCircle, AiOutlineInfoCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon } from '@heroicons/react/24/solid';
@@ -262,6 +262,8 @@ export default function TSNoteCard({
   const [initialFields, setInitialFields] = useState({...fields});
   const [currentStep, setCurrentStep] = useState(1);
   const [isHoveringInfo, setIsHoveringInfo] = useState(false); // State for TS Info hover
+  const [isHoveringCard, setIsHoveringCard] = useState(false); // Renamed for clarity
+  const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 탭 제목: 읽던 순간, 떠오른 장면, 연결된 지식, 내게 온 의미
@@ -295,9 +297,7 @@ export default function TSNoteCard({
     mentalImage: prompts[3],
   };
 
-  const handleSave = async () => {
-    // const updatedNotePartial: Partial<TSNote> = { _id: initialNote._id, ...fields }; // This line caused the error and is unused.
-    
+  const handleSave = useCallback(async () => {
     // Send only changed fields to onUpdate
     const changedFields: Partial<TSNote> = { _id: initialNote._id };
     let hasChanges = false;
@@ -312,7 +312,7 @@ export default function TSNoteCard({
       onUpdate?.(changedFields);
     }
     setIsOpen(false); 
-  };
+  }, [fields, initialNote, onUpdate, tabKeys, setIsOpen]);
 
   const toggleOpen = () => setIsOpen((prev) => !prev);
 
@@ -320,15 +320,15 @@ export default function TSNoteCard({
     setFields((prev) => ({ ...prev, [key]: value }));
   };
   
-  const handleBlur = async (key: keyof typeof fields) => {
+  const handleBlur = useCallback(async (key: keyof typeof fields) => {
     // Call onUpdate when a field loses focus and its content has actually changed
     // from the original note prop
     if (fields[key] !== (initialNote[key] || '')) {
         onUpdate?.({ _id: initialNote._id, [key]: fields[key] });
     }
-  };
+  }, [fields, initialNote, onUpdate]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
     if (currentIndex < tabKeys.length - 1) {
       setActiveTab(tabKeys[currentIndex + 1]);
@@ -336,7 +336,7 @@ export default function TSNoteCard({
       // If on the last tab, "Next" could become "Save" or cycle to first
       handleSave(); 
     }
-  };
+  }, [activeTab, handleSave, tabKeys]);
 
   const handlePrev = () => {
     setCurrentStep((prev) => (prev > 1 ? prev - 1 : tabList.length));
@@ -350,19 +350,40 @@ export default function TSNoteCard({
                                     : '';
   const displayPPM = sessionDetails?.ppm !== undefined ? formatPPM(sessionDetails.ppm) : '';
 
-  const renderSessionInfo = () => (
-    <div 
-      className={`transition-opacity duration-300 ease-in-out ${isHoveringInfo ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} 
-                 absolute top-1 left-1 w-auto max-w-xs bg-gray-900/80 backdrop-blur-sm p-2 rounded-md 
-                 text-xs text-gray-300 z-20 shadow-lg`}
+  const renderSessionInfoButton = () => (
+    <button
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent card click or other underlying events
+        setShowSessionDetailsPopover(!showSessionDetailsPopover);
+      }}
+      onMouseEnter={() => setShowSessionDetailsPopover(true)}
+      onMouseLeave={() => setShowSessionDetailsPopover(false)}
+      className={`absolute top-2 right-2 z-30 p-1.5 rounded-full bg-gray-700/70 hover:bg-cyan-600/90
+                  text-gray-300 hover:text-white transition-all duration-200
+                  focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+      aria-label="TS 세션 정보 보기"
     >
-      <h4 className={`font-semibold mb-1 ${cyberTheme.primaryText}`}>TS 세션 정보</h4>
-      {sessionDetails?.createdAtISO && <p>기록일: {displaySessionCreatedAt}</p>}
+      <AiOutlineInfoCircle className="h-4 w-4" />
+    </button>
+  );
+
+  const renderSessionInfoPopover = () => (
+    <div 
+      className={`transition-opacity duration-200 ease-in-out ${showSessionDetailsPopover ? 'opacity-100' : 'opacity-0'}
+                 absolute top-8 right-2 w-auto max-w-xs bg-gray-900/90 backdrop-blur-md p-3 rounded-lg
+                 text-xs text-gray-200 z-20 shadow-xl border border-gray-700/50`}
+      // Keep popover open if mouse moves from button to popover
+      onMouseEnter={() => setShowSessionDetailsPopover(true)} 
+      onMouseLeave={() => setShowSessionDetailsPopover(false)}
+    >
+      <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1`}>TS 세션 정보</h4>
+      {sessionDetails?.createdAtISO && <p className="mt-1">기록일: {displaySessionCreatedAt}</p>}
       {sessionDetails?.durationSeconds !== undefined && <p>집중 시간: {displaySessionDuration}</p>}
       {sessionDetails && (sessionDetails.startPage !== undefined || sessionDetails.actualEndPage !== undefined) && (
         <p>페이지: {displaySessionPageProgress}</p>
       )}
       {sessionDetails?.ppm !== undefined && <p>독서 속도: {displayPPM}</p>}
+      {(!sessionDetails || Object.keys(sessionDetails).length === 0) && <p className="text-gray-400 italic">세션 정보가 없습니다.</p>}
     </div>
   );
   
@@ -377,13 +398,21 @@ export default function TSNoteCard({
   };
 
   return (
-    <div className={`relative group ${cyberTheme.cardBg} p-4 rounded-lg shadow-md border ${cyberTheme.cardBorder} ${className} ${minimalDisplay ? 'min-h-0' : 'min-h-[180px]'} transition-all duration-200 hover:shadow-xl hover:border-cyan-500/70`}>
-      {sessionDetails && !minimalDisplay && renderSessionInfo()}
+    <div 
+      className={`relative group ${cyberTheme.cardBg} p-4 rounded-lg shadow-md border ${cyberTheme.cardBorder} ${className} ${minimalDisplay ? 'min-h-0' : 'min-h-[180px]'} transition-all duration-200 hover:shadow-xl hover:border-cyan-500/70`}
+      onMouseEnter={() => setIsHoveringCard(true)} // For general card hover effects if any
+      onMouseLeave={() => setIsHoveringCard(false)}
+    >
+      {sessionDetails && !minimalDisplay && (
+        <>
+          {renderSessionInfoButton()}
+          {renderSessionInfoPopover()}
+        </>
+      )}
       
       <div 
         className="relative flex flex-col h-full"
-        onMouseEnter={() => setIsHoveringInfo(true)}
-        onMouseLeave={() => setIsHoveringInfo(false)}
+        // Removed onMouseEnter/Leave from here as they were for the old popover logic
       >
         {/* Main Content */}
         <div className="flex-grow mb-2">
