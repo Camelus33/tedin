@@ -63,6 +63,19 @@ export default function EditSummaryNotePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notesLoading, setNotesLoading] = useState(false);
+  const [currentBookReadingPurpose, setCurrentBookReadingPurpose] = useState<string | undefined>(undefined);
+
+  const fetchBookDetailsForPurpose = async (bookId: string) => {
+    try {
+      // Assuming you have an API endpoint to get a single book's details
+      const response = await api.get(`/books/${bookId}`); 
+      // Assuming the book data has a readingPurpose field
+      setCurrentBookReadingPurpose(response.data?.readingPurpose || 'humanities_self_reflection'); 
+    } catch (err) {
+      console.error('Failed to fetch book details for reading purpose:', err);
+      setCurrentBookReadingPurpose('humanities_self_reflection'); // Default on error
+    }
+  };
 
   const fetchSummaryNoteDetails = useCallback(async () => {
     if (!summaryNoteId) return;
@@ -76,6 +89,10 @@ export default function EditSummaryNotePage() {
       setDescription(data.description || '');
       if (data.orderedNoteIds && data.orderedNoteIds.length > 0) {
         fetchNotesDetails(data.orderedNoteIds);
+      }
+      if (data.bookIds && data.bookIds.length > 0) {
+        // Fetch reading purpose from the first associated book
+        fetchBookDetailsForPurpose(data.bookIds[0]);
       }
     } catch (err: any) {
       console.error("Failed to fetch summary note details:", err);
@@ -93,11 +110,9 @@ export default function EditSummaryNotePage() {
     setNotesLoading(true);
     try {
       const response = await api.post('/notes/batch', { noteIds });
-      // Ensure the response data structure matches FetchedNoteDetails or adapt as needed
       setFetchedNotes(response.data || []); 
     } catch (err) {
       console.error("Failed to fetch notes details:", err);
-      // Optionally set an error state for notes fetching
     } finally {
       setNotesLoading(false);
     }
@@ -115,34 +130,16 @@ export default function EditSummaryNotePage() {
       const updatedData = {
         title,
         description,
-        orderedNoteIds: summaryNote.orderedNoteIds, // For now, keep original notes. Reordering/removal later.
-        // tags: summaryNote.tags, // Tag editing can be added later
+        orderedNoteIds: summaryNote.orderedNoteIds,
       };
       await api.put(`/summary-notes/${summaryNoteId}`, updatedData);
       alert('단권화 노트가 성공적으로 저장되었습니다.');
-      router.push('/books'); // Redirect to the library or the updated note view page
+      fetchSummaryNoteDetails(); // Refetch to show updated data on the same page
     } catch (err: any) {
       console.error("Failed to save summary note:", err);
       setError(err.response?.data?.message || "저장 중 오류가 발생했습니다.");
     } finally {
       setIsSaving(false);
-    }
-  };
-  
-  const handleDeleteSummaryNote = async () => {
-    if (!summaryNoteId) return;
-    if (window.confirm("정말로 이 단권화 노트를 삭제하시겠습니까? 관련된 노트 자체가 삭제되지는 않습니다.")) {
-      setIsSaving(true); // Use isSaving to disable buttons
-      setError(null);
-      try {
-        await api.delete(`/summary-notes/${summaryNoteId}`);
-        alert("단권화 노트가 삭제되었습니다.");
-        router.push('/books'); // Redirect to a relevant page, e.g., library
-      } catch (err: any) {
-        console.error("Failed to delete summary note:", err);
-        setError(err.response?.data?.message || "삭제 중 오류가 발생했습니다.");
-        setIsSaving(false);
-      }
     }
   };
 
@@ -155,7 +152,7 @@ export default function EditSummaryNotePage() {
     );
   }
 
-  if (error && !summaryNote) { // Show full page error if initial load failed
+  if (error && !summaryNote) {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4 text-center`}>
         <p className={`${cyberTheme.errorText} text-xl mb-4`}>오류: {error}</p>
@@ -166,7 +163,7 @@ export default function EditSummaryNotePage() {
     );
   }
   
-  if (!summaryNote) { // Should be covered by isLoading or error, but as a fallback
+  if (!summaryNote) {
      return (
       <div className={`min-h-screen flex items-center justify-center ${cyberTheme.gradient}`}>
         <p className={`${cyberTheme.textLight}`}>단권화 노트를 찾을 수 없습니다.</p>
@@ -225,9 +222,15 @@ export default function EditSummaryNotePage() {
             ) : fetchedNotes.length > 0 ? (
                 <div className="space-y-4">
                     {fetchedNotes.map((note) => (
-                        <div key={note._id} className={`${cyberTheme.cardBg} p-4 rounded-md border ${cyberTheme.inputBorder} opacity-80 hover:opacity-100 transition-opacity`}>
-                          {/* Defaulting bookId for TSNoteCard, this might need adjustment based on actual data */}
-                          <TSNoteCard note={{...note, bookId: note.bookId || summaryNote.bookIds[0] || 'unknown-book' }} onUpdate={() => {}} />
+                        <div key={note._id} className={`${cyberTheme.cardBg} p-4 rounded-md border ${cyberTheme.inputBorder} opacity-90 hover:opacity-100 transition-opacity`}>
+                          <TSNoteCard 
+                            note={note} 
+                            readingPurpose={currentBookReadingPurpose}
+                            onUpdate={(updatedFields) => {
+                                const newFetchedNotes = fetchedNotes.map(n => n._id === updatedFields._id ? {...n, ...updatedFields} : n);
+                                setFetchedNotes(newFetchedNotes);
+                            }}
+                          />
                         </div>
                     ))}
                 </div>
@@ -237,18 +240,10 @@ export default function EditSummaryNotePage() {
         </div>
 
         <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t ${cyberTheme.inputBorder}">
-          <Button
-            onClick={handleDeleteSummaryNote}
-            variant="destructive" // Assuming this variant styles it as a danger button
-            className={`${cyberTheme.buttonDangerBg} ${cyberTheme.buttonDangerHoverBg} text-white`}
-            disabled={isSaving}
-          >
-            {isSaving ? <Spinner size="sm" /> : '이 단권화 노트 삭제'}
-          </Button>
           <Button 
             onClick={handleSaveSummaryNote} 
             className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white`}
-            disabled={isSaving}
+            disabled={isSaving || isLoading}
           >
             {isSaving ? <Spinner size="sm" /> : '변경사항 저장'}
           </Button>

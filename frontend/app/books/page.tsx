@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +8,14 @@ import { AiOutlinePlus, AiOutlineSearch, AiOutlineFilter, AiOutlineEdit, AiOutli
 import { FiBook, FiClock, FiChevronRight, FiMoreVertical, FiList, FiCalendar, FiTrendingUp, FiActivity } from "react-icons/fi";
 import api, { books as booksApi } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
+import { Button } from '@/components/ui/button';
+import { EllipsisVerticalIcon as DotsVerticalIcon } from '@heroicons/react/24/outline';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 // Cyber Theme Definition
 const cyberTheme = {
@@ -36,6 +44,9 @@ const cyberTheme = {
   errorBorder: 'border-red-500/50',
   menuBg: 'bg-gray-700',
   menuItemHover: 'hover:bg-gray-600',
+  tabActiveBg: 'bg-cyan-600',
+  tabInactiveBg: 'bg-gray-700',
+  tabText: 'text-white',
 };
 
 // API base URL (This will be removed)
@@ -110,64 +121,60 @@ export default function BooksPage() {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
+    if (controller.current) {
+      controller.current.abort();
+    }
+    if (requestTimeout.current) {
+      clearTimeout(requestTimeout.current);
+    }
+    
+    controller.current = new AbortController();
+    setIsLoading(true);
+    setError("");
+    
+    requestTimeout.current = setTimeout(() => {
       if (controller.current) {
         controller.current.abort();
+        if (isMounted.current) {
+          setError("서버 응답 시간이 초과되었습니다. 네트워크 연결을 확인하거나 나중에 다시 시도해주세요.");
+          setIsLoading(false);
+        }
       }
+    }, 15000);
+    
+    try {
+      console.log('Fetching books from API via booksApi.getAll()...');
+      const data = await booksApi.getAll({ signal: controller.current?.signal });
+
+      let booksData: Book[] = [];
+      if (Array.isArray(data)) {
+        booksData = data;
+      } else if (data && Array.isArray(data.books)) {
+        booksData = data.books;
+      } else {
+        console.error('책 데이터 형식이 올바르지 않습니다:', data);
+        booksData = [];
+      }
+      
+      if (isMounted.current) {
+        setBooks(booksData);
+        setFilteredBooks(booksData);
+        setIsLoading(false);
+      }
+    } catch (err: any) {
+      console.error('책 목록 로딩 오류:', err);
+      
+      if (isMounted.current && err.name !== 'AbortError') {
+        setError(err.message || "기억 저장소 정보를 불러오는 중 오류가 발생했습니다");
+        setIsLoading(false);
+      }
+    } finally {
       if (requestTimeout.current) {
         clearTimeout(requestTimeout.current);
+        requestTimeout.current = null;
       }
-      
-      controller.current = new AbortController();
-      setIsLoading(true);
-      setError("");
-      
-      requestTimeout.current = setTimeout(() => {
-        if (controller.current) {
-          controller.current.abort();
-          if (isMounted.current) {
-            setError("서버 응답 시간이 초과되었습니다. 네트워크 연결을 확인하거나 나중에 다시 시도해주세요.");
-            setIsLoading(false);
-          }
-        }
-      }, 15000);
-      
-      try {
-        console.log('Fetching books from API via booksApi.getAll()...');
-        const data = await booksApi.getAll({ signal: controller.current?.signal });
-
-        let booksData: Book[] = [];
-        if (Array.isArray(data)) {
-          booksData = data;
-        } else if (data && Array.isArray(data.books)) {
-          booksData = data.books;
-        } else {
-          console.error('책 데이터 형식이 올바르지 않습니다:', data);
-          booksData = [];
-        }
-        
-        if (isMounted.current) {
-          setBooks(booksData);
-          setFilteredBooks(booksData);
-          setIsLoading(false);
-        }
-      } catch (err: any) {
-        console.error('책 목록 로딩 오류:', err);
-        
-        if (isMounted.current && err.name !== 'AbortError') {
-          setError(err.message || "기억 저장소 정보를 불러오는 중 오류가 발생했습니다");
-          setIsLoading(false);
-        }
-      } finally {
-        if (requestTimeout.current) {
-          clearTimeout(requestTimeout.current);
-          requestTimeout.current = null;
-        }
-      }
-    };
-
-    fetchBooks();
+    }
   }, [router]);
 
   useEffect(() => {
@@ -281,29 +288,40 @@ export default function BooksPage() {
   };
 
   // 단권화 노트 목록 가져오기
-  useEffect(() => {
-    if (activeTab !== 'summaryNotes') {
-      // setSummaryNotes([]); // 탭이 비활성화될 때 목록을 비울 수도 있음 (선택사항)
-      return;
+  const fetchSummaryNotes = useCallback(async () => {
+    setSummaryNotesLoading(true);
+    setSummaryNotesError('');
+    try {
+      console.log('Fetching summary notes from API...');
+      const response = await api.get('/summary-notes/'); // 백엔드 API 엔드포인트
+      setSummaryNotes(response.data || []);
+    } catch (err: any) {
+      console.error('단권화 노트 로딩 오류:', err);
+      setSummaryNotesError(err.response?.data?.message || err.message || '단권화 노트를 불러오는 중 오류 발생');
+    } finally {
+      setSummaryNotesLoading(false);
     }
+  }, []);
 
-    const fetchSummaryNotes = async () => {
-      setSummaryNotesLoading(true);
-      setSummaryNotesError('');
+  useEffect(() => {
+    if (activeTab === 'summaryNotes') {
+      fetchSummaryNotes();
+    }
+  }, [activeTab, fetchSummaryNotes]);
+
+  const handleDeleteSummaryNote = async (summaryNoteId: string) => {
+    if (window.confirm("정말로 이 단권화 노트를 삭제하시겠습니까?")) {
       try {
-        console.log('Fetching summary notes from API...');
-        const response = await api.get('/summary-notes/'); // 백엔드 API 엔드포인트
-        setSummaryNotes(response.data || []);
+        await api.delete(`/summary-notes/${summaryNoteId}`);
+        setSummaryNotes(prevNotes => prevNotes.filter(note => note._id !== summaryNoteId));
+        alert("단권화 노트가 삭제되었습니다.");
       } catch (err: any) {
-        console.error('단권화 노트 로딩 오류:', err);
-        setSummaryNotesError(err.response?.data?.message || err.message || '단권화 노트를 불러오는 중 오류 발생');
-      } finally {
-        setSummaryNotesLoading(false);
+        console.error("Failed to delete summary note:", err);
+        setSummaryNotesError(err.response?.data?.message || "삭제 중 오류가 발생했습니다.");
+        alert("단권화 노트 삭제에 실패했습니다: " + (err.response?.data?.message || err.message));
       }
-    };
-
-    fetchSummaryNotes();
-  }, [activeTab]); // activeTab이 변경될 때마다 실행
+    }
+  };
 
   if (isLoading) {
     return (
@@ -507,31 +525,40 @@ export default function BooksPage() {
               </div>
             )}
             {!summaryNotesLoading && !summaryNotesError && summaryNotes.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="space-y-4">
                 {summaryNotes.map((note) => (
-                  <Link key={note._id} href={`/summary-notes/${note._id}/edit`} legacyBehavior>
-                    <a className={`block group ${cyberTheme.cardBg} rounded-lg shadow-xl p-5 border ${cyberTheme.inputBorder} transition-all duration-300 hover:shadow-purple-500/30 hover:border-purple-500/50`}>
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className={`text-lg font-semibold truncate ${cyberTheme.textLight} group-hover:${cyberTheme.secondary} transition-colors`} title={note.title}>
-                          {note.title}
-                        </h3>
-                        <FiChevronRight className={`w-5 h-5 ${cyberTheme.textMuted} group-hover:text-purple-400 transition-colors`} />
+                  <div key={note._id} className={`${cyberTheme.cardBg} p-4 rounded-lg shadow-lg border ${cyberTheme.borderSecondary}/20 flex justify-between items-start`}>
+                    <Link href={`/summary-notes/${note._id}/edit`} className="flex-grow">
+                      <h3 className={`text-xl font-semibold ${cyberTheme.primary} hover:underline`}>{note.title}</h3>
+                      {note.description && <p className="text-sm text-gray-400 mt-1 truncate-2-lines">{note.description}</p>}
+                      <div className="text-xs text-gray-500 mt-2">
+                        <span>포함된 메모: {note.orderedNoteIds.length}개</span>
+                        <span className="mx-2">|</span>
+                        <span>마지막 업데이트: {new Date(note.updatedAt).toLocaleDateString()}</span>
                       </div>
-                      <p className={`text-xs ${cyberTheme.textMuted} mb-3 h-10 overflow-hidden text-ellipsis`}>
-                        {note.description || '설명이 없습니다.'}
-                      </p>
-                      <div className="flex justify-between items-center text-xs text-gray-500">
-                        <div className="flex items-center">
-                          <FiList className="w-3 h-3 mr-1" />
-                          <span>{note.orderedNoteIds?.length || 0}개 메모</span>
-                        </div>
-                        <div className="flex items-center">
-                          <FiCalendar className="w-3 h-3 mr-1" />
-                          <span>{formatLastRead(note.updatedAt)}</span>
-                        </div>
-                      </div>
-                    </a>
-                  </Link>
+                    </Link>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="p-2 h-8 w-8 text-gray-400 hover:text-cyan-400 hover:bg-gray-700">
+                          <DotsVerticalIcon className="h-5 w-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className={`${cyberTheme.bgSecondary} border-${cyberTheme.borderSecondary}/50 text-white`}>
+                        <DropdownMenuItem 
+                          onClick={() => router.push(`/summary-notes/${note._id}/edit`)}
+                          className={`hover:!bg-cyan-700/50 hover:!text-cyan-300 cursor-pointer`}
+                        >
+                          수정
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteSummaryNote(note._id)}
+                          className={`hover:!bg-red-700/50 hover:!text-red-300 cursor-pointer`}
+                        >
+                          삭제
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 ))}
               </div>
             )}
