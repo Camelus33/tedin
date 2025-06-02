@@ -351,8 +351,12 @@ export default function TSNoteCard({
   const displayPPM = sessionDetails?.ppm !== undefined ? formatPPM(sessionDetails.ppm) : '';
 
   const renderSessionInfo = () => (
-    <div className={`transition-opacity duration-300 ease-in-out ${isHoveringInfo ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} absolute top-0 left-0 w-full bg-gray-900/80 backdrop-blur-sm p-3 rounded-t-lg text-xs text-gray-300 z-10`}>
-      <h4 className="font-semibold mb-1 text-cyan-400">TS 세션 정보</h4>
+    <div 
+      className={`transition-opacity duration-300 ease-in-out ${isHoveringInfo ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} 
+                 absolute top-1 left-1 w-auto max-w-xs bg-gray-900/80 backdrop-blur-sm p-2 rounded-md 
+                 text-xs text-gray-300 z-20 shadow-lg`}
+    >
+      <h4 className={`font-semibold mb-1 ${cyberTheme.primaryText}`}>TS 세션 정보</h4>
       {sessionDetails?.createdAtISO && <p>기록일: {displaySessionCreatedAt}</p>}
       {sessionDetails?.durationSeconds !== undefined && <p>집중 시간: {displaySessionDuration}</p>}
       {sessionDetails && (sessionDetails.startPage !== undefined || sessionDetails.actualEndPage !== undefined) && (
@@ -423,21 +427,21 @@ export default function TSNoteCard({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="px-2">
-                  <EllipsisVerticalIcon className="h-5 w-5 text-gray-400 hover:text-cyan-400" />
+                  <EllipsisVerticalIcon className={`h-5 w-5 text-gray-400 hover:${cyberTheme.primaryText}`} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
-                <DropdownMenuItem onClick={toggleOpen} className={`${cyberTheme.menuItemHover}`}>
-                  <SparklesIcon className="h-4 w-4 mr-2 ${cyberTheme.primaryText}" /> 메모 진화
+                <DropdownMenuItem onClick={toggleOpen} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                  <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화
                 </DropdownMenuItem>
                 {onFlashcardConvert && (
-                  <DropdownMenuItem onClick={() => onFlashcardConvert(initialNote)} className={`${cyberTheme.menuItemHover}`}>
-                    <GiCutDiamond className="h-4 w-4 mr-2 ${cyberTheme.secondaryText}" /> 플래시카드 변환
+                  <DropdownMenuItem onClick={() => onFlashcardConvert(initialNote)} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                    <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드 변환
                   </DropdownMenuItem>
                 )}
                 {onRelatedLinks && (
-                  <DropdownMenuItem onClick={() => onRelatedLinks(initialNote)} className={`${cyberTheme.menuItemHover}`}>
-                    <LinkIcon className="h-4 w-4 mr-2" /> 관련 링크 관리
+                  <DropdownMenuItem onClick={() => onRelatedLinks(initialNote)} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                    <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
