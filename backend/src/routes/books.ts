@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUserBooks, getBookById, addBook, updateBookProgress, removeBook, getBooksByIds } from '../controllers/bookController';
+import { getUserBooks, getBookById, addBook, updateBookProgress, removeBook, getBooksByIds, updateBookInfo } from '../controllers/bookController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -48,6 +48,18 @@ const upload = multer({
 // All book routes require authentication
 router.use(authenticate);
 
+// Validation for adding/updating a book (title, author, totalPages는 addBookValidation과 유사하게 사용 가능)
+// 필요시 updateBookValidation을 별도로 정의하거나 기존 bookAddValidation 활용
+const bookUpdateValidation = [
+  body('title').optional().notEmpty().withMessage('책 제목을 입력해주세요').trim(),
+  body('author').optional().notEmpty().withMessage('저자를 입력해주세요').trim(),
+  body('totalPages').optional().isInt({ min: 1 }).withMessage('총 페이지 수는 1 이상이어야 합니다'),
+  body('currentPage').optional().isInt({ min: 0 }).withMessage('현재 페이지는 0 이상이어야 합니다'),
+  body('category').optional().trim(),
+  body('readingPurpose').optional().isIn(['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure']).withMessage('읽는 목적이 올바르지 않습니다.'),
+  // 다른 필드에 대한 유효성 검사 추가 가능
+];
+
 // Validation for adding a new book
 const bookAddValidation = [
   body('title')
@@ -94,11 +106,19 @@ router.get('/:bookId', getBookById);
 // Add a new book
 router.post(
   '/',
-  authenticate,
   upload.single('coverImage'),
   bookAddValidation,
   validateRequest,
   addBook
+);
+
+// NEW ROUTE for updating book information (including cover image)
+router.put(
+  '/:bookId',
+  upload.single('coverImage'),
+  bookUpdateValidation,
+  validateRequest,
+  updateBookInfo
 );
 
 // Update book progress

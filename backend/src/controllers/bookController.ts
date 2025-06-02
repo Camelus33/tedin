@@ -4,6 +4,8 @@ import User from '../models/User';
 import Session from '../models/Session';
 import mongoose from 'mongoose';
 import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
 
 // Helper function to calculate and update estimated reading time (중복 방지 위해 다른 파일로 분리 가능)
 const updateEstimatedTime = async (bookId: string, userId: string) => {
@@ -117,7 +119,7 @@ export const addBook = async (req: Request, res: Response) => {
 
     if (coverImageFile && coverImageFile.filename) {
       const backendUrl = process.env.BACKEND_URL || 'https://habitus33-api.onrender.com';
-      newBookData.coverImage = `${backendUrl}/uploads/${coverImageFile.filename}`;
+      newBookData.coverImage = `/uploads/${coverImageFile.filename}`;
     } else {
       newBookData.coverImage = ''; // 또는 기본 이미지 URL
     }
@@ -140,7 +142,111 @@ export const addBook = async (req: Request, res: Response) => {
   }
 };
 
-// 책 현재 페이지 또는 상태 업데이트
+// 책 정보 업데이트 (제목, 저자, 이미지 등)
+export const updateBookInfo = async (req: Request, res: Response) => {
+  try {
+    const { bookId } = req.params;
+    const userId = req.user?.id;
+    const { title, author, totalPages, currentPage, category, readingPurpose, readingSpeed, removeCoverImage } = req.body;
+    const coverImageFile = req.file as Express.Multer.File;
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    const book = await Book.findOne({ _id: bookId, userId });
+    if (!book) {
+      return res.status(404).json({ message: '해당 책을 찾을 수 없습니다.' });
+    }
+
+    const updateData: any = {};
+
+    // 텍스트 필드 업데이트
+    if (title !== undefined) updateData.title = title.trim();
+    if (author !== undefined) updateData.author = author.trim();
+    if (totalPages !== undefined) updateData.totalPages = parseInt(totalPages, 10);
+    if (category !== undefined) updateData.category = category.trim();
+    if (readingPurpose !== undefined) updateData.readingPurpose = readingPurpose;
+    // currentPage 및 status는 updateBookProgress에서 관리하므로 여기서는 제외하거나, 
+    // 프론트엔드에서 모든 정보를 한 번에 보낸다면 여기서도 처리 가능.
+    // 여기서는 프론트엔드가 보낸 값을 그대로 반영한다고 가정.
+    if (currentPage !== undefined) {
+      updateData.currentPage = parseInt(currentPage, 10);
+      if (book.totalPages > 0) {
+        updateData.completionPercentage = Math.min(Math.round((parseInt(currentPage, 10) / book.totalPages) * 100), 100);
+      }
+      if (parseInt(currentPage, 10) >= book.totalPages) {
+        updateData.status = 'completed';
+      } else if (parseInt(currentPage, 10) > 0 && book.status === 'not_started') {
+        updateData.status = 'in_progress';
+      }
+    }
+    if (readingSpeed !== undefined) updateData.readingSpeed = parseInt(readingSpeed, 10);
+
+    // 이미지 처리
+    if (coverImageFile && coverImageFile.filename) {
+      // 새 이미지가 업로드된 경우
+      if (book.coverImage) {
+        // 기존 이미지가 있으면 삭제
+        // book.coverImage가 /uploads/filename.ext 형태라고 가정
+        const oldImageFileName = path.basename(book.coverImage);
+        const oldImagePath = path.join(__dirname, '../../uploads', oldImageFileName);
+        if (fs.existsSync(oldImagePath)) {
+          try {
+            await fs.promises.unlink(oldImagePath);
+            console.log('기존 이미지 삭제 성공:', oldImagePath);
+          } catch (unlinkError) {
+            console.error('기존 이미지 삭제 실패:', unlinkError);
+            // 여기서 오류를 반환할 수도 있지만, 일단 진행하도록 함
+          }
+        }
+      }
+      // `addBook`과 동일하게 상대 경로 저장 또는 전체 URL 저장
+      // const backendUrl = process.env.BACKEND_URL || 'https://habitus33-api.onrender.com';
+      updateData.coverImage = `/uploads/${coverImageFile.filename}`; 
+    } else if (removeCoverImage === 'true' && book.coverImage) {
+      // 이미지 삭제 요청이 있고 기존 이미지가 있는 경우 (프론트에서 removeCoverImage='true' 파라미터 전송 시)
+      const oldImageFileName = path.basename(book.coverImage);
+      const oldImagePath = path.join(__dirname, '../../uploads', oldImageFileName);
+      if (fs.existsSync(oldImagePath)) {
+        try {
+          await fs.promises.unlink(oldImagePath);
+          console.log('요청에 의한 이미지 삭제 성공:', oldImagePath);
+          updateData.coverImage = ''; // DB에서 이미지 경로 제거
+        } catch (unlinkError) {
+          console.error('요청에 의한 이미지 삭제 실패:', unlinkError);
+        }
+      } else {
+        updateData.coverImage = ''; // 파일이 없어도 DB에서는 제거
+      }
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(200).json({ message: '변경할 내용이 없습니다.', book });
+    }
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      bookId,
+      { $set: updateData },
+      { new: true }
+    ).select('-__v');
+
+    if (!updatedBook) {
+      return res.status(500).json({ message: '책 정보 업데이트 중 오류가 발생했습니다.' });
+    }
+
+    res.status(200).json(updatedBook);
+
+  } catch (error) {
+    console.error('책 정보 업데이트 중 오류 발생:', error);
+    if (error instanceof multer.MulterError) {
+      return res.status(400).json({ message: `파일 업로드 오류: ${error.message}` });
+    }
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+// 책 현재 페이지 또는 상태 업데이트 (이 함수는 주로 진행상황만 업데이트)
 export const updateBookProgress = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
@@ -250,7 +356,21 @@ export const removeBook = async (req: Request, res: Response) => {
       { $pull: { books: bookId } }
     );
 
-    res.status(200).json({ message: '책이 삭제되었습니다.' });
+    // Delete associated cover image if it exists
+    if (book.coverImage) {
+      const oldImageFileName = path.basename(book.coverImage);
+      const oldImagePath = path.join(__dirname, '../../uploads', oldImageFileName);
+      if (fs.existsSync(oldImagePath)) {
+        try {
+          await fs.promises.unlink(oldImagePath);
+          console.log('책 삭제 시 연관 이미지 삭제 성공:', oldImagePath);
+        } catch (unlinkError) {
+          console.error('책 삭제 시 연관 이미지 삭제 실패:', unlinkError);
+        }
+      }
+    }
+
+    res.status(200).json({ message: '책이 성공적으로 삭제되었습니다.' });
   } catch (error) {
     console.error('책 삭제 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
@@ -269,22 +389,20 @@ export const getBooksByIds = async (req: Request, res: Response) => {
 
     // bookIds 유효성 검사: 배열 형태인지, 비어있지 않은지 확인합니다.
     if (!bookIds || !Array.isArray(bookIds) || bookIds.length === 0) {
-      return res.status(400).json({ message: 'bookIds must be a non-empty array.' });
+      return res.status(400).json({ message: '유효한 책 ID 목록을 제공해주세요.' });
     }
 
-    // 각 bookId가 유효한 MongoDB ObjectId 형식인지 확인합니다. (선택적이지만 권장)
-    // import mongoose from 'mongoose'; // Ensure mongoose is imported at the top
-    for (const id of bookIds) {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: `Invalid book ID format: ${id}` });
-      }
+    // Ensure all book IDs are valid MongoDB ObjectIds
+    const validBookIds = bookIds.filter(id => mongoose.Types.ObjectId.isValid(id));
+    if (validBookIds.length !== bookIds.length) {
+        return res.status(400).json({ message: '제공된 ID 중 일부가 유효하지 않습니다.' });
     }
 
     // MongoDB에서 $in 연산자를 사용하여 여러 ID에 해당하는 책을 조회합니다.
     // 동시에 userId 조건을 추가하여 요청한 사용자의 책만 가져오도록 보안을 강화합니다.
     // 필요한 필드만 선택하여 반환합니다 (예: _id, title).
     const books = await Book.find({
-      _id: { $in: bookIds.map(id => new mongoose.Types.ObjectId(id)) },
+      _id: { $in: validBookIds.map(id => new mongoose.Types.ObjectId(id)) },
       userId: new mongoose.Types.ObjectId(userId),
     }).select('_id title author coverImage'); // 필요한 필드만 선택
 
@@ -296,7 +414,7 @@ export const getBooksByIds = async (req: Request, res: Response) => {
 
     res.status(200).json(books);
   } catch (error) {
-    console.error('배치 책 조회 중 오류 발생:', error);
+    console.error('여러 책 조회 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 };
@@ -328,7 +446,7 @@ export const updateBook = async (req: Request, res: Response) => {
 
     if (coverImageFile && coverImageFile.filename) {
       const backendUrl = process.env.BACKEND_URL || 'https://habitus33-api.onrender.com';
-      book.coverImage = `${backendUrl}/uploads/${coverImageFile.filename}`;
+      book.coverImage = `/uploads/${coverImageFile.filename}`;
     } else if (req.body.coverImage === '' || req.body.removeCoverImage === 'true') {
       book.coverImage = '';
     }

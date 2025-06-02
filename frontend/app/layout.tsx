@@ -38,6 +38,7 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       {/* Pretendard 폰트 링크 추가 */}
       <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
           rel="stylesheet"
           as="style"
