@@ -3,7 +3,8 @@ import {
   createSummaryNote,
   getSummaryNoteById,
   updateSummaryNote,
-  getSummaryNotesByUserId
+  getSummaryNotesByUserId,
+  deleteSummaryNote
 } from '../controllers/summaryNoteController';
 import { authenticate } from '../middlewares/auth'; // 인증 미들웨어 임포트
 
@@ -49,5 +50,14 @@ router.get('/:summaryNoteId', getSummaryNoteById);
  * @handler summaryNoteController.updateSummaryNote
  */
 router.put('/:summaryNoteId', updateSummaryNote);
+
+/**
+ * @route DELETE /api/summary-notes/:summaryNoteId
+ * @description 특정 ID를 가진 단권화 노트를 삭제합니다.
+ * @access Private (인증 필요)
+ * @param {string} summaryNoteId - 삭제할 단권화 노트의 ID
+ * @handler summaryNoteController.deleteSummaryNote
+ */
+router.delete('/:summaryNoteId', deleteSummaryNote);
 
 export default router; 

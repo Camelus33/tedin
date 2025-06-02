@@ -157,6 +157,47 @@ export const getSummaryNotesByUserId = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @function deleteSummaryNote
+ * @description ID를 사용하여 특정 단권화 노트를 삭제합니다.
+ * 해당 단권화 노트가 요청한 사용자의 소유인지 확인합니다.
+ * @param {Request} req - Express 요청 객체. params에 summaryNoteId 포함.
+ * @param {Response} res - Express 응답 객체.
+ * @returns {Promise<void>} 성공 시 200 상태 코드와 성공 메시지를 JSON으로 반환합니다.
+ *                        노트를 찾지 못하거나 권한이 없을 경우 적절한 상태 코드를 반환합니다.
+ */
+export const deleteSummaryNote = async (req: Request, res: Response) => {
+  try {
+    const { summaryNoteId } = req.params;
+    const userId = (req as any).user?.id;
+
+    if (!mongoose.Types.ObjectId.isValid(summaryNoteId)) {
+      return res.status(400).json({ message: 'Invalid SummaryNote ID format' });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated for deleting summary note' });
+    }
+
+    const summaryNote = await SummaryNote.findById(summaryNoteId);
+
+    if (!summaryNote) {
+      return res.status(404).json({ message: 'Summary note not found' });
+    }
+
+    if (summaryNote.userId.toString() !== userId) {
+      return res.status(403).json({ message: 'User not authorized to delete this summary note' });
+    }
+
+    await summaryNote.deleteOne(); // Changed from remove() to deleteOne()
+
+    res.status(200).json({ message: 'Summary note deleted successfully' });
+  } catch (error: any) {
+    console.error('[DeleteSummaryNote Error]', error);
+    res.status(500).json({ message: 'Error deleting summary note', error: error.message });
+  }
+};
+
 // (Placeholder for batch get notes - this might belong in noteController.ts)
 // GET /api/notes/batch - This is part of the plan but will be handled separately
 // to ensure it's in the correct controller (likely noteController.ts). 

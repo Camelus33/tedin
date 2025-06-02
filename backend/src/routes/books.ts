@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUserBooks, getBookById, addBook, updateBookProgress, removeBook } from '../controllers/bookController';
+import { getUserBooks, getBookById, addBook, updateBookProgress, removeBook, getBooksByIds } from '../controllers/bookController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -111,5 +111,8 @@ router.put(
 
 // Delete a book
 router.delete('/:bookId', removeBook);
+
+// Batch get books by IDs
+router.post('/batch', getBooksByIds);
 
 export default router; 

@@ -31,6 +31,12 @@ interface FetchedNoteDetails extends TSNote {
   // relatedLinks is already part of TSNote, ensure it's correctly typed as RelatedLink[]
 }
 
+interface BookInfo {
+  _id: string;
+  title: string;
+  // Add other fields like author or coverImage if needed later
+}
+
 // Theme (copied from books/page.tsx for consistency if needed, or use a central theme object)
 const cyberTheme = {
   primary: 'text-cyan-400',
@@ -70,6 +76,7 @@ export default function EditSummaryNotePage() {
   const [error, setError] = useState<string | null>(null);
   const [changedNoteIds, setChangedNoteIds] = useState<Set<string>>(new Set());
   const [currentBookReadingPurpose, setCurrentBookReadingPurpose] = useState<string | undefined>(undefined);
+  const [bookInfoMap, setBookInfoMap] = useState<Map<string, BookInfo>>(new Map());
 
   // State for Related Links Modal
   const [selectedNoteForLinkModal, setSelectedNoteForLinkModal] = useState<FetchedNoteDetails | null>(null);
@@ -87,6 +94,7 @@ export default function EditSummaryNotePage() {
 
     const fetchSummaryNoteDetails = async () => {
       setLoading(true);
+      setError(null); // Reset error state at the beginning of fetch
       try {
         const summaryRes = await api.get(`/summary-notes/${summaryNoteId}`);
         const summaryData: SummaryNoteData = summaryRes.data;
@@ -98,14 +106,12 @@ export default function EditSummaryNotePage() {
           const notesDetailsRes = await api.post('/notes/batch', { noteIds: summaryData.orderedNoteIds });
           let notesData: FetchedNoteDetails[] = notesDetailsRes.data;
 
-          // Fetch session details for each note if originSession exists
-          // and also try to get readingPurpose from the first book of the first note.
           if (notesData.length > 0 && notesData[0].bookId) {
             try {
-                const bookRes = await api.get(`/books/${notesData[0].bookId}`);
-                setCurrentBookReadingPurpose(bookRes.data.readingPurpose || bookRes.data.readingGoal);
+              const bookRes = await api.get(`/books/${notesData[0].bookId}`);
+              setCurrentBookReadingPurpose(bookRes.data.readingPurpose || bookRes.data.readingGoal);
             } catch (bookErr) {
-                console.warn(`Could not fetch book details for ${notesData[0].bookId}`, bookErr);
+              console.warn(`Could not fetch book details for ${notesData[0].bookId}`, bookErr);
             }
           }
           
@@ -138,8 +144,24 @@ export default function EditSummaryNotePage() {
           ).filter(n => n !== undefined) as FetchedNoteDetails[];
           setFetchedNotes(orderedNotes);
 
+          // After fetching notes, extract all unique bookIds and fetch their info
+          const uniqueBookIds = Array.from(new Set(orderedNotes.map(note => note.bookId).filter(Boolean)));
+          if (uniqueBookIds.length > 0) {
+            try {
+              const booksInfoRes = await api.post('/books/batch', { bookIds: uniqueBookIds });
+              const booksData: BookInfo[] = booksInfoRes.data;
+              const newBookInfoMap = new Map<string, BookInfo>();
+              booksData.forEach(book => newBookInfoMap.set(book._id, book));
+              setBookInfoMap(newBookInfoMap);
+            } catch (bookBatchError) {
+              console.warn('Failed to fetch batch book details:', bookBatchError);
+              // Not critical enough to set a page-level error, notes will just miss book titles
+            }
+          }
+
         } else {
           setFetchedNotes([]);
+          setBookInfoMap(new Map()); // Clear book info map if no notes
         }
         setError(null);
       } catch (err: any) {
@@ -375,6 +397,7 @@ export default function EditSummaryNotePage() {
               <div key={note._id} className={`p-1 rounded-lg shadow-lg ${cyberTheme.cardBg} border ${cyberTheme.borderPrimary}/30 relative`}>
                 <TSNoteCard
                   note={note}
+                  bookTitle={bookInfoMap.get(note.bookId)?.title} // Pass bookTitle
                   readingPurpose={currentBookReadingPurpose} // Pass down reading purpose
                   sessionDetails={note.sessionDetails}
                   onUpdate={handleNoteUpdate}

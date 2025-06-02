@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Book from '../models/Book';
 import User from '../models/User';
 import Session from '../models/Session';
+import mongoose from 'mongoose';
 
 // Helper function to calculate and update estimated reading time (중복 방지 위해 다른 파일로 분리 가능)
 const updateEstimatedTime = async (bookId: string, userId: string) => {
@@ -255,6 +256,50 @@ export const removeBook = async (req: Request, res: Response) => {
     res.status(200).json({ message: '책이 삭제되었습니다.' });
   } catch (error) {
     console.error('책 삭제 중 오류 발생:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+// 여러 ID로 책 일괄 조회
+export const getBooksByIds = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { bookIds } = req.body; // 요청 본문에서 bookIds 배열을 가져옵니다.
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    // bookIds 유효성 검사: 배열 형태인지, 비어있지 않은지 확인합니다.
+    if (!bookIds || !Array.isArray(bookIds) || bookIds.length === 0) {
+      return res.status(400).json({ message: 'bookIds must be a non-empty array.' });
+    }
+
+    // 각 bookId가 유효한 MongoDB ObjectId 형식인지 확인합니다. (선택적이지만 권장)
+    // import mongoose from 'mongoose'; // Ensure mongoose is imported at the top
+    for (const id of bookIds) {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: `Invalid book ID format: ${id}` });
+      }
+    }
+
+    // MongoDB에서 $in 연산자를 사용하여 여러 ID에 해당하는 책을 조회합니다.
+    // 동시에 userId 조건을 추가하여 요청한 사용자의 책만 가져오도록 보안을 강화합니다.
+    // 필요한 필드만 선택하여 반환합니다 (예: _id, title).
+    const books = await Book.find({
+      _id: { $in: bookIds.map(id => new mongoose.Types.ObjectId(id)) },
+      userId: new mongoose.Types.ObjectId(userId),
+    }).select('_id title author coverImage'); // 필요한 필드만 선택
+
+    // 조회된 책들을 요청된 bookIds 순서대로 정렬할 수도 있으나,
+    // 클라이언트에서 ID를 이미 가지고 있으므로, 반환된 배열을 매핑하여 사용하면 됩니다.
+    // 여기서는 MongoDB가 반환하는 순서대로 줍니다.
+    // 필요하다면, 다음과 같이 순서를 맞출 수 있습니다:
+    // const orderedBooks = bookIds.map(id => books.find(book => book._id.toString() === id)).filter(Boolean);
+
+    res.status(200).json(books);
+  } catch (error) {
+    console.error('배치 책 조회 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 }; 
