@@ -149,6 +149,8 @@ export type TSNoteCardProps = {
   showActions?: boolean;
   /** @property {boolean} [minimalDisplay] - (선택적) 최소 표시 모드를 사용할지 여부. */
   minimalDisplay?: boolean;
+  /** @property {boolean} [isPageEditing] - (선택적) 페이지 전체의 편집 모드 상태 */
+  isPageEditing?: boolean;
 };
 
 const tabIconMap = [
@@ -250,23 +252,24 @@ export default function TSNoteCard({
   className,
   showActions = true,
   minimalDisplay = false,
-  bookTitle
+  bookTitle,
+  isPageEditing = true,
 }: TSNoteCardProps) {
+  const [note, setNote] = useState(initialNote);
   const [isOpen, setIsOpen] = useState(false);
   const [fields, setFields] = useState({
-    importanceReason: initialNote.importanceReason || '',
-    momentContext: initialNote.momentContext || '',
-    relatedKnowledge: initialNote.relatedKnowledge || '',
-    mentalImage: initialNote.mentalImage || '',
+    importanceReason: note.importanceReason || '',
+    momentContext: note.momentContext || '',
+    relatedKnowledge: note.relatedKnowledge || '',
+    mentalImage: note.mentalImage || '',
   });
   const [initialFields, setInitialFields] = useState({...fields});
   const [currentStep, setCurrentStep] = useState(1);
-  const [isHoveringInfo, setIsHoveringInfo] = useState(false); // State for TS Info hover
-  const [isHoveringCard, setIsHoveringCard] = useState(false); // Renamed for clarity
+  const [isHoveringInfo, setIsHoveringInfo] = useState(false);
+  const [isHoveringCard, setIsHoveringCard] = useState(false);
   const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // 탭 제목: 읽던 순간, 떠오른 장면, 연결된 지식, 내게 온 의미
   const tabList = [
     { key: 'importanceReason', label: '읽던 순간' },
     { key: 'momentContext', label: '떠오른 장면' },
@@ -275,19 +278,16 @@ export default function TSNoteCard({
   ];
   const [activeTab, setActiveTab] = useState(tabList[0].key);
 
-  // 탭 순서: importanceReason, momentContext, relatedKnowledge, mentalImage
   const tabKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
   
-  // Update fields state if note prop changes (e.g. parent re-fetches data)
   useEffect(() => {
     setFields({
-      importanceReason: initialNote.importanceReason || '',
-      momentContext: initialNote.momentContext || '',
-      relatedKnowledge: initialNote.relatedKnowledge || '',
-      mentalImage: initialNote.mentalImage || '',
+      importanceReason: note.importanceReason || '',
+      momentContext: note.momentContext || '',
+      relatedKnowledge: note.relatedKnowledge || '',
+      mentalImage: note.mentalImage || '',
     });
-    // No need to update relatedLinks here as they are directly used from `initialNote.relatedLinks` for display
-  }, [initialNote.importanceReason, initialNote.momentContext, initialNote.relatedKnowledge, initialNote.mentalImage]);
+  }, [note.importanceReason, note.momentContext, note.relatedKnowledge, note.mentalImage]);
 
   const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
   const tabQuestions: Record<string, { question: string; placeholder: string }> = {
@@ -298,11 +298,10 @@ export default function TSNoteCard({
   };
 
   const handleSave = useCallback(async () => {
-    // Send only changed fields to onUpdate
-    const changedFields: Partial<TSNote> = { _id: initialNote._id };
+    const changedFields: Partial<TSNote> = { _id: note._id };
     let hasChanges = false;
     for (const key of tabKeys) {
-      if (fields[key] !== (initialNote[key] || '')) {
+      if (fields[key] !== (note[key] || '')) {
         (changedFields as any)[key] = fields[key];
         hasChanges = true;
       }
@@ -312,28 +311,28 @@ export default function TSNoteCard({
       onUpdate?.(changedFields);
     }
     setIsOpen(false); 
-  }, [fields, initialNote, onUpdate, tabKeys, setIsOpen]);
+  }, [fields, note, onUpdate, tabKeys, setIsOpen]);
 
-  const toggleOpen = () => setIsOpen((prev) => !prev);
+  const toggleOpen = () => {
+    if (!isPageEditing && !isOpen) return;
+    setIsOpen((prev) => !prev);
+  };
 
   const handleChange = (key: keyof typeof fields, value: string) => {
     setFields((prev) => ({ ...prev, [key]: value }));
   };
   
   const handleBlur = useCallback(async (key: keyof typeof fields) => {
-    // Call onUpdate when a field loses focus and its content has actually changed
-    // from the original note prop
-    if (fields[key] !== (initialNote[key] || '')) {
-        onUpdate?.({ _id: initialNote._id, [key]: fields[key] });
+    if (fields[key] !== (note[key] || '')) {
+        onUpdate?.({ _id: note._id, [key]: fields[key] });
     }
-  }, [fields, initialNote, onUpdate]);
+  }, [fields, note, onUpdate]);
 
   const handleNext = useCallback(() => {
     const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
     if (currentIndex < tabKeys.length - 1) {
       setActiveTab(tabKeys[currentIndex + 1]);
     } else {
-      // If on the last tab, "Next" could become "Save" or cycle to first
       handleSave(); 
     }
   }, [activeTab, handleSave, tabKeys]);
@@ -342,7 +341,6 @@ export default function TSNoteCard({
     setCurrentStep((prev) => (prev > 1 ? prev - 1 : tabList.length));
   };
 
-  // Ensure that sessionDetails object exists and has properties before trying to access them
   const displaySessionCreatedAt = sessionDetails?.createdAtISO ? formatSessionCreatedAt(sessionDetails.createdAtISO) : '세션 정보 없음';
   const displaySessionDuration = sessionDetails?.durationSeconds !== undefined ? formatSessionDuration(sessionDetails.durationSeconds) : '';
   const displaySessionPageProgress = (sessionDetails?.startPage !== undefined || sessionDetails?.actualEndPage !== undefined || sessionDetails?.targetPage !== undefined) 
@@ -393,7 +391,7 @@ export default function TSNoteCard({
   return (
     <div 
       className={`relative group ${cyberTheme.cardBg} p-4 rounded-lg shadow-md border ${cyberTheme.cardBorder} ${className} ${minimalDisplay ? 'min-h-0' : 'min-h-[180px]'} transition-all duration-200 hover:shadow-xl hover:border-cyan-500/70`}
-      onMouseEnter={() => setIsHoveringCard(true)} // For general card hover effects if any
+      onMouseEnter={() => setIsHoveringCard(true)}
       onMouseLeave={() => setIsHoveringCard(false)}
     >
       {sessionDetails && !minimalDisplay && (
@@ -405,20 +403,17 @@ export default function TSNoteCard({
       
       <div 
         className="relative flex flex-col h-full"
-        // Removed onMouseEnter/Leave from here as they were for the old popover logic
       >
-        {/* Main Content */}
         <div className="flex-grow mb-2">
           <p className={`text-base ${cyberTheme.textMain} leading-relaxed whitespace-pre-wrap break-words`}>
-            {initialNote.content}
+            {note.content}
           </p>
           {!minimalDisplay && renderBookSource()}
         </div>
 
-        {/* Tags */}
-        {!minimalDisplay && initialNote.tags && initialNote.tags.length > 0 && (
+        {!minimalDisplay && note.tags && note.tags.length > 0 && (
           <div className="mb-3 mt-1 flex flex-wrap gap-1.5">
-            {initialNote.tags.map((tag, index) => (
+            {note.tags.map((tag, index) => (
               <span
                 key={index}
                 className={`px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center`}
@@ -430,14 +425,13 @@ export default function TSNoteCard({
           </div>
         )}
         
-        {/* Action Buttons Area */}
         {showActions && !minimalDisplay && (
           <div className="flex items-center justify-end space-x-2 mt-auto pt-2 border-t border-gray-700/50">
             {onAddToCart && (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => onAddToCart(initialNote._id, initialNote.bookId)}
+                onClick={() => onAddToCart(note._id, note.bookId)}
                 title={isAddedToCart ? "카트에서 제거" : "지식 카트에 담기"}
                 className={`${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
               >
@@ -457,12 +451,12 @@ export default function TSNoteCard({
                   <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화
                 </DropdownMenuItem>
                 {onFlashcardConvert && (
-                  <DropdownMenuItem onClick={() => onFlashcardConvert(initialNote)} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                  <DropdownMenuItem onClick={() => onFlashcardConvert(note)} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
                     <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드 변환
                   </DropdownMenuItem>
                 )}
                 {onRelatedLinks && (
-                  <DropdownMenuItem onClick={() => onRelatedLinks(initialNote)} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                  <DropdownMenuItem onClick={() => onRelatedLinks(note)} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
                     <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
                   </DropdownMenuItem>
                 )}
@@ -472,7 +466,6 @@ export default function TSNoteCard({
         )}
       </div>
 
-      {/* Memo Evolution Modal/Section (Simplified, adjust as per actual implementation) */}
       {isOpen && !minimalDisplay && (
         <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-4 rounded-lg z-20 flex flex-col">
           <div className="flex justify-between items-center mb-2">
@@ -490,12 +483,11 @@ export default function TSNoteCard({
               placeholder={prompts[currentStep - 1]?.placeholder}
               className="w-full h-32 p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white"
             />
-            {/* Display related links if any, specific to this evolution step or general */}
-            {initialNote.relatedLinks && initialNote.relatedLinks.length > 0 && currentStep === 3 && (
+            {note.relatedLinks && note.relatedLinks.length > 0 && currentStep === 3 && (
                  <div className="mt-3">
                      <h4 className="text-sm font-medium text-gray-400 mb-1">관련 링크:</h4>
                      <ul className="space-y-1 text-xs">
-                         {initialNote.relatedLinks.map((link, idx) => (
+                         {note.relatedLinks.map((link, idx) => (
                              <li key={idx} className="flex items-center">
                                  {getLinkTypeIcon(link.type)}
                                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline truncate" title={link.url}>
