@@ -9,9 +9,15 @@ import FlashcardForm from '@/components/flashcard/FlashcardForm'; // Import Flas
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon } from '@heroicons/react/24/outline'; // Added TrashIcon
+import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'; // Added TrashIcon and EllipsisVerticalIcon
 import { AiFillYoutube } from 'react-icons/ai'; // For YouTube icon
 import { NewspaperIcon } from '@heroicons/react/24/solid'; // For Media icon (can adjust if outline is preferred)
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; 
 
 // Types
 interface SummaryNoteData {
@@ -78,6 +84,8 @@ export default function EditSummaryNotePage() {
   const [currentBookReadingPurpose, setCurrentBookReadingPurpose] = useState<string | undefined>(undefined);
   const [bookInfoMap, setBookInfoMap] = useState<Map<string, BookInfo>>(new Map());
 
+  const [isEditing, setIsEditing] = useState(false); // 뷰/편집 모드 상태
+
   // State for Related Links Modal
   const [selectedNoteForLinkModal, setSelectedNoteForLinkModal] = useState<FetchedNoteDetails | null>(null);
   const [showLinkModal, setShowLinkModal] = useState(false);
@@ -94,7 +102,8 @@ export default function EditSummaryNotePage() {
 
     const fetchSummaryNoteDetails = async () => {
       setLoading(true);
-      setError(null); // Reset error state at the beginning of fetch
+      setError(null);
+      setIsEditing(false); // 데이터 다시 불러올 때 항상 조회 모드로 시작
       try {
         const summaryRes = await api.get(`/summary-notes/${summaryNoteId}`);
         const summaryData: SummaryNoteData = summaryRes.data;
@@ -185,8 +194,24 @@ export default function EditSummaryNotePage() {
     setChangedNoteIds(prev => new Set(prev).add(updatedNoteFields._id!));
   }, []);
 
+  // 모드 전환 핸들러
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    // 제목과 설명을 원본 데이터로 복원
+    if (summaryNote) {
+      setTitle(summaryNote.title);
+      setDescription(summaryNote.description);
+    }
+    // 변경된 노트 ID 목록도 초기화 (선택적: 저장하지 않았으므로)
+    // setChangedNoteIds(new Set()); 
+  };
+
   const handleSaveSummaryNote = async () => {
-    if (!summaryNote) return;
+    if (!summaryNote) return false; // boolean 반환하도록 수정
     setLoading(true);
     try {
       // 1. Save all changed individual notes
@@ -215,14 +240,24 @@ export default function EditSummaryNotePage() {
       };
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
-      setChangedNoteIds(new Set()); // Reset changed IDs
+      setChangedNoteIds(new Set());
       alert('단권화 노트가 성공적으로 저장되었습니다.');
-      // Optionally, router.push somewhere or re-fetch data if needed
+      // 저장 후 summaryNote 상태 업데이트 (선택적이지만, UI 즉시 반영에 도움)
+      setSummaryNote(prev => prev ? { ...prev, ...updatedSummaryNoteData } : null);
+      return true; // 저장 성공
     } catch (err) {
       console.error('Failed to save summary note:', err);
       alert('단권화 노트 저장 중 오류가 발생했습니다.');
+      return false; // 저장 실패
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveAndToggleMode = async () => {
+    const success = await handleSaveSummaryNote();
+    if (success) {
+      setIsEditing(false); // 저장 성공 시 조회 모드로 전환
     }
   };
   
@@ -316,117 +351,157 @@ export default function EditSummaryNotePage() {
     alert('링크가 삭제되었습니다. "변경사항 저장"을 눌러야 최종 반영됩니다.');
   };
 
-  if (loading && !summaryNote) { // Show full page spinner only on initial load
-    return (
-      <div className={`min-h-screen flex items-center justify-center ${cyberTheme.bgPrimary}`}>
-        <Spinner size="lg" color="cyan" />
-        <p className={`ml-4 ${cyberTheme.textLight}`}>단권화 노트 로딩 중...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={`min-h-screen flex flex-col items-center justify-center p-4 ${cyberTheme.bgPrimary}`}>
-        <div className={`${cyberTheme.cardBg} rounded-xl shadow-lg p-6 max-w-md w-full border ${cyberTheme.errorBorder}`}>
-          <h1 className={`text-xl font-bold ${cyberTheme.errorText} mb-4`}>오류 발생</h1>
-          <p className={`mb-6 ${cyberTheme.textLight}`}>{error}</p>
-          <Button onClick={() => router.push('/books?tab=summary')} className="w-full">
-            내 서재로 돌아가기
-          </Button>
-        </div>
-      </div>
-    );
-  }
-  
-  if (!summaryNote) {
-    return ( // Should be covered by error state if fetch fails, but as a fallback
-        <div className={`min-h-screen flex items-center justify-center ${cyberTheme.bgPrimary}`}>
-            <p className={`${cyberTheme.textMuted}`}>단권화 노트를 찾을 수 없습니다.</p>
-        </div>
-    );
-  }
+  if (loading) return <div className="flex justify-center items-center h-screen"><Spinner /></div>;
+  if (error) return <div className="text-red-500 p-4 text-center">{error}</div>;
+  if (!summaryNote) return <div className="text-center p-4">요약 노트를 찾을 수 없습니다.</div>;
 
   return (
     <div className={`min-h-screen ${cyberTheme.bgPrimary} ${cyberTheme.textLight} p-4 md:p-8`}>
-      <div className="container mx-auto max-w-3xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className={`text-3xl font-bold ${cyberTheme.primary}`}>단권화 노트 수정</h1>
-          <div>
-            <Button onClick={() => router.push('/books?tab=summary')} variant="outline" className="mr-2">
-              목록으로
-            </Button>
-            <Button onClick={handleDeleteSummaryNote} variant="destructive" className="mr-2">
-              노트 삭제
-            </Button>
-            <Button onClick={handleSaveSummaryNote} disabled={loading}>
-              {loading ? <Spinner size="sm" /> : '변경사항 저장'}
-            </Button>
-          </div>
+      {/* Header and Action Buttons */}
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+        <h1 className={`text-3xl font-bold ${cyberTheme.primary} mb-4 sm:mb-0`}>
+          {isEditing ? '단권화 노트 수정' : summaryNote.title} 
+        </h1>
+        <div className="flex items-center space-x-2">
+          {!isEditing ? (
+            <>
+              <Button variant="outline" onClick={() => router.push('/books?tab=summary')}>목록으로</Button>
+              <Button onClick={handleEdit}>수정</Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="ml-1">
+                    <EllipsisVerticalIcon className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleDeleteSummaryNote} className="text-red-500 hover:!text-red-500 hover:!bg-red-500/10">
+                    <TrashIcon className="h-4 w-4 mr-2" />
+                    노트 삭제
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" onClick={handleCancel}>취소</Button>
+              <Button onClick={handleSaveAndToggleMode}>변경사항 저장</Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="ml-1">
+                    <EllipsisVerticalIcon className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleDeleteSummaryNote} className="text-red-500 hover:!text-red-500 hover:!bg-red-500/10">
+                    <TrashIcon className="h-4 w-4 mr-2" />
+                    노트 삭제
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
         </div>
+      </div>
 
-        <div className={`p-6 rounded-lg shadow-xl ${cyberTheme.cardBg} border ${cyberTheme.borderSecondary}/50 mb-8`}>
-          <div className="mb-4">
-            <label htmlFor="summaryTitle" className={`block text-sm font-medium ${cyberTheme.textMuted} mb-1`}>노트 제목</label>
-            <Input
-              id="summaryTitle"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="단권화 노트의 주제를 입력하세요"
-              className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:border-cyan-500 focus:ring-cyan-500/50`}
-            />
-          </div>
-          <div>
-            <label htmlFor="summaryDescription" className={`block text-sm font-medium ${cyberTheme.textMuted} mb-1`}>노트 설명 (선택)</label>
-            <Textarea
-              id="summaryDescription"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="이 단권화 노트의 목적이나 개요를 설명해주세요."
-              className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:border-cyan-500 focus:ring-cyan-500/50`}
-              rows={3}
-            />
-          </div>
-        </div>
-
-        <h2 className={`text-2xl font-semibold ${cyberTheme.secondary} mb-4`}>포함된 1줄 메모 ({fetchedNotes.length}개)</h2>
-        {fetchedNotes.length > 0 ? (
-          <div className="space-y-6">
-            {fetchedNotes.map((note, index) => (
-              <div key={note._id} className={`p-1 rounded-lg shadow-lg ${cyberTheme.cardBg} border ${cyberTheme.borderPrimary}/30 relative`}>
-                <TSNoteCard
-                  note={note}
-                  bookTitle={bookInfoMap.get(note.bookId)?.title} // Pass bookTitle
-                  readingPurpose={currentBookReadingPurpose} // Pass down reading purpose
-                  sessionDetails={note.sessionDetails}
-                  onUpdate={handleNoteUpdate}
-                  onFlashcardConvert={(currentNote) => {
-                    setNoteForFlashcardModal(currentNote as FetchedNoteDetails);
-                    setShowFlashcardModal(true);
-                  }}
-                  onRelatedLinks={(currentNote) => {
-                    setSelectedNoteForLinkModal(currentNote as FetchedNoteDetails);
-                    // Initialize modal states based on currentNote's links
-                    setCurrentLinkUrl('');
-                    setCurrentLinkReason('');
-                    setActiveRelatedLinkTypeTab(relatedLinkModalTabs[0].key); // Reset to first tab
-                    setShowLinkModal(true);
-                  }}
-                  // onAddToCart is not relevant here as notes are already part of the summary
-                />
-                <div className="absolute top-12 right-2 flex flex-col space-y-1 z-10">
-                    <Button size="sm" variant="ghost" onClick={() => handleReorderNote(note._id, 'up')} disabled={index === 0} className="px-1 py-0.5 h-auto text-lg">▲</Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleReorderNote(note._id, 'down')} disabled={index === fetchedNotes.length - 1} className="px-1 py-0.5 h-auto text-lg">▼</Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleRemoveNoteFromSummary(note._id)} className="px-1 py-0.5 h-auto text-lg">✕</Button>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Title and Description Fields */}
+      <div className="mb-8 p-6 rounded-lg shadow-xl border border-gray-700/50" style={{backgroundColor: 'rgba(17, 24, 39, 0.7)', backdropFilter: 'blur(10px)'}}>
+        {isEditing ? (
+          <>
+            <div className="mb-4">
+              <label htmlFor="summaryNoteTitle" className={`block text-sm font-medium ${cyberTheme.textMuted} mb-1`}>노트 제목</label>
+              <Input 
+                id="summaryNoteTitle"
+                type="text" 
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)} 
+                placeholder="단권화 노트의 제목을 입력하세요..."
+                className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
+              />
+            </div>
+            <div>
+              <label htmlFor="summaryNoteDescription" className={`block text-sm font-medium ${cyberTheme.textMuted} mb-1`}>노트 설명 (선택)</label>
+              <Textarea 
+                id="summaryNoteDescription"
+                value={description} 
+                onChange={(e) => setDescription(e.target.value)} 
+                placeholder="노트에 대한 간략한 설명을 추가하세요... (선택 사항)"
+                rows={3}
+                className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
+              />
+            </div>
+          </>
         ) : (
-          <p className={`${cyberTheme.textMuted} text-center py-8`}>아직 추가된 1줄 메모가 없습니다.</p>
+          <>
+            {/* 조회 모드에서는 summaryNote.title이 페이지 최상단 h1으로 표시됨 */}
+            {/* <h2 className={`text-2xl font-semibold mb-2 ${cyberTheme.primary}`}>{summaryNote.title}</h2> */}
+            <p className={`text-lg whitespace-pre-wrap ${description ? cyberTheme.textLight : cyberTheme.textMuted}`}>
+              {description || '설명이 없습니다.'}
+            </p>
+          </>
         )}
       </div>
+
+      {/* Included Notes Section Title */}
+      <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>포함된 1줄 메모 ({fetchedNotes.length}개)</h2>
+
+      {/* Notes List */}
+      {fetchedNotes.length > 0 ? (
+        <div className="space-y-6">
+          {fetchedNotes.map((note, index) => (
+            <div key={note._id} className="flex items-start space-x-3">
+              <TSNoteCard
+                note={note}
+                bookTitle={bookInfoMap.get(note.bookId)?.title} 
+                readingPurpose={currentBookReadingPurpose} 
+                sessionDetails={note.sessionDetails}
+                onUpdate={handleNoteUpdate} 
+                onFlashcardConvert={(currentNote) => {
+                  setNoteForFlashcardModal(currentNote as FetchedNoteDetails);
+                  setShowFlashcardModal(true);
+                }}
+                onRelatedLinks={(currentNote) => {
+                  setSelectedNoteForLinkModal(currentNote as FetchedNoteDetails);
+                  setShowLinkModal(true);
+                }}
+                isPageEditing={isEditing}
+              />
+              {/* 편집 모드일 때만 순서 변경 및 삭제 버튼 표시 */}
+              {isEditing && (
+                <div className="flex flex-col space-y-1.5 mt-1 relative top-2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleReorderNote(note._id, 'up')} 
+                    disabled={index === 0}
+                    className={`p-1 h-7 w-7 ${index === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'} ${cyberTheme.textMuted}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleReorderNote(note._id, 'down')} 
+                    disabled={index === fetchedNotes.length - 1}
+                    className={`p-1 h-7 w-7 ${index === fetchedNotes.length - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'} ${cyberTheme.textMuted}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleRemoveNoteFromSummary(note._id)}
+                    className={`p-1 h-7 w-7 hover:bg-red-700/50 hover:text-red-300 ${cyberTheme.textMuted}`}
+                  >
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className={`${cyberTheme.textMuted} text-center py-8`}>아직 추가된 1줄 메모가 없습니다.</p>
+      )}
 
       {/* Related Links Modal */}
       {showLinkModal && selectedNoteForLinkModal && (
