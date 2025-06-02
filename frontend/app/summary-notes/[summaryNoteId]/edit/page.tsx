@@ -356,292 +356,295 @@ export default function EditSummaryNotePage() {
   if (!summaryNote) return <div className="text-center p-4">요약 노트를 찾을 수 없습니다.</div>;
 
   return (
-    <div className={`min-h-screen ${cyberTheme.bgPrimary} ${cyberTheme.textLight} p-4 md:p-8`}>
-      {/* Header and Action Buttons */}
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-        <h1 className={`text-3xl font-bold ${cyberTheme.primary} mb-4 sm:mb-0`}>
-          {isEditing ? '단권화 노트 수정' : summaryNote.title} 
-        </h1>
-        <div className="flex items-center space-x-2">
-          {!isEditing ? (
+    <div className={`min-h-screen ${cyberTheme.bgPrimary} ${cyberTheme.textLight} py-8`}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header and Action Buttons */}
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+          <h1 className={`text-3xl font-bold ${cyberTheme.primary} mb-4 sm:mb-0`}>
+            {isEditing ? '단권화 노트 수정' : summaryNote.title} 
+          </h1>
+          <div className="flex items-center space-x-2">
+            {!isEditing ? (
+              <>
+                <Button variant="outline" onClick={() => router.push('/books?tab=summary')}>목록으로</Button>
+                <Button onClick={handleEdit}>수정</Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="ml-1">
+                      <EllipsisVerticalIcon className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleDeleteSummaryNote} className="text-red-500 hover:!text-red-500 hover:!bg-red-500/10">
+                      <TrashIcon className="h-4 w-4 mr-2" />
+                      노트 삭제
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={handleCancel}>취소</Button>
+                <Button onClick={handleSaveAndToggleMode}>변경사항 저장</Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="ml-1">
+                      <EllipsisVerticalIcon className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleDeleteSummaryNote} className="text-red-500 hover:!text-red-500 hover:!bg-red-500/10">
+                      <TrashIcon className="h-4 w-4 mr-2" />
+                      노트 삭제
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Title and Description Fields */}
+        <div className={isEditing ? `mb-8 p-6 rounded-lg shadow-xl border border-gray-700/50 bg-gray-800/70` : `mb-8 py-2`}>
+          {isEditing ? (
             <>
-              <Button variant="outline" onClick={() => router.push('/books?tab=summary')}>목록으로</Button>
-              <Button onClick={handleEdit}>수정</Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="ml-1">
-                    <EllipsisVerticalIcon className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleDeleteSummaryNote} className="text-red-500 hover:!text-red-500 hover:!bg-red-500/10">
-                    <TrashIcon className="h-4 w-4 mr-2" />
-                    노트 삭제
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="mb-4">
+                <label htmlFor="summaryNoteTitle" className={`block text-sm font-medium ${cyberTheme.textMuted} mb-1`}>노트 제목</label>
+                <Input 
+                  id="summaryNoteTitle"
+                  type="text" 
+                  value={title} 
+                  onChange={(e) => setTitle(e.target.value)} 
+                  placeholder="단권화 노트의 제목을 입력하세요..."
+                  className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
+                />
+              </div>
+              <div>
+                <label htmlFor="summaryNoteDescription" className={`block text-sm font-medium ${cyberTheme.textMuted} mb-1`}>노트 설명 (선택)</label>
+                <Textarea 
+                  id="summaryNoteDescription"
+                  value={description} 
+                  onChange={(e) => setDescription(e.target.value)} 
+                  placeholder="노트에 대한 간략한 설명을 추가하세요... (선택 사항)"
+                  rows={3}
+                  className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
+                />
+              </div>
             </>
           ) : (
             <>
-              <Button variant="outline" onClick={handleCancel}>취소</Button>
-              <Button onClick={handleSaveAndToggleMode}>변경사항 저장</Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="ml-1">
-                    <EllipsisVerticalIcon className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleDeleteSummaryNote} className="text-red-500 hover:!text-red-500 hover:!bg-red-500/10">
-                    <TrashIcon className="h-4 w-4 mr-2" />
-                    노트 삭제
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* 조회 모드에서는 페이지 제목(h1)이 이미 summaryNote.title을 표시하므로 여기서는 설명만 표시 */}
+              <p className={`text-lg whitespace-pre-wrap ${description ? cyberTheme.textLight : cyberTheme.textMuted}`}>
+                {description || '설명이 없습니다.'}
+              </p>
             </>
           )}
         </div>
-      </div>
 
-      {/* Title and Description Fields */}
-      <div className="mb-8 p-6 rounded-lg shadow-xl border border-gray-700/50" style={{backgroundColor: 'rgba(17, 24, 39, 0.7)', backdropFilter: 'blur(10px)'}}>
-        {isEditing ? (
-          <>
-            <div className="mb-4">
-              <label htmlFor="summaryNoteTitle" className={`block text-sm font-medium ${cyberTheme.textMuted} mb-1`}>노트 제목</label>
-              <Input 
-                id="summaryNoteTitle"
-                type="text" 
-                value={title} 
-                onChange={(e) => setTitle(e.target.value)} 
-                placeholder="단권화 노트의 제목을 입력하세요..."
-                className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
-              />
-            </div>
-            <div>
-              <label htmlFor="summaryNoteDescription" className={`block text-sm font-medium ${cyberTheme.textMuted} mb-1`}>노트 설명 (선택)</label>
-              <Textarea 
-                id="summaryNoteDescription"
-                value={description} 
-                onChange={(e) => setDescription(e.target.value)} 
-                placeholder="노트에 대한 간략한 설명을 추가하세요... (선택 사항)"
-                rows={3}
-                className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            {/* 조회 모드에서는 summaryNote.title이 페이지 최상단 h1으로 표시됨 */}
-            {/* <h2 className={`text-2xl font-semibold mb-2 ${cyberTheme.primary}`}>{summaryNote.title}</h2> */}
-            <p className={`text-lg whitespace-pre-wrap ${description ? cyberTheme.textLight : cyberTheme.textMuted}`}>
-              {description || '설명이 없습니다.'}
-            </p>
-          </>
-        )}
-      </div>
+        {/* Divider */}
+        <hr className="border-gray-700/50" />
 
-      {/* Included Notes Section Title */}
-      <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>포함된 1줄 메모 ({fetchedNotes.length}개)</h2>
+        {/* Included Notes Section Title */}
+        <h2 className={`text-2xl font-semibold mt-8 mb-6 ${cyberTheme.secondary}`}>포함된 1줄 메모 ({fetchedNotes.length}개)</h2>
 
-      {/* Notes List */}
-      {fetchedNotes.length > 0 ? (
-        <div className="space-y-6">
-          {fetchedNotes.map((note, index) => (
-            <div key={note._id} className="flex items-start space-x-3">
-              <TSNoteCard
-                note={note}
-                bookTitle={bookInfoMap.get(note.bookId)?.title} 
-                readingPurpose={currentBookReadingPurpose} 
-                sessionDetails={note.sessionDetails}
-                onUpdate={handleNoteUpdate} 
-                onFlashcardConvert={(currentNote) => {
-                  setNoteForFlashcardModal(currentNote as FetchedNoteDetails);
-                  setShowFlashcardModal(true);
-                }}
-                onRelatedLinks={(currentNote) => {
-                  setSelectedNoteForLinkModal(currentNote as FetchedNoteDetails);
-                  setShowLinkModal(true);
-                }}
-                isPageEditing={isEditing}
-              />
-              {/* 편집 모드일 때만 순서 변경 및 삭제 버튼 표시 */}
-              {isEditing && (
-                <div className="flex flex-col space-y-1.5 mt-1 relative top-2">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => handleReorderNote(note._id, 'up')} 
-                    disabled={index === 0}
-                    className={`p-1 h-7 w-7 ${index === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'} ${cyberTheme.textMuted}`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => handleReorderNote(note._id, 'down')} 
-                    disabled={index === fetchedNotes.length - 1}
-                    className={`p-1 h-7 w-7 ${index === fetchedNotes.length - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'} ${cyberTheme.textMuted}`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => handleRemoveNoteFromSummary(note._id)}
-                    className={`p-1 h-7 w-7 hover:bg-red-700/50 hover:text-red-300 ${cyberTheme.textMuted}`}
-                  >
-                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                  </Button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className={`${cyberTheme.textMuted} text-center py-8`}>아직 추가된 1줄 메모가 없습니다.</p>
-      )}
-
-      {/* Related Links Modal */}
-      {showLinkModal && selectedNoteForLinkModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-4">
-          <div className={`bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full border border-cyan-500/50 relative ${cyberTheme.textLight}`}>
-            <h3 className="text-lg font-semibold mb-4 text-cyan-400">
-              관련 링크 관리: "{selectedNoteForLinkModal.content.substring(0,30)}..."
-            </h3>
-            
-            {/* Link Type Tabs */}
-            <div className="flex space-x-1 border-b border-gray-700 mb-4">
-                {relatedLinkModalTabs.map(tab => (
-                    <button
-                        key={tab.key}
-                        onClick={() => setActiveRelatedLinkTypeTab(tab.key)}
-                        className={`px-3 py-1.5 text-xs rounded-t-md ${activeRelatedLinkTypeTab === tab.key ? 'bg-cyan-600 text-white font-semibold' : 'bg-gray-700 hover:bg-gray-600'}`}
-                    >
-                        <tab.icon className="w-3 h-3 mr-1.5 inline"/>{tab.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Form to add new related link */}
-            <div className="mb-4 p-3 bg-gray-700/50 rounded-md space-y-3">
-              <h4 className="text-sm font-medium text-gray-300">
-                새 '{relatedLinkModalTabs.find(t => t.key === activeRelatedLinkTypeTab)?.label}' 링크 추가
-              </h4>
-              <Input
-                type="url"
-                placeholder="링크 URL"
-                value={currentLinkUrl}
-                onChange={(e) => setCurrentLinkUrl(e.target.value)}
-                className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:border-cyan-500`}
-              />
-              <Textarea
-                placeholder="이 링크를 연결하는 이유 (선택 사항)"
-                value={currentLinkReason}
-                onChange={(e) => setCurrentLinkReason(e.target.value)}
-                className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:border-cyan-500`}
-                rows={2}
-              />
-              <Button onClick={handleAddRelatedLinkInModal} size="sm" className="text-white bg-cyan-600 hover:bg-cyan-700">
-                링크 추가하기
-              </Button>
-            </div>
-
-            {/* Display existing links for the current note & type */}
-            <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-              <h4 className="text-sm font-medium text-gray-300 mt-3">
-                현재 노트의 '{relatedLinkModalTabs.find(t => t.key === activeRelatedLinkTypeTab)?.label}' 링크
-              </h4>
-              {(selectedNoteForLinkModal.relatedLinks || []).filter(link => link.type === activeRelatedLinkTypeTab).length > 0 ? 
-                (selectedNoteForLinkModal.relatedLinks || []).filter(link => link.type === activeRelatedLinkTypeTab).map((link, idx) => (
-                  <div key={idx} className="flex justify-between items-center p-2 bg-gray-700/70 rounded text-xs">
-                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="truncate hover:text-cyan-400" title={link.url}>
-                      {link.reason || link.url}
-                    </a>
+        {/* Notes List */}
+        {fetchedNotes.length > 0 ? (
+          <div className="space-y-6">
+            {fetchedNotes.map((note, index) => (
+              <div key={note._id} className="flex items-start space-x-3 w-full">
+                <TSNoteCard
+                  note={note}
+                  bookTitle={bookInfoMap.get(note.bookId)?.title} 
+                  readingPurpose={currentBookReadingPurpose} 
+                  sessionDetails={note.sessionDetails}
+                  onUpdate={handleNoteUpdate} 
+                  onFlashcardConvert={(currentNote) => {
+                    setNoteForFlashcardModal(currentNote as FetchedNoteDetails);
+                    setShowFlashcardModal(true);
+                  }}
+                  onRelatedLinks={(currentNote) => {
+                    setSelectedNoteForLinkModal(currentNote as FetchedNoteDetails);
+                    setShowLinkModal(true);
+                  }}
+                  isPageEditing={isEditing} 
+                />
+                {isEditing && (
+                  <div className="flex flex-col space-y-1.5 mt-1 relative top-2">
                     <Button 
-                        onClick={() => {
-                            // Find the actual index in the full relatedLinks array before filtering by type
-                            const actualIndex = (selectedNoteForLinkModal.relatedLinks || []).findIndex(
-                                rl => rl.url === link.url && rl.type === link.type && rl.reason === link.reason
-                                // This findIndex might not be robust if multiple identical links exist.
-                                // A more robust way would be to pass the original index or a unique ID if links had one.
-                                // For now, this assumes link objects are unique enough or order is preserved.
-                            );
-                            if (actualIndex !== -1) {
-                                handleDeleteRelatedLinkInModal(actualIndex);
-                            } else {
-                                // Fallback for safety if the above logic fails (e.g. due to non-unique links)
-                                // This part of the logic may need refinement if links don't have unique IDs
-                                // and direct index from filtered list is not reliable.
-                                // For now, we rely on the fact that we rebuild the array.
-                                // Consider adding temporary unique IDs to links in UI state if this becomes an issue.
-                                const indexInFiltered = (selectedNoteForLinkModal.relatedLinks || [])
-                                    .filter(rl => rl.type === activeRelatedLinkTypeTab)
-                                    .findIndex(rl => rl.url === link.url && rl.reason === link.reason);
-                                if(indexInFiltered !== -1) {
-                                     const originalFullList = selectedNoteForLinkModal.relatedLinks || [];
-                                     let count = 0;
-                                     let foundOriginalIndex = -1;
-                                     for(let i=0; i < originalFullList.length; i++){
-                                         if(originalFullList[i].type === activeRelatedLinkTypeTab){
-                                             if(count === indexInFiltered){
-                                                 foundOriginalIndex = i;
-                                                 break;
-                                             }
-                                             count++;
-                                         }
-                                     }
-                                     if(foundOriginalIndex !== -1) handleDeleteRelatedLinkInModal(foundOriginalIndex);
-                                     else alert("삭제할 링크를 찾는 데 문제가 발생했습니다.");
-                                } else {
-                                    alert("삭제할 링크를 찾는 데 문제가 발생했습니다. (filtered)");
-                                }
-                            }
-                        }} 
-                        variant="destructive" 
-                        size="sm" 
-                        className="p-0 h-auto"
-                        title="이 링크 삭제"
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleReorderNote(note._id, 'up')} 
+                      disabled={index === 0}
+                      className={`p-1 h-7 w-7 ${index === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'} ${cyberTheme.textMuted}`}
                     >
-                      <TrashIcon className="w-4 h-4" />
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleReorderNote(note._id, 'down')} 
+                      disabled={index === fetchedNotes.length - 1}
+                      className={`p-1 h-7 w-7 ${index === fetchedNotes.length - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'} ${cyberTheme.textMuted}`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleRemoveNoteFromSummary(note._id)}
+                      className={`p-1 h-7 w-7 hover:bg-red-700/50 hover:text-red-300 ${cyberTheme.textMuted}`}
+                    >
+                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </Button>
                   </div>
-                )) : 
-                <p className="text-gray-500 text-xs">이 유형의 링크가 없습니다.</p>
-              }
-            </div>
-            <Button onClick={() => setShowLinkModal(false)} variant="outline" size="sm" className="mt-6 w-full">
-              닫기
-            </Button>
+                )}
+              </div>
+            ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <p className={`${cyberTheme.textMuted} text-center py-8`}>아직 추가된 1줄 메모가 없습니다.</p>
+        )}
 
-      {/* Flashcard Modal */}
-      {showFlashcardModal && noteForFlashcardModal && (
-         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-           <div className="bg-gray-800 p-0 rounded-lg shadow-xl max-w-lg w-full border border-purple-500/50 relative">
-            {/* FlashcardForm expects white background, so added a wrapper or adjust FlashcardForm theme */}
-            <FlashcardForm
-              bookId={noteForFlashcardModal.bookId} 
-              note={noteForFlashcardModal} // Pass the full note object, changed from noteContext
-              onCreated={(createdCard) => {
-                console.log('Flashcard created/updated:', createdCard);
-                alert(`플래시카드가 성공적으로 ${createdCard.question.includes(noteForFlashcardModal.content.substring(0,10)) ? '생성' : '수정'}되었습니다!`); // Basic feedback
-                setShowFlashcardModal(false);
-                setNoteForFlashcardModal(null);
-              }}
-              onCancel={() => {
-                setShowFlashcardModal(false);
-                setNoteForFlashcardModal(null);
-              }}
-              // To use existing flashcard edit functionality, you'd need to fetch if a flashcard exists for this note
-              // and pass its 'editId'. For now, this will always create.
-            />
+        {/* Related Links Modal */}
+        {showLinkModal && selectedNoteForLinkModal && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+            <div className={`bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full border border-cyan-500/50 relative ${cyberTheme.textLight}`}>
+              <h3 className="text-lg font-semibold mb-4 text-cyan-400">
+                관련 링크 관리: "{selectedNoteForLinkModal.content.substring(0,30)}..."
+              </h3>
+              
+              {/* Link Type Tabs */}
+              <div className="flex space-x-1 border-b border-gray-700 mb-4">
+                  {relatedLinkModalTabs.map(tab => (
+                      <button
+                          key={tab.key}
+                          onClick={() => setActiveRelatedLinkTypeTab(tab.key)}
+                          className={`px-3 py-1.5 text-xs rounded-t-md ${activeRelatedLinkTypeTab === tab.key ? 'bg-cyan-600 text-white font-semibold' : 'bg-gray-700 hover:bg-gray-600'}`}
+                      >
+                          <tab.icon className="w-3 h-3 mr-1.5 inline"/>{tab.label}
+                      </button>
+                  ))}
+              </div>
+
+              {/* Form to add new related link */}
+              <div className="mb-4 p-3 bg-gray-700/50 rounded-md space-y-3">
+                <h4 className="text-sm font-medium text-gray-300">
+                  새 '{relatedLinkModalTabs.find(t => t.key === activeRelatedLinkTypeTab)?.label}' 링크 추가
+                </h4>
+                <Input
+                  type="url"
+                  placeholder="링크 URL"
+                  value={currentLinkUrl}
+                  onChange={(e) => setCurrentLinkUrl(e.target.value)}
+                  className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:border-cyan-500`}
+                />
+                <Textarea
+                  placeholder="이 링크를 연결하는 이유 (선택 사항)"
+                  value={currentLinkReason}
+                  onChange={(e) => setCurrentLinkReason(e.target.value)}
+                  className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:border-cyan-500`}
+                  rows={2}
+                />
+                <Button onClick={handleAddRelatedLinkInModal} size="sm" className="text-white bg-cyan-600 hover:bg-cyan-700">
+                  링크 추가하기
+                </Button>
+              </div>
+
+              {/* Display existing links for the current note & type */}
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+                <h4 className="text-sm font-medium text-gray-300 mt-3">
+                  현재 노트의 '{relatedLinkModalTabs.find(t => t.key === activeRelatedLinkTypeTab)?.label}' 링크
+                </h4>
+                {(selectedNoteForLinkModal.relatedLinks || []).filter(link => link.type === activeRelatedLinkTypeTab).length > 0 ? 
+                  (selectedNoteForLinkModal.relatedLinks || []).filter(link => link.type === activeRelatedLinkTypeTab).map((link, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-2 bg-gray-700/70 rounded text-xs">
+                      <a href={link.url} target="_blank" rel="noopener noreferrer" className="truncate hover:text-cyan-400" title={link.url}>
+                        {link.reason || link.url}
+                      </a>
+                      <Button 
+                          onClick={() => {
+                              // Find the actual index in the full relatedLinks array before filtering by type
+                              const actualIndex = (selectedNoteForLinkModal.relatedLinks || []).findIndex(
+                                  rl => rl.url === link.url && rl.type === link.type && rl.reason === link.reason
+                                  // This findIndex might not be robust if multiple identical links exist.
+                                  // A more robust way would be to pass the original index or a unique ID if links had one.
+                                  // For now, this assumes link objects are unique enough or order is preserved.
+                              );
+                              if (actualIndex !== -1) {
+                                  handleDeleteRelatedLinkInModal(actualIndex);
+                              } else {
+                                  // Fallback for safety if the above logic fails (e.g. due to non-unique links)
+                                  // This part of the logic may need refinement if links don't have unique IDs
+                                  // and direct index from filtered list is not reliable.
+                                  // For now, we rely on the fact that we rebuild the array.
+                                  // Consider adding temporary unique IDs to links in UI state if this becomes an issue.
+                                  const indexInFiltered = (selectedNoteForLinkModal.relatedLinks || [])
+                                      .filter(rl => rl.type === activeRelatedLinkTypeTab)
+                                      .findIndex(rl => rl.url === link.url && rl.reason === link.reason);
+                                  if(indexInFiltered !== -1) {
+                                       const originalFullList = selectedNoteForLinkModal.relatedLinks || [];
+                                       let count = 0;
+                                       let foundOriginalIndex = -1;
+                                       for(let i=0; i < originalFullList.length; i++){
+                                           if(originalFullList[i].type === activeRelatedLinkTypeTab){
+                                               if(count === indexInFiltered){
+                                                   foundOriginalIndex = i;
+                                                   break;
+                                               }
+                                               count++;
+                                           }
+                                       }
+                                       if(foundOriginalIndex !== -1) handleDeleteRelatedLinkInModal(foundOriginalIndex);
+                                       else alert("삭제할 링크를 찾는 데 문제가 발생했습니다.");
+                                  } else {
+                                      alert("삭제할 링크를 찾는 데 문제가 발생했습니다. (filtered)");
+                                  }
+                              }
+                          }} 
+                          variant="destructive" 
+                          size="sm" 
+                          className="p-0 h-auto"
+                          title="이 링크 삭제"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )) : 
+                  <p className="text-gray-500 text-xs">이 유형의 링크가 없습니다.</p>
+                }
+              </div>
+              <Button onClick={() => setShowLinkModal(false)} variant="outline" size="sm" className="mt-6 w-full">
+                닫기
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Flashcard Modal */}
+        {showFlashcardModal && noteForFlashcardModal && (
+           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+             <div className="bg-gray-800 p-0 rounded-lg shadow-xl max-w-lg w-full border border-purple-500/50 relative">
+              {/* FlashcardForm expects white background, so added a wrapper or adjust FlashcardForm theme */}
+              <FlashcardForm
+                bookId={noteForFlashcardModal.bookId} 
+                note={noteForFlashcardModal} // Pass the full note object, changed from noteContext
+                onCreated={(createdCard) => {
+                  console.log('Flashcard created/updated:', createdCard);
+                  alert(`플래시카드가 성공적으로 ${createdCard.question.includes(noteForFlashcardModal.content.substring(0,10)) ? '생성' : '수정'}되었습니다!`); // Basic feedback
+                  setShowFlashcardModal(false);
+                  setNoteForFlashcardModal(null);
+                }}
+                onCancel={() => {
+                  setShowFlashcardModal(false);
+                  setNoteForFlashcardModal(null);
+                }}
+                // To use existing flashcard edit functionality, you'd need to fetch if a flashcard exists for this note
+                // and pass its 'editId'. For now, this will always create.
+              />
+             </div>
            </div>
-         </div>
-      )}
+        )}
+      </div>
     </div>
   );
 } 

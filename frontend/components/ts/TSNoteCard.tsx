@@ -390,7 +390,7 @@ export default function TSNoteCard({
 
   return (
     <div 
-      className={`relative group ${cyberTheme.cardBg} p-4 rounded-lg shadow-md border ${cyberTheme.cardBorder} ${className} ${minimalDisplay ? 'min-h-0' : 'min-h-[180px]'} transition-all duration-200 hover:shadow-xl hover:border-cyan-500/70`}
+      className={`relative group ${cyberTheme.cardBg} p-4 rounded-lg shadow-md border ${cyberTheme.cardBorder} ${className} ${minimalDisplay ? 'min-h-0' : 'min-h-[180px]'} transition-all duration-200 hover:shadow-xl hover:border-cyan-500/70 w-full`}
       onMouseEnter={() => setIsHoveringCard(true)}
       onMouseLeave={() => setIsHoveringCard(false)}
     >
@@ -405,7 +405,7 @@ export default function TSNoteCard({
         className="relative flex flex-col h-full"
       >
         <div className="flex-grow mb-2">
-          <p className={`text-base ${cyberTheme.textMain} leading-relaxed whitespace-pre-wrap break-words`}>
+          <p className={`text-base ${cyberTheme.textMain} leading-relaxed whitespace-pre-wrap break-words max-w-prose`}>
             {note.content}
           </p>
           {!minimalDisplay && renderBookSource()}
