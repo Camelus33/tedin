@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { AiOutlinePlus, AiOutlineSearch, AiOutlineFilter, AiOutlineEdit, AiOutlineDelete, AiOutlineHighlight, AiOutlineBook, AiOutlineFileText } from "react-icons/ai";
@@ -86,6 +86,7 @@ type SortByType = "title" | "date" | "progress";
 
 export default function BooksPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -170,6 +171,13 @@ export default function BooksPage() {
 
   useEffect(() => {
     isMounted.current = true;
+    const tabFromQuery = searchParams.get('tab');
+    if (tabFromQuery === 'summary') {
+      setActiveTab('summaryNotes');
+    } else {
+      setActiveTab('books');
+    }
+
     if (activeTab === 'books') {
       fetchBooks();
     } else if (activeTab === 'summaryNotes') {
@@ -180,7 +188,7 @@ export default function BooksPage() {
       if (controller.current) controller.current.abort();
       if (requestTimeout.current) clearTimeout(requestTimeout.current);
     };
-  }, [activeTab, fetchBooks, fetchSummaryNotes]);
+  }, [searchParams, fetchBooks, fetchSummaryNotes]);
   
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -268,15 +276,19 @@ export default function BooksPage() {
   const handleViewBookDetails = (bookId: string) => router.push(`/books/${bookId}`);
   const handleAddBook = () => router.push("/books/new");
 
-  const handleDeleteSummaryNote = async (summaryNoteId: string) => {
-    if (window.confirm("정말로 이 단권화 노트를 삭제하시겠습니까?")) {
+  const handleDeleteSummaryNoteFromList = async (summaryNoteId: string) => {
+    if (window.confirm('이 단권화 노트를 정말 삭제하시겠습니까? 연결된 1줄 메모는 삭제되지 않습니다.')) {
+      setSummaryNotesLoading(true); // Indicate loading state
       try {
         await api.delete(`/summary-notes/${summaryNoteId}`);
-        setSummaryNotes(prevNotes => prevNotes.filter(note => note._id !== summaryNoteId));
-        alert("단권화 노트가 삭제되었습니다.");
+        setSummaryNotes(prevSummaryNotes => prevSummaryNotes.filter(note => note._id !== summaryNoteId));
+        alert('단권화 노트가 성공적으로 삭제되었습니다.');
       } catch (err: any) {
-        setSummaryNotesError(err.response?.data?.message || "삭제 중 오류가 발생했습니다.");
-        alert("단권화 노트 삭제 실패: " + (err.response?.data?.message || err.message));
+        console.error('Failed to delete summary note from list:', err);
+        setSummaryNotesError(err.response?.data?.message || err.message || '단권화 노트 삭제 중 오류 발생');
+        alert(`단권화 노트 삭제 중 오류가 발생했습니다: ${err.response?.data?.message || err.message}`);
+      } finally {
+        setSummaryNotesLoading(false);
       }
     }
   };
@@ -349,10 +361,26 @@ export default function BooksPage() {
         </div>
 
         <div className="mb-6 flex border-b border-gray-700">
-          <button onClick={() => setActiveTab('books')} className={`py-3 px-5 font-semibold flex items-center gap-2 transition-colors ${activeTab === 'books' ? `${cyberTheme.primary} border-b-2 ${cyberTheme.borderPrimary}` : `${cyberTheme.textMuted} hover:text-cyan-300 border-b-2 border-transparent`}
-            `}><AiOutlineBook className="w-5 h-5" /> 내 서재 (책)</button>
-          <button onClick={() => setActiveTab('summaryNotes')} className={`py-3 px-5 font-semibold flex items-center gap-2 transition-colors ${activeTab === 'summaryNotes' ? `${cyberTheme.primary} border-b-2 ${cyberTheme.borderPrimary}` : `${cyberTheme.textMuted} hover:text-cyan-300 border-b-2 border-transparent`}
-            `}><AiOutlineFileText className="w-5 h-5" /> 단권화 노트</button>
+          <button
+            onClick={() => setActiveTab('books')}
+            className={`px-6 py-2.5 rounded-t-lg font-semibold transition-all duration-200 ease-in-out border-b-2
+              ${activeTab === 'books' 
+                ? `${cyberTheme.tabActiveBg} ${cyberTheme.tabText} border-cyan-300 shadow-md` 
+                : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-cyan-300 border-transparent hover:bg-gray-700/70`}
+            `}
+          >
+            <FiBook className="inline mr-2 mb-0.5" />내 서재
+          </button>
+          <button
+            onClick={() => setActiveTab('summaryNotes')}
+            className={`px-6 py-2.5 rounded-t-lg font-semibold transition-all duration-200 ease-in-out border-b-2
+              ${activeTab === 'summaryNotes' 
+                ? `bg-purple-600 ${cyberTheme.tabText} border-purple-400 shadow-md` 
+                : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-purple-300 border-transparent hover:bg-gray-700/70`}
+            `}
+          >
+            <AiOutlineHighlight className="inline mr-2 mb-0.5" />단권화 노트
+          </button>
         </div>
 
         {activeTab === 'books' && (
@@ -427,74 +455,68 @@ export default function BooksPage() {
           </>
         )}
         {activeTab === 'summaryNotes' && (
-          <>
+          <div className="mt-2">
             {summaryNotesLoading && (
-              <div className="flex items-center justify-center py-10">
-                <Spinner size="md" color="cyan" />
-                <p className={`ml-3 ${cyberTheme.textLight}`}>단권화 노트 로딩 중...</p>
+              <div className="flex justify-center items-center py-10">
+                <Spinner size="lg" color="purple" />
+                <p className={`ml-3 ${cyberTheme.textMuted}`}>단권화 노트 로딩 중...</p>
               </div>
             )}
             {summaryNotesError && (
-              <div className={`text-center py-10 ${cyberTheme.cardBg} rounded-lg p-6 border ${cyberTheme.errorBorder}`}>
-                <p className={`${cyberTheme.errorText} font-semibold mb-2`}>오류 발생</p>
-                <p className={`${cyberTheme.textLight} text-sm`}>{summaryNotesError}</p>
-                <button
-                  onClick={() => { setActiveTab('summaryNotes'); fetchSummaryNotes();}}
-                  className={`mt-4 py-2 px-4 rounded-lg ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} text-white font-semibold text-sm transition-colors`}
-                >
-                  다시 시도
-                </button>
+              <div className={`text-center py-10 ${cyberTheme.errorText} bg-red-900/20 p-4 rounded-md`}>
+                <p>오류: {summaryNotesError}</p>
+                <Button onClick={fetchSummaryNotes} variant="outline" className="mt-4">재시도</Button>
+              </div>
+            )}
+            {!summaryNotesLoading && !summaryNotesError && summaryNotes.length === 0 && (
+              <div className={`text-center py-10 ${cyberTheme.textMuted}`}>
+                <AiOutlineFileText className="mx-auto text-4xl mb-3" />
+                <p className="mb-4">아직 생성된 단권화 노트가 없습니다.</p>
+                <Button onClick={() => router.push('/summary-notes/create')} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white`}>
+                  <AiOutlinePlus className="mr-2" /> 새 단권화 노트 만들기
+                </Button>
               </div>
             )}
             {!summaryNotesLoading && !summaryNotesError && summaryNotes.length > 0 && (
               <div className="space-y-4">
-                {summaryNotes.map((note) => (
-                  <div key={note._id} className={`${cyberTheme.cardBg} p-4 rounded-lg shadow-lg border ${cyberTheme.borderSecondary}/20 flex justify-between items-start`}>
-                    <Link href={`/summary-notes/${note._id}/edit`} className="flex-grow">
-                      <h3 className={`text-xl font-semibold ${cyberTheme.primary} hover:underline`}>{note.title}</h3>
-                      {note.description && <p className="text-sm text-gray-400 mt-1 truncate-2-lines">{note.description}</p>}
-                      <div className="text-xs text-gray-500 mt-2">
-                        <span>포함된 메모: {note.orderedNoteIds.length}개</span>
-                        <span className="mx-2">|</span>
-                        <span>마지막 업데이트: {new Date(note.updatedAt).toLocaleDateString()}</span>
+                {summaryNotes.map(note => (
+                  <div 
+                    key={note._id} 
+                    className={`p-5 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:shadow-purple-500/30 border ${cyberTheme.borderSecondary}/30 ${cyberTheme.cardBg}`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className={`text-xl font-semibold ${cyberTheme.secondary} mb-1.5 hover:text-purple-300`}>
+                          <Link href={`/summary-notes/${note._id}/edit`}>{note.title}</Link>
+                        </h3>
+                        <p className={`text-sm ${cyberTheme.textMuted} mb-1`}>{note.description || '설명 없음'}</p>
+                        <p className={`text-xs ${cyberTheme.textMuted}`}>포함된 1줄 메모: {note.orderedNoteIds.length}개</p>
+                        <p className={`text-xs ${cyberTheme.textMuted}`}>마지막 업데이트: {new Date(note.updatedAt).toLocaleDateString('ko-KR')}</p>
                       </div>
-                    </Link>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="p-2 h-8 w-8 text-gray-400 hover:text-cyan-400 hover:bg-gray-700">
-                          <DotsVerticalIcon className="h-5 w-5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className={`${cyberTheme.bgSecondary} border-${cyberTheme.borderSecondary}/50 text-white`}>
-                        <DropdownMenuItem 
+                      <div className="flex space-x-2 flex-shrink-0 ml-4">
+                        <Button 
+                          variant="outline"
+                          size="sm"
                           onClick={() => router.push(`/summary-notes/${note._id}/edit`)}
-                          className={`hover:!bg-cyan-700/50 hover:!text-cyan-300 cursor-pointer`}
+                          className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textLight} border-purple-500/50 hover:border-purple-400`}
                         >
-                          수정
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteSummaryNote(note._id)}
-                          className={`hover:!bg-red-700/50 hover:!text-red-300 cursor-pointer`}
+                          <AiOutlineEdit className="mr-1.5" /> 수정
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => handleDeleteSummaryNoteFromList(note._id)}
+                          disabled={summaryNotesLoading} // Disable button while any summary note operation is in progress
                         >
-                          삭제
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <AiOutlineDelete className="mr-1.5" /> 삭제
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
-            {!summaryNotesLoading && !summaryNotesError && summaryNotes.length === 0 && (
-              <div className="text-center py-12">
-                <AiOutlineFileText className={`w-16 h-16 mx-auto mb-4 ${cyberTheme.textMuted}`} />
-                <p className={`text-lg ${cyberTheme.textLight} mb-2`}>아직 작성된 단권화 노트가 없습니다.</p>
-                <p className={`${cyberTheme.textMuted} mb-6`}>지식 카트의 메모들을 모아 첫 단권화 노트를 만들어보세요.</p>
-                <button onClick={() => router.push("/summary-notes/create")} className={`flex items-center gap-2 mx-auto py-2.5 px-6 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-semibold text-sm transition-colors`}>
-                  <AiOutlinePlus /> 새 단권화 노트 만들기
-                </button>
-              </div>
-            )}
-          </>
+          </div>
         )}
       </div>
     </div>

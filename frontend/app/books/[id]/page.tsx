@@ -102,15 +102,18 @@ type Book = {
  * 페이지 특화적인 추가 필드(type, createdAt, originSession 등)를 가질 수 있습니다.
  * 이 페이지에서 API를 통해 가져온 노트 데이터는 이 타입으로 매핑됩니다.
  */
+export interface PageRelatedLink {
+  type: 'book' | 'paper' | 'youtube' | 'media' | 'website';
+  url: string;
+  reason?: string;
+  _id?: string;
+}
+
 interface PageNote extends TSNote { 
   type: 'quote' | 'thought' | 'question'; 
   createdAt: string; 
   originSession?: string; 
-  relatedLinks?: Array<{
-    type: 'bookAndPaper' | 'youtube' | 'sns' | 'media' | 'noteApp'; 
-    url: string;
-    reason?: string;
-  }>;
+  relatedLinks?: PageRelatedLink[];
 }
 
 /**
@@ -171,7 +174,7 @@ export default function BookDetailPage() {
   const params = useParams();
   const bookId = params.id as string; // URL 파라미터에서 현재 책의 ID를 가져옵니다.
   
-  const { bookFetchState, fetchBookDetail } = useBooks(); // 책 정보 조회 커스텀 훅
+  const { bookFetchState, fetchBookDetail } = useBooks();
   const [tsNotes, setTsNotes] = useState<PageNote[]>([]); // 현재 책에 속한 TS 노트 목록 상태
   const [tsSessions, setTsSessions] = useState<Session[]>([]); // 현재 책에 속한 TS 세션 목록 상태
   const [sessionsLoading, setSessionsLoading] = useState<boolean>(true); // 세션 로딩 상태
@@ -187,17 +190,17 @@ export default function BookDetailPage() {
   const [localMetadata, setLocalMetadata] = useState<any>(null);
   
   // 관련 링크 탭용 상태
-  const relatedLinkTabs: { key: RelatedLink['type']; label: string; icon: React.ComponentType<any>; tooltip: string; }[] = [
-    { key: 'bookAndPaper', label: '책과 논문',        icon: BookOpenIcon,      tooltip: '책, 논문 연결' },
-    { key: 'youtube',      label: '유튜브',          icon: AiFillYoutube,     tooltip: '유튜브 영상'       },
-    { key: 'sns',          label: 'SNS',             icon: ShareIcon,         tooltip: '인스타그램, X(구 트위터) 등 SNS 연결' },
-    { key: 'media',        label: '언론·기사·매체',    icon: NewspaperIcon,     tooltip: '언론 및 매체 기사 연결'   },
-    { key: 'noteApp',      label: '노트앱',      icon: DocumentTextIcon,  tooltip: '노션, 옵시디언 등 노트App과 연결' },
+  const relatedLinkTabs: { key: PageRelatedLink['type']; label: string; icon: React.ComponentType<any>; tooltip: string; }[] = [
+    { key: 'book',         label: '책',              icon: BookOpenIcon,      tooltip: '관련 책 연결' },
+    { key: 'paper',        label: '논문/자료',         icon: DocumentTextIcon,  tooltip: '논문, 학술 자료 연결' },
+    { key: 'youtube',      label: '유튜브',          icon: AiFillYoutube,     tooltip: '유튜브 영상' },
+    { key: 'media',        label: '미디어/뉴스',      icon: NewspaperIcon,     tooltip: '언론, 뉴스 기사, 미디어 콘텐츠 연결' },
+    { key: 'website',      label: '웹사이트/기타',  icon: ShareIcon,         tooltip: '블로그, SNS, 일반 웹사이트 등 기타 링크 연결' }, 
   ];
-  const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState<RelatedLink['type']>(relatedLinkTabs[0].key);
+  const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState<PageRelatedLink['type']>(relatedLinkTabs[0].key);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkReason, setLinkReason] = useState('');
-  const [relatedLinksMap, setRelatedLinksMap] = useState<Record<string, RelatedLink[]>>({});
+  const [relatedLinksMap, setRelatedLinksMap] = useState<Record<string, PageRelatedLink[]>>({});
 
   useEffect(() => {
     setLinkUrl('');
@@ -207,11 +210,10 @@ export default function BookDetailPage() {
   const currentLinks = selectedRelatedNote ? (relatedLinksMap[selectedRelatedNote._id] || []) : [];
   const filteredLinks = currentLinks.filter(l => l.type === activeRelatedLinkTab);
 
-  // 관련 링크 추가 핸들러
   const handleAddRelatedLink = async () => {
     if (!selectedRelatedNote || !linkUrl.trim()) return;
-    const newLink: RelatedLink = {
-      type: activeRelatedLinkTab as RelatedLink['type'],
+    const newLink: PageRelatedLink = {
+      type: activeRelatedLinkTab,
       url: linkUrl.trim(),
       reason: linkReason.trim(),
     };
@@ -222,58 +224,92 @@ export default function BookDetailPage() {
     setLinkReason('');
     try {
       await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
+      setTsNotes(prevTsNotes => prevTsNotes.map(n => n._id === noteId ? {...n, relatedLinks: updatedLinks} : n));
+      if (selectedRelatedNote && selectedRelatedNote._id === noteId) {
+        setSelectedRelatedNote(prev => prev ? {...prev, relatedLinks: updatedLinks} : null);
+      }
     } catch (err) {
       alert('관련 링크 저장 중 오류 발생: ' + (err as any).message);
+      const originalLinks = (relatedLinksMap[noteId] || []).filter(link => link.url !== newLink.url || link.type !== newLink.type);
+      setRelatedLinksMap(prev => ({ ...prev, [noteId]: originalLinks }));
     }
   };
 
-  // 관련 링크 삭제 핸들러
-  const handleDeleteRelatedLink = async (idx: number) => {
+  const handleDeleteRelatedLink = async (originalIndex: number) => {
     if (!selectedRelatedNote) return;
     const noteId = selectedRelatedNote._id;
-    const updatedLinks = (relatedLinksMap[noteId] || []).filter((_, i) => i !== idx);
+    const allLinksForNote = relatedLinksMap[noteId] || [];
+    
+    let count = -1;
+    const actualIndexInAll = allLinksForNote.findIndex(link => {
+        if (link.type === activeRelatedLinkTab) {
+            count++;
+            return count === originalIndex;
+        }
+        return false;
+    });
+
+    if (actualIndexInAll === -1) {
+        alert('삭제할 링크를 찾지 못했습니다.');
+        return;
+    }
+
+    const linkToDelete = allLinksForNote[actualIndexInAll];
+    const updatedLinks = allLinksForNote.filter((_, i) => i !== actualIndexInAll);
+    
     setRelatedLinksMap(prev => ({ ...prev, [noteId]: updatedLinks }));
     try {
       await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
+      setTsNotes(prevTsNotes => prevTsNotes.map(n => n._id === noteId ? {...n, relatedLinks: updatedLinks} : n));
+      if (selectedRelatedNote && selectedRelatedNote._id === noteId) {
+        setSelectedRelatedNote(prev => prev ? {...prev, relatedLinks: updatedLinks} : null);
+      }
     } catch (err) {
       alert('관련 링크 삭제 중 오류 발생: ' + (err as any).message);
+      setRelatedLinksMap(prev => ({ ...prev, [noteId]: [...updatedLinks, linkToDelete].sort() })); 
     }
   };
   
-  const { isLoading, error, book } = bookFetchState; // 책 정보 로딩 상태, 오류, 데이터
-  // Zustand 스토어에서 카트 아이템 목록과 addToCart 액션을 가져옵니다.
+  const { isLoading, error, book } = bookFetchState;
   const { items: cartItems, addToCart } = useCartStore();
   
   useEffect(() => {
     if (!bookId) return;
-    console.log('Fetching book detail for ID:', bookId);
     const loadBook = async () => {
       await fetchBookDetail(bookId);
     };
     loadBook();
   }, [bookId, fetchBookDetail]);
   
-  // 책 정보(book)가 로드된 후, 해당 책의 TS 노트와 TS 세션 정보를 가져옵니다.
   useEffect(() => {
-    if (!bookId || !book) return; // bookId나 book 객체가 없으면 API 호출 방지
-    
+    if (!bookId || !book) return;
     const fetchData = async () => {
-      // TS 노트 (1줄 메모) 목록 가져오기 (originOnly=true는 TS 모드에서 생성된 원본 메모만 필터링)
       try {
         const notesResponse = await api.get(`/notes/book/${bookId}?originOnly=true`);
-        // API 응답 데이터를 PageNote 타입으로 매핑하고, 각 노트에 현재 bookId를 명시적으로 주입합니다.
-        // 이는 TSNoteCard가 note.bookId를 필요로 하기 때문입니다.
-        const notesWithBookInfo: PageNote[] = (notesResponse.data || []).map((note: Omit<PageNote, 'bookId'>) => ({
-          ...note,
-          bookId: bookId, 
-        }));
+        const notesWithBookInfo: PageNote[] = (notesResponse.data || []).map((note: Omit<PageNote, 'bookId' | 'relatedLinks'> & { relatedLinks?: any[] }) => {
+          const typedRelatedLinks: PageRelatedLink[] = (note.relatedLinks || []).map(link => ({
+            ...link,
+            type: link.type as PageRelatedLink['type'],
+          })); 
+          return {
+            ...note,
+            bookId: bookId,
+            relatedLinks: typedRelatedLinks,
+          };
+        });
         setTsNotes(notesWithBookInfo);
+        const initialRelatedLinksMap: Record<string, PageRelatedLink[]> = {};
+        notesWithBookInfo.forEach(note => {
+          if (note.relatedLinks) {
+            initialRelatedLinksMap[note._id] = note.relatedLinks;
+          }
+        });
+        setRelatedLinksMap(initialRelatedLinksMap);
       } catch (err) {
         console.error('TS 메모 로딩 오류:', err);
-        setTsNotes([]); // 오류 발생 시 빈 배열로 설정
+        setTsNotes([]);
       }
 
-      // TS 세션 정보 가져오기
       setSessionsLoading(true);
       try {
         const sessionsResponse = await api.get(`/sessions/book/${bookId}`);
@@ -285,9 +321,8 @@ export default function BookDetailPage() {
         setSessionsLoading(false);
       }
     };
-    
     fetchData();
-  }, [bookId, book, router]); // bookId 또는 book 객체가 변경될 때마다 실행
+  }, [bookId, book, router]);
 
   /**
    * @effect 클라이언트 사이드에서 localStorage의 'book-metadata'를 읽어와 localMetadata 상태를 설정합니다.
@@ -358,19 +393,19 @@ export default function BookDetailPage() {
     router.push(`/books/${bookId}/edit`);
   };
 
-  const linkPlaceholderMap: Partial<Record<RelatedLink['type'], string>> = {
-    bookAndPaper: '이 메모와 관련 있는 책 또는 논문의 온라인 링크를 입력하세요',
-    youtube:      '이 메모와 관련 있는 유튜브 영상의 URL을 입력하세요',
-    sns:          '이 메모와 관련 있는 SNS 게시물(URL)을 입력하세요',
-    media:        '이 메모와 관련 있는 기사/방송/매체의 URL을 입력하세요',
-    noteApp:      '노션·옵시디언 등 노트앱 링크를 입력하세요',
+  const linkPlaceholderMap: Partial<Record<PageRelatedLink['type'], string>> = {
+    book: '이 메모와 관련 있는 책의 온라인 링크를 입력하세요',
+    paper: '이 메모와 관련 있는 논문 또는 자료의 온라인 링크를 입력하세요',
+    youtube: '이 메모와 관련 있는 유튜브 영상의 URL을 입력하세요',
+    media: '이 메모와 관련 있는 기사/방송/매체의 URL을 입력하세요',
+    website: '노션·옵시디언 등 노트앱 링크를 입력하세요',
   };
-  const reasonPlaceholderMap: Partial<Record<RelatedLink['type'], string>> = {
-    bookAndPaper: '이 링크가 왜 책 또는 논문과 관련 있다고 생각했나요?',
-    youtube:      '이 영상이 왜 관련 있다고 생각했나요?',
-    sns:          '이 링크가 왜 SNS 게시물과 관련 있다고 생각했나요?',
-    media:        '이 매체가 왜 관련 있다고 생각했나요?',
-    noteApp:      '이 링크가 왜 노트앱과 관련 있다고 생각했나요?',
+  const reasonPlaceholderMap: Partial<Record<PageRelatedLink['type'], string>> = {
+    book: '이 링크가 왜 책과 관련 있다고 생각했나요?',
+    paper: '이 링크가 왜 논문 또는 자료와 관련 있다고 생각했나요?',
+    youtube: '이 영상이 왜 관련 있다고 생각했나요?',
+    media: '이 매체가 왜 관련 있다고 생각했나요?',
+    website: '이 링크가 왜 노트앱과 관련 있다고 생각했나요?',
   };
 
   /**

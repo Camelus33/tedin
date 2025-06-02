@@ -25,6 +25,8 @@ export interface TSNote {
    * 지식 카트에 담을 때나, 특정 책에 종속된 노트를 필터링할 때 사용됩니다.
    */
   bookId: string;
+  /** @property {string} userId - 노트를 작성한 사용자의 고유 ID. */
+  userId?: string;
   /** @property {string} content - 1줄 메모의 핵심 내용. */
   content: string;
   /** @property {string[]} tags - 노트와 관련된 태그 목록. */
@@ -41,6 +43,12 @@ export interface TSNote {
   nickname?: string;
   /** @property {RelatedLink[]} [relatedLinks] - (백엔드 동기화) 관련된 외부 링크 목록. */
   relatedLinks?: RelatedLink[];
+  /** @property {boolean} [isArchived] - 노트가 보관된 상태인지 여부. */
+  isArchived?: boolean;
+  /** @property {boolean} [isTemporary] - 노트가 임시 상태인지 여부. */
+  isTemporary?: boolean;
+  /** @property {string} [originSession] - 노트가 생성된 TS 세션의 ID. */
+  originSession?: string;
   // pageNum, sessionId 등 추가 필드가 백엔드 Note 모델에 있을 수 있으나, TSNoteCard에서 직접 사용되지 않으면 생략 가능.
 }
 
@@ -52,6 +60,7 @@ export interface TSSessionDetails {
   actualEndPage?: number;   // Session.actualEndPage
   targetPage?: number;      // Session.endPage (목표 종료 페이지로 사용)
   ppm?: number;             // Session.ppm
+  book?: any;                // Added book from session data
 }
 
 // 목적별 4단계 질문/가이드/placeholder 매핑
@@ -86,7 +95,7 @@ const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder
  * @interface TSNoteCardProps
  * @description TSNoteCard 컴포넌트가 받는 프롭(props)들의 타입 정의입니다.
  */
-type TSNoteCardProps = {
+export type TSNoteCardProps = {
   /** @property {TSNote} note - 표시하고 관리할 노트 객체. */
   note: TSNote;
   /** 
@@ -95,7 +104,7 @@ type TSNoteCardProps = {
    *   변경된 필드만 포함하는 부분적인 TSNote 객체를 인자로 받습니다.
    *   부모 컴포넌트에서 이 콜백을 통해 상태를 동기화하거나 추가 작업을 수행할 수 있습니다.
    */
-  onUpdate: (updated: Partial<TSNote>) => void;
+  onUpdate?: (updatedFields: Partial<TSNote>) => void;
   /** 
    * @property {(note: TSNote) => void} [onFlashcardConvert]
    * - (선택적) 플래시카드 변환 버튼 클릭 시 호출되는 콜백 함수입니다.
@@ -125,6 +134,12 @@ type TSNoteCardProps = {
    *   이 값에 따라 "지식 카트에 담기" 버튼의 아이콘 및 툴크 내용이 변경됩니다. (예: 🛒+ 또는 🛒✅)
    */
   isAddedToCart?: boolean;
+  /** @property {string} [className] - (선택적) 컴포넌트에 추가할 클래스 이름. */
+  className?: string;
+  /** @property {boolean} [showActions] - (선택적) 컴포넌트에 액션 버튼을 표시할지 여부. */
+  showActions?: boolean;
+  /** @property {boolean} [minimalDisplay] - (선택적) 최소 표시 모드를 사용할지 여부. */
+  minimalDisplay?: boolean;
 };
 
 const tabIconMap = [
@@ -195,13 +210,25 @@ const getLinkTypeIcon = (type: RelatedLink['type']) => {
  *              지식 카트 담기 등의 기능을 제공하는 핵심 UI 컴포넌트입니다.
  * @param {TSNoteCardProps} props - 컴포넌트가 받는 프롭들.
  */
-export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelatedLinks, readingPurpose, sessionDetails, onAddToCart, isAddedToCart }: TSNoteCardProps) {
+export default function TSNoteCard({ 
+  note: initialNote,
+  onUpdate,
+  onFlashcardConvert,
+  onRelatedLinks,
+  readingPurpose,
+  sessionDetails,
+  onAddToCart,
+  isAddedToCart,
+  className,
+  showActions = true,
+  minimalDisplay = false
+}: TSNoteCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [fields, setFields] = useState<{ [K in keyof Omit<TSNote, '_id' | 'bookId' | 'content' | 'tags' | 'nickname' | 'relatedLinks'>]: string }>(() => ({ // Added relatedLinks to Omit
-    importanceReason: note.importanceReason || '',
-    momentContext: note.momentContext || '',
-    relatedKnowledge: note.relatedKnowledge || '',
-    mentalImage: note.mentalImage || '',
+    importanceReason: initialNote.importanceReason || '',
+    momentContext: initialNote.momentContext || '',
+    relatedKnowledge: initialNote.relatedKnowledge || '',
+    mentalImage: initialNote.mentalImage || '',
   }));
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -220,13 +247,13 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
   // Update fields state if note prop changes (e.g. parent re-fetches data)
   useEffect(() => {
     setFields({
-      importanceReason: note.importanceReason || '',
-      momentContext: note.momentContext || '',
-      relatedKnowledge: note.relatedKnowledge || '',
-      mentalImage: note.mentalImage || '',
+      importanceReason: initialNote.importanceReason || '',
+      momentContext: initialNote.momentContext || '',
+      relatedKnowledge: initialNote.relatedKnowledge || '',
+      mentalImage: initialNote.mentalImage || '',
     });
-    // No need to update relatedLinks here as they are directly used from `note.relatedLinks` for display
-  }, [note.importanceReason, note.momentContext, note.relatedKnowledge, note.mentalImage]);
+    // No need to update relatedLinks here as they are directly used from `initialNote.relatedLinks` for display
+  }, [initialNote.importanceReason, initialNote.momentContext, initialNote.relatedKnowledge, initialNote.mentalImage]);
 
   const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
   const tabQuestions: Record<string, { question: string; placeholder: string }> = {
@@ -237,20 +264,20 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
   };
 
   const handleSave = async () => {
-    const updatedNotePartial: Partial<TSNote> = { _id: note._id, ...fields };
+    // const updatedNotePartial: Partial<TSNote> = { _id: initialNote._id, ...fields }; // This line caused the error and is unused.
     
     // Send only changed fields to onUpdate
-    const changedFields: Partial<TSNote> = { _id: note._id };
+    const changedFields: Partial<TSNote> = { _id: initialNote._id };
     let hasChanges = false;
     for (const key of tabKeys) {
-      if (fields[key] !== (note[key] || '')) {
+      if (fields[key] !== (initialNote[key] || '')) {
         (changedFields as any)[key] = fields[key];
         hasChanges = true;
       }
     }
 
     if (hasChanges) {
-      onUpdate(changedFields);
+      onUpdate?.(changedFields);
     }
     setIsOpen(false); 
   };
@@ -264,8 +291,8 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
   const handleBlur = async (key: keyof typeof fields) => {
     // Call onUpdate when a field loses focus and its content has actually changed
     // from the original note prop
-    if (fields[key] !== (note[key] || '')) {
-        onUpdate({ _id: note._id, [key]: fields[key] });
+    if (fields[key] !== (initialNote[key] || '')) {
+        onUpdate?.({ _id: initialNote._id, [key]: fields[key] });
     }
   };
 
@@ -316,12 +343,12 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
           {/* Top Bar: Note Content and Action Buttons */}
           <div className="flex justify-between items-start mb-3">
             <p className="text-gray-100 text-base leading-relaxed break-words hyphens-auto mr-2 flex-grow" lang="ko">
-              {note.content}
+              {initialNote.content}
             </p>
             <div className="flex-shrink-0 flex items-center space-x-1">
               {onFlashcardConvert && (
                 <button
-                    onClick={() => onFlashcardConvert(note)}
+                    onClick={() => onFlashcardConvert(initialNote)}
                     className="p-1.5 text-gray-400 hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 rounded-md transition-colors"
                     title="플래시카드로 변환"
                 >
@@ -330,7 +357,7 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
               )}
               {onRelatedLinks && (
                 <button
-                    onClick={() => onRelatedLinks(note)}
+                    onClick={() => onRelatedLinks(initialNote)}
                     className="p-1.5 text-gray-400 hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-green-500/50 rounded-md transition-colors"
                     title="관련 링크 관리"
                 >
@@ -339,7 +366,7 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
               )}
               {onAddToCart && (
                  <button
-                    onClick={() => onAddToCart(note._id, note.bookId)}
+                    onClick={() => onAddToCart(initialNote._id, initialNote.bookId)}
                     className={`p-1.5 ${isAddedToCart ? 'text-cyan-400' : 'text-gray-400 hover:text-cyan-300'} focus:outline-none focus:ring-2 focus:ring-cyan-500/50 rounded-md transition-colors`}
                     title={isAddedToCart ? "카트에서 제거" : "지식 카트에 담기"}
                 >
@@ -350,9 +377,9 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
           </div>
 
           {/* Tags Display */}
-          {note.tags && note.tags.length > 0 && (
+          {initialNote.tags && initialNote.tags.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-1.5">
-              {note.tags.map((tag, index) => (
+              {initialNote.tags.map((tag, index) => (
                 <span key={index} className="px-2 py-0.5 bg-gray-700 text-xs text-gray-300 rounded-full flex items-center">
                   <TagIcon className="h-3 w-3 mr-1 text-cyan-400" /> 
                   {tag}
@@ -362,14 +389,14 @@ export default function TSNoteCard({ note, onUpdate, onFlashcardConvert, onRelat
           )}
           
           {/* Display Related Links if they exist */}
-          {note.relatedLinks && note.relatedLinks.length > 0 && (
+          {initialNote.relatedLinks && initialNote.relatedLinks.length > 0 && (
             <div className="mb-4 mt-2 border-t border-gray-700 pt-3">
               <h4 className="text-sm font-semibold text-gray-400 mb-2 flex items-center">
                 <LinkIcon className="h-4 w-4 mr-2 text-green-400" />
                 관련 자료
               </h4>
               <ul className="space-y-1.5 pl-1">
-                {note.relatedLinks.map((link, index) => (
+                {initialNote.relatedLinks.map((link, index) => (
                   <li key={link._id || index} className="text-xs group">
                     <a
                       href={link.url}
