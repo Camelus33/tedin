@@ -354,7 +354,7 @@ export default function TSNoteCard({
     <button
       onMouseEnter={() => setShowSessionDetailsPopover(true)}
       onMouseLeave={() => setShowSessionDetailsPopover(false)}
-      className={`absolute top-2 right-10 z-30 p-1.5 rounded-full bg-gray-700/70 hover:bg-cyan-600/90
+      className={`absolute bottom-2 left-2 z-30 p-1.5 rounded-full bg-gray-700/70 hover:bg-cyan-600/90
                   text-gray-300 hover:text-white transition-all duration-200
                   focus:outline-none focus:ring-2 focus:ring-cyan-500`}
       aria-label="TS 세션 정보 보기"
@@ -366,7 +366,7 @@ export default function TSNoteCard({
   const renderSessionInfoPopover = () => (
     <div 
       className={`transition-opacity duration-200 ease-in-out ${showSessionDetailsPopover ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-                 absolute top-8 right-10 w-auto max-w-xs bg-gray-900/90 backdrop-blur-md p-3 rounded-lg
+                 absolute bottom-10 left-2 w-auto max-w-xs bg-gray-900/90 backdrop-blur-md p-3 rounded-lg
                  text-xs text-gray-200 z-20 shadow-xl border border-gray-700/50`}
     >
       <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1`}>TS 세션 정보</h4>
