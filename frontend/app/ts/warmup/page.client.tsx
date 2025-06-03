@@ -82,12 +82,33 @@ type TextFlowVariationParams = {
   instructionText: string;
 };
 
+// NEW: Params for Number Saccades
+type NumberSaccadesVariationParams = {
+  name: string;
+  targetType: 'number'; // Fixed for this type
+  movementPattern: 'corners' | 'cornersAndCenter'; // Predefined patterns
+  durationPerSpot: number; // ms
+  repetitions: number; // How many full cycles of the pattern
+  instructionText: string;
+};
+
+// NEW: Params for Word Gliding
+type WordGlidingVariationParams = {
+  name: string;
+  contentType: 'simpleWords' | 'randomChars';
+  flowType: 'highlight'; // Fixed for this type
+  itemsPerLine: number; // Number of words or char blocks
+  speed: number; // ms per item
+  repetitions: number; // Number of lines to process
+  instructionText: string;
+};
+
 // Union type for any variation parameters
 type AnyVariationParams = 
   | BreathingVariationParams 
-  | EyeTrackingVariationParams
+  | NumberSaccadesVariationParams // New
   | VisualSpanVariationParams
-  | TextFlowVariationParams;
+  | WordGlidingVariationParams; // New
 
 // Base configuration for each of the 4 main exercise types
 type ExerciseConfig = {
@@ -138,6 +159,13 @@ type Exercise = {
 
 // Removed: const updateStimuli = [5, 8, 2]; // Not used
 
+// NEW: Content for Word Gliding
+const SIMPLE_WORDS: string[] = [
+  "하늘", "구름", "바다", "나무", "꽃잎", "햇살", "바람", "소리", "웃음", "기쁨", 
+  "사랑", "행복", "친구", "가족", "여행", "음악", "책상", "의자", "연필", "공책",
+  "시간", "기억", "꿈결", "세상", "마음", "생각", "이야기", "노래", "선물", "편지"
+];
+
 // NEW EXERCISE CONFIGURATIONS
 const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
   {
@@ -168,36 +196,27 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
     ],
   },
   {
-    id: 'eye_tracking',
-    title: '시선 추적 챌린지',
-    generalDescription: '화면의 시각적 안내를 따라 안구를 움직이며 유연성과 집중력을 향상시킵니다. 머리는 고정해주세요.',
-    tip: '눈동자만 부드럽게 움직이는 것이 중요합니다. 리듬을 타보세요.',
+    id: 'number_saccades',
+    title: '숫자 따라 시선 이동',
+    generalDescription: '화면에 순서대로 나타나는 숫자를 따라 시선을 빠르게 이동합니다. 안구 이동의 정확성과 속도를 훈련합니다.',
+    tip: '머리는 고정하고 눈동자만 움직여 숫자를 정확히 포착하세요. 숫자가 나타날 위치를 예측해보는 것도 좋습니다.',
     variations: [
-      // Placeholder - will be filled in later
       {
-        name: '부드러운 원 운동',
-        targetType: 'dot',
-        movementPattern: 'circular',
-        speed: 'medium', // Corresponds to ~2.5s per circle, total 3 reps = 7.5s
-        repetitions: 3,
-        instructionText: '화면 중앙의 원을 따라 부드럽게 시선을 움직이세요.'
-      } as EyeTrackingVariationParams,
+        name: '기본 4점 이동',
+        targetType: 'number',
+        movementPattern: 'corners',
+        durationPerSpot: 1000, // ms
+        repetitions: 3, // 3 cycles of 4 points = 12 numbers
+        instructionText: '화면의 네 모서리에 순서대로 나타나는 숫자를 따라 빠르게 시선을 이동하세요.'
+      } as NumberSaccadesVariationParams,
       {
-        name: '좌우 왕복 운동',
-        targetType: 'dot',
-        movementPattern: 'horizontalJumps',
-        durationPerSpot: 700, // ms
-        repetitions: 6, // 6 jumps = 3 back-and-forth cycles
-        instructionText: '좌우로 점프하는 점을 따라 빠르게 시선을 옮기세요.'
-      } as EyeTrackingVariationParams,
-      {
-        name: '상하 왕복 운동',
-        targetType: 'dot',
-        movementPattern: 'verticalJumps',
-        durationPerSpot: 700, // ms
-        repetitions: 6, // 6 jumps
-        instructionText: '상하로 점프하는 점을 따라 빠르게 시선을 옮기세요.'
-      } as EyeTrackingVariationParams,
+        name: '중앙 활용 5점 이동',
+        targetType: 'number',
+        movementPattern: 'cornersAndCenter',
+        durationPerSpot: 800, // ms
+        repetitions: 2, // 2 cycles of 8 points (4 corners, 4 center returns) = 16 numbers
+        instructionText: '화면의 네 모서리와 중앙에 번갈아 나타나는 숫자를 따라 빠르게 시선을 이동하세요.'
+      } as NumberSaccadesVariationParams,
     ],
   },
   {
@@ -230,30 +249,29 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
     ],
   },
   {
-    id: 'text_flow',
-    title: '속도 가변형 텍스트 플로우',
-    generalDescription: '다양한 속도로 제시되는 텍스트의 흐름을 따라가며 시각적 처리 속도와 리듬감을 훈련합니다.',
-    tip: '텍스트의 흐름에 몸을 맡기듯 자연스럽게 따라가세요. 이해하려 애쓰지 않아도 괜찮습니다.',
+    id: 'word_gliding',
+    title: '단어 글라이딩',
+    generalDescription: '한 줄의 텍스트 위를 시선이 부드럽게 미끄러지듯 따라가며 읽습니다. 자연스러운 시선 흐름과 리듬을 연습합니다.',
+    tip: '단어의 의미를 파악하려 애쓰기보다, 시선이 막힘없이 부드럽게 흘러가는 감각에 집중하세요.',
     variations: [
-      // Placeholder - will be filled in later
       {
-        name: '가속 단어 하이라이트',
-        contentType: 'simpleStory', // We'll need a small bank of simple stories/sentences
+        name: '쉬운 단어 하이라이트',
+        contentType: 'simpleWords',
         flowType: 'highlight',
-        initialSpeed: 550, // ms per word
-        acceleration: 0.97, // Multiplicative factor for speed (each word is (prev_speed * 0.97)ms)
-        // minSpeed: 150, // ms per word (optional)
-        totalDuration: 0, // Will be determined by text length and speed dynamics, or could be fixed
-        instructionText: '하이라이트되는 단어를 따라 시선을 이동하세요. 속도가 점점 빨라집니다.'
-      } as TextFlowVariationParams,
+        itemsPerLine: 6,
+        speed: 450, // ms per word
+        repetitions: 5, // 5 lines
+        instructionText: '하이라이트되는 단어를 따라 시선을 부드럽게 이동하세요. 일정한 속도를 유지합니다.'
+      } as WordGlidingVariationParams,
       {
-        name: '리듬 스크롤 텍스트',
+        name: '무의미 문자열 하이라이트',
         contentType: 'randomChars',
-        flowType: 'scroll',
-        initialSpeed: 120, // Pixels per second for scrolling, or lines per second could be another metric
-        totalDuration: 20, // seconds
-        instructionText: '화면 아래에서 위로 스크롤되는 텍스트의 흐름을 부드럽게 따라가세요.'
-      } as TextFlowVariationParams,
+        flowType: 'highlight',
+        itemsPerLine: 5, // 5 blocks of random chars
+        speed: 350, // ms per block
+        repetitions: 5, // 5 lines
+        instructionText: '나타나는 문자열 덩어리를 따라 시선을 부드럽게 이동하세요. 의미는 신경 쓰지 마세요.'
+      } as WordGlidingVariationParams,
     ],
   },
 ];
@@ -276,64 +294,42 @@ export default function TSWarmupPage() {
   // States for dynamic content within exercises
   // These will be controlled by specific logic for each exercise type
   const [exerciseInternalStep, setExerciseInternalStep] = useState<number>(0); // General step counter for multi-step exercises
-  // const [showExerciseStimulus, setShowExerciseStimulus] = useState<boolean>(true); // This might be managed within each exercise's logic
   
   // States specific to Guided Breathing
   const [breathingPhase, setBreathingPhase] = useState<'inhale' | 'hold1' | 'exhale' | 'hold2' | 'done'>('inhale');
   const [breathingCycle, setBreathingCycle] = useState<number>(1);
-  // const TOTAL_BREATHING_CYCLES = 3; // Will come from variationParams
-  // const BREATHING_DURATIONS = { inhale: 4000, hold: 2000, exhale: 6000 }; // Will come from variationParams
 
-  // States specific to Eye Saccades / Tracking
-  const [dotPosition, setDotPosition] = useState<{ top: string, left: string } | null>(null);
-  const [saccadeStep, setSaccadeStep] = useState<number>(0); // May be reused or adapted for eye tracking
-  /* // OLD Eye Saccade constants - will be replaced by variationParams
-  const EYE_SACCADE_LOCATIONS = [
-    { top: '50%', left: '10%' }, // Left-Center
-    { top: '50%', left: '90%' }, // Right-Center
-    { top: '10%', left: '50%' }, // Top-Center
-    { top: '90%', left: '50%' }, // Bottom-Center
-  ];
-  const EYE_SACCADE_REPETITIONS = 2; 
-  const EYE_SACCADE_DURATION_PER_SPOT = 1000; 
-  */
-  const [saccadePhase, setSaccadePhase] = useState<'horizontal' | 'vertical' | 'circular_phase' | 'done'>('horizontal'); // Adapt as needed
-  const [saccadeCycleCount, setSaccadeCycleCount] = useState<number>(0); // Adapt as needed
+  // NEW: States for Number Saccades (replaces eye_tracking)
+  const [currentSaccadeNumber, setCurrentSaccadeNumber] = useState<number>(1);
+  const [currentSaccadeCoords, setCurrentSaccadeCoords] = useState<{ top: string, left: string } | null>(null);
+  const [currentSaccadePatternStep, setCurrentSaccadePatternStep] = useState<number>(0);
+  const [numberSaccadeRepCount, setNumberSaccadeRepCount] = useState<number>(0);
+  const [numberSaccadesPhase, setNumberSaccadesPhase] = useState<'idle' | 'running' | 'done'>('idle');
 
-  // States specific to Chunking Practice / Visual Span
-  const [chunkingPhase, setChunkingPhase] = useState<'showing' | 'hidden' | 'question' | 'done'>('hidden'); // Adapt for visual span
-  // const [currentChunkToDisplay, setCurrentChunkToDisplay] = useState<NonNullable<Exercise['chunks']>[number] | null>(null); // Old, to be removed/replaced
-  // const CHUNK_DISPLAY_DURATION = 1200; // Old
-  // const CHUNK_BETWEEN_DURATION = 500; // Old
-  // States for Visual Span specifically
-  const [currentVisualSpanStimulus, setCurrentVisualSpanStimulus] = useState<string[] | string | null>(null); // e.g. array of letters for grid
+  // States specific to Visual Span / Chunking (existing)
+  const [chunkingPhase, setChunkingPhase] = useState<'showing' | 'hidden' | 'question' | 'done'>('hidden'); 
+  const [currentVisualSpanStimulus, setCurrentVisualSpanStimulus] = useState<string[] | string | null>(null); 
   const [visualSpanRepetitionCount, setVisualSpanRepetitionCount] = useState<number>(0);
-
-  // States for Eye Tracking Challenge
-  const [eyeTrackingPhase, setEyeTrackingPhase] = useState<'idle' | 'running' | 'done'>('idle');
-  const [eyeTrackingCurrentRep, setEyeTrackingCurrentRep] = useState<number>(0);
-  const [eyeTrackingTime, setEyeTrackingTime] = useState<number>(0); // For time-based animations like circular
-
-  // States for Visual Span Grid
   type GridCell = { letter: string | null; id: number };
   const [gridStimulus, setGridStimulus] = useState<GridCell[]>([]);
   const [visualSpanPhase, setVisualSpanPhase] = useState<'idle' | 'presenting' | 'interval' | 'done'>('idle');
 
-  // States specific to Text Flow
-  const [textFlowContent, setTextFlowContent] = useState<string[]>([]); // Array of words or lines
-  const [currentHighlightIndex, setCurrentHighlightIndex] = useState<number>(-1);
-  const [currentScrollPosition, setCurrentScrollPosition] = useState<number>(0);
-  const [textFlowPhase, setTextFlowPhase] = useState<'idle' | 'running' | 'done'>('idle');
-  const [currentWordSpeed, setCurrentWordSpeed] = useState<number>(500); // ms per word for highlight
-  const [textFlowStartTime, setTextFlowStartTime] = useState<number>(0); // For duration based scroll
+  // NEW: States for Word Gliding (replaces text_flow)
+  const [currentGlideText, setCurrentGlideText] = useState<string[]>([]); // Holds words/chars for the current line
+  const [currentGlideHighlightIdx, setCurrentGlideHighlightIdx] = useState<number>(-1);
+  const [currentGlideSpeed, setCurrentGlideSpeed] = useState<number>(400); // ms per item
+  const [wordGlideRepCount, setWordGlideRepCount] = useState<number>(0);
+  const [wordGlidePhase, setWordGlidePhase] = useState<'idle' | 'running' | 'done'>('idle');
 
-  // Predefined simple stories for Text Flow - Highlight variation
+  // Predefined simple stories for Text Flow - Highlight variation (OLD - Not used by new WordGliding simpleWords)
+  /*
   const SIMPLE_STORIES = [
     "작은 고양이가 햇볕 아래에서 낮잠을 잡니다. 바람이 부드럽게 나뭇잎을 흔듭니다. 새들이 하늘에서 노래합니다. 오늘은 참 평화로운 날입니다.",
     "소년은 강가에 앉아 물고기를 잡고 있었습니다. 갑자기 큰 물고기가 미끼를 물었습니다. 소년은 힘껏 낚싯대를 당겼습니다. 결국 멋진 물고기를 잡았습니다.",
     "소녀는 언덕 위에서 연을 날리고 있었습니다. 연은 바람을 타고 높이높이 올라갔습니다. 소녀는 웃으며 연을 바라보았습니다. 정말 신나는 하루였습니다.",
     "아침 일찍 농부가 밭으로 나갑니다. 오늘은 씨앗을 심을 예정입니다. 땅을 부드럽게 만들고 씨앗을 뿌립니다. 풍성한 수확을 기대합니다."
   ];
+  */
 
   const RANDOM_CHAR_LINES = [
     "xKzV RqWmP SvBn LkFcT",
@@ -465,44 +461,57 @@ export default function TSWarmupPage() {
     setBreathingPhase('done'); 
     setBreathingCycle(0);    
     
-    // Eye Tracking / Saccades
-    setDotPosition(null);
-    setSaccadeStep(0);
-    setSaccadeCycleCount(0);
-    setEyeTrackingPhase('idle'); 
-    setEyeTrackingCurrentRep(0);
-    setEyeTrackingTime(0);
-    console.log('[MainEffect DEBUG] eyeTrackingPhase set to idle, dotPosition to null.');
+    // Eye Tracking / Saccades (Old - states removed, setters will be removed from here)
+    // setDotPosition(null);
+    // setSaccadeStep(0);
+    // setSaccadeCycleCount(0);
+    // setEyeTrackingPhase('idle'); 
+    // setEyeTrackingCurrentRep(0);
+    // setEyeTrackingTime(0);
+    // console.log('[MainEffect DEBUG] eyeTrackingPhase set to idle, dotPosition to null.'); // Old log
 
-    // Visual Span / Chunking
-    // setChunkingPhase('done'); // Old state, visualSpanPhase is primary now
+    // NEW: Number Saccades (replaces eye_tracking)
+    setNumberSaccadesPhase('done'); // Reset to done/neutral
+    setCurrentSaccadeCoords(null);
+    setCurrentSaccadePatternStep(0);
+    setNumberSaccadeRepCount(0);
+    setCurrentSaccadeNumber(1); // Default starting number
+
+    // Visual Span / Chunking (Existing)
     setVisualSpanRepetitionCount(0);
     setCurrentVisualSpanStimulus(null);
     setGridStimulus([]);
-    setVisualSpanPhase('idle'); // Reset main visual span state
+    setVisualSpanPhase('idle');
 
-    // Text Flow
-    setTextFlowContent([]);
-    setCurrentHighlightIndex(-1);
-    setCurrentScrollPosition(0);
-    setTextFlowPhase('idle'); // Reset main text flow state
-    // setCurrentWordSpeed will be set from variationParams
-    setTextFlowStartTime(0);
+    // Text Flow (Old - states removed, setters will be removed from here)
+    // setTextFlowContent([]);
+    // setCurrentHighlightIndex(-1); // Old state
+    // setCurrentScrollPosition(0); 
+    // setTextFlowPhase('idle'); 
+    // setCurrentWordSpeed will be set from variationParams // Old comment
+    // setTextFlowStartTime(0);
+
+    // NEW: Word Gliding (replaces text_flow)
+    setWordGlidePhase('done'); // Reset to done/neutral
+    setCurrentGlideText([]);
+    setCurrentGlideHighlightIdx(-1);
+    setWordGlideRepCount(0);
+    // currentGlideSpeed will be set from variationParams if this exercise is chosen
     
     // Initialize states for the *new* exercise type based on 'detail.id' and 'detail.variationParams'
     if (detail.id === 'guided_breathing') {
       setBreathingPhase('inhale');
       setBreathingCycle(1);
-    } else if (detail.id === 'eye_tracking') {
-      console.log('[MainEffect DEBUG] Confirmed eye_tracking selected. eyeTrackingPhase should be idle now.');
-      // setSaccadePhase('horizontal'); // This was an old state, ensure it's not interfering or remove if fully unused
+    } else if (detail.id === 'number_saccades') {
+      // console.log('[MainEffect DEBUG] Confirmed number_saccades selected.'); // Old log adapted
+      setNumberSaccadesPhase('idle'); // Start this exercise in idle phase
     } else if (detail.id === 'visual_span') {
-      // Initial state for visual_span is 'idle', logic inside its useEffect will handle 'presenting' etc.
-      // setGridStimulus([]); // Already reset above
-    } else if (detail.id === 'text_flow') {
-      // Initial state for text_flow is 'idle', logic inside its useEffect will handle 'running'
-      const params = detail.variationParams as TextFlowVariationParams;
-      setCurrentWordSpeed(params.initialSpeed); // Set initial speed from params
+      // Visual span is already reset to idle above, specific setup happens in its own useEffect
+    } else if (detail.id === 'word_gliding') {
+      // console.log('[MainEffect DEBUG] Confirmed word_gliding selected.');
+      setWordGlidePhase('idle'); // Start this exercise in idle phase
+      const params = detail.variationParams as WordGlidingVariationParams;
+      setCurrentGlideSpeed(params.speed); 
     }
 
   }, [currentExerciseIndex]); // Removed EXERCISE_CONFIGURATIONS from deps, it's constant
@@ -582,123 +591,82 @@ export default function TSWarmupPage() {
     return () => clearTimeout(timerId);
   }, [activeExerciseDetail, breathingPhase, breathingCycle]);
 
-  // NEW Effect for Eye Tracking Challenge
+  // NEW Effect for Number Saccades
   useEffect(() => {
-    console.log('[EyeTracking DEBUG] Effect triggered. ID:', activeExerciseDetail?.id, 'Phase:', eyeTrackingPhase);
-
-    if (!activeExerciseDetail || activeExerciseDetail.id !== 'eye_tracking') {
-      console.log('[EyeTracking DEBUG] Skipped: Not eye_tracking or no detail.');
-      // setDotPosition(null); // Clearing dot position here might be too aggressive if phase is just changing
-      return;
-    }
-    
-    if (eyeTrackingPhase === 'done') {
-      console.log('[EyeTracking DEBUG] Skipped: Phase is done.');
-      setDotPosition(null); // Ensure dot is cleared when exercise is truly done
+    if (!activeExerciseDetail || activeExerciseDetail.id !== 'number_saccades' || numberSaccadesPhase === 'done') {
+      setCurrentSaccadeCoords(null); // Clear coords if not active or done
       return;
     }
 
-    const params = activeExerciseDetail.variationParams as EyeTrackingVariationParams;
-    console.log('[EyeTracking DEBUG] Params:', JSON.stringify(params));
-
+    const params = activeExerciseDetail.variationParams as NumberSaccadesVariationParams;
     let timerId: NodeJS.Timeout | undefined = undefined;
 
-    if (eyeTrackingPhase === 'idle') {
-      console.log('[EyeTracking DEBUG] Phase: idle -> setting to running.');
-      setEyeTrackingPhase('running');
-      setEyeTrackingCurrentRep(0);
-      setEyeTrackingTime(0); 
-      setSaccadeStep(0); 
-      // No dotPosition set here yet, it will be set when phase is 'running'
-      return; 
+    // Define fixed positions for number patterns
+    const positions = {
+      corners: [
+        { top: '15%', left: '15%' }, // Top-Left
+        { top: '15%', left: '85%' }, // Top-Right
+        { top: '85%', left: '85%' }, // Bottom-Right
+        { top: '85%', left: '15%' }, // Bottom-Left
+      ],
+      cornersAndCenter: [
+        { top: '15%', left: '15%' }, { top: '50%', left: '50%' }, // TL, Center
+        { top: '15%', left: '85%' }, { top: '50%', left: '50%' }, // TR, Center
+        { top: '85%', left: '85%' }, { top: '50%', left: '50%' }, // BR, Center
+        { top: '85%', left: '15%' }, { top: '50%', left: '50%' }, // BL, Center
+      ]
+    };
+
+    const currentPattern = positions[params.movementPattern];
+
+    if (numberSaccadesPhase === 'idle') {
+      setNumberSaccadesPhase('running');
+      setCurrentSaccadePatternStep(0);
+      setNumberSaccadeRepCount(0);
+      setCurrentSaccadeNumber(1); // Start with number 1
+      setCurrentSaccadeCoords(currentPattern[0]);
+      return; // Allow state to update before starting timer logic
     }
 
-    if (eyeTrackingPhase === 'running') {
-      console.log('[EyeTracking DEBUG] Phase: running. Attempting to set dot position.');
-      
-      // FOR DEBUGGING: Always set to a fixed position first
-      setDotPosition({ top: '50%', left: '50%' });
-      console.log('[EyeTracking DEBUG] dotPosition set to fixed 50% / 50%.');
-
-      // Temporarily comment out actual animation logic to see if static dot appears
-      /* 
-      if (params.repetitions !== undefined && eyeTrackingCurrentRep >= params.repetitions) {
-        console.log('[EyeTracking DEBUG] Reps completed. Phase: running -> done');
-        setEyeTrackingPhase('done');
+    if (numberSaccadesPhase === 'running') {
+      if (numberSaccadeRepCount >= params.repetitions) {
+        setNumberSaccadesPhase('done');
         setUserInteracted(true);
-        setDotPosition(null);
+        setCurrentSaccadeCoords(null);
         return;
       }
 
-      if (params.movementPattern === 'circular') {
-        const speedFactor = params.speed === 'slow' ? 4000 : params.speed === 'fast' ? 1500 : 2500; // ms per circle
-        const angle = (eyeTrackingTime / speedFactor) * 2 * Math.PI; 
-        const radius = 30; 
-        const x = 50 + radius * Math.cos(angle);
-        const y = 50 + radius * Math.sin(angle);
-        console.log('[EyeTracking DEBUG] Circular. Time:', eyeTrackingTime, 'Angle:', angle, 'Pos:', { top: `${y}%`, left: `${x}%` });
-        setDotPosition({ top: `${y}%`, left: `${x}%` });
-
-        const totalDurationForCircularRep = speedFactor; 
-        if (eyeTrackingTime < totalDurationForCircularRep) {
-          timerId = setTimeout(() => {
-            setEyeTrackingTime(prev => prev + 50); 
-          }, 50);
-        } else { 
-          console.log('[EyeTracking DEBUG] Circular rep finished. CurrentRep:', eyeTrackingCurrentRep, 'NextRep:', eyeTrackingCurrentRep + 1)
-          setEyeTrackingCurrentRep(prev => prev + 1);
-          setEyeTrackingTime(0); 
-        }
-
-      } else if (params.movementPattern === 'horizontalJumps') {
-        const locations = [{ top: '50%', left: '15%' }, { top: '50%', left: '85%' }];
-        const currentLoc = locations[saccadeStep % locations.length];
-        console.log('[EyeTracking DEBUG] Horizontal Jumps. SaccadeStep:', saccadeStep, 'Pos:', currentLoc);
-        setDotPosition(currentLoc);
-        timerId = setTimeout(() => {
-          if (params.repetitions !== undefined && saccadeStep + 1 >= locations.length * params.repetitions) {
-            console.log('[EyeTracking DEBUG] Horizontal Jumps completed all reps.');
-            setEyeTrackingCurrentRep(params.repetitions); 
-          } else {
-            setSaccadeStep(prev => prev + 1);
-          }
-        }, params.durationPerSpot || 700);
-      } else if (params.movementPattern === 'verticalJumps') {
-        const locations = [{ top: '15%', left: '50%' }, { top: '85%', left: '50%' }];
-        const currentLoc = locations[saccadeStep % locations.length];
-        console.log('[EyeTracking DEBUG] Vertical Jumps. SaccadeStep:', saccadeStep, 'Pos:', currentLoc);
-        setDotPosition(currentLoc);
-        timerId = setTimeout(() => {
-          if (params.repetitions !== undefined && saccadeStep + 1 >= locations.length * params.repetitions) {
-            console.log('[EyeTracking DEBUG] Vertical Jumps completed all reps.');
-            setEyeTrackingCurrentRep(params.repetitions);
-          } else {
-            setSaccadeStep(prev => prev + 1);
-          }
-        }, params.durationPerSpot || 700);
-      }
-      */
+      setCurrentSaccadeCoords(currentPattern[currentSaccadePatternStep % currentPattern.length]);
       
-      // For now, let it just show the static dot. To make it "complete" for testing, add a timeout to set to done.
       timerId = setTimeout(() => {
-        console.log('[EyeTracking DEBUG] Debug timer: setting phase to done.');
-        setEyeTrackingPhase('done');
-        setUserInteracted(true);
-        setDotPosition(null); // Clear dot when done
-      }, 5000); // Show static dot for 5 seconds then complete
-
-      return () => {
-        console.log('[EyeTracking DEBUG] Cleanup for running phase. TimerId:', timerId);
-        if (timerId) clearTimeout(timerId);
-      };
+        const nextStep = currentSaccadePatternStep + 1;
+        setCurrentSaccadeNumber(prev => prev + 1); // Increment displayed number
+        
+        if (nextStep >= currentPattern.length * params.repetitions) { // Check total steps across all reps
+            setNumberSaccadesPhase('done');
+            setUserInteracted(true);
+            setCurrentSaccadeCoords(null);
+        } else {
+            setCurrentSaccadePatternStep(nextStep);
+             // Check if a full pattern cycle is completed to increment repCount
+            if (nextStep % currentPattern.length === 0) {
+                setNumberSaccadeRepCount(prev => prev + 1);
+                 // If all reps are done after this cycle, mark as done immediately
+                if (numberSaccadeRepCount + 1 >= params.repetitions) {
+                    setNumberSaccadesPhase('done');
+                    setUserInteracted(true);
+                    setCurrentSaccadeCoords(null);
+                    return; // Exit early
+                }
+            }
+        }
+      }, params.durationPerSpot);
     }
-    // Fallback cleanup if no timer was set in the 'running' phase but an early return happened.
-    // However, all paths in 'running' that don't set phase to 'done' should set a timer.
+
     return () => {
-        if (timerId) clearTimeout(timerId);
-    }
-
-  }, [activeExerciseDetail, eyeTrackingPhase, eyeTrackingCurrentRep, eyeTrackingTime, saccadeStep]);
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [activeExerciseDetail, numberSaccadesPhase, currentSaccadePatternStep, numberSaccadeRepCount]);
 
   // Effect for Visual Span Grid / Word Pairs
   useEffect(() => {
@@ -784,83 +752,66 @@ export default function TSWarmupPage() {
     return () => clearTimeout(timerId);
   }, [activeExerciseDetail, visualSpanPhase, visualSpanRepetitionCount]);
 
-  // Effect for Text Flow (Highlight and Scroll)
+  // NEW Effect for Word Gliding
   useEffect(() => {
-    if (!activeExerciseDetail || activeExerciseDetail.id !== 'text_flow' || textFlowPhase === 'done') {
+    if (!activeExerciseDetail || activeExerciseDetail.id !== 'word_gliding' || wordGlidePhase === 'done') {
       return;
     }
 
-    const params = activeExerciseDetail.variationParams as TextFlowVariationParams;
-    let timerId: NodeJS.Timeout | number | undefined = undefined; // Can be number for requestAnimationFrame
+    const params = activeExerciseDetail.variationParams as WordGlidingVariationParams;
+    let timerId: NodeJS.Timeout | undefined = undefined;
 
-    const prepareContent = () => {
-      if (params.contentType === 'simpleStory') {
-        const story = SIMPLE_STORIES[Math.floor(Math.random() * SIMPLE_STORIES.length)];
-        setTextFlowContent(story.split(/\s+/)); // Split by space or punctuation
+    const prepareNewLine = () => {
+      let lineContent: string[] = [];
+      if (params.contentType === 'simpleWords') {
+        const shuffledWords = [...SIMPLE_WORDS].sort(() => 0.5 - Math.random());
+        lineContent = shuffledWords.slice(0, params.itemsPerLine);
       } else { // randomChars
-        // For scrolling, we might want to repeat or have more lines
-        const lines = Array(20).fill('').map(() => RANDOM_CHAR_LINES[Math.floor(Math.random() * RANDOM_CHAR_LINES.length)]);
-        setTextFlowContent(lines);
+        lineContent = Array(params.itemsPerLine).fill('').map(() => {
+            // Ensure RANDOM_CHAR_LINES is not empty and has elements
+            if (RANDOM_CHAR_LINES.length > 0) {
+                return RANDOM_CHAR_LINES[Math.floor(Math.random() * RANDOM_CHAR_LINES.length)];
+            } 
+            return "err#@!"; // Fallback if RANDOM_CHAR_LINES is empty
+        });
       }
-      setCurrentHighlightIndex(-1);
-      setCurrentScrollPosition(0);
-      setCurrentWordSpeed(params.initialSpeed);
-      setTextFlowStartTime(Date.now());
+      setCurrentGlideText(lineContent);
+      setCurrentGlideHighlightIdx(-1); 
+      // currentGlideSpeed is set when exercise (variation) is selected
     };
 
-    if (textFlowPhase === 'idle') {
-      prepareContent();
-      setTextFlowPhase('running');
-    } else if (textFlowPhase === 'running') {
-      if (params.flowType === 'highlight') {
-        if (textFlowContent.length === 0) { // Content not ready
-            prepareContent(); // Try to prepare again
-            return; // And wait for next render cycle
-        }
-        if (currentHighlightIndex < textFlowContent.length - 1) {
-          timerId = setTimeout(() => {
-            setCurrentHighlightIndex(prev => prev + 1);
-            if (params.acceleration) {
-              setCurrentWordSpeed(prevSpeed => Math.max(100, prevSpeed * params.acceleration!)); // Ensure speed doesn't get too fast (e.g., min 100ms)
-            }
-          }, currentWordSpeed);
+    if (wordGlidePhase === 'idle') {
+      prepareNewLine();
+      setWordGlidePhase('running');
+      return; // Allow state to update before timer logic
+    }
+
+    if (wordGlidePhase === 'running') {
+      if (currentGlideText.length === 0) { // Content not ready (e.g. initial run after idle)
+          prepareNewLine(); // Prepare it
+          return; // Wait for next render cycle for content to be available
+      }
+      
+      if (currentGlideHighlightIdx < currentGlideText.length - 1) {
+        timerId = setTimeout(() => {
+          setCurrentGlideHighlightIdx(prev => prev + 1);
+        }, currentGlideSpeed); // currentGlideSpeed is already set from params
+      } else {
+        // Current line finished, check repetitions
+        if (wordGlideRepCount < params.repetitions - 1) {
+          setWordGlideRepCount(prev => prev + 1);
+          setWordGlidePhase('idle'); // Go back to idle to prepare the next line
         } else {
-          setTextFlowPhase('done');
-          setUserInteracted(true);
-        }
-      } else if (params.flowType === 'scroll') {
-        const runTime = (Date.now() - textFlowStartTime) / 1000; // seconds
-        if (runTime < params.totalDuration!) {
-          // Assuming initialSpeed is pixels per second for simplicity here
-          setCurrentScrollPosition(prevPos => prevPos - (params.initialSpeed / 60)); // rough scroll up per frame (assuming 60fps)
-          timerId = requestAnimationFrame(() => {}); // Trigger re-render for scroll, actual update is state change
-        } else {
-          setTextFlowPhase('done');
+          setWordGlidePhase('done');
           setUserInteracted(true);
         }
       }
     }
 
     return () => {
-      if (timerId) {
-        if (params.flowType === 'highlight') clearTimeout(timerId as NodeJS.Timeout);
-        else cancelAnimationFrame(timerId as number);
-      }
+      if (timerId) clearTimeout(timerId);
     };
-  }, [activeExerciseDetail, textFlowPhase, currentHighlightIndex, textFlowContent, currentWordSpeed, textFlowStartTime]);
-
-  // Effect for Chunking Practice Logic (OLD - to be adapted for Visual Span)
-  /*
-  useEffect(() => {
-    // This logic will be entirely replaced by Visual Span logic
-    // For now, let's assume it completes and enables interaction if it were active.
-    if (activeExerciseDetail && activeExerciseDetail.id === 'visual_span' && chunkingPhase !== 'done') {
-      // Placeholder: Simulate completion for now
-      // setChunkingPhase('done');
-      // setUserInteracted(true);
-    }
-  }, [activeExerciseDetail, chunkingPhase]);
-  */
+  }, [activeExerciseDetail, wordGlidePhase, currentGlideHighlightIdx, currentGlideText, wordGlideRepCount, currentGlideSpeed]);
 
   const handleAnswerSelect = (answer: string | string[], isCorrect?: boolean) => {
     // This function will be simplified or repurposed.
@@ -984,221 +935,42 @@ export default function TSWarmupPage() {
                     <div className={`absolute bottom-0 left-0 w-full h-2.5 transition-colors duration-200 ${(breathingPhase === 'exhale') ? cyberTheme.primary : 'bg-gray-600'}`} />
                     {/* Left Side */}
                     <div className={`absolute top-0 left-0 w-2.5 h-full transition-colors duration-200 ${(breathingPhase === 'hold2') ? cyberTheme.primary : 'bg-gray-600'}`} />
-                    
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>들이쉬세요</p>}
-                        {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>멈추세요</p>}
-                        {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>내쉬세요</p>}
-                        {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
-                        {breathingPhase === 'done' && <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />}
-                    </div>
                   </div>
                 ) : (
-                  // Default Circle Breathing UI
-                  <div className="relative w-32 h-32 mx-auto mb-4">
-                    <div 
-                      className={`absolute inset-0 rounded-full ${cyberTheme.primary} opacity-30 transition-all ease-in-out`}
-                      style={{ 
-                        transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
-                        transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
-                      }}
-                    />
-                    <div 
-                      className={`absolute inset-0 rounded-full border-2 ${cyberTheme.borderPrimary} flex items-center justify-center transition-transform ease-in-out`}
-                      style={{
-                         transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
-                         transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
-                      }}
-                    >
-                    </div>
-                     <div className="absolute inset-0 flex items-center justify-center">
-                          {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>들이쉬세요</p>}
-                          {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>멈추세요</p>}
-                          {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>내쉬세요</p>}
-                          {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
-                          {breathingPhase === 'done' && <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />}
-                      </div>
-                  </div>
-                )}
-
-                <p className={`text-lg ${cyberTheme.textLight}`}>
-                  {breathingPhase === 'inhale' && `숨을 깊게 들이쉬세요 (${(exercise.variationParams as BreathingVariationParams).durations.inhale / 1000}초)`}
-                  {breathingPhase === 'hold1' && (exercise.variationParams as BreathingVariationParams).durations.hold1 && `잠시 멈추세요 (${(exercise.variationParams as BreathingVariationParams).durations.hold1! / 1000}초)`}
-                  {breathingPhase === 'exhale' && `천천히 내쉬세요 (${(exercise.variationParams as BreathingVariationParams).durations.exhale / 1000}초)`}
-                  {breathingPhase === 'hold2' && (exercise.variationParams as BreathingVariationParams).durations.hold2 && `잠시 멈추세요 (${(exercise.variationParams as BreathingVariationParams).durations.hold2! / 1000}초)`}
-                  {breathingPhase === 'done' && '호흡을 마쳤습니다!'}
-                </p>
-              </div>
-            )}
-            {exercise.id === 'eye_tracking' && (
-              <div className="text-center relative w-full h-full min-h-[100px] flex items-center justify-center">
-                {/* Placeholder - Eye Tracking UI will go here based on variationParams */}
-                {eyeTrackingPhase === 'running' && dotPosition && (
-                  <div
-                    className={`absolute w-5 h-5 ${cyberTheme.primary} rounded-full ${(activeExerciseDetail?.variationParams as EyeTrackingVariationParams)?.movementPattern === 'circular' ? 'transition-all duration-100 ease-linear' : ''}`}
-                    style={{
-                      top: dotPosition.top,
-                      left: dotPosition.left,
-                      transform: 'translate(-50%, -50%)', // Center the dot
-                    }}
-                  />
-                )}
-                {eyeTrackingPhase === 'done' && (
-                  <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />
-                )}
-                {eyeTrackingPhase === 'idle' && <p className={`${cyberTheme.textMuted}`}>눈 운동 준비 중...</p>}
-              </div>
-            )}
-            {exercise.id === 'visual_span' && (
-              <div className="text-center w-full relative min-h-[100px]"> {/* Added relative and min-height for positioning context */}
-                { (visualSpanPhase === 'idle' || visualSpanPhase === 'interval') && 
-                  <p className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl ${cyberTheme.secondary}`}>+</p>
-                }
-                {(exercise.variationParams as VisualSpanVariationParams).stimulusType === 'letters' && 
-                 (exercise.variationParams as VisualSpanVariationParams).gridSize && 
-                 visualSpanPhase === 'presenting' && gridStimulus.length > 0 && (
-                  <div 
-                    className="grid gap-2 mx-auto"
-                    style={{
-                      gridTemplateColumns: `repeat(${(exercise.variationParams as VisualSpanVariationParams).gridSize!.cols}, minmax(0, 1fr))`,
-                      width: `${(exercise.variationParams as VisualSpanVariationParams).gridSize!.cols * 3}rem`, // Approx size
-                    }}
-                  >
-                    {gridStimulus.map((cell) => (
-                      <div 
-                        key={cell.id} 
-                        className={`w-10 h-10 flex items-center justify-center border rounded ${cyberTheme.inputBorder} ${cyberTheme.textLight} text-xl`}
+                  // Random Characters UI
+                  <div className="text-center">
+                    {currentGlideText.map((char, index) => (
+                      <span
+                        key={index}
+                        className={`${currentGlideHighlightIdx === index ? cyberTheme.primary : cyberTheme.textMuted} text-2xl font-bold mr-2`}
                       >
-                        {cell.letter}
-                      </div>
+                        {char}
+                      </span>
                     ))}
                   </div>
                 )}
-                {(exercise.variationParams as VisualSpanVariationParams).stimulusType === 'words' &&
-                  visualSpanPhase === 'presenting' && currentVisualSpanStimulus && Array.isArray(currentVisualSpanStimulus) && (
-                  <div className="flex justify-around items-center w-full px-4">
-                    <span className={`text-2xl font-semibold ${cyberTheme.textLight}`}>{currentVisualSpanStimulus[0]}</span>
-                    {/* Central fixation is handled by the absolute positioned '+' */}
-                    <span className={`text-2xl font-semibold ${cyberTheme.textLight}`}>{currentVisualSpanStimulus[1]}</span>
-                  </div>
-                )}
-                {visualSpanPhase === 'interval' && visualSpanRepetitionCount < (exercise.variationParams as VisualSpanVariationParams).repetitions -1 && (
-                    <p className={`${cyberTheme.textMuted}`}>다음 자극 준비 중...</p>
-                )}
-                {visualSpanPhase === 'done' && (
-                  <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />
-                )}
-                {visualSpanPhase === 'idle' && <p className={`${cyberTheme.textMuted}`}>시야 확장 준비 중...</p>}
               </div>
             )}
-            {exercise.id === 'text_flow' && (
-                <div className="text-center w-full overflow-hidden relative" style={{ height: '150px' }}> {/* Container for scrolling/highlight */}
-                    { (exercise.variationParams as TextFlowVariationParams).flowType === 'highlight' && textFlowPhase === 'running' && textFlowContent.length > 0 && (
-                        <p className={`text-xl ${cyberTheme.textLight} p-4`}>
-                            {textFlowContent.map((word, index) => (
-                                <span key={index} className={`${index === currentHighlightIndex ? `${cyberTheme.primary} font-bold underline` : ''}`}>
-                                    {word}{' '}
-                                </span>
-                            ))}
-                        </p>
-                    )}
-                    { (exercise.variationParams as TextFlowVariationParams).flowType === 'scroll' && textFlowPhase === 'running' && textFlowContent.length > 0 && (
-                        <div className="absolute w-full" style={{ top: `${currentScrollPosition}px`, transition: 'top 0.016s linear'}}>
-                            {textFlowContent.map((line, index) => (
-                                <p key={index} className={`text-lg ${cyberTheme.textMuted} whitespace-nowrap`}>{line}</p>
-                            ))}
-                        </div>
-                    )}
-                    {textFlowPhase === 'done' && (
-                        <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary} m-auto`} />
-                    )}
-                    {textFlowPhase === 'idle' && <p className={`${cyberTheme.textMuted}`}>텍스트 플로우 준비 중...</p>}
-                </div>
-            )}
-
-            {/* Fallback for unhandled exercise types (should ideally not happen) */}
-            {exercise.id !== 'guided_breathing' && exercise.id !== 'eye_tracking' && exercise.id !== 'visual_span' && exercise.id !== 'text_flow' && (
-              <p className="text-center text-lg">알 수 없는 예열 운동입니다.</p>
-            )}
-          </div>
-          
-          {/* Question/Prompt area - to be simplified or removed for most exercises */}
-          {/* For now, let's assume a generic completion button will be used mostly */}
-          { (exercise.id === 'guided_breathing' && breathingPhase === 'done') ||
-            (exercise.id === 'eye_tracking' && eyeTrackingPhase === 'done') || 
-            (exercise.id === 'visual_span' && visualSpanPhase === 'done') || 
-            (exercise.id === 'text_flow' && textFlowPhase === 'done') ? 
-            (
-              <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>훈련을 완료했습니다. 다음으로 진행하세요.</p>
-            ) : (
-              <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>화면의 안내에 따라 훈련을 진행하세요.</p>
-            )
-          }
-
-
-          {/* Options / Input - This section will be heavily refactored or removed.
-              For now, we rely on userInteracted state set by exercise logic.
-          */}
-          <div className="space-y-3 mb-6">
-            {/* Example of a generic "I'm Done" button if an exercise doesn't auto-advance */}
-            {/* This is a placeholder and might not be the final interaction model */}
-            { !userInteracted && (exercise.id === 'some_exercise_that_needs_manual_confirm') && (
-              <button
-                    onClick={() => setUserInteracted(true)}
-                className={`w-full text-left p-3 rounded-md transition-colors duration-150
-                    ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted}
-                    border ${cyberTheme.inputBorder} focus:outline-none focus:ring-2 ${cyberTheme.inputFocusRing}`}
-                >
-                    완료 확인 (임시)
-              </button>
-            )}
           </div>
 
-          {/* Tip Section */}
-          {exercise.tip && (
-            <div className="mb-6">
-              <button 
-                onClick={handleToggleTip}
-                className={`flex items-center text-sm ${cyberTheme.textMuted} ${cyberTheme.buttonSecondaryHoverBg} p-2 rounded-md`}
-              >
-                <LightBulbIcon className={`h-5 w-5 mr-2 ${showTip ? cyberTheme.tipIcon : cyberTheme.textMuted}`} />
-                {showTip ? '도움말 숨기기' : '도움말 보기'}
-              </button>
-              {showTip && (
-                <div className={`mt-2 p-3 rounded-md ${cyberTheme.tipBg} border ${cyberTheme.tipBorder}`}>
-                  <p className={`text-xs ${cyberTheme.textLight}`}>{exercise.tip}</p>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button 
-              onClick={handleFinishWarmup}
+          {/* Exercise Controls */}
+          <div className="mt-6 flex justify-between">
+            <Button
+              onClick={handleQuitWarmup}
               variant="secondary"
-              className={`w-full sm:w-auto ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted}`}
+              className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg}`}
             >
-              <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-              Skip
+              종료
             </Button>
-            <Button 
+            <Button
               onClick={handleNext}
-              disabled={!userInteracted}
-              className={`w-full flex-grow ${!userInteracted ? cyberTheme.buttonDisabledBg : cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}
+              className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}
             >
-              {currentExerciseIndex === EXERCISE_CONFIGURATIONS.length - 1 ? '집중 독서 시작' : '다음 훈련'} 
-              <ChevronRightIcon className="h-5 w-5 ml-2" />
+              다음
             </Button>
           </div>
-
         </div>
       </main>
-
-      {/* Footer (Optional - can be minimal) */}
-      <footer className={`text-center p-3 text-xs ${cyberTheme.textMuted} ${cyberTheme.bgSecondary}/50`}>
-        Habitus33 - 뇌 기능 최적화 시스템
-      </footer>
     </div>
   );
-} 
+}
