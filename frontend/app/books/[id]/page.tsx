@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import Button from '@/components/common/Button';
-import { AiOutlineEdit, AiOutlineQuestionCircle, AiOutlineArrowRight, AiOutlineInfoCircle, AiOutlineEye } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineQuestionCircle, AiOutlineArrowRight, AiOutlineInfoCircle, AiOutlineEye, AiOutlineArrowLeft } from 'react-icons/ai';
 import { FiBook } from 'react-icons/fi';
 import useBooks from '@/hooks/useBooks';
 import TSNoteCard, { TSNote, TSSessionDetails } from '@/components/ts/TSNoteCard';
@@ -525,6 +526,20 @@ export default function BookDetailPage() {
   return (
     <div className={`min-h-screen ${cyberTheme.gradient} p-4 md:p-6 ${cyberTheme.textLight}`}>
       <div className="container mx-auto max-w-4xl">
+        {/* "내 서재" 버튼 추가 */}
+        <div className="mb-4">
+          <Link href="/books" passHref>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border flex items-center`}
+            >
+              <AiOutlineArrowLeft className="mr-2 h-4 w-4" />
+              내 서재
+            </Button>
+          </Link>
+        </div>
+        
         {/* App Logo/Name Header */}
         <div className="text-center mb-6">
           <h1 
