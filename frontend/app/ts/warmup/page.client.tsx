@@ -969,7 +969,7 @@ export default function TSWarmupPage() {
                 {/* Placeholder - Eye Tracking UI will go here based on variationParams */}
                 {eyeTrackingPhase === 'running' && dotPosition && (
                   <div
-                    className={`absolute w-5 h-5 ${cyberTheme.primary} rounded-full`}
+                    className={`absolute w-5 h-5 ${cyberTheme.primary} rounded-full ${(activeExerciseDetail?.variationParams as EyeTrackingVariationParams)?.movementPattern === 'circular' ? 'transition-all duration-100 ease-linear' : ''}`}
                     style={{
                       top: dotPosition.top,
                       left: dotPosition.left,
@@ -1109,12 +1109,12 @@ export default function TSWarmupPage() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
             <Button 
-              onClick={handleQuitWarmup}
+              onClick={handleFinishWarmup}
               variant="secondary"
               className={`w-full sm:w-auto ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted}`}
             >
               <ArrowUturnLeftIcon className="h-5 w-5 mr-2" />
-              예열 중단
+              Skip
             </Button>
             <Button 
               onClick={handleNext}

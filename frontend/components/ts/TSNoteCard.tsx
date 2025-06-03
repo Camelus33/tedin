@@ -392,6 +392,46 @@ export default function TSNoteCard({
     );
   };
 
+  // "메모 진화" 내용을 조회 모드에서 표시하는 함수
+  const renderMemoEvolutionDetails = () => {
+    if (isOpen || isPageEditing || minimalDisplay) {
+      return null;
+    }
+
+    const evolutionFieldsToShow: { key: keyof TSNote; label: string }[] = [
+      { key: 'importanceReason', label: '중요했던 이유' },
+      { key: 'momentContext', label: '작성 당시 상황' },
+      { key: 'relatedKnowledge', label: '연관된 지식' },
+      { key: 'mentalImage', label: '떠오른 생각/심상' },
+    ];
+
+    const details = evolutionFieldsToShow
+      .map(field => {
+        const value = note[field.key];
+        if (value && typeof value === 'string' && value.trim() !== '') {
+          return (
+            <div key={field.key} className="mt-2">
+              <p className="text-xs font-semibold text-cyan-500 mb-0.5">{field.label}:</p>
+              <p className="text-sm text-gray-300 whitespace-pre-wrap break-words">{value}</p>
+            </div>
+          );
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    if (details.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="mt-3 pt-3 border-t border-gray-700/30">
+        <h4 className="text-xs font-bold text-gray-500 mb-1">메모 진화 내용:</h4>
+        {details}
+      </div>
+    );
+  };
+
   return (
     <div 
       className={`relative group ${cyberTheme.cardBg} p-4 rounded-lg shadow-md border ${cyberTheme.cardBorder} ${className} ${minimalDisplay ? 'min-h-0' : 'min-h-[180px]'} transition-all duration-200 hover:shadow-xl hover:border-cyan-500/70 w-full`}
@@ -414,6 +454,9 @@ export default function TSNoteCard({
           </p>
           {!minimalDisplay && renderBookSource()}
         </div>
+
+        {/* Render memo evolution details in view mode */}
+        {renderMemoEvolutionDetails()}
 
         {!minimalDisplay && note.tags && note.tags.length > 0 && (
           <div className="mb-3 mt-1 flex flex-wrap gap-1.5">
