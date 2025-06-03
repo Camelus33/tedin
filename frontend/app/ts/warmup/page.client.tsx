@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import Spinner from '@/components/ui/Spinner';
-import { InformationCircleIcon, CheckCircleIcon, XCircleIcon, LightBulbIcon, ClockIcon, ChevronRightIcon, ArrowRightOnRectangleIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline';
+import { InformationCircleIcon, CheckCircleIcon, XCircleIcon, LightBulbIcon, ClockIcon, ChevronRightIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import api from '@/lib/api';
 
 // Cyber Theme Definition (Consistent with other TS pages)
@@ -590,22 +590,29 @@ export default function TSWarmupPage() {
   // NEW Effect for Eye Tracking Challenge
   useEffect(() => {
     if (!activeExerciseDetail || activeExerciseDetail.id !== 'eye_tracking' || eyeTrackingPhase === 'done') {
+      // console.log('[EyeTracking] Effect skipped or done.', { activeId: activeExerciseDetail?.id, eyeTrackingPhase });
       setDotPosition(null);
       return;
     }
 
     const params = activeExerciseDetail.variationParams as EyeTrackingVariationParams;
+    // console.log('[EyeTracking] Effect RUNNING. Phase:', eyeTrackingPhase, 'Rep:', eyeTrackingCurrentRep, 'Params:', params);
+
     let timerId: NodeJS.Timeout | undefined = undefined;
 
     if (eyeTrackingPhase === 'idle') {
+      // console.log('[EyeTracking] Phase: idle -> running');
       setEyeTrackingPhase('running');
       setEyeTrackingCurrentRep(0);
       setEyeTrackingTime(0); // Reset time for circular/continuous movements
       setSaccadeStep(0); // Reset step for jump-based movements
+      return; // Return here to allow state update to propagate before running movement logic
     }
 
     if (eyeTrackingPhase === 'running') {
-      if (eyeTrackingCurrentRep >= (params.repetitions || 1)) {
+      // console.log('[EyeTracking] Phase: running. Current Rep:', eyeTrackingCurrentRep, 'Total Reps:', params.repetitions);
+      if (params.repetitions !== undefined && eyeTrackingCurrentRep >= params.repetitions) {
+        // console.log('[EyeTracking] Reps completed. Phase: running -> done');
         setEyeTrackingPhase('done');
         setUserInteracted(true);
         setDotPosition(null);
@@ -614,42 +621,49 @@ export default function TSWarmupPage() {
 
       if (params.movementPattern === 'circular') {
         const speedFactor = params.speed === 'slow' ? 4000 : params.speed === 'fast' ? 1500 : 2500; // ms per circle
-        const angle = (eyeTrackingTime / speedFactor) * 2 * Math.PI * (params.repetitions || 1); // angle based on time & total reps to ensure completion
+        // Corrected angle calculation for one full circle based on speedFactor
+        const angle = (eyeTrackingTime / speedFactor) * 2 * Math.PI; 
         const radius = 30; // Percentage of half the smaller container dimension
         const x = 50 + radius * Math.cos(angle);
         const y = 50 + radius * Math.sin(angle);
+        // console.log('[EyeTracking] Circular. Time:', eyeTrackingTime, 'Angle:', angle, 'Pos:', { top: `${y}%`, left: `${x}%` });
         setDotPosition({ top: `${y}%`, left: `${x}%` });
 
-        if (eyeTrackingTime >= speedFactor * (eyeTrackingCurrentRep +1) / (params.repetitions ||1) ){
-           // This logic is a bit off for incrementing reps in continuous circular. 
-           // Let's simplify: run for total duration = speedFactor * repetitions
-        }
-        // Updated logic for circular completion and rep counting
-        const totalDurationForCircular = speedFactor * (params.repetitions || 1);
-        if (eyeTrackingTime < totalDurationForCircular) {
+        const totalDurationForCircularRep = speedFactor; // Duration for ONE circle repetition
+        if (eyeTrackingTime < totalDurationForCircularRep) {
           timerId = setTimeout(() => {
             setEyeTrackingTime(prev => prev + 50); // Increment time every 50ms for smoother animation
           }, 50);
-        } else {
-          setEyeTrackingCurrentRep(params.repetitions || 1); // Mark all reps done
+        } else { // One circle finished
+          // console.log('[EyeTracking] Circular rep finished. CurrentRep:', eyeTrackingCurrentRep, 'NextRep:', eyeTrackingCurrentRep + 1)
+          setEyeTrackingCurrentRep(prev => prev + 1);
+          setEyeTrackingTime(0); // Reset time for the next circle
         }
 
       } else if (params.movementPattern === 'horizontalJumps') {
         const locations = [{ top: '50%', left: '15%' }, { top: '50%', left: '85%' }];
-        setDotPosition(locations[saccadeStep % locations.length]);
+        const currentLoc = locations[saccadeStep % locations.length];
+        // console.log('[EyeTracking] Horizontal Jumps. SaccadeStep:', saccadeStep, 'Pos:', currentLoc);
+        setDotPosition(currentLoc);
         timerId = setTimeout(() => {
-          if (saccadeStep + 1 >= locations.length * (params.repetitions || 1)) {
-            setEyeTrackingCurrentRep(params.repetitions || 1);
+          // Check if all repetitions of jumps are done
+          // Each rep is a full back-and-forth, so locations.length * repetitions total steps
+          if (params.repetitions !== undefined && saccadeStep + 1 >= locations.length * params.repetitions) {
+            // console.log('[EyeTracking] Horizontal Jumps completed all reps.');
+            setEyeTrackingCurrentRep(params.repetitions); // Mark all reps done
           } else {
             setSaccadeStep(prev => prev + 1);
           }
         }, params.durationPerSpot || 700);
       } else if (params.movementPattern === 'verticalJumps') {
         const locations = [{ top: '15%', left: '50%' }, { top: '85%', left: '50%' }];
-        setDotPosition(locations[saccadeStep % locations.length]);
+        const currentLoc = locations[saccadeStep % locations.length];
+        // console.log('[EyeTracking] Vertical Jumps. SaccadeStep:', saccadeStep, 'Pos:', currentLoc);
+        setDotPosition(currentLoc);
         timerId = setTimeout(() => {
-          if (saccadeStep + 1 >= locations.length * (params.repetitions || 1)) {
-             setEyeTrackingCurrentRep(params.repetitions || 1);
+          if (params.repetitions !== undefined && saccadeStep + 1 >= locations.length * params.repetitions) {
+            // console.log('[EyeTracking] Vertical Jumps completed all reps.');
+            setEyeTrackingCurrentRep(params.repetitions);
           } else {
             setSaccadeStep(prev => prev + 1);
           }
@@ -657,6 +671,7 @@ export default function TSWarmupPage() {
       }
     }
     return () => {
+      // console.log('[EyeTracking] Cleanup effect. TimerId:', timerId);
       if (timerId) clearTimeout(timerId);
     };
   }, [activeExerciseDetail, eyeTrackingPhase, eyeTrackingCurrentRep, eyeTrackingTime, saccadeStep]);
@@ -935,15 +950,17 @@ export default function TSWarmupPage() {
                 </p>
                 <div className="relative w-32 h-32 mx-auto mb-4">
                   <div 
-                    className={`absolute inset-0 rounded-full ${cyberTheme.primary} opacity-30 transition-all duration-1000 ease-in-out`}
+                    className={`absolute inset-0 rounded-full ${cyberTheme.primary} opacity-30 transition-all ease-in-out`}
                     style={{ 
                       transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
+                      transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
                     }}
                   />
                   <div 
-                    className={`absolute inset-0 rounded-full border-2 ${cyberTheme.borderPrimary} flex items-center justify-center transition-transform duration-1000 ease-in-out`}
+                    className={`absolute inset-0 rounded-full border-2 ${cyberTheme.borderPrimary} flex items-center justify-center transition-transform ease-in-out`}
                     style={{
                        transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
+                       transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
                     }}
                   >
                   </div>
@@ -984,8 +1001,8 @@ export default function TSWarmupPage() {
               </div>
             )}
             {exercise.id === 'visual_span' && (
-              <div className="text-center w-full">
-                { visualSpanPhase !== 'done' && 
+              <div className="text-center w-full relative min-h-[100px]"> {/* Added relative and min-height for positioning context */}
+                { (visualSpanPhase === 'idle' || visualSpanPhase === 'interval') && 
                   <p className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl ${cyberTheme.secondary}`}>+</p>
                 }
                 {(exercise.variationParams as VisualSpanVariationParams).stimulusType === 'letters' && 
@@ -1113,7 +1130,7 @@ export default function TSWarmupPage() {
               variant="secondary"
               className={`w-full sm:w-auto ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted}`}
             >
-              <ArrowUturnLeftIcon className="h-5 w-5 mr-2" />
+              <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
               Skip
             </Button>
             <Button 
