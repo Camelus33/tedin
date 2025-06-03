@@ -15,6 +15,7 @@ import { ShareIcon } from '@heroicons/react/24/solid';
 import { AiFillYoutube } from 'react-icons/ai';
 import api from '@/lib/api'; // Added import for central api instance
 import { useCartStore } from '@/store/cartStore'; // Uncommented
+import toast from 'react-hot-toast'; // Added toast import
 
 // API base URL - this should match what's used elsewhere in the app (REMOVING THIS)
 // const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'; // Commented out
@@ -415,15 +416,42 @@ export default function BookDetailPage() {
    * "지식 연결" 탭에서 선택된 노트(`selectedRelatedNote`)도 동일한 노트라면 함께 업데이트합니다.
    * @param {Partial<PageNote>} updatedNoteFields - 변경된 필드만 포함하는 부분적인 PageNote 객체 (반드시 _id 포함).
    */
-  const handleNoteUpdate = (updatedNoteFields: Partial<PageNote>) => {
-    // tsNotes 상태를 업데이트합니다. 기존 노트 목록을 순회하며 ID가 일치하는 노트를 찾아 업데이트된 필드로 교체합니다.
-    setTsNotes(prevNotes =>
-      prevNotes.map(n => (n._id === updatedNoteFields._id ? { ...n, ...updatedNoteFields } : n))
-    );
-    // 만약 현재 "지식 연결" 탭에서 선택된 노트가 방금 업데이트된 노트와 동일하다면,
-    // selectedRelatedNote 상태도 최신 정보로 업데이트하여 UI 일관성을 유지합니다.
-    if (selectedRelatedNote && selectedRelatedNote._id === updatedNoteFields._id) {
-      setSelectedRelatedNote(prev => prev ? { ...prev, ...updatedNoteFields } : null);
+  const handleNoteUpdate = async (updatedNoteFields: Partial<PageNote>) => {
+    if (!updatedNoteFields._id) {
+      console.error("Note ID is missing in updatedNoteFields");
+      toast.error("노트 ID가 없어 업데이트할 수 없습니다.");
+      return Promise.reject("Note ID missing");
+    }
+
+    const noteId = updatedNoteFields._id;
+
+    try {
+      // Optimistic update can be considered here, but for now, we wait for API response.
+      const response = await api.put(`/notes/${noteId}`, updatedNoteFields);
+      
+      // Update local state only after successful API call
+      setTsNotes(prevNotes =>
+        prevNotes.map(n => (n._id === noteId ? { ...n, ...response.data } : n))
+      );
+
+      if (selectedRelatedNote && selectedRelatedNote._id === noteId) {
+        setSelectedRelatedNote(prev => prev ? { ...prev, ...response.data } : null);
+      }
+      
+      toast.success("메모가 성공적으로 저장되었습니다.");
+      return Promise.resolve(); // Resolve the promise on success
+
+    } catch (error) {
+      console.error("Failed to update note:", error);
+      let errorMessage = "메모 저장 중 오류가 발생했습니다.";
+      if (error && typeof error === 'object' && 'response' in error && error.response && 
+          typeof error.response === 'object' && 'data' in error.response && error.response.data && 
+          typeof error.response.data === 'object' && 'message' in error.response.data && 
+          typeof error.response.data.message === 'string') {
+        errorMessage = error.response.data.message;
+      }
+      toast.error(errorMessage);
+      return Promise.reject(errorMessage); // Reject the promise on error
     }
   };
 
@@ -461,7 +489,7 @@ export default function BookDetailPage() {
       contentPreview: noteToAdd.content.substring(0, 50) + (noteToAdd.content.length > 50 ? '...' : ''),
     });
     // 사용자에게 카트 추가 성공 알림을 표시합니다. (react-hot-toast 등 사용 가능)
-    alert(`'${noteToAdd.content.substring(0,20)}...' 메모가 지식 카트에 추가되었습니다.`);
+    toast.success(`'${noteToAdd.content.substring(0,20)}...' 메모가 지식 카트에 추가되었습니다.`);
   };
 
   if (isLoading || sessionsLoading) {

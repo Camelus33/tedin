@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'; // Added TrashIcon and EllipsisVerticalIcon
 import { AiFillYoutube } from 'react-icons/ai'; // For YouTube icon
 import { NewspaperIcon } from '@heroicons/react/24/solid'; // For Media icon (can adjust if outline is preferred)
+import toast from 'react-hot-toast'; // Import toast
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -186,13 +187,57 @@ export default function EditSummaryNotePage() {
     fetchSummaryNoteDetails();
   }, [summaryNoteId]);
 
-  const handleNoteUpdate = useCallback((updatedNoteFields: Partial<FetchedNoteDetails>) => {
-    if (!updatedNoteFields._id) return;
+  // 페이지 이탈 방지 로직
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (isEditing && changedNoteIds.size > 0) {
+        event.preventDefault();
+        // Chrome에서는 returnValue 설정이 필요합니다.
+        event.returnValue = '저장되지 않은 변경 사항이 있습니다. 페이지를 벗어나시겠습니까?';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isEditing, changedNoteIds]); // isEditing과 changedNoteIds가 변경될 때마다 effect 재실행
+
+  const handleNoteUpdate = useCallback(async (updatedNoteFields: Partial<FetchedNoteDetails>) => {
+    if (!updatedNoteFields._id) {
+      // No toast here, as TSNoteCard might handle its own errors or this is an internal consistency issue.
+      console.error("Note ID is missing in updatedNoteFields for local update.");
+      return Promise.reject("Note ID missing for local update");
+    }
+
+    // Check if the update comes from evolution fields
+    let isEvolutionUpdate = false;
+    const evolutionKeys: (keyof TSNote)[] = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'];
+    for (const key of evolutionKeys) {
+      if (key in updatedNoteFields) {
+        isEvolutionUpdate = true;
+        break;
+      }
+    }
+
     setFetchedNotes(prevNotes =>
       prevNotes.map(n => (n._id === updatedNoteFields._id ? { ...n, ...updatedNoteFields } : n))
     );
     setChangedNoteIds(prev => new Set(prev).add(updatedNoteFields._id!));
-  }, []);
+
+    // Provide specific feedback if it's an evolution update during page edit mode
+    if (isEditing && isEvolutionUpdate) {
+      const updatedFieldNames = Object.keys(updatedNoteFields).filter(k => k !== '_id' && evolutionKeys.includes(k as keyof TSNote));
+      if (updatedFieldNames.length > 0) {
+        toast.success('메모 진화 내용이 임시 변경되었습니다. 페이지 상단의 "변경사항 저장"을 눌러야 최종 반영됩니다.', {
+          duration: 4000,
+          icon: '📝',
+        });
+      }
+    }
+    return Promise.resolve(); // Explicitly return a resolved promise
+  }, [isEditing]); // isEditing is added to the dependency array
 
   // 모드 전환 핸들러
   const handleEdit = () => {
@@ -241,13 +286,13 @@ export default function EditSummaryNotePage() {
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
       setChangedNoteIds(new Set());
-      alert('단권화 노트가 성공적으로 저장되었습니다.');
+      toast.success('단권화 노트가 성공적으로 저장되었습니다.');
       // 저장 후 summaryNote 상태 업데이트 (선택적이지만, UI 즉시 반영에 도움)
       setSummaryNote(prev => prev ? { ...prev, ...updatedSummaryNoteData } : null);
       return true; // 저장 성공
     } catch (err) {
       console.error('Failed to save summary note:', err);
-      alert('단권화 노트 저장 중 오류가 발생했습니다.');
+      toast.error('단권화 노트 저장 중 오류가 발생했습니다.');
       return false; // 저장 실패
     } finally {
       setLoading(false);
@@ -267,11 +312,11 @@ export default function EditSummaryNotePage() {
       setLoading(true);
       try {
         await api.delete(`/summary-notes/${summaryNoteId}`);
-        alert('단권화 노트가 삭제되었습니다.');
+        toast.success('단권화 노트가 삭제되었습니다.');
         router.push('/books?tab=summary'); // Redirect to My Library, summary tab
       } catch (err) {
         console.error('Failed to delete summary note:', err);
-        alert('단권화 노트 삭제 중 오류가 발생했습니다.');
+        toast.error('단권화 노트 삭제 중 오류가 발생했습니다.');
         setLoading(false);
       }
     }
@@ -331,7 +376,7 @@ export default function EditSummaryNotePage() {
     setCurrentLinkReason('');
     // Optionally close the modal or allow adding more links
     // setShowLinkModal(false); 
-    alert('링크가 추가되었습니다. "변경사항 저장"을 눌러야 최종 반영됩니다.');
+    toast.success('링크가 추가되었습니다. "변경사항 저장"을 눌러야 최종 반영됩니다.');
   };
 
   // Placeholder for Related Link Modal Delete
@@ -348,7 +393,7 @@ export default function EditSummaryNotePage() {
       )
     );
     setChangedNoteIds(prev => new Set(prev).add(selectedNoteForLinkModal._id));
-    alert('링크가 삭제되었습니다. "변경사항 저장"을 눌러야 최종 반영됩니다.');
+    toast.success('링크가 삭제되었습니다. "변경사항 저장"을 눌러야 최종 반영됩니다.');
   };
 
   if (loading) return <div className="flex justify-center items-center h-screen"><Spinner /></div>;
@@ -595,9 +640,9 @@ export default function EditSummaryNotePage() {
                                            }
                                        }
                                        if(foundOriginalIndex !== -1) handleDeleteRelatedLinkInModal(foundOriginalIndex);
-                                       else alert("삭제할 링크를 찾는 데 문제가 발생했습니다.");
+                                       else toast.error("삭제할 링크를 찾는 데 문제가 발생했습니다.");
                                   } else {
-                                      alert("삭제할 링크를 찾는 데 문제가 발생했습니다. (filtered)");
+                                      toast.error("삭제할 링크를 찾는 데 문제가 발생했습니다. (filtered)");
                                   }
                               }
                           }} 
@@ -630,7 +675,7 @@ export default function EditSummaryNotePage() {
                 note={noteForFlashcardModal} // Pass the full note object, changed from noteContext
                 onCreated={(createdCard) => {
                   console.log('Flashcard created/updated:', createdCard);
-                  alert(`플래시카드가 성공적으로 ${createdCard.question.includes(noteForFlashcardModal.content.substring(0,10)) ? '생성' : '수정'}되었습니다!`); // Basic feedback
+                  toast.success(`플래시카드가 성공적으로 ${createdCard.question.includes(noteForFlashcardModal.content.substring(0,10)) ? '생성' : '수정'}되었습니다!`); // Basic feedback
                   setShowFlashcardModal(false);
                   setNoteForFlashcardModal(null);
                 }}

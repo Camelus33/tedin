@@ -268,6 +268,7 @@ export default function TSNoteCard({
   const [isHoveringInfo, setIsHoveringInfo] = useState(false);
   const [isHoveringCard, setIsHoveringCard] = useState(false);
   const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
+  const [isSavingEvolution, setIsSavingEvolution] = useState(false);
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const tabList = [
@@ -307,10 +308,19 @@ export default function TSNoteCard({
       }
     }
 
-    if (hasChanges) {
-      onUpdate?.(changedFields);
+    if (hasChanges && onUpdate) {
+      setIsSavingEvolution(true);
+      try {
+        await onUpdate(changedFields);
+        setIsOpen(false);
+      } catch (error) {
+        console.error("Failed to save note evolution:", error);
+      } finally {
+        setIsSavingEvolution(false);
+      }
+    } else {
+      setIsOpen(false);
     }
-    setIsOpen(false); 
   }, [fields, note, onUpdate, tabKeys, setIsOpen]);
 
   const toggleOpen = () => {
@@ -322,12 +332,6 @@ export default function TSNoteCard({
     setFields((prev) => ({ ...prev, [key]: value }));
   };
   
-  const handleBlur = useCallback(async (key: keyof typeof fields) => {
-    if (fields[key] !== (note[key] || '')) {
-        onUpdate?.({ _id: note._id, [key]: fields[key] });
-    }
-  }, [fields, note, onUpdate]);
-
   const handleNext = useCallback(() => {
     const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
     if (currentIndex < tabKeys.length - 1) {
@@ -479,7 +483,6 @@ export default function TSNoteCard({
               ref={evolutionTextareaRef}
               value={fields[tabKeys[currentStep - 1] as keyof typeof fields]}
               onChange={(e) => handleChange(tabKeys[currentStep - 1] as keyof typeof fields, e.target.value)}
-              onBlur={() => handleBlur(tabKeys[currentStep - 1] as keyof typeof fields)}
               placeholder={prompts[currentStep - 1]?.placeholder}
               className="w-full h-32 p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white"
             />
@@ -512,9 +515,26 @@ export default function TSNoteCard({
               ))}
             </div>
             <div className="space-x-2">
-              <Button variant="outline" size="sm" onClick={handlePrev}>이전</Button>
-              <Button variant="outline" size="sm" onClick={handleNext}>다음</Button>
-              <Button size="sm" onClick={handleSave} className="bg-cyan-600 hover:bg-cyan-700 text-white">진화 저장</Button>
+              <Button variant="outline" size="sm" onClick={handlePrev} disabled={isSavingEvolution}>이전</Button>
+              <Button variant="outline" size="sm" onClick={handleNext} disabled={isSavingEvolution}>다음</Button>
+              <Button 
+                size="sm" 
+                onClick={handleSave} 
+                className="bg-cyan-600 hover:bg-cyan-700 text-white min-w-[80px]"
+                disabled={isSavingEvolution}
+              >
+                {isSavingEvolution ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    저장 중...
+                  </>
+                ) : (
+                  "완료"
+                )}
+              </Button>
             </div>
           </div>
         </div>
