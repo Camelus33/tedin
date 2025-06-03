@@ -429,7 +429,11 @@ export default function TSWarmupPage() {
 
   // NEW: useEffect to select and set the active exercise variation
   useEffect(() => {
-    if (EXERCISE_CONFIGURATIONS.length === 0) return;
+    console.log(`[MainEffect DEBUG] CurrentExerciseIndex: ${currentExerciseIndex}`);
+    if (EXERCISE_CONFIGURATIONS.length === 0) {
+      console.log('[MainEffect DEBUG] No exercise configurations found.');
+      return;
+    }
 
     setUserInteracted(false); // Reset interaction status for the new exercise/variation
 
@@ -437,6 +441,7 @@ export default function TSWarmupPage() {
     if (!currentConfig || currentConfig.variations.length === 0) {
       setError('현재 운동에 대한 설정을 찾을 수 없습니다.');
       setActiveExerciseDetail(null);
+      console.log('[MainEffect DEBUG] Error: Current config not found or has no variations.');
       return;
     }
 
@@ -453,21 +458,21 @@ export default function TSWarmupPage() {
       variationParams: selectedVariationParams,
     };
     setActiveExerciseDetail(detail);
-    // setUserInteracted(false); // Moved to the top of the effect
+    console.log('[MainEffect DEBUG] Set activeExerciseDetail.id:', detail.id, 'VariationName:', selectedVariationParams.name);
 
     // Reset states specific to ALL exercise types before setting new ones
     // Guided Breathing
-    setBreathingPhase('done'); // Neutral state, will be set to 'inhale' if this exercise is selected
-    setBreathingCycle(0);    // Reset cycle
+    setBreathingPhase('done'); 
+    setBreathingCycle(0);    
     
     // Eye Tracking / Saccades
     setDotPosition(null);
     setSaccadeStep(0);
-    // setSaccadePhase('done'); // Neutral state, specific phase will be set if eye_tracking
     setSaccadeCycleCount(0);
-    setEyeTrackingPhase('idle'); // Reset main eye tracking state
+    setEyeTrackingPhase('idle'); 
     setEyeTrackingCurrentRep(0);
     setEyeTrackingTime(0);
+    console.log('[MainEffect DEBUG] eyeTrackingPhase set to idle, dotPosition to null.');
 
     // Visual Span / Chunking
     // setChunkingPhase('done'); // Old state, visualSpanPhase is primary now
@@ -489,10 +494,8 @@ export default function TSWarmupPage() {
       setBreathingPhase('inhale');
       setBreathingCycle(1);
     } else if (detail.id === 'eye_tracking') {
-      // Initial state for eye_tracking is 'idle', logic inside its useEffect will handle 'running'
-      // setDotPosition(null); // Already reset above
-      // Specific saccadePhase might be set based on variation, or handled in its own effect. Default to a common one or let its effect manage.
-      setSaccadePhase('horizontal'); // Reset to a default, actual pattern will drive this
+      console.log('[MainEffect DEBUG] Confirmed eye_tracking selected. eyeTrackingPhase should be idle now.');
+      // setSaccadePhase('horizontal'); // This was an old state, ensure it's not interfering or remove if fully unused
     } else if (detail.id === 'visual_span') {
       // Initial state for visual_span is 'idle', logic inside its useEffect will handle 'presenting' etc.
       // setGridStimulus([]); // Already reset above
@@ -531,14 +534,6 @@ export default function TSWarmupPage() {
       //   setSaccadePhase('done');
       // }
       
-      // if (exercises[currentExercise]?.type === 'chunking_practice') {
-      //   // setCurrentChunkIndex(0);
-      //   setChunkingPhase('hidden'); 
-      //   // setCurrentChunkToDisplay(null); 
-      // } else {
-      //   setChunkingPhase('done');
-      // }
-      
   // }, [currentExercise, exercises]); // Added exercises to dependency array for safety, though type access is main key
   */
 
@@ -572,7 +567,7 @@ export default function TSWarmupPage() {
         }
       }, params.durations.exhale);
     } else if (breathingPhase === 'hold2' && params.durations.hold2) {
-        timerId = setTimeout(() => {
+       timerId = setTimeout(() => {
             if (breathingCycle < params.totalCycles) {
                 setBreathingCycle(prev => prev + 1);
                 setBreathingPhase('inhale');
@@ -589,30 +584,46 @@ export default function TSWarmupPage() {
 
   // NEW Effect for Eye Tracking Challenge
   useEffect(() => {
-    if (!activeExerciseDetail || activeExerciseDetail.id !== 'eye_tracking' || eyeTrackingPhase === 'done') {
-      // console.log('[EyeTracking] Effect skipped or done.', { activeId: activeExerciseDetail?.id, eyeTrackingPhase });
-      setDotPosition(null);
+    console.log('[EyeTracking DEBUG] Effect triggered. ID:', activeExerciseDetail?.id, 'Phase:', eyeTrackingPhase);
+
+    if (!activeExerciseDetail || activeExerciseDetail.id !== 'eye_tracking') {
+      console.log('[EyeTracking DEBUG] Skipped: Not eye_tracking or no detail.');
+      // setDotPosition(null); // Clearing dot position here might be too aggressive if phase is just changing
+      return;
+    }
+    
+    if (eyeTrackingPhase === 'done') {
+      console.log('[EyeTracking DEBUG] Skipped: Phase is done.');
+      setDotPosition(null); // Ensure dot is cleared when exercise is truly done
       return;
     }
 
     const params = activeExerciseDetail.variationParams as EyeTrackingVariationParams;
-    // console.log('[EyeTracking] Effect RUNNING. Phase:', eyeTrackingPhase, 'Rep:', eyeTrackingCurrentRep, 'Params:', params);
+    console.log('[EyeTracking DEBUG] Params:', JSON.stringify(params));
 
     let timerId: NodeJS.Timeout | undefined = undefined;
 
     if (eyeTrackingPhase === 'idle') {
-      // console.log('[EyeTracking] Phase: idle -> running');
+      console.log('[EyeTracking DEBUG] Phase: idle -> setting to running.');
       setEyeTrackingPhase('running');
       setEyeTrackingCurrentRep(0);
-      setEyeTrackingTime(0); // Reset time for circular/continuous movements
-      setSaccadeStep(0); // Reset step for jump-based movements
-      return; // Return here to allow state update to propagate before running movement logic
+      setEyeTrackingTime(0); 
+      setSaccadeStep(0); 
+      // No dotPosition set here yet, it will be set when phase is 'running'
+      return; 
     }
 
     if (eyeTrackingPhase === 'running') {
-      // console.log('[EyeTracking] Phase: running. Current Rep:', eyeTrackingCurrentRep, 'Total Reps:', params.repetitions);
+      console.log('[EyeTracking DEBUG] Phase: running. Attempting to set dot position.');
+      
+      // FOR DEBUGGING: Always set to a fixed position first
+      setDotPosition({ top: '50%', left: '50%' });
+      console.log('[EyeTracking DEBUG] dotPosition set to fixed 50% / 50%.');
+
+      // Temporarily comment out actual animation logic to see if static dot appears
+      /* 
       if (params.repetitions !== undefined && eyeTrackingCurrentRep >= params.repetitions) {
-        // console.log('[EyeTracking] Reps completed. Phase: running -> done');
+        console.log('[EyeTracking DEBUG] Reps completed. Phase: running -> done');
         setEyeTrackingPhase('done');
         setUserInteracted(true);
         setDotPosition(null);
@@ -621,36 +632,33 @@ export default function TSWarmupPage() {
 
       if (params.movementPattern === 'circular') {
         const speedFactor = params.speed === 'slow' ? 4000 : params.speed === 'fast' ? 1500 : 2500; // ms per circle
-        // Corrected angle calculation for one full circle based on speedFactor
         const angle = (eyeTrackingTime / speedFactor) * 2 * Math.PI; 
-        const radius = 30; // Percentage of half the smaller container dimension
+        const radius = 30; 
         const x = 50 + radius * Math.cos(angle);
         const y = 50 + radius * Math.sin(angle);
-        // console.log('[EyeTracking] Circular. Time:', eyeTrackingTime, 'Angle:', angle, 'Pos:', { top: `${y}%`, left: `${x}%` });
+        console.log('[EyeTracking DEBUG] Circular. Time:', eyeTrackingTime, 'Angle:', angle, 'Pos:', { top: `${y}%`, left: `${x}%` });
         setDotPosition({ top: `${y}%`, left: `${x}%` });
 
-        const totalDurationForCircularRep = speedFactor; // Duration for ONE circle repetition
+        const totalDurationForCircularRep = speedFactor; 
         if (eyeTrackingTime < totalDurationForCircularRep) {
           timerId = setTimeout(() => {
-            setEyeTrackingTime(prev => prev + 50); // Increment time every 50ms for smoother animation
+            setEyeTrackingTime(prev => prev + 50); 
           }, 50);
-        } else { // One circle finished
-          // console.log('[EyeTracking] Circular rep finished. CurrentRep:', eyeTrackingCurrentRep, 'NextRep:', eyeTrackingCurrentRep + 1)
+        } else { 
+          console.log('[EyeTracking DEBUG] Circular rep finished. CurrentRep:', eyeTrackingCurrentRep, 'NextRep:', eyeTrackingCurrentRep + 1)
           setEyeTrackingCurrentRep(prev => prev + 1);
-          setEyeTrackingTime(0); // Reset time for the next circle
+          setEyeTrackingTime(0); 
         }
 
       } else if (params.movementPattern === 'horizontalJumps') {
         const locations = [{ top: '50%', left: '15%' }, { top: '50%', left: '85%' }];
         const currentLoc = locations[saccadeStep % locations.length];
-        // console.log('[EyeTracking] Horizontal Jumps. SaccadeStep:', saccadeStep, 'Pos:', currentLoc);
+        console.log('[EyeTracking DEBUG] Horizontal Jumps. SaccadeStep:', saccadeStep, 'Pos:', currentLoc);
         setDotPosition(currentLoc);
         timerId = setTimeout(() => {
-          // Check if all repetitions of jumps are done
-          // Each rep is a full back-and-forth, so locations.length * repetitions total steps
           if (params.repetitions !== undefined && saccadeStep + 1 >= locations.length * params.repetitions) {
-            // console.log('[EyeTracking] Horizontal Jumps completed all reps.');
-            setEyeTrackingCurrentRep(params.repetitions); // Mark all reps done
+            console.log('[EyeTracking DEBUG] Horizontal Jumps completed all reps.');
+            setEyeTrackingCurrentRep(params.repetitions); 
           } else {
             setSaccadeStep(prev => prev + 1);
           }
@@ -658,22 +666,38 @@ export default function TSWarmupPage() {
       } else if (params.movementPattern === 'verticalJumps') {
         const locations = [{ top: '15%', left: '50%' }, { top: '85%', left: '50%' }];
         const currentLoc = locations[saccadeStep % locations.length];
-        // console.log('[EyeTracking] Vertical Jumps. SaccadeStep:', saccadeStep, 'Pos:', currentLoc);
+        console.log('[EyeTracking DEBUG] Vertical Jumps. SaccadeStep:', saccadeStep, 'Pos:', currentLoc);
         setDotPosition(currentLoc);
         timerId = setTimeout(() => {
           if (params.repetitions !== undefined && saccadeStep + 1 >= locations.length * params.repetitions) {
-            // console.log('[EyeTracking] Vertical Jumps completed all reps.');
+            console.log('[EyeTracking DEBUG] Vertical Jumps completed all reps.');
             setEyeTrackingCurrentRep(params.repetitions);
           } else {
             setSaccadeStep(prev => prev + 1);
           }
         }, params.durationPerSpot || 700);
       }
+      */
+      
+      // For now, let it just show the static dot. To make it "complete" for testing, add a timeout to set to done.
+      timerId = setTimeout(() => {
+        console.log('[EyeTracking DEBUG] Debug timer: setting phase to done.');
+        setEyeTrackingPhase('done');
+        setUserInteracted(true);
+        setDotPosition(null); // Clear dot when done
+      }, 5000); // Show static dot for 5 seconds then complete
+
+      return () => {
+        console.log('[EyeTracking DEBUG] Cleanup for running phase. TimerId:', timerId);
+        if (timerId) clearTimeout(timerId);
+      };
     }
+    // Fallback cleanup if no timer was set in the 'running' phase but an early return happened.
+    // However, all paths in 'running' that don't set phase to 'done' should set a timer.
     return () => {
-      // console.log('[EyeTracking] Cleanup effect. TimerId:', timerId);
-      if (timerId) clearTimeout(timerId);
-    };
+        if (timerId) clearTimeout(timerId);
+    }
+
   }, [activeExerciseDetail, eyeTrackingPhase, eyeTrackingCurrentRep, eyeTrackingTime, saccadeStep]);
 
   // Effect for Visual Span Grid / Word Pairs
@@ -948,30 +972,55 @@ export default function TSWarmupPage() {
                 <p className={`mb-2 text-sm ${cyberTheme.textMuted}`}>
                   호흡 주기: {breathingCycle} / {(exercise.variationParams as BreathingVariationParams).totalCycles}
                 </p>
-                <div className="relative w-32 h-32 mx-auto mb-4">
-                  <div 
-                    className={`absolute inset-0 rounded-full ${cyberTheme.primary} opacity-30 transition-all ease-in-out`}
-                    style={{ 
-                      transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
-                      transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
-                    }}
-                  />
-                  <div 
-                    className={`absolute inset-0 rounded-full border-2 ${cyberTheme.borderPrimary} flex items-center justify-center transition-transform ease-in-out`}
-                    style={{
-                       transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
-                       transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
-                    }}
-                  >
-                  </div>
-                   <div className="absolute inset-0 flex items-center justify-center">
+                
+                {(exercise.variationParams as BreathingVariationParams).name === '박스 호흡' ? (
+                  // Box Breathing UI
+                  <div className="relative w-32 h-32 mx-auto mb-4 border-2 border-gray-600">
+                    {/* Top Side */}
+                    <div className={`absolute top-0 left-0 w-full h-2.5 transition-colors duration-200 ${(breathingPhase === 'inhale') ? cyberTheme.primary : 'bg-gray-600'}`} />
+                    {/* Right Side */}
+                    <div className={`absolute top-0 right-0 w-2.5 h-full transition-colors duration-200 ${(breathingPhase === 'hold1') ? cyberTheme.primary : 'bg-gray-600'}`} />
+                    {/* Bottom Side */}
+                    <div className={`absolute bottom-0 left-0 w-full h-2.5 transition-colors duration-200 ${(breathingPhase === 'exhale') ? cyberTheme.primary : 'bg-gray-600'}`} />
+                    {/* Left Side */}
+                    <div className={`absolute top-0 left-0 w-2.5 h-full transition-colors duration-200 ${(breathingPhase === 'hold2') ? cyberTheme.primary : 'bg-gray-600'}`} />
+                    
+                    <div className="absolute inset-0 flex items-center justify-center">
                         {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>들이쉬세요</p>}
                         {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>멈추세요</p>}
                         {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>내쉬세요</p>}
                         {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
                         {breathingPhase === 'done' && <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />}
                     </div>
-                </div>
+                  </div>
+                ) : (
+                  // Default Circle Breathing UI
+                  <div className="relative w-32 h-32 mx-auto mb-4">
+                    <div 
+                      className={`absolute inset-0 rounded-full ${cyberTheme.primary} opacity-30 transition-all ease-in-out`}
+                      style={{ 
+                        transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
+                        transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
+                      }}
+                    />
+                    <div 
+                      className={`absolute inset-0 rounded-full border-2 ${cyberTheme.borderPrimary} flex items-center justify-center transition-transform ease-in-out`}
+                      style={{
+                         transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
+                         transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
+                      }}
+                    >
+                    </div>
+                     <div className="absolute inset-0 flex items-center justify-center">
+                          {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>들이쉬세요</p>}
+                          {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>멈추세요</p>}
+                          {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>내쉬세요</p>}
+                          {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
+                          {breathingPhase === 'done' && <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />}
+                      </div>
+                  </div>
+                )}
+
                 <p className={`text-lg ${cyberTheme.textLight}`}>
                   {breathingPhase === 'inhale' && `숨을 깊게 들이쉬세요 (${(exercise.variationParams as BreathingVariationParams).durations.inhale / 1000}초)`}
                   {breathingPhase === 'hold1' && (exercise.variationParams as BreathingVariationParams).durations.hold1 && `잠시 멈추세요 (${(exercise.variationParams as BreathingVariationParams).durations.hold1! / 1000}초)`}
@@ -1094,17 +1143,17 @@ export default function TSWarmupPage() {
             {/* Example of a generic "I'm Done" button if an exercise doesn't auto-advance */}
             {/* This is a placeholder and might not be the final interaction model */}
             { !userInteracted && (exercise.id === 'some_exercise_that_needs_manual_confirm') && (
-                 <button
+              <button
                     onClick={() => setUserInteracted(true)}
-                    className={`w-full text-left p-3 rounded-md transition-colors duration-150
+                className={`w-full text-left p-3 rounded-md transition-colors duration-150
                     ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted}
                     border ${cyberTheme.inputBorder} focus:outline-none focus:ring-2 ${cyberTheme.inputFocusRing}`}
                 >
                     완료 확인 (임시)
-                </button>
+              </button>
             )}
           </div>
-          
+
           {/* Tip Section */}
           {exercise.tip && (
             <div className="mb-6">
