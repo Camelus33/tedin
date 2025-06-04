@@ -213,7 +213,7 @@ export default function OnboardingPage() {
             {/* 예시: <BrainIcon className="w-16 h-16 mx-auto mb-4 text-cyan-400" /> */}
             
             <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-              읽기 능력의 놀라운 도약, <br/> 지금 시작하세요! {/* 부드러운 줄바꿈 추가 */}
+              문해력 강화, <br/> 지금 시작하세요! {/* 부드러운 줄바꿈 추가 */}
             </h2>
             
             {/* 2. 핵심 프로그램 소개 (카드형 또는 섹션 구분 제안) */}
@@ -227,28 +227,28 @@ export default function OnboardingPage() {
               {/* ZenGo 훈련 */}
               <div className="text-left p-3 bg-neutral-700 rounded-md"> {/* 배경색 살짝 다르게 */}
                 {/* TODO: ZenGo 아이콘 */}
-                <h3 className="font-semibold text-cyan-400 mb-1">ZenGo 훈련 (레벨 {prefs.recommendedZenGoLevels.join(", ")})</h3>
-                <p className={`${mutedTextColor} text-sm`}>뇌가소성 원리에 기반한 시지각 및 인지 능력 강화 훈련입니다.</p>
+                <h3 className="font-semibold text-cyan-400 mb-1">ZenGo (레벨 {prefs.recommendedZenGoLevels.join(", ")})</h3>
+                <p className={`${mutedTextColor} text-sm`}>바둑 원리에 기반한 작업 기억력 강화 게임입니다.</p>
               </div>
 
               {/* TS 집중 루틴 */}
               <div className="text-left p-3 bg-neutral-700 rounded-md">
                 {/* TODO: TS 루틴 아이콘 (시계/달력 등) */}
-                <h3 className="font-semibold text-cyan-400 mb-1">TS 집중 루틴 ({prefs.recommendedTsDuration}분/일)</h3>
-                <p className={`${mutedTextColor} text-sm`}>매일 꾸준한 집중 연습으로 독해 지구력을 향상시킵니다.</p>
+                <h3 className="font-semibold text-cyan-400 mb-1">TS 마이크로 리딩 ({prefs.recommendedTsDuration}분/일)</h3>
+                <p className={`${mutedTextColor} text-sm`}>매일 꾸준한 연습으로 읽기 속도를 향상시킵니다.</p>
               </div>
               
               <p className={`${textColor} font-semibold text-lg mt-3 leading-relaxed`}>
-                이를 통해 집중력이 향상되어, 내용을 더 빠르고 정확하게 이해하며 오래 기억하게 됩니다.
-                긴 글 부담은 줄고, 지식 습득의 즐거움은 커집니다.
+                이를 통해 더 빠르고 정확하게 이해하며 오래 기억하게 됩니다.
+                긴 글 부담은 줄고, 정보 처리 속도가 점점 빨라집니다.
               </p>
             </div>
 
             {/* 3. 변화 기간 및 효과 강조 (요청하신 텍스트 수정 반영) */}
             <p className={`font-semibold mt-6 text-xl ${textColor} leading-relaxed`}> 
               {/* TODO: "33일간" 부분에 달력 아이콘 또는 시각적 강조 요소 추가 */}
-              단 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-2xl">3분 11페이지, 33일간의</strong> 변화! <br/> 
-              Habitus33와 함께 놀라운 성장을 경험하세요.
+              단 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-2xl">3분</strong> 놀라운 변화! <br/> 
+              Habitus33와 함께 시작하세요!
             </p>
           </div>
         )}

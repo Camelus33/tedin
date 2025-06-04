@@ -487,8 +487,8 @@ export default function DashboardPage() {
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-cyan-500/30 hover:border-cyan-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
               <div>
                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>TS : Micro-Reading</h2> {/* Theme text */}
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>읽기 집중력 체크</p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>잘게 쪼갠 분단위 읽기로 지루함을 극복하세요 </p> {/* Theme text */}
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}></p> {/* Revised Text & Theme */}
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>잘게 쪼갠 시간 읽기로 잡념 없이 몰입하세요 </p> {/* Theme text */}
               </div>
               <div className="mt-6">
                  <button className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
@@ -503,7 +503,7 @@ export default function DashboardPage() {
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
                <div>
                  <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo : Work Memory</h2> {/* Theme text */} 
-                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>작업 기억력 체크</p> {/* Revised Text & Theme */} 
+                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}></p> {/* Revised Text & Theme */} 
                  <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 선명하고 오래가는 기억력을 달성하세요</p> {/* Theme text */} 
                </div>
                <div className="mt-6">
@@ -523,8 +523,8 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>입력하고 외우고 공유하세요</p>
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>내가 만든 ZenGo. 이제 건망증과 작별할 시간입니다</p>
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>직접 만든 ZenGo</p>
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>입력해서 외우고 곧바로 테스트</p>
               </div>
               <div className="mt-6">
                 <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-orbitron font-bold text-cyan-300 drop-shadow-sm">
-                    매일 11분씩 3회, 33일 후 놀라운 성장
+                    매일 3분 머아크로 리딩, 33일 후 놀라운 성장
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
@@ -663,7 +663,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">나의 읽기 집중력</p>
+                <p className="text-sm text-gray-200 mb-1">나의 읽기 속도</p>
                 <p className="text-xl font-bold text-blue-400">
                   {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(2)} PPM` : '-'}
                 </p>

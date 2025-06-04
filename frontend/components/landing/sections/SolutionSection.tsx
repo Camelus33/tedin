@@ -34,7 +34,7 @@ export default function SolutionSection() {
           >
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
               어떻게 벗어날 수 있을까요? <br />
-              <span className="text-indigo-600">'측정' 후 '노력'</span>이면 가능합니다
+              <span className="text-indigo-600">'정확한 측정'</span>만이 가능합니다
             </h2>
             {/* Add md:text-xl for better readability on larger screens */}
             <p className="mt-6 text-lg md:text-xl text-gray-600">

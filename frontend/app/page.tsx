@@ -9,14 +9,14 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'; // 
 export const metadata: Metadata = {
   // Add metadataBase
   metadataBase: new URL(baseUrl),
-  title: 'Habitus33 | 읽기 속도, 작업 기억 실시간 AI 측정, 잠자는 뇌를 깨우세요',
+  title: 'Habitus33 | 쭉쭉 읽고 바로 이해하세요!',
   description:
-    '당신의 한계는 뇌가 아니라 훈련 방식에 있었습니다. 신경과학 기반 Habitus33으로 작업 기억력(속도, 용량, 지속 시간)을 강화하고 학습과 업무의 레벨을 바꾸세요. 지금 새로운 기회를 경험하세요!',
+    '어렵고 긴 글, 이제 걱정마세요. 작업 기억력(속도, 용량, 시간)을 강화하고 읽기 자신감을 회복하세요!',
   // Add other relevant metadata: keywords, open graph tags, etc.
   keywords: ['작업 기억력', '뇌 훈련', '인지 능력', '집중력', '기억력', '읽기 속도', '신경과학', 'Habitus33', 'ZenGo', '마이크로 리딩','TS 모드'],
   openGraph: {
-    title: 'Habitus33 | 작업 기억, 뇌 잠재력을 깨우는 새로운 기회',
-    description: '신경과학 기반 Habitus33으로 작업 기억력을 강화하고 학습과 업무 효율성을 극대화하세요.',
+    title: 'Habitus33 | 마이크로 리딩, 읽기 속도 측정, 암기력 강화 게임',
+    description: '33일, 몰라보게 달라질 학습과 업무 효율성을 기대하세요.',
     // images: ['/og-image.png'], // Add OG image path later
     url: '/', // Relative to metadataBase
     siteName: 'Habitus33',
