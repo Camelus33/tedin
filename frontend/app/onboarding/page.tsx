@@ -7,6 +7,8 @@ import EvidenceSection from '@/components/common/EvidenceSection';
 import MemoryTest from '@/components/onboarding/MemoryTest';
 import AttentionTest from '@/components/onboarding/AttentionTest';
 import { apiClient } from '@/lib/apiClient';
+import { ArrowPathIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 type Prefs = {
   memorySpanScore: number;
@@ -50,7 +52,6 @@ export default function OnboardingPage() {
         setLoading(false);
       }
     } else if (step === 5) {
-      // 온보딩 완료 시 대시보드로 이동
       router.push("/dashboard");
     }
   };
@@ -66,35 +67,63 @@ export default function OnboardingPage() {
 
   const progressPercent = Math.min((step / 5) * 100, 100);
 
+  const neutralBgColor = "bg-neutral-900";
+  const cardBgColor = "bg-neutral-800";
+  const textColor = "text-neutral-100";
+  const mutedTextColor = "text-neutral-400";
+  const progressBarBgColor = "bg-neutral-700";
+  const progressBarFillColor = "bg-cyan-500";
+  const primaryButtonBgColor = "bg-cyan-500 hover:bg-cyan-600";
+  const primaryButtonTextColor = "text-white";
+  const secondaryButtonBgColor = "bg-neutral-700 hover:bg-neutral-600";
+  const secondaryButtonTextColor = "text-neutral-200";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
-        {/* Debug: show internal state */}
-        {/* <pre className="text-xs text-red-500 mb-2">{JSON.stringify({ step, memorySpanScore, attentionScore })}</pre> */}
-        <div className="flex justify-center mb-4">
-          <AppLogo className="w-9 h-9" />
-        </div>
-        <div className="mb-4">
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-indigo-500" style={{ width: `${progressPercent}%` }} />
+    <div className={`min-h-screen flex flex-col items-center justify-center ${neutralBgColor} p-6`}>
+      <div className={`w-full max-w-md ${cardBgColor} rounded-lg shadow-xl p-8 ${textColor}`}>
+        {/* 진행 표시 (카드의 가장 상단으로 이동) */}
+        <div className="mb-8"> {/* 진행 바와 다음 내용 사이의 여백 */}
+          <div className={`h-3 ${progressBarBgColor} rounded-full overflow-hidden`}>
+            <div className={`h-full ${progressBarFillColor} transition-all duration-500 ease-out`} style={{ width: `${progressPercent}%` }} />
           </div>
-          <div className="text-xs text-center text-gray-600 mt-1">{step} / 5</div>
+          <div className={`text-sm text-center ${mutedTextColor} mt-2`}>{step} / 5단계</div>
         </div>
 
+        {/* 환영 메시지 및 슬로건 (1단계에만 표시) */}
+        {step === 1 && (
+          <div className="mb-8 text-center">
+            <AppLogo className="w-16 h-16 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
+              환영합니다!
+            </h1>
+            <p className="text-xl font-semibold mb-3">
+              "이제, 쭉쭉 읽고 바로 이해하세요!"
+            </p>
+            <p className={`text-lg ${textColor}`}>
+              단 <strong className="font-bold text-cyan-400">33일</strong>, 당신의 놀라운 변화가 시작됩니다.
+            </p>
+          </div>
+        )}
+
+        {/* 로고 (1단계 이후 상단 중앙) */}
+        {step > 1 && (
+          <div className="flex justify-center mb-6">
+            <AppLogo className="w-12 h-12" />
+          </div>
+        )}
+        
         {/* Step Contents */}
         {step === 1 && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">훈련 목표 선택</h2>
-            <div className="flex flex-wrap gap-2">
+          <div key={step} className="space-y-4 animate-in fade-in duration-500">
+            <h2 className="text-xl font-semibold mb-4">목표가 무엇인가요?</h2>
+            <div className="flex flex-wrap justify-center gap-2">
               {goalOptions.map((opt) => (
                 <button
                   key={opt.id}
                   onClick={() =>
                     setGoals(goals.includes(opt.id) ? goals.filter((g) => g !== opt.id) : [...goals, opt.id])
                   }
-                  className={`px-4 py-2 border rounded ${
-                    goals.includes(opt.id) ? "bg-indigo-500 text-white" : "bg-white text-gray-800"
-                  }`}
+                  className={`px-3.5 py-2 border rounded-lg text-sm font-medium transition-colors duration-150 ${goals.includes(opt.id) ? `${primaryButtonBgColor} ${primaryButtonTextColor} border-transparent` : `${secondaryButtonBgColor} ${secondaryButtonTextColor} border-neutral-600 hover:bg-neutral-700`}`}
                 >
                   {opt.label}
                 </button>
@@ -103,83 +132,127 @@ export default function OnboardingPage() {
           </div>
         )}
         {step === 2 && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">워킹 메모리 테스트</h2>
+          <div key={step} className="space-y-4 animate-in fade-in duration-500">
+            <h2 className="text-xl font-semibold mb-1">당신의 숨겨진 인지 능력을 발견해보세요:</h2>
+            <h3 className="text-lg font-medium mb-3 text-cyan-400">워킹 메모리 테스트</h3>
             <EvidenceSection
-              description="워킹 메모리(작업 기억)는 학습에서 중요한 역할을 합니다."
-              citations={[
-                { author: "Alan D. Baddeley", title: "The episodic buffer: a new component of working memory", year: 2000, url: "https://doi.org/10.1016/S1364-6613(00)01446-1" },
-                { author: "Nelson Cowan", title: "The magical number 4 in short-term memory", year: 2001, url: "https://doi.org/10.1037/0033-295X.108.2.205" },
-              ]}
+              description="워킹 메모리(작업 기억)는 학습 능력의 핵심입니다. 간단한 테스트로 현재 상태를 확인해보세요."
             />
             {! (memorySpanScore >= 0) ? (
               <MemoryTest sequenceLength={9} displayDuration={500} onComplete={(score) => setMemorySpanScore(score)} />
             ) : (
-              <p>테스트 완료! 점수: {memorySpanScore}</p>
+              <div className="flex flex-col items-center justify-center text-center py-3">
+                <CheckCircleIcon className="w-12 h-12 text-cyan-400 mb-2" />
+                <p className="text-cyan-400 font-semibold">
+                  훌륭해요! 워킹 메모리 테스트 완료 (점수: {memorySpanScore}).<br/>이 점수를 바탕으로 맞춤 훈련이 제공됩니다!
+                </p>
+              </div>
             )}
           </div>
         )}
         {step === 3 && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">지속 주의력 테스트</h2>
+          <div key={step} className="space-y-4 animate-in fade-in duration-500">
+            <h2 className="text-xl font-semibold mb-1">놀라운 집중력의 시작:</h2>
+            <h3 className="text-lg font-medium mb-3 text-cyan-400">지속 주의력 테스트</h3>
             <EvidenceSection
-              description="지속 주의력은 학습 유지와 수행에 필수적입니다."
-              citations={[
-                { author: "Michael I. Posner", title: "The attention system of the human brain", year: 1990, url: "https://doi.org/10.1146/annurev.ne.13.030190.001325" },
-                { author: "Edward R. Robertson", title: "Sustained Attention to Response Task", year: 1997, url: "https://doi.org/10.1016/S0010-0277(97)00113-4" },
-              ]}
+              description="집중력은 학습 효율을 좌우합니다. 현재 주의력 수준을 측정하고 향상시켜 보세요."
             />
             {! (attentionScore >= 0) ? (
               <AttentionTest onComplete={(score) => setAttentionScore(score)} />
             ) : (
-              <p>테스트 완료! 점수: {attentionScore}</p>
+              <div className="flex flex-col items-center justify-center text-center py-3">
+                <CheckCircleIcon className="w-12 h-12 text-cyan-400 mb-2" />
+                <p className="text-cyan-400 font-semibold">
+                  집중력이 대단하시네요! 지속 주의력 테스트 완료 (점수: {attentionScore}).<br/>Habitus33가 더 발전시켜 드려요!
+                </p>
+              </div>
             )}
           </div>
         )}
         {step === 4 && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">환경 설정</h2>
-            <label className="block">
-              알림 시간:
+          <div key={step} className="space-y-4 animate-in fade-in duration-500">
+            <h2 className="text-xl font-semibold mb-4">Habitus33를 당신에게 맞게 설정하세요</h2>
+            
+            {/* 알림 시간 설정 영역 */}
+            <div className="mb-5"> {/* 이전 mb-3에서 mb-5로 늘려 커뮤니티 참여 영역과의 간격 확보 */}
+              <label htmlFor="notificationTimeInput" className="block font-medium mb-1.5 text-neutral-100"> {/* textColor 적용 및 htmlFor 추가, mb 증가 */}
+                알림 시간:
+              </label>
               <input
+                id="notificationTimeInput"
                 type="time"
                 value={notificationTime}
                 onChange={(e) => setNotificationTime(e.target.value)}
-                className="ml-2 border p-1 rounded"
+                // 기본 스타일 개선 및 Webkit 브라우저 타겟 스타일 추가
+                className={`w-full p-2.5 border rounded-md bg-neutral-700 border-neutral-600 text-neutral-100 placeholder-neutral-400 focus:ring-cyan-500 focus:border-cyan-500 
+                          custom-time-input 
+                          dark:[color-scheme:dark]`} // color-scheme 추가 및 패딩 조정
+                // custom-time-input 클래스에 대한 CSS 정의는 styles/globals.css 등에 필요할 수 있습니다.
+                // 예: input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1) brightness(0.8) sepia(0.5) saturate(5) hue-rotate(170deg); }
               />
-            </label>
-            <label className="flex items-center gap-2">
+              <p className={`text-xs ${mutedTextColor} mt-1.5`}>꾸준한 훈련을 위한 리마인더예요.</p> {/* mt 증가 */}
+            </div>
+
+            {/* 커뮤니티 참여 영역 */}
+            <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={communityInterest}
                 onChange={(e) => setCommunityInterest(e.target.checked)}
+                className="h-4 w-4 rounded border-neutral-600 text-cyan-600 focus:ring-cyan-500 bg-neutral-700"
               />
-              <span>커뮤니티 참여</span>
+              <span className="font-medium text-neutral-100">커뮤니티 참여</span> {/* textColor 적용 */}
+              <span className={`text-xs ${mutedTextColor}`}> (함께 성장하는 즐거움을 경험하세요!)</span>
             </label>
           </div>
         )}
         {step === 5 && prefs && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">추천 훈련</h2>
-            <p>워킹 메모리: {prefs.memorySpanScore}</p>
-            <p>주의력: {prefs.attentionScore}</p>
-            <p>추천 ZenGo: {prefs.recommendedZenGoLevels.join(", ")}</p>
-            <p>추천 TS 루틴: {prefs.recommendedTsDuration}분</p>
+          <div key={step} className="space-y-4 text-center animate-in fade-in duration-500">
+            <h2 className="text-2xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
+              읽기 능력의 놀라운 도약, 지금 시작하세요!
+            </h2>
+            
+            <div className={`p-5 rounded-md ${progressBarBgColor} border border-neutral-700 space-y-3`}>
+              <p className={`${mutedTextColor} text-sm leading-relaxed`}>
+                긴 글 앞에서 답답했거나, 시험 시간이 부족했나요?
+              </p>
+              <p className={`${textColor} text-sm leading-relaxed`}>
+                Habitus33가 해결해 드립니다. 당신의 측정 결과와 <strong className="text-cyan-400">[ {goals.map(g => goalOptions.find(opt => opt.id === g)?.label || g).join(', ')} ]</strong> 목표에 따라,
+                최적의 ZenGo 훈련(레벨 <strong className="text-cyan-400">{prefs.recommendedZenGoLevels.join(", ")}</strong>)과 TS 집중 루틴(<strong className="text-cyan-400">{prefs.recommendedTsDuration}분/일</strong>)을 제안합니다. 이를 통해...
+              </p>
+              <p className={`${textColor} font-semibold text-base leading-relaxed`}>
+                ...집중력이 향상되어, 내용을 더 빠르고 정확하게 이해하며 오래 기억하게 됩니다.
+                긴 글 부담은 줄고, 지식 습득의 즐거움은 커집니다.
+              </p>
+            </div>
+
+            <p className={`font-semibold mt-5 text-lg ${textColor} leading-relaxed`}>
+              <strong className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">33일 후,</strong> Habitus33와 함께 놀라운 변화를 경험하세요! <br/>
+              향상된 집중력과 독해력, 지금 바로 시작하세요.
+            </p>
           </div>
         )}
 
         {/* Navigation */}
-        <div className="mt-6 flex justify-between">
+        <div className="mt-8 flex justify-between">
           <button
             onClick={handlePrev}
             disabled={step === 1}
-            className="px-4 py-2 border rounded disabled:opacity-50"
+            className={`px-5 py-2.5 border border-neutral-600 ${secondaryButtonBgColor} ${secondaryButtonTextColor} rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150`}
           >이전</button>
           <button
             onClick={handleNext}
             disabled={isNextDisabled}
-            className="px-6 py-2 bg-indigo-500 text-white rounded disabled:opacity-50"
-          >{step === 5 ? (loading ? "완료 중..." : "완료") : "다음"}</button>
+            className={`px-8 py-2.5 ${primaryButtonBgColor} ${primaryButtonTextColor} rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 font-semibold flex items-center justify-center`}
+          >
+            {loading && step === 5 ? (
+              <ArrowPathIcon className="animate-spin h-5 w-5 mr-2" />
+            ) : null}
+            {loading && step !== 5 ? (
+              <ArrowPathIcon className="animate-spin h-5 w-5 mr-2" />
+            ) : null}
+            {step === 5 ? (loading ? "완료 중..." : "Habitus33 시작하기!") : (loading ? "다음 단계로..." : "다음")}
+          </button>
         </div>
       </div>
     </div>

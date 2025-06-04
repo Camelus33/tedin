@@ -62,11 +62,12 @@ const MemoryTest: React.FC<MemoryTestProps> = ({ sequenceLength = 5, displayDura
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        className="border p-2 rounded w-full"
+        className="border p-2 rounded w-full bg-neutral-700 border-neutral-600 text-neutral-100 focus:ring-cyan-500 focus:border-cyan-500 placeholder-neutral-400"
+        placeholder="예: 12345"
       />
       <button
         onClick={handleSubmit}
-        className="px-4 py-2 bg-indigo-500 text-white rounded"
+        className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded font-semibold w-full sm:w-auto"
       >
         제출
       </button>

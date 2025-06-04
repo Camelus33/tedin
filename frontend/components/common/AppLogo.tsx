@@ -6,8 +6,8 @@ export default function AppLogo({ className = "w-11 h-11" }: { className?: strin
     <svg viewBox="0 0 50 50" className={className}>
       <defs>
         <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#4F46E5" />
-          <stop offset="100%" stopColor="#9333EA" />
+          <stop offset="0%" stopColor="#4F46E5" /> {/* Indigo-ish blue */}
+          <stop offset="100%" stopColor="#9333EA" /> {/* Purple */}
         </linearGradient>
       </defs>
       <path

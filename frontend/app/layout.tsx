@@ -23,8 +23,8 @@ import CartUIManager from '@/components/cart/CartUIManager'; // Import CartUIMan
 // })
 
 export const metadata = {
-  title: 'Habitus33 - 독서 생산성을 높이는 습관 시스템',
-  description: '독서 습관과 독해력 향상을 위한 타임스캐너와 인지 훈련 도구입니다',
+  title: 'Habitus33: 이제, 쭉쭉 읽고 바로 이해하세요!',
+  description: '느린 읽기에 좌절했나요? Habitus33의 인지과학 기반 마이크로 리딩과 메모진화로 33일 만에 놀라운 읽기 능력 향상과 지적 자신감을 경험하세요!',
 }
 
 export default function RootLayout({

@@ -1,38 +1,24 @@
 import React from 'react';
 
-type Citation = {
-  author: string;
-  title: string;
-  year: number;
-  url?: string;
-};
+// Citation 타입 및 prop 제거
+// type Citation = {
+//   author: string;
+//   title: string;
+//   year: number;
+//   url?: string;
+// };
 
 interface EvidenceSectionProps {
   description: string;
-  citations: Citation[];
 }
 
-const EvidenceSection: React.FC<EvidenceSectionProps> = ({ description, citations }) => {
+const EvidenceSection: React.FC<EvidenceSectionProps> = ({ description }) => {
   return (
-    <div className="bg-indigo-50 p-4 rounded-md border-l-4 border-indigo-500 mb-4">
-      <p className="font-semibold text-indigo-800 mb-2">{description}</p>
-      <ul className="list-disc list-inside text-sm text-gray-700">
-        {citations.map((c, i) => (
-          <li key={i}>
-            {c.author} ({c.year}). <em>{c.title}</em>
-            {c.url && (
-              <a
-                href={c.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 underline ml-1"
-              >
-                [Link]
-              </a>
-            )}
-          </li>
-        ))}
-      </ul>
+    // 배경, 테두리, 큰 패딩 제거. 하단 마진만 유지.
+    <div className="mb-3">
+      {/* 설명 텍스트를 더 부드럽고 작게 만듭니다. */}
+      <p className="text-neutral-400 text-sm">{description}</p>
+      {/* Citations 리스트 렌더링 코드 완전 제거 */}
     </div>
   );
 };
