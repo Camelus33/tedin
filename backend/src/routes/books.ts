@@ -70,7 +70,11 @@ const bookUpdateValidation = [
   body('currentPage').optional().isInt({ min: 0 }).withMessage('현재 페이지는 0 이상이어야 합니다'),
   body('category').optional().trim(),
   body('readingPurpose').optional().isIn(['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure']).withMessage('읽는 목적이 올바르지 않습니다.'),
-  body('purchaseLink').optional().isURL().withMessage('유효한 URL을 입력해주세요. (예: https://...)').trim(),
+  body('purchaseLink')
+    .trim()
+    .optional({ checkFalsy: true })
+    .isURL()
+    .withMessage('유효한 URL을 입력해주세요. (예: https://...)'),
   // 다른 필드에 대한 유효성 검사 추가 가능
 ];
 
@@ -97,7 +101,11 @@ const bookAddValidation = [
     .optional()
     .isIn(['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'])
     .withMessage('읽는 목적이 올바르지 않습니다.'),
-  body('purchaseLink').optional().isURL().withMessage('유효한 URL을 입력해주세요. (예: https://...)').trim(),
+  body('purchaseLink')
+    .trim()
+    .optional({ checkFalsy: true })
+    .isURL()
+    .withMessage('유효한 URL을 입력해주세요. (예: https://...)'),
 ];
 
 // Validation for updating book progress
