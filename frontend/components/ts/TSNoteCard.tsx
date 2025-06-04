@@ -277,7 +277,6 @@ export default function TSNoteCard({
     { key: 'relatedKnowledge', label: '연상된 지식' },
     { key: 'mentalImage', label: '받아들인 의미' },
   ];
-  const [activeTab, setActiveTab] = useState(tabList[0].key);
 
   const tabKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
   
@@ -333,16 +332,15 @@ export default function TSNoteCard({
   };
   
   const handleNext = useCallback(() => {
-    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
-    if (currentIndex < tabKeys.length - 1) {
-      setActiveTab(tabKeys[currentIndex + 1]);
+    if (currentStep < tabKeys.length) {
+      setCurrentStep(prevStep => prevStep + 1);
     } else {
-      handleSave(); 
+      handleSave();
     }
-  }, [activeTab, handleSave, tabKeys]);
+  }, [currentStep, handleSave]);
 
   const handlePrev = () => {
-    setCurrentStep((prev) => (prev > 1 ? prev - 1 : tabList.length));
+    setCurrentStep((prev) => (prev > 1 ? prev - 1 : tabKeys.length));
   };
 
   const displaySessionCreatedAt = sessionDetails?.createdAtISO ? formatSessionCreatedAt(sessionDetails.createdAtISO) : '세션 정보 없음';
