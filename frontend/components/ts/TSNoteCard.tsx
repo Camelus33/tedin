@@ -449,7 +449,7 @@ export default function TSNoteCard({
         className="relative flex flex-col h-full"
       >
         <div className="flex-grow mb-2">
-          <p className={`text-base ${cyberTheme.textMain} leading-relaxed whitespace-pre-wrap break-words max-w-prose`}>
+          <p className={`text-lg font-semibold text-sky-300 py-2 leading-relaxed whitespace-pre-wrap break-words max-w-prose`}>
             {note.content}
           </p>
           {!minimalDisplay && renderBookSource()}
