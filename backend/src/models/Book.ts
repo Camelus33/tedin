@@ -9,11 +9,12 @@ export interface IBook extends Document {
   isbn: string;
   coverImage: string;
   category: string;
-  status: 'not_started' | 'in_progress' | 'completed';
+  status: 'not_started' | 'in_progress' | 'completed' | 'to_read' | 'reading' | 'on_hold' | 'dropped';
   completionPercentage: number;
   estimatedRemainingMinutes?: number | null;
   avgPpm?: number | null;
   readingPurpose?: 'exam_prep' | 'practical_knowledge' | 'humanities_self_reflection' | 'reading_pleasure' | null;
+  purchaseLink?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,7 +60,7 @@ const BookSchema: Schema = new Schema(
     },
     status: {
       type: String,
-      enum: ['not_started', 'in_progress', 'completed'],
+      enum: ['not_started', 'in_progress', 'completed', 'to_read', 'reading', 'on_hold', 'dropped'],
       default: 'not_started',
     },
     completionPercentage: {
@@ -81,6 +82,11 @@ const BookSchema: Schema = new Schema(
       enum: ['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'],
       default: null,
     },
+    purchaseLink: {
+      type: String,
+      trim: true,
+      default: ''
+    }
   },
   { timestamps: true }
 );

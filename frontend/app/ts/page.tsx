@@ -52,7 +52,7 @@ export default function TSSetupPage() {
   const [startPage, setStartPage] = useState<number>(1);
   const [endPage, setEndPage] = useState<number>(0);
   const [enableWarmup, setEnableWarmup] = useState<boolean>(true);
-  const [focusDuration, setFocusDuration] = useState<number>(11);
+  const [focusDuration, setFocusDuration] = useState<number>(3);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [isStarting, setIsStarting] = useState<boolean>(false);
@@ -443,15 +443,19 @@ export default function TSSetupPage() {
                  <input
                     type="range"
                     id="focus-duration"
-                    min="5"
-                    max="16"
+                    name="focusDuration"
+                    min="3"
+                    max="17"
                     step="1"
                     value={focusDuration}
                     onChange={(e) => setFocusDuration(Number(e.target.value))}
                     className="w-full h-1.5 bg-gray-600 rounded-lg appearance-none cursor-pointer range-sm accent-cyan-500 flex-grow"
                  />
-                 <span className={`text-sm font-medium ${cyberTheme.textLight} w-8 text-right`}>{focusDuration}분</span>
+                 <span className={`text-lg font-semibold ${cyberTheme.secondary} w-10 text-center`}>{focusDuration}</span>
               </div>
+              <p className="text-xs text-gray-400 mt-2">
+                최소 3분, 최대 17분까지 설정 가능합니다.
+              </p>
             </div>
           </div>
 

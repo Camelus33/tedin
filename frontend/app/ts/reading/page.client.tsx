@@ -34,6 +34,7 @@ export default function TSReadingPage() {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [startTime, setStartTime] = useState<number | null>(null);
 
   // Format seconds into MM:SS
   const formatTime = (seconds: number) => {
@@ -82,6 +83,7 @@ export default function TSReadingPage() {
         
         setSessionData(adjustedData);
         setTimeRemaining(incomingDuration);
+        setStartTime(Date.now());
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -119,7 +121,13 @@ export default function TSReadingPage() {
   };
 
   const handleFinishEarly = () => {
-    router.push(`/ts/review?sessionId=${sessionId}`);
+    let elapsedSeconds = sessionData ? sessionData.durationSec - timeRemaining : 0;
+    if (startTime) {
+      const currentTime = Date.now();
+      elapsedSeconds = Math.round((currentTime - startTime) / 1000);
+    }
+    const finalElapsedSeconds = Math.max(1, elapsedSeconds);
+    router.push(`/ts/review?sessionId=${sessionId}&elapsed=${finalElapsedSeconds}`);
   };
 
   if (isLoading) {

@@ -42,7 +42,11 @@ export default function NewBookPage() {
     genre: "",
     totalPages: "",
     readingPurpose: "",
-    currentPage: "0"
+    currentPage: "0",
+    isbn: "",
+    category: "자기계발",
+    coverImage: "",
+    purchaseLink: ""
   });
   
   // 이미지 프리뷰
@@ -141,6 +145,9 @@ export default function NewBookPage() {
       if (coverImageFile) {
         apiFormData.append('coverImage', coverImageFile); // 'coverImage'는 백엔드에서 받을 필드명
       }
+
+      apiFormData.append('isbn', formData.isbn);
+      apiFormData.append('purchaseLink', formData.purchaseLink);
 
       console.log("전송할 FormData:", apiFormData); // FormData 내용을 직접 로깅하기는 어려움
       console.log("전송 토큰:", token.substring(0, 10) + "...");
@@ -409,6 +416,58 @@ export default function NewBookPage() {
                 
                 <div className="bg-cyan-900/30 rounded-md p-2 w-full text-[11px] text-cyan-300 border border-cyan-500/20">
                   <p>💡 표지 이미지는 선택사항입니다. 업로드하지 않으면 제목과 저자 정보로 표지가 생성됩니다.</p>
+                </div>
+
+                {/* 책 표지 이미지 업로드 */}
+                <div>
+                  <label htmlFor="coverImageFile" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                    책 표지 이미지 (선택 사항)
+                  </label>
+                  <div className="mt-1 flex items-center justify-center px-3 py-2 border-2 border-dashed border-gray-600 rounded-md hover:border-cyan-500 transition-colors">
+                    <div className="space-y-0.5 text-center">
+                      {coverImage ? (
+                        <div className="relative group">
+                          <Image src={coverImage} alt="Cover preview" width={128} height={192} className="mx-auto h-32 w-auto object-contain rounded-md" />
+                          <button 
+                            type="button"
+                            onClick={clearCoverImage}
+                            className="absolute top-0 right-0 m-1 p-0.5 bg-red-700/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            aria-label="이미지 제거"
+                          >
+                            <FiX size={12} />
+                          </button>
+                        </div>
+                      ) : (
+                        <FiUpload className="mx-auto h-6 w-6 text-gray-500" />
+                      )}
+                      <div className="text-xs text-gray-400">
+                        <label
+                          htmlFor="coverImageFile-upload"
+                          className={`relative cursor-pointer rounded-md font-medium text-cyan-400 hover:text-cyan-300 focus-within:outline-none ${isUploading ? 'opacity-50' : ''}`}
+                        >
+                          <span>{isUploading ? '업로드 중...' : (coverImage ? '다른 이미지 선택' : '이미지 선택')}</span>
+                          <input id="coverImageFile-upload" name="coverImageFile" type="file" className="sr-only" onChange={handleImageUpload} accept="image/*" ref={fileInputRef} disabled={isUploading} />
+                        </label>
+                      </div>
+                      {!coverImage && <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 인터넷 서점 링크 */}
+                <div>
+                  <label htmlFor="purchaseLink" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                    인터넷 서점 링크 (선택 사항)
+                  </label>
+                  <input
+                    type="url"
+                    id="purchaseLink"
+                    name="purchaseLink"
+                    value={formData.purchaseLink}
+                    onChange={handleInputChange}
+                    placeholder="예: https://www.yes24.com/상품/12345"
+                    className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400"
+                  />
                 </div>
               </div>
             </div>

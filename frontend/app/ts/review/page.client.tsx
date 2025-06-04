@@ -54,6 +54,7 @@ export default function TSReviewPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('sessionId');
+  const elapsedSecondsFromReading = searchParams.get('elapsed');
   
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
   const [reviewData, setReviewData] = useState({
@@ -61,6 +62,7 @@ export default function TSReviewPage() {
     memo: '',
     summary: '',
     selfRating: 3,
+    memoType: 'thought'
   });
   
   const [timeLeft, setTimeLeft] = useState<number>(180); // 3 minutes for review
@@ -150,32 +152,38 @@ export default function TSReviewPage() {
     setIsSubmitting(true);
 
     try {
-      // Calculate PPM (Pages Per Minute) with safety checks
       const pagesRead = Math.max(1, reviewData.actualEndPage - sessionData.startPage);
-      const minutesSpent = Math.max(0.5, sessionData.durationSec / 60); // 최소 0.5분(30초)으로 설정
-      const rawPpm = pagesRead / minutesSpent;
       
-      // Ensure PPM is a valid number between 1-1000
-      const ppm = isNaN(rawPpm) ? 1 : Math.min(1000, Math.max(1, rawPpm));
+      let actualDurationSec = sessionData.durationSec;
+      if (elapsedSecondsFromReading) {
+        const parsedElapsed = parseInt(elapsedSecondsFromReading, 10);
+        if (!isNaN(parsedElapsed) && parsedElapsed > 0) {
+          actualDurationSec = parsedElapsed;
+        }
+      }
+      actualDurationSec = Math.max(1, actualDurationSec || 1);
 
-      // durationSec이 유효한 값인지 확인하고 최소 1초로 설정
-      const validDurationSec = Math.max(1, sessionData.durationSec || 1);
+      const minutesSpent = Math.max(0.5, actualDurationSec / 60);
+      const rawPpm = pagesRead / minutesSpent;
+      const ppm = isNaN(rawPpm) ? 1 : Math.min(1000, Math.max(1, rawPpm));
 
       console.log('세션 완료 요청 데이터:', {
         actualEndPage: reviewData.actualEndPage,
         memo: reviewData.memo,
         summary10words: reviewData.summary.split(/\s+/).slice(0, 10).join(' '),
         selfRating: reviewData.selfRating,
-        durationSec: validDurationSec,
+        durationSec: actualDurationSec,
         ppm,
+        memoType: reviewData.memoType
       });
       await api.put(`/sessions/${sessionId}/complete`, {
           actualEndPage: reviewData.actualEndPage,
           memo: reviewData.memo,
           summary10words: reviewData.summary.split(/\s+/).slice(0, 10).join(' '),
           selfRating: reviewData.selfRating,
-          durationSec: validDurationSec,
+          durationSec: actualDurationSec,
           ppm,
+          memoType: reviewData.memoType
       });
 
       // Navigate to results page
@@ -250,7 +258,31 @@ export default function TSReviewPage() {
           </div>
 
           <div>
-            <label htmlFor="memo" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>1줄 메모</label>
+            <label className={`block text-sm font-medium mb-1.5 ${cyberTheme.textMuted}`}>1줄 메모 성격 선택</label>
+            <div className="flex space-x-2">
+              {[
+                { id: 'thought', label: '💭 단상' },
+                { id: 'quote', label: '💬 인용' },
+                { id: 'question', label: '❓ 질문' },
+              ].map((type) => (
+                <button
+                  key={type.id}
+                  type="button"
+                  onClick={() => setReviewData(prev => ({ ...prev, memoType: type.id }))}
+                  className={`flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all border
+                    ${reviewData.memoType === type.id
+                      ? `${cyberTheme.borderPrimary} ${cyberTheme.buttonPrimaryBg} text-white shadow-md` 
+                      : `${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryBg} ${cyberTheme.textLight} hover:border-cyan-400 hover:bg-gray-700`}
+                  `}
+                >
+                  {type.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="memo" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>1줄 메모 (핵심 생각)</label>
             <textarea
               id="memo"
               name="memo"

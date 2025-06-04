@@ -163,7 +163,7 @@ export const createSession = async (req: Request, res: Response) => {
 export const completeSession = async (req: Request, res: Response) => {
   const { sessionId } = req.params;
   const userId = req.user?.id;
-  const { actualEndPage, durationSec, ppm, memo, summary10words, selfRating } = req.body;
+  const { actualEndPage, durationSec, ppm, memo, summary10words, selfRating, memoType } = req.body;
 
   if (!userId) {
     return res.status(401).json({ message: '인증이 필요합니다.' });
@@ -237,7 +237,7 @@ export const completeSession = async (req: Request, res: Response) => {
         userId: userId,
         bookId: session.bookId,
         originSession: session._id,
-        type: 'thought',
+        type: memoType || 'thought',
         content: memo,
         tags: (summary10words || '').trim().split(/\s+/).filter(Boolean),
       });

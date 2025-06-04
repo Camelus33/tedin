@@ -47,7 +47,8 @@ export default function EditBookPage() {
     totalPages: "",
     readingPurpose: "",
     currentPage: "0",
-    readingSpeed: ""
+    readingSpeed: "",
+    purchaseLink: ""
   });
   
   const [coverImage, setCoverImage] = useState<string | null>(null);
@@ -115,7 +116,8 @@ export default function EditBookPage() {
             totalPages: book.totalPages?.toString() || "",
             readingPurpose: book.readingPurpose || book.readingGoal || "",
             currentPage: book.currentPage?.toString() || "0",
-            readingSpeed: book.readingSpeed?.toString() || ""
+            readingSpeed: book.readingSpeed?.toString() || "",
+            purchaseLink: book.purchaseLink || ""
           });
           
           if (book.coverImage) {
@@ -239,6 +241,7 @@ export default function EditBookPage() {
       if (formData.readingSpeed) {
         apiFormData.append('readingSpeed', formData.readingSpeed);
       }
+      apiFormData.append('purchaseLink', formData.purchaseLink || '');
 
       if (coverImageFile) { // 새 이미지 파일이 선택되었을 경우
         apiFormData.append('coverImage', coverImageFile);
@@ -470,6 +473,23 @@ export default function EditBookPage() {
                     )}
                   </div>
                 </div>
+
+                {/* 인터넷 서점 링크 */}
+                <div>
+                  <label htmlFor="purchaseLink" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                    인터넷 서점 링크 (선택 사항)
+                  </label>
+                  <input
+                    type="url"
+                    id="purchaseLink"
+                    name="purchaseLink"
+                    value={formData.purchaseLink}
+                    onChange={handleInputChange}
+                    placeholder="예: https://www.yes24.com/상품/12345"
+                    className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400"
+                  />
+                </div>
+
               </div>
             </div>
             

@@ -101,7 +101,7 @@ export const addBook = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    const { title, author, totalPages, currentPage, isbn, category, readingPurpose } = req.body;
+    const { title, author, totalPages, currentPage, isbn, category, readingPurpose, coverImage, purchaseLink } = req.body;
     const coverImageFile = req.file as Express.Multer.File;
 
     const newBookData: any = {
@@ -115,6 +115,7 @@ export const addBook = async (req: Request, res: Response) => {
       status: 'not_started',
       completionPercentage: 0,
       readingPurpose,
+      purchaseLink: purchaseLink || '',
     };
 
     if (coverImageFile && coverImageFile.filename) {
@@ -147,7 +148,7 @@ export const updateBookInfo = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
     const userId = req.user?.id;
-    const { title, author, totalPages, currentPage, category, readingPurpose, readingSpeed, removeCoverImage } = req.body;
+    const { title, author, totalPages, currentPage, category, readingPurpose, readingSpeed, removeCoverImage, purchaseLink } = req.body;
     const coverImageFile = req.file as Express.Multer.File;
 
     if (!userId) {
@@ -167,6 +168,7 @@ export const updateBookInfo = async (req: Request, res: Response) => {
     if (totalPages !== undefined) updateData.totalPages = parseInt(totalPages, 10);
     if (category !== undefined) updateData.category = category.trim();
     if (readingPurpose !== undefined) updateData.readingPurpose = readingPurpose;
+    if (purchaseLink !== undefined) updateData.purchaseLink = purchaseLink;
     // currentPage 및 status는 updateBookProgress에서 관리하므로 여기서는 제외하거나, 
     // 프론트엔드에서 모든 정보를 한 번에 보낸다면 여기서도 처리 가능.
     // 여기서는 프론트엔드가 보낸 값을 그대로 반영한다고 가정.
@@ -427,7 +429,7 @@ export const updateBook = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
     const userId = req.user?.id;
-    const { title, author, totalPages, currentPage, isbn, category, readingPurpose, status } = req.body;
+    const { title, author, totalPages, currentPage, isbn, category, readingPurpose, status, purchaseLink } = req.body;
     const coverImageFile = req.file as Express.Multer.File;
 
     const book = await Book.findOne({ _id: bookId, userId });
@@ -443,6 +445,7 @@ export const updateBook = async (req: Request, res: Response) => {
     if (category) book.category = category;
     if (readingPurpose) book.readingPurpose = readingPurpose;
     if (status) book.status = status;
+    if (purchaseLink) book.purchaseLink = purchaseLink;
 
     if (coverImageFile && coverImageFile.filename) {
       const backendUrl = process.env.BACKEND_URL || 'https://habitus33-api.onrender.com';
