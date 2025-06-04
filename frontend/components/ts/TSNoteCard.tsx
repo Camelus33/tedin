@@ -385,7 +385,7 @@ export default function TSNoteCard({
   const renderBookSource = () => {
     if (!bookTitle) return null;
     return (
-      <div className="mt-2 mb-1 text-xs text-gray-400 flex items-center">
+      <div className="mt-1 mb-2 text-xs text-gray-400 flex items-center">
         <SolidBookOpenIcon className="h-3.5 w-3.5 mr-1.5 text-cyan-500 flex-shrink-0" />
         출처: <span className="font-medium text-gray-300 ml-1 truncate" title={bookTitle}>{bookTitle}</span>
       </div>
@@ -410,8 +410,8 @@ export default function TSNoteCard({
         const value = note[field.key];
         if (value && typeof value === 'string' && value.trim() !== '') {
           return (
-            <div key={field.key} className="mt-2">
-              <p className="text-xs font-semibold text-cyan-500 mb-0.5">{field.label}:</p>
+            <div key={field.key} className="mt-2.5">
+              <p className="text-xs font-medium text-cyan-600 mb-0.5">{field.label}:</p>
               <p className="text-sm text-gray-300 whitespace-pre-wrap break-words">{value}</p>
             </div>
           );
@@ -425,8 +425,10 @@ export default function TSNoteCard({
     }
 
     return (
-      <div className="mt-3 pt-3 border-t border-gray-700/30">
-        <h4 className="text-xs font-bold text-gray-500 mb-1">메모 진화 내용:</h4>
+      <div className="mt-4 pt-3 border-t border-gray-700/50">
+        <h4 className="text-xs font-semibold text-gray-400 mb-2">
+          메모 진화 내용:
+        </h4>
         {details}
       </div>
     );
@@ -448,16 +450,20 @@ export default function TSNoteCard({
       <div 
         className="relative flex flex-col h-full"
       >
-        <div className="flex-grow mb-2">
-          <p className={`text-lg font-semibold text-sky-300 py-2 leading-relaxed whitespace-pre-wrap break-words max-w-prose`}>
+        {/* 1. 강조된 note.content 인용 블록 */}
+        <div className="mb-3 border-l-4 border-cyan-400 pl-4 py-3">
+          <p className="text-xl font-medium text-gray-100 leading-relaxed whitespace-pre-wrap break-words">
             {note.content}
           </p>
-          {!minimalDisplay && renderBookSource()}
         </div>
 
-        {/* Render memo evolution details in view mode */}
+        {/* 2. 출처 정보 */}
+        {!minimalDisplay && renderBookSource()}
+        
+        {/* 3. Render memo evolution details in view mode */}
         {renderMemoEvolutionDetails()}
 
+        {/* 4. 태그 목록 */}
         {!minimalDisplay && note.tags && note.tags.length > 0 && (
           <div className="mb-3 mt-1 flex flex-wrap gap-1.5">
             {note.tags.map((tag, index) => (
