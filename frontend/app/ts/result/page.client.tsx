@@ -350,7 +350,11 @@ export default function TSResultPage() {
             책 페이지로
           </Button>
           <Button 
-            href="/ts" 
+            href={
+              sessionResult && sessionResult.bookId && typeof sessionResult.bookId === 'object' && sessionResult.bookId._id
+                ? `/ts?lastReadBookId=${sessionResult.bookId._id}`
+                : "/ts"
+            } 
             variant="outline" 
             fullWidth
             className="col-span-2"

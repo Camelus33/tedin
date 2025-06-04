@@ -372,7 +372,7 @@ export default function BookDetailPage() {
   };
 
   const handleStartReading = () => {
-    router.push(`/ts?bookId=${bookId}`);
+    router.push(`/ts?lastReadBookId=${bookId}`);
   };
 
   const handleDeleteBook = async () => {

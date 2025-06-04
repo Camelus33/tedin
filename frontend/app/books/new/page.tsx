@@ -113,6 +113,9 @@ export default function NewBookPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Log the purchaseLink value for debugging
+    console.log("[DEBUG] purchaseLink to be submitted:", `'${formData.purchaseLink}'`);
+
     // 필수 필드 검증
     if (!formData.title || !formData.author || !formData.totalPages) {
       setError("제목, 저자, 총 페이지 수는 필수 입력 항목입니다");

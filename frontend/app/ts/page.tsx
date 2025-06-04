@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -47,6 +47,7 @@ const LOCAL_STORAGE_BOOKS_KEY = 'habitus33_books_cache';
 
 export default function TSSetupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<string>('');
   const [startPage, setStartPage] = useState<number>(1);
@@ -61,15 +62,30 @@ export default function TSSetupPage() {
   // Redux 스토어에서 user 정보 가져오기 (auth가 아닌 user 슬라이스 사용)
   const user = useSelector((state: RootState) => state.user?.isAuthenticated);
 
-  // Handle bookId query parameter from URL
+  // URL에서 lastReadBookId를 읽고, 책 목록이 로드되면 해당 책을 선택
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const queryBookId = params.get('bookId');
-    if (queryBookId) {
-      setSelectedBookId(queryBookId);
+    const lastReadBookIdFromUrl = searchParams.get('lastReadBookId');
+    console.log('TSSetupPage - lastReadBookIdFromUrl:', lastReadBookIdFromUrl); // 디버깅 로그
+    console.log('TSSetupPage - books available:', books.length); // 디버깅 로그
+    
+    if (books.length > 0) { // 책 목록이 로드된 후에만 실행
+      if (lastReadBookIdFromUrl) {
+        const bookExists = books.some(book => book._id === lastReadBookIdFromUrl);
+        if (bookExists) {
+          console.log('TSSetupPage - Selecting book from URL:', lastReadBookIdFromUrl); // 디버깅 로그
+          setSelectedBookId(lastReadBookIdFromUrl);
+        } else {
+          console.log('TSSetupPage - Book from URL not found, selecting first book (if any and none selected).'); // 디버깅 로그
+          if (!selectedBookId && books.length > 0) { // URL의 책이 없지만, 아직 선택된 책이 없다면 첫번째 책 선택
+            setSelectedBookId(books[0]._id);
+          }
+        }
+      } else if (!selectedBookId && books.length > 0) { // URL 파라미터가 없고, 아직 선택된 책이 없다면 첫번째 책 선택
+        console.log('TSSetupPage - No URL param, selecting first book (if any and none selected).'); // 디버깅 로그
+        setSelectedBookId(books[0]._id);
+      }
     }
-  }, [books]);
+  }, [books, searchParams, selectedBookId]);
 
   // Update start and end pages when a book is selected
   useEffect(() => {
@@ -164,13 +180,8 @@ export default function TSSetupPage() {
         
         setBooks(bookList);
         
-        // 책이 있으면 첫 번째 책 선택
-        if (bookList.length > 0) {
-          console.log('첫 번째 책 선택:', bookList[0].title);
-          setSelectedBookId(bookList[0]._id);
-          setStartPage(bookList[0].currentPage);
-          setEndPage(Math.min(bookList[0].currentPage + 10, bookList[0].totalPages));
-        } else {
+        // 책이 없는 경우 새 책 추가 모드로 전환하는 로직은 유지
+        if (bookList.length === 0) {
           console.log('책이 없어 새 책 추가 모드로 전환');
           // 책이 없으면 새 책 추가 옵션으로 전환
           setBookSource('new');
@@ -201,9 +212,7 @@ export default function TSSetupPage() {
               }
             ];
             setBooks(testBooks);
-            setSelectedBookId(testBooks[0]._id);
-            setStartPage(testBooks[0].currentPage);
-            setEndPage(Math.min(testBooks[0].currentPage + 10, testBooks[0].totalPages));
+            // setSelectedBookId 등은 상단 useEffect에서 books 상태 변경에 따라 처리됨
             setError('서버 연결 실패, 테스트 데이터를 사용합니다');
           } else {
             // 캐시된 책 목록이 없는 경우 에러 표시
@@ -221,16 +230,7 @@ export default function TSSetupPage() {
     };
 
     fetchBooks();
-  }, [router, books.length]);
-
-  // books 배열이 바뀔 때마다 첫 번째 책으로 선택 상태 초기화
-  useEffect(() => {
-    if (books.length > 0) {
-      setSelectedBookId(books[0]._id);
-      setStartPage(books[0].currentPage);
-      setEndPage(Math.min(books[0].currentPage + 10, books[0].totalPages));
-    }
-  }, [books]);
+  }, [router]);
 
   const handleBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const bookId = e.target.value;
