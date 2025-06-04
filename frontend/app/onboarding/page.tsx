@@ -207,51 +207,73 @@ export default function OnboardingPage() {
           </div>
         )}
         {step === 5 && prefs && (
-          <div key={step} className="space-y-4 text-center animate-in fade-in duration-500">
-            <h2 className="text-2xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-              읽기 능력의 놀라운 도약, 지금 시작하세요!
+          <div key={step} className="space-y-6 text-center animate-in fade-in duration-500">
+            {/* 1. 상단 아이콘 또는 로고 (개선안) */}
+            {/* TODO: 여기에 서비스의 핵심 가치를 나타내는 일러스트나 아이콘 추가 (예: 뇌, 책, 성장 관련) */}
+            {/* 예시: <BrainIcon className="w-16 h-16 mx-auto mb-4 text-cyan-400" /> */}
+            
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
+              읽기 능력의 놀라운 도약, <br/> 지금 시작하세요! {/* 부드러운 줄바꿈 추가 */}
             </h2>
             
-            <div className={`p-5 rounded-md ${progressBarBgColor} border border-neutral-700 space-y-3`}>
-              <p className={`${mutedTextColor} text-sm leading-relaxed`}>
-                긴 글 앞에서 답답했거나, 시험 시간이 부족했나요?
+            {/* 2. 핵심 프로그램 소개 (카드형 또는 섹션 구분 제안) */}
+            <div className={`p-6 rounded-lg ${progressBarBgColor} border border-neutral-700 space-y-4`}>
+              {/* TODO: 각 항목 옆에 작은 아이콘 추가 고려 */}
+              <p className={`${textColor} text-lg leading-relaxed`}>
+                당신의 측정 결과와 <strong className="text-cyan-400">[ {goals.map(g => goalOptions.find(opt => opt.id === g)?.label || g).join(', ')} ]</strong> 목표에 맞춰,
+                Habitus33가 최적의 훈련을 제안합니다.
               </p>
-              <p className={`${textColor} text-sm leading-relaxed`}>
-                Habitus33가 해결해 드립니다. 당신의 측정 결과와 <strong className="text-cyan-400">[ {goals.map(g => goalOptions.find(opt => opt.id === g)?.label || g).join(', ')} ]</strong> 목표에 따라,
-                최적의 ZenGo 훈련(레벨 <strong className="text-cyan-400">{prefs.recommendedZenGoLevels.join(", ")}</strong>)과 TS 집중 루틴(<strong className="text-cyan-400">{prefs.recommendedTsDuration}분/일</strong>)을 제안합니다. 이를 통해...
-              </p>
-              <p className={`${textColor} font-semibold text-base leading-relaxed`}>
-                ...집중력이 향상되어, 내용을 더 빠르고 정확하게 이해하며 오래 기억하게 됩니다.
+              
+              {/* ZenGo 훈련 */}
+              <div className="text-left p-3 bg-neutral-700 rounded-md"> {/* 배경색 살짝 다르게 */}
+                {/* TODO: ZenGo 아이콘 */}
+                <h3 className="font-semibold text-cyan-400 mb-1">ZenGo 훈련 (레벨 {prefs.recommendedZenGoLevels.join(", ")})</h3>
+                <p className={`${mutedTextColor} text-sm`}>뇌가소성 원리에 기반한 시지각 및 인지 능력 강화 훈련입니다.</p>
+              </div>
+
+              {/* TS 집중 루틴 */}
+              <div className="text-left p-3 bg-neutral-700 rounded-md">
+                {/* TODO: TS 루틴 아이콘 (시계/달력 등) */}
+                <h3 className="font-semibold text-cyan-400 mb-1">TS 집중 루틴 ({prefs.recommendedTsDuration}분/일)</h3>
+                <p className={`${mutedTextColor} text-sm`}>매일 꾸준한 집중 연습으로 독해 지구력을 향상시킵니다.</p>
+              </div>
+              
+              <p className={`${textColor} font-semibold text-lg mt-3 leading-relaxed`}>
+                이를 통해 집중력이 향상되어, 내용을 더 빠르고 정확하게 이해하며 오래 기억하게 됩니다.
                 긴 글 부담은 줄고, 지식 습득의 즐거움은 커집니다.
               </p>
             </div>
 
-            <p className={`font-semibold mt-5 text-lg ${textColor} leading-relaxed`}>
-              <strong className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">33일 후,</strong> Habitus33와 함께 놀라운 변화를 경험하세요! <br/>
-              향상된 집중력과 독해력, 지금 바로 시작하세요.
+            {/* 3. 변화 기간 및 효과 강조 (요청하신 텍스트 수정 반영) */}
+            <p className={`font-semibold mt-6 text-xl ${textColor} leading-relaxed`}> 
+              {/* TODO: "33일간" 부분에 달력 아이콘 또는 시각적 강조 요소 추가 */}
+              단 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-2xl">3분 11페이지, 33일간의</strong> 변화! <br/> 
+              Habitus33와 함께 놀라운 성장을 경험하세요.
             </p>
           </div>
         )}
 
         {/* Navigation */}
-        <div className="mt-8 flex justify-between">
+        <div className="mt-10 flex justify-between items-center"> {/* mt 증가 및 items-center 추가 */}
           <button
             onClick={handlePrev}
             disabled={step === 1}
+            // 이전 버튼 스타일은 유지하거나, step 5에서는 "다시 설정하기" 등으로 텍스트 변경 고려
             className={`px-5 py-2.5 border border-neutral-600 ${secondaryButtonBgColor} ${secondaryButtonTextColor} rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150`}
-          >이전</button>
+          >
+            {step === 5 ? "설정 검토" : "이전"}
+          </button>
           <button
             onClick={handleNext}
             disabled={isNextDisabled}
-            className={`px-8 py-2.5 ${primaryButtonBgColor} ${primaryButtonTextColor} rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 font-semibold flex items-center justify-center`}
+            // 주요 CTA 버튼 스타일 강조 (개선안)
+            className={`px-8 py-3 ${primaryButtonBgColor} ${primaryButtonTextColor} rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 font-bold text-lg shadow-lg hover:shadow-cyan-500/50 flex items-center justify-center`}
           >
-            {loading && step === 5 ? (
+            {loading && step === 4 ? ( // step 4에서 로딩 아이콘 (기존 로직은 step 5였으나, API 호출은 step 4에서 발생)
               <ArrowPathIcon className="animate-spin h-5 w-5 mr-2" />
             ) : null}
-            {loading && step !== 5 ? (
-              <ArrowPathIcon className="animate-spin h-5 w-5 mr-2" />
-            ) : null}
-            {step === 5 ? (loading ? "완료 중..." : "Habitus33 시작하기!") : (loading ? "다음 단계로..." : "다음")}
+            {step === 5 ? "Habitus33 시작하기!" : (loading && step === 4 ? "설정 저장 중..." : "다음")} 
+            {/* TODO: step 5 버튼에 화살표 아이콘 추가 (예: <ArrowRightIcon className="w-5 h-5 ml-2" />) */}
           </button>
         </div>
       </div>
