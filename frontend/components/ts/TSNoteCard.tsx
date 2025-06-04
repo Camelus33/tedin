@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AiOutlineQuestionCircle, AiOutlineInfoCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
-import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon } from '@heroicons/react/24/solid';
+import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import api from '@/lib/api'; // Import the central api instance
 import {
   DropdownMenu,
@@ -277,6 +277,7 @@ export default function TSNoteCard({
     { key: 'relatedKnowledge', label: '연상된 지식' },
     { key: 'mentalImage', label: '받아들인 의미' },
   ];
+  const [activeTab, setActiveTab] = useState(tabList[0].key);
 
   const tabKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
   
@@ -288,6 +289,13 @@ export default function TSNoteCard({
       mentalImage: note.mentalImage || '',
     });
   }, [note.importanceReason, note.momentContext, note.relatedKnowledge, note.mentalImage]);
+
+  useEffect(() => {
+    const newCurrentStep = tabKeys.indexOf(activeTab as typeof tabKeys[number]) + 1;
+    if (newCurrentStep > 0) {
+      setCurrentStep(newCurrentStep);
+    }
+  }, [activeTab, tabKeys]);
 
   const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
   const tabQuestions: Record<string, { question: string; placeholder: string }> = {
@@ -332,16 +340,24 @@ export default function TSNoteCard({
   };
   
   const handleNext = useCallback(() => {
-    if (currentStep < tabKeys.length) {
-      setCurrentStep(prevStep => prevStep + 1);
+    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
+    if (currentIndex < tabKeys.length - 1) {
+      setActiveTab(tabKeys[currentIndex + 1]);
     } else {
-      handleSave();
+      // Cycle to the first tab instead of saving/closing
+      setActiveTab(tabKeys[0]); 
     }
-  }, [currentStep, handleSave]);
+  }, [activeTab, tabKeys]);
 
-  const handlePrev = () => {
-    setCurrentStep((prev) => (prev > 1 ? prev - 1 : tabKeys.length));
-  };
+  const handlePrev = useCallback(() => {
+    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
+    if (currentIndex > 0) {
+      setActiveTab(tabKeys[currentIndex - 1]);
+    } else {
+      // Cycle to the last tab
+      setActiveTab(tabKeys[tabKeys.length - 1]);
+    }
+  }, [activeTab, tabKeys]);
 
   const displaySessionCreatedAt = sessionDetails?.createdAtISO ? formatSessionCreatedAt(sessionDetails.createdAtISO) : '세션 정보 없음';
   const displaySessionDuration = sessionDetails?.durationSeconds !== undefined ? formatSessionDuration(sessionDetails.durationSeconds) : '';
@@ -481,13 +497,12 @@ export default function TSNoteCard({
             {onAddToCart && (
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
                 onClick={() => onAddToCart(note._id, note.bookId)}
-                title={isAddedToCart ? "카트에서 제거" : "지식 카트에 담기"}
+                title={isAddedToCart ? "단권화 노트에서 제거" : "단권화 노트에 담기"}
                 className={`${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
               >
-                <ShoppingCartIcon className={`h-4 w-4 mr-1.5 ${isAddedToCart ? 'text-green-500' : ''}`} />
-                {isAddedToCart ? '카트에 담김' : '카트 담기'}
+                <ShoppingCartIcon className={`h-4 w-4 ${isAddedToCart ? 'text-green-500' : ''}`} />
               </Button>
             )}
 
@@ -555,15 +570,19 @@ export default function TSNoteCard({
               {tabList.map((tab, index) => (
                 <button
                   key={index}
-                  onClick={() => setCurrentStep(index + 1)}
+                  onClick={() => setActiveTab(tabKeys[index])}
                   className={`w-3 h-3 rounded-full ${currentStep === index + 1 ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
                   title={tab.label}
                 />
               ))}
             </div>
             <div className="space-x-2">
-              <Button variant="outline" size="sm" onClick={handlePrev} disabled={isSavingEvolution}>이전</Button>
-              <Button variant="outline" size="sm" onClick={handleNext} disabled={isSavingEvolution}>다음</Button>
+              <Button variant="outline" size="icon" onClick={handlePrev} disabled={isSavingEvolution} title="이전 단계">
+                <ChevronLeftIcon className="h-5 w-5" />
+              </Button>
+              <Button variant="outline" size="icon" onClick={handleNext} disabled={isSavingEvolution} title="다음 단계">
+                <ChevronRightIcon className="h-5 w-5" />
+              </Button>
               <Button 
                 size="sm" 
                 onClick={handleSave} 
