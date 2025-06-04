@@ -22,6 +22,29 @@ export default function RegisterPage() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setEmailError('');
+
+    // 이메일 유효성 검사
+    const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    if (!emailRegex.test(email)) {
+      setError('유효한 이메일 형식이 아닙니다.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 닉네임 유효성 검사 (최소 2자)
+    if (nickname.trim().length < 2) {
+      setError('닉네임은 2자 이상이어야 합니다.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 비밀번호 유효성 검사 (최소 8자)
+    if (password.length < 8) {
+      setError('비밀번호는 8자 이상이어야 합니다.');
+      setIsLoading(false);
+      return;
+    }
 
     // 비밀번호 확인
     if (password !== confirmPassword) {
@@ -92,7 +115,6 @@ export default function RegisterPage() {
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                 placeholder="e.g. example@gmail.com, example@naver.com"
-                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                 title="올바른 이메일 형식으로 입력해주세요"
                 onBlur={() => {
                   const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
