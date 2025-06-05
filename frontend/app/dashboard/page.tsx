@@ -486,7 +486,7 @@ export default function DashboardPage() {
           <Link href="/ts" className="block">
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-cyan-500/30 hover:border-cyan-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
               <div>
-                <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>TS : Micro-Reading</h2> {/* Theme text */}
+                <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>TS : Atomic-Reading</h2> {/* Theme text */}
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}></p> {/* Revised Text & Theme */}
                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>잘게 쪼갠 시간으로 읽기를 정복하세요 </p> {/* Theme text */}
               </div>
@@ -502,7 +502,7 @@ export default function DashboardPage() {
           <Link href="/zengo" className="block">
             <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
                <div>
-                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo : Work Memory</h2> {/* Theme text */} 
+                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo : Work-Memory</h2> {/* Theme text */} 
                  <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}></p> {/* Revised Text & Theme */} 
                  <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 선명하고 오래가는 기억력을 달성하세요</p> {/* Theme text */} 
                </div>

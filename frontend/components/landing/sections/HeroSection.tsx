@@ -45,7 +45,7 @@ export default function HeroSection() {
           {/* Hook Question */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight">
             매일 <span className="text-indigo-600">열심히 노력 </span>하는데<br />
-            왜 항상 그대로일까요?
+            왜 제자리일까요?
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-600 max-w-xl mx-auto">
             노력만큼 성과가 없다면, <br className="hidden sm:block" />

@@ -34,18 +34,17 @@ export default function SolutionSection() {
           >
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
               어떻게 벗어날 수 있을까요? <br />
-              <span className="text-indigo-600">'정확한 측정'</span>만이 가능합니다
+              <span className="text-indigo-600">'정교한 측정'</span>이면 가능합니다
             </h2>
             {/* Add md:text-xl for better readability on larger screens */}
             <p className="mt-6 text-lg md:text-xl text-gray-600">
-              Habitus33은 Cybernetics AI의 <strong className="text-gray-800">실시간 '측정'</strong>을 통해 
-              내비게이션이 현재 위치를 보여 주듯, <strong className="text-indigo-600">TS(정보 처리 속도)</strong>와 <strong className="text-indigo-600">ZenGo(기억 용량)</strong>이 당신을 데이터로 보여줍니다
-            </p>
+              Habitus33은 Cybernetics기반 <strong className="text-gray-800">실시간 AI '측정'</strong>을 통해 
+              내비게이션이 현재 위치를 보여 주듯, <strong className="text-indigo-600">정보 처리 속도</strong>와 <strong className="text-indigo-600">기억 용량</strong>을 보여줍니다.            </p>
             {/* Add md:text-xl for better readability on larger screens */}
             <p className="mt-4 text-lg md:text-xl text-gray-600">
-              자신의 상태를 <strong className="text-gray-800">'인지'</strong>하는 순간, 변화는 시작됩니다. 
-              측정한 데이터는 나침반이 되어<strong className="text-indigo-600"> 목표</strong>로 당신을 이끌고, 
-              작은 성공은 <strong className="text-indigo-600">다시 강력한 힘</strong>이 되어<strong className="text-indigo-600"> '선순환' </strong>을 이끕니다.
+              현재 컨디션을 <strong className="text-gray-800">'인지'</strong>하고, 
+              달성 가능한 <strong className="text-indigo-600"> 작은 목표</strong>로 성공을 유도하고
+              이는 <strong className="text-indigo-600">다시 강력한 힘</strong>이 되어<strong className="text-indigo-600"> '높은 도약' </strong>을 이끕니다.
             </p>
              {/* Optional: Bullet points for key steps? */}
              {/* <ul className="mt-6 space-y-2 text-left"> ... </ul> */}

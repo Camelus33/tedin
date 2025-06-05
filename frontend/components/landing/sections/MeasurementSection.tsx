@@ -52,7 +52,7 @@ export default function MeasurementSection() {
         {/* --- 아이콘 중심의 2x2 그리드 피드백 루프 설명 --- */}
         <div className="mt-16 pt-12 border-t border-gray-200">
           <h3 className="text-xl md:text-2xl font-semibold text-gray-800 mb-10 md:mb-12 text-center">
-            잠재력 가속 엔진 : 피드백 루프
+            피드백 루프
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
@@ -62,10 +62,10 @@ export default function MeasurementSection() {
               <FiTarget className="w-12 h-12 text-blue-600 mb-4" />
               <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-3">① 안정화 루프</h4>
               <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
-                목표에서 멀어졌다고 느낄 때, <strong className="text-blue-700">다시 제자리로 돌아오도록</strong> 방향을 잡아주는 당신 안의 나침반입니다.
+                목표에서 멀어지면, <strong className="text-blue-700">다시 제자리로 돌아오도록</strong> 끌어당기는 당신 안의 자석입니다.
               </p>
               <p className="text-xs md:text-sm text-gray-500 italic bg-blue-50 p-3 rounded">
-                <strong>예시:</strong> '매일 영어 공부' 다짐이 무너질 때, <strong className="font-medium">작은 도전으로 다시 동기 부여</strong>를 받는 당신의 모습처럼, 다시 돌아오도록 돕습니다.
+                <strong>예시:</strong> '매일 영어 공부' 다짐이 무너질 때, <strong className="font-medium">작은 도전으로 다시 일어설 수 있게</strong>합니다.
               </p>
             </div>
 
@@ -74,10 +74,10 @@ export default function MeasurementSection() {
               <FiTrendingUp className="w-12 h-12 text-purple-600 mb-4" />
               <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-3">② 강화 루프 </h4>
               <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
-                작은 성취가 다음 행동을 이끌며, <strong className="text-purple-700">성장에 점점 가속도가 붙게</strong> 하는 당신 안의 엔진입니다.
+                작은 성취로 <strong className="text-purple-700">점점 가속도가 붙게</strong> 하는 당신 안의 엔진입니다.
               </p>
               <p className="text-xs md:text-sm text-gray-500 italic bg-purple-50 p-3 rounded">
-                <strong>예시:</strong> 새로운 지식 하나를 외운 <strong className="font-medium">작은 기쁨이 더 큰 학습 의욕</strong>으로 이어져, 어느새 훌쩍 성장한 당신을 발견하는 경험입니다.
+                <strong>예시:</strong> 새로운 지식 하나를 외운 <strong className="font-medium">작은 기쁨이 더 큰 학습 의욕</strong>으로 이어져, 당신을 성장시킵니다.
               </p>
             </div>
 
@@ -85,12 +85,12 @@ export default function MeasurementSection() {
 
            {/* 최종 요약 메시지 */}
            <p className="mt-12 text-center text-base md:text-lg text-gray-700 max-w-3xl mx-auto">
-             Habitus33은 이 <strong className="font-semibold text-indigo-700"> 가속 엔진</strong>을 깨워,<strong className="font-semibold text-indigo-700"> 잠재력</strong>을 계속 일깨웁니다
+             Habitus33은 이 <strong className="font-semibold text-indigo-700">잠재력</strong>을 깨우는,<strong className="font-semibold text-indigo-700">엔진</strong>입니다.
            </p>
 
            {/* Updated Quote */}
            <p className="mt-10 text-center text-xs md:text-sm text-gray-500 italic max-w-2xl mx-auto">
-             "자신의 시스템에 귀 기울이면 더 편안하게 멀리 나아갈 수 있습니다."<br/>- 도넬라 메도우즈. MIT
+             "시스템에 귀 기울이면 더 멀리 나아갈 수 있습니다."<br/>- 도넬라 메도우즈. MIT
            </p>
         </div>
         {/* --- 피드백 루프 설명 섹션 끝 --- */}
