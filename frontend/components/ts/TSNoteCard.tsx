@@ -268,11 +268,11 @@ export default function TSNoteCard({
   showActions = true,
   minimalDisplay = false,
   bookTitle,
-  isPageEditing = true, // isPageEditing은 단권화 노트 등에서 페이지 전체 편집 모드에 사용
-  enableOverlayEvolutionMode = false, // 책 상세 페이지에서 개별 카드 오버레이 편집 모드 활성화 여부
+  isPageEditing = true, 
+  enableOverlayEvolutionMode = false,
 }: TSNoteCardProps) {
-  const [note, setNote] = useState(initialNote); // diff에 따라 제네릭 <TSNote> 제거
-  const [isOpen, setIsOpen] = useState(false); // 오버레이 UI 표시 여부
+  const [note, setNote] = useState(initialNote);
+  const [isOpen, setIsOpen] = useState(false);
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -280,14 +280,12 @@ export default function TSNoteCard({
     relatedKnowledge: initialNote.relatedKnowledge || '',
     mentalImage: initialNote.mentalImage || '',
   });
-  // const [initialFields, setInitialFields] = useState({...fields}); // diff에 있었으나, note 변경 시 fields도 초기화되므로 불필요해 보임. 일단 주석.
   
   const tabKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
   type MemoEvolutionFieldKey = typeof tabKeys[number];
 
   const [activeTabKey, setActiveTabKey] = useState<MemoEvolutionFieldKey>(tabKeys[0]);
-  const [currentStep, setCurrentStep] = useState(1); // 1-based index for UI
-
+  const [currentStep, setCurrentStep] = useState(1);
   const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
   const [isSavingEvolution, setIsSavingEvolution] = useState(false);
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -322,7 +320,7 @@ export default function TSNoteCard({
     const changedFields: Partial<TSNote> = { _id: note._id };
     let hasChanges = false;
     for (const key of tabKeys) {
-      if (fields[key] !== (note[key as MemoEvolutionFieldKey] || '')) { // note[key] 타입 일치
+      if (fields[key] !== (note[key as MemoEvolutionFieldKey] || '')) {
         (changedFields as any)[key] = fields[key];
         hasChanges = true;
       }
@@ -331,28 +329,23 @@ export default function TSNoteCard({
     if (hasChanges && onUpdate) {
       setIsSavingEvolution(true);
       try {
-        await onUpdate(changedFields); // onUpdate가 Promise를 반환할 수 있도록 가정
-        // 성공 시 note 상태 업데이트 (부모가 내려주는 initialNote가 업데이트되면 useEffect로 자동 반영되긴 함)
-        // setNote(prev => ({ ...prev, ...changedFields })); // 직접 업데이트가 필요하다면
-        setIsOpen(false); // 저장 후 닫기
+        await onUpdate(changedFields);
+        setIsOpen(false); 
       } catch (error) {
         console.error("Failed to save note evolution:", error);
-        // 에러 처리 UI (예: 토스트 메시지)
       } finally {
         setIsSavingEvolution(false);
       }
     } else {
-      setIsOpen(false); // 변경 없으면 그냥 닫기
+      setIsOpen(false); 
     }
   }, [fields, note, onUpdate, tabKeys, setIsOpen]);
 
   const toggleEvolutionOverlay = () => {
-    // 책 상세 페이지의 개별 카드 편집 모드가 활성화된 경우에만 오버레이 토글
     if (enableOverlayEvolutionMode) { 
       setIsOpen((prev) => {
         const nextOpenState = !prev;
-        if (nextOpenState) { // 열릴 때
-          // 현재 노트 값으로 fields 상태 초기화 및 첫번째 탭으로 설정
+        if (nextOpenState) {
           setFields({
             importanceReason: note.importanceReason || '',
             momentContext: note.momentContext || '',
@@ -364,13 +357,9 @@ export default function TSNoteCard({
         return nextOpenState;
       });
     }
-    // enableOverlayEvolutionMode가 false인 경우 (예: 단권화 노트)에는
-    // "메모 진화" 메뉴가 다른 동작을 하거나, 아예 이 함수가 호출되지 않도록 해야 함.
-    // 여기서는 일단 enableOverlayEvolutionMode가 true일 때만 동작.
   };
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // 카드 클릭으로 오버레이 열리는 로직은 제거됨 (사용자 요청)
     if ((e.target as HTMLElement).closest('button, a, [role="button"], [role="link"], [data-no-toggle]')) {
       return;
     }
@@ -384,9 +373,6 @@ export default function TSNoteCard({
     const currentIndex = tabKeys.indexOf(activeTabKey);
     if (currentIndex < tabKeys.length - 1) {
       setActiveTabKey(tabKeys[currentIndex + 1]);
-    } else {
-      // 마지막 단계에서 다음으로 가면 첫번째로 (선택사항)
-      // setActiveTabKey(tabKeys[0]); 
     }
   }, [activeTabKey, tabKeys]);
 
@@ -394,9 +380,6 @@ export default function TSNoteCard({
     const currentIndex = tabKeys.indexOf(activeTabKey);
     if (currentIndex > 0) {
       setActiveTabKey(tabKeys[currentIndex - 1]);
-    } else {
-      // 첫번째 단계에서 이전으로 가면 마지막으로 (선택사항)
-      // setActiveTabKey(tabKeys[tabKeys.length - 1]);
     }
   }, [activeTabKey, tabKeys]);
 
@@ -411,14 +394,14 @@ export default function TSNoteCard({
     <button
       onMouseEnter={() => setShowSessionDetailsPopover(true)}
       onMouseLeave={() => setShowSessionDetailsPopover(false)}
-      onClick={(e) => e.stopPropagation()} // 카드 클릭 이벤트 전파 방지
-      data-no-toggle // handleCardClick에서 무시하도록
+      onClick={(e) => e.stopPropagation()}
+      data-no-toggle
       className={`absolute bottom-2 left-2 z-30 p-1.5 rounded-full bg-gray-700/70 hover:bg-cyan-600/90
                   text-gray-300 hover:text-white transition-all duration-200
-                  focus:outline-none focus:ring-2 focus:ring-cyan-500`} // diff에 따른 스타일 변경
-      aria-label="TS 세션 정보 보기" // diff에 따른 aria-label 변경
+                  focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+      aria-label="TS 세션 정보 보기"
     >
-      <AiOutlineInfoCircle className="h-4 w-4" /> {/* diff에 따른 className 변경 */}
+      <AiOutlineInfoCircle className="h-4 w-4" />
     </button>
   );
 
@@ -429,7 +412,6 @@ export default function TSNoteCard({
                  text-xs text-gray-200 z-20 shadow-xl border border-gray-700/50`}
     >
       <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1`}>TS 세션 정보</h4>
-      {/* diff에 따른 내용 변경 */}
       {sessionDetails?.createdAtISO && <p className="mt-1">기록일: {displaySessionCreatedAt}</p>}
       {sessionDetails?.durationSeconds !== undefined && <p>집중 시간: {displaySessionDuration}</p>}
       {sessionDetails && (sessionDetails.startPage !== undefined || sessionDetails.actualEndPage !== undefined) && (
@@ -440,11 +422,41 @@ export default function TSNoteCard({
     </div>
   );
   
-  // 오버레이가 닫혀 있을 때 메모 진화 요약 표시
+  const renderInlineMemoEvolutionEditUI = () => {
+    if (enableOverlayEvolutionMode || !isPageEditing || minimalDisplay || isOpen) return null;
+
+    return (
+      <div className="mt-4 pt-3 border-t border-gray-700/50 space-y-3">
+        <h4 className="text-xs font-semibold text-gray-400 mb-2">
+          메모 진화 (편집 중):
+        </h4>
+        {tabKeys.map((fieldKey, index) => (
+          <div key={fieldKey}>
+            <label htmlFor={`evolution-${fieldKey}-${note._id}`} className="block text-sm font-medium text-cyan-500 mb-1">
+              {prompts[index]?.question || fieldKey}
+            </label>
+            <textarea
+              id={`evolution-${fieldKey}-${note._id}`}
+              value={fields[fieldKey]}
+              onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
+              onBlur={() => {
+                if (fields[fieldKey] !== (note[fieldKey] || '')) {
+                  if (onUpdate) {
+                    onUpdate({ _id: note._id, [fieldKey]: fields[fieldKey] });
+                  }
+                }
+              }}
+              placeholder={prompts[index]?.placeholder || '내용 입력'}
+              className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 h-24 resize-none text-gray-200 custom-scrollbar"
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
+  
   const renderMemoEvolutionSummary = () => {
-    // 이 함수는 isPageEditing (단권화노트 편집모드) 또는 minimalDisplay 일 때는 표시되지 않음.
-    // 그리고 isOpen (오버레이 열림) 일 때도 표시되지 않아야 함.
-    if (isPageEditing || minimalDisplay || isOpen) return null;
+    if (isPageEditing || minimalDisplay || isOpen || enableOverlayEvolutionMode) return null;
 
     const evolutionFieldsToShow: { key: MemoEvolutionFieldKey; label: string }[] = [
       { key: 'importanceReason', label: '중요했던 이유' },
@@ -469,7 +481,6 @@ export default function TSNoteCard({
       .filter(Boolean);
 
     if (details.length === 0) {
-      // 메모 진화 내용이 하나도 없으면 아예 섹션을 표시하지 않거나, "메모 진화 내용 없음" 메시지 표시 (선택)
       return (
         <div className="mt-4 pt-3 border-t border-gray-700/50">
            <p className="text-xs text-gray-500 italic">아직 작성된 메모 진화 내용이 없습니다.</p>
@@ -491,13 +502,12 @@ export default function TSNoteCard({
     <div
       className={cn(
         "relative p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
-        isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80", // 오버레이 열릴때만 ring
+        isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
         minimalDisplay ? "p-3 min-h-0" : "",
         className
       )}
-      onClick={handleCardClick} // 카드 자체 클릭은 이제 아무것도 안함 (내부 버튼 등만 동작)
+      onClick={handleCardClick}
     >
-      {/* 세션 정보 버튼 및 팝오버 - diff 기반으로 onClick 이벤트 전파 중지 등 수정 */}
       {!minimalDisplay && sessionDetails && Object.keys(sessionDetails).length > 0 && ( 
         <>
           {renderSessionInfoButton()}
@@ -523,12 +533,10 @@ export default function TSNoteCard({
           </div>
         )}
         
-        {/* 메모 진화 요약 (오버레이 닫혔을 때) 또는 인라인 편집 UI (단권화 노트 편집 시) */}
-        {renderMemoEvolutionSummary()}
+        {!enableOverlayEvolutionMode && isPageEditing ? renderInlineMemoEvolutionEditUI() : renderMemoEvolutionSummary()}
 
       </div>
       
-      {/* 관련 링크 (오버레이 닫혔을 때 표시) */}
       {!isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && note.relatedLinks && note.relatedLinks.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
           <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
@@ -545,7 +553,7 @@ export default function TSNoteCard({
                   rel="noopener noreferrer"
                   className="truncate"
                   title={link.url}
-                  onClick={(e) => e.stopPropagation()} // 링크 클릭 시 카드 클릭 방지
+                  onClick={(e) => e.stopPropagation()}
                   data-no-toggle
                 >
                   {link.reason || getDomainFromUrl(link.url)}
@@ -556,7 +564,6 @@ export default function TSNoteCard({
         </div>
       )}
 
-      {/* 태그 (항상 표시, minimalDisplay 아닐 때) */}
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
           <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
@@ -568,7 +575,7 @@ export default function TSNoteCard({
               <span
                 key={index}
                 className={`px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center`}
-                onClick={(e) => e.stopPropagation()} // 태그 클릭 시 카드 클릭 방지
+                onClick={(e) => e.stopPropagation()}
                 data-no-toggle
               >
                 <TagIcon className="h-3 w-3 mr-1" />
@@ -579,7 +586,6 @@ export default function TSNoteCard({
         </div>
       )}
 
-      {/* 액션 버튼들 */}
       {showActions && !minimalDisplay && (
         <div className="flex items-center justify-end space-x-2 mt-auto pt-2 border-t border-gray-700/50">
           {onAddToCart && (
@@ -602,33 +608,11 @@ export default function TSNoteCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
-              {/* "메모 진화" 메뉴: enableOverlayEvolutionMode에 따라 오버레이 토글 */}
               {enableOverlayEvolutionMode && (
                 <DropdownMenuItem onClick={toggleEvolutionOverlay} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
                   <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화 (오버레이)
                 </DropdownMenuItem>
               )}
-              {/* 
-                단권화 노트 등에서 isPageEditing에 따라 인라인 편집을 활성화하는 "메모 진화" 메뉴 아이템은
-                여기에 조건부로 추가하거나, toggleEvolutionOverlay 함수 내부에서 enableOverlayEvolutionMode 값에 따라
-                다른 로직을 타도록 수정해야 합니다.
-                지금은 enableOverlayEvolutionMode가 false이면 "메모 진화 (오버레이)" 메뉴가 아예 안 보입니다.
-                만약 단권화노트에서 "메모 진화" 메뉴가 인라인 편집을 토글해야 한다면, 별도 메뉴 아이템이나 로직 분기가 필요합니다.
-                예시:
-                {!enableOverlayEvolutionMode && isPageEditing && (
-                   <DropdownMenuItem onClick={() => { 
-                     // 여기에 인라인 편집 상태를 토글하는 로직 (부모 컴포넌트와 연동 필요)
-                     // 예를 들어, setIsInlineEditing(!isInlineEditing) 같은 상태를 TSNoteCard가 직접 관리하거나
-                     // 부모에게 콜백을 전달해야 함.
-                     // 지금은 TSNoteCard가 isPageEditing prop을 받기만 하므로, 
-                     // 인라인 편집 활성화는 부모(단권화 노트 페이지)가 isPageEditing을 true로 넘겨주면
-                     // Textarea 등이 활성화되는 방식으로 구현되어야 함.
-                     // 따라서 "메모 진화" 메뉴가 단권화 노트에서 인라인 편집을 토글하는 역할은 현재 없음.
-                   }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                     <PencilIcon className="w-4 h-4 mr-2" /> 메모 진화 (인라인)
-                   </DropdownMenuItem>
-                )}
-              */}
               
               {onFlashcardConvert && (
                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
@@ -640,15 +624,11 @@ export default function TSNoteCard({
                   <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
                 </DropdownMenuItem>
               )}
-              {/* 기존의 "자세히 보기/간략히 보기" 메뉴는 오버레이 UI가 그 역할을 대신하므로 제거되었을 수 있음.
-                  필요하다면 minimalDisplay 상태를 직접 토글하는 메뉴로 다시 추가 가능.
-              */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       )}
 
-      {/* 메모 진화 오버레이 UI */}
       {isOpen && enableOverlayEvolutionMode && !minimalDisplay && (
         <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-4 rounded-lg z-20 flex flex-col animate-fadeIn">
           <div className="flex justify-between items-center mb-2">
