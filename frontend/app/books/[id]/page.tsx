@@ -816,6 +816,7 @@ export default function BookDetailPage() {
                         onAddToCart={handleAddToCartToStore}
                         isAddedToCart={isNoteInCart}
                         isPageEditing={false}
+                        enableOverlayEvolutionMode={true}
                       />
                     </div>
                   );

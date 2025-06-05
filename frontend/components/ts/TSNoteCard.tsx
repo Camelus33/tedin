@@ -379,6 +379,9 @@ export default function TSNoteCard({
         }
         return nextOpenState;
       });
+    } else {
+      // 오버레이 모드가 아닐 때는 인라인 편집 모드 사용
+      toggleInlineEdit();
     }
   };
 
@@ -496,8 +499,8 @@ export default function TSNoteCard({
     // 다음 조건 중 하나라도 해당되면 요약을 보여주지 않음:
     // 1. 최소 표시 모드일 때
     if (minimalDisplay) return null;
-    // 2. 오버레이 모드이면서 오버레이가 열려있을 때
-    if (enableOverlayEvolutionMode && isOpen) return null;
+    // 2. 오버레이가 열려있을 때
+    if (isOpen) return null;
     // 3. 인라인 모드이면서 페이지 편집 모드이고 이 카드가 인라인 편집 중일 때
     if (!enableOverlayEvolutionMode && isPageEditing && isInlineEditing) return null;
 
@@ -570,29 +573,29 @@ export default function TSNoteCard({
           {note.content}
         </p>
 
-        {bookTitle && !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing && (
+        {/* 책 제목(출처) 표시 조건을 수정 */}
+        {bookTitle && !isPageEditing && !isOpen && !minimalDisplay && !isInlineEditing && (
           <div className="mt-2 text-xs text-gray-400 flex items-center">
             <SolidBookOpenIcon className="h-3 w-3 mr-1.5 text-gray-500" />
             출처: {bookTitle}
           </div>
         )}
         
+        {/* 조건부 렌더링 로직 수정 - 렌더링 함수는 항상 React 요소를 반환하도록 */}
         {(() => {
           if (isInlineEditing) {
             // 인라인 편집 모드가 켜져 있으면 항상 편집 UI 표시
-            return renderInlineMemoEvolutionEditUI();
-          } else if (enableOverlayEvolutionMode) {
-            // 오버레이 모드 (예: 책 상세 페이지)
-            return renderMemoEvolutionSummary();
-          } else {
-            // 인라인 모드 (예: 단권화 노트 페이지)
-            return renderMemoEvolutionSummary();
-          }
+            return renderInlineMemoEvolutionEditUI() || null;
+          } else if (!isOpen) { // 오버레이가 열려있지 않을 때만 요약 표시
+            // 메모 진화 요약 표시
+            return renderMemoEvolutionSummary() || null;
+          } 
+          return null;
         })()}
 
       </div>
       
-      {!isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing && note.relatedLinks && note.relatedLinks.length > 0 && (
+      {!isPageEditing && !isOpen && !minimalDisplay && !isInlineEditing && note.relatedLinks && note.relatedLinks.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
           <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
             <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
@@ -671,11 +674,11 @@ export default function TSNoteCard({
                 <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
                   {/* "메모 진화" 메뉴 항목 조건 변경: 항상 표시하되 모드에 따라 텍스트만 다르게 */}
                   <DropdownMenuItem 
-                    onClick={enableOverlayEvolutionMode ? toggleEvolutionOverlay : toggleInlineEdit} 
+                    onClick={toggleEvolutionOverlay} 
                     className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}
                   >
                     <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 
-                    메모 진화 {enableOverlayEvolutionMode ? '(오버레이)' : ''}
+                    메모 진화
                   </DropdownMenuItem>
                   
                   {/* 기존의 인라인 편집 시작/종료 메뉴는 제거 (중복 방지) */}
@@ -697,7 +700,7 @@ export default function TSNoteCard({
         }
       })()}
 
-      {isOpen && enableOverlayEvolutionMode && !minimalDisplay && (
+      {isOpen && !minimalDisplay && (
         <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-4 rounded-lg z-20 flex flex-col animate-fadeIn">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-semibold text-cyan-400">메모 진화: {tabList.find(t => t.key === activeTabKey)?.label}</h3>
