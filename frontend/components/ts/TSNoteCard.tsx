@@ -263,12 +263,13 @@ export default function TSNoteCard({
   isAddedToCart,
   className,
   showActions = true,
-  minimalDisplay = false,
   bookTitle,
-  isPageEditing = true,
+  isPageEditing = false,
 }: TSNoteCardProps) {
-  const [note, setNote] = useState(initialNote);
-  const [isOpen, setIsOpen] = useState(false);
+  const [note, setNote] = useState<TSNote>(initialNote);
+  const [isOpen, setIsOpen] = useState(isPageEditing);
+  const [isEditingInternal, setIsEditingInternal] = useState(false);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const [fields, setFields] = useState({
     importanceReason: note.importanceReason || '',
     momentContext: note.momentContext || '',
@@ -295,13 +296,14 @@ export default function TSNoteCard({
   
   useEffect(() => {
     setNote(initialNote);
+    setIsOpen(isPageEditing || isEditingInternal);
     setFields({
       importanceReason: initialNote.importanceReason || '',
       momentContext: initialNote.momentContext || '',
       relatedKnowledge: initialNote.relatedKnowledge || '',
       mentalImage: initialNote.mentalImage || '',
     });
-  }, [initialNote]);
+  }, [initialNote, isPageEditing, isEditingInternal]);
 
   useEffect(() => {
     const newCurrentStep = tabKeys.indexOf(activeTab as typeof tabKeys[number]) + 1;
@@ -310,12 +312,12 @@ export default function TSNoteCard({
     }
   }, [activeTab, tabKeys]);
 
-  const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
+  const activePrompts = memoEvolutionPrompts[readingPurpose || 'humanities_self_reflection'] || memoEvolutionPrompts.humanities_self_reflection;
   const tabQuestions: Record<string, { question: string; placeholder: string }> = {
-    importanceReason: prompts[0],
-    momentContext: prompts[1],
-    relatedKnowledge: prompts[2],
-    mentalImage: prompts[3],
+    importanceReason: activePrompts[0],
+    momentContext: activePrompts[1],
+    relatedKnowledge: activePrompts[2],
+    mentalImage: activePrompts[3],
   };
 
   const handleSave = useCallback(async () => {
@@ -344,26 +346,24 @@ export default function TSNoteCard({
   }, [fields, note, onUpdate, tabKeys, setIsOpen]);
 
   const toggleOpen = () => {
-    setIsOpen((prev) => !prev);
-    if (!isOpen) {
-      const firstEvolutionKey = tabKeys[0] as keyof typeof fields;
-      setActiveTab(firstEvolutionKey);
-      setCurrentStep(1);
-      setFields({
-        importanceReason: note.importanceReason || '',
-        momentContext: note.momentContext || '',
-        relatedKnowledge: note.relatedKnowledge || '',
-        mentalImage: note.mentalImage || '',
-      });
-    }
+    setIsOpen(!isOpen);
   };
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('button, a, [role="button"], [role="link"], [data-no-toggle]')) {
+    if ((e.target as HTMLElement).closest('.interactive-element')) {
       return;
     }
-    if (!isPageEditing && !minimalDisplay) {
-      toggleOpen();
+    if (!isPageEditing) {
+      return;
+    }
+    setIsOpen(!isOpen);
+  };
+
+  const handleEditToggle = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setIsEditingInternal(!isEditingInternal);
+    if (!isEditingInternal) {
+      setIsOpen(true);
     }
   };
 
@@ -437,42 +437,57 @@ export default function TSNoteCard({
   };
 
   const renderMemoEvolutionDetails = () => {
-    if (isOpen || isPageEditing || minimalDisplay) {
-      return null;
-    }
+    if (!isOpen && !isPageEditing && !isEditingInternal) return null;
 
-    const evolutionFieldsToShow: { key: keyof TSNote; label: string }[] = [
-      { key: 'importanceReason', label: '중요했던 이유' },
-      { key: 'momentContext', label: '작성 당시 상황' },
-      { key: 'relatedKnowledge', label: '연관된 지식' },
-      { key: 'mentalImage', label: '떠오른 생각/심상' },
-    ];
-
-    const details = evolutionFieldsToShow
-      .map(field => {
-        const value = note[field.key];
-        if (value && typeof value === 'string' && value.trim() !== '') {
-          return (
-            <div key={field.key} className="mt-2.5">
-              <p className="text-xs font-medium text-cyan-600 mb-0.5">{field.label}:</p>
-              <p className="text-sm text-gray-300 whitespace-pre-wrap break-words">{value}</p>
-            </div>
-          );
-        }
-        return null;
-      })
-      .filter(Boolean);
-
-    if (details.length === 0) {
-      return null;
-    }
+    const showEditableFields = isPageEditing || isEditingInternal;
 
     return (
-      <div className="mt-4 pt-3 border-t border-gray-700/50">
-        <h4 className="text-xs font-semibold text-gray-400 mb-2">
-          메모 진화 내용:
-        </h4>
-        {details}
+      <div className={`mt-3 pt-3 border-t ${showEditableFields ? 'border-cyan-500/30' : 'border-gray-700/50'} transition-all duration-300 ease-in-out`}>
+        {showEditableFields ? (
+          <>
+            <div className="flex justify-between items-center mb-2">
+              <h4 className={`text-xs font-semibold ${cyberTheme.secondaryText} flex items-center`}>
+                <SparklesIcon className="w-4 h-4 mr-1.5" /> 메모 진화 (수정 중)
+              </h4>
+              <div className="flex space-x-2">
+                <Button onClick={handleSave} size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs interactive-element">저장</Button>
+                <Button onClick={handleEditToggle} variant="outline" size="sm" className="text-gray-300 border-gray-500 hover:bg-gray-700 hover:text-white text-xs interactive-element">취소</Button>
+              </div>
+            </div>
+            <div className="flex space-x-1 mb-2">
+              {tabList.map((tab, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTab(tabKeys[index] as keyof typeof fields)}
+                  className={`w-3 h-3 rounded-full ${currentStep === index + 1 ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
+                  title={tab.label}
+                />
+              ))}
+            </div>
+            <div className="p-2 rounded bg-black/20 text-xs space-y-1">
+              <p><strong className="font-medium text-gray-400">{activePrompts[currentTabIndex].question}:</strong> {fields[Object.keys(fields)[currentTabIndex] as keyof typeof fields] || <span className="text-gray-500 italic">입력된 내용 없음</span>}</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <h4 className={`text-xs font-semibold ${cyberTheme.secondaryText} mb-2 flex items-center`}>
+              <SparklesIcon className="w-4 h-4 mr-1.5" /> 메모 진화 (조회)
+            </h4>
+            <div className="flex space-x-1 mb-2">
+              {tabList.map((tab, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTab(tabKeys[index] as keyof typeof fields)}
+                  className={`w-3 h-3 rounded-full ${currentStep === index + 1 ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
+                  title={tab.label}
+                />
+              ))}
+            </div>
+            <div className="p-2 rounded bg-black/20 text-xs space-y-1">
+              <p><strong className="font-medium text-gray-400">{activePrompts[currentTabIndex].question}:</strong> {fields[Object.keys(fields)[currentTabIndex] as keyof typeof fields] || <span className="text-gray-500 italic">입력된 내용 없음</span>}</p>
+            </div>
+          </>
+        )}
       </div>
     );
   };
@@ -482,13 +497,13 @@ export default function TSNoteCard({
       className={cn(
         "relative p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
         isOpen ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
-        minimalDisplay ? "p-3 min-h-0" : "",
+        isPageEditing ? "p-3 min-h-0" : "",
         className
       )}
       onClick={handleCardClick}
     >
       <div className="flex justify-between items-start mb-2">
-        {sessionDetails && !minimalDisplay && (
+        {sessionDetails && !isPageEditing && (
           <>
             {renderSessionInfoButton()}
             {renderSessionInfoPopover()}
@@ -499,15 +514,15 @@ export default function TSNoteCard({
       <div className="flex-grow mb-2">
         <p
           className={`text-lg leading-relaxed ${
-            isOpen || isPageEditing || minimalDisplay ? 'text-gray-300' : 'text-white'
+            isOpen || isPageEditing ? 'text-gray-300' : 'text-white'
           } whitespace-pre-wrap break-words font-medium ${
-            !isPageEditing && !isOpen && !minimalDisplay ? 'border-l-4 border-cyan-600 pl-3 py-1' : 'py-1'
+            !isPageEditing && !isOpen ? 'border-l-4 border-cyan-600 pl-3 py-1' : 'py-1'
           }`}
         >
           {note.content}
         </p>
 
-        {bookTitle && !isPageEditing && !isOpen && !minimalDisplay && (
+        {bookTitle && !isPageEditing && !isOpen && (
           <div className="mt-2 text-xs text-gray-400 flex items-center">
             <SolidBookOpenIcon className="h-3 w-3 mr-1.5 text-gray-500" />
             출처: {bookTitle}
@@ -517,7 +532,7 @@ export default function TSNoteCard({
         {renderMemoEvolutionDetails()}
       </div>
       
-      {!isPageEditing && !isOpen && !minimalDisplay && note.relatedLinks && note.relatedLinks.length > 0 && (
+      {!isPageEditing && !isOpen && note.relatedLinks && note.relatedLinks.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
           <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
             <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
@@ -542,7 +557,7 @@ export default function TSNoteCard({
         </div>
       )}
 
-      {!minimalDisplay && note.tags && note.tags.length > 0 && (
+      {!isPageEditing && !isOpen && note.tags && note.tags.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
           <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
             <TagIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
@@ -562,7 +577,7 @@ export default function TSNoteCard({
         </div>
       )}
 
-      {showActions && !minimalDisplay && (
+      {showActions && !isPageEditing && (
         <div className="flex items-center justify-end space-x-2 mt-auto pt-2 border-t border-gray-700/50">
           {onAddToCart && (
             <Button
@@ -583,8 +598,14 @@ export default function TSNoteCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
-              <DropdownMenuItem onClick={toggleOpen} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화
+              <DropdownMenuItem
+                onClick={(e) => {
+                  handleEditToggle(e);
+                }}
+                className="interactive-element"
+              >
+                <PencilSquareIcon className="mr-2 h-4 w-4" />
+                메모 진화
               </DropdownMenuItem>
               {onFlashcardConvert && (
                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
@@ -598,65 +619,6 @@ export default function TSNoteCard({
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      )}
-
-      {isOpen && !minimalDisplay && (
-        <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-4 rounded-lg z-20 flex flex-col">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold text-cyan-400">메모 진화: {tabList[currentStep - 1]?.label}</h3>
-            <Button variant="ghost" size="sm" onClick={toggleOpen} className="text-gray-400 hover:text-white">✕</Button>
-          </div>
-          
-          <div className="flex-grow overflow-y-auto pr-2">
-            <p className="text-sm text-gray-300 mb-1">{prompts[currentStep - 1]?.question}</p>
-            <textarea
-              ref={evolutionTextareaRef}
-              value={fields[tabKeys[currentStep - 1] as keyof typeof fields]}
-              onChange={(e) => handleChange(tabKeys[currentStep - 1] as keyof typeof fields, e.target.value)}
-              placeholder={prompts[currentStep - 1]?.placeholder}
-              className="w-full h-32 p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white"
-            />
-          </div>
-
-          <div className="mt-3 flex justify-between items-center">
-            <div className="flex space-x-1 ml-8">
-              {tabList.map((tab, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveTab(tabKeys[index] as keyof typeof fields)}
-                  className={`w-3 h-3 rounded-full ${currentStep === index + 1 ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
-                  title={tab.label}
-                />
-              ))}
-            </div>
-            <div className="space-x-2">
-              <Button variant="outline" size="icon" onClick={handlePrev} disabled={isSavingEvolution} title="이전 단계">
-                <ChevronLeftIcon className="h-5 w-5" />
-              </Button>
-              <Button variant="outline" size="icon" onClick={handleNext} disabled={isSavingEvolution} title="다음 단계">
-                <ChevronRightIcon className="h-5 w-5" />
-              </Button>
-              <Button 
-                size="sm" 
-                onClick={handleSave} 
-                className="bg-cyan-600 hover:bg-cyan-700 text-white min-w-[80px]"
-                disabled={isSavingEvolution}
-              >
-                {isSavingEvolution ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    저장 중...
-                  </>
-                ) : (
-                  "완료"
-                )}
-              </Button>
-            </div>
-          </div>
         </div>
       )}
     </div>
