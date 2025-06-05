@@ -271,6 +271,10 @@ export default function TSNoteCard({
   isPageEditing = false, // 기본값을 false로 변경
   enableOverlayEvolutionMode = false,
 }: TSNoteCardProps) {
+  // --- DEBUG LOG START ---
+  console.log(`TSNoteCard (${initialNote._id}): Props received - showActions=${showActions}, minimalDisplay=${minimalDisplay}, isPageEditing=${isPageEditing}, enableOverlayEvolutionMode=${enableOverlayEvolutionMode}`);
+  // --- DEBUG LOG END ---
+
   const [note, setNote] = useState(initialNote);
   const [isOpen, setIsOpen] = useState(false); // 오버레이 UI 표시 상태
   const [isInlineEditing, setIsInlineEditing] = useState(false); // 새로운 상태: 인라인 편집 활성화 여부
@@ -379,22 +383,13 @@ export default function TSNoteCard({
   };
 
   const toggleInlineEdit = () => {
-    // 페이지 전체 편집 모드이고, 오버레이 모드가 아니며, 최소 표시 모드가 아닐 때만 동작
-    if (isPageEditing && !enableOverlayEvolutionMode && !minimalDisplay) {
+    // 오버레이 모드가 아니고 최소 표시 모드가 아닐 때만 동작 (isPageEditing 조건 제거)
+    if (!enableOverlayEvolutionMode && !minimalDisplay) {
       setIsInlineEditing(prev => {
         const nextInlineState = !prev;
         if (nextInlineState && isOpen) {
           setIsOpen(false); // 인라인 편집 시작 시 오버레이 닫음
         }
-        // 인라인 편집 시작 시 필드 초기화 (선택적, 현재는 오버레이와 동일 로직 사용 안 함)
-        // if (nextInlineState) {
-        //   setFields({
-        //     importanceReason: note.importanceReason || '',
-        //     momentContext: note.momentContext || '',
-        //     relatedKnowledge: note.relatedKnowledge || '',
-        //     mentalImage: note.mentalImage || '',
-        //   });
-        // }
         return nextInlineState;
       });
     }
@@ -583,18 +578,15 @@ export default function TSNoteCard({
         )}
         
         {(() => {
-          if (enableOverlayEvolutionMode) { // 오버레이 모드 (예: 책 상세 페이지)
+          if (isInlineEditing) {
+            // 인라인 편집 모드가 켜져 있으면 항상 편집 UI 표시
+            return renderInlineMemoEvolutionEditUI();
+          } else if (enableOverlayEvolutionMode) {
+            // 오버레이 모드 (예: 책 상세 페이지)
             return renderMemoEvolutionSummary();
-          } else { // 인라인 모드 (예: 단권화 노트 페이지)
-            if (isPageEditing) { // 페이지 전체 편집 모드
-              if (isInlineEditing) { // 이 카드 인라인 편집 중
-                return renderInlineMemoEvolutionEditUI();
-              } else { // 이 카드 인라인 편집 중 아님
-                return renderMemoEvolutionSummary();
-              }
-            } else { // 페이지 전체 읽기 모드
-              return renderMemoEvolutionSummary();
-            }
+          } else {
+            // 인라인 모드 (예: 단권화 노트 페이지)
+            return renderMemoEvolutionSummary();
           }
         })()}
 
@@ -649,55 +641,61 @@ export default function TSNoteCard({
         </div>
       )}
 
-      {showActions && !minimalDisplay && (
-        <div className="flex items-center justify-end space-x-2 mt-auto pt-2 border-t border-gray-700/50">
-          {onAddToCart && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={(e) => { e.stopPropagation(); onAddToCart(note._id, note.bookId); }}
-              title={isAddedToCart ? "단권화 노트에서 제거" : "단권화 노트에 담기"}
-              className={`${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
-              data-no-toggle
-            >
-              <ShoppingCartIcon className={`h-4 w-4 ${isAddedToCart ? 'text-green-500' : ''}`} />
-            </Button>
-          )}
+      {(() => {
+        // --- DEBUG LOG START ---
+        const shouldRenderActions = showActions && !minimalDisplay;
+        console.log(`TSNoteCard (${initialNote._id}): Condition for rendering actions (showActions && !minimalDisplay) = ${shouldRenderActions}`);
+        // --- DEBUG LOG END ---
+        if (shouldRenderActions) {
+          return (
+            <div className="flex items-center justify-end space-x-2 mt-auto pt-2 border-t border-gray-700/50">
+              {onAddToCart && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={(e) => { e.stopPropagation(); onAddToCart(note._id, note.bookId); }}
+                  title={isAddedToCart ? "단권화 노트에서 제거" : "단권화 노트에 담기"}
+                  className={`${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
+                  data-no-toggle
+                >
+                  <ShoppingCartIcon className={`h-4 w-4 ${isAddedToCart ? 'text-green-500' : ''}`} />
+                </Button>
+              )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="px-2" data-no-toggle onClick={(e) => e.stopPropagation()}>
-                <EllipsisVerticalIcon className={`h-5 w-5 text-gray-400 hover:${cyberTheme.primaryText}`} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
-              {enableOverlayEvolutionMode && (
-                <DropdownMenuItem onClick={toggleEvolutionOverlay} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                  <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화 (오버레이)
-                </DropdownMenuItem>
-              )}
-              {/* 인라인 편집 토글 메뉴 (단권화 노트 편집 시 && 오버레이 모드가 아닐 때 && 최소 표시가 아닐때) */}
-              {!enableOverlayEvolutionMode && isPageEditing && !minimalDisplay && (
-                <DropdownMenuItem onClick={toggleInlineEdit} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                  <PencilSquareIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 
-                  {isInlineEditing ? '인라인 편집 종료' : '인라인 편집 시작'}
-                </DropdownMenuItem>
-              )}
-              
-              {onFlashcardConvert && (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                  <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드 변환
-                </DropdownMenuItem>
-              )}
-              {onRelatedLinks && (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                  <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="px-2" data-no-toggle onClick={(e) => e.stopPropagation()}>
+                    <EllipsisVerticalIcon className={`h-5 w-5 text-gray-400 hover:${cyberTheme.primaryText}`} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
+                  {/* "메모 진화" 메뉴 항목 조건 변경: 항상 표시하되 모드에 따라 텍스트만 다르게 */}
+                  <DropdownMenuItem 
+                    onClick={enableOverlayEvolutionMode ? toggleEvolutionOverlay : toggleInlineEdit} 
+                    className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}
+                  >
+                    <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 
+                    메모 진화 {enableOverlayEvolutionMode ? '(오버레이)' : ''}
+                  </DropdownMenuItem>
+                  
+                  {/* 기존의 인라인 편집 시작/종료 메뉴는 제거 (중복 방지) */}
+                  
+                  {onFlashcardConvert && (
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                      <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드 변환
+                    </DropdownMenuItem>
+                  )}
+                  {onRelatedLinks && (
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                      <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        }
+      })()}
 
       {isOpen && enableOverlayEvolutionMode && !minimalDisplay && (
         <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-4 rounded-lg z-20 flex flex-col animate-fadeIn">

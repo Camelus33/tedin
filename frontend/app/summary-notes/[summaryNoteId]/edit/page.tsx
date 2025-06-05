@@ -421,47 +421,50 @@ export default function EditSummaryNotePage() {
         {/* Main Content Area: 2-Panel Layout */}
         <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-300px)] md:h-[calc(100vh-280px)]"> {/* Adjust height as needed */}
           {/* Left Panel: Notes List */}
-          <Panel defaultSize={50} minSize={25} className="overflow-y-auto pr-2 md:pr-4 bg-opacity-50 bg-black/10 rounded-lg custom-scrollbar"> {/* Added custom-scrollbar if you have one */}
-            <div className="space-y-6">
-              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
-                포함된 1줄 메모 <span className="text-sm">({fetchedNotes.length}개)</span>
-              </h2>
+          <Panel minSize={30} className="overflow-y-auto pr-2 pb-6 h-full custom-scrollbar">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-300 mb-3">1줄 메모 카드 ({fetchedNotes.length})</h3>
               {fetchedNotes.length > 0 ? (
-                fetchedNotes.map((note, index) => (
-                  <div key={note._id} className="flex items-start space-x-3 w-full">
+                fetchedNotes.map((note, idx) => (
+                  <div key={note._id} className="p-2 relative group bg-gray-800/60 rounded-md">
                     {isEditing && (
-                      <div className="flex flex-col space-y-1 items-center pt-1">
+                      <div className="absolute -left-2 -top-2 z-10 flex space-x-1">
                         <button 
-                          onClick={() => handleReorderNote(note._id, 'up')} 
-                          disabled={index === 0}
-                          className="p-1 rounded-md hover:bg-gray-700 disabled:opacity-30"
+                          onClick={() => handleReorderNote(note._id, 'up')}
+                          disabled={idx === 0}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center ${idx === 0 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                          title="위로 이동"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>
+                          ↑
                         </button>
                         <button 
-                          onClick={() => handleReorderNote(note._id, 'down')} 
-                          disabled={index === fetchedNotes.length - 1}
-                          className="p-1 rounded-md hover:bg-gray-700 disabled:opacity-30"
+                          onClick={() => handleReorderNote(note._id, 'down')}
+                          disabled={idx === fetchedNotes.length - 1}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center ${idx === fetchedNotes.length - 1 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                          title="아래로 이동"
                         >
-                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                          ↓
                         </button>
                       </div>
                     )}
-                    <TSNoteCard
-                      note={note}
-                      bookTitle={bookInfoMap.get(note.bookId)?.title} 
-                      readingPurpose={currentBookReadingPurpose} 
-                      sessionDetails={note.sessionDetails}
-                      onUpdate={handleNoteUpdate} 
-                      onFlashcardConvert={(currentNote) => {
-                        setNoteForFlashcardModal(currentNote as FetchedNoteDetails);
+                    <TSNoteCard 
+                      note={note} 
+                      onUpdate={handleNoteUpdate}
+                      onFlashcardConvert={(note) => {
+                        setNoteForFlashcardModal(note);
                         setShowFlashcardModal(true);
                       }}
-                      onRelatedLinks={(currentNote) => {
-                        setSelectedNoteForLinkModal(currentNote as FetchedNoteDetails);
+                      onRelatedLinks={(note) => {
+                        setSelectedNoteForLinkModal(note);
                         setShowLinkModal(true);
+                        if (note.relatedLinks && note.relatedLinks.length > 0) {
+                          setActiveRelatedLinkTypeTab(note.relatedLinks[0].type);
+                        }
                       }}
-                      isPageEditing={isEditing} 
+                      sessionDetails={note.sessionDetails}
+                      readingPurpose={currentBookReadingPurpose || 'humanities_self_reflection'}
+                      isPageEditing={false}
+                      bookTitle={note.bookId ? (bookInfoMap.get(note.bookId)?.title || 'Unknown Book') : undefined}
                     />
                   </div>
                 ))
