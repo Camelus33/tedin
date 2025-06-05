@@ -6,17 +6,17 @@ import mongoose from 'mongoose';
 /**
  * @function createSummaryNote
  * @description 새로운 단권화 노트를 생성합니다.
- * 요청 본문으로부터 제목, 설명, 노트 ID 목록, 책 ID 목록, 태그 등을 받아 단권화 노트를 생성합니다.
+ * 요청 본문으로부터 제목, 설명, 노트 ID 목록, 책 ID 목록, 태그, 유저 마크다운 컨텐츠를 받아 단권화 노트를 생성합니다.
  * 사용자 인증이 필요하며, 요청 객체(req)의 user.id로부터 사용자 ID를 가져옵니다.
- * @param {Request} req - Express 요청 객체. 본문에 title, description, orderedNoteIds, bookIds, tags 포함.
+ * @param {Request} req - Express 요청 객체. 본문에 title, description, orderedNoteIds, bookIds, tags, userMarkdownContent 포함.
  * @param {Response} res - Express 응답 객체.
  * @returns {Promise<void>} 성공 시 201 상태 코드와 생성된 단권화 노트 객체를 JSON으로 반환합니다.
  *                        실패 시 적절한 상태 코드와 오류 메시지를 반환합니다.
  */
 export const createSummaryNote = async (req: Request, res: Response) => {
   try {
-    const { title, description, orderedNoteIds, bookIds, tags } = req.body;
-    const userId = (req as any).user?.id; // Assuming userId is available from auth middleware
+    const { title, description, orderedNoteIds, bookIds, tags, userMarkdownContent } = req.body;
+    const userId = (req as any).user?.id;
 
     if (!userId) {
       return res.status(401).json({ message: 'User not authenticated' });
@@ -26,16 +26,16 @@ export const createSummaryNote = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'orderedNoteIds are required and must be a non-empty array.' });
     }
 
-    // Ensure bookIds are unique if provided, otherwise create an empty array
     const uniqueBookIds = bookIds && Array.isArray(bookIds) ? [...new Set(bookIds.map(String))] : [];
 
     const newSummaryNote = new SummaryNote({
       userId,
-      title: title || '나의 단권화 노트', // Default title if not provided
+      title: title || '나의 단권화 노트',
       description,
       orderedNoteIds,
       bookIds: uniqueBookIds,
       tags: tags || [],
+      userMarkdownContent: userMarkdownContent || '',
     });
 
     await newSummaryNote.save();
@@ -86,7 +86,7 @@ export const getSummaryNoteById = async (req: Request, res: Response) => {
 /**
  * @function updateSummaryNote
  * @description ID를 사용하여 특정 단권화 노트를 업데이트합니다.
- * 요청 파라미터로부터 summaryNoteId를 받고, 요청 본문으로부터 업데이트할 필드(title, description, orderedNoteIds, tags)를 받습니다.
+ * 요청 파라미터로부터 summaryNoteId를 받고, 요청 본문으로부터 업데이트할 필드(title, description, orderedNoteIds, tags, userMarkdownContent)를 받습니다.
  * 해당 단권화 노트가 요청한 사용자의 소유인지 확인하는 로직이 포함됩니다.
  * bookIds는 일반적으로 생성 시점에 결정되므로 여기서는 업데이트 대상에서 제외합니다.
  * @param {Request} req - Express 요청 객체. params에 summaryNoteId, body에 업데이트할 필드 포함.
@@ -97,7 +97,7 @@ export const getSummaryNoteById = async (req: Request, res: Response) => {
 export const updateSummaryNote = async (req: Request, res: Response) => {
   try {
     const { summaryNoteId } = req.params;
-    const { title, description, orderedNoteIds, tags } = req.body;
+    const { title, description, orderedNoteIds, tags, userMarkdownContent } = req.body;
     const userId = (req as any).user?.id;
 
     if (!mongoose.Types.ObjectId.isValid(summaryNoteId)) {
@@ -119,6 +119,7 @@ export const updateSummaryNote = async (req: Request, res: Response) => {
     if (description !== undefined) summaryNote.description = description;
     if (orderedNoteIds !== undefined) summaryNote.orderedNoteIds = orderedNoteIds;
     if (tags !== undefined) summaryNote.tags = tags;
+    if (userMarkdownContent !== undefined) summaryNote.userMarkdownContent = userMarkdownContent;
     // bookIds are typically not updated here, they are set at creation based on notes.
 
     await summaryNote.save();

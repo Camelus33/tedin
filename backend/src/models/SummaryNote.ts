@@ -40,6 +40,10 @@ export interface ISummaryNote extends Document {
    * @property {Date} updatedAt - 단권화 노트 마지막 수정 일시입니다. Mongoose의 timestamps 옵션에 의해 자동 관리됩니다.
    */
   updatedAt: Date;
+  /**
+   * @property {string} [userMarkdownContent] - 사용자가 단권화 노트에 대해 작성한 마크다운 내용입니다.
+   */
+  userMarkdownContent?: string;
 }
 
 /**
@@ -54,6 +58,7 @@ const SummaryNoteSchema: Schema = new Schema({
   bookIds: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
   orderedNoteIds: [{ type: Schema.Types.ObjectId, ref: 'Note' }], // 'Note' 모델 (TSNote 포함) 참조
   tags: [{ type: String, index: true }],
+  userMarkdownContent: { type: String, default: '' },
 }, { 
   /**
    * timestamps 옵션: true로 설정 시, createdAt 및 updatedAt 필드를 자동으로 생성하고 관리합니다.
