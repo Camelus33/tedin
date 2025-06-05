@@ -331,7 +331,7 @@ export default function TSNoteCard({
   }, [fields, note, onUpdate, tabKeys, setIsOpen]);
 
   const toggleOpen = () => {
-    if (!isPageEditing && !isOpen) return;
+    // if (!isPageEditing && !isOpen) return; // 임시 주석 처리로 조건부 로직 비활성화
     setIsOpen((prev) => !prev);
   };
 
