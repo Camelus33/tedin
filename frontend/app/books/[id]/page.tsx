@@ -815,6 +815,7 @@ export default function BookDetailPage() {
                         sessionDetails={sessionDetailsForCard}
                         onAddToCart={handleAddToCartToStore}
                         isAddedToCart={isNoteInCart}
+                        isPageEditing={false}
                       />
                     </div>
                   );
