@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"; // Import Dropdown components
 import { Button } from '@/components/ui/button'; // Import Button for styling consistency
+import { cn } from '@/lib/utils';
 
 // Define the structure for a single related link
 export interface RelatedLink {
@@ -215,6 +216,17 @@ const getLinkTypeIcon = (type: RelatedLink['type']) => {
   }
 };
 
+// Helper function to extract domain from URL
+const getDomainFromUrl = (url: string) => {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.hostname;
+  } catch (e) {
+    // If URL is invalid, return a placeholder or the original URL fragment
+    return url.split('/')[2] || url;
+  }
+};
+
 // Ensure cyberTheme is defined or imported if it's used here (e.g., for button/menu styling)
 // Minimal cyberTheme definition for TSNoteCard if not using a global one:
 const cyberTheme = {
@@ -282,13 +294,14 @@ export default function TSNoteCard({
   const tabKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
   
   useEffect(() => {
+    setNote(initialNote);
     setFields({
-      importanceReason: note.importanceReason || '',
-      momentContext: note.momentContext || '',
-      relatedKnowledge: note.relatedKnowledge || '',
-      mentalImage: note.mentalImage || '',
+      importanceReason: initialNote.importanceReason || '',
+      momentContext: initialNote.momentContext || '',
+      relatedKnowledge: initialNote.relatedKnowledge || '',
+      mentalImage: initialNote.mentalImage || '',
     });
-  }, [note.importanceReason, note.momentContext, note.relatedKnowledge, note.mentalImage]);
+  }, [initialNote]);
 
   useEffect(() => {
     const newCurrentStep = tabKeys.indexOf(activeTab as typeof tabKeys[number]) + 1;
@@ -331,8 +344,27 @@ export default function TSNoteCard({
   }, [fields, note, onUpdate, tabKeys, setIsOpen]);
 
   const toggleOpen = () => {
-    // if (!isPageEditing && !isOpen) return; // 임시 주석 처리로 조건부 로직 비활성화
     setIsOpen((prev) => !prev);
+    if (!isOpen) {
+      const firstEvolutionKey = tabKeys[0] as keyof typeof fields;
+      setActiveTab(firstEvolutionKey);
+      setCurrentStep(1);
+      setFields({
+        importanceReason: note.importanceReason || '',
+        momentContext: note.momentContext || '',
+        relatedKnowledge: note.relatedKnowledge || '',
+        mentalImage: note.mentalImage || '',
+      });
+    }
+  };
+
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest('button, a, [role="button"], [role="link"], [data-no-toggle]')) {
+      return;
+    }
+    if (!isPageEditing && !minimalDisplay) {
+      toggleOpen();
+    }
   };
 
   const handleChange = (key: keyof typeof fields, value: string) => {
@@ -344,7 +376,6 @@ export default function TSNoteCard({
     if (currentIndex < tabKeys.length - 1) {
       setActiveTab(tabKeys[currentIndex + 1]);
     } else {
-      // Cycle to the first tab instead of saving/closing
       setActiveTab(tabKeys[0]); 
     }
   }, [activeTab, tabKeys]);
@@ -354,7 +385,6 @@ export default function TSNoteCard({
     if (currentIndex > 0) {
       setActiveTab(tabKeys[currentIndex - 1]);
     } else {
-      // Cycle to the last tab
       setActiveTab(tabKeys[tabKeys.length - 1]);
     }
   }, [activeTab, tabKeys]);
@@ -406,7 +436,6 @@ export default function TSNoteCard({
     );
   };
 
-  // "메모 진화" 내용을 조회 모드에서 표시하는 함수
   const renderMemoEvolutionDetails = () => {
     if (isOpen || isPageEditing || minimalDisplay) {
       return null;
@@ -449,37 +478,77 @@ export default function TSNoteCard({
   };
 
   return (
-    <div 
-      className={`relative group ${cyberTheme.cardBg} p-4 rounded-lg shadow-md border ${cyberTheme.cardBorder} ${className} ${minimalDisplay ? 'min-h-0' : 'min-h-[180px]'} transition-all duration-200 hover:shadow-xl hover:border-cyan-500/70 w-full`}
-      onMouseEnter={() => setIsHoveringCard(true)}
-      onMouseLeave={() => setIsHoveringCard(false)}
-    >
-      {sessionDetails && !minimalDisplay && (
-        <>
-          {renderSessionInfoButton()}
-          {renderSessionInfoPopover()}
-        </>
+    <div
+      className={cn(
+        "relative p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
+        isOpen ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
+        minimalDisplay ? "p-3 min-h-0" : "",
+        className
       )}
-      
-      <div 
-        className="relative flex flex-col h-full"
-      >
-        {/* 1. 강조된 note.content 인용 블록 */}
-        <div className="mb-3 border-l-4 border-cyan-400 pl-4 py-3">
-          <p className="text-xl font-medium text-gray-100 leading-relaxed whitespace-pre-wrap break-words">
-            {note.content}
-          </p>
-        </div>
+      onClick={handleCardClick}
+    >
+      <div className="flex justify-between items-start mb-2">
+        {sessionDetails && !minimalDisplay && (
+          <>
+            {renderSessionInfoButton()}
+            {renderSessionInfoPopover()}
+          </>
+        )}
+      </div>
 
-        {/* 2. 출처 정보 */}
-        {!minimalDisplay && renderBookSource()}
-        
-        {/* 3. Render memo evolution details in view mode */}
+      <div className="flex-grow mb-2">
+        <p
+          className={`text-lg leading-relaxed ${
+            isOpen || isPageEditing || minimalDisplay ? 'text-gray-300' : 'text-white'
+          } whitespace-pre-wrap break-words font-medium ${
+            !isPageEditing && !isOpen && !minimalDisplay ? 'border-l-4 border-cyan-600 pl-3 py-1' : 'py-1'
+          }`}
+        >
+          {note.content}
+        </p>
+
+        {bookTitle && !isPageEditing && !isOpen && !minimalDisplay && (
+          <div className="mt-2 text-xs text-gray-400 flex items-center">
+            <SolidBookOpenIcon className="h-3 w-3 mr-1.5 text-gray-500" />
+            출처: {bookTitle}
+          </div>
+        )}
+
         {renderMemoEvolutionDetails()}
+      </div>
+      
+      {!isPageEditing && !isOpen && !minimalDisplay && note.relatedLinks && note.relatedLinks.length > 0 && (
+        <div className="mt-3 pt-2 border-t border-gray-700/50">
+          <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
+            <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
+            관련 링크
+          </h4>
+          <ul className="space-y-1">
+            {note.relatedLinks.map((link, idx) => (
+              <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150">
+                <ArrowTopRightOnSquareIcon className="h-3 w-3 mr-1.5 flex-shrink-0 text-gray-500" />
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="truncate"
+                  title={link.url}
+                >
+                  {link.reason || getDomainFromUrl(link.url)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-        {/* 4. 태그 목록 */}
-        {!minimalDisplay && note.tags && note.tags.length > 0 && (
-          <div className="mb-3 mt-1 flex flex-wrap gap-1.5">
+      {!minimalDisplay && note.tags && note.tags.length > 0 && (
+        <div className="mt-3 pt-2 border-t border-gray-700/50">
+          <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
+            <TagIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
+            태그
+          </h4>
+          <div className="flex flex-wrap gap-1.5">
             {note.tags.map((tag, index) => (
               <span
                 key={index}
@@ -490,47 +559,47 @@ export default function TSNoteCard({
               </span>
             ))}
           </div>
-        )}
-        
-        {showActions && !minimalDisplay && (
-          <div className="flex items-center justify-end space-x-2 mt-auto pt-2 border-t border-gray-700/50">
-            {onAddToCart && (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => onAddToCart(note._id, note.bookId)}
-                title={isAddedToCart ? "단권화 노트에서 제거" : "단권화 노트에 담기"}
-                className={`${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
-              >
-                <ShoppingCartIcon className={`h-4 w-4 ${isAddedToCart ? 'text-green-500' : ''}`} />
-              </Button>
-            )}
+        </div>
+      )}
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="px-2">
-                  <EllipsisVerticalIcon className={`h-5 w-5 text-gray-400 hover:${cyberTheme.primaryText}`} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
-                <DropdownMenuItem onClick={toggleOpen} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                  <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화
+      {showActions && !minimalDisplay && (
+        <div className="flex items-center justify-end space-x-2 mt-auto pt-2 border-t border-gray-700/50">
+          {onAddToCart && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={(e) => { e.stopPropagation(); onAddToCart(note._id, note.bookId); }}
+              title={isAddedToCart ? "단권화 노트에서 제거" : "단권화 노트에 담기"}
+              className={`${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
+            >
+              <ShoppingCartIcon className={`h-4 w-4 ${isAddedToCart ? 'text-green-500' : ''}`} />
+            </Button>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="px-2">
+                <EllipsisVerticalIcon className={`h-5 w-5 text-gray-400 hover:${cyberTheme.primaryText}`} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
+              <DropdownMenuItem onClick={toggleOpen} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화
+              </DropdownMenuItem>
+              {onFlashcardConvert && (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                  <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드 변환
                 </DropdownMenuItem>
-                {onFlashcardConvert && (
-                  <DropdownMenuItem onClick={() => onFlashcardConvert(note)} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                    <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드 변환
-                  </DropdownMenuItem>
-                )}
-                {onRelatedLinks && (
-                  <DropdownMenuItem onClick={() => onRelatedLinks(note)} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                    <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-      </div>
+              )}
+              {onRelatedLinks && (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                  <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
 
       {isOpen && !minimalDisplay && (
         <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-4 rounded-lg z-20 flex flex-col">
@@ -548,21 +617,6 @@ export default function TSNoteCard({
               placeholder={prompts[currentStep - 1]?.placeholder}
               className="w-full h-32 p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white"
             />
-            {note.relatedLinks && note.relatedLinks.length > 0 && currentStep === 3 && (
-                 <div className="mt-3">
-                     <h4 className="text-sm font-medium text-gray-400 mb-1">관련 링크:</h4>
-                     <ul className="space-y-1 text-xs">
-                         {note.relatedLinks.map((link, idx) => (
-                             <li key={idx} className="flex items-center">
-                                 {getLinkTypeIcon(link.type)}
-                                 <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline truncate" title={link.url}>
-                                     {link.reason || link.url}
-                                 </a>
-                             </li>
-                         ))}
-                     </ul>
-                 </div>
-             )}
           </div>
 
           <div className="mt-3 flex justify-between items-center">
@@ -570,7 +624,7 @@ export default function TSNoteCard({
               {tabList.map((tab, index) => (
                 <button
                   key={index}
-                  onClick={() => setActiveTab(tabKeys[index])}
+                  onClick={() => setActiveTab(tabKeys[index] as keyof typeof fields)}
                   className={`w-3 h-3 rounded-full ${currentStep === index + 1 ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
                   title={tab.label}
                 />
