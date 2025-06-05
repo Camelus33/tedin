@@ -480,7 +480,7 @@ export default function EditSummaryNotePage() {
           {/* Right Panel: Markdown Editor */}
           <Panel defaultSize={50} minSize={25} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
-                나의 생각 노트
+                생각 확장 노트
               </h2>
             <div className="flex-grow h-full" data-color-mode="dark"> {/* data-color-mode for MDEditor dark theme */}
               {isEditing ? (
@@ -541,7 +541,7 @@ export default function EditSummaryNotePage() {
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-4">
             <div className={`bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full border border-cyan-500/50 relative ${cyberTheme.textLight}`}>
               <h3 className="text-lg font-semibold mb-4 text-cyan-400">
-                관련 링크 관리: "{selectedNoteForLinkModal.content.substring(0,30)}..."
+                관련 링크: "{selectedNoteForLinkModal.content.substring(0,30)}..."
               </h3>
               
               {/* Link Type Tabs */}

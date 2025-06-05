@@ -488,7 +488,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>TS : Micro-Reading</h2> {/* Theme text */}
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}></p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>잘게 쪼갠 시간 읽기로 잡념 없이 몰입하세요 </p> {/* Theme text */}
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>잘게 쪼갠 시간으로 읽기를 정복하세요 </p> {/* Theme text */}
               </div>
               <div className="mt-6">
                  <button className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
@@ -524,7 +524,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>직접 만든 ZenGo</p>
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>입력해서 외우고 곧바로 테스트</p>
+                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>단 번에 떠올리고 외우세요</p>
               </div>
               <div className="mt-6">
                 <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-orbitron font-bold text-cyan-300 drop-shadow-sm">
-                    매일 3분 마이크로 리딩, 33일 후 놀라운 성장
+                    3분 11페이지 도전하세요!
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
