@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AiOutlineQuestionCircle, AiOutlineInfoCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import api from '@/lib/api'; // Import the central api instance
 import {
   DropdownMenu,
@@ -10,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"; // Import Dropdown components
 import { Button } from '@/components/ui/button'; // Import Button for styling consistency
+import { Textarea } from '@/components/ui/textarea'; // Ensure Textarea is imported
 import { cn } from '@/lib/utils';
 
 // Define the structure for a single related link
@@ -263,131 +265,105 @@ export default function TSNoteCard({
   isAddedToCart,
   className,
   showActions = true,
+  minimalDisplay = false,
   bookTitle,
-  isPageEditing = false,
+  isPageEditing = true,
 }: TSNoteCardProps) {
   const [note, setNote] = useState<TSNote>(initialNote);
-  const [isOpen, setIsOpen] = useState(isPageEditing);
-  const [isEditingInternal, setIsEditingInternal] = useState(false);
-  const [currentTabIndex, setCurrentTabIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [fields, setFields] = useState({
-    importanceReason: note.importanceReason || '',
-    momentContext: note.momentContext || '',
-    relatedKnowledge: note.relatedKnowledge || '',
-    mentalImage: note.mentalImage || '',
+    importanceReason: initialNote.importanceReason || '',
+    momentContext: initialNote.momentContext || '',
+    relatedKnowledge: initialNote.relatedKnowledge || '',
+    mentalImage: initialNote.mentalImage || '',
   });
-  const [initialFields, setInitialFields] = useState({...fields});
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isHoveringInfo, setIsHoveringInfo] = useState(false);
-  const [isHoveringCard, setIsHoveringCard] = useState(false);
+  const [isMemoEvolutionDirectEditing, setIsMemoEvolutionDirectEditing] = useState(false);
+  const [originalMemoEvolutionFields, setOriginalMemoEvolutionFields] = useState({
+    importanceReason: initialNote.importanceReason || '',
+    momentContext: initialNote.momentContext || '',
+    relatedKnowledge: initialNote.relatedKnowledge || '',
+    mentalImage: initialNote.mentalImage || '',
+  });
+
+  // Re-add state for session details popover
   const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
-  const [isSavingEvolution, setIsSavingEvolution] = useState(false);
+
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const tabList = [
-    { key: 'importanceReason', label: '읽던 순간' },
-    { key: 'momentContext', label: '떠오른 장면' },
-    { key: 'relatedKnowledge', label: '연상된 지식' },
-    { key: 'mentalImage', label: '받아들인 의미' },
-  ];
-  const [activeTab, setActiveTab] = useState(tabList[0].key);
-
-  const tabKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
-  
   useEffect(() => {
     setNote(initialNote);
-    setIsOpen(isPageEditing || isEditingInternal);
     setFields({
       importanceReason: initialNote.importanceReason || '',
       momentContext: initialNote.momentContext || '',
       relatedKnowledge: initialNote.relatedKnowledge || '',
       mentalImage: initialNote.mentalImage || '',
     });
-  }, [initialNote, isPageEditing, isEditingInternal]);
-
-  useEffect(() => {
-    const newCurrentStep = tabKeys.indexOf(activeTab as typeof tabKeys[number]) + 1;
-    if (newCurrentStep > 0) {
-      setCurrentStep(newCurrentStep);
+    // If the card is closed externally, also exit direct editing mode
+    if (!isOpen) {
+      setIsMemoEvolutionDirectEditing(false);
     }
-  }, [activeTab, tabKeys]);
+  }, [initialNote, isOpen]);
 
-  const activePrompts = memoEvolutionPrompts[readingPurpose || 'humanities_self_reflection'] || memoEvolutionPrompts.humanities_self_reflection;
-  const tabQuestions: Record<string, { question: string; placeholder: string }> = {
-    importanceReason: activePrompts[0],
-    momentContext: activePrompts[1],
-    relatedKnowledge: activePrompts[2],
-    mentalImage: activePrompts[3],
+  const handleOpenMemoEvolutionEdit = () => {
+    setIsOpen(true);
+    setOriginalMemoEvolutionFields({ ...fields }); // Store current field values as original
+    setIsMemoEvolutionDirectEditing(true);
+    // Focus on the first textarea of the active tab might be good UX
+    // setActiveTabIndex(0); // Ensure first tab is active, then focus
+    // setTimeout(() => evolutionTextareaRef.current?.focus(), 0); // Needs specific ref per tab or a general one
   };
 
-  const handleSave = useCallback(async () => {
-    const changedFields: Partial<TSNote> = { _id: note._id };
-    let hasChanges = false;
-    for (const key of tabKeys) {
-      if (fields[key] !== (note[key] || '')) {
-        (changedFields as any)[key] = fields[key];
-        hasChanges = true;
-      }
+  const handleSaveMemoEvolutionEdits = () => {
+    if (onUpdate) {
+      onUpdate({ _id: note._id, ...fields });
     }
+    setIsMemoEvolutionDirectEditing(false);
+    setIsOpen(false); // Close after saving, as per requirement
+  };
 
-    if (hasChanges && onUpdate) {
-      setIsSavingEvolution(true);
-      try {
-        await onUpdate(changedFields);
-        setIsOpen(false);
-      } catch (error) {
-        console.error("Failed to save note evolution:", error);
-      } finally {
-        setIsSavingEvolution(false);
-      }
-    } else {
-      setIsOpen(false);
-    }
-  }, [fields, note, onUpdate, tabKeys, setIsOpen]);
-
+  const handleCancelMemoEvolutionEdits = () => {
+    setFields(originalMemoEvolutionFields); // Restore original fields
+    setIsMemoEvolutionDirectEditing(false);
+    setIsOpen(false); // Close after cancelling
+  };
+  
   const toggleOpen = () => {
-    setIsOpen(!isOpen);
+    // if (!isPageEditing && !isOpen && !isMemoEvolutionDirectEditing) return; // Adjusted condition
+    setIsOpen(prev => {
+      const nextOpenState = !prev;
+      if (!nextOpenState) { // If closing
+        setIsMemoEvolutionDirectEditing(false); // Ensure direct editing mode is also exited
+        // If there were unsaved changes in direct editing mode, prompt or revert here if needed.
+        // For now, simply exiting direct edit mode.
+      }
+      return nextOpenState;
+    });
   };
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('.interactive-element')) {
+    // Allow clicking on interactive elements within the card without toggling open state
+    if ((e.target as HTMLElement).closest('button, a, textarea, input, [role=\"menuitem\"]')) {
       return;
     }
-    if (!isPageEditing) {
-      return;
+    // If in direct editing mode, don't close on card click (use explicit buttons)
+    if (isMemoEvolutionDirectEditing) {
+        return;
     }
-    setIsOpen(!isOpen);
-  };
-
-  const handleEditToggle = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    setIsEditingInternal(!isEditingInternal);
-    if (!isEditingInternal) {
-      setIsOpen(true);
-    }
+    toggleOpen();
   };
 
   const handleChange = (key: keyof typeof fields, value: string) => {
-    setFields((prev) => ({ ...prev, [key]: value }));
+    setFields(prev => ({ ...prev, [key]: value }));
   };
-  
-  const handleNext = useCallback(() => {
-    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
-    if (currentIndex < tabKeys.length - 1) {
-      setActiveTab(tabKeys[currentIndex + 1]);
-    } else {
-      setActiveTab(tabKeys[0]); 
-    }
-  }, [activeTab, tabKeys]);
 
-  const handlePrev = useCallback(() => {
-    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
-    if (currentIndex > 0) {
-      setActiveTab(tabKeys[currentIndex - 1]);
-    } else {
-      setActiveTab(tabKeys[tabKeys.length - 1]);
+  const handleSave = (key: keyof typeof fields) => {
+    if (isMemoEvolutionDirectEditing) return; // Don't auto-save if in direct editing mode
+
+    if (onUpdate && fields[key] !== note[key as keyof TSNote]) {
+      onUpdate({ _id: note._id, [key]: fields[key] });
     }
-  }, [activeTab, tabKeys]);
+  };
 
   const displaySessionCreatedAt = sessionDetails?.createdAtISO ? formatSessionCreatedAt(sessionDetails.createdAtISO) : '세션 정보 없음';
   const displaySessionDuration = sessionDetails?.durationSeconds !== undefined ? formatSessionDuration(sessionDetails.durationSeconds) : '';
@@ -402,10 +378,10 @@ export default function TSNoteCard({
       onMouseLeave={() => setShowSessionDetailsPopover(false)}
       className={`absolute bottom-2 left-2 z-30 p-1.5 rounded-full bg-gray-700/70 hover:bg-cyan-600/90
                   text-gray-300 hover:text-white transition-all duration-200
-                  focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-      aria-label="TS 세션 정보 보기"
+                  flex items-center justify-center shadow-lg`}
+      aria-label="세션 정보 보기"
     >
-      <AiOutlineInfoCircle className="h-4 w-4" />
+      <AiOutlineInfoCircle className="w-4 h-4" />
     </button>
   );
 
@@ -416,13 +392,13 @@ export default function TSNoteCard({
                  text-xs text-gray-200 z-20 shadow-xl border border-gray-700/50`}
     >
       <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1`}>TS 세션 정보</h4>
-      {sessionDetails?.createdAtISO && <p className="mt-1">기록일: {displaySessionCreatedAt}</p>}
-      {sessionDetails?.durationSeconds !== undefined && <p>집중 시간: {displaySessionDuration}</p>}
-      {sessionDetails && (sessionDetails.startPage !== undefined || sessionDetails.actualEndPage !== undefined) && (
-        <p>페이지: {displaySessionPageProgress}</p>
-      )}
-      {sessionDetails?.ppm !== undefined && <p>독서 속도: {displayPPM}</p>}
-      {(!sessionDetails || Object.keys(sessionDetails).length === 0) && <p className="text-gray-400 italic">세션 정보가 없습니다.</p>}
+      <p><strong>세션 생성일:</strong> {displaySessionCreatedAt}</p>
+      {sessionDetails?.durationSeconds !== undefined && <p><strong>소요 시간:</strong> {formatSessionDuration(sessionDetails.durationSeconds)}</p>}
+      {(sessionDetails?.startPage !== undefined || sessionDetails?.actualEndPage !== undefined) && 
+        <p><strong>읽은 범위:</strong> {formatSessionPageProgress(sessionDetails.startPage, sessionDetails.actualEndPage, sessionDetails.targetPage)}</p>}
+      {sessionDetails?.ppm !== undefined && <p><strong>독서 속도:</strong> {formatPPM(sessionDetails.ppm)}</p>}
+      {sessionDetails?.book?.title && <p><strong>세션 연관 도서:</strong> {sessionDetails.book.title}</p>}
+      {(!sessionDetails || Object.keys(sessionDetails).length === 0) && <p>세션 상세 정보가 없습니다.</p>}
     </div>
   );
   
@@ -437,56 +413,64 @@ export default function TSNoteCard({
   };
 
   const renderMemoEvolutionDetails = () => {
-    if (!isOpen && !isPageEditing && !isEditingInternal) return null;
+    if (isOpen || isPageEditing || minimalDisplay) {
+      return null;
+    }
 
-    const showEditableFields = isPageEditing || isEditingInternal;
+    const currentPrompts = memoEvolutionPrompts[readingPurpose || 'exam_prep'] || memoEvolutionPrompts.exam_prep;
+    const fieldKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
+    
+    const isFieldDisabled = !(isPageEditing || isMemoEvolutionDirectEditing);
 
     return (
-      <div className={`mt-3 pt-3 border-t ${showEditableFields ? 'border-cyan-500/30' : 'border-gray-700/50'} transition-all duration-300 ease-in-out`}>
-        {showEditableFields ? (
-          <>
-            <div className="flex justify-between items-center mb-2">
-              <h4 className={`text-xs font-semibold ${cyberTheme.secondaryText} flex items-center`}>
-                <SparklesIcon className="w-4 h-4 mr-1.5" /> 메모 진화 (수정 중)
-              </h4>
-              <div className="flex space-x-2">
-                <Button onClick={handleSave} size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs interactive-element">저장</Button>
-                <Button onClick={handleEditToggle} variant="outline" size="sm" className="text-gray-300 border-gray-500 hover:bg-gray-700 hover:text-white text-xs interactive-element">취소</Button>
-              </div>
-            </div>
-            <div className="flex space-x-1 mb-2">
-              {tabList.map((tab, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveTab(tabKeys[index] as keyof typeof fields)}
-                  className={`w-3 h-3 rounded-full ${currentStep === index + 1 ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
-                  title={tab.label}
-                />
-              ))}
-            </div>
-            <div className="p-2 rounded bg-black/20 text-xs space-y-1">
-              <p><strong className="font-medium text-gray-400">{activePrompts[currentTabIndex].question}:</strong> {fields[Object.keys(fields)[currentTabIndex] as keyof typeof fields] || <span className="text-gray-500 italic">입력된 내용 없음</span>}</p>
-            </div>
-          </>
-        ) : (
-          <>
-            <h4 className={`text-xs font-semibold ${cyberTheme.secondaryText} mb-2 flex items-center`}>
-              <SparklesIcon className="w-4 h-4 mr-1.5" /> 메모 진화 (조회)
-            </h4>
-            <div className="flex space-x-1 mb-2">
-              {tabList.map((tab, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveTab(tabKeys[index] as keyof typeof fields)}
-                  className={`w-3 h-3 rounded-full ${currentStep === index + 1 ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
-                  title={tab.label}
-                />
-              ))}
-            </div>
-            <div className="p-2 rounded bg-black/20 text-xs space-y-1">
-              <p><strong className="font-medium text-gray-400">{activePrompts[currentTabIndex].question}:</strong> {fields[Object.keys(fields)[currentTabIndex] as keyof typeof fields] || <span className="text-gray-500 italic">입력된 내용 없음</span>}</p>
-            </div>
-          </>
+      <div className="mt-3 p-3 bg-gray-800 rounded-md shadow-inner">
+        <div className="flex mb-2 border-b border-gray-700">
+          {currentPrompts.map((prompt, index) => (
+            <button
+              key={index}
+              onClick={() => setActiveTabIndex(index)}
+              className={`px-3 py-1.5 text-xs rounded-t-md focus:outline-none transition-colors duration-150 ease-in-out ${
+                activeTabIndex === index 
+                  ? 'bg-cyan-600 text-white font-semibold shadow-md' 
+                  : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+              }`}
+            >
+              {prompt.question.split(' ')[0].replace(',', '')} {/* Tab Label */}
+            </button>
+          ))}
+        </div>
+        <div className="text-xs text-gray-400 mb-1 italic">
+          {currentPrompts[activeTabIndex].question}
+        </div>
+        <Textarea
+          ref={evolutionTextareaRef} // May need adjustment if each tab needs its own ref
+          value={fields[fieldKeys[activeTabIndex]]}
+          onChange={(e) => handleChange(fieldKeys[activeTabIndex], e.target.value)}
+          onBlur={() => handleSave(fieldKeys[activeTabIndex])}
+          placeholder={currentPrompts[activeTabIndex].placeholder}
+          className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 h-24 resize-none text-gray-200 custom-scrollbar"
+          disabled={isFieldDisabled}
+        />
+        {isMemoEvolutionDirectEditing && (
+          <div className="mt-3 flex justify-end space-x-2">
+            <Button 
+              onClick={handleCancelMemoEvolutionEdits} 
+              variant="outline" 
+              size="sm"
+              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+            >
+              <XMarkIcon className="w-4 h-4 mr-1.5" />
+              취소
+            </Button>
+            <Button 
+              onClick={handleSaveMemoEvolutionEdits} 
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <CheckIcon className="w-4 h-4 mr-1.5" />
+              저장 및 닫기
+            </Button>
+          </div>
         )}
       </div>
     );
@@ -497,32 +481,26 @@ export default function TSNoteCard({
       className={cn(
         "relative p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
         isOpen ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
-        isPageEditing ? "p-3 min-h-0" : "",
+        minimalDisplay ? "p-3 min-h-0" : "",
         className
       )}
       onClick={handleCardClick}
     >
-      <div className="flex justify-between items-start mb-2">
-        {sessionDetails && !isPageEditing && (
-          <>
-            {renderSessionInfoButton()}
-            {renderSessionInfoPopover()}
-          </>
-        )}
-      </div>
+      {sessionDetails && Object.keys(sessionDetails).length > 0 && renderSessionInfoButton()}
+      {sessionDetails && Object.keys(sessionDetails).length > 0 && renderSessionInfoPopover()}
 
       <div className="flex-grow mb-2">
         <p
           className={`text-lg leading-relaxed ${
-            isOpen || isPageEditing ? 'text-gray-300' : 'text-white'
+            isOpen || isPageEditing || minimalDisplay ? 'text-gray-300' : 'text-white'
           } whitespace-pre-wrap break-words font-medium ${
-            !isPageEditing && !isOpen ? 'border-l-4 border-cyan-600 pl-3 py-1' : 'py-1'
+            !isPageEditing && !isOpen && !minimalDisplay ? 'border-l-4 border-cyan-600 pl-3 py-1' : 'py-1'
           }`}
         >
           {note.content}
         </p>
 
-        {bookTitle && !isPageEditing && !isOpen && (
+        {bookTitle && !isPageEditing && !isOpen && !minimalDisplay && (
           <div className="mt-2 text-xs text-gray-400 flex items-center">
             <SolidBookOpenIcon className="h-3 w-3 mr-1.5 text-gray-500" />
             출처: {bookTitle}
@@ -532,7 +510,7 @@ export default function TSNoteCard({
         {renderMemoEvolutionDetails()}
       </div>
       
-      {!isPageEditing && !isOpen && note.relatedLinks && note.relatedLinks.length > 0 && (
+      {!isPageEditing && !isOpen && !minimalDisplay && note.relatedLinks && note.relatedLinks.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
           <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
             <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
@@ -557,7 +535,7 @@ export default function TSNoteCard({
         </div>
       )}
 
-      {!isPageEditing && !isOpen && note.tags && note.tags.length > 0 && (
+      {!minimalDisplay && note.tags && note.tags.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
           <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
             <TagIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
@@ -577,7 +555,7 @@ export default function TSNoteCard({
         </div>
       )}
 
-      {showActions && !isPageEditing && (
+      {showActions && !minimalDisplay && (
         <div className="flex items-center justify-end space-x-2 mt-auto pt-2 border-t border-gray-700/50">
           {onAddToCart && (
             <Button
@@ -598,22 +576,19 @@ export default function TSNoteCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  handleEditToggle(e);
-                }}
-                className="interactive-element"
-              >
-                <PencilSquareIcon className="mr-2 h-4 w-4" />
-                메모 진화
+              <DropdownMenuItem onSelect={() => setIsOpen(prev => !prev)} className={cyberTheme.menuItemHover}>
+                {isOpen ? '간략히 보기' : '자세히 보기/수정'}
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleOpenMemoEvolutionEdit} className={cyberTheme.menuItemHover}>
+                <PencilIcon className="w-4 h-4 mr-2" /> 메모 진화 수정
               </DropdownMenuItem>
               {onFlashcardConvert && (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                <DropdownMenuItem onSelect={() => onFlashcardConvert(note)} className={cyberTheme.menuItemHover}>
                   <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드 변환
                 </DropdownMenuItem>
               )}
               {onRelatedLinks && (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                <DropdownMenuItem onSelect={() => onRelatedLinks(note)} className={cyberTheme.menuItemHover}>
                   <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
                 </DropdownMenuItem>
               )}
