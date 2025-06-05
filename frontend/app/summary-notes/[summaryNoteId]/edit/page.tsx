@@ -462,7 +462,6 @@ export default function EditSummaryNotePage() {
                         setShowLinkModal(true);
                       }}
                       isPageEditing={isEditing} 
-                      minimalDisplay={!isEditing} // 조회 모드일 때 minimalDisplay true로 전달
                     />
                   </div>
                 ))
