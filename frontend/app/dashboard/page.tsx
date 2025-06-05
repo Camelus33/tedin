@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-orbitron font-bold text-cyan-300 drop-shadow-sm">
-                    매일 3분 머아크로 리딩, 33일 후 놀라운 성장
+                    매일 3분 마이크로 리딩, 33일 후 놀라운 성장
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">

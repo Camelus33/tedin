@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AiOutlineQuestionCircle, AiOutlineInfoCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
@@ -71,31 +71,30 @@ export interface TSSessionDetails {
 }
 
 // 목적별 4단계 질문/가이드/placeholder 매핑
-// New questions and placeholders based on user feedback
 const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder: string }>> = {
-  exam_prep: [ // 시험/인증 대비
-    { question: "이 내용을 읽을 때 어떤 상황이었나요?", placeholder: "예) 이동 중, 특정 문제 고민 중" },
-    { question: "이 내용이 왜 중요하다고 생각했나요?", placeholder: "예) 새로운 아이디어, 문제 해결 실마리" },
-    { question: "이 내용과 관련된 기존 지식은 무엇인가요?", placeholder: "예) 이전에 읽은 책, 경험" },
-    { question: "이 내용을 어떻게 활용할 수 있을까요?", placeholder: "예) 업무 적용, 대화 주제" }
+  exam_prep: [
+    { question: '방금 읽은 이 부분에서, 무엇때문에 중요하거나 특히 기억해야 한다고 느꼈나요?', placeholder: '이 개념은 자주 출제된다, 시험에서 헷갈리기 쉬운 부분' },
+    { question: '이 메모(또는 방금 읽은 내용)가 실제 시험 문제로 출제된다면 어떤 모습일까요?', placeholder: '이론 설명형, 사례 적용형, OX 문제 등' },
+    { question: '방금 읽은 내용은 이미 알고 있는 어떤 것을 연상시키나요? ', placeholder: '강의, 노트 필기, 문제집 등' },
+    { question: '이 부분의 학습이 이 책 전체 흐름에서 어떤 의미를 가지며, 이를 완벽히 이해하기 위해 어떤 것이 더 필요할까요?', placeholder: '플래시카드, 요약노트, 친구에게 설명' },
   ],
-  practical_knowledge: [ // 실용적 지식 습득 및 적용
-    { question: "이 내용을 읽을 때 어떤 상황이었나요?", placeholder: "예) 이동 중, 특정 문제 고민 중" },
-    { question: "이 내용이 왜 중요하다고 생각했나요?", placeholder: "예) 새로운 아이디어, 문제 해결 실마리" },
-    { question: "이 내용과 관련된 기존 지식은 무엇인가요?", placeholder: "예) 이전에 읽은 책, 경험" },
-    { question: "이 내용을 어떻게 활용할 수 있을까요?", placeholder: "예) 업무 적용, 대화 주제" }
+  practical_knowledge: [
+    { question: '방금 읽은 이 기술/정보에서, 현재 업무/프로젝트에 즉시 적용할 만한 아이디어나 개선점을 발견했나요?', placeholder: '프로젝트에 바로 쓸 수 있다, 업무 자동화에 활용' },
+    { question: '이 메모(또는 방금 읽은 내용)를 실제 업무에 적용하는 구체적인 절차나 예상되는 상황(제약, 협업)을 그려본다면?', placeholder: '현장 상황, 리소스 부족, 협업 이슈' },
+    { question: '방금 읽은 이 새로운 지식이 기존의 업무 경험이나 보유 기술과 어떻게 연결되어 시너지/차이점을 만들 수 있을까요?', placeholder: '이전 프로젝트, 다른 툴과의 차이' },
+    { question: '이 부분의 지식 습득이 당신의 전문성 향상에 어떤 의미를 주며, 실제 업무에 적용하기 위한 첫 단계는 무엇일까요?', placeholder: '내일 회의 때 공유, 샘플 코드 작성' },
   ],
-  humanities_self_reflection: [ // 인문학적 성찰 및 자기 계발
-    { question: "이 내용을 읽을 때 어떤 상황이었나요?", placeholder: "예) 이동 중, 특정 문제 고민 중" },
-    { question: "이 내용이 왜 중요하다고 생각했나요?", placeholder: "예) 새로운 아이디어, 문제 해결 실마리" },
-    { question: "이 내용과 관련된 기존 지식은 무엇인가요?", placeholder: "예) 이전에 읽은 책, 경험" },
-    { question: "이 내용을 어떻게 활용할 수 있을까요?", placeholder: "예) 업무 적용, 대화 주제" }
+  humanities_self_reflection: [
+    { question: '방금 읽은 이 구절/내용을 접했을 때, 어떤 감정이나 생각이 가장 먼저 들었나요? 기존 가치관에 영향을 주었나요?', placeholder: '새로운 시각, 내 신념과의 충돌' },
+    { question: '이 메모(또는 방금 읽은 내용)와 관련된 당신의 개인적인 경험이나 삶의 특정 장면이 있다면 무엇인가요?', placeholder: '과거 경험, 가족/사회와의 관계' },
+    { question: '방금 읽은 이 부분과 유사한 주제를 다룬 다른 책, 영화, 예술 작품이나, 연관된 철학적/역사적 개념이 떠오르나요?', placeholder: '삶의 방향, 내면의 변화' },
+    { question: '이 부분을 통해 얻은 깨달음이나 통찰이 당신의 삶에 어떤 새로운 의미를 더해주며, 앞으로 어떤 생각/행동의 변화로 이어질 수 있을까요?', placeholder: '일상에서 실천, 주변에 추천' },
   ],
-  reading_pleasure: [ // 독서 자체의 즐거움 추구
-    { question: "이 내용을 읽을 때 어떤 상황이었나요?", placeholder: "예) 이동 중, 특정 문제 고민 중" },
-    { question: "이 내용이 왜 중요하다고 생각했나요?", placeholder: "예) 새로운 아이디어, 문제 해결 실마리" },
-    { question: "이 내용과 관련된 기존 지식은 무엇인가요?", placeholder: "예) 이전에 읽은 책, 경험" },
-    { question: "이 내용을 어떻게 활용할 수 있을까요?", placeholder: "예) 업무 적용, 대화 주제" }
+  reading_pleasure: [
+    { question: '방금 읽은 이 부분에서, 어떤 점(문장, 묘사, 사건) 때문에 즉각적으로 흥미나 감동을 느꼈나요?', placeholder: '반전, 유머, 감동적인 장면' },
+    { question: '이 메모(또는 방금 읽은 내용)와 관련하여 가장 생생하게 떠오르는 장면, 대사, 또는 캐릭터의 모습은 무엇인가요?', placeholder: '주인공의 한마디, 명장면' },
+    { question: '방금 읽은 이 부분의 내용/분위기가 당신의 다른 경험(독서, 영화 감상 등)과 연결되어 더 큰 재미나 특별한 느낌을 주었나요?', placeholder: '이 책의 매력, 추천 포인트' },
+    { question: '이 부분을 통해 느낀 즐거움/감동이 당신에게 어떤 여운을 남겼으며, 이 책의 어떤 매력을 다른 사람에게 이야기하고 싶나요?', placeholder: '여운, 아쉬움, 다음 권 기대' },
   ],
 };
 
@@ -256,171 +255,109 @@ export default function TSNoteCard({
   bookTitle,
   isPageEditing = true,
 }: TSNoteCardProps) {
-  const [note, setNote] = useState<TSNote>(initialNote);
-  const [isMemoEvolutionModalOpen, setIsMemoEvolutionModalOpen] = useState(false); 
-  const [isMemoEvolutionEditing, setIsMemoEvolutionEditing] = useState(false);
-  const [memoEvolutionContentExists, setMemoEvolutionContentExists] = useState(false);
-
-  const tabList = useMemo(() => [
-    { key: 'momentContext', label: '읽던 순간' },
-    { key: 'importanceReason', label: '중요 이유' },
-    { key: 'relatedKnowledge', label: '관련 지식' },
-    { key: 'mentalImage', label: '실행' },
-  ], []);
-
-  const tabKeys = useMemo(() => tabList.map(t => t.key as MemoEvolutionFieldKey), [tabList]);
-  type MemoEvolutionFieldKey = 'momentContext' | 'importanceReason' | 'relatedKnowledge' | 'mentalImage';
-
-  const [activeTab, setActiveTab] = useState<MemoEvolutionFieldKey>(tabKeys[0]);
-  
-  // Holds the current values in the form fields
-  const [fields, setFields] = useState<Record<MemoEvolutionFieldKey, string>>(() => {
-    const setup: Partial<Record<MemoEvolutionFieldKey, string>> = {};
-    for (const key of tabKeys) {
-      setup[key] = (initialNote[key] as string | undefined) || '';
-    }
-    return setup as Record<MemoEvolutionFieldKey, string>;
+  const [note, setNote] = useState(initialNote);
+  const [isOpen, setIsOpen] = useState(false);
+  const [fields, setFields] = useState({
+    importanceReason: note.importanceReason || '',
+    momentContext: note.momentContext || '',
+    relatedKnowledge: note.relatedKnowledge || '',
+    mentalImage: note.mentalImage || '',
   });
-
-  // Holds the values of the fields when the modal was opened or last saved
-  const [fieldsAtModalOpen, setFieldsAtModalOpen] = useState<Record<MemoEvolutionFieldKey, string>>(fields);
-
-  // Effect to sync 'fields' and 'fieldsAtModalOpen' when 'initialNote' (prop) changes
-  useEffect(() => {
-    const newFieldsFromProp: Record<MemoEvolutionFieldKey, string> = {} as Record<MemoEvolutionFieldKey, string>;
-    let contentFound = false;
-    for (const key of tabKeys) {
-      const value = (initialNote[key] as string | undefined) || '';
-      newFieldsFromProp[key] = value;
-      if (typeof value === 'string' && value.trim() !== '') {
-        contentFound = true;
-      }
-    }
-    setFields(newFieldsFromProp);
-    setMemoEvolutionContentExists(contentFound);
-    // If modal is not open, also reset the baseline for "cancel"
-    if (!isMemoEvolutionModalOpen) {
-      setFieldsAtModalOpen(newFieldsFromProp);
-    }
-  }, [initialNote, tabKeys, isMemoEvolutionModalOpen]);
-  
+  const [initialFields, setInitialFields] = useState({...fields});
+  const [currentStep, setCurrentStep] = useState(1);
   const [isHoveringInfo, setIsHoveringInfo] = useState(false);
   const [isHoveringCard, setIsHoveringCard] = useState(false);
   const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSavingEvolution, setIsSavingEvolution] = useState(false);
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
+  const tabList = [
+    { key: 'importanceReason', label: '읽던 순간' },
+    { key: 'momentContext', label: '떠오른 장면' },
+    { key: 'relatedKnowledge', label: '연상된 지식' },
+    { key: 'mentalImage', label: '받아들인 의미' },
+  ];
+  const [activeTab, setActiveTab] = useState(tabList[0].key);
+
+  const tabKeys = ['importanceReason', 'momentContext', 'relatedKnowledge', 'mentalImage'] as const;
   
-  const currentPromptDetails = useMemo(() => {
-    const currentIndex = tabKeys.indexOf(activeTab);
-    return prompts[currentIndex];
-  }, [activeTab, prompts, tabKeys]);
+  useEffect(() => {
+    setFields({
+      importanceReason: note.importanceReason || '',
+      momentContext: note.momentContext || '',
+      relatedKnowledge: note.relatedKnowledge || '',
+      mentalImage: note.mentalImage || '',
+    });
+  }, [note.importanceReason, note.momentContext, note.relatedKnowledge, note.mentalImage]);
 
-  const handleOpenMemoEvolutionModal = useCallback(() => {
-    const currentFieldsFromNoteState: Record<MemoEvolutionFieldKey, string> = {} as Record<MemoEvolutionFieldKey, string>;
-    let contentCurrentlyExists = false;
-    for (const key of tabKeys) {
-      const value = (note[key] as string | undefined) || '';
-      currentFieldsFromNoteState[key] = value;
-      if (typeof value === 'string' && value.trim() !== '') {
-        contentCurrentlyExists = true;
-      }
+  useEffect(() => {
+    const newCurrentStep = tabKeys.indexOf(activeTab as typeof tabKeys[number]) + 1;
+    if (newCurrentStep > 0) {
+      setCurrentStep(newCurrentStep);
     }
-    setFields(currentFieldsFromNoteState);
-    setFieldsAtModalOpen(currentFieldsFromNoteState); // Set baseline for this modal session
-    setMemoEvolutionContentExists(contentCurrentlyExists);
-    setActiveTab(tabKeys[0]);
+  }, [activeTab, tabKeys]);
 
-    if (contentCurrentlyExists) {
-      setIsMemoEvolutionEditing(false);
-    } else {
-      setIsMemoEvolutionEditing(true);
-    }
-    setIsMemoEvolutionModalOpen(true);
-  }, [note, tabKeys]);
-
-  const handleCloseMemoEvolutionModal = useCallback(() => {
-    setIsMemoEvolutionModalOpen(false);
-    setIsMemoEvolutionEditing(false);
-  }, []);
+  const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
+  const tabQuestions: Record<string, { question: string; placeholder: string }> = {
+    importanceReason: prompts[0],
+    momentContext: prompts[1],
+    relatedKnowledge: prompts[2],
+    mentalImage: prompts[3],
+  };
 
   const handleSave = useCallback(async () => {
-    setIsSaving(true);
-    const changesToApply: Partial<Pick<TSNote, MemoEvolutionFieldKey>> = {};
+    const changedFields: Partial<TSNote> = { _id: note._id };
     let hasChanges = false;
-
     for (const key of tabKeys) {
-      if (fields[key] !== fieldsAtModalOpen[key]) {
-        changesToApply[key] = fields[key];
+      if (fields[key] !== (note[key] || '')) {
+        (changedFields as any)[key] = fields[key];
         hasChanges = true;
       }
     }
 
-    if (hasChanges) {
+    if (hasChanges && onUpdate) {
+      setIsSavingEvolution(true);
       try {
-        await api.patch(`/notes/${note._id}/memo-evolution`, changesToApply);
-        
-        setNote(prevNote => ({
-            ...prevNote,
-            ...changesToApply,
-            lastDeepDiveDate: new Date().toISOString()
-        }));
-        
-        // Update fieldsAtModalOpen to the new saved state for subsequent cancels/saves in the same modal session
-        setFieldsAtModalOpen(fields);
-
-        onUpdate?.(changesToApply as Partial<TSNote>);
-        
-        setMemoEvolutionContentExists(true);
-        setIsMemoEvolutionEditing(false); 
+        await onUpdate(changedFields);
+        setIsOpen(false);
       } catch (error) {
         console.error("Failed to save note evolution:", error);
       } finally {
-        setIsSaving(false);
+        setIsSavingEvolution(false);
       }
     } else {
-      setIsMemoEvolutionEditing(false); 
-      setIsSaving(false);
+      setIsOpen(false);
     }
-  }, [fields, fieldsAtModalOpen, note, onUpdate, tabKeys]);
+  }, [fields, note, onUpdate, tabKeys, setIsOpen]);
 
-  const handleCancelEdit = useCallback(() => {
-    setFields(fieldsAtModalOpen); 
-    setIsMemoEvolutionEditing(false);
-    if (!memoEvolutionContentExists) { 
-        setIsMemoEvolutionModalOpen(false);
-    }
-  }, [fieldsAtModalOpen, memoEvolutionContentExists]);
+  const toggleOpen = () => {
+    if (!isPageEditing && !isOpen) return;
+    setIsOpen((prev) => !prev);
+  };
 
-  const handleChange = (key: MemoEvolutionFieldKey, value: string) => {
+  const handleChange = (key: keyof typeof fields, value: string) => {
     setFields((prev) => ({ ...prev, [key]: value }));
   };
   
   const handleNext = useCallback(() => {
-    const currentIndex = tabKeys.indexOf(activeTab);
+    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
     if (currentIndex < tabKeys.length - 1) {
       setActiveTab(tabKeys[currentIndex + 1]);
     } else {
+      // Cycle to the first tab instead of saving/closing
       setActiveTab(tabKeys[0]); 
     }
   }, [activeTab, tabKeys]);
 
   const handlePrev = useCallback(() => {
-    const currentIndex = tabKeys.indexOf(activeTab);
+    const currentIndex = tabKeys.indexOf(activeTab as typeof tabKeys[number]);
     if (currentIndex > 0) {
       setActiveTab(tabKeys[currentIndex - 1]);
     } else {
+      // Cycle to the last tab
       setActiveTab(tabKeys[tabKeys.length - 1]);
     }
   }, [activeTab, tabKeys]);
-
-  useEffect(() => {
-    if (isMemoEvolutionEditing && evolutionTextareaRef.current) {
-      evolutionTextareaRef.current.style.height = 'auto';
-      evolutionTextareaRef.current.style.height = `${evolutionTextareaRef.current.scrollHeight}px`;
-    }
-  }, [fields[activeTab], isMemoEvolutionEditing, activeTab]);
 
   const displaySessionCreatedAt = sessionDetails?.createdAtISO ? formatSessionCreatedAt(sessionDetails.createdAtISO) : '세션 정보 없음';
   const displaySessionDuration = sessionDetails?.durationSeconds !== undefined ? formatSessionDuration(sessionDetails.durationSeconds) : '';
@@ -471,23 +408,25 @@ export default function TSNoteCard({
 
   // "메모 진화" 내용을 조회 모드에서 표시하는 함수
   const renderMemoEvolutionDetails = () => {
-    if (isMemoEvolutionModalOpen || isPageEditing || minimalDisplay) {
+    if (isOpen || isPageEditing || minimalDisplay) {
       return null;
     }
 
-    const evolutionFieldsToShow: { key: MemoEvolutionFieldKey; label: string }[] = tabList
-      .map(tab => ({ key: tab.key as MemoEvolutionFieldKey, label: tab.label }));
+    const evolutionFieldsToShow: { key: keyof TSNote; label: string }[] = [
+      { key: 'importanceReason', label: '중요했던 이유' },
+      { key: 'momentContext', label: '작성 당시 상황' },
+      { key: 'relatedKnowledge', label: '연관된 지식' },
+      { key: 'mentalImage', label: '떠오른 생각/심상' },
+    ];
 
     const details = evolutionFieldsToShow
       .map(field => {
-        const value = (note[field.key as MemoEvolutionFieldKey] as string | undefined);
+        const value = note[field.key];
         if (value && typeof value === 'string' && value.trim() !== '') {
           return (
-            <div key={field.key} className="mb-3">
-              <h4 className="text-sm font-semibold text-cyan-500 mb-0.5">{field.label}</h4>
-              <p className="text-sm text-gray-200 whitespace-pre-wrap break-words">
-                {value}
-              </p>
+            <div key={field.key} className="mt-2.5">
+              <p className="text-xs font-medium text-cyan-600 mb-0.5">{field.label}:</p>
+              <p className="text-sm text-gray-300 whitespace-pre-wrap break-words">{value}</p>
             </div>
           );
         }
@@ -574,7 +513,7 @@ export default function TSNoteCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
-                <DropdownMenuItem onClick={handleOpenMemoEvolutionModal} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                <DropdownMenuItem onClick={toggleOpen} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
                   <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화
                 </DropdownMenuItem>
                 {onFlashcardConvert && (
@@ -593,85 +532,77 @@ export default function TSNoteCard({
         )}
       </div>
 
-      {isMemoEvolutionModalOpen && !minimalDisplay && (
+      {isOpen && !minimalDisplay && (
         <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-4 rounded-lg z-20 flex flex-col">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold text-cyan-400">
-              메모 진화: {tabList.find(t => t.key === activeTab)?.label}
-            </h3>
-            <Button variant="ghost" size="sm" onClick={handleCloseMemoEvolutionModal} className="text-gray-400 hover:text-white">✕</Button>
+            <h3 className="text-lg font-semibold text-cyan-400">메모 진화: {tabList[currentStep - 1]?.label}</h3>
+            <Button variant="ghost" size="sm" onClick={toggleOpen} className="text-gray-400 hover:text-white">✕</Button>
           </div>
           
-          {isMemoEvolutionEditing ? (
-            // EDIT MODE UI
-            <>
-              <div className="flex-grow overflow-y-auto pr-2">
-                <p className="text-sm text-gray-300 mb-1">{currentPromptDetails?.question}</p>
-                <textarea
-                  ref={evolutionTextareaRef}
-                  value={fields[activeTab]}
-                  onChange={(e) => handleChange(activeTab, e.target.value)}
-                  placeholder={currentPromptDetails?.placeholder}
-                  className="w-full min-h-[80px] p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none overflow-hidden"
-                  rows={3} // Initial rows, auto-resize will adjust
+          <div className="flex-grow overflow-y-auto pr-2">
+            <p className="text-sm text-gray-300 mb-1">{prompts[currentStep - 1]?.question}</p>
+            <textarea
+              ref={evolutionTextareaRef}
+              value={fields[tabKeys[currentStep - 1] as keyof typeof fields]}
+              onChange={(e) => handleChange(tabKeys[currentStep - 1] as keyof typeof fields, e.target.value)}
+              placeholder={prompts[currentStep - 1]?.placeholder}
+              className="w-full h-32 p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white"
+            />
+            {note.relatedLinks && note.relatedLinks.length > 0 && currentStep === 3 && (
+                 <div className="mt-3">
+                     <h4 className="text-sm font-medium text-gray-400 mb-1">관련 링크:</h4>
+                     <ul className="space-y-1 text-xs">
+                         {note.relatedLinks.map((link, idx) => (
+                             <li key={idx} className="flex items-center">
+                                 {getLinkTypeIcon(link.type)}
+                                 <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline truncate" title={link.url}>
+                                     {link.reason || link.url}
+                                 </a>
+                             </li>
+                         ))}
+                     </ul>
+                 </div>
+             )}
+          </div>
+
+          <div className="mt-3 flex justify-between items-center">
+            <div className="flex space-x-1 ml-8">
+              {tabList.map((tab, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTab(tabKeys[index])}
+                  className={`w-3 h-3 rounded-full ${currentStep === index + 1 ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
+                  title={tab.label}
                 />
-                {/* 관련 링크 표시는 뷰 모드에서 하거나, 에디트 모드에서도 필요하다면 추가 */}
-              </div>
-              <div className="mt-3 flex justify-between items-center">
-                <div className="flex space-x-1">
-                  {tabList.map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => setActiveTab(tab.key as MemoEvolutionFieldKey)}
-                      className={`w-3 h-3 rounded-full ${activeTab === tab.key ? 'bg-cyan-500' : 'bg-gray-600 hover:bg-gray-500'}`}
-                      title={tab.label}
-                    />
-                  ))}
-                </div>
-                <div className="space-x-2">
-                  <Button variant="outline" size="sm" onClick={handleCancelEdit} disabled={isSaving}>
-                    취소
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    onClick={handleSave} 
-                    className="bg-cyan-600 hover:bg-cyan-700 text-white min-w-[80px]"
-                    disabled={isSaving}
-                  >
-                    {isSaving ? "저장 중..." : "저장"}
-                  </Button>
-                </div>
-              </div>
-            </>
-          ) : (
-            // VIEW MODE UI
-            <>
-              <div className="flex-grow overflow-y-auto pr-2">
-                {tabList.map(tab => (
-                  fields[tab.key as MemoEvolutionFieldKey] && ( // Only show if there's content
-                    <div key={tab.key} className="mb-3">
-                      <h4 className="text-sm font-semibold text-cyan-500 mb-0.5">{tab.label}</h4>
-                      <p className="text-sm text-gray-200 whitespace-pre-wrap break-words">
-                        {fields[tab.key as MemoEvolutionFieldKey]}
-                      </p>
-                    </div>
-                  )
-                ))}
-                {!memoEvolutionContentExists && (
-                    <p className="text-sm text-gray-400 italic text-center py-4">진화시킬 내용이 아직 없습니다. 수정을 눌러 작성을 시작하세요.</p>
+              ))}
+            </div>
+            <div className="space-x-2">
+              <Button variant="outline" size="icon" onClick={handlePrev} disabled={isSavingEvolution} title="이전 단계">
+                <ChevronLeftIcon className="h-5 w-5" />
+              </Button>
+              <Button variant="outline" size="icon" onClick={handleNext} disabled={isSavingEvolution} title="다음 단계">
+                <ChevronRightIcon className="h-5 w-5" />
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={handleSave} 
+                className="bg-cyan-600 hover:bg-cyan-700 text-white min-w-[80px]"
+                disabled={isSavingEvolution}
+              >
+                {isSavingEvolution ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    저장 중...
+                  </>
+                ) : (
+                  "완료"
                 )}
-              </div>
-              <div className="mt-3 flex justify-end items-center">
-                 <Button 
-                    size="sm" 
-                    onClick={() => setIsMemoEvolutionEditing(true)} 
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    수정
-                  </Button>
-              </div>
-            </>
-          )}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
