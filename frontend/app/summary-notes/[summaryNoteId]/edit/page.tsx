@@ -23,7 +23,7 @@ import {
 // 마크다운 에디터 및 리사이저블 패널 추가
 import MDEditor from '@uiw/react-md-editor';
 import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-md-editor/markdown-preview.css"; // For preview styles
+import "@uiw/react-markdown-preview/markdown.css";
 import {
   Panel,
   PanelGroup,
