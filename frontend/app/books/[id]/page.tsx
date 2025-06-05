@@ -657,13 +657,13 @@ export default function BookDetailPage() {
             <div className="flex flex-col md:flex-row gap-12 mb-3">
               {/* 왼쪽: 타이틀/설명 */}
               <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">메모진화 - Think Beyond</h2>
-                <span className="text-xs text-gray-400 font-medium block mb-2">단순 기록을 넘어, 실제 성장에 직결되는 메모</span>
-                <p className="text-sm text-cyan-300 mb-2 font-semibold">메모진화 시스템은 1줄 메모를 입체적으로 증강해, 학습·업무·성장에 바로 활용할 수 있게 돕습니다.</p>
+                <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">Deep Dive</h2>
+                <span className="text-xs text-gray-400 font-medium block mb-2">기록을 넘어 성장으로</span>
+                <p className="text-sm text-cyan-300 mb-2 font-semibold">1줄 메모를 연결-확장해, 학습·업무·성장에 곧바로 적용하세요.</p>
                 <ul className="text-xs text-gray-400 leading-relaxed list-disc pl-4 space-y-1">
-                  <li>핵심을 빠르게 기록하세요.</li>
-                  <li>왜 중요한지, 어떻게 쓸지 한 줄로 남기세요.</li>
-                  <li>필요할 때마다 메모를 발전시켜 나만의 지식 자산으로 만드세요.</li>
+                  <li>작지만 강력하게 기록하세요.</li>
+                  <li>왜 중요한지, 어떻게 쓸지 작게 남기세요.</li>
+                  <li>틈틈히 조금씩 살을 붙여, 눈덩이로 만드세요.</li>
                 </ul>
               </div>
               {/* 오른쪽: 단계별 카드 grid */}
@@ -711,7 +711,7 @@ export default function BookDetailPage() {
                     },
                     {
                       title: '기록',
-                      desc: '중요함을 메모로 외부화합니다.',
+                      desc: '중요함을 메모로 정리합니다.',
                     },
                     {
                       title: '성찰',
@@ -723,7 +723,7 @@ export default function BookDetailPage() {
                     },
                     {
                       title: '적용',
-                      desc: '실제 자신의 삶에 활용',
+                      desc: '자신의 삶에 작게 활용',
                     },
                     {
                       title: '창발',
@@ -832,12 +832,12 @@ export default function BookDetailPage() {
               <div className="flex flex-col md:flex-row gap-12 mb-3">
                 {/* 좌측: 설명 */}
                 <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                  <h2 className="text-xl font-bold text-green-300 mb-1">지식연결: 지식의 연결고리</h2>
-                  <span className="text-xs text-gray-300 block mb-2">메모와 연결해 지식의 세계로 진입하세요.</span>
+                  <h2 className="text-xl font-bold text-green-300 mb-1">Connect</h2>
+                  <span className="text-xs text-gray-300 block mb-2">기존의 지식과 연결하세요</span>
                   <ul className="text-xs text-gray-300 list-disc pl-4 space-y-1">
-                    <li>떠오르는 지식을 함께 관리하세요.</li>
-                    <li>탭을 눌러 자료 유형별로 정리할 수 있습니다.</li>
-                    <li>링크와 이유를 남겨 나중에 쉽게 찾으세요</li>
+                    <li>떠오르는 모든 것을 연결하세요.</li>
+                    <li>유형별로 점점 더 넓게 확장하세요.</li>
+                    <li>연결한 이유를 반드시 남겨 나중에 쉽게 찾으세요</li>
                   </ul>
                 </div>
                 {/* 우측: 도해식 flow */}
@@ -956,7 +956,7 @@ export default function BookDetailPage() {
           ) : (
             <section className="bg-white rounded-xl shadow-lg p-6 mt-6">
               <h2 className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
-                지식연결 관리
+                지식연결
               </h2>
               <div className="text-gray-400 text-base">1줄 메모에서 <b>지식연결</b> 버튼을 눌러 관리할 메모를 선택하세요.</div>
             </section>
@@ -979,7 +979,7 @@ export default function BookDetailPage() {
             ) : (
               <>
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl md:text-2xl font-bold text-purple-400">플래시카드 : 오답 노트</h2>
+                <h2 className="text-xl md:text-2xl font-bold text-purple-400">Flashcard</h2>
                 <button
                   className="px-3 py-1 rounded bg-cyan-700 text-white text-xs hover:bg-cyan-800 font-semibold ml-4"
                   onClick={() => setShowNewFlashcardForm((v) => !v)}
@@ -987,7 +987,7 @@ export default function BookDetailPage() {
                   NEW
                 </button>
               </div>
-              <p className="text-sm text-gray-400 mb-4">1줄 메모를 질문으로 바꾸고, 오해 방지를 위한 답변을 작성하세요</p>
+              <p className="text-sm text-gray-400 mb-4">1줄 메모를 질문으로 바꾸고, 셀프 점검하세요</p>
               {showNewFlashcardForm && (
                 <div className="mb-4">
                   <FlashcardForm
