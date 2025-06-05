@@ -268,11 +268,12 @@ export default function TSNoteCard({
   showActions = true,
   minimalDisplay = false,
   bookTitle,
-  isPageEditing = true, 
+  isPageEditing = false, // 기본값을 false로 변경
   enableOverlayEvolutionMode = false,
 }: TSNoteCardProps) {
   const [note, setNote] = useState(initialNote);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // 오버레이 UI 표시 상태
+  const [isInlineEditing, setIsInlineEditing] = useState(false); // 새로운 상태: 인라인 편집 활성화 여부
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -307,7 +308,13 @@ export default function TSNoteCard({
       relatedKnowledge: initialNote.relatedKnowledge || '',
       mentalImage: initialNote.mentalImage || '',
     });
-  }, [initialNote]);
+    // 페이지 전체 편집 모드가 비활성화되거나, 오버레이 모드가 활성화되면
+    // 개별 카드의 인라인 편집 상태도 초기화 (비활성화)합니다.
+    // 또한, initialNote가 변경될 때도 isInlineEditing을 false로 초기화할 수 있습니다. (선택적)
+    if (!isPageEditing || enableOverlayEvolutionMode) {
+      setIsInlineEditing(false);
+    }
+  }, [initialNote, isPageEditing, enableOverlayEvolutionMode]);
 
   useEffect(() => {
     const newCurrentStep = tabKeys.indexOf(activeTabKey) + 1;
@@ -330,22 +337,34 @@ export default function TSNoteCard({
       setIsSavingEvolution(true);
       try {
         await onUpdate(changedFields);
-        setIsOpen(false); 
+        // 오버레이 또는 인라인 편집 상태에 따라 적절히 닫기
+        if (enableOverlayEvolutionMode) {
+          setIsOpen(false); 
+        } else {
+          // 인라인 편집 저장 후 자동으로 닫을지는 UX 결정 사항
+          // setIsInlineEditing(false); 
+        }
       } catch (error) {
         console.error("Failed to save note evolution:", error);
       } finally {
         setIsSavingEvolution(false);
       }
     } else {
-      setIsOpen(false); 
+      // 변경 사항이 없어도 닫기
+      if (enableOverlayEvolutionMode) {
+        setIsOpen(false); 
+      } else {
+        // setIsInlineEditing(false);
+      }
     }
-  }, [fields, note, onUpdate, tabKeys, setIsOpen]);
+  }, [fields, note, onUpdate, tabKeys, setIsOpen, enableOverlayEvolutionMode, setIsInlineEditing]);
 
   const toggleEvolutionOverlay = () => {
     if (enableOverlayEvolutionMode) { 
       setIsOpen((prev) => {
         const nextOpenState = !prev;
         if (nextOpenState) {
+          setIsInlineEditing(false); // 오버레이 열리면 인라인 편집은 닫음
           setFields({
             importanceReason: note.importanceReason || '',
             momentContext: note.momentContext || '',
@@ -355,6 +374,28 @@ export default function TSNoteCard({
           setActiveTabKey(tabKeys[0]);
         }
         return nextOpenState;
+      });
+    }
+  };
+
+  const toggleInlineEdit = () => {
+    // 페이지 전체 편집 모드이고, 오버레이 모드가 아니며, 최소 표시 모드가 아닐 때만 동작
+    if (isPageEditing && !enableOverlayEvolutionMode && !minimalDisplay) {
+      setIsInlineEditing(prev => {
+        const nextInlineState = !prev;
+        if (nextInlineState && isOpen) {
+          setIsOpen(false); // 인라인 편집 시작 시 오버레이 닫음
+        }
+        // 인라인 편집 시작 시 필드 초기화 (선택적, 현재는 오버레이와 동일 로직 사용 안 함)
+        // if (nextInlineState) {
+        //   setFields({
+        //     importanceReason: note.importanceReason || '',
+        //     momentContext: note.momentContext || '',
+        //     relatedKnowledge: note.relatedKnowledge || '',
+        //     mentalImage: note.mentalImage || '',
+        //   });
+        // }
+        return nextInlineState;
       });
     }
   };
@@ -423,12 +464,13 @@ export default function TSNoteCard({
   );
   
   const renderInlineMemoEvolutionEditUI = () => {
-    if (enableOverlayEvolutionMode || !isPageEditing || minimalDisplay || isOpen) return null;
+    // 오버레이 모드이거나, 페이지 편집 모드가 아니거나, 최소 표시거나, 이 카드가 인라인 편집 상태가 아니면 null
+    if (enableOverlayEvolutionMode || !isPageEditing || minimalDisplay || !isInlineEditing) return null;
 
     return (
       <div className="mt-4 pt-3 border-t border-gray-700/50 space-y-3">
         <h4 className="text-xs font-semibold text-gray-400 mb-2">
-          메모 진화 (편집 중):
+          메모 진화 (인라인 편집 중):
         </h4>
         {tabKeys.map((fieldKey, index) => (
           <div key={fieldKey}>
@@ -456,7 +498,13 @@ export default function TSNoteCard({
   };
   
   const renderMemoEvolutionSummary = () => {
-    if (isPageEditing || minimalDisplay || isOpen || enableOverlayEvolutionMode) return null;
+    // 다음 조건 중 하나라도 해당되면 요약을 보여주지 않음:
+    // 1. 최소 표시 모드일 때
+    if (minimalDisplay) return null;
+    // 2. 오버레이 모드이면서 오버레이가 열려있을 때
+    if (enableOverlayEvolutionMode && isOpen) return null;
+    // 3. 인라인 모드이면서 페이지 편집 모드이고 이 카드가 인라인 편집 중일 때
+    if (!enableOverlayEvolutionMode && isPageEditing && isInlineEditing) return null;
 
     const evolutionFieldsToShow: { key: MemoEvolutionFieldKey; label: string }[] = [
       { key: 'importanceReason', label: '중요했던 이유' },
@@ -502,7 +550,7 @@ export default function TSNoteCard({
     <div
       className={cn(
         "relative p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
-        isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
+        (isOpen && enableOverlayEvolutionMode) || (isInlineEditing && isPageEditing && !enableOverlayEvolutionMode) ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
         minimalDisplay ? "p-3 min-h-0" : "",
         className
       )}
@@ -520,24 +568,39 @@ export default function TSNoteCard({
           className={cn(
             "text-lg leading-relaxed whitespace-pre-wrap break-words font-medium",
             isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay ? 'border-l-4 border-cyan-600 pl-3 py-1' : 'py-1'
+            // 인라인 편집 중이 아닐 때만 왼쪽 border 적용 (또는 isPageEditing && !isInlineEditing 조건 추가)
+            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-4 border-cyan-600 pl-3 py-1' : 'py-1'
           )}
         >
           {note.content}
         </p>
 
-        {bookTitle && !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && (
+        {bookTitle && !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing && (
           <div className="mt-2 text-xs text-gray-400 flex items-center">
             <SolidBookOpenIcon className="h-3 w-3 mr-1.5 text-gray-500" />
             출처: {bookTitle}
           </div>
         )}
         
-        {!enableOverlayEvolutionMode && isPageEditing ? renderInlineMemoEvolutionEditUI() : renderMemoEvolutionSummary()}
+        {(() => {
+          if (enableOverlayEvolutionMode) { // 오버레이 모드 (예: 책 상세 페이지)
+            return renderMemoEvolutionSummary();
+          } else { // 인라인 모드 (예: 단권화 노트 페이지)
+            if (isPageEditing) { // 페이지 전체 편집 모드
+              if (isInlineEditing) { // 이 카드 인라인 편집 중
+                return renderInlineMemoEvolutionEditUI();
+              } else { // 이 카드 인라인 편집 중 아님
+                return renderMemoEvolutionSummary();
+              }
+            } else { // 페이지 전체 읽기 모드
+              return renderMemoEvolutionSummary();
+            }
+          }
+        })()}
 
       </div>
       
-      {!isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && note.relatedLinks && note.relatedLinks.length > 0 && (
+      {!isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing && note.relatedLinks && note.relatedLinks.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
           <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
             <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
@@ -611,6 +674,13 @@ export default function TSNoteCard({
               {enableOverlayEvolutionMode && (
                 <DropdownMenuItem onClick={toggleEvolutionOverlay} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
                   <SparklesIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 메모 진화 (오버레이)
+                </DropdownMenuItem>
+              )}
+              {/* 인라인 편집 토글 메뉴 (단권화 노트 편집 시 && 오버레이 모드가 아닐 때 && 최소 표시가 아닐때) */}
+              {!enableOverlayEvolutionMode && isPageEditing && !minimalDisplay && (
+                <DropdownMenuItem onClick={toggleInlineEdit} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
+                  <PencilSquareIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 
+                  {isInlineEditing ? '인라인 편집 종료' : '인라인 편집 시작'}
                 </DropdownMenuItem>
               )}
               
