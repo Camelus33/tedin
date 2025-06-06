@@ -2,17 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CSS 변수 정의 제거 - Tailwind 설정으로 통합됨 */
-/* 
+/* Habitus33 브랜드 OS 컬러 시스템 */
 :root {
-  --color-primary-from: #5C6BC0;
-  --color-primary-to: #AB47BC;
-  --color-secondary-from: #4CAF50;
-  --color-secondary-to: #2196F3;
-  --color-accent-from: #EC407A;
-  --color-accent-to: #E53935;
+  /* 주 색상 (80%) */
+  --primary-indigo: 42, 57, 144; /* #2A3990 */
+  --primary-turquoise: 78, 205, 196; /* #4ECDC4 */
+  
+  /* 보조 색상 (15%) */
+  --secondary-beige: 247, 244, 233; /* #F7F4E9 */
+  --secondary-green: 107, 144, 128; /* #6B9080 */
+  
+  /* 포인트 색상 (5%, 성공 시에만 사용) */
+  --accent-orange: 255, 107, 107; /* #FF6B6B */
+
+  /* 기존 Tailwind 변수 */
+  --background: 0 0% 100%;
+  --foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47.4% 11.2%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47.4% 11.2%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --accent: 346.8 77.2% 49.8%;
+  --accent-foreground: 355.7 100% 97.3%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 215 20.2% 65.1%;
+  --radius: 0.5rem;
+
+  /* 차트 컬러 - 브랜드 팔레트로 교체 */
+  --chart-1: 221, 83%, 53%;
+  --chart-2: 174, 42%, 56%;
+  --chart-3: 262, 83%, 58%;
+  --chart-4: 32, 94%, 62%;
+  --chart-5: 142, 71%, 45%;
 }
-*/
 
 @layer base {
   html {
@@ -46,6 +77,20 @@
   
   .input {
     @apply block w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:ring-1 focus:ring-accent-500 focus:border-accent-500 sm:text-sm;
+  }
+
+  /* 브랜드 OS에 맞는 애니메이션 트랜지션 */
+  .habitus-transition {
+    @apply transition-all duration-500 ease-in-out;
+  }
+  
+  /* 고요한 승리를 위한 컴포넌트 스타일 */
+  .quiet-victory {
+    @apply opacity-0 transform translate-y-4 transition-all duration-700 ease-in-out;
+  }
+  
+  .quiet-victory.appear {
+    @apply opacity-100 translate-y-0;
   }
 
   /* Dashboard Action Card Gradients */
