@@ -229,68 +229,102 @@ export default function BrainAnalyticsPage() {
     fetchData();
   }, [timeRange, router]);
 
-  const overallProfileData = useMemo(() => {
-    // analyticsData가 null이면 종료
-    if (!analyticsData) return null;
-    
-    // metrics 객체가 없는 경우 종료
-    if (!analyticsData.metrics) return null;
-    
-    // 안전하게 객체 키와 값 추출
-    const metricsKeys = Object.keys(analyticsData.metrics) as Array<keyof CognitiveMetrics>;
-    
-    if (metricsKeys.length === 0) return null;
-    
-    const labels = metricsKeys.map(key => metricDisplayNames[key] || String(key));
-    const dataValues = metricsKeys.map(key => analyticsData.metrics[key]);
-    
-    return {
-      labels,
-      datasets: [
-        {
-          label: '나의 인지 역량',
-          data: dataValues,
-          backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo-500 with opacity
-          borderColor: 'rgba(79, 70, 229, 1)', // Indigo-500
-          borderWidth: 2,
-          pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
-        },
-      ],
-    };
-  }, [analyticsData, metricDisplayNames]);
-
   const timeSeriesData = useMemo(() => {
-    // analyticsData가 null이면 바로 종료
-    if (!analyticsData) return null;
+    // 기본값 반환 조건을 상단에 배치
+    if (!analyticsData || !analyticsData.timeSeriesData || !analyticsData.metrics) return null;
     
-    // timeSeriesData가 없거나 비어있으면 종료
-    if (!analyticsData.timeSeriesData || analyticsData.timeSeriesData.length === 0) return null;
-
-    // metrics가 없으면 종료
-    if (!analyticsData.metrics) return null;
-
-    const labels = analyticsData.timeSeriesData.map(d => {
-      const date = new Date(d.date);
-      return `${date.getMonth() + 1}/${date.getDate()}`;
-    });
+    // 빈 배열 체크
+    if (analyticsData.timeSeriesData.length === 0) return null;
     
-    // 메트릭 키 배열을 미리 생성
+    // 사전에 모든 배열과 변수 초기화
+    const dates = [...analyticsData.timeSeriesData];
+    const formattedLabels = [];
+    
+    // 라벨 처리를 별도로 진행
+    for (const d of dates) {
+      try {
+        const date = new Date(d.date);
+        formattedLabels.push(isNaN(date.getTime()) ? '날짜 없음' : `${date.getMonth() + 1}/${date.getDate()}`);
+      } catch (e) {
+        formattedLabels.push('날짜 없음');
+      }
+    }
+    
+    // 메트릭 키를 미리 배열로 준비 - 타입 명시
     const metricKeys = Object.keys(analyticsData.metrics) as Array<keyof CognitiveMetrics>;
+    const datasets = [];
     
-    const datasets = metricKeys.map(key => {
-      return {
+    // 각 메트릭에 대해 데이터셋 구성
+    for (const key of metricKeys) {
+      const dataPoints = [];
+      for (const d of dates) {
+        try {
+          if (d.metrics && key in d.metrics) {
+            const value = d.metrics[key];
+            dataPoints.push(typeof value === 'number' && !isNaN(value) ? value : null);
+          } else {
+            dataPoints.push(null);
+          }
+        } catch (e) {
+          console.error('데이터 포인트 처리 중 오류:', e);
+          dataPoints.push(null);
+        }
+      }
+      
+      datasets.push({
         label: metricDisplayNames[key] || String(key),
-        data: analyticsData.timeSeriesData.map(d => d.metrics[key] || 0),
+        data: dataPoints,
         borderColor: getRandomColor(),
         tension: 0.1,
         hidden: !['workingMemoryCapacity', 'processingSpeed'].includes(key as string),
-      };
-    });
+      });
+    }
+    
+    return { labels: formattedLabels, datasets };
+  }, [analyticsData, metricDisplayNames]);
 
-    return { labels, datasets };
+  const overallProfileData = useMemo(() => {
+    // 기본값 반환 조건을 상단에 배치
+    if (!analyticsData || !analyticsData.metrics) return null;
+    
+    try {
+      // 메트릭 키를 미리 배열로 준비
+      const metricsKeys = Object.keys(analyticsData.metrics) as Array<keyof CognitiveMetrics>;
+      
+      if (metricsKeys.length === 0) return null;
+      
+      // 라벨과 데이터 값을 미리 배열로 초기화
+      const labels = [];
+      const dataValues = [];
+      
+      // 각 메트릭에 대해 라벨과 값 추출
+      for (const key of metricsKeys) {
+        labels.push(metricDisplayNames[key] || String(key));
+        
+        const value = analyticsData.metrics[key];
+        dataValues.push(typeof value === 'number' && !isNaN(value) ? value : 0);
+      }
+      
+      return {
+        labels,
+        datasets: [
+          {
+            label: '나의 인지 역량',
+            data: dataValues,
+            backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo-500 with opacity
+            borderColor: 'rgba(79, 70, 229, 1)', // Indigo-500
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+          },
+        ],
+      };
+    } catch (e) {
+      console.error('인지 프로필 데이터 처리 중 오류:', e);
+      return null;
+    }
   }, [analyticsData, metricDisplayNames]);
 
   // Helper function to generate random colors for chart datasets
