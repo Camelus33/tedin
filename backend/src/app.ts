@@ -108,12 +108,16 @@ app.use('/api/routines', routineRoutes);
 app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/summary-notes', summaryNoteRoutes);
-console.log(`[App] API routes configured.`);
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Server is running' });
-});
+// Cognitive metrics API route
+import cognitiveRoutes from './routes/cognitive';
+app.use('/api/cognitive', cognitiveRoutes);
+
+// 헬스 체크 라우트
+import healthRoutes from './routes/health';
+app.use('/api/health', healthRoutes);
+
+console.log(`[App] API routes configured.`);
 
 // 404 handler
 app.use((req, res) => {
@@ -134,4 +138,4 @@ app.listen(PORT, () => {
   console.log(`[App] uploadsPath (at server start): ${uploadsPath}`);
 });
 
-export default app; 
+export default app;

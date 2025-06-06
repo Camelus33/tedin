@@ -1,0 +1,27 @@
+{
+  "name": "habitus33-frontend",
+  "version": 2,
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://habitus33-api.onrender.com"
+  },
+  "builds": [
+    { 
+      "src": "package.json", 
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://habitus33-api.onrender.com/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "github": {
+    "enabled": true,
+    "silent": true
+  }
+} 

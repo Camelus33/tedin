@@ -9,7 +9,8 @@
     "analyze-zengo-distribution": "node scripts/analyze-zengo-distribution.js",
     "insert-zengo-proverbs": "node scripts/insert-zengo-proverbs.js",
     "validate-zengo-proverbs": "node scripts/insert-zengo-proverbs.js --validate-only",
-    "check-duplicate-words": "node scripts/validate-duplicate-words.js"
+    "check-duplicate-words": "node scripts/validate-duplicate-words.js",
+    "test-analytics": "node scripts/test-analytics.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -25,6 +26,8 @@
     "three": "^0.150.1"
   },
   "devDependencies": {
-    "@types/node": "^22.15.18"
+    "@types/node": "^22.15.18",
+    "chalk": "^4.1.2",
+    "node-fetch": "^2.6.9"
   }
 }

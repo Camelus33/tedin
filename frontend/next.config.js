@@ -1,16 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+  swcMinify: true,
+  // 빌드 중 환경 변수 검증
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   },
   images: {
+    domains: [
+      'habitus33-api.onrender.com',
+      'localhost',
+      'placehold.it',
+      'picsum.photos',
+    ],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'via.placeholder.com',
+        hostname: 'picsum.photos',
         port: '',
-        pathname: '**',
+        pathname: '/**',
       },
       {
         protocol: 'https',
@@ -22,12 +30,12 @@ const nextConfig = {
   },
   // API 프록시 설정 강화
   async rewrites() {
+    // 기본 개발 환경 API 프록시
     if (process.env.NODE_ENV === 'development') {
       return [
         {
           source: '/api/:path*',
           destination: `${process.env.LOCAL_BACKEND_URL || 'http://localhost:8000'}/api/:path*`,
-          // destination: 'http://localhost:8000/api/:path*', // 기존 방식 유지 시
           has: [
             {
               type: 'header',
@@ -38,7 +46,9 @@ const nextConfig = {
         },
       ];
     }
-    return []; // 프로덕션 환경에서는 rewrites 없음
+    
+    // 프로덕션 환경 API 프록시 (필요시)
+    return [];
   },
   // 백엔드 연결 문제 시 오류 페이지 표시 방지
   onDemandEntries: {
@@ -47,14 +57,26 @@ const nextConfig = {
     // 한 번에 메모리에 유지할 페이지 수
     pagesBufferLength: 5,
   },
+  // 프로덕션 빌드 최적화
+  experimental: {
+    optimizeCss: true,     // CSS 최적화
+    scrollRestoration: true, // 스크롤 위치 복원
+  },
   // 웹소켓 재연결 시도 횟수 증가
   webpack: (config, { isServer }) => {
+    // 브라우저 환경에서만 적용
     if (!isServer) {
-      // 브라우저 환경에서만 적용
-      config.optimization.moduleIds = 'deterministic';
+      // source map 파일 설정
+      config.devtool = 'source-map';
     }
+
     return config;
-  }
+  },
+  // 오류 페이지 설정
+  typescript: {
+    // 타입스크립트 오류가 있어도 빌드 진행
+    ignoreBuildErrors: process.env.NODE_ENV === 'development',
+  },
 }
 
 module.exports = nextConfig 

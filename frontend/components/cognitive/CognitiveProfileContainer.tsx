@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import CognitiveProfileChart from './CognitiveProfileChart';
 import { apiClient } from '@/lib/apiClient';
 
@@ -104,8 +105,13 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
   return (
     <div className={`bg-white rounded-xl shadow-md overflow-hidden ${className}`}>
       <div className="p-6 md:p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">나의 인지능력</h2>
-        <p className="text-sm text-gray-500 mb-6 text-center">매순간 자신의 강점을 확인하고 단점을 보완하세요 </p>
+        <Link href="/analytics" className="group inline-block">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center group-hover:text-indigo-600 transition-colors">
+            나의 인지능력
+            <span className="inline-block ml-1 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300">→</span>
+          </h2>
+          <p className="text-sm text-gray-500 mb-6 text-center group-hover:text-indigo-400 transition-colors">매순간 자신의 강점을 확인하고 단점을 보완하세요</p>
+        </Link>
         
         {/* Time period selector */}
         <div className="flex justify-center mb-6">

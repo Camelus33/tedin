@@ -53,13 +53,7 @@ class ApiClient {
       // 프로덕션 환경에서는 기존 방식 사용
       try {
         const response = await fetch(`${API_BASE_URL}/api${endpoint}`, config);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || '요청 처리 중 오류가 발생했습니다.');
-        }
-
-        return data;
+        return await this.handleResponse(response, endpoint);
       } catch (error: any) {
         const errorMessage = error.message || '서버와 통신 중 오류가 발생했습니다.';
         toast.error(errorMessage);
@@ -126,6 +120,45 @@ class ApiClient {
       debugLogger.error(`DELETE ${endpoint} 실패`, error);
       throw error;
     }
+  }
+
+  // 인증 관련 오류 핸들링 개선
+  private async handleResponse(response: Response, url: string): Promise<any> {
+    if (response.ok) {
+      return response.json();
+    }
+
+    // 오류 응답 처리
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch (e) {
+      errorData = { message: 'Failed to parse error response' };
+    }
+
+    const error = new Error(errorData.message || `API 요청 실패: ${response.status}`);
+    (error as any).status = response.status;
+    (error as any).errorData = errorData;
+
+    // 인증 오류(401) 처리
+    if (response.status === 401) {
+      console.error('Authentication error:', url);
+      // 클라이언트 측에서 토큰 제거
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('authToken');
+        
+        // 로그인 페이지로 리디렉션 (토스트 메시지 표시 후)
+        toast.error('세션이 만료되었습니다. 다시 로그인해 주세요.');
+        
+        // 약간의 지연 후 리디렉션 (토스트 메시지를 볼 수 있도록)
+        setTimeout(() => {
+          window.location.href = '/auth/login';
+        }, 1500);
+      }
+    }
+
+    throw error;
   }
 }
 

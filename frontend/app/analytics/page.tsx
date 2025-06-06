@@ -1,481 +1,528 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Button from '@/components/common/Button';
-import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Doughnut, Line, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, PointElement, LineElement, BarElement, RadarController, RadialLinearScale, Title, Tooltip, Legend } from 'chart.js';
+import { Bar, Line, Radar, Doughnut } from 'react-chartjs-2';
+import Button from '@/components/common/Button'; // Assuming this component exists
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import TimeSeriesChartCard from '@/components/analytics/TimeSeriesChartCard'; // 새로 추가
+import PercentileRankCard from '@/components/analytics/PercentileRankCard'; // 새로 추가
+import RecentGamesCard from '@/components/analytics/RecentGamesCard'; // 새로 추가
+import RecommendationsCard from '@/components/analytics/RecommendationsCard'; // 새로 추가
+import OverallProfileRadarCard from '@/components/analytics/OverallProfileRadarCard'; // 새로 추가
+import StrengthsWeaknessesDisplay from '@/components/analytics/StrengthsWeaknessesDisplay'; // 새로 추가
+import OverallScoreCard from '@/components/analytics/OverallScoreCard'; // 새로 추가
 
-// Chart.js 등록
-ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
+// Register Chart.js components
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  RadarController,
+  RadialLinearScale,
+  Title,
+  Tooltip,
+  Legend
+);
 
-// 타입 정의
-type ReadingStats = {
-  // 전체 통계
-  totalBooks: number;
-  booksCompleted: number;
-  totalPagesRead: number;
-  totalReadingTime: number; // 분 단위
-  averageReadingSpeed: number; // 페이지/시간
-  readingStreak: number;
-  
-  // 시간대별 독서량
-  readingByHour: {
-    hour: number;
-    minutes: number;
+// Type definitions
+interface CognitiveMetrics {
+  workingMemoryCapacity: number;
+  visuospatialPrecision: number;
+  processingSpeed: number;
+  sustainedAttention: number;
+  patternRecognition: number;
+  cognitiveFlexibility: number;
+  hippocampusActivation: number;
+  executiveFunction: number;
+}
+
+interface CognitiveMetricsTimeSeries {
+  date: string;
+  metrics: CognitiveMetrics;
+}
+
+interface RecentGame {
+  gameId: string;
+  gameName: string;
+  playedAt: string;
+  score: number;
+  level: string;
+  metricsChange: Partial<CognitiveMetrics>;
+}
+
+interface BrainAnalyticsData {
+  overallScore: number;
+  metrics: CognitiveMetrics;
+  timeSeriesData: CognitiveMetricsTimeSeries[];
+  percentileRanks: Partial<Record<keyof CognitiveMetrics, number>>;
+  strengths: (keyof CognitiveMetrics)[];
+  weaknesses: (keyof CognitiveMetrics)[];
+  recommendations: {
+    title: string;
+    description: string;
+    action: string;
+    link?: string;
   }[];
-  
-  // 장르별 분포
-  genreDistribution: {
-    genre: string;
-    count: number;
-  }[];
-  
-  // 최근 30일 독서 시간
-  dailyReading: {
-    date: string;
-    minutes: number;
-  }[];
-  
-  // 월별 독서량
-  monthlyReading: {
-    month: string;
-    pages: number;
-  }[];
+}
+
+interface ApiResponse {
+  message: string;
+  data: BrainAnalyticsData;
+}
+
+// Mock Data (will be replaced by API call)
+const mockCognitiveMetrics: CognitiveMetrics = {
+  workingMemoryCapacity: 75,
+  visuospatialPrecision: 80,
+  processingSpeed: 85,
+  sustainedAttention: 70,
+  patternRecognition: 90,
+  cognitiveFlexibility: 65,
+  hippocampusActivation: 78,
+  executiveFunction: 82,
 };
 
-export default function AnalyticsPage() {
+const mockBrainAnalyticsData: BrainAnalyticsData = {
+  overallScore: 78,
+  metrics: mockCognitiveMetrics,
+  timeSeriesData: [
+    { date: '2024-04-01', metrics: { ...mockCognitiveMetrics, workingMemoryCapacity: 60, processingSpeed: 70 } },
+    { date: '2024-04-15', metrics: { ...mockCognitiveMetrics, workingMemoryCapacity: 65, processingSpeed: 75 } },
+    { date: '2024-05-01', metrics: { ...mockCognitiveMetrics, workingMemoryCapacity: 70, processingSpeed: 80 } },
+    { date: '2024-05-15', metrics: mockCognitiveMetrics },
+  ],
+  percentileRanks: {
+    workingMemoryCapacity: 88,
+    processingSpeed: 92,
+    sustainedAttention: 75,
+    executiveFunction: 85,
+  },
+  strengths: ['patternRecognition', 'processingSpeed'],
+  weaknesses: ['cognitiveFlexibility', 'sustainedAttention'],
+  recommendations: [
+    {
+      title: '작업 기억 용량 강화',
+      description: '작업 기억 용량이 평균보다 낮습니다. 젠고의 단어 순서 기억 게임을 통해 이 영역을 집중 훈련하세요.',
+      action: '단어 순서 기억 게임 시작',
+      link: '/zengo/memory-sequence',
+    },
+    {
+      title: '정보 처리 속도 유지',
+      description: '정보 처리 속도가 매우 우수합니다! 현재 수준을 유지하고 더 높은 난이도에 도전해 보세요.',
+      action: '젠고 고급 레벨 도전',
+      link: '/zengo/advanced-levels',
+    },
+  ],
+};
+
+const metricDisplayNames: { [K in keyof CognitiveMetrics]: string } = {
+  workingMemoryCapacity: '작업기억 용량',
+  visuospatialPrecision: '시공간 정확도',
+  processingSpeed: '처리 속도',
+  sustainedAttention: '주의 지속성',
+  patternRecognition: '패턴 인식',
+  cognitiveFlexibility: '인지 유연성',
+  hippocampusActivation: '해마 활성화',
+  executiveFunction: '실행 기능',
+};
+
+export default function BrainAnalyticsPage() {
   const router = useRouter();
-  const [stats, setStats] = useState<ReadingStats | null>(null);
-  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  
+  const [analyticsData, setAnalyticsData] = useState<BrainAnalyticsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [timeRange, setTimeRange] = useState<'1m' | '3m' | '6m' | 'all'>('3m');
+
   useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          router.push('/auth/login');
-          return;
-        }
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      const token = localStorage.getItem('authToken'); // 실제 인증 토큰 가져오기
+
+      if (!token) {
+        setError('로그인이 필요합니다. 인증 토큰을 찾을 수 없습니다.');
+        setIsLoading(false);
         
-        // 실제 API 호출 (백엔드 구현 시 아래 코드 사용)
-        /*
-        const response = await fetch(`/api/analytics?range=${timeRange}`, {
+        // 개발 환경에서만 목업 데이터 사용
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("개발 환경: 인증 토큰이 없어 목업 데이터를 사용합니다.");
+          try {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // 네트워크 지연 시뮬레이션
+            setAnalyticsData(mockBrainAnalyticsData);
+          } catch (err) {
+            if (err instanceof Error) {
+              setError(err.message);
+            } else {
+              setError('알 수 없는 오류가 발생했습니다.');
+            }
+          } finally {
+            setIsLoading(false);
+          }
+        } else {
+          // 프로덕션 환경에서는 로그인 페이지로 리디렉션
+          router.push('/auth/login');
+        }
+        return;
+      }
+      
+      try {
+        // 실제 API 엔드포인트 및 요청
+        const response = await fetch(`/api/cognitive/metrics?timeRange=${timeRange}`, {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
-          },
+            'Content-Type': 'application/json'
+          }
         });
-        
+
         if (!response.ok) {
-          throw new Error('통계 데이터를 불러오는 데 실패했습니다.');
+          // HTTP 상태 코드가 200-299 범위가 아닐 경우 오류 처리
+          const errorData = await response.json().catch(() => ({ message: '응답 처리 중 오류 발생' }));
+          throw new Error(errorData.message || `데이터를 불러오는데 실패했습니다. 상태: ${response.status}`);
+        }
+
+        const responseData: ApiResponse = await response.json();
+        
+        // 응답 구조 유효성 검사
+        if (!responseData.data || typeof responseData.data !== 'object') {
+          console.error('API 응답 구조가 예상과 다릅니다:', responseData);
+          throw new Error('API 응답 구조가 유효하지 않습니다.');
         }
         
-        const data = await response.json();
-        setStats(data.stats);
-        */
+        // 필수 필드 확인
+        const requiredFields = ['metrics', 'overallScore', 'timeSeriesData'];
+        const missingFields = requiredFields.filter(field => !(field in responseData.data));
         
-        // 대신 목업 데이터 사용
-        setStats({
-          totalBooks: 18,
-          booksCompleted: 12,
-          totalPagesRead: 3256,
-          totalReadingTime: 5430, // 분 단위 (약 90시간)
-          averageReadingSpeed: 36, // 페이지/시간
-          readingStreak: 14,
-          
-          readingByHour: [
-            { hour: 0, minutes: 15 },
-            { hour: 1, minutes: 5 },
-            { hour: 2, minutes: 0 },
-            { hour: 3, minutes: 0 },
-            { hour: 4, minutes: 0 },
-            { hour: 5, minutes: 0 },
-            { hour: 6, minutes: 10 },
-            { hour: 7, minutes: 45 },
-            { hour: 8, minutes: 30 },
-            { hour: 9, minutes: 20 },
-            { hour: 10, minutes: 15 },
-            { hour: 11, minutes: 10 },
-            { hour: 12, minutes: 25 },
-            { hour: 13, minutes: 20 },
-            { hour: 14, minutes: 15 },
-            { hour: 15, minutes: 30 },
-            { hour: 16, minutes: 25 },
-            { hour: 17, minutes: 35 },
-            { hour: 18, minutes: 40 },
-            { hour: 19, minutes: 60 },
-            { hour: 20, minutes: 90 },
-            { hour: 21, minutes: 120 },
-            { hour: 22, minutes: 60 },
-            { hour: 23, minutes: 40 },
-          ],
-          
-          genreDistribution: [
-            { genre: '소설', count: 7 },
-            { genre: '인문학', count: 4 },
-            { genre: '경제', count: 3 },
-            { genre: '과학', count: 2 },
-            { genre: '심리학', count: 2 },
-          ],
-          
-          dailyReading: Array.from({ length: 30 }, (_, i) => ({
-            date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            minutes: Math.floor(Math.random() * 60) + (i % 7 === 0 ? 0 : 15), // 일주일에 하루는 휴식일
-          })),
-          
-          monthlyReading: [
-            { month: '1월', pages: 245 },
-            { month: '2월', pages: 312 },
-            { month: '3월', pages: 198 },
-            { month: '4월', pages: 275 },
-            { month: '5월', pages: 410 },
-            { month: '6월', pages: 323 },
-            { month: '7월', pages: 375 },
-            { month: '8월', pages: 289 },
-            { month: '9월', pages: 356 },
-            { month: '10월', pages: 420 },
-            { month: '11월', pages: 290 },
-            { month: '12월', pages: 198 },
-          ],
-        });
-      } catch (err: any) {
-        setError(err.message);
+        if (missingFields.length > 0) {
+          console.error(`API 응답에 필수 필드가 누락되었습니다: ${missingFields.join(', ')}`, responseData.data);
+          throw new Error('API 응답에 필수 데이터가 누락되었습니다.');
+        }
+        
+        setAnalyticsData(responseData.data);
+      } catch (err) {
+        console.error('API 호출 중 오류 발생:', err);
+        if (err instanceof Error) {
+          setError(`데이터를 불러오는 중 오류가 발생했습니다: ${err.message}`);
+        } else {
+          setError('알 수 없는 오류가 발생했습니다.');
+        }
+        
+        // 개발 환경에서만 목업 데이터로 폴백
+        if (process.env.NODE_ENV === 'development') {
+          console.warn("개발 환경: API 호출 실패로 목업 데이터를 사용합니다.");
+          setAnalyticsData(mockBrainAnalyticsData);
+        }
       } finally {
         setIsLoading(false);
       }
     };
-    
-    fetchAnalytics();
+
+    fetchData();
   }, [timeRange, router]);
-  
-  // 시간 포맷팅 헬퍼
-  const formatReadingTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}시간 ${mins}분`;
-  };
-  
-  // 차트 데이터
-  const genreChartData = {
-    labels: stats?.genreDistribution.map(item => item.genre) || [],
-    datasets: [
-      {
-        data: stats?.genreDistribution.map(item => item.count) || [],
-        backgroundColor: [
-          '#4F46E5', // indigo-600
-          '#8B5CF6', // violet-500
-          '#EC4899', // pink-500
-          '#F59E0B', // amber-500
-          '#10B981', // emerald-500
-          '#06B6D4', // cyan-500
-          '#6366F1', // indigo-500
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
-  
-  const hourlyReadingData = {
-    labels: stats?.readingByHour.map(item => `${item.hour}시`) || [],
-    datasets: [
-      {
-        label: '평균 독서 시간 (분)',
-        data: stats?.readingByHour.map(item => item.minutes) || [],
-        backgroundColor: 'rgba(79, 70, 229, 0.7)',
-        borderRadius: 4,
-      },
-    ],
-  };
-  
-  const dailyReadingData = {
-    labels: stats?.dailyReading.map(item => {
-      const date = new Date(item.date);
+
+  const overallProfileData = useMemo(() => {
+    if (!analyticsData) return null;
+    const labels = Object.keys(analyticsData.metrics).map(key => metricDisplayNames[key as keyof CognitiveMetrics] || key);
+    const dataValues = Object.values(analyticsData.metrics);
+    return {
+      labels,
+      datasets: [
+        {
+          label: '나의 인지 역량',
+          data: dataValues,
+          backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo-500 with opacity
+          borderColor: 'rgba(79, 70, 229, 1)', // Indigo-500
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+        },
+      ],
+    };
+  }, [analyticsData, metricDisplayNames]);
+
+  const timeSeriesData = useMemo(() => {
+    if (!analyticsData?.timeSeriesData) return null;
+
+    const labels = analyticsData.timeSeriesData.map(d => {
+      const date = new Date(d.date);
       return `${date.getMonth() + 1}/${date.getDate()}`;
-    }) || [],
-    datasets: [
-      {
-        label: '독서 시간 (분)',
-        data: stats?.dailyReading.map(item => item.minutes) || [],
-        borderColor: '#4F46E5',
-        backgroundColor: 'rgba(79, 70, 229, 0.1)',
-        tension: 0.3,
-        fill: true,
-      },
-    ],
+    });
+    
+    const datasets = Object.keys(mockCognitiveMetrics).map(metricKey => {
+      const key = metricKey as keyof CognitiveMetrics;
+      return {
+        label: metricDisplayNames[key] || key,
+        data: analyticsData.timeSeriesData.map(d => d.metrics[key]),
+        borderColor: getRandomColor(), // 각 지표별 색상 (아래 heler 함수 추가 필요)
+        tension: 0.1,
+        hidden: !['workingMemoryCapacity', 'processingSpeed'].includes(key), // 초기에는 일부만 보이도록 설정
+      };
+    });
+
+    return { labels, datasets };
+  }, [analyticsData, metricDisplayNames]);
+
+  // Helper function to generate random colors for chart datasets
+  const getRandomColor = () => {
+    const r = Math.floor(Math.random() * 200);
+    const g = Math.floor(Math.random() * 200);
+    const b = Math.floor(Math.random() * 200);
+    return `rgb(${r},${g},${b})`;
   };
-  
-  const monthlyReadingData = {
-    labels: stats?.monthlyReading.map(item => item.month) || [],
-    datasets: [
-      {
-        label: '독서량 (페이지)',
-        data: stats?.monthlyReading.map(item => item.pages) || [],
-        backgroundColor: 'rgba(16, 185, 129, 0.7)',
-        borderRadius: 4,
-      },
-    ],
-  };
-  
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-        <p>통계 데이터 로딩 중...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-gray-600">데이터를 불러오는 중...</p>
       </div>
     );
   }
-  
+
   if (error) {
     return (
-      <div className="min-h-screen bg-blue-50 p-4 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-2xl font-bold mb-4">오류 발생</h1>
-          <p className="text-red-600 mb-6">{error}</p>
-          <Button
-            href="/dashboard"
-            variant="default"
-          >
-            대시보드로 돌아가기
-          </Button>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <p className="text-lg text-red-600 mb-4">오류: {error}</p>
+        <Button onClick={() => { setIsLoading(true); setError(null); /* fetchData(); */ }} variant="outline">
+          다시 시도
+        </Button>
       </div>
     );
   }
-  
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="container mx-auto max-w-5xl">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">독서 분석</h1>
-          <p className="text-gray-600">내 독서 습관과 패턴을 분석해보세요</p>
-        </header>
-        
-        {/* 필터 옵션 */}
-        <div className="mb-8">
-          <div className="bg-white rounded-xl shadow p-4 flex space-x-4">
-            <button
-              onClick={() => setTimeRange('week')}
-              className={`px-4 py-2 rounded-md ${
-                timeRange === 'week'
-                  ? 'bg-indigo-100 text-indigo-700 font-medium'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              이번 주
-            </button>
-            <button
-              onClick={() => setTimeRange('month')}
-              className={`px-4 py-2 rounded-md ${
-                timeRange === 'month'
-                  ? 'bg-indigo-100 text-indigo-700 font-medium'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              이번 달
-            </button>
-            <button
-              onClick={() => setTimeRange('year')}
-              className={`px-4 py-2 rounded-md ${
-                timeRange === 'year'
-                  ? 'bg-indigo-100 text-indigo-700 font-medium'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              올해
-            </button>
-          </div>
-        </div>
-        
-        {/* 메인 통계 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold mb-4">독서 현황</h2>
-            <div className="h-48 flex justify-center items-center">
-              <Doughnut
-                data={genreChartData}
-                options={{
-                  plugins: {
-                    legend: {
-                      position: 'bottom',
-                    },
-                  },
-                  cutout: '65%',
-                }}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              <div className="bg-indigo-50 p-3 rounded-md text-center">
-                <p className="text-2xl font-bold text-indigo-700">{stats?.totalBooks || 0}</p>
-                <p className="text-xs text-gray-600">총 책</p>
-              </div>
-              <div className="bg-green-50 p-3 rounded-md text-center">
-                <p className="text-2xl font-bold text-green-700">{stats?.booksCompleted || 0}</p>
-                <p className="text-xs text-gray-600">완독</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold mb-4">독서 습관</h2>
-            <div>
-              <dl className="space-y-4">
-                <div className="flex justify-between">
-                  <dt className="text-sm text-gray-500">평균 독서 속도</dt>
-                  <dd className="font-medium">{stats?.averageReadingSpeed || 0} 페이지/시간</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-sm text-gray-500">총 독서 시간</dt>
-                  <dd className="font-medium">{formatReadingTime(stats?.totalReadingTime || 0)}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-sm text-gray-500">총 읽은 페이지</dt>
-                  <dd className="font-medium">{stats?.totalPagesRead || 0} 페이지</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-sm text-gray-500">연속 독서</dt>
-                  <dd className="font-medium">{stats?.readingStreak || 0}일</dd>
-                </div>
-              </dl>
-            </div>
-            <Button
-              href="/dashboard"
-              variant="outline"
-              className="mt-6 w-full"
-            >
-              대시보드로 이동
-            </Button>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold mb-4">시간별 독서 패턴</h2>
-            <div className="h-64">
-              <Bar
-                data={hourlyReadingData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                    },
-                  },
-                }}
-              />
-            </div>
-            <p className="text-sm text-gray-500 mt-4 text-center">
-              저녁 8시~10시에 독서를 가장 많이 하시네요!
-            </p>
-          </div>
-        </div>
-        
-        {/* 그래프 */}
-        <div className="grid grid-cols-1 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold mb-4">일간 독서 시간</h2>
-            <div className="h-72">
-              <Line
-                data={dailyReadingData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                      title: {
-                        display: true,
-                        text: '독서 시간 (분)',
-                      },
-                    },
-                    x: {
-                      grid: {
-                        display: false,
-                      },
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold mb-4">월간 독서량</h2>
-            <div className="h-72">
-              <Bar
-                data={monthlyReadingData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                      title: {
-                        display: true,
-                        text: '페이지',
-                      },
-                    },
-                    x: {
-                      grid: {
-                        display: false,
-                      },
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
-        </div>
-        
-        {/* 도전과제 및 인사이트 */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-xl font-bold mb-4">독서 인사이트</h2>
-          <div className="space-y-4">
-            <div className="p-4 bg-indigo-50 rounded-lg">
-              <h3 className="font-medium text-indigo-900 mb-2">당신의 독서 유형: 저녁 독서가</h3>
-              <p className="text-sm text-gray-600">
-                저녁 시간(20시~22시)에 가장 많은 독서를 하시는군요. 이 시간대는 하루를 마무리하며
-                집중력이 높아지는 시간으로, 깊이 있는 독서에 적합합니다.
-              </p>
-            </div>
-            
-            <div className="p-4 bg-green-50 rounded-lg">
-              <h3 className="font-medium text-green-900 mb-2">독서 목표 달성율</h3>
-              <p className="text-sm text-gray-600">
-                올해 설정한 독서 목표의 67%를 달성했습니다. 목표 달성까지 약 3,500페이지가 남았습니다.
-                현재 페이스라면 12월 초에 목표를 달성할 수 있을 것으로 예상됩니다.
-              </p>
-            </div>
-            
-            <div className="p-4 bg-amber-50 rounded-lg">
-              <h3 className="font-medium text-amber-900 mb-2">독서 제안</h3>
-              <p className="text-sm text-gray-600">
-                최근 인문학과 소설 위주로 독서하고 계시네요. 독서의 다양성을 위해 과학이나 경제 관련 
-                도서를 시도해보는 것이 어떨까요? 추천 도서 목록을 확인해보세요.
-              </p>
-              <Button
-                href="/books/recommendations"
-                variant="outline"
-                className="mt-2 text-sm py-1"
-              >
-                추천 도서 보기
-              </Button>
-            </div>
-          </div>
-        </div>
+
+  if (!analyticsData) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-gray-500">분석 데이터를 표시할 수 없습니다.</p>
       </div>
+    );
+  }
+
+  const { 
+    metrics, 
+    timeSeriesData: timeSeries,
+    percentileRanks, 
+    recommendations
+  } = analyticsData;
+
+  const radarChartData = {
+    labels: [
+      '작업기억 용량',
+      '시공간 정확도',
+      '처리 속도',
+      '주의 지속성',
+      '패턴 인식',
+      '인지 유연성',
+      '해마 활성화',
+      '실행 기능',
+    ],
+    datasets: [
+      {
+        label: '나의 인지 역량',
+        data: [
+          metrics.workingMemoryCapacity,
+          metrics.visuospatialPrecision,
+          metrics.processingSpeed,
+          metrics.sustainedAttention,
+          metrics.patternRecognition,
+          metrics.cognitiveFlexibility,
+          metrics.hippocampusActivation,
+          metrics.executiveFunction,
+        ],
+        backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo
+        borderColor: 'rgba(79, 70, 229, 1)',
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+      },
+      // TODO: Add dataset for average user for comparison if available
+    ],
+  };
+
+  const radarChartOptions = {
+    scales: {
+      r: {
+        angleLines: {
+          display: true,
+        },
+        suggestedMin: 0,
+        suggestedMax: 100,
+        ticks: {
+          stepSize: 20,
+          backdropColor: 'transparent',
+          font: { size: 10 }, // 틱 라벨 크기 조정
+        },
+        pointLabels: {
+          font: {
+            size: 11, // 포인트 라벨 크기를 약간 줄여 작은 화면에 대응
+            family: "'Pretendard', sans-serif" // 폰트 일관성 유지
+          },
+          padding: 5 // 라벨과 차트 가장자리 사이의 패딩
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.r !== null) {
+              label += context.parsed.r.toFixed(0) + '점';
+            }
+            return label;
+          }
+        }
+      }
+    },
+    maintainAspectRatio: false,
+  };
+
+  const lineChartData = {
+    labels: timeSeries?.map(d => d.date) || [],
+    datasets: [
+      {
+        label: '작업기억 용량',
+        data: timeSeries?.map(d => d.metrics.workingMemoryCapacity) || [],
+        borderColor: 'rgb(79, 70, 229)', // Indigo
+        backgroundColor: 'rgba(79, 70, 229, 0.5)',
+        tension: 0.3,
+        yAxisID: 'y',
+      },
+      {
+        label: '처리 속도',
+        data: timeSeries?.map(d => d.metrics.processingSpeed) || [],
+        borderColor: 'rgb(5, 150, 105)', // Emerald
+        backgroundColor: 'rgba(5, 150, 105, 0.5)',
+        tension: 0.3,
+        yAxisID: 'y',
+      },
+      // Add more datasets for other relevant metrics
+    ],
+  };
+
+  const lineChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index' as const,
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: any) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += context.parsed.y.toFixed(0) + '점';
+            }
+            return label;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: '날짜',
+        },
+      },
+      y: {
+        type: 'linear' as const,
+        display: true,
+        position: 'left' as const,
+        title: {
+          display: true,
+          text: '점수 (0-100)',
+        },
+        suggestedMin: 0,
+        suggestedMax: 100,
+      },
+    },
+  };
+
+  return (
+    <div className="container mx-auto p-4 md:p-6 lg:p-8">
+      <header className="mb-8 md:mb-10">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">브레인 역량 분석</h1>
+        <p className="text-md sm:text-lg text-gray-600 mt-1">
+          나의 인지 능력을 다각도로 분석하고 성장을 위한 맞춤형 가이드를 받아보세요.
+        </p>
+      </header>
+
+      <Tabs value={timeRange} onValueChange={(value: string) => setTimeRange(value as '1m' | '3m' | '6m' | 'all')} className="mb-6 md:mb-8">
+        <TabsList>
+          <TabsTrigger value="1m">1개월</TabsTrigger>
+          <TabsTrigger value="3m">3개월</TabsTrigger>
+          <TabsTrigger value="6m">6개월</TabsTrigger>
+          <TabsTrigger value="all">전체</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 md:mb-8">
+        {/* Left Column: Overall Profile Radar Chart */}
+        <OverallProfileRadarCard 
+          radarChartData={radarChartData} 
+          radarChartOptions={radarChartOptions} 
+        />
+
+        {/* Right Column: Strengths and Improvement Areas */}
+        <StrengthsWeaknessesDisplay 
+          strengthsData={analyticsData?.strengths}
+          improvementAreasData={analyticsData?.weaknesses}
+          metricDisplayNames={metricDisplayNames}
+        />
+      </div>
+
+      {/* Time-based Change Section */}
+      <TimeSeriesChartCard chartData={timeSeriesData} chartOptions={lineChartOptions} />
+      
+      {/* Percentile Rank & Recent Games Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 md:mb-8">
+        {/* Percentile Rank Section */}
+        <PercentileRankCard 
+          percentileRanksData={analyticsData?.percentileRanks} 
+          metricDisplayNames={metricDisplayNames}
+        />
+
+        {/* Recent Games Section - 연결 데이터가 없으면 주석 처리 */}
+        {/* <RecentGamesCard 
+          recentGamesData={analyticsData?.recentGames} 
+          metricDisplayNames={metricDisplayNames} 
+        /> */}
+      </div>
+
+      {/* Personalized Recommendation Section */}
+      <RecommendationsCard recommendationsData={analyticsData?.recommendations} />
+
+      {/* Display Overall Cognitive Score Card */}
+      <OverallScoreCard score={analyticsData.overallScore} />
+
     </div>
   );
 } 
