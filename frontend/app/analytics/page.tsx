@@ -259,7 +259,7 @@ export default function BrainAnalyticsPage() {
       return `${date.getMonth() + 1}/${date.getDate()}`;
     });
     
-    const datasets = Object.keys(mockCognitiveMetrics).map(metricKey => {
+    const datasets = Object.keys(analyticsData.metrics).map(metricKey => {
       const key = metricKey as keyof CognitiveMetrics;
       return {
         label: metricDisplayNames[key] || key,
