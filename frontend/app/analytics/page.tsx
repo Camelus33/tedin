@@ -335,6 +335,137 @@ export default function BrainAnalyticsPage() {
     return `rgb(${r},${g},${b})`;
   };
 
+  // lineChartData를 useMemo로 감싸고 안전하게 처리
+  const lineChartData = useMemo(() => {
+    // null 체크
+    if (!analyticsData || !analyticsData.timeSeriesData) return { labels: [], datasets: [] };
+  
+    // 라벨 배열 초기화
+    const formattedLabels = [];
+    const workingMemoryData = [];
+    const processingSpeedData = [];
+  
+    // 각 날짜와 데이터 포인트를 명시적으로 처리
+    for (let i = 0; i < analyticsData.timeSeriesData.length; i++) {
+      const d = analyticsData.timeSeriesData[i];
+      
+      // 날짜 라벨 처리
+      try {
+        const date = new Date(d.date);
+        formattedLabels.push(isNaN(date.getTime()) ? '날짜 없음' : `${date.getMonth() + 1}/${date.getDate()}`);
+      } catch (e) {
+        formattedLabels.push('날짜 없음');
+      }
+      
+      // 작업기억 용량 데이터 처리
+      try {
+        if (d.metrics && 'workingMemoryCapacity' in d.metrics) {
+          const value = d.metrics.workingMemoryCapacity;
+          workingMemoryData.push(typeof value === 'number' && !isNaN(value) ? value : null);
+        } else {
+          workingMemoryData.push(null);
+        }
+      } catch (e) {
+        console.error('작업기억 용량 데이터 처리 중 오류:', e);
+        workingMemoryData.push(null);
+      }
+      
+      // 처리 속도 데이터 처리
+      try {
+        if (d.metrics && 'processingSpeed' in d.metrics) {
+          const value = d.metrics.processingSpeed;
+          processingSpeedData.push(typeof value === 'number' && !isNaN(value) ? value : null);
+        } else {
+          processingSpeedData.push(null);
+        }
+      } catch (e) {
+        console.error('처리 속도 데이터 처리 중 오류:', e);
+        processingSpeedData.push(null);
+      }
+    }
+  
+    return {
+      labels: formattedLabels,
+      datasets: [
+        {
+          label: '작업기억 용량',
+          data: workingMemoryData,
+          borderColor: 'rgb(79, 70, 229)', // Indigo
+          backgroundColor: 'rgba(79, 70, 229, 0.5)',
+          tension: 0.3,
+          yAxisID: 'y',
+        },
+        {
+          label: '처리 속도',
+          data: processingSpeedData,
+          borderColor: 'rgb(5, 150, 105)', // Emerald
+          backgroundColor: 'rgba(5, 150, 105, 0.5)',
+          tension: 0.3,
+          yAxisID: 'y',
+        },
+      ],
+    };
+  }, [analyticsData]);
+
+  // radarChartData를 useMemo로 감싸고 안전하게 처리
+  const radarChartData = useMemo(() => {
+    // null 체크
+    if (!analyticsData || !analyticsData.metrics) return { labels: [], datasets: [] };
+    
+    // 기본 라벨 배열
+    const labels = [
+      '작업기억 용량',
+      '시공간 정확도',
+      '처리 속도',
+      '주의 지속성',
+      '패턴 인식',
+      '인지 유연성',
+      '해마 활성화',
+      '실행 기능',
+    ];
+    
+    // 데이터 포인트 초기화
+    const dataPoints = [];
+    
+    // 각 메트릭 값을 명시적으로 추출
+    try {
+      const m = analyticsData.metrics;
+      
+      // 각 메트릭에 대해 값 추출 시 null 체크
+      dataPoints.push(typeof m.workingMemoryCapacity === 'number' && !isNaN(m.workingMemoryCapacity) ? m.workingMemoryCapacity : 0);
+      dataPoints.push(typeof m.visuospatialPrecision === 'number' && !isNaN(m.visuospatialPrecision) ? m.visuospatialPrecision : 0);
+      dataPoints.push(typeof m.processingSpeed === 'number' && !isNaN(m.processingSpeed) ? m.processingSpeed : 0);
+      dataPoints.push(typeof m.sustainedAttention === 'number' && !isNaN(m.sustainedAttention) ? m.sustainedAttention : 0);
+      dataPoints.push(typeof m.patternRecognition === 'number' && !isNaN(m.patternRecognition) ? m.patternRecognition : 0);
+      dataPoints.push(typeof m.cognitiveFlexibility === 'number' && !isNaN(m.cognitiveFlexibility) ? m.cognitiveFlexibility : 0);
+      dataPoints.push(typeof m.hippocampusActivation === 'number' && !isNaN(m.hippocampusActivation) ? m.hippocampusActivation : 0);
+      dataPoints.push(typeof m.executiveFunction === 'number' && !isNaN(m.executiveFunction) ? m.executiveFunction : 0);
+    } catch (e) {
+      console.error('메트릭 데이터 처리 중 오류:', e);
+      // 오류 발생 시 모든 값을 0으로 설정
+      for (let i = 0; i < 8; i++) {
+        dataPoints.push(0);
+      }
+    }
+    
+    return {
+      labels,
+      datasets: [
+        {
+          label: '나의 인지 역량',
+          data: dataPoints,
+          backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo
+          borderColor: 'rgba(79, 70, 229, 1)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+        },
+      ],
+    };
+  }, [analyticsData]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -368,42 +499,6 @@ export default function BrainAnalyticsPage() {
     percentileRanks, 
     recommendations
   } = analyticsData;
-
-  const radarChartData = {
-    labels: [
-      '작업기억 용량',
-      '시공간 정확도',
-      '처리 속도',
-      '주의 지속성',
-      '패턴 인식',
-      '인지 유연성',
-      '해마 활성화',
-      '실행 기능',
-    ],
-    datasets: [
-      {
-        label: '나의 인지 역량',
-        data: [
-          metrics.workingMemoryCapacity,
-          metrics.visuospatialPrecision,
-          metrics.processingSpeed,
-          metrics.sustainedAttention,
-          metrics.patternRecognition,
-          metrics.cognitiveFlexibility,
-          metrics.hippocampusActivation,
-          metrics.executiveFunction,
-        ],
-        backgroundColor: 'rgba(79, 70, 229, 0.2)', // Indigo
-        borderColor: 'rgba(79, 70, 229, 1)',
-        borderWidth: 2,
-        pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
-      },
-      // TODO: Add dataset for average user for comparison if available
-    ],
-  };
 
   const radarChartOptions = {
     scales: {
@@ -447,51 +542,6 @@ export default function BrainAnalyticsPage() {
       }
     },
     maintainAspectRatio: false,
-  };
-
-  const lineChartData = {
-    // timeSeries가 없을 경우 빈 배열로 처리
-    labels: timeSeries?.map(d => {
-      // 날짜 형식이 올바르지 않을 경우 기본값 처리
-      try {
-        const date = new Date(d.date);
-        if (isNaN(date.getTime())) return '날짜 없음';
-        return `${date.getMonth() + 1}/${date.getDate()}`;
-      } catch (e) {
-        return '날짜 없음';
-      }
-    }) || [],
-    datasets: [
-      {
-        label: '작업기억 용량',
-        // 각 데이터 포인트에 방어 로직 추가
-        data: timeSeries?.map(d => {
-          // metrics나 workingMemoryCapacity가 없을 경우 null 처리
-          if (!d.metrics) return null;
-          const value = d.metrics.workingMemoryCapacity;
-          return typeof value === 'number' && !isNaN(value) ? value : null;
-        }) || [],
-        borderColor: 'rgb(79, 70, 229)', // Indigo
-        backgroundColor: 'rgba(79, 70, 229, 0.5)',
-        tension: 0.3,
-        yAxisID: 'y',
-      },
-      {
-        label: '처리 속도',
-        // 각 데이터 포인트에 방어 로직 추가
-        data: timeSeries?.map(d => {
-          // metrics나 processingSpeed가 없을 경우 null 처리
-          if (!d.metrics) return null;
-          const value = d.metrics.processingSpeed;
-          return typeof value === 'number' && !isNaN(value) ? value : null;
-        }) || [],
-        borderColor: 'rgb(5, 150, 105)', // Emerald
-        backgroundColor: 'rgba(5, 150, 105, 0.5)',
-        tension: 0.3,
-        yAxisID: 'y',
-      },
-      // Add more datasets for other relevant metrics
-    ],
   };
 
   const lineChartOptions = {
