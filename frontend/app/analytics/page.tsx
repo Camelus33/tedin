@@ -62,12 +62,34 @@ export default function AnalyticsPage() {
     setError(null);
     
     try {
-      // API 라우트를 통해 데이터 요청
-      const response = await fetch(`/api/cognitive/metrics?timeRange=${range}`);
+      // localStorage에서 토큰 가져오기
+      const token = localStorage.getItem('token');
+      if (!token) {
+        // 토큰이 없으면 로그인 페이지로 리디렉션 (실제 구현 시 router 사용)
+        console.error("인증 토큰이 없습니다. 로그인 페이지로 이동합니다.");
+        setError("인증 정보가 없습니다. 다시 로그인해주세요.");
+        setLoading(false);
+        // window.location.href = '/auth/login';
+        return;
+      }
+      
+      // API 라우트를 통해 데이터 요청 (인증 헤더 추가)
+      const response = await fetch(`/api/cognitive/metrics?timeRange=${range}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: '알 수 없는 오류가 발생했습니다.' }));
-        throw new Error(errorData.message || `API 요청 실패: ${response.status}`);
+        if (response.status === 401) {
+          setError('세션이 만료되었거나 유효하지 않습니다. 다시 로그인해주세요.');
+          // 여기서 로그인 페이지로 리디렉션 할 수 있습니다.
+          // window.location.href = '/auth/login';
+        } else {
+          const errorData = await response.json().catch(() => ({ message: '알 수 없는 오류가 발생했습니다.' }));
+          throw new Error(errorData.message || `API 요청 실패: ${response.status}`);
+        }
+        return; // 오류 발생 시 함수 종료
       }
       
       const data = await response.json();
