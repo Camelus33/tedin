@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   // 빌드 중 환경 변수 검증
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
@@ -56,11 +55,6 @@ const nextConfig = {
     maxInactiveAge: 60 * 60 * 1000, // 1시간
     // 한 번에 메모리에 유지할 페이지 수
     pagesBufferLength: 5,
-  },
-  // 프로덕션 빌드 최적화
-  experimental: {
-    optimizeCss: true,     // CSS 최적화
-    scrollRestoration: true, // 스크롤 위치 복원
   },
   // 웹소켓 재연결 시도 횟수 증가
   webpack: (config, { isServer }) => {
