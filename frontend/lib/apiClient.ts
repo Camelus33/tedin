@@ -146,7 +146,6 @@ class ApiClient {
       // 클라이언트 측에서 토큰 제거
       if (typeof window !== 'undefined') {
         localStorage.removeItem('token');
-        localStorage.removeItem('authToken');
         
         // 로그인 페이지로 리디렉션 (토스트 메시지 표시 후)
         toast.error('세션이 만료되었습니다. 다시 로그인해 주세요.');

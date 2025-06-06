@@ -16,7 +16,7 @@ export default function useAuth() {
   
   // Check if user is already authenticated on initial load
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('token');
     
     if (token && !user.isAuthenticated) {
       // If we have a token but no user data, try to fetch user data
@@ -87,7 +87,7 @@ export default function useAuth() {
       }
       
       const data = await response.json();
-      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('token', data.token);
       
       dispatch(loginSuccess(data.user));
       router.push('/dashboard');
