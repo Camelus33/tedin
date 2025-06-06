@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import CognitiveProfileChart from './CognitiveProfileChart';
 import { apiClient } from '@/lib/apiClient';
+import { toast } from 'react-hot-toast';
 
 // API response interface
 interface CognitiveProfileResponse {
@@ -41,11 +43,29 @@ interface CognitiveProfileContainerProps {
 // - 유지보수 시 결과 저장, 프로필 집계, 시각화(대시보드/통계) 연계 구조를 반드시 함께 점검하세요.
 
 const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ className = '' }) => {
+  const router = useRouter();
   // State for cognitive profile data
   const [profileData, setProfileData] = useState<CognitiveProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timePeriod, setTimePeriod] = useState<'all' | 'week' | 'month' | 'year'>('month');
+
+  // 인지 프로필 클릭 핸들러 추가
+  const handleCognitiveProfileClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // 로그인 상태 확인 (localStorage에서 토큰 체크)
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      toast.error('로그인이 필요합니다.');
+      router.push('/auth/login');
+      return;
+    }
+    
+    // 토큰이 있으면 브레인 역량 분석 페이지로 이동
+    router.push('/analytics');
+  };
 
   // Fetch cognitive profile data from the API
   useEffect(() => {
@@ -105,13 +125,13 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
   return (
     <div className={`bg-white rounded-xl shadow-md overflow-hidden ${className}`}>
       <div className="p-6 md:p-8">
-        <Link href="/analytics" className="group inline-block">
+        <a href="#" onClick={handleCognitiveProfileClick} className="group inline-block">
           <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center group-hover:text-indigo-600 transition-colors">
             나의 인지능력
             <span className="inline-block ml-1 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300">→</span>
           </h2>
           <p className="text-sm text-gray-500 mb-6 text-center group-hover:text-indigo-400 transition-colors">매순간 자신의 강점을 확인하고 단점을 보완하세요</p>
-        </Link>
+        </a>
         
         {/* Time period selector */}
         <div className="flex justify-center mb-6">

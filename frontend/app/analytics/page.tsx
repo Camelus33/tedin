@@ -146,7 +146,7 @@ export default function BrainAnalyticsPage() {
       setIsLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('authToken'); // 실제 인증 토큰 가져오기
+      const token = localStorage.getItem('token'); // 'authToken' 대신 'token' 사용
 
       if (!token) {
         setError('로그인이 필요합니다. 인증 토큰을 찾을 수 없습니다.');
