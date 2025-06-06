@@ -230,9 +230,20 @@ export default function BrainAnalyticsPage() {
   }, [timeRange, router]);
 
   const overallProfileData = useMemo(() => {
+    // analyticsData가 null이면 종료
     if (!analyticsData) return null;
-    const labels = Object.keys(analyticsData.metrics).map(key => metricDisplayNames[key as keyof CognitiveMetrics] || key);
-    const dataValues = Object.values(analyticsData.metrics);
+    
+    // metrics 객체가 없는 경우 종료
+    if (!analyticsData.metrics) return null;
+    
+    // 안전하게 객체 키와 값 추출
+    const metricsKeys = Object.keys(analyticsData.metrics) as Array<keyof CognitiveMetrics>;
+    
+    if (metricsKeys.length === 0) return null;
+    
+    const labels = metricsKeys.map(key => metricDisplayNames[key] || String(key));
+    const dataValues = metricsKeys.map(key => analyticsData.metrics[key]);
+    
     return {
       labels,
       datasets: [
@@ -252,21 +263,30 @@ export default function BrainAnalyticsPage() {
   }, [analyticsData, metricDisplayNames]);
 
   const timeSeriesData = useMemo(() => {
-    if (!analyticsData?.timeSeriesData) return null;
+    // analyticsData가 null이면 바로 종료
+    if (!analyticsData) return null;
+    
+    // timeSeriesData가 없거나 비어있으면 종료
+    if (!analyticsData.timeSeriesData || analyticsData.timeSeriesData.length === 0) return null;
+
+    // metrics가 없으면 종료
+    if (!analyticsData.metrics) return null;
 
     const labels = analyticsData.timeSeriesData.map(d => {
       const date = new Date(d.date);
       return `${date.getMonth() + 1}/${date.getDate()}`;
     });
     
-    const datasets = Object.keys(analyticsData.metrics).map(metricKey => {
-      const key = metricKey as keyof CognitiveMetrics;
+    // 메트릭 키 배열을 미리 생성
+    const metricKeys = Object.keys(analyticsData.metrics) as Array<keyof CognitiveMetrics>;
+    
+    const datasets = metricKeys.map(key => {
       return {
-        label: metricDisplayNames[key] || key,
-        data: analyticsData.timeSeriesData.map(d => d.metrics[key]),
-        borderColor: getRandomColor(), // 각 지표별 색상 (아래 heler 함수 추가 필요)
+        label: metricDisplayNames[key] || String(key),
+        data: analyticsData.timeSeriesData.map(d => d.metrics[key] || 0),
+        borderColor: getRandomColor(),
         tension: 0.1,
-        hidden: !['workingMemoryCapacity', 'processingSpeed'].includes(key), // 초기에는 일부만 보이도록 설정
+        hidden: !['workingMemoryCapacity', 'processingSpeed'].includes(key as string),
       };
     });
 
@@ -396,11 +416,27 @@ export default function BrainAnalyticsPage() {
   };
 
   const lineChartData = {
-    labels: timeSeries?.map(d => d.date) || [],
+    // timeSeries가 없을 경우 빈 배열로 처리
+    labels: timeSeries?.map(d => {
+      // 날짜 형식이 올바르지 않을 경우 기본값 처리
+      try {
+        const date = new Date(d.date);
+        if (isNaN(date.getTime())) return '날짜 없음';
+        return `${date.getMonth() + 1}/${date.getDate()}`;
+      } catch (e) {
+        return '날짜 없음';
+      }
+    }) || [],
     datasets: [
       {
         label: '작업기억 용량',
-        data: timeSeries?.map(d => d.metrics.workingMemoryCapacity) || [],
+        // 각 데이터 포인트에 방어 로직 추가
+        data: timeSeries?.map(d => {
+          // metrics나 workingMemoryCapacity가 없을 경우 null 처리
+          if (!d.metrics) return null;
+          const value = d.metrics.workingMemoryCapacity;
+          return typeof value === 'number' && !isNaN(value) ? value : null;
+        }) || [],
         borderColor: 'rgb(79, 70, 229)', // Indigo
         backgroundColor: 'rgba(79, 70, 229, 0.5)',
         tension: 0.3,
@@ -408,7 +444,13 @@ export default function BrainAnalyticsPage() {
       },
       {
         label: '처리 속도',
-        data: timeSeries?.map(d => d.metrics.processingSpeed) || [],
+        // 각 데이터 포인트에 방어 로직 추가
+        data: timeSeries?.map(d => {
+          // metrics나 processingSpeed가 없을 경우 null 처리
+          if (!d.metrics) return null;
+          const value = d.metrics.processingSpeed;
+          return typeof value === 'number' && !isNaN(value) ? value : null;
+        }) || [],
         borderColor: 'rgb(5, 150, 105)', // Emerald
         backgroundColor: 'rgba(5, 150, 105, 0.5)',
         tension: 0.3,
