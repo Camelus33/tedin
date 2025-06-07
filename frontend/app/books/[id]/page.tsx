@@ -58,8 +58,8 @@ const cyberTheme = {
 
 // 독서 목적 라벨 매핑
 const readingPurposeLabels: Record<string, string> = {
-  exam_prep: "시험/인증 대비",
-  practical_knowledge: "실무지식/기술 습득",
+  exam_prep: "시험/학습",
+  practical_knowledge: "지식/기술 습득",
   humanities_self_reflection: "인문 소양/자기 성찰",
   reading_pleasure: "읽는 재미"
 };
@@ -193,11 +193,11 @@ export default function BookDetailPage() {
   
   // 관련 링크 탭용 상태
   const relatedLinkTabs: { key: PageRelatedLink['type']; label: string; icon: React.ComponentType<any>; tooltip: string; }[] = [
-    { key: 'book',         label: '책',              icon: BookOpenIcon,      tooltip: '관련 책 연결' },
-    { key: 'paper',        label: '논문/자료',         icon: DocumentTextIcon,  tooltip: '논문, 학술 자료 연결' },
-    { key: 'youtube',      label: '유튜브',          icon: AiFillYoutube,     tooltip: '유튜브 영상' },
-    { key: 'media',        label: '미디어/뉴스',      icon: NewspaperIcon,     tooltip: '언론, 뉴스 기사, 미디어 콘텐츠 연결' },
-    { key: 'website',      label: '웹사이트/기타',  icon: ShareIcon,         tooltip: '블로그, SNS, 일반 웹사이트 등 기타 링크 연결' }, 
+    { key: 'book',         label: '책',              icon: BookOpenIcon,      tooltip: '관련 서적 연결' },
+    { key: 'paper',        label: '논문/자료',         icon: DocumentTextIcon,  tooltip: '법률, 학술 자료 연결' },
+    { key: 'youtube',      label: '유튜브',          icon: AiFillYoutube,     tooltip: '유튜브' },
+    { key: 'media',        label: '미디어/뉴스',      icon: NewspaperIcon,     tooltip: '언론, 뉴스 SNS 연결' },
+    { key: 'website',      label: '노트앱/기타',  icon: ShareIcon,         tooltip: '노션, 옵시디언 연결' }, 
   ];
   const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState<PageRelatedLink['type']>(relatedLinkTabs[0].key);
   const [linkUrl, setLinkUrl] = useState('');
@@ -513,7 +513,7 @@ export default function BookDetailPage() {
             variant="default"
             className={`w-full text-white`}
           >
-            나의 독서 공간으로
+            나의 도서관으로
           </Button>
         </div>
       </div>
