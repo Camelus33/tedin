@@ -405,7 +405,7 @@ export default function MyversePage() {
                 Habitus33
               </h1>
               <p className={`text-xs font-medium tracking-wider ${cyberTheme.textMuted}`}>
-                Sharpen Your Mind
+                Read Short. Deep Dive
               </p>
             </div>
           </Link>

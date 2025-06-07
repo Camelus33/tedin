@@ -16,7 +16,7 @@ export default function Footer() {
               <AppLogo className="w-12 h-12 text-white flex-shrink-0 group-hover:opacity-90 transition-opacity" />
               <div>
                 <span className="block text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">habitus33</span>
-                <span className="block text-sm font-normal text-cyan-400 mt-1">Sharpen Your Mind</span>
+                <span className="block text-sm font-normal text-cyan-400 mt-1">Read Short. Deep Dive</span>
               </div>
             </Link>
           </div>

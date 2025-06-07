@@ -48,7 +48,10 @@ export default function LandingPageClient() {
           <div className="flex justify-between items-center py-4">
             <Link href="/" className="flex items-center space-x-2" aria-label="Homepage">
               <AppLogo className="w-8 h-8" />
-              <span className="text-xl font-bold text-gray-800">habitus33</span>
+              <div>
+                <div className="text-xl font-bold text-gray-800">habitus33</div>
+                <p className="text-xs font-medium tracking-wider text-gray-500">Read Short. Deep Dive</p>
+              </div>
             </Link>
             <div className="flex items-center space-x-3">
               <Link
