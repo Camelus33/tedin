@@ -93,14 +93,29 @@ export default function AnalyticsPage() {
         return; // 오류 발생 시 함수 종료
       }
       
-      const data = await response.json();
+      const responseData = await response.json();
       
       // 백엔드 응답 데이터를 각 상태에 할당
-      setPercentileRanks(data.percentileRanks || null);
-      setTimeSeriesData(data.timeSeriesData || null);
-      setStrengthsWeaknesses(data.strengthsWeaknesses || null);
-      setOverallScore(data.overallScore || null);
-      setGrowthStage(data.growthStage || null);
+      // 백엔드 응답이 { message, code, data: { ... } } 구조로 오므로 data.data를 사용
+      const analyticsData = responseData.data;
+
+      if (!analyticsData) {
+        throw new Error('분석 데이터가 비어있습니다.');
+      }
+      
+      setPercentileRanks(analyticsData.percentileRanks || null);
+      setTimeSeriesData(analyticsData.timeSeriesData || null);
+      // 백엔드에서 strengths, weaknesses가 별도로 올 수 있으므로 이를 합쳐서 상태 설정
+      if (analyticsData.strengths && analyticsData.weaknesses) {
+        setStrengthsWeaknesses({
+          strengths: analyticsData.strengths,
+          weaknesses: analyticsData.weaknesses,
+        });
+      } else {
+        setStrengthsWeaknesses(null);
+      }
+      setOverallScore(analyticsData.overallScore || null);
+      setGrowthStage(analyticsData.growthStage || null);
       
     } catch (err) {
       console.error('데이터 로딩 오류:', err);
