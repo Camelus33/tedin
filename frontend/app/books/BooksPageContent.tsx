@@ -145,7 +145,7 @@ export default function BooksPageContent() {
     } catch (err: any) {
       if (isMounted.current && err.name !== 'AbortError') {
         console.error('Error loading books:', err);
-        setError(err.message || "나의 독서 공간을 불러오는 중 잠시 문제가 생겼어요. 다시 한번 시도해볼까요?");
+        setError(err.message || "나의 도서관을 불러오는 중 잠시 문제가 생겼어요. 다시 한번 시도해볼까요?");
       }
     } finally {
       if (isMounted.current) setIsLoading(false);
@@ -347,7 +347,7 @@ export default function BooksPageContent() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-            <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>나의 독서 공간</h1>
+            <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>나의 도서관</h1>
             <button onClick={handleAddBook} aria-label="새 책 등록" className={`flex items-center gap-2 px-4 py-2 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-medium transition-colors w-full sm:w-auto mt-3 sm:mt-0`}>
               <AiOutlinePlus className="h-5 w-5" /><span>새 책 등록</span>
             </button>
@@ -386,7 +386,7 @@ export default function BooksPageContent() {
                 : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-cyan-300 border-transparent hover:bg-gray-700/70`}
             `}
           >
-            <FiBook className="inline mr-2 mb-0.5" />나의 독서공간
+            <FiBook className="inline mr-2 mb-0.5" />등록한 책
           </button>
           <button
             onClick={() => setActiveTab('summaryNotes')}

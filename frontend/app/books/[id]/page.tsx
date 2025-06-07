@@ -194,10 +194,10 @@ export default function BookDetailPage() {
   // 관련 링크 탭용 상태
   const relatedLinkTabs: { key: PageRelatedLink['type']; label: string; icon: React.ComponentType<any>; tooltip: string; }[] = [
     { key: 'book',         label: '책',              icon: BookOpenIcon,      tooltip: '관련 서적 연결' },
-    { key: 'paper',        label: '논문/자료',         icon: DocumentTextIcon,  tooltip: '법률, 학술 자료 연결' },
+    { key: 'paper',        label: '논문/자료/AI답변',         icon: DocumentTextIcon,  tooltip: '논문, 학숩, AI 답변' },
     { key: 'youtube',      label: '유튜브',          icon: AiFillYoutube,     tooltip: '유튜브' },
-    { key: 'media',        label: '미디어/뉴스',      icon: NewspaperIcon,     tooltip: '언론, 뉴스 SNS 연결' },
-    { key: 'website',      label: '노트앱/기타',  icon: ShareIcon,         tooltip: '노션, 옵시디언 연결' }, 
+    { key: 'media',        label: '미디어/뉴스',      icon: NewspaperIcon,     tooltip: '언론, 뉴스, SNS 연결' },
+    { key: 'website',      label: '노트앱/기타',  icon: ShareIcon,         tooltip: '노션, 옵시디언 노트앱 연결' }, 
   ];
   const [activeRelatedLinkTab, setActiveRelatedLinkTab] = useState<PageRelatedLink['type']>(relatedLinkTabs[0].key);
   const [linkUrl, setLinkUrl] = useState('');

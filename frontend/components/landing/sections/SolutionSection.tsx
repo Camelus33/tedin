@@ -39,7 +39,7 @@ export default function SolutionSection() {
             <p className="mt-6 text-lg md:text-xl text-gray-700">
               Habitus33은 당신을 꼼꼼히 비춰주는 <strong className="font-semibold text-gray-900">거울</strong>입니다.
               지금 어떤 리듬으로 정보를 받아들이는지 알게 되면, 가장 편안하고 깊게 몰입할 수 있는 
-              <strong className="text-brand-primary">'나만의 보폭'</strong>을 찾을 수 있습니다.
+              <strong className="text-brand-primary"> '나만의 보폭'</strong>을 찾을 수 있습니다.
             </p>
             <p className="mt-4 text-lg md:text-xl text-gray-700">
               <strong className="font-semibold text-gray-900">작은 성공</strong>이 모여 선순환의 리듬을 만들고, 
