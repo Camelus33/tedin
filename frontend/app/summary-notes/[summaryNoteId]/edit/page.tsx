@@ -177,25 +177,10 @@ export default function EditSummaryNotePage() {
           ).filter(n => n !== undefined) as FetchedNoteDetails[];
 
           const uniqueBookIds = Array.from(new Set(finalNotes.map(note => note.bookId).filter(Boolean)));
-          
-          // --- 🐛 NEW DEBUG LOGS START ---
-          console.log('[DEBUG] uniqueBookIds to fetch:', uniqueBookIds);
-          // --- NEW DEBUG LOGS END ---
-
           if (uniqueBookIds.length > 0) {
             try {
-              const booksInfoRes = await api.post('/books/batch-info', { bookIds: uniqueBookIds });
-              
-              // --- 🐛 NEW DEBUG LOGS START ---
-              console.log('[DEBUG] API response from /books/batch-info:', booksInfoRes.data);
-              // --- NEW DEBUG LOGS END ---
-
+              const booksInfoRes = await api.post('/books/batch', { bookIds: uniqueBookIds });
               booksInfoRes.data.forEach((book: BookInfo) => finalBookInfoMap.set(book._id, book));
-
-              // --- 🐛 NEW DEBUG LOGS START ---
-              console.log('[DEBUG] finalBookInfoMap state:', finalBookInfoMap);
-              // --- NEW DEBUG LOGS END ---
-
             } catch (booksErr) {
               console.warn('Failed to fetch batch book info', booksErr);
             }
