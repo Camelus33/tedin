@@ -67,7 +67,7 @@ export default function EditBookPage() {
     const fetchBookData = async () => {
       if (!bookId) {
         setIsLoading(false);
-        setError("책 ID가 유효하지 않습니다.");
+        setError("책 정보를 찾을 수 없어요. 이전 페이지로 돌아가 다시 시도해 주시겠어요?");
         return;
       }
       
@@ -84,7 +84,7 @@ export default function EditBookPage() {
         const timeoutId = setTimeout(() => {
           if (isMounted) { // Check isMounted before calling controller.abort
             controller.abort();
-            setError('서버 응답이 너무 오래 걸립니다. 네트워크 연결을 확인하세요.');
+            setError('서버와의 연결이 조금 늦어지고 있어요. 잠시 후 다시 시도해 주세요.');
             setIsLoading(false);
           }
         }, 20000);
@@ -98,14 +98,14 @@ export default function EditBookPage() {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`책 정보를 불러오는 데 실패했습니다. Status: ${response.status} - ${errorText}`);
+          throw new Error(`책 정보를 불러오는 데 잠시 문제가 생겼어요. 다시 시도해 주시겠어요? (Status: ${response.status})`);
         }
 
         const bookData = await response.json();
         const book = bookData && bookData._id ? bookData : (bookData && bookData.book ? bookData.book : null);
         
         if (!book) {
-          throw new Error('책 데이터 형식이 올바르지 않습니다.');
+          throw new Error('책 정보를 정리하는 데 도움이 필요해요. 형식이 조금 다른 것 같아요.');
         }
         
         if (isMounted) {
@@ -134,7 +134,7 @@ export default function EditBookPage() {
         if (err.name === 'AbortError') {
           console.log('Fetch aborted by timeout or unmount');
         } else if (isMounted) {
-          setError(err.message || "책 정보를 불러오는 중 알 수 없는 오류가 발생했습니다.");
+          setError(err.message || "책 정보를 불러오는 중에 예상치 못한 문제가 발생했어요. 잠시 후 다시 시도해 주세요.");
         }
       } finally {
         if (isMounted) {
@@ -171,7 +171,7 @@ export default function EditBookPage() {
     setIsUploading(true);
     
     if (file.size > 5 * 1024 * 1024) {
-      setError("이미지 크기는 5MB 이하여야 합니다");
+      setError("표지 이미지가 조금 크네요! 5MB 이하의 이미지로 부탁드려요.");
       setIsUploading(false);
       setCoverImageFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -179,7 +179,7 @@ export default function EditBookPage() {
     }
     
     if (!file.type.startsWith("image/")) {
-      setError("이미지 파일만 업로드할 수 있습니다");
+      setError("이 파일은 이미지 파일이 아닌 것 같아요. 다른 이미지로 시도해볼까요?");
       setIsUploading(false);
       setCoverImageFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -193,7 +193,7 @@ export default function EditBookPage() {
       setIsUploading(false);
     };
     reader.onerror = () => {
-      setError("이미지를 읽는 중 오류가 발생했습니다.");
+      setError("이미지를 불러오는 중에 작은 문제가 생겼어요. 다른 이미지로 시도해 보시겠어요?");
       setIsUploading(false);
       setCoverImageFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -213,7 +213,7 @@ export default function EditBookPage() {
     e.preventDefault();
     
     if (!formData.title || !formData.author || !formData.totalPages) {
-      setError('제목, 저자, 총 페이지 수는 필수 항목입니다.');
+      setError('더 멋진 기록을 위해, 제목과 저자, 전체 페이지 수를 알려주시겠어요?');
       return;
     }
     
@@ -268,9 +268,9 @@ export default function EditBookPage() {
         try {
           errorData = JSON.parse(responseText);
         } catch (parseError) {
-          errorData = { message: responseText || `책 정보 업데이트에 실패했습니다. (Status: ${response.status})` };
+          errorData = { message: responseText || `성장의 기록을 업데이트하는 중에 잠시 문제가 생겼어요. (Status: ${response.status})` };
         }
-        throw new Error(errorData.message || errorData.error || `책 정보 업데이트에 실패했습니다.`);
+        throw new Error(errorData.message || errorData.error || `성장의 기록을 업데이트하는 중에 잠시 문제가 생겼어요.`);
       }
       
       // 성공 시, 필요하다면 응답에서 업데이트된 책 정보를 받아 상태를 업데이트할 수 있음.
@@ -280,7 +280,7 @@ export default function EditBookPage() {
       router.push(`/books/${bookId}`);
 
     } catch (err: any) {
-      setError(err.message || '책 정보 업데이트 중 알 수 없는 오류가 발생했습니다.');
+      setError(err.message || '기록을 업데이트하는 중에 예상치 못한 문제가 발생했어요. 잠시 후 다시 시도해 주세요.');
     } finally {
       setIsSubmitting(false);
     }
@@ -289,7 +289,7 @@ export default function EditBookPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-lg text-gray-700">책 정보 로딩 중...</p>
+        <p className="text-lg text-gray-700">성장 기록을 불러오고 있어요...</p>
       </div>
     );
   }
@@ -303,12 +303,12 @@ export default function EditBookPage() {
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
             <FiArrowLeft className="mr-2" />
-            <span>책 상세 페이지로 돌아가기</span>
+            <span>책 상세 정보로 돌아가기</span>
           </Link>
         </div>
         
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">책 정보 수정</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">성장의 기록 다듬기</h1>
           
           {error && (
             <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md mb-6">
@@ -332,7 +332,7 @@ export default function EditBookPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                    placeholder="책 제목을 입력하세요"
+                    placeholder="어떤 책과 함께 성장하고 있나요?"
                   />
                 </div>
                 <div>
@@ -347,7 +347,7 @@ export default function EditBookPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                    placeholder="저자 이름을 입력하세요"
+                    placeholder="누구의 지혜와 함께하고 있나요?"
                   />
                 </div>
                 <div>
@@ -361,7 +361,7 @@ export default function EditBookPage() {
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   >
-                    <option value="">장르 선택 (선택사항)</option>
+                    <option value="">어떤 분야의 책인가요? (선택)</option>
                     {genres.map((genre) => (
                       <option key={genre.id} value={genre.id}>
                         {genre.name}
@@ -380,7 +380,7 @@ export default function EditBookPage() {
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   >
-                    <option value="">독서 목적 선택 (선택사항)</option>
+                    <option value="">이 책을 통해 어떤 성장을 원하시나요? (선택)</option>
                     {readingPurposes.map((purpose) => (
                       <option key={purpose.id} value={purpose.id}>
                         {purpose.name} - {purpose.description}
@@ -404,7 +404,7 @@ export default function EditBookPage() {
                     onChange={handleNumberInput}
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                    placeholder="책의 총 페이지 수를 입력하세요"
+                    placeholder="성장의 여정은 총 몇 페이지인가요?"
                   />
                 </div>
                 <div>
@@ -418,7 +418,7 @@ export default function EditBookPage() {
                     value={formData.currentPage}
                     onChange={handleNumberInput}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                    placeholder="현재까지 읽은 페이지를 입력하세요"
+                    placeholder="지금은 성장의 몇 페이지를 지나고 있나요?"
                   />
                 </div>
                 
@@ -432,7 +432,7 @@ export default function EditBookPage() {
                 {/* Cover Image Upload UI (Updated) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    책 표지 이미지
+                    성장의 표지
                   </label>
                   <div className="mt-1">
                     {coverImage ? (
@@ -457,8 +457,8 @@ export default function EditBookPage() {
                         className="w-40 h-56 mx-auto border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 bg-gray-50 hover:bg-gray-100 transition-colors"
                       >
                         <FiUpload size={32} className="text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500">클릭하여 업로드</p>
-                        <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP (최대 5MB)</p>
+                        <p className="text-sm text-gray-500">클릭하여 표지 등록</p>
+                        <p className="text-xs text-gray-400 mt-1">5MB 이하의 이미지 파일</p>
                       </div>
                     )}
                     <input
@@ -469,7 +469,7 @@ export default function EditBookPage() {
                       accept="image/*" // client-side type filtering
                     />
                     {isUploading && (
-                      <p className="text-sm text-indigo-600 mt-2 text-center">이미지 처리 중...</p>
+                      <p className="text-sm text-indigo-600 mt-2 text-center">이미지를 불러오는 중...</p>
                     )}
                   </div>
                 </div>
@@ -485,7 +485,7 @@ export default function EditBookPage() {
                     name="purchaseLink"
                     value={formData.purchaseLink}
                     onChange={handleInputChange}
-                    placeholder="예: https://www.yes24.com/상품/12345"
+                    placeholder="이 책을 다시 찾아볼 수 있는 곳이 있나요?"
                     className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400"
                   />
                 </div>

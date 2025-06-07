@@ -231,7 +231,7 @@ export default function BookDetailPage() {
         setSelectedRelatedNote(prev => prev ? {...prev, relatedLinks: updatedLinks} : null);
       }
     } catch (err) {
-      alert('관련 링크 저장 중 오류 발생: ' + (err as any).message);
+      alert('링크를 저장하는 중 잠시 문제가 생겼어요: ' + (err as any).message);
       const originalLinks = (relatedLinksMap[noteId] || []).filter(link => link.url !== newLink.url || link.type !== newLink.type);
       setRelatedLinksMap(prev => ({ ...prev, [noteId]: originalLinks }));
     }
@@ -252,7 +252,7 @@ export default function BookDetailPage() {
     });
 
     if (actualIndexInAll === -1) {
-        alert('삭제할 링크를 찾지 못했습니다.');
+        alert('정리하려는 링크를 찾지 못했어요. 다시 시도해 주세요.');
         return;
     }
 
@@ -267,7 +267,7 @@ export default function BookDetailPage() {
         setSelectedRelatedNote(prev => prev ? {...prev, relatedLinks: updatedLinks} : null);
       }
     } catch (err) {
-      alert('관련 링크 삭제 중 오류 발생: ' + (err as any).message);
+      alert('링크를 정리하는 중 잠시 문제가 생겼어요: ' + (err as any).message);
       setRelatedLinksMap(prev => ({ ...prev, [noteId]: [...updatedLinks, linkToDelete].sort() })); 
     }
   };
@@ -377,15 +377,15 @@ export default function BookDetailPage() {
 
   const handleDeleteBook = async () => {
     if (!bookId) return;
-    if (window.confirm('이 책과 관련된 모든 TS 메모, 세션 기록이 삭제됩니다. 정말 삭제하시겠습니까?')) {
+    if (window.confirm('이 책과 함께한 성장의 기록들을 모두 정리하시겠어요? 메모와 세션 기록들도 함께 정리됩니다.')) {
       setIsDeleting(true);
       try {
         await api.delete(`/books/${bookId}`);
-        alert('책이 성공적으로 삭제되었습니다.');
+        alert('성장의 기록이 잘 정리되었습니다.');
         router.push('/books');
       } catch (err) {
         console.error('책 삭제 오류:', err);
-        alert('책을 삭제하는 중 오류가 발생했습니다: ' + (err as any).message);
+        alert('기록을 정리하는 중 잠시 문제가 생겼어요: ' + (err as any).message);
         setIsDeleting(false);
       }
     }
@@ -396,18 +396,18 @@ export default function BookDetailPage() {
   };
 
   const linkPlaceholderMap: Partial<Record<PageRelatedLink['type'], string>> = {
-    book: '이 메모와 관련 있는 책의 온라인 링크를 입력하세요',
-    paper: '이 메모와 관련 있는 논문 또는 자료의 온라인 링크를 입력하세요',
-    youtube: '이 메모와 관련 있는 유튜브 영상의 URL을 입력하세요',
-    media: '이 메모와 관련 있는 기사/방송/매체의 URL을 입력하세요',
-    website: '노션·옵시디언 등 노트앱 링크를 입력하세요',
+    book: '어떤 책과 연결해볼까요? 링크를 남겨주세요.',
+    paper: '어떤 자료와 연결해볼까요? 링크를 남겨주세요.',
+    youtube: '어떤 영상과 연결해볼까요? 링크를 남겨주세요.',
+    media: '어떤 미디어와 연결해볼까요? 링크를 남겨주세요.',
+    website: '개인 노트에 있는 생각과 연결해볼까요?',
   };
   const reasonPlaceholderMap: Partial<Record<PageRelatedLink['type'], string>> = {
-    book: '이 링크가 왜 책과 관련 있다고 생각했나요?',
-    paper: '이 링크가 왜 논문 또는 자료와 관련 있다고 생각했나요?',
-    youtube: '이 영상이 왜 관련 있다고 생각했나요?',
-    media: '이 매체가 왜 관련 있다고 생각했나요?',
-    website: '이 링크가 왜 노트앱과 관련 있다고 생각했나요?',
+    book: '이 책과 연결한 나만의 이유를 남겨주세요.',
+    paper: '이 자료와 연결한 나만의 이유를 남겨주세요.',
+    youtube: '이 영상과 연결한 나만의 이유를 남겨주세요.',
+    media: '이 매체와 연결한 나만의 이유를 남겨주세요.',
+    website: '이 노트와 연결한 나만의 이유를 남겨주세요.',
   };
 
   /**
@@ -420,7 +420,7 @@ export default function BookDetailPage() {
   const handleNoteUpdate = async (updatedNoteFields: Partial<PageNote>) => {
     if (!updatedNoteFields._id) {
       console.error("Note ID is missing in updatedNoteFields");
-      toast.error("노트 ID가 없어 업데이트할 수 없습니다.");
+      toast.error("메모를 업데이트하려면 정보가 조금 더 필요해요.");
       return Promise.reject("Note ID missing");
     }
 
@@ -444,7 +444,7 @@ export default function BookDetailPage() {
 
     } catch (error) {
       console.error("Failed to update note:", error);
-      let errorMessage = "메모 저장 중 오류가 발생했습니다.";
+      let errorMessage = "메모를 저장하는 중에 잠시 문제가 생겼어요. 다시 시도해 주세요.";
       if (error && typeof error === 'object' && 'response' in error && error.response && 
           typeof error.response === 'object' && 'data' in error.response && error.response.data && 
           typeof error.response.data === 'object' && 'message' in error.response.data && 
@@ -472,12 +472,12 @@ export default function BookDetailPage() {
     // 책 정보나 노트 정보가 없으면 오류를 발생시키거나 알림을 표시하고 함수를 종료합니다.
     if (!currentBook || !currentBook.title) {
       console.error('Book information is not loaded yet. Cannot add to cart.');
-      alert('책 정보가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+      alert('책 정보를 아직 불러오고 있어요. 잠시 후 다시 카트에 담아주세요.');
       return;
     }
     if (!noteToAdd) {
       console.error(`Note with ID ${noteId} not found in tsNotes. Cannot add to cart.`);
-      alert('카트에 추가하려는 노트를 찾을 수 없습니다.');
+      alert('카트에 담으려는 메모를 찾지 못했어요. 다시 한번 시도해 주시겠어요?');
       return;
     }
     
@@ -490,14 +490,14 @@ export default function BookDetailPage() {
       contentPreview: noteToAdd.content.substring(0, 50) + (noteToAdd.content.length > 50 ? '...' : ''),
     });
     // 사용자에게 카트 추가 성공 알림을 표시합니다. (react-hot-toast 등 사용 가능)
-    toast.success(`'${noteToAdd.content.substring(0,20)}...' 메모가 지식 카트에 추가되었습니다.`);
+    toast.success(`'${noteToAdd.content.substring(0,20)}...' 메모 조각을 소중히 담았어요.`);
   };
 
   if (isLoading || sessionsLoading) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${cyberTheme.gradient}`}>
         <Spinner size="lg" color="cyan" />
-        <p className={`ml-4 ${cyberTheme.textLight}`}>기억 정보 로딩 중...</p>
+        <p className={`ml-4 ${cyberTheme.textLight}`}>소중한 기억들을 불러오는 중이에요...</p>
       </div>
     );
   }
@@ -506,14 +506,14 @@ export default function BookDetailPage() {
     return (
       <div className={`min-h-screen flex items-center justify-center p-4 ${cyberTheme.gradient}`}>
         <div className={`${cyberTheme.cardBg} rounded-xl shadow-lg p-6 max-w-md w-full border ${cyberTheme.errorBorder}`}>
-          <h1 className={`text-xl font-bold ${cyberTheme.errorText} mb-4`}>오류 발생</h1>
-          <p className={`mb-6 ${cyberTheme.textLight}`}>{error || '기억 정보를 찾을 수 없습니다.'}</p>
+          <h1 className={`text-xl font-bold ${cyberTheme.errorText} mb-4`}>잠시 문제가 발생했어요</h1>
+          <p className={`mb-6 ${cyberTheme.textLight}`}>{error || '성장의 기록을 찾지 못했어요. 다시 한번 확인해 주시겠어요?'}</p>
           <Button
             href="/books"
             variant="default"
             className={`w-full text-white`}
           >
-            내 서재 목록으로
+            나의 독서 공간으로
           </Button>
         </div>
       </div>
@@ -535,7 +535,7 @@ export default function BookDetailPage() {
               className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border flex items-center`}
             >
               <AiOutlineArrowLeft className="mr-2 h-4 w-4" />
-              내 서재
+              나의 독서 공간
             </Button>
           </Link>
         </div>
@@ -593,14 +593,14 @@ export default function BookDetailPage() {
             </div>
             {/* Book Info */}
             <div className="md:col-span-3 space-y-3">
-              <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.textLight} mb-1`}>{bookData.title || '제목 없음'}</h1>
-              <p className={`text-md ${cyberTheme.textLight} mb-4`}>{bookData.author || '저자 미상'}</p>
+              <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.textLight} mb-1`}>{bookData.title || '제목을 기다리고 있어요'}</h1>
+              <p className={`text-md ${cyberTheme.textLight} mb-4`}>{bookData.author || '저자를 기다리고 있어요'}</p>
               <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 {[
-                  ['장르', localMetadata?.genre || bookData.category || bookData.genre || '미분류'],
-                  ['독서 목적', readingPurposeLabels[String(localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal)] || '설정되지 않음'],
-                  ['총 페이지', (bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages} 페이지` : '페이지 정보 없음'],
-                  ['등록일', bookData.createdAt ? formatDate(bookData.createdAt) : '등록일 정보 없음'],
+                  ['분야', localMetadata?.genre || bookData.category || bookData.genre || '분류되지 않음'],
+                  ['독서 목적', readingPurposeLabels[String(localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal)] || '아직 설정되지 않았어요'],
+                  ['전체 여정', (bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages} 페이지` : '페이지 정보가 없어요'],
+                  ['기록 시작일', bookData.createdAt ? formatDate(bookData.createdAt) : '기록 시작일 정보가 없어요'],
                 ].map(([label, value]) => (
                   <div key={label} className="flex items-baseline space-x-2">
                     <span className={`w-20 ${cyberTheme.textMuted}`}>{label}:</span>
@@ -609,9 +609,9 @@ export default function BookDetailPage() {
                 ))}
               </div>
               {/* Progress Bar */}
-              <div className="pt-2" role="group" aria-label={`독서 진행률 ${getProgressPercentage()}%`}>
+              <div className="pt-2" role="group" aria-label={`성장 진행률 ${getProgressPercentage()}%`}>
                 <div className="flex justify-between items-center mb-1 text-sm">
-                  <span className={cyberTheme.textMuted}>독서 진행률</span>
+                  <span className={cyberTheme.textMuted}>성장 진행률</span>
                   <span className={cyberTheme.textLight}>{getProgressPercentage()}%</span>
                 </div>
                 <div className={`w-full ${cyberTheme.progressBarBg} h-2 rounded-full overflow-hidden`}>
@@ -621,7 +621,7 @@ export default function BookDetailPage() {
                   />
                 </div>
                 <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>
-                  현재 {bookData.currentPage || 0} / {bookData.totalPages || '∞'} 페이지
+                  {bookData.currentPage || 0} / {bookData.totalPages || '∞'} 페이지, 함께하는 중
                 </div>
               </div>
             </div>
@@ -657,13 +657,13 @@ export default function BookDetailPage() {
             <div className="flex flex-col md:flex-row gap-12 mb-3">
               {/* 왼쪽: 타이틀/설명 */}
               <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">Deep Dive</h2>
+                <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">Memo Hub</h2>
                 <span className="text-xs text-gray-400 font-medium block mb-2">기록을 넘어 성장으로</span>
-                <p className="text-sm text-cyan-300 mb-2 font-semibold">1줄 메모를 연결-확장해, 학습·업무·성장에 곧바로 적용하세요.</p>
+                <p className="text-sm text-cyan-300 mb-2 font-semibold">1줄 메모를 연결-확장해, 학습·업무에 활용해 보세요..</p>
                 <ul className="text-xs text-gray-400 leading-relaxed list-disc pl-4 space-y-1">
-                  <li>작지만 강력하게 기록하세요.</li>
-                  <li>왜 중요한지, 어떻게 쓸지 작게 남기세요.</li>
-                  <li>틈틈히 조금씩 살을 붙여, 눈덩이로 만드세요.</li>
+                  <li>작은 생각의 조각도 소중하게 기록해보세요.</li>
+                  <li>왜 중요하게 느껴졌는지, 어떻게 활용할 수 있을지 간단히 남겨두면 좋아요.</li>
+                  <li>틈틈이 생각을 더해, 하나의 큰 눈덩이로 키워나가 보세요.</li>
                 </ul>
               </div>
               {/* 오른쪽: 단계별 카드 grid */}
@@ -772,7 +772,7 @@ export default function BookDetailPage() {
 
             {/* Notes List */}
             {tsNotes.length === 0 ? (
-              <p className={`${cyberTheme.textMuted} text-center py-4`}>활성화된 메모가 없습니다. TS를 시작하여 메모를 생성하세요.</p>
+              <p className={`${cyberTheme.textMuted} text-center py-4`}>아직 남겨진 생각의 조각이 없네요. TS 모드로 첫 메모를 남겨볼까요?</p>
             ) : (
               <div className={`space-y-4 border-t ${cyberTheme.inputBorder} pt-4`}>
                 {tsNotes.map((note) => {
@@ -833,11 +833,11 @@ export default function BookDetailPage() {
                 {/* 좌측: 설명 */}
                 <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
                   <h2 className="text-xl font-bold text-green-300 mb-1">Connect</h2>
-                  <span className="text-xs text-gray-300 block mb-2">기존의 지식과 연결하세요</span>
+                  <span className="text-xs text-gray-300 block mb-2">더 많은 지식과 연결하세요</span>
                   <ul className="text-xs text-gray-300 list-disc pl-4 space-y-1">
-                    <li>떠오르는 모든 것을 연결하세요.</li>
-                    <li>유형별로 점점 더 넓게 확장하세요.</li>
-                    <li>연결한 이유를 반드시 남겨 나중에 쉽게 찾으세요</li>
+                    <li>자유롭게 떠오르는 생각들을 연결해보세요.</li>
+                    <li>책, 영상, 웹사이트 등 다양한 지식으로 생각을 넓혀가세요.</li>
+                    <li>'왜 연결했는지'를 남겨두면, 나중에 더 큰 도움이 될 거예요.</li>
                   </ul>
                 </div>
                 {/* 우측: 도해식 flow */}
@@ -908,13 +908,13 @@ export default function BookDetailPage() {
                   <div className="flex flex-col gap-2 mb-2 w-full">
                     <input
                       className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
-                      placeholder={linkPlaceholderMap[activeRelatedLinkTab] || '링크(URL)를 입력하세요'}
+                      placeholder={linkPlaceholderMap[activeRelatedLinkTab] || '링크주소(URL)를 입력하세요'}
                       value={linkUrl}
                       onChange={e => setLinkUrl(e.target.value)}
                     />
                     <input
                       className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
-                      placeholder={reasonPlaceholderMap[activeRelatedLinkTab] || '링크한 배경/이유를 간단히 입력'}
+                      placeholder={reasonPlaceholderMap[activeRelatedLinkTab] || '배경/이유를 적어두면 더 오래 기억됩니다.'}
                       value={linkReason}
                       onChange={e => setLinkReason(e.target.value)}
                     />
@@ -928,7 +928,7 @@ export default function BookDetailPage() {
                   </div>
                   {/* 링크 리스트 */}
                   {filteredLinks.length === 0 ? (
-                    <div className="text-gray-400 text-sm">(추가된 링크가 없습니다)</div>
+                    <div className="text-gray-400 text-sm">(추가된 링크가 없군요.)</div>
                   ) : (
                     <ul className="space-y-2 w-full">
                       {filteredLinks.map((link, idx) => (
@@ -958,7 +958,7 @@ export default function BookDetailPage() {
               <h2 className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
                 지식연결
               </h2>
-              <div className="text-gray-400 text-base">1줄 메모에서 <b>지식연결</b> 버튼을 눌러 관리할 메모를 선택하세요.</div>
+              <div className="text-gray-400 text-base">1줄 메모에서 <b>지식연결</b> 버튼을 눌러 관리할 메모를 선택해 보시겠어요?</div>
             </section>
           )
         )}
@@ -987,7 +987,7 @@ export default function BookDetailPage() {
                   NEW
                 </button>
               </div>
-              <p className="text-sm text-gray-400 mb-4">1줄 메모를 질문으로 바꾸고, 셀프 점검하세요</p>
+              <p className="text-sm text-gray-400 mb-4">스스로에게 질문을 던지며, 생각을 더 단단하게 만들어보세요.</p>
               {showNewFlashcardForm && (
                 <div className="mb-4">
                   <FlashcardForm

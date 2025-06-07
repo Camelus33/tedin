@@ -116,7 +116,7 @@ export default function BooksPageContent() {
     requestTimeout.current = setTimeout(() => {
       if (isMounted.current && controller.current) {
         controller.current.abort();
-        setError("서버 응답 시간이 초과되었습니다.");
+        setError("성장 기록을 불러오는 데 시간이 조금 더 걸리네요. 잠시 후 다시 시도해 주시겠어요?");
         setIsLoading(false);
       }
     }, 15000);
@@ -145,7 +145,7 @@ export default function BooksPageContent() {
     } catch (err: any) {
       if (isMounted.current && err.name !== 'AbortError') {
         console.error('Error loading books:', err);
-        setError(err.message || "기억 저장소 정보를 불러오는 중 오류가 발생했습니다");
+        setError(err.message || "나의 독서 공간을 불러오는 중 잠시 문제가 생겼어요. 다시 한번 시도해볼까요?");
       }
     } finally {
       if (isMounted.current) setIsLoading(false);
@@ -163,7 +163,7 @@ export default function BooksPageContent() {
       setFilteredSummaryNotes(notesData);
     } catch (err: any) {
       console.error('단권화 노트 로딩 오류:', err);
-      setSummaryNotesError(err.response?.data?.message || err.message || '단권화 노트를 불러오는 중 오류 발생');
+      setSummaryNotesError(err.response?.data?.message || err.message || '정리된 생각들을 불러오는 데 잠시 문제가 생겼어요. 다시 한번 시도해볼까요?');
     } finally {
       setSummaryNotesLoading(false);
     }
@@ -257,25 +257,25 @@ export default function BooksPageContent() {
   };
 
   const formatLastRead = (dateString?: string): string => {
-    if (!dateString) return "아직 읽지 않음";
+    if (!dateString) return "아직 성장의 기록이 없어요";
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays <= 1) return "오늘 활성화";
-    if (diffDays <= 7) return `${diffDays}일 전 활성화`;
+    if (diffDays <= 1) return "오늘의 기록";
+    if (diffDays <= 7) return `${diffDays}일 전 기록`;
     return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
   };
 
   const handleDeleteBook = async (bookId: string) => {
-    if (!window.confirm("이 책을 정말 삭제하시겠습니까? 관련된 노트와 데이터가 함께 삭제될 수 있습니다.")) return;
+    if (!window.confirm("이 책에 담긴 소중한 기록들을 정리하시겠어요? 관련 노트들도 함께 정리될 수 있어요.")) return;
     try {
       await booksApi.delete(bookId);
       setBooks(prev => prev.filter(b => b._id !== bookId));
       setFilteredBooks(prev => prev.filter(b => b._id !== bookId));
     } catch (err) {
       console.error("Error deleting book:", err);
-      alert("책 삭제 중 오류가 발생했습니다.");
+      alert("기록을 정리하는 중에 잠시 문제가 생겼어요. 잠시 후에 다시 시도해주시면 감사하겠습니다.");
     }
   };
 
@@ -299,14 +299,14 @@ export default function BooksPageContent() {
   const handleAddBook = () => router.push("/books/new");
 
   const handleDeleteSummaryNoteFromList = async (summaryNoteId: string) => {
-    if (!window.confirm("이 단권화 노트를 정말 삭제하시겠습니까? 1줄 메모들은 삭제되지 않습니다.")) return;
+    if (!window.confirm("이 단권화 노트를 정리하시겠어요? 소중한 1줄 메모들은 그대로 남아있으니 안심하세요.")) return;
     try {
       await api.delete(`/summary-notes/${summaryNoteId}`);
       setSummaryNotes(prev => prev.filter(note => note._id !== summaryNoteId));
       setFilteredSummaryNotes(prev => prev.filter(note => note._id !== summaryNoteId));
     } catch (err) {
       console.error("Error deleting summary note:", err);
-      alert("단권화 노트 삭제 중 오류가 발생했습니다.");
+      alert("노트를 정리하는 중에 잠시 문제가 생겼어요. 잠시 후에 다시 시도해볼까요?");
     }
   };
 
@@ -319,7 +319,7 @@ export default function BooksPageContent() {
       <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
         <Spinner size="lg" color="cyan" />
         <p className={`mt-4 ${cyberTheme.textLight}`}>
-          {activeTab === 'books' ? '기억 저장소 정보 로딩 중...' : '단권화 노트 로딩 중...'}
+          {activeTab === 'books' ? '당신의 성장 기록을 불러오고 있어요...' : '정리된 생각들을 불러오고 있어요...'}
         </p>
       </div>
     );
@@ -337,9 +337,9 @@ export default function BooksPageContent() {
   }
 
   const sortOptions: { key: SortByType; label: string; icon: React.ElementType }[] = [
-    { key: "date", label: "최근 기억 활성화 순", icon: FiCalendar },
-    { key: "progress", label: "기억 저장 진행률 순", icon: FiTrendingUp },
-    { key: "title", label: "제목순", icon: FiList },
+    { key: "date", label: "최근에 펼쳐본 순", icon: FiCalendar },
+    { key: "progress", label: "성장 진행률 순", icon: FiTrendingUp },
+    { key: "title", label: "가나다 순", icon: FiList },
   ];
 
   return (
@@ -347,17 +347,17 @@ export default function BooksPageContent() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-            <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>내 서재</h1>
+            <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>나의 독서 공간</h1>
             <button onClick={handleAddBook} aria-label="새 책 등록" className={`flex items-center gap-2 px-4 py-2 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-medium transition-colors w-full sm:w-auto mt-3 sm:mt-0`}>
               <AiOutlinePlus className="h-5 w-5" /><span>새 책 등록</span>
             </button>
           </div>
-          <p className={`text-sm ${cyberTheme.textMuted}`}>당신이 읽고 있는 모든 것을 등록하고 관리하세요. 책, 논문, 수험서, 학습자료, 문서 등</p>
+          <p className={`text-sm ${cyberTheme.textMuted}`}>이곳은 당신의 생각과 노력이 차곡차곡 쌓이는 소중한 공간이에요. 책, 논문, 학습자료 등 성장의 재료들을 기록해보세요.</p>
         </div>
         <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 ${cyberTheme.bgSecondary} rounded-lg`}>
           <div className="relative w-full sm:w-auto flex-grow">
             <AiOutlineSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${cyberTheme.textMuted}`} />
-            <input type="text" placeholder={activeTab === 'summaryNotes' ? "단권화 노트 제목, 내용 검색..." : "기억 저장소에서 책 검색..."} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`} />
+            <input type="text" placeholder={activeTab === 'summaryNotes' ? "소중한 기록들 속에서 필요한 내용을 찾아보세요." : "성장의 기록들 속에서 원하시는 책을 찾아보세요."} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`} />
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
              <div className="relative">
@@ -386,7 +386,7 @@ export default function BooksPageContent() {
                 : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-cyan-300 border-transparent hover:bg-gray-700/70`}
             `}
           >
-            <FiBook className="inline mr-2 mb-0.5" />내 서재
+            <FiBook className="inline mr-2 mb-0.5" />나의 독서공간
           </button>
           <button
             onClick={() => setActiveTab('summaryNotes')}
@@ -403,7 +403,7 @@ export default function BooksPageContent() {
         {activeTab === 'books' && (
           <>
             {filteredBooks.length === 0 && !isLoading ? (
-              <div className={`text-center py-10 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-lg`}>해당하는 책이 없거나 아직 책을 추가하지 않았습니다.</div>
+              <div className={`text-center py-10 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-lg`}>아직 이곳에 기록된 성장의 흔적이 없네요. 첫걸음을 함께 시작해볼까요?</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {filteredBooks.map((book) => {
@@ -454,11 +454,11 @@ export default function BooksPageContent() {
                           <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-1.5`}>
                             <div className={`h-1.5 rounded-full ${cyberTheme.progressFg}`} style={{ width: `${progress}%` }}></div>
                           </div>
-                          <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>기억 저장: {progress}% ({book.currentPage}/{book.totalPages}쪽)</p>
+                          <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>성장의 흔적: {progress}% ({book.currentPage}/{book.totalPages} 페이지)</p>
                         </div>
                         <div className={`flex items-center text-xs ${cyberTheme.textMuted}`}>
                           <FiClock className="h-3.5 w-3.5 mr-1" />
-                          <span>최근 기억 활성화: {formatLastRead(book.lastReadAt)}</span>
+                          <span>최근 성장 기록: {formatLastRead(book.lastReadAt)}</span>
                         </div>
                       </div>
                     </div>
@@ -485,7 +485,7 @@ export default function BooksPageContent() {
             {!summaryNotesLoading && !summaryNotesError && summaryNotes.length === 0 && (
               <div className={`text-center py-10 ${cyberTheme.textMuted}`}>
                 <AiOutlineFileText className="mx-auto text-4xl mb-3" />
-                <p className="mb-4">아직 생성된 단권화 노트가 없습니다.</p>
+                <p className="mb-4">아직 정리된 생각이 없네요. 첫 노트를 만들어볼까요?</p>
                 <Button onClick={() => router.push('/summary-notes/create')} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white`}>
                   <AiOutlinePlus className="mr-2" /> 새 단권화 노트 만들기
                 </Button>
@@ -503,9 +503,9 @@ export default function BooksPageContent() {
                         <h3 className={`text-xl font-semibold ${cyberTheme.secondary} mb-1.5 hover:text-purple-300`}>
                           <Link href={`/summary-notes/${note._id}/edit`}>{note.title}</Link>
                         </h3>
-                        <p className={`text-sm ${cyberTheme.textMuted} mb-1`}>{note.description || '설명 없음'}</p>
-                        <p className={`text-xs ${cyberTheme.textMuted}`}>포함된 1줄 메모: {note.orderedNoteIds.length}개</p>
-                        <p className={`text-xs ${cyberTheme.textMuted}`}>마지막 업데이트: {new Date(note.updatedAt).toLocaleDateString('ko-KR')}</p>
+                        <p className={`text-sm ${cyberTheme.textMuted} mb-1`}>{note.description || '어떤 내용인지 간단한 설명을 추가해보세요.'}</p>
+                        <p className={`text-xs ${cyberTheme.textMuted}`}>연결된 생각 조각: {note.orderedNoteIds.length}개</p>
+                        <p className={`text-xs ${cyberTheme.textMuted}`}>마지막으로 들여다본 날: {new Date(note.updatedAt).toLocaleDateString('ko-KR')}</p>
                       </div>
                       <div className="flex space-x-2 flex-shrink-0 ml-4">
                         <DropdownMenu>

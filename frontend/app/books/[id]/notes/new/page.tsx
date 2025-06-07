@@ -51,7 +51,7 @@ export default function NewNotePage() {
         });
 
         if (!response.ok) {
-          throw new Error('책 정보를 불러오는 데 실패했습니다.');
+          throw new Error('함께할 책 정보를 불러오는 데 잠시 문제가 생겼어요.');
         }
 
         const data = await response.json();
@@ -117,7 +117,7 @@ export default function NewNotePage() {
     try {
       // Validate
       if (!formData.content.trim()) {
-        throw new Error('메모 내용을 입력해주세요.');
+        throw new Error('어떤 생각을 하셨는지 알려주세요. 작은 조각이라도 소중해요.');
       }
 
       // Submit note
@@ -135,7 +135,7 @@ export default function NewNotePage() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || '메모 저장에 실패했습니다.');
+        throw new Error(data.error || '생각의 조각을 저장하는 데 잠시 문제가 생겼어요. 다시 시도해 주세요.');
       }
 
       // Return to book detail page
@@ -149,7 +149,7 @@ export default function NewNotePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-        <p>책 정보 로딩 중...</p>
+        <p>어떤 책과 함께할지 확인하고 있어요...</p>
       </div>
     );
   }
@@ -158,13 +158,13 @@ export default function NewNotePage() {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-red-600 mb-4">오류 발생</h1>
+          <h1 className="text-xl font-bold text-red-600 mb-4">잠시 문제가 생겼어요</h1>
           <p className="mb-6">{error}</p>
           <Button
             href="/books"
             variant="default"
           >
-            책 목록으로
+            나의 독서 공간으로
           </Button>
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function NewNotePage() {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 p-4">
       <div className="container mx-auto max-w-2xl">
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold text-center mb-6">독서 메모 작성</h1>
+          <h1 className="text-2xl font-bold text-center mb-6">성장의 조각 남기기</h1>
           
           {/* Book Info */}
           {book && (
@@ -195,7 +195,7 @@ export default function NewNotePage() {
             {/* Note Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                메모 유형
+                어떤 종류의 생각인가요?
               </label>
               <div className="flex space-x-3">
                 <button
@@ -237,7 +237,7 @@ export default function NewNotePage() {
             {/* Note Content */}
             <div>
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-                메모 내용
+                생각의 조각을 남겨주세요
               </label>
               <textarea
                 id="content"
@@ -248,10 +248,10 @@ export default function NewNotePage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder={
                   formData.type === 'quote' 
-                    ? '인상 깊었던 문장이나 내용을 적어보세요...' 
+                    ? '마음에 와닿은 문장이 있었나요?' 
                     : formData.type === 'thought' 
-                    ? '읽으며 떠오른 생각을 자유롭게 적어보세요...' 
-                    : '책을 읽으며 생긴 질문을 적어보세요...'
+                    ? '어떤 생각들이 스쳐 지나갔나요? 자유롭게 남겨주세요.' 
+                    : '새로운 질문이 떠올랐나요?'
                 }
                 required
               />
@@ -260,7 +260,7 @@ export default function NewNotePage() {
             {/* Tags */}
             <div>
               <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
-                태그 (선택사항)
+                어떤 주제와 관련 있나요? (선택)
               </label>
               <div className="flex items-center space-x-2 mb-2">
                 <input
@@ -270,7 +270,7 @@ export default function NewNotePage() {
                   onChange={handleTagInputChange}
                   onKeyDown={handleTagInputKeyDown}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="태그 입력 후 엔터 (예: 인생, 철학, 명언)"
+                  placeholder="키워드를 남겨두면 나중에 찾기 쉬워요."
                 />
                 <button
                   type="button"

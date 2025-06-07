@@ -25,10 +25,10 @@ const genres = [
 
 // 독서 목적 옵션
 const readingPurposes = [
-  { id: "exam_prep", name: "시험/인증 대비", description: "시험 합격, 자격 취득, 평가 대비 (예: 학습/시험대비, 기술 서적)" },
-  { id: "practical_knowledge", name: "실무지식/기술 습득", description: "업무, 프로젝트, 실전 적용 (예: 기술, 과학, 경영/경제, 전문 비소설)" },
-  { id: "humanities_self_reflection", name: "인문 소양/자기 성찰", description: "사고력, 가치관, 내적 성장 (예: 철학, 역사, 심리학, 자기계발, 에세이)" },
-  { id: "reading_pleasure", name: "읽는 재미", description: "감동, 즐거움, 스트레스 해소 (예: 소설, 에세이, 전기/회고록, 예술)" }
+  { id: "exam_prep", name: "시험/인증 대비", description: "정해진 목표를 달성하기 위한 지식 습득" },
+  { id: "practical_knowledge", name: "실무지식/기술 습득", description: "업무나 생활에 바로 적용할 수 있는 기술 습득" },
+  { id: "humanities_self_reflection", name: "인문 소양/자기 성찰", description: "생각의 깊이를 더하고, 스스로를 돌아보기 위한 여정" },
+  { id: "reading_pleasure", name: "읽는 재미", description: "독서 자체의 즐거움을 느끼고 마음의 휴식을 얻기 위함" }
 ];
 
 export default function NewBookPage() {
@@ -118,7 +118,7 @@ export default function NewBookPage() {
 
     // 필수 필드 검증
     if (!formData.title || !formData.author || !formData.totalPages) {
-      setError("제목, 저자, 총 페이지 수는 필수 입력 항목입니다");
+      setError("더 멋진 기록을 위해, 제목과 저자, 전체 페이지 수를 알려주시겠어요?");
       return;
     }
     
@@ -174,11 +174,11 @@ export default function NewBookPage() {
         try {
           errorData = JSON.parse(responseText);
         } catch (e) {
-          errorData = { message: responseText || "책 등록에 실패했습니다" };
+          errorData = { message: responseText || "성장의 기록을 추가하는 데 잠시 문제가 생겼어요. 잠시 후 다시 시도해 주세요." };
         }
         
         console.error("API 오류:", errorData);
-        throw new Error(errorData.message || errorData.error || "책 등록에 실패했습니다");
+        throw new Error(errorData.message || errorData.error || "성장의 기록을 추가하는 데 잠시 문제가 생겼어요. 잠시 후 다시 시도해 주세요.");
       }
       
       let data;
@@ -187,7 +187,7 @@ export default function NewBookPage() {
         console.log("등록 성공:", data);
       } catch (e) {
         console.error("응답 파싱 오류:", e);
-        throw new Error("서버 응답을 처리할 수 없습니다");
+        throw new Error("서버 응답을 처리하는 데 잠시 어려움이 있어요.");
       }
       
       // 성공 메시지 표시 후 책 상세 페이지로 이동
@@ -196,7 +196,7 @@ export default function NewBookPage() {
       
       if (!bookId) {
         console.error("책 ID를 찾을 수 없습니다:", data);
-        throw new Error("책이 생성되었지만 ID를 찾을 수 없습니다");
+        throw new Error("성장의 기록은 잘 만들어졌는데, 잠시 길을 잃은 것 같아요. 다시 확인해 주세요.");
       }
       
       // 약간의 딜레이 후 이동 (UX 개선)
@@ -206,7 +206,7 @@ export default function NewBookPage() {
       
     } catch (err: any) {
       console.error("책 등록 오류:", err);
-      setError(err.message || "책 등록에 실패했습니다. 다시 시도해주세요.");
+      setError(err.message || "기록을 추가하는 데 잠시 문제가 생겼어요. 다시 시도해 주시겠어요?");
     } finally {
       setIsSubmitting(false);
     }
@@ -222,13 +222,13 @@ export default function NewBookPage() {
             className="flex items-center text-cyan-400 hover:text-cyan-300 transition-colors text-xs font-mono"
           >
             <FiArrowLeft className="mr-1" />
-            <span>도서 목록으로 돌아가기</span>
+            <span>나의 독서 공간으로 돌아가기</span>
           </Link>
         </div>
         
         {/* 메인 카드 */}
         <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-cyan-500/10 border border-cyan-500/40 p-4">
-          <h1 className="text-xl font-bold text-cyan-300 mb-3 font-orbitron tracking-wide">새 책 등록</h1>
+          <h1 className="text-xl font-bold text-cyan-300 mb-3 font-orbitron tracking-wide">새로운 성장 기록하기</h1>
           
           {error && (
             <div className="bg-red-900/30 border-l-4 border-red-500 p-2 rounded-md mb-3">
@@ -253,7 +253,7 @@ export default function NewBookPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
-                    placeholder="책 제목을 입력하세요"
+                    placeholder="어떤 책과 함께 성장할 예정인가요?"
                   />
                 </div>
                 
@@ -270,7 +270,7 @@ export default function NewBookPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
-                    placeholder="저자 이름을 입력하세요"
+                    placeholder="누구의 지혜와 함께할 예정인가요?"
                   />
                 </div>
                 
@@ -287,7 +287,7 @@ export default function NewBookPage() {
                     required
                     className="w-full px-3 py-2 border border-purple-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-purple-400/60 focus:border-purple-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all appearance-none"
                   >
-                    <option value="">장르 선택</option>
+                    <option value="">어떤 분야의 책인가요?</option>
                     {genres.map((genre) => (
                       <option key={genre.id} value={genre.id}>
                         {genre.name}
@@ -309,14 +309,14 @@ export default function NewBookPage() {
                     onChange={handleNumberInput}
                     required
                     className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
-                    placeholder="책의 총 페이지 수"
+                    placeholder="총 몇 페이지의 성장 여정인가요?"
                   />
                 </div>
                 
                 {/* 읽는 목적 */}
                 <div>
                   <label htmlFor="readingPurpose" className="block text-xs font-semibold text-emerald-300 mb-0.5 font-barlow">
-                    읽는 목적
+                    성장의 목표
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {readingPurposes.map((purpose) => (
@@ -356,7 +356,7 @@ export default function NewBookPage() {
                 {/* 현재 읽은 페이지 */}
                 <div>
                   <label htmlFor="currentPage" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
-                    현재 페이지
+                    이미 읽은 페이지
                   </label>
                   <input
                     type="text"
@@ -365,7 +365,7 @@ export default function NewBookPage() {
                     value={formData.currentPage}
                     onChange={handleNumberInput}
                     className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
-                    placeholder="이미 읽은 페이지가 있다면 입력하세요"
+                    placeholder="어디까지 성장했는지 기록해둘까요?"
                   />
                 </div>
               </div>
@@ -374,7 +374,7 @@ export default function NewBookPage() {
               <div className="flex flex-col items-center justify-start space-y-2">
                 <div className="w-full text-center">
                   <label className="block text-xs font-semibold text-cyan-300 mb-2 font-barlow">
-                    표지 이미지
+                    성장의 표지
                   </label>
                   
                   {coverImage ? (
@@ -399,7 +399,7 @@ export default function NewBookPage() {
                       className="w-32 h-44 mx-auto border-2 border-dashed border-cyan-500/40 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-cyan-400 bg-gray-900/60 transition-colors"
                     >
                       <FiUpload size={24} className="text-cyan-400 mb-1" />
-                      <p className="text-xs text-cyan-300">클릭하여 업로드</p>
+                      <p className="text-xs text-cyan-300">클릭하여 표지 등록</p>
                       <p className="text-[10px] text-cyan-500 mt-0.5">JPG, PNG, WebP</p>
                     </div>
                   )}
@@ -418,7 +418,7 @@ export default function NewBookPage() {
                 </div>
                 
                 <div className="bg-cyan-900/30 rounded-md p-2 w-full text-[11px] text-cyan-300 border border-cyan-500/20">
-                  <p>💡 표지 이미지는 선택사항입니다. 업로드하지 않으면 제목과 저자 정보로 표지가 생성됩니다.</p>
+                  <p>💡 표지는 선택사항이에요. 등록하지 않아도 멋진 기본 표지가 만들어져요.</p>
                 </div>
 
                 {/* 인터넷 서점 링크 */}
@@ -432,7 +432,7 @@ export default function NewBookPage() {
                     name="purchaseLink"
                     value={formData.purchaseLink}
                     onChange={handleInputChange}
-                    placeholder="예: https://www.yes24.com/상품/12345"
+                    placeholder="이 책을 다시 찾아볼 수 있는 곳이 있나요?"
                     className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400"
                   />
                 </div>

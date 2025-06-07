@@ -296,10 +296,10 @@ export default function TSNoteCard({
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const tabList = [
-    { key: 'importanceReason', label: '읽던 순간' },
-    { key: 'momentContext', label: '떠오른 장면' },
+    { key: 'importanceReason', label: '적은 이유' },
+    { key: 'momentContext', label: '적던 순간' },
     { key: 'relatedKnowledge', label: '연상된 지식' },
-    { key: 'mentalImage', label: '받아들인 의미' },
+    { key: 'mentalImage', label: '떠오른 장면' },
   ];
   
   const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
@@ -450,9 +450,9 @@ export default function TSNoteCard({
                  absolute bottom-10 left-2 w-auto max-w-xs bg-gray-900/90 backdrop-blur-md p-3 rounded-lg
                  text-xs text-gray-200 z-20 shadow-xl border border-gray-700/50`}
     >
-      <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1`}>TS 세션 정보</h4>
+      <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1`}>TS 세션</h4>
       {sessionDetails?.createdAtISO && <p className="mt-1">기록일: {displaySessionCreatedAt}</p>}
-      {sessionDetails?.durationSeconds !== undefined && <p>집중 시간: {displaySessionDuration}</p>}
+      {sessionDetails?.durationSeconds !== undefined && <p>독서 시간: {displaySessionDuration}</p>}
       {sessionDetails && (sessionDetails.startPage !== undefined || sessionDetails.actualEndPage !== undefined) && (
         <p>페이지: {displaySessionPageProgress}</p>
       )}
@@ -505,10 +505,10 @@ export default function TSNoteCard({
     if (!enableOverlayEvolutionMode && isPageEditing && isInlineEditing) return null;
 
     const evolutionFieldsToShow: { key: MemoEvolutionFieldKey; label: string }[] = [
-      { key: 'importanceReason', label: '중요했던 이유' },
-      { key: 'momentContext', label: '작성 당시 상황' },
-      { key: 'relatedKnowledge', label: '연관된 지식' },
-      { key: 'mentalImage', label: '떠오른 생각/심상' },
+      { key: 'importanceReason', label: '작성한 이유' },
+      { key: 'momentContext', label: '작성한 당시 상황' },
+      { key: 'relatedKnowledge', label: '연셩되는 지식' },
+      { key: 'mentalImage', label: '떠오른 장면' },
     ];
 
     const details = evolutionFieldsToShow
@@ -529,7 +529,7 @@ export default function TSNoteCard({
     if (details.length === 0) {
       return (
         <div className="mt-4 pt-3 border-t border-gray-700/50">
-           <p className="text-xs text-gray-500 italic">아직 작성된 메모 진화 내용이 없습니다.</p>
+           <p className="text-xs text-gray-500 italic">아직 작성된 메모 진화가 없군요. 조금 남겨 두시겠어요?</p>
         </div>
       );
     }
@@ -685,12 +685,12 @@ export default function TSNoteCard({
                   
                   {onFlashcardConvert && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                      <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드 변환
+                      <GiCutDiamond className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 플래시카드
                     </DropdownMenuItem>
                   )}
                   {onRelatedLinks && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                      <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 관련 링크 관리
+                      <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 링크 연결
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
