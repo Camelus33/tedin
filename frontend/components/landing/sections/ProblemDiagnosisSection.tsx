@@ -18,14 +18,14 @@ export default function ProblemDiagnosisSection() {
           className="text-center"
         >
           <h2 className="text-3xl sm:text-4xl font-bold font-serif text-brand-primary tracking-tight">
-            우리의 뇌는 한 번에 하나의 강에만<br />
+            우리는 한 번에 하나에만<br />
             집중할 수 있습니다.
           </h2>
           <p className="mt-6 text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-            너무 많은 정보가 한꺼번에 밀려오면, 뇌는 가장 중요한 것을 지키기 위해 일부를 흘려보냅니다. 
-            이는 잘못이 아닌, <strong className="font-semibold text-gray-900">자연스러운 보호 반응</strong>입니다. 
-            하지만 이 과정이 반복되면, 애써 들인 노력이 온전히 쌓이지 않아 
-            <strong className="font-semibold text-gray-900">지치고 길을 잃은 듯한 기분</strong>이 들 수 있습니다.
+            너무 많은 정보가 한꺼번에 밀려오면, 일부를 흘려보냅니다. 
+            이는 잘못이 아닌, <strong className="font-semibold text-gray-900">자연스러운 반응</strong>입니다. 
+            하지만 이런 경험이 반복되면, 들인 노력이 쌓이지 않아 
+            <strong className="font-semibold text-gray-900">멍해지는 기분</strong>이 들 수 있습니다.
           </p>
         </motion.div>
       </div>

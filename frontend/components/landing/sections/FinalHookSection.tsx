@@ -9,10 +9,10 @@ export default function FinalHookSection() {
         <FiTrendingUp className="w-12 h-12 mx-auto mb-5 text-brand-primary" />
         <h2 className="text-3xl md:text-4xl font-bold font-serif text-brand-primary mb-5 leading-tight">
           이제, <br className="sm:hidden" /> 
-          <span className="text-brand-primary"> 꾸준함이 즐거워</span>집니다.
+          <span className="text-brand-primary"> 작은 노력도 크게</span>보입니다.
         </h2>
         <p className="text-lg md:text-xl text-gray-700 mb-10 max-w-2xl mx-auto">
-          데이터는 당신의 노력을 기억합니다. 이제 그 노력이 선명한 성장이 되는 것을 지켜보세요. <strong className="font-semibold text-gray-900">바로 지금.</strong>
+          데이터는 당신의 모든 노력을 기억합니다. 이제 성장이 되는 것을 지켜보세요. <strong className="font-semibold text-gray-900">바로 지금.</strong>
         </p>
 
         <Link

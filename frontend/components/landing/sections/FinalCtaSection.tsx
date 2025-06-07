@@ -11,14 +11,14 @@ export default function FinalCtaSection() {
           이제, 당신의 노력이<br className="sm:hidden" /> 헛되지 않도록.
         </h2>
         <p className="text-lg md:text-xl text-indigo-100 mb-10 max-w-2xl mx-auto">
-          Habitus33과 함께 <strong className="font-semibold text-white">당신의 리듬을 찾고</strong>, 매일의 노력이 온전히 성과로 이어지는 <strong className="font-semibold text-white">성장의 즐거움</strong>을 경험하세요.
+          Habitus33과 함께 <strong className="font-semibold text-white">나만의 리듬을 찾고</strong>, 작은 노력도 온전히 성과로 이어지는 <strong className="font-semibold text-white">성장의 즐거움</strong>을 경험하세요.
         </p>
 
         <Link
           href="/auth/register" 
           className="inline-flex items-center justify-center px-8 py-3 md:px-10 md:py-4 text-lg md:text-xl font-bold text-brand-primary bg-white rounded-md hover:bg-gray-100 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-primary focus:ring-white group"
         >
-          나의 리듬 찾고 성장 시작하기
+          나만의 리듬으로 성장하기
           <FiArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>

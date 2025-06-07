@@ -44,12 +44,12 @@ export default function HeroSection() {
         >
           {/* Hook Question */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
-            혹시, 당신의 노력이 흩어지고 있다는<br />
-            느낌이 드나요?
+            혹시, 힘들다는<br />
+            느낌이 드시나요?
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-700 max-w-xl mx-auto">
-            괜찮습니다. 흩어진 노력을 한곳으로 모아주는 '집중의 리듬'을 찾으면 됩니다. <br className="hidden sm:block" />
-            그것이 바로, 지치지 않고 나아가는 길입니다.
+            괜찮습니다. 다시 '나만의 리듬'으로 돌아오세요. <br className="hidden sm:block" />
+            그것이 바로, 성장입니다.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
             <Link
@@ -57,7 +57,7 @@ export default function HeroSection() {
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-primary hover:opacity-90 transition duration-150 ease-in-out w-full sm:w-auto"
             >
               <SparklesIconOutline className="w-5 h-5 mr-2 -ml-1" aria-hidden="true" /> 
-              나의 집중 리듬 알아보기
+              나만의 리듬 찾기
             </Link>
             {/* Optional secondary CTA (e.g., learn more) */}
             {/* <Link

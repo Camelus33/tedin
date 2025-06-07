@@ -9,14 +9,14 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'; // 
 export const metadata: Metadata = {
   // Add metadataBase
   metadataBase: new URL(baseUrl),
-  title: 'Habitus33 | 당신의 학습 리듬을 찾고, 번아웃과 작별하세요',
+  title: 'Habitus33 | Less read, More memory',
   description:
-    '정보의 홍수 속에서 길을 잃으셨나요? Habitus33은 Atomic Reading으로 깊이 있는 집중을, 과학적 피드백으로 지속가능한 학습 리듬을 찾아드립니다. 당신의 노력이 온전히 성과로 이어지는 경험을 시작해보세요.',
+    'Habitus33은 Atomic Reading으로 작고 강한 집중을, 정교한 AI로 당신만의 리듬을 찾아 드립니다. 작은 노력도 모두 성공으로 만드세요.',
   // Add other relevant metadata: keywords, open graph tags, etc.
-  keywords: ['학습 번아웃', '학습 리듬', 'Atomic Reading', 'Deep Focus', '작업 기억력', '뇌 훈련', '인지 능력', '집중력', '기억력', 'Habitus33', 'ZenGo'],
+  keywords: ['학습 번아웃', '학습 리듬', 'Atomic Reading', 'Deep Focus', '작업 기억력', '작고 강한 몰입', '인지력', '집중력', '기억력', 'Habitus33', 'ZenGo'],
   openGraph: {
-    title: 'Habitus33 | 지속가능한 학습의 리듬을 찾다',
-    description: '작은 성공의 경험을 통해 지적 성장의 즐거움을 되찾으세요.',
+    title: 'Habitus33 | 작고 깊게 읽고, 오래 기억하세요',
+    description: '작은 성공을 통해 끊임없는 성장의 즐거움을 맛보세요.',
     // images: ['/og-image.png'], // Add OG image path later
     url: '/', // Relative to metadataBase
     siteName: 'Habitus33',

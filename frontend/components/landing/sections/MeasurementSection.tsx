@@ -1,95 +1,80 @@
 import React from 'react';
-import { FiZap, FiGrid, FiTarget, FiTrendingUp } from 'react-icons/fi'; // Placeholder icons
+import { FiAward, FiPocket, FiCompass, FiTrendingUp } from 'react-icons/fi';
 
 export default function MeasurementSection() {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-20 md:py-28 bg-white">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold font-serif text-brand-primary mb-4">
-          나의 노력을 선명하게 기록하고, 성장을 눈으로 확인하세요.
+        <h2 className="text-3xl md:text-4xl font-bold font-serif text-gray-800 mb-6">
+          나의 노력을 발견하고, 성장을 목격하세요.
         </h2>
-        <p className="text-lg md:text-xl text-gray-700 mb-12 max-w-3xl mx-auto">
-          당신의 노력이 어떻게 결실을 맺는지, 두 가지 지표로 부드럽게 안내합니다.
+        <p className="text-lg md:text-xl text-gray-600 mb-16 max-w-3xl mx-auto">
+          당신의 잠재력이 어떻게 빛을 발하는지, 두 가지 핵심 경험으로 안내합니다.
         </p>
 
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
           {/* TS 모드 카드 */}
-          <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-gray-200 text-left flex flex-col h-full">
+          <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-xl shadow-lg border border-gray-100 text-left flex flex-col h-full">
              <div className="flex items-center mb-4">
-               <FiZap className="w-8 h-8 text-brand-primary mr-3 flex-shrink-0" />
-               <h3 className="text-lg md:text-xl font-semibold text-brand-primary">TS 모드: 얼마나 깊이 몰입하고 있나요?</h3>
+               <FiAward className="w-8 h-8 text-blue-600 mr-4 flex-shrink-0" />
+               <h3 className="text-xl md:text-2xl font-semibold text-gray-800">Atomic Reading: 작고 강한 몰입</h3>
              </div>
-             <p className="text-sm md:text-base text-gray-700 flex-grow">
-               한 페이지의 정보를 얼마나 편안하게 받아들이는지 확인하며, 
-               <strong className="font-semibold text-gray-900">당신의 자연스러운 읽기 깊이를 발견</strong>해 보세요.
+             <p className="text-base md:text-lg text-gray-700 flex-grow">
+               단 3분, 온전히 빠져드는 경험. 당신의 집중력이 가장 빛나는 <strong className="font-semibold text-blue-700">최적의 리듬</strong>을 찾아보세요.
              </p>
           </div>
 
           {/* ZenGo (기본) 카드 */}
-          <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-gray-200 text-left flex flex-col h-full">
+          <div className="bg-gradient-to-br from-purple-50 to-white p-8 rounded-xl shadow-lg border border-gray-100 text-left flex flex-col h-full">
             <div className="flex items-center mb-4">
-               <FiGrid className="w-8 h-8 text-brand-accent-sage mr-3 flex-shrink-0" />
-              <h3 className="text-lg md:text-xl font-semibold text-brand-primary">ZenGo: 핵심을 얼마나 선명하게 붙잡고 있나요?</h3>
+               <FiPocket className="w-8 h-8 text-purple-600 mr-4 flex-shrink-0" />
+              <h3 className="text-xl md:text-2xl font-semibold text-gray-800">ZenGo: 기억의 선명함을 느껴보세요</h3>
             </div>
-            <p className="text-sm md:text-base text-gray-700 flex-grow">
-              중요한 지식의 조각들을 얼마나 단단하게 간직하는지, 즐거운 게임으로 
-              <strong className="font-semibold text-gray-900">기억의 연결고리를 강화</strong>해 보세요.
+            <p className="text-base md:text-lg text-gray-700 flex-grow">
+              정보를 얼마나 효과적으로 붙잡아두는지, 당신의 <strong className="font-semibold text-purple-700">작업 기억력(Working Memory) 크기</strong>를 직접 확인해 보세요.
             </p>
           </div>
         </div>
-
-        {/* Responsive text size for concluding paragraph */}
-        {/*
-        <p className="mt-12 text-lg md:text-xl text-gray-700">
-          이 두 가지 핵심 지표를 통해 현재 나의 작업 기억력 상태를 명확히 인지할 수 있습니다.
-        </p>
-        */}
-
-        {/* --- 아이콘 중심의 2x2 그리드 피드백 루프 설명 --- */}
-        <div className="mt-16 pt-12 border-t border-gray-200">
-          <h3 className="text-xl md:text-2xl font-semibold text-gray-800 mb-10 md:mb-12 text-center">
-            피드백 루프
+        
+        <div className="mt-20 pt-16 border-t border-gray-200">
+          <h3 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-12 md:mb-16 text-center">
+            내 안의 성장 시스템, 피드백 루프
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
             
-            {/* Card 1: 안정화 피드백 루프 (Balancing Loop) */}
-            <div className="flex flex-col items-center text-center p-6 md:p-8 bg-white rounded-lg shadow-md border border-gray-100">
-              <FiTarget className="w-12 h-12 text-blue-600 mb-4" />
-              <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-3">① 안정화 루프</h4>
-              <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
-                목표에서 멀어지면, <strong className="text-blue-700">다시 제자리로 돌아오도록</strong> 끌어당기는 당신 안의 자석입니다.
+            <div className="flex flex-col items-center text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+              <FiCompass className="w-12 h-12 text-green-600 mb-5" />
+              <h4 className="text-xl md:text-2xl font-semibold text-gray-800 mb-3">① 흔들릴 때, 방향을 되찾는 나침반</h4>
+              <p className="text-base md:text-lg text-gray-600 leading-relaxed mb-4">
+                목표에서 멀어질 때, <strong className="text-green-700">다시 나아갈 힘</strong>을 주는 당신 안의 시스템입니다.
               </p>
-              <p className="text-xs md:text-sm text-gray-500 italic bg-blue-50 p-3 rounded">
-                <strong>예시:</strong> '매일 영어 공부' 다짐이 무너질 때, <strong className="font-medium">작은 도전으로 다시 일어설 수 있게</strong>합니다.
+              <p className="text-sm md:text-base text-gray-500 italic bg-green-50 p-4 rounded-lg">
+                <strong>예시:</strong> '매일 책읽기' 다짐이 무너졌을 때, <strong className="font-medium">3분의 짧은 독서로 다시 리듬을 찾는 것.</strong>
               </p>
             </div>
-
-            {/* Card 2: 강화 피드백 루프 (Reinforcing Loop) */}
-            <div className="flex flex-col items-center text-center p-6 md:p-8 bg-white rounded-lg shadow-md border border-gray-100">
-              <FiTrendingUp className="w-12 h-12 text-purple-600 mb-4" />
-              <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-3">② 강화 루프 </h4>
-              <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
-                작은 성취로 <strong className="text-purple-700">점점 가속도가 붙게</strong> 하는 당신 안의 엔진입니다.
+            
+            <div className="flex flex-col items-center text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+              <FiTrendingUp className="w-12 h-12 text-orange-600 mb-5" />
+              <h4 className="text-xl md:text-2xl font-semibold text-gray-800 mb-3">② 좋을 때, 가속도가 붙는 엔진</h4>
+              <p className="text-base md:text-lg text-gray-600 leading-relaxed mb-4">
+                작은 성공의 경험이 <strong className="text-orange-700">더 큰 성장을 이끄는</strong> 당신 안의 동력입니다.
               </p>
-              <p className="text-xs md:text-sm text-gray-500 italic bg-purple-50 p-3 rounded">
-                <strong>예시:</strong> 새로운 지식 하나를 외운 <strong className="font-medium">작은 기쁨이 더 큰 학습 의욕</strong>으로 이어져, 당신을 성장시킵니다.
+              <p className="text-sm md:text-base text-gray-500 italic bg-orange-50 p-4 rounded-lg">
+                <strong>예시:</strong> 새로운 지식 하나를 명확히 이해한 <strong className="font-medium">작은 성취감이 더 큰 학습 의욕으로 이어지는 것.</strong>
               </p>
             </div>
 
           </div>
 
-           {/* 최종 요약 메시지 */}
-           <p className="mt-12 text-center text-base md:text-lg text-gray-700 max-w-3xl mx-auto">
-             Habitus33은 이 <strong className="font-semibold text-indigo-700">잠재력</strong>을 깨우는,<strong className="font-semibold text-indigo-700">엔진</strong>입니다.
+           <p className="mt-16 text-center text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
+             Habitus33은 당신 안에 잠들어 있는 <strong className="font-semibold text-indigo-700">강력한 성장 시스템</strong>을 깨우는, 단 하나의 열쇠입니다.
            </p>
-
-           {/* Updated Quote */}
-           <p className="mt-10 text-center text-xs md:text-sm text-gray-500 italic max-w-2xl mx-auto">
-             "시스템에 귀 기울이면 더 멀리 나아갈 수 있습니다."<br/>- 도넬라 메도우즈. MIT
+           
+           <p className="mt-10 text-center text-sm md:text-base text-gray-500 italic max-w-2xl mx-auto">
+             "시스템에 귀 기울이면, 우리는 상상 이상의 곳에 도달할 수 있습니다."<br/>- 도넬라 메도우즈. MIT
            </p>
         </div>
-        {/* --- 피드백 루프 설명 섹션 끝 --- */}
       </div>
     </section>
   );
