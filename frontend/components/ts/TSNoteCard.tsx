@@ -272,7 +272,7 @@ export default function TSNoteCard({
   enableOverlayEvolutionMode = false,
 }: TSNoteCardProps) {
   // --- DEBUG LOG START ---
-  console.log(`TSNoteCard (${initialNote._id}): Props received - showActions=${showActions}, minimalDisplay=${minimalDisplay}, isPageEditing=${isPageEditing}, enableOverlayEvolutionMode=${enableOverlayEvolutionMode}`);
+  console.log(`[TSNoteCard.tsx] Rendering card for note ${initialNote._id}. Received props:`, { bookTitle, sessionDetails, minimalDisplay });
   // --- DEBUG LOG END ---
 
   const [note, setNote] = useState(initialNote);
