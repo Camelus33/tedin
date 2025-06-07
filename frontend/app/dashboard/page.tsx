@@ -21,37 +21,37 @@ import { books as booksApi, user as userApi /*, zengo as zengoApi */ } from '@/l
 import api from '@/lib/api';
 
 // Cyber Theme Definition (Added)
-const cyberTheme = {
-  primary: 'text-cyan-400',
-  secondary: 'text-purple-400',
-  bgPrimary: 'bg-gray-900',
-  bgSecondary: 'bg-gray-800',
-  cardBg: 'bg-gray-800/60',
-  borderPrimary: 'border-cyan-500',
-  borderSecondary: 'border-purple-500',
-  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
-  textMuted: 'text-gray-400',
-  textLight: 'text-gray-300',
-  inputBg: 'bg-gray-700/50',
-  inputBorder: 'border-gray-600',
-  inputFocusBorder: 'focus:border-cyan-500',
-  inputFocusRing: 'focus:ring-cyan-500/50',
-  progressBarBg: 'bg-gray-700',
-  progressFg: 'bg-gradient-to-r from-cyan-500 to-purple-500',
-  buttonPrimaryBg: 'bg-cyan-600',
-  buttonPrimaryHoverBg: 'hover:bg-cyan-700',
-  buttonSecondaryBg: 'bg-gray-700/50',
-  buttonSecondaryHoverBg: 'hover:bg-gray-600/50',
-  buttonOutlineBorder: 'border-cyan-500',
-  buttonOutlineText: 'text-cyan-400',
-  buttonOutlineHoverBg: 'hover:bg-cyan-500/10',
-  buttonDisabledBg: 'bg-gray-600',
-  errorText: 'text-red-400',
-  errorBorder: 'border-red-500/50',
-  menuBg: 'bg-gray-700',
-  menuItemHover: 'hover:bg-gray-600',
-  tooltipBg: 'bg-gray-700',
-  tooltipText: 'text-gray-200',
+const habitus33Theme = {
+  primary: 'text-indigo-900',
+  secondary: 'text-emerald-700',
+  bgPrimary: 'bg-blue-50',
+  bgSecondary: 'bg-indigo-50',
+  cardBg: 'bg-white/90',
+  borderPrimary: 'border-indigo-200',
+  borderSecondary: 'border-emerald-200',
+  gradient: 'bg-gradient-to-br from-blue-50 via-indigo-50 to-warmgray-50',
+  textMuted: 'text-warmgray-500',
+  textLight: 'text-indigo-700',
+  inputBg: 'bg-white',
+  inputBorder: 'border-indigo-100',
+  inputFocusBorder: 'focus:border-indigo-300',
+  inputFocusRing: 'focus:ring-indigo-200/50',
+  progressBarBg: 'bg-indigo-100',
+  progressFg: 'bg-gradient-to-r from-indigo-400 to-indigo-600',
+  buttonPrimaryBg: 'bg-indigo-600',
+  buttonPrimaryHoverBg: 'hover:bg-indigo-700',
+  buttonSecondaryBg: 'bg-white',
+  buttonSecondaryHoverBg: 'hover:bg-indigo-50',
+  buttonOutlineBorder: 'border-indigo-300',
+  buttonOutlineText: 'text-indigo-700',
+  buttonOutlineHoverBg: 'hover:bg-indigo-50',
+  buttonDisabledBg: 'bg-gray-200',
+  errorText: 'text-rose-600',
+  errorBorder: 'border-rose-200',
+  menuBg: 'bg-white',
+  menuItemHover: 'hover:bg-indigo-50',
+  tooltipBg: 'bg-indigo-700',
+  tooltipText: 'text-white',
 };
 
 // Chart.js 등록
@@ -380,14 +380,14 @@ export default function DashboardPage() {
   const getMilestoneMessage = (currentDay: number | undefined): string => {
     if (currentDay === undefined || currentDay === null) {
       // Handle case where routine data is not loaded yet or no active routine
-      return "루틴 정보를 불러오는 중..." // Or a default message like "새로운 루틴을 시작해보세요!"
+      return "당신만의 여정을 시작해보세요" // More gentle, inviting message
     }
-    if (currentDay >= 33) return "🎉 습관 형성 완료! 축하합니다!";
-    if (currentDay >= 28) return "🏁 마지막 주! 거의 다 왔어요!"; // Added a message for the last week
-    if (currentDay >= 21) return "🏃 3주차 도전! 꾸준함이 중요해요!";
-    if (currentDay >= 14) return "💪 2주 달성! 절반을 넘어섰습니다!";
-    if (currentDay >= 7) return "👍 첫 주 완료! 잘하고 있어요!";
-    return "🌱 첫 주 도전 시작! 화이팅!";
+    if (currentDay >= 33) return "🌳 당신만의 리듬이 자리잡았습니다";
+    if (currentDay >= 28) return "🌿 점점 자라나는 당신의 성장이 보이나요?"; 
+    if (currentDay >= 21) return "🌱 꾸준히 물을 주는 정원사처럼";
+    if (currentDay >= 14) return "☘️ 작은 새싹이 움트고 있어요";
+    if (currentDay >= 7) return "🌾 첫 번째 씨앗이 땅에 뿌리내렸어요";
+    return "🪴 작은 시작이 모여 아름다운 정원이 됩니다";
   };
 
   // 총 TS 시간 포맷 함수 (초 -> 시간 분)
@@ -422,18 +422,18 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className={`min-h-screen ${cyberTheme.gradient}`}> {/* Applied theme gradient */}
+    <div className={`min-h-screen ${habitus33Theme.gradient}`}> {/* Applied calm gradient */}
       {/* 고정 헤더 - 배경색 변경 */}
-      <header className={`sticky top-0 z-10 glass-header py-4 px-4 animate-fadeIn ${cyberTheme.bgSecondary}`}>
+      <header className={`sticky top-0 z-10 glass-header py-4 px-4 animate-fadeIn ${habitus33Theme.bgSecondary}`}>
         <div className="container mx-auto max-w-6xl flex justify-between items-center">
           <Link href="/dashboard" className="flex items-center space-x-3 group">
             <AppLogo className="w-11 h-11 group-hover:opacity-90 transition-opacity" />
             <div>
-              <h1 className={`font-orbitron font-extrabold text-2xl tracking-tight text-white group-hover:text-cyan-300 transition-colors`}> 
+                              <h1 className={`font-medium text-2xl tracking-tight text-indigo-900 group-hover:text-indigo-700 transition-colors duration-500`}> 
                 Habitus33
               </h1>
-              <p className={`text-xs font-medium tracking-wider text-white`}> 
-                Sharpen Your Mind
+              <p className={`text-xs font-medium tracking-wider text-indigo-700`}> 
+                Find Your Rhythm
               </p>
             </div>
           </Link>
@@ -443,31 +443,31 @@ export default function DashboardPage() {
             <NotificationBell />
             <div className="flex items-center">
               <div className="mr-3 text-right">
-                <p className={`font-medium text-white`}> 
+                <p className={`font-medium text-indigo-900`}> 
                   {user?.nickname || '사용자'}
                 </p>
               </div>
               <div className="relative">
                 <div 
-                  className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer shadow-md overflow-hidden border-2 border-purple-500/50" 
+                  className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer shadow-sm overflow-hidden border border-indigo-200 transition-all duration-500 hover:border-indigo-300" 
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                 >
                   {user?.profileImage ? (
                     <img src={user.profileImage} alt={user?.nickname || '사용자'} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-cyan-600 to-purple-600 flex items-center justify-center"> 
-                      <span className="text-white font-semibold">{user?.nickname?.charAt(0) || '?'}</span>
+                    <div className="w-full h-full bg-gradient-to-br from-indigo-200 to-blue-100 flex items-center justify-center"> 
+                      <span className="text-indigo-800 font-medium">{user?.nickname?.charAt(0) || '?'}</span>
                     </div>
                   )}
                 </div>
                 {profileMenuOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setProfileMenuOpen(false)}></div>
-                    <div className={`absolute right-0 mt-2 w-48 ${cyberTheme.menuBg} rounded-md shadow-lg py-1 z-50 transition-all duration-300 transform origin-top-right border ${cyberTheme.inputBorder}`}> 
-                      <Link href="/profile" className={`block px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} transition-colors`} onClick={() => setProfileMenuOpen(false)}>
+                    <div className={`absolute right-0 mt-2 w-48 ${habitus33Theme.menuBg} rounded-md shadow-lg py-1 z-50 transition-all duration-300 transform origin-top-right border ${habitus33Theme.inputBorder}`}> 
+                      <Link href="/profile" className={`block px-4 py-2 text-sm ${habitus33Theme.textLight} ${habitus33Theme.menuItemHover} transition-colors`} onClick={() => setProfileMenuOpen(false)}>
                         프로필 설정
                       </Link>
-                      <button onClick={() => { setProfileMenuOpen(false); handleLogout(); }} className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} transition-colors`}>
+                      <button onClick={() => { setProfileMenuOpen(false); handleLogout(); }} className={`block w-full text-left px-4 py-2 text-sm ${habitus33Theme.textLight} ${habitus33Theme.menuItemHover} transition-colors`}>
                         로그아웃
                       </button>
                     </div>
@@ -480,19 +480,19 @@ export default function DashboardPage() {
       </header>
 
       <div className="container mx-auto max-w-6xl py-8 px-4">
-        {/* 주요 액션 버튼 영역 - Applying CyberTheme styles */}
+        {/* 주요 액션 버튼 영역 - Applying Habitus33 calm styles */}
         <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6 animate-slideUp">
           {/* Time Sprint Card */}
           <Link href="/ts" className="block">
-            <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-cyan-500/30 hover:border-cyan-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
+            <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${habitus33Theme.cardBg} border-cyan-500/30 hover:border-cyan-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
               <div>
-                <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.primary}`}>TS : Atomic-Reading</h2> {/* Theme text */}
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}></p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>잘게 쪼갠 시간으로 읽기를 정복하세요 </p> {/* Theme text */}
+                <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.primary}`}>TS : Atomic-Reading</h2> {/* Theme text */}
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */}
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>당신만의 읽기 리듬을 찾아보세요</p> {/* Theme text */}
               </div>
               <div className="mt-6">
-                 <button className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
-                    Speed {/* Revised Text */} 
+                 <button className={`w-full ${habitus33Theme.buttonPrimaryBg} ${habitus33Theme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
+                    Rhythm {/* Calm flow */} 
                  </button>
               </div>
               {/* Removed emoji div */}
@@ -500,15 +500,15 @@ export default function DashboardPage() {
           </Link>
           {/* ZenGo Card */}
           <Link href="/zengo" className="block">
-            <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
+            <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${habitus33Theme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
                <div>
-                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${cyberTheme.secondary}`}>ZenGo : Work-Memory</h2> {/* Theme text */} 
-                 <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}></p> {/* Revised Text & Theme */} 
-                 <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>더 선명하고 오래가는 기억력을 달성하세요</p> {/* Theme text */} 
+                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.secondary}`}>ZenGo : Work-Memory</h2> {/* Theme text */} 
+                 <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */} 
+                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>자연스러운 기억의 흐름을 경험하세요</p> {/* Theme text */} 
                </div>
                <div className="mt-6">
                  <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
-                   Capacity {/* Revised Text */} 
+                   Depth {/* Inner space */} 
                  </button>
                </div>
                {/* Removed emoji div */}
@@ -516,19 +516,19 @@ export default function DashboardPage() {
           </Link>
           {/* Myverse Card (was: 내 서재) */}
           <Link href="/myverse" className="block">
-            <div className={`relative h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${cyberTheme.cardBg} border-emerald-400/30 hover:border-emerald-400/80 flex flex-col justify-between`}> {/* Neon green cybernetic theme */}
+            <div className={`relative h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${habitus33Theme.cardBg} border-emerald-400/30 hover:border-emerald-400/80 flex flex-col justify-between`}> {/* Neon green cybernetic theme */}
               {/* PREMIUM 뱃지 */}
               <div className="absolute top-4 right-4 z-10 pointer-events-none select-none">
                 <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px] shadow-lg border border-white/30 tracking-widest uppercase animate-premium-wave" style={{letterSpacing:'0.08em', backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>PREMIUM</span>
               </div>
               <div>
                 <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${cyberTheme.textLight}`}>직접 만든 ZenGo</p>
-                <p className={`opacity-80 text-sm ${cyberTheme.textMuted}`}>단 번에 떠올리고 외우세요</p>
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}>직접 만든 ZenGo</p>
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>생각이 자라나는 공간을 만들어 보세요</p>
               </div>
               <div className="mt-6">
                 <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
-                  <span className="relative z-10 font-barlow uppercase tracking-wider">Start</span>
+                  <span className="relative z-10 font-barlow tracking-wider">Begin</span>
                   <span className="cyber-rect-anim pointer-events-none absolute inset-0 rounded-lg"></span>
                 </button>
               </div>
@@ -544,7 +544,7 @@ export default function DashboardPage() {
         
         {/* 33일 루틴 트래커 */}
         {routineData ? (
-          <div className="relative p-6 mb-10 rounded-2xl border border-slate-700/80 ring-1 ring-slate-500/30 shadow-2xl bg-gradient-to-br from-gray-950 via-slate-900 to-gray-800 overflow-hidden">
+          <div className="relative p-6 mb-10 rounded-2xl border border-indigo-200 shadow-md bg-gradient-to-br from-blue-50/80 via-indigo-50/80 to-white overflow-hidden">
             {/* metallic noise/texture SVG 배경 */}
             <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 400 120" fill="none">
               <filter id="metallicNoise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" result="turb"/><feColorMatrix type="saturate" values="0.2"/><feComponentTransfer><feFuncA type="linear" slope="0.2"/></feComponentTransfer></filter>
@@ -553,63 +553,63 @@ export default function DashboardPage() {
             <div className="flex justify-between items-center mb-4 relative z-10">
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
-                  <h2 className="text-xl font-orbitron font-bold text-cyan-300 drop-shadow-sm">
-                    3분 11페이지 도전하세요!
+                  <h2 className="text-xl font-medium text-indigo-800">
+                    당신만의 고유한 리듬을 찾아보세요
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
-                    className="min-w-[200px] px-8 py-3 rounded-xl border-2 border-slate-400 bg-white text-gray-900 font-bold text-lg transition-all duration-400 ease-[cubic-bezier(.4,0,.2,1)] hover:bg-gradient-to-r hover:from-cyan-400 hover:via-fuchsia-600 hover:to-purple-800 hover:text-white hover:border-cyan-500 hover:shadow-2xl hover:scale-105 focus:bg-gradient-to-r focus:from-cyan-500 focus:via-fuchsia-700 focus:to-purple-900 focus:text-white focus:border-cyan-600 focus:shadow-2xl focus:scale-105 active:bg-purple-900 active:text-white active:scale-100 outline-none"
-                    aria-label="Find Your Routine"
+                    className="min-w-[200px] px-8 py-3 rounded-xl border border-indigo-300 bg-white text-indigo-800 font-medium text-lg transition-all duration-700 ease-in-out hover:bg-indigo-50 hover:border-indigo-400 hover:shadow-md hover:scale-[1.02] focus:bg-indigo-100 focus:border-indigo-500 focus:shadow-md focus:scale-[1.02] active:bg-indigo-200 active:scale-100 outline-none"
+                    aria-label="Find Your Rhythm"
                     type="button"
                   >
-                    Sharpen Your Brain
+                    Find Your Rhythm
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
-                  <div className="bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 py-1 px-4 rounded-full flex items-center space-x-2 border border-slate-600 shadow-md">
-                    <p className="text-xs font-semibold text-slate-200"> 
-                      Day {routineData.currentDay} / 33
+                  <div className="bg-white/90 py-1 px-4 rounded-full flex items-center space-x-2 border border-indigo-100 shadow-sm">
+                    <p className="text-xs font-medium text-indigo-800"> 
+                      오늘의 작은 성장
                     </p>
                     <span 
-                      className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-300' : 'text-slate-500'}`}
-                      title={routineData?.todayTsExecuted ? "오늘 TS 실행 완료!" : "오늘 TS 실행 미완료"}
+                      className={`text-sm ${routineData?.todayTsExecuted ? 'text-indigo-600' : 'text-indigo-200'}`}
+                      title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}
                     >
-                      ⚡
+                      🌱
                     </span>
                     <span 
-                      className={`text-sm ${routineData?.todayZengoCompleted ? 'text-emerald-300' : 'text-slate-500'}`}
-                      title={routineData?.todayZengoCompleted ? "오늘 ZenGo 완료!" : "오늘 ZenGo 미완료"}
+                      className={`text-sm ${routineData?.todayZengoCompleted ? 'text-indigo-600' : 'text-indigo-200'}`}
+                      title={routineData?.todayZengoCompleted ? "오늘 ZenGo 경험 완료" : "오늘의 ZenGo 경험 대기 중"}
                     >
-                      🧠
+                      🌿
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div className="mb-6 relative h-2 z-10">
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-slate-700 via-gray-800 to-slate-900 rounded-full overflow-hidden"></div>
+              <div className="absolute top-0 left-0 w-full h-full bg-indigo-100/70 rounded-full overflow-hidden"></div>
               <div
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-cyan-400 via-slate-200 to-cyan-300 rounded-full transition-all duration-500 ease-out"
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-400 to-indigo-500 rounded-full transition-all duration-1000 ease-in-out"
                 style={{ width: `${(routineData.currentDay / 33) * 100}%` }}
               >
-                {/* reflection overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent rounded-full mix-blend-screen" />
+                {/* gentle flow overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-full" />
               </div>
               <div className="absolute top-[-20px] right-0 flex items-center">
-                <span className="text-xs font-medium text-slate-200"> 
-                  {Math.round((routineData.currentDay / 33) * 100)}%
+                <span className="text-xs font-medium text-indigo-700"> 
+                  Day {routineData.currentDay} / 33
                 </span>
               </div>
             </div>
             <div className="mt-6 text-center relative z-10">
-              <p className="text-lg font-semibold text-emerald-300"> 
+              <p className="text-lg font-medium text-indigo-800"> 
                 {getMilestoneMessage(routineData?.currentDay)}
               </p>
-              <p className="text-sm text-slate-200 mt-2">
-                <span className="font-medium text-cyan-300">{routineData?.consecutiveStreak || 0}일</span> 연속 도전 중 🔥 - 
-                습관 형성까지 <span className="font-medium text-cyan-300">{33 - (routineData?.currentDay || 0)}일</span> 남았습니다
+              <p className="text-sm text-indigo-600 mt-2">
+                <span className="font-medium text-indigo-900">{routineData?.consecutiveStreak || 0}일째</span> 함께하는 여정 - 
+                <span className="font-medium text-indigo-900"> 작은 성장이 쌓여 큰 변화</span>가 됩니다
               </p>
             </div>
           </div>
@@ -644,7 +644,7 @@ export default function DashboardPage() {
         {/* 통계 요약 카드 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
           {/* 정보 처리 속도 */}
-          <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-blue-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
+          <div className="relative p-6 rounded-xl shadow-sm border border-indigo-100 bg-white/90 backdrop-blur-sm overflow-hidden">
             {/* 사이버 패턴 SVG 배경 - 파랑 계열 */}
             <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
               <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern1)" />
@@ -658,14 +658,14 @@ export default function DashboardPage() {
               <circle cx="50" cy="30" r="8" stroke="#818cf8" strokeWidth="1" fill="none" />
             </svg>
             <div className="relative flex items-center space-x-4">
-              <div className="bg-white/70 rounded-full p-3">
+              <div className="bg-indigo-50 rounded-full p-3">
                 {/* Heroicons solid ClockIcon */}
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">나의 읽기 속도</p>
-                <p className="text-xl font-bold text-blue-400">
-                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(2)} PPM` : '-'}
+                <p className="text-sm text-indigo-800 mb-1">나의 읽기 여정</p>
+                <p className="text-xl font-medium text-indigo-700">
+                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className="text-xs text-indigo-500">페이지/분</span>
                 </p>
               </div>
             </div>
@@ -753,25 +753,25 @@ export default function DashboardPage() {
         {/* 재구성된 메인 콘텐츠 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-slideUp" style={{animationDelay: '200ms'}}>
           {/* 왼쪽: 현재 읽고 있는 책 */}
-          <div className="glass-card p-8">
+          <div className="bg-white p-8 border border-indigo-100 rounded-xl shadow-sm">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">현재 읽고 있는 ...</h2>
+              <h2 className="text-xl font-medium text-indigo-900">현재의 독서 여정</h2>
               <Button 
                 href="/books" 
                 variant="outline"
               >
-                전체 보기
+                모든 여정 보기
               </Button>
             </div>
             
             {currentBooks.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-gray-500 mb-6">아직 읽고 있는 책이 없습니다.</p>
+                <p className="text-indigo-600 mb-6">새로운 독서 여정을 시작해 보세요</p>
                 <Button 
                   href="/books/new" 
                   variant="default"
                 >
-                  책 추가하기
+                  나만의 책 담기
                 </Button>
               </div>
             ) : (
@@ -799,26 +799,26 @@ export default function DashboardPage() {
                         </div>
                         <div className="ml-5 flex-1 min-w-0">
                           <h3 className={`font-bold text-lg text-indigo-400 truncate`} title={book.title}>{book.title}</h3>
-                          <p className={`${cyberTheme.textMuted} text-sm mb-3 truncate`} title={book.author}>{book.author}</p>
+                          <p className={`${habitus33Theme.textMuted} text-sm mb-3 truncate`} title={book.author}>{book.author}</p>
                           <div className="flex items-center mb-2">
-                            <div className={`w-full h-1.5 ${cyberTheme.progressBarBg} rounded-full overflow-hidden`}>
+                            <div className={`w-full h-1.5 ${habitus33Theme.progressBarBg} rounded-full overflow-hidden`}>
                               <div 
-                                className={`h-full ${cyberTheme.progressFg} rounded-full`} 
+                                className={`h-full ${habitus33Theme.progressFg} rounded-full`} 
                                 style={{ width: `${progress}%` }}
                               >
                               </div>
                             </div>
-                            <span className={`ml-3 text-xs font-medium ${cyberTheme.textMuted}`}> 
+                            <span className={`ml-3 text-xs font-medium ${habitus33Theme.textMuted}`}> 
                               {book.currentPage}/{book.totalPages} ({progress}%)
                             </span>
                           </div>
                           {book.status !== 'completed' && estimatedTimeString && (
-                            <p className={`text-xs ${cyberTheme.secondary} font-medium mt-1`}>
+                            <p className={`text-xs ${habitus33Theme.secondary} font-medium mt-1`}>
                               {estimatedTimeString}
                             </p>
                           )}
                            {book.status !== 'completed' && !book.estimatedRemainingMinutes && book.currentPage < book.totalPages && (
-                             <p className={`text-xs ${cyberTheme.textMuted} mt-1`}> 
+                             <p className={`text-xs ${habitus33Theme.textMuted} mt-1`}> 
                                TS로 예상 완독 시간을 확인해보세요
                              </p>
                            )}

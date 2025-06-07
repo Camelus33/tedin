@@ -39,46 +39,46 @@ interface CognitiveProfileChartProps {
   className?: string;
 }
 
-// Korean labels for metrics
+// 개선된 한글 지표명 - 더 자연스럽고 부드러운 표현으로 변경
 const metricLabelsKo = {
-  hippocampusActivation: '해마 활성화',
-  workingMemory: '작업 기억력',
-  processingSpeed: '처리 속도',
-  attention: '주의력',
-  patternRecognition: '패턴 인식',
-  cognitiveFlexibility: '인지 유연성'
+  hippocampusActivation: '기억 형성',
+  workingMemory: '정보 유지',
+  processingSpeed: '생각 흐름',
+  attention: '집중 감각',
+  patternRecognition: '연결 발견',
+  cognitiveFlexibility: '사고 유연함'
 };
 
 const CognitiveProfileChart: React.FC<CognitiveProfileChartProps> = ({ data, previousData, className = '' }) => {
-  // Prepare data for the radar chart
+  // 차트 데이터 준비 - 색상 변경
   const chartData = {
     labels: Object.values(metricLabelsKo),
     datasets: [
       {
-        label: '현재 능력치',
+        label: '현재 여정',
         data: Object.keys(metricLabelsKo).map(key => data[key as keyof MetricData]),
-        // Refined violet color theme
-        backgroundColor: 'rgba(167, 139, 250, 0.35)', // Violet-400 with adjusted opacity
-        borderColor: 'rgba(139, 92, 246, 1)',    // Solid Violet-600
+        backgroundColor: 'rgba(219, 234, 254, 0.35)', // 딥 인디고(Light)
+        borderColor: 'rgba(30, 58, 138, 0.8)',       // 딥 인디고(Dark)
         borderWidth: 1.5,
-        pointBackgroundColor: 'rgba(139, 92, 246, 1)', // Violet-600 for points
+        pointBackgroundColor: 'rgba(30, 58, 138, 0.8)',
         pointBorderColor: '#fff',
         pointRadius: 4, 
-        pointHoverRadius: 6, 
+        pointHoverRadius: 6,
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(139, 92, 246, 1)',
-        tension: 0.1, // Add slight curve to the line
+        pointHoverBorderColor: 'rgba(30, 58, 138, 1)',
+        tension: 0.4, // 더 부드러운 곡선
+        borderJoinStyle: 'round' as const, // 둥근 연결점
       },
     ],
   };
 
-  // Chart options
+  // 차트 옵션 - 부드러운 표현으로 변경
   const options = {
     scales: {
       r: {
         angleLines: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.06)', 
+          color: 'rgba(30, 58, 138, 0.1)',
         },
         ticks: {
           stepSize: 20,
@@ -87,21 +87,22 @@ const CognitiveProfileChart: React.FC<CognitiveProfileChartProps> = ({ data, pre
             size: 10,
             family: "'Pretendard', sans-serif"
           },
-          color: 'rgba(0, 0, 0, 0.4)' 
+          color: 'rgba(30, 58, 138, 0.4)' 
         },
         suggestedMin: 0,
         suggestedMax: 100,
         grid: {
-          color: 'rgba(0, 0, 0, 0.08)', // Slightly darker than angle lines
-          borderDash: [3, 3], // Make grid lines dashed
+          color: 'rgba(30, 58, 138, 0.05)',
+          borderDash: [3, 3],
+          circular: true, // 원형 그리드
         },
         pointLabels: {
           font: {
             size: 13, 
             family: "'Pretendard', sans-serif",
           },
-          color: '#4B5563',
-          padding: 10, // Add padding around labels
+          color: '#1E40AF', // 인디고 색상
+          padding: 10,
         },
       },
     },
@@ -111,7 +112,7 @@ const CognitiveProfileChart: React.FC<CognitiveProfileChartProps> = ({ data, pre
       },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(31, 41, 55, 0.85)', // Darker tooltip background (gray-800)
+        backgroundColor: 'rgba(30, 58, 138, 0.8)',
         titleFont: {
           size: 13,
           family: "'Pretendard', sans-serif",
@@ -120,17 +121,21 @@ const CognitiveProfileChart: React.FC<CognitiveProfileChartProps> = ({ data, pre
           size: 12,
           family: "'Pretendard', sans-serif",
         },
-        padding: 10, // Slightly more padding
+        padding: 10,
         displayColors: false,
-        cornerRadius: 4, // Rounded corners
+        cornerRadius: 4,
         titleColor: '#ffffff',
-        bodyColor: '#E5E7EB', // Lighter gray body text (gray-200)
+        bodyColor: '#E5E7EB',
       },
     },
     maintainAspectRatio: false,
+    animation: {
+      duration: 2000, // 천천히 나타나는 애니메이션
+      easing: 'easeInOutQuart' as const // 부드러운 가속/감속
+    }
   };
 
-  // Calculate and format changes if previousData exists
+  // 변화 표시 함수 개선 - 물결 아이콘 사용
   const renderChanges = () => {
     if (!previousData) {
       return null;
@@ -140,18 +145,18 @@ const CognitiveProfileChart: React.FC<CognitiveProfileChartProps> = ({ data, pre
       const current = data[key as keyof MetricData];
       const previous = previousData[key as keyof MetricData];
       const diff = current - previous;
-      const sign = diff > 0 ? '+' : diff < 0 ? '' : ''; // No sign for 0 change
-      const colorClass = diff > 0 ? 'text-emerald-600' : diff < 0 ? 'text-rose-600' : 'text-gray-500';
-      const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '';
+      const sign = diff > 0 ? '+' : diff < 0 ? '' : '';
+      const colorClass = 'text-indigo-700'; // 일관된 색상으로 변경
+      const icon = diff !== 0 ? '∿' : ''; // 모든 변화에 동일한 물결 아이콘
 
       return (
-        <li key={key} className="text-base flex justify-between items-baseline py-1.5 border-b border-gray-100 last:border-b-0">
-          <span className="text-gray-700">{metricLabelsKo[key as keyof typeof metricLabelsKo]}:</span>
-          <span className={`font-semibold ${colorClass} flex items-center`}>
+        <li key={key} className="text-base flex justify-between items-baseline py-1.5 border-b border-indigo-100/30 last:border-b-0">
+          <span className="text-indigo-800">{metricLabelsKo[key as keyof typeof metricLabelsKo]}</span>
+          <span className={`font-medium ${colorClass} flex items-center`}>
             {current}
             {diff !== 0 && (
-              <span className="ml-1.5 flex items-center text-sm">
-                 ({arrow}{sign}{diff})
+              <span className="ml-1.5 flex items-center text-sm opacity-80">
+                 {icon} {sign}{Math.abs(diff)}
               </span>
             )}
           </span>
@@ -160,8 +165,8 @@ const CognitiveProfileChart: React.FC<CognitiveProfileChartProps> = ({ data, pre
     });
 
     return (
-      <div className="mt-8 pt-6 border-t border-gray-200 px-2 md:px-4">
-        <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">최근 변화</h4>
+      <div className="mt-8 pt-6 border-t border-indigo-100/50 px-2 md:px-4 bg-blue-50/30 rounded-b-lg">
+        <h4 className="text-lg font-medium text-indigo-900 mb-4 text-center">나의 인지 리듬</h4>
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
           {changes}
         </ul>
@@ -171,10 +176,19 @@ const CognitiveProfileChart: React.FC<CognitiveProfileChartProps> = ({ data, pre
 
   return (
     <div className={`cognitive-profile-chart ${className}`}>
-      <div className="h-72 md:h-80"> 
+      <div className="h-72 md:h-80 relative">
+        {/* 배경 패턴 추가 */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <pattern id="garden-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M20 0 A20 20 0 0 1 20 40 A20 20 0 0 1 20 0" fill="none" stroke="#4338ca" strokeWidth="0.5" />
+            </pattern>
+            <rect x="0" y="0" width="100%" height="100%" fill="url(#garden-pattern)" />
+          </svg>
+        </div>
         <Radar data={chartData} options={options} />
       </div>
-      {renderChanges()} {/* Render the changes section */}
+      {renderChanges()}
     </div>
   );
 };

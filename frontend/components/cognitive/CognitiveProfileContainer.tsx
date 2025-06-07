@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CognitiveProfileChart from './CognitiveProfileChart';
 import { apiClient } from '@/lib/apiClient';
@@ -49,6 +49,7 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timePeriod, setTimePeriod] = useState<'all' | 'week' | 'month' | 'year'>('month');
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // 인지 프로필 클릭 핸들러 추가
   const handleCognitiveProfileClick = (e: React.MouseEvent) => {
@@ -65,6 +66,17 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
     
     // 토큰이 있으면 브레인 역량 분석 페이지로 이동
     router.push('/analytics');
+  };
+
+  // 기간 변경 핸들러 개선
+  const handlePeriodChange = (newPeriod: 'all' | 'week' | 'month' | 'year') => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setTimePeriod(newPeriod);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 800);
+    }, 300);
   };
 
   // Fetch cognitive profile data from the API
@@ -123,15 +135,24 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-md overflow-hidden ${className}`}>
+    <div className={`bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-indigo-100 shadow-sm overflow-hidden ${className}`}>
       <div className="p-6 md:p-8">
         <a href="#" onClick={handleCognitiveProfileClick} className="group inline-block">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center group-hover:text-indigo-600 transition-colors">
-            나의 인지능력
-            <span className="inline-block ml-1 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-300">→</span>
+          <h2 className="text-2xl font-medium text-indigo-900 mb-2 text-center group-hover:text-indigo-600 transition-colors">
+            나의 인지 여정
+            <span className="inline-block ml-1 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-700">→</span>
           </h2>
-          <p className="text-sm text-gray-500 mb-6 text-center group-hover:text-indigo-400 transition-colors">매순간 자신의 강점을 확인하고 단점을 보완하세요</p>
+          <p className="text-sm text-indigo-700 mb-6 text-center group-hover:text-indigo-500 transition-colors">
+            당신만의 고유한 인지 리듬을 발견하세요
+          </p>
         </a>
+        
+        {/* 자연 메타포 추가 */}
+        <div className="text-center mb-6 text-indigo-800">
+          <p className="text-sm italic">
+            "물이 흐르듯 자연스러운 당신의 인지 흐름을 관찰하세요"
+          </p>
+        </div>
         
         {/* Time period selector */}
         <div className="flex justify-center mb-6">
@@ -145,21 +166,17 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
               <button
                 key={period.key}
                 type="button"
-                className={`px-3 py-1 text-sm font-medium border border-gray-200 
-                  transition-colors duration-150 
+                className={`px-3 py-1 text-sm font-medium border 
+                  transition-colors duration-500 
                   ${
                     timePeriod === period.key
-                      ? 'bg-indigo-600 text-white z-10 ring-1 ring-indigo-600'
-                      : 'bg-white text-indigo-700 hover:bg-indigo-50'
+                      ? 'bg-indigo-100 text-indigo-900 z-10 border-indigo-200'
+                      : 'bg-white text-indigo-800 hover:bg-blue-50 border-gray-100'
                   }
-                  ${
-                    index === 0 ? 'rounded-l-md' : ''
-                  }
-                  ${
-                    index === arr.length - 1 ? 'rounded-r-md' : ''
-                  }
+                  ${index === 0 ? 'rounded-l-md' : ''}
+                  ${index === arr.length - 1 ? 'rounded-r-md' : ''}
                 `}
-                onClick={() => setTimePeriod(period.key as 'all' | 'week' | 'month' | 'year')}
+                onClick={() => handlePeriodChange(period.key as 'all' | 'week' | 'month' | 'year')}
               >
                 {period.label}
               </button>
@@ -169,12 +186,12 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
 
         {isLoading ? (
           <div className="flex justify-center items-center h-60">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
           </div>
         ) : error ? (
-          <div className="text-center text-red-500 py-8">{error}</div>
+          <div className="text-center text-indigo-500 py-8 bg-indigo-50 rounded-lg">{error}</div>
         ) : (
-          <div className="space-y-8">
+          <div className={`space-y-8 transition-opacity duration-700 ${isTransitioning ? 'opacity-50' : 'opacity-100'}`}>
             {/* Cognitive Profile Radar Chart */}
             <div>
               <CognitiveProfileChart 
