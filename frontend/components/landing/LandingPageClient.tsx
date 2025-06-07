@@ -61,7 +61,7 @@ export default function LandingPageClient() {
                 href="/auth/register"
                 className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                무료 체험 시작
+                나의 리듬 찾기
               </Link>
             </div>
           </div>

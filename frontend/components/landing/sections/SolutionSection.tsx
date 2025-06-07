@@ -26,28 +26,25 @@ export default function SolutionSection() {
 
           {/* Text Content Area */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }} // Animate from right
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.5 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="text-center lg:text-left" // Center on mobile, left align on larger screens
+            className="text-center lg:text-left"
           >
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              어떻게 벗어날 수 있을까요? <br />
-              <span className="text-indigo-600">'정교한 측정'</span>이면 가능합니다
+            <h2 className="text-3xl sm:text-4xl font-bold font-serif text-brand-primary tracking-tight">
+              나의 상태를 아는 것에서<br />
+              모든 <span className="text-brand-primary">변화</span>는 시작됩니다.
             </h2>
-            {/* Add md:text-xl for better readability on larger screens */}
-            <p className="mt-6 text-lg md:text-xl text-gray-600">
-              Habitus33은 Cybernetics기반 <strong className="text-gray-800">실시간 AI '측정'</strong>을 통해 
-              내비게이션이 현재 위치를 보여 주듯, <strong className="text-indigo-600">정보 처리 속도</strong>와 <strong className="text-indigo-600">기억 용량</strong>을 보여줍니다.            </p>
-            {/* Add md:text-xl for better readability on larger screens */}
-            <p className="mt-4 text-lg md:text-xl text-gray-600">
-              현재 컨디션을 <strong className="text-gray-800">'인지'</strong>하고, 
-              달성 가능한 <strong className="text-indigo-600"> 작은 목표</strong>로 성공을 유도하고
-              이는 <strong className="text-indigo-600">다시 강력한 힘</strong>이 되어<strong className="text-indigo-600"> '높은 도약' </strong>을 이끕니다.
+            <p className="mt-6 text-lg md:text-xl text-gray-700">
+              Habitus33은 당신의 현재 집중 상태를 조용히 비춰주는 <strong className="font-semibold text-gray-900">거울</strong>과 같습니다.
+              내가 지금 어떤 리듬으로 정보를 받아들이는지 알게 되면, 가장 편안하고 깊게 몰입할 수 있는 
+              <strong className="text-brand-primary">'나만의 보폭'</strong>을 찾을 수 있습니다.
             </p>
-             {/* Optional: Bullet points for key steps? */}
-             {/* <ul className="mt-6 space-y-2 text-left"> ... </ul> */}
+            <p className="mt-4 text-lg md:text-xl text-gray-700">
+              <strong className="font-semibold text-gray-900">작은 성공</strong>이 모여 선순환의 리듬을 만들고, 
+              그 리듬이 당신을 지치지 않고 더 <strong className="text-brand-primary">멀리</strong> 나아가게 합니다.
+            </p>
           </motion.div>
         </div>
       </div>

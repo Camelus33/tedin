@@ -26,12 +26,12 @@ const testimonials = [
 
 export default function TestimonialsSection() {
   return (
-    <section className="py-16 md:py-24 bg-gray-50">
+    <section className="py-16 md:py-24 bg-brand-secondary">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800">
-          Habitus33으로 <span className="text-indigo-600">성공을 만드는</span>사람들
+        <h2 className="text-3xl md:text-4xl font-bold font-serif text-brand-primary text-center mb-4">
+          자신만의 <span className="text-brand-primary">리듬을 찾아낸</span> 사람들
         </h2>
-        <p className="text-lg md:text-xl text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl text-gray-700 text-center mb-12 max-w-2xl mx-auto">
            운에 기대지 말고 선명한 성장을 직접 만드세요.
         </p>
 

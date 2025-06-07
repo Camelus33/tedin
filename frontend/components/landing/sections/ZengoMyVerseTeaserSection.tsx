@@ -11,10 +11,10 @@ export default function ZengoMyVerseTeaserSection() {
         <FiStar className="w-12 h-12 mx-auto mb-4 text-indigo-400" /> 
         
         <h2 className="text-3xl md:text-4xl font-bold mb-5 leading-tight">
-          시험, 업무, 일상... <br className="sm:hidden" /> <span className="text-yellow-400">반드시 기억해야 할 것들</span>을 이제 정복하세요.
+          당신에게 꼭 필요한 지식들을<br className="sm:hidden" /> <span className="text-yellow-400">더욱 선명하게 간직하는 법</span>
         </h2>
         <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-          ZenGo 마이버스: 바둑에서 탄생한 정교한 <strong className="text-white font-semibold">DIY 기억착수 게임</strong>
+          ZenGo 마이버스: 즐거운 몰입으로 만드는 <strong className="text-white font-semibold">나만의 지식 저장고</strong>
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-10 mb-12 text-left">
@@ -51,7 +51,7 @@ export default function ZengoMyVerseTeaserSection() {
         </div>
 
         <p className="text-base md:text-lg text-gray-500 italic mt-10">
-          ZenGo Myverse는 당신의 <strong className="text-gray-400">기억 방식 자체를 바꾸는 혁신</strong>입니다. 기억하는 삶, 지금 경험해 보세요. (유료 플랜)
+          ZenGo Myverse는 당신의 지식이 흩어지지 않도록 돕는 <strong className="text-gray-400">즐거운 여정</strong>입니다. (프리미엄 플랜)
         </p>
       </div>
     </section>

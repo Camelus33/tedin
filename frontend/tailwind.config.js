@@ -1,3 +1,5 @@
+const { fontFamily } = require('tailwindcss/defaultTheme')
+
 /** @type {import('tailwindcss').Config} */
 const colors = require('tailwindcss/colors');
 
@@ -6,6 +8,7 @@ module.exports = {
     content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
   	extend: {
@@ -68,26 +71,32 @@ module.exports = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			brand: {
+  				primary: '#192A56',       // Deep Navy
+  				secondary: '#F5F5F5',     // Warm Gray
+  				accent: {
+  					sage: '#87A96B',         // Sage Green
+  					orange: '#E89F71',       // Muted Orange
+  				},
+  			},
+  			indigo: {
+  				50: '#eef2ff',
+  				100: '#e0e7ff',
+  				600: '#4f46e5',
+  				700: '#4338ca',
+  			},
+  			purple: {
+  				600: '#9333ea',
+  			},
+  			emerald: {
+  				600: '#059669',
+  				700: '#047857',
   			}
   		},
   		fontFamily: {
-  			sans: [
-  				'Pretendard Variable',
-  				'Pretendard',
-  				'-apple-system',
-  				'BlinkMacSystemFont',
-  				'system-ui',
-  				'Roboto',
-  				'Helvetica Neue',
-  				'Segoe UI',
-  				'Apple SD Gothic Neo',
-  				'Noto Sans KR',
-  				'Malgun Gothic',
-  				'Apple Color Emoji',
-  				'Segoe UI Emoji',
-  				'Segoe UI Symbol',
-  				'sans-serif'
-  			]
+  			sans: ['Pretendard Variable', ...fontFamily.sans],
+  			serif: ['var(--font-noto-serif-kr)', ...fontFamily.serif],
   		},
   		animation: {
   			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
@@ -145,5 +154,9 @@ module.exports = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+  ],
 } 

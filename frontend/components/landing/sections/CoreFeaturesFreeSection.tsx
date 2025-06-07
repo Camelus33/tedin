@@ -1,52 +1,46 @@
 import React from 'react';
 import Link from 'next/link';
-import { FiCheckSquare, FiGift, FiArrowRight } from 'react-icons/fi'; // Placeholder icons
+import { FiCheckSquare, FiGift, FiArrowRight, FiZap, FiCpu, FiAward } from 'react-icons/fi'; // Placeholder icons
 
 export default function CoreFeaturesFreeSection() {
   return (
-    <section className="py-16 md:py-24 bg-indigo-50"> {/* Slightly different background */}
+    <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4 text-center max-w-4xl">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-indigo-900">
-          당신의 능력, <br className="sm:hidden" />지금  <span className="text-indigo-600">무료</span>로 확인하세요!
+        <h2 className="text-3xl md:text-4xl font-bold font-serif text-brand-primary mb-6">
+          가장 중요한 첫걸음, <br className="sm:hidden" /> 
+          <span className="text-brand-primary">당신의 리듬을 찾는 일</span>부터.
         </h2>
         
         <div className="grid sm:grid-cols-3 gap-6 md:gap-8 my-10 text-left">
-          <div className="flex items-start space-x-3 p-4 bg-white/50 rounded-lg">
-            <FiCheckSquare className="w-6 h-6 text-emerald-600 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-lg text-gray-800 mb-1">AI 측정</h3>
-              <p className="text-gray-600 text-sm">처리 속도 & 처리 용량</p>
-            </div>
+          <div className="bg-brand-secondary p-6 rounded-lg">
+            <FiZap className="w-8 h-8 mb-3 text-brand-primary" />
+            <h3 className="font-semibold text-lg mb-2 text-gray-900">Atomic Reading</h3>
+            <p className="text-sm text-gray-700">짧고 깊게 읽으며 뇌의 과부하를 막는 새로운 읽기 습관</p>
           </div>
-          <div className="flex items-start space-x-3 p-4 bg-white/50 rounded-lg">
-            <FiCheckSquare className="w-6 h-6 text-emerald-600 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-lg text-gray-800 mb-1">확인</h3>
-              <p className="text-gray-600 text-sm">33일 피드백 루프</p>
-            </div>
+          <div className="bg-brand-secondary p-6 rounded-lg">
+            <FiCpu className="w-8 h-8 mb-3 text-brand-accent-sage" />
+            <h3 className="font-semibold text-lg mb-2 text-gray-900">AI 피드백</h3>
+            <p className="text-sm text-gray-700">나의 상태를 객관적으로 알려주는 인공지능 코치</p>
           </div>
-          <div className="flex items-start space-x-3 p-4 bg-white/50 rounded-lg">
-            <FiCheckSquare className="w-6 h-6 text-emerald-600 mt-1 flex-shrink-0" />
-             <div>
-               <h3 className="font-semibold text-lg text-gray-800 mb-1">선순환 시작!</h3>
-               <p className="text-gray-600 text-sm">측정-인지-개선-성장</p>
-             </div>
+          <div className="bg-brand-secondary p-6 rounded-lg">
+            <FiAward className="w-8 h-8 mb-3 text-brand-accent-orange" />
+            <h3 className="font-semibold text-lg mb-2 text-gray-900">장기 기억 강화</h3>
+            <p className="text-sm text-gray-700">핵심만 골라, 잊히지 않는 지식으로 만드는 기억 게임</p>
           </div>
         </div>
 
-         <div className="inline-flex items-center justify-center p-3 px-6 bg-emerald-100 rounded-full mb-10">
-            <FiGift className="w-6 h-6 text-emerald-700 mr-3" />
-            <p className="font-bold text-emerald-800 text-lg md:text-xl">
-              핵심 기능 평생 무료!
-            </p>
-          </div>
-
+        <div className="inline-flex items-center justify-center p-3 px-6 bg-emerald-100 rounded-full mb-10">
+          <FiGift className="w-6 h-6 text-emerald-700 mr-3" />
+          <p className="font-bold text-emerald-800 text-lg md:text-xl">
+            핵심 기능 평생 무료!
+          </p>
+        </div>
 
         <Link
-          href="/auth/register" // Or link to the specific diagnostic tool if available
-          className="inline-flex items-center justify-center px-8 py-3 text-lg md:text-xl font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 group"
+          href="/auth/register"
+          className="inline-flex items-center justify-center px-8 py-3 text-lg md:text-xl font-semibold text-white bg-brand-primary rounded-md hover:opacity-90 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary group"
         >
-          내 능력, 지금 무료 진단!
+          나만의 학습 리듬 찾기 (무료)
           <FiArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
         </Link>
 

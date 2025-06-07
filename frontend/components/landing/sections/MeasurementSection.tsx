@@ -3,41 +3,37 @@ import { FiZap, FiGrid, FiTarget, FiTrendingUp } from 'react-icons/fi'; // Place
 
 export default function MeasurementSection() {
   return (
-    <section className="py-16 md:py-24 bg-gray-50">
+    <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">
-          당신의 성장, 어떻게 측정하고 가속할까요?
+        <h2 className="text-3xl md:text-4xl font-bold font-serif text-brand-primary mb-4">
+          나의 노력을 선명하게 기록하고, 성장을 눈으로 확인하세요.
         </h2>
-        <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-          잠재력을 깨우는 핵심, 정보 처리 속도와 용량을 파악하세요.
+        <p className="text-lg md:text-xl text-gray-700 mb-12 max-w-3xl mx-auto">
+          당신의 노력이 어떻게 결실을 맺는지, 두 가지 지표로 부드럽게 안내합니다.
         </p>
 
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
-          {/* TS 모드 카드 - Responsive padding and text size */}
-          <div className="bg-white p-6 md:p-8 rounded-lg shadow-md text-left flex flex-col h-full">
+          {/* TS 모드 카드 */}
+          <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-gray-200 text-left flex flex-col h-full">
              <div className="flex items-center mb-4">
-               <FiZap className="w-8 h-8 text-indigo-600 mr-3 flex-shrink-0" />
-               {/* Responsive heading size */}
-               <h3 className="text-lg md:text-xl font-semibold text-gray-800">TS: 얼마나 빠르게 받아 들이나요?</h3>
+               <FiZap className="w-8 h-8 text-brand-primary mr-3 flex-shrink-0" />
+               <h3 className="text-lg md:text-xl font-semibold text-brand-primary">TS 모드: 얼마나 깊이 몰입하고 있나요?</h3>
              </div>
-             {/* Responsive paragraph size */}
-             <p className="text-sm md:text-base text-gray-600 flex-grow">
-               얼마나 빠르게 <strong className="text-indigo-700">페이지 단위로 정보를 흡수하는지</strong> 측정하며, 
-               <strong className="text-indigo-700">당신의 속도</strong>를 확인해 보세요.
+             <p className="text-sm md:text-base text-gray-700 flex-grow">
+               한 페이지의 정보를 얼마나 편안하게 받아들이는지 확인하며, 
+               <strong className="font-semibold text-gray-900">당신의 자연스러운 읽기 깊이를 발견</strong>해 보세요.
              </p>
           </div>
 
-          {/* ZenGo (기본) 카드 - Responsive padding and text size */}
-          <div className="bg-white p-6 md:p-8 rounded-lg shadow-md text-left flex flex-col h-full">
+          {/* ZenGo (기본) 카드 */}
+          <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-gray-200 text-left flex flex-col h-full">
             <div className="flex items-center mb-4">
-               <FiGrid className="w-8 h-8 text-emerald-600 mr-3 flex-shrink-0" />
-               {/* Responsive heading size */}
-              <h3 className="text-lg md:text-xl font-semibold text-gray-800">ZenGo: 얼마나 많이 떠올릴 수 있나요?</h3>
+               <FiGrid className="w-8 h-8 text-brand-accent-sage mr-3 flex-shrink-0" />
+              <h3 className="text-lg md:text-xl font-semibold text-brand-primary">ZenGo: 핵심을 얼마나 선명하게 붙잡고 있나요?</h3>
             </div>
-             {/* Responsive paragraph size */}
-            <p className="text-sm md:text-base text-gray-600 flex-grow">
-              한 번에 얼마나 많이 <strong className="text-emerald-700">기억 속에 붙잡아 둘 수 있는지</strong>, 바둑 원리를 활용한 게임으로 
-              <strong className="text-emerald-700">당신의 용량</strong>을 확인해 보세요.
+            <p className="text-sm md:text-base text-gray-700 flex-grow">
+              중요한 지식의 조각들을 얼마나 단단하게 간직하는지, 즐거운 게임으로 
+              <strong className="font-semibold text-gray-900">기억의 연결고리를 강화</strong>해 보세요.
             </p>
           </div>
         </div>

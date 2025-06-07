@@ -1,30 +1,25 @@
 import '@/styles/globals.css'
-// import { Inter, Montserrat } from 'next/font/google' // 기존 폰트 임포트 제거
+import { Noto_Serif_KR } from 'next/font/google'
 import { Providers as ReduxProvider } from '@/store/provider'
 import { Providers } from './providers'
 import { Toaster } from 'react-hot-toast'
-import Head from 'next/head' // Head 임포트 추가
-// Import dashboard global styles for action cards
+import Head from 'next/head'
 import './dashboard/styles/dashboard.css';
-import Footer from '@/components/common/Footer'; // Import the Footer component
-import CartUIManager from '@/components/cart/CartUIManager'; // Import CartUIManager
+import Footer from '@/components/common/Footer';
+import CartUIManager from '@/components/cart/CartUIManager';
 
-// 기존 폰트 설정 제거
-// const inter = Inter({
-//   subsets: ['latin'],
-//   display: 'swap',
-//   variable: '--font-inter',
-// })
+// Noto Serif KR 폰트 설정
+const notoSerifKr = Noto_Serif_KR({
+  subsets: ['latin'],
+  weight: ['400', '700', '900'], // 필요한 가중치 선택
+  display: 'swap',
+  variable: '--font-noto-serif-kr',
+});
 
-// const montserrat = Montserrat({
-//   subsets: ['latin'],
-//   display: 'swap',
-//   variable: '--font-montserrat',
-// })
-
+// metadata는 page.tsx에서 관리하므로 layout에서는 제거하거나 기본값 유지
 export const metadata = {
-  title: 'Habitus33: 이제, 쭉쭉 읽고 바로 이해하세요!',
-  description: '읽기속도 측정과 암기력 강화게임을 통한 폭발적인 문해력 향상을 경험하세요!',
+  title: 'Habitus33',
+  description: '지속가능한 학습의 리듬을 찾고, 번아웃과 작별하세요.',
 }
 
 export default function RootLayout({
@@ -33,10 +28,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    // 기존 폰트 변수 클래스 제거
-    // <html lang="ko" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning> 
-    <html lang="ko" suppressHydrationWarning>
-      {/* Pretendard 폰트 링크 추가 */}
+    <html lang="ko" className={notoSerifKr.variable} suppressHydrationWarning>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
@@ -46,7 +38,7 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </Head>
-      <body className="min-h-screen bg-white flex flex-col">
+      <body className="min-h-screen bg-brand-secondary text-gray-800 flex flex-col pretendard">
         <Providers>
           <ReduxProvider>
             <div className="flex-grow">

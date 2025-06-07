@@ -48,8 +48,8 @@ export default function GrowthChartSimulation() {
       {
         label: 'TS 속도 (WPM)',
         data: Array(days).fill(null), // Initialize with nulls
-        borderColor: 'rgb(79, 70, 229)', // Indigo
-        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+        borderColor: '#192A56', // Deep Navy
+        backgroundColor: 'rgba(25, 42, 86, 0.1)',
         tension: 0.3,
         fill: true,
         pointRadius: 0,
@@ -58,8 +58,8 @@ export default function GrowthChartSimulation() {
       {
         label: 'ZenGo 용량 (점수)',
         data: Array(days).fill(null), // Initialize with nulls
-        borderColor: 'rgb(5, 150, 105)', // Emerald
-        backgroundColor: 'rgba(5, 150, 105, 0.1)',
+        borderColor: '#87A96B', // Sage Green
+        backgroundColor: 'rgba(135, 169, 107, 0.1)',
         tension: 0.3,
         fill: true,
         pointRadius: 0,
@@ -127,7 +127,14 @@ export default function GrowthChartSimulation() {
         beginAtZero: true,
          title: {
             display: true,
-            text: '점수 / WPM'
+            text: '점수 / WPM',
+            color: '#4b5563' // gray-600
+        },
+        ticks: {
+            color: '#4b5563' // gray-600
+        },
+        grid: {
+            color: '#e5e7eb' // gray-200
         }
       },
     },

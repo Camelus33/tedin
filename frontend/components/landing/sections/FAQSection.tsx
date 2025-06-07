@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiHelpCircle, FiChevronDown } from 'react-icons/fi'; // Icons for FAQ
+import { Disclosure, Transition } from '@headlessui/react';
 
 const faqData = [
   {
@@ -20,7 +21,7 @@ const faqData = [
   },
    {
     question: "왜 33일인가요? 정말 33일이면 효과가 있나요?",
-    answer: "33일은 새로운 신경 연결이 형성되고 습관이 자리 잡기 시작하는 데 의미 있는 기간으로 제시되는 경우가 많습니다. 물론 개인차는 있지만, 33일간 꾸준히 자신의 피드백 루프를 측정하고 인지하는 경험은 분명 긍정적인 변화를 시작하기에 충분한 시간입니다. 중요한 것은 기간보다 '꾸준한 측정과 인지'입니다."
+    answer: "새로운 길이 익숙해지려면 시간이 필요하듯, 우리 뇌에 새로운 학습 리듬이 자리 잡는 데에도 꾸준한 시간이 필요합니다. 33일은 완성이 아닌, 의미 있는 '변화의 시작'을 경험하기에 충분한 시간입니다. 중요한 것은 숫자가 아닌, '어제의 나보다 조금 더 나아졌다'는 감각을 꾸준히 느끼는 것입니다."
   },
   {
     question: "매일 사용해야 하나요? 바쁘면 건너뛰어도 되나요?",
@@ -28,7 +29,7 @@ const faqData = [
   },
   {
     question: "다른 두뇌 훈련 게임 앱과 무엇이 다른가요?",
-    answer: "단순히 게임 점수를 높이는 것이 목적이 아닙니다. Habitus33은 '작업 기억력 피드백 루프'라는 명확한 개념을 기반으로, '측정'과 '인지'를 통해 사용자가 자신의 상태를 객관적으로 파악하고 '실질적인 개선 과정(선순환)'을 경험하도록 설계되었습니다. 게임(ZenGo)은 이 과정의 일부일 뿐입니다."
+    answer: "대부분의 게임이 '점수'를 목표로 한다면, Habitus33은 '과정'에 집중합니다. 우리는 당신이 게임을 통해 자신의 인지 상태를 이해하고, 그 이해를 바탕으로 실생활의 학습에서 더 깊은 집중을 경험하도록 돕는 '가이드'입니다. 게임은 목적이 아닌, 당신의 성장을 돕는 즐거운 도구입니다."
   },
   {
     question: "무료 핵심 기능에는 정확히 무엇이 포함되나요?",
@@ -44,25 +45,41 @@ const faqData = [
   }
 ];
 
-
 export default function FAQSection() {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section id="faq" className="py-20 md:py-28 bg-white">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
-          자주 묻는 질문 (FAQ)
+        <h2 className="text-3xl md:text-4xl font-bold font-serif text-brand-primary text-center mb-12">
+          자주 묻는 질문
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {faqData.map((faq, index) => (
-            <details key={index} className="group bg-gray-50 p-4 md:p-6 rounded-lg border border-gray-200">
-              <summary className="flex justify-between items-center cursor-pointer list-none">
-                <span className="font-semibold text-base md:text-lg text-gray-700 group-hover:text-indigo-600 transition-colors">{faq.question}</span>
-                <FiChevronDown className="w-5 h-5 text-gray-500 transition-transform duration-300 group-open:rotate-180 flex-shrink-0 ml-2" />
-              </summary>
-              <div className="mt-3 text-sm md:text-base text-gray-600 leading-relaxed">
-                {faq.answer}
-              </div>
-            </details>
+            <Disclosure as="div" key={index} className="p-6 border border-gray-200 rounded-lg bg-brand-secondary">
+              {({ open }) => (
+                <>
+                  <Disclosure.Button className="flex justify-between items-center w-full text-left">
+                    <span className="font-semibold text-lg text-gray-900">{faq.question}</span>
+                    <FiChevronDown
+                      className={`${
+                        open ? 'transform rotate-180' : ''
+                      } w-5 h-5 text-brand-primary transition-transform`}
+                    />
+                  </Disclosure.Button>
+                  <Transition
+                    enter="transition duration-100 ease-out"
+                    enterFrom="transform scale-95 opacity-0"
+                    enterTo="transform scale-100 opacity-100"
+                    leave="transition duration-75 ease-out"
+                    leaveFrom="transform scale-100 opacity-100"
+                    leaveTo="transform scale-95 opacity-0"
+                  >
+                    <Disclosure.Panel className="mt-4 text-gray-700">
+                      {faq.answer}
+                    </Disclosure.Panel>
+                  </Transition>
+                </>
+              )}
+            </Disclosure>
           ))}
         </div>
       </div>
