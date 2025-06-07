@@ -429,6 +429,8 @@ export default function TSNoteCard({
                                     : '';
   const displayPPM = sessionDetails?.ppm !== undefined ? formatPPM(sessionDetails.ppm) : '';
 
+  const displayBookTitle = bookTitle || sessionDetails?.book?.title || "Unknown Book";
+
   const renderSessionInfoButton = () => (
     <button
       onMouseEnter={() => setShowSessionDetailsPopover(true)}
@@ -577,7 +579,7 @@ export default function TSNoteCard({
         {bookTitle && !isPageEditing && !isOpen && !minimalDisplay && !isInlineEditing && (
           <div className="mt-2 text-xs text-gray-400 flex items-center">
             <SolidBookOpenIcon className="h-3 w-3 mr-1.5 text-gray-500" />
-            출처: {bookTitle}
+            출처: {displayBookTitle}
           </div>
         )}
         

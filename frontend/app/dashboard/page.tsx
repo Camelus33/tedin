@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-medium text-indigo-800">
-                    나만의 리듬, 나만의 깊이
+                    나만의 리듬, 나만의 도전!
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
