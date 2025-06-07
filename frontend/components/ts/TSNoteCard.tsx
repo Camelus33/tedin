@@ -571,12 +571,11 @@ export default function TSNoteCard({
           {note.content}
         </p>
 
-        {/* 🐛 BUG FIX: 사용자의 명확한 요구사항에 따라 조건부 렌더링 로직을 수정. */}
-        {/* 'bookTitle'이 있고, 'isInlineEditing' 상태가 아닐 때만 출처를 표시합니다. */}
-        {bookTitle && !isInlineEditing && (
+        {/* 책 제목(출처) 표시 조건을 수정 */}
+        {bookTitle && !isPageEditing && !isOpen && !minimalDisplay && !isInlineEditing && (
           <div className="mt-2 text-xs text-gray-400 flex items-center">
             <SolidBookOpenIcon className="h-3 w-3 mr-1.5 text-gray-500" />
-            출처: <span className="font-semibold text-gray-300">{displayBookTitle}</span>
+            출처: {displayBookTitle}
           </div>
         )}
         

@@ -177,10 +177,25 @@ export default function EditSummaryNotePage() {
           ).filter(n => n !== undefined) as FetchedNoteDetails[];
 
           const uniqueBookIds = Array.from(new Set(finalNotes.map(note => note.bookId).filter(Boolean)));
+          
+          // --- 🐛 NEW DEBUG LOGS START ---
+          console.log('[DEBUG] uniqueBookIds to fetch:', uniqueBookIds);
+          // --- NEW DEBUG LOGS END ---
+
           if (uniqueBookIds.length > 0) {
             try {
               const booksInfoRes = await api.post('/books/batch-info', { bookIds: uniqueBookIds });
+              
+              // --- 🐛 NEW DEBUG LOGS START ---
+              console.log('[DEBUG] API response from /books/batch-info:', booksInfoRes.data);
+              // --- NEW DEBUG LOGS END ---
+
               booksInfoRes.data.forEach((book: BookInfo) => finalBookInfoMap.set(book._id, book));
+
+              // --- 🐛 NEW DEBUG LOGS START ---
+              console.log('[DEBUG] finalBookInfoMap state:', finalBookInfoMap);
+              // --- NEW DEBUG LOGS END ---
+
             } catch (booksErr) {
               console.warn('Failed to fetch batch book info', booksErr);
             }
@@ -432,8 +447,6 @@ export default function EditSummaryNotePage() {
               {fetchedNotes.length > 0 ? (
                 fetchedNotes.map((note, idx) => {
                   const noteBookTitle = bookInfoMap.get(note.bookId)?.title;
-                  // DEBUG: Log the book title being passed to the card
-                  console.log(`[edit/page.tsx] Rendering NoteCard for note ${note._id}. Passing bookTitle: ${noteBookTitle}`);
 
                   return (
                     <div key={note._id} className="p-2 relative group bg-gray-800/60 rounded-md">
