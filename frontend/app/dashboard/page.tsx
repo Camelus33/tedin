@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-medium text-indigo-800">
-                    작은 노력도 모두 성장으로
+                    나만의 리듬, 나만의 깊이
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
@@ -564,7 +564,7 @@ export default function DashboardPage() {
                     aria-label="브레인핵 루틴 시작"
                     type="button"
                   >
-                    브레인핵 루틴 시작
+                    Atomic-Reading
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
@@ -663,7 +663,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-indigo-800 mb-1">나의 읽기 여정</p>
+                <p className="text-sm text-indigo-800 mb-1">Atomic-Reading</p>
                 <p className="text-xl font-medium text-indigo-700">
                   {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className="text-xs text-indigo-500">페이지/분</span>
                 </p>

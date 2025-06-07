@@ -445,19 +445,19 @@ export default function CyberneticsFeedbackLoopPage() {
     <PageContainer className={`${cyberTheme.gradient} text-gray-200 min-h-screen py-16 px-4 md:px-6`}>
       <PageTitle className={`text-4xl md:text-5xl font-bold mb-12 text-center ${cyberTheme.primary}`}>
         작고 강한 몰입, Atomic Reading
-        <span className={`block text-xl md:text-2xl font-normal ${cyberTheme.textMuted} mt-3`}>Habitus33 시스템의 작동 원리</span>
+        <span className={`block text-xl md:text-2xl font-normal ${cyberTheme.textMuted} mt-3`}>Habitus33의 바탕 원리</span>
       </PageTitle>
 
       <SectionWrapper className={`${cyberTheme.bgSecondary} rounded-xl shadow-2xl`} id="micro-reading-intro">
         <SectionTitle 
-          title="TS : Micro-Reading"
+          title="TS : Atomic-Reading"
           icon={LightBulbIcon} 
           color={cyberTheme.primary} 
         />
         
         <SectionParagraph>
           
-          Habitus33의 <Highlight color={cyberTheme.primary}>TS 모드</Highlight>를 관통하는 핵심 엔진, 바로 <Highlight color={cyberTheme.secondary}>Atomic-Reading</Highlight>입니다. 이는 단순히 책장을 빠르게 넘기는 속독과는 차원이 다른, <Highlight color={cyberTheme.primary}>인지과학 기반의 정교한 독서 전략</Highlight>입니다. 마치 최정상급 운동선수가 과학적인 인터벌 트레이닝(HIIT)으로 경기 능력을 극한까지 끌어올리듯, Atomic-Reading은 사용자의 두뇌가 정보를 가장 효율적으로 처리하고 깊이 있는 학습이 가능하도록 설계되었습니다. 핵심은 <Highlight color={cyberTheme.secondary}>짧은 단위의 명확한 목표 설정</Highlight>과 <Highlight color={cyberTheme.secondary}>초고도 몰입 독서</Highlight>, 그리고 세션 직후 이어지는 <Highlight color={cyberTheme.secondary}>즉각적인 독서 메모</Highlight>의 반복 사이클입니다.
+          Habitus33의 <Highlight color={cyberTheme.primary}>핵심</Highlight>을 관통하는 핵심 엔진, 바로 <Highlight color={cyberTheme.secondary}>Atomic-Reading</Highlight>입니다. 이는 단순히 책장을 빠르게 넘기는 속독과는 차원이 다른, <Highlight color={cyberTheme.primary}>인지과학 기반의 정교한 독서 전략</Highlight>입니다. 마치 최정상급 운동선수가 과학적인 인터벌 트레이닝(HIIT)으로 경기 능력을 극한까지 끌어올리듯, Atomic-Reading은 사용자의 두뇌가 정보를 가장 효율적으로 처리하고 깊이 있는 학습이 가능하도록 설계되었습니다. 핵심은 <Highlight color={cyberTheme.secondary}>짧은 단위의 명확한 목표 설정</Highlight>과 <Highlight color={cyberTheme.secondary}>초고도 몰입 독서</Highlight>, 그리고 세션 직후 이어지는 <Highlight color={cyberTheme.secondary}>즉각적인 독서 메모</Highlight>의 반복 사이클입니다.
         </SectionParagraph>
 
         <div className="my-12 p-6 md:p-8 bg-gray-900/60 rounded-2xl shadow-xl border border-cyan-600/40">
