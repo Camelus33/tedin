@@ -33,14 +33,20 @@ export default function CreateSummaryNotePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true); // 카트에 담긴 노트들의 상세 정보 로딩
   const [isSaving, setIsSaving] = useState<boolean>(false); // 단권화 노트 서버 저장 진행
   const [error, setError] = useState<string | null>(null); // 오류 메시지 표시용
+  const [isMounted, setIsMounted] = useState(false); // 클라이언트 마운트 상태 확인용
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // 페이지 로드 시 카트 아이템이 없으면, 이전 페이지(또는 홈)로 리다이렉트합니다.
   useEffect(() => {
-    if (cartItems.length === 0 && !isLoading) { // 로딩이 끝난 후에도 아이템이 없으면
+    // 마운트 된 후, 로딩이 끝났는데도 카트 아이템이 없으면 리디렉션
+    if (isMounted && cartItems.length === 0 && !isLoading) {
       toast.error('카트에 담긴 내용이 없습니다. 먼저 1줄 메모를 카트에 추가해주세요.');
       router.push('/books'); // 예시: 책 목록 페이지로 이동
     }
-  }, [cartItems, isLoading, router]);
+  }, [isMounted, cartItems, isLoading, router]);
 
   // 카트 아이템이 변경되거나 페이지가 처음 로드될 때, 카트에 담긴 노트들의 전체 상세 정보를 가져옵니다.
   useEffect(() => {
@@ -121,14 +127,15 @@ export default function CreateSummaryNotePage() {
       // 백엔드 API 호출
       const response = await api.post('/summary-notes', summaryNoteData);
       
-      if (response.status === 201) { // HTTP 201 Created 성공 응답
+      if (response.status === 201 && response.data?._id) { // HTTP 201 Created 성공 응답 및 ID 확인
+        const newNoteId = response.data._id;
         toast.success('단권화 노트가 성공적으로 저장되었습니다!');
         clearCart(); // 카트 비우기
-        router.push('/dashboard'); // 예시: 대시보드 페이지로 이동
+        router.push(`/summary-notes/${newNoteId}/edit`); // 새로 생성된 노트의 편집 페이지로 이동
       } else {
-        // 예상치 못한 성공 상태 코드 처리 (예: 200 OK)
-        console.warn('Summary note saved, but with unexpected status:', response.status);
-        setError('노트 저장에 성공했으나, 예상치 못한 응답을 받았습니다.');
+        // 예상치 못한 성공 상태 코드 처리 (예: 200 OK 또는 ID 없음)
+        console.warn('Summary note saved, but with unexpected status or missing ID:', response);
+        setError('노트 저장에 성공했으나, 예상치 못한 응답을 받았습니다. 잠시 후 다시 시도해 주세요.');
       }
     } catch (err: any) {
       console.error('Error saving summary note:', err);
