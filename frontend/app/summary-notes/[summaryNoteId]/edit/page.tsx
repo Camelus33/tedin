@@ -122,14 +122,19 @@ export default function EditSummaryNotePage() {
     const fetchSummaryNoteDetails = async () => {
       setLoading(true);
       setError(null);
-      setIsEditing(false); 
+      
+      let finalNotes: FetchedNoteDetails[] = [];
+      let finalBookInfoMap = new Map<string, BookInfo>();
+
       try {
         const summaryRes = await api.get(`/summary-notes/${summaryNoteId}`);
         const summaryData: SummaryNoteData = summaryRes.data;
+        
+        // 기본 정보 먼저 설정
         setSummaryNote(summaryData);
         setTitle(summaryData.title);
         setDescription(summaryData.description);
-        setUserMarkdownContent(summaryData.userMarkdownContent || ''); 
+        setUserMarkdownContent(summaryData.userMarkdownContent || '');
 
         if (summaryData.orderedNoteIds && summaryData.orderedNoteIds.length > 0) {
           const notesDetailsRes = await api.post('/notes/batch', { noteIds: summaryData.orderedNoteIds });
@@ -167,18 +172,15 @@ export default function EditSummaryNotePage() {
             return note;
           }));
           
-          const orderedNotes = summaryData.orderedNoteIds.map(id => 
+          finalNotes = summaryData.orderedNoteIds.map(id => 
             notesWithSessionDetails.find(n => n._id === id)
           ).filter(n => n !== undefined) as FetchedNoteDetails[];
-          setFetchedNotes(orderedNotes);
 
-          const uniqueBookIds = Array.from(new Set(orderedNotes.map(note => note.bookId).filter(Boolean)));
+          const uniqueBookIds = Array.from(new Set(finalNotes.map(note => note.bookId).filter(Boolean)));
           if (uniqueBookIds.length > 0) {
             try {
               const booksInfoRes = await api.post('/books/batch-info', { bookIds: uniqueBookIds });
-              const newBookInfoMap = new Map<string, BookInfo>();
-              booksInfoRes.data.forEach((book: BookInfo) => newBookInfoMap.set(book._id, book));
-              setBookInfoMap(newBookInfoMap);
+              booksInfoRes.data.forEach((book: BookInfo) => finalBookInfoMap.set(book._id, book));
             } catch (booksErr) {
               console.warn('Failed to fetch batch book info', booksErr);
             }
@@ -188,6 +190,9 @@ export default function EditSummaryNotePage() {
         console.error('Failed to fetch summary note details:', err);
         setError('단권화 노트 정보를 불러오는데 실패했습니다.');
       } finally {
+        // 모든 데이터가 준비된 후 한 번에 상태를 설정합니다.
+        setFetchedNotes(finalNotes);
+        setBookInfoMap(finalBookInfoMap);
         setLoading(false);
       }
     };
