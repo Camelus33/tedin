@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCartStore, CartItem } from '@/store/cartStore';
+import { useCartStore } from '@/store/cartStore';
 import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard'; // TSNote 타입도 함께 임포트
 import api from '@/lib/api';
 import { Input } from '@/components/ui/input'; // shadcn/ui에서 추가된 Input 경로
@@ -19,8 +19,7 @@ import toast from 'react-hot-toast';
  */
 export default function CreateSummaryNotePage() {
   const router = useRouter();
-  // Zustand 스토어에서 카트 아이템 목록과 카트 비우기 액션을 가져옵니다.
-  const { items: cartItems, clearCart } = useCartStore();
+  const { items: cartItems, clearCart, _hasHydrated } = useCartStore();
 
   // 단권화 노트의 전체 제목, 설명을 위한 상태입니다.
   const [title, setTitle] = useState<string>('나의 단권화 노트');
@@ -33,54 +32,50 @@ export default function CreateSummaryNotePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true); // 카트에 담긴 노트들의 상세 정보 로딩
   const [isSaving, setIsSaving] = useState<boolean>(false); // 단권화 노트 서버 저장 진행
   const [error, setError] = useState<string | null>(null); // 오류 메시지 표시용
-  const [isMounted, setIsMounted] = useState(false); // 클라이언트 마운트 상태 확인용
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // 페이지 로드 시 카트 아이템이 없으면, 이전 페이지(또는 홈)로 리다이렉트합니다.
-  useEffect(() => {
-    // 마운트 된 후, 로딩이 끝났는데도 카트 아이템이 없으면 리디렉션
-    if (isMounted && cartItems.length === 0 && !isLoading) {
+    // 스토어 rehydration이 완료되고, 노트 로딩도 끝났는데 카트가 비어있으면 리디렉션
+    if (_hasHydrated && cartItems.length === 0 && !isLoading) {
       toast.error('카트에 담긴 내용이 없습니다. 먼저 1줄 메모를 카트에 추가해주세요.');
-      router.push('/books'); // 예시: 책 목록 페이지로 이동
+      router.push('/books');
     }
-  }, [isMounted, cartItems, isLoading, router]);
+  }, [_hasHydrated, cartItems, isLoading, router]);
 
-  // 카트 아이템이 변경되거나 페이지가 처음 로드될 때, 카트에 담긴 노트들의 전체 상세 정보를 가져옵니다.
   useEffect(() => {
+    // rehydration이 완료된 후에만 노트 정보를 가져옵니다.
+    if (!_hasHydrated) {
+      return;
+    }
+
     const fetchFullNotes = async () => {
       if (cartItems.length === 0) {
-        setOrderedNotes([]);
+        // Hydration 후 카트가 비어있다면, 위의 useEffect가 리디렉션을 처리할 것입니다.
+        // 여기서는 로딩 상태만 false로 변경합니다.
         setIsLoading(false);
         return;
       }
       setIsLoading(true);
       setError(null);
       try {
-        // 카트 아이템에서 노트 ID 목록을 추출합니다.
         const noteIds = cartItems.map(item => item.noteId);
-        // 백엔드의 배치 노트 조회 API (/notes/batch)를 호출하여 노트 상세 정보를 가져옵니다.
         const response = await api.post('/notes/batch', { noteIds });
-        const fullNotesData: TSNote[] = response.data || []; // 백엔드는 노트 배열을 직접 반환
+        const fullNotesData: TSNote[] = response.data || [];
 
-        // API 응답으로 받은 노트들을 카트 아이템의 순서대로 정렬합니다.
         const sortedFullNotes = cartItems.map(cartItem => 
           fullNotesData.find(note => note._id === cartItem.noteId)
-        ).filter(Boolean) as TSNote[]; // filter(Boolean)으로 혹시 모를 undefined 제거 및 타입 단언
+        ).filter(Boolean) as TSNote[];
         
         setOrderedNotes(sortedFullNotes);
       } catch (err: any) {
         console.error('Error fetching full notes for summary:', err);
         setError('노트 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.');
-        setOrderedNotes([]); // 오류 발생 시 노트 목록 초기화
+        setOrderedNotes([]);
       } finally {
         setIsLoading(false);
       }
     };
     fetchFullNotes();
-  }, [cartItems]); // cartItems가 변경될 때마다 실행
+  }, [cartItems, _hasHydrated]);
 
   /**
    * @function handleNoteUpdateInList
@@ -149,7 +144,17 @@ export default function CreateSummaryNotePage() {
     }
   };
 
-  // 로딩 중 UI
+  // 스토어 Hydration을 기다리는 동안 로딩 상태를 표시합니다.
+  if (!_hasHydrated) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">
+        <Loader2 className="h-12 w-12 animate-spin text-blue-400 mb-4" />
+        <p className="text-lg">카트 정보를 동기화하는 중입니다...</p>
+      </div>
+    );
+  }
+
+  // 노트 정보를 fetch하는 동안 로딩 상태를 표시합니다.
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">

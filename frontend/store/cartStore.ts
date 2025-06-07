@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, PersistStorage } from 'zustand/middleware';
 // import { TSNote } from '@/components/ts/TSNoteCard'; // TSNote 타입은 현재 직접 사용되지 않음
 
 /**
@@ -46,6 +47,10 @@ interface CartState {
    * @description 지식 카트의 모든 아이템을 제거합니다.
    */
   clearCart: () => void;
+  /**
+   * @property {boolean} _hasHydrated - 스토어가 localStorage로부터 rehydration을 완료했는지 여부.
+   */
+  _hasHydrated: boolean;
   // updateItemOrder: (orderedItems: CartItem[]) => void; // 향후 드래그앤드롭 순서 변경 기능을 위한 주석 처리된 액션
 }
 
@@ -53,39 +58,50 @@ interface CartState {
  * @const useCartStore
  * @description 지식 카트 관리를 위한 Zustand 스토어를 생성하고 내보냅니다.
  * 상태(items)와 상태를 변경하는 액션(addToCart, removeFromCart, clearCart)을 포함합니다.
+ * `persist` 미들웨어를 사용하여 상태를 localStorage에 저장, 페이지 이동 및 새로고침 시에도 데이터가 유지됩니다.
  */
-export const useCartStore = create<CartState>((set, get) => ({
-  items: [],
-  addToCart: (itemData) => {
-    set((state) => {
-      // 이미 카트에 동일한 노트 ID의 아이템이 있는지 확인합니다.
-      const existingItem = state.items.find(i => i.noteId === itemData.noteId);
-      if (existingItem) {
-        // 아이템이 이미 존재하면, 상태를 변경하지 않고 현재 상태를 반환합니다 (중복 방지).
-        // 필요에 따라 기존 아이템을 업데이트하거나 사용자에게 알림을 줄 수도 있습니다.
-        console.log('Item already in cart:', itemData.noteId);
-        return { items: state.items }; 
-      }
-      // 새 카트 아이템 객체를 생성하고, 현재 시간을 addedAt 타임스탬프로 추가합니다.
-      const newItem: CartItem = {
-        ...itemData,
-        addedAt: Date.now(),
-      };
-      // 기존 아이템 배열에 새 아이템을 추가하여 상태를 업데이트합니다.
-      return { items: [...state.items, newItem] };
-    });
-  },
-  removeFromCart: (noteId) => {
-    set((state) => ({
-      // 전달받은 noteId와 일치하지 않는 아이템들만 필터링하여 상태를 업데이트합니다.
-      items: state.items.filter(item => item.noteId !== noteId),
-    }));
-  },
-  clearCart: () => {
-    // items 배열을 빈 배열로 설정하여 모든 아이템을 제거합니다.
-    set({ items: [] });
-  },
-  // updateItemOrder: (orderedItems) => { // 향후 드래그앤드롭 기능을 위한 주석
-  //   set({ items: orderedItems });
-  // },
-})); 
+export const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      items: [],
+      _hasHydrated: false, // 초기 상태는 false
+      addToCart: (itemData) => {
+        set((state) => {
+          // 이미 카트에 동일한 노트 ID의 아이템이 있는지 확인합니다.
+          const existingItem = state.items.find(i => i.noteId === itemData.noteId);
+          if (existingItem) {
+            // 아이템이 이미 존재하면, 상태를 변경하지 않고 현재 상태를 반환합니다 (중복 방지).
+            // 필요에 따라 기존 아이템을 업데이트하거나 사용자에게 알림을 줄 수도 있습니다.
+            console.log('Item already in cart:', itemData.noteId);
+            return { items: state.items };
+          }
+          // 새 카트 아이템 객체를 생성하고, 현재 시간을 addedAt 타임스탬프로 추가합니다.
+          const newItem: CartItem = {
+            ...itemData,
+            addedAt: Date.now(),
+          };
+          // 기존 아이템 배열에 새 아이템을 추가하여 상태를 업데이트합니다.
+          return { items: [...state.items, newItem] };
+        });
+      },
+      removeFromCart: (noteId) => {
+        set((state) => ({
+          // 전달받은 noteId와 일치하지 않는 아이템들만 필터링하여 상태를 업데이트합니다.
+          items: state.items.filter(item => item.noteId !== noteId),
+        }));
+      },
+      clearCart: () => {
+        // items 배열을 빈 배열로 설정하여 모든 아이템을 제거합니다.
+        set({ items: [] });
+      },
+    }),
+    {
+      name: 'knowledge-cart-storage', // localStorage에 저장될 때 사용될 고유한 키 이름입니다.
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state._hasHydrated = true;
+        }
+      },
+    }
+  )
+); 
