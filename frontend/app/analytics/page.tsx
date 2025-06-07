@@ -77,7 +77,8 @@ export default function AnalyticsPage() {
       const response = await fetch(`/api/cognitive/metrics?timeRange=${range}`, {
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        cache: 'no-store' // 캐시 비활성화
       });
       
       if (!response.ok) {
