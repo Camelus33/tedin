@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     }
     
     // 백엔드 API 호출
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     const response = await fetch(`${backendUrl}/api/cognitive/metrics?timeRange=${timeRange}`, {
       method: 'GET',
       headers: {
