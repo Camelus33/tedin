@@ -462,8 +462,8 @@ export default function TSNoteCard({
   );
   
   const renderInlineMemoEvolutionEditUI = () => {
-    // 오버레이 모드이거나, 페이지 편집 모드가 아니거나, 최소 표시거나, 이 카드가 인라인 편집 상태가 아니면 null
-    if (enableOverlayEvolutionMode || !isPageEditing || minimalDisplay || !isInlineEditing) return null;
+    // 오버레이 모드이거나, 최소 표시거나, 이 카드가 인라인 편집 상태가 아니면 null (isPageEditing 조건 제거)
+    if (enableOverlayEvolutionMode || minimalDisplay || !isInlineEditing) return null;
 
     return (
       <div className="mt-4 pt-3 border-t border-gray-700/50 space-y-3">
