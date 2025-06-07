@@ -17,7 +17,7 @@ export default function MeasurementSection() {
           <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-xl shadow-lg border border-gray-100 text-left flex flex-col h-full">
              <div className="flex items-center mb-4">
                <FiAward className="w-8 h-8 text-blue-600 mr-4 flex-shrink-0" />
-               <h3 className="text-xl md:text-2xl font-semibold text-gray-800">Atomic Reading: 작고 강한 몰입</h3>
+               <h3 className="text-xl md:text-2xl font-semibold text-gray-800">Atomic Reading</h3>
              </div>
              <p className="text-base md:text-lg text-gray-700 flex-grow">
                단 3분, 온전히 빠져드는 경험. 당신의 집중력이 가장 빛나는 <strong className="font-semibold text-blue-700">최적의 리듬</strong>을 찾아보세요.
@@ -28,7 +28,7 @@ export default function MeasurementSection() {
           <div className="bg-gradient-to-br from-purple-50 to-white p-8 rounded-xl shadow-lg border border-gray-100 text-left flex flex-col h-full">
             <div className="flex items-center mb-4">
                <FiPocket className="w-8 h-8 text-purple-600 mr-4 flex-shrink-0" />
-              <h3 className="text-xl md:text-2xl font-semibold text-gray-800">ZenGo: 기억의 선명함을 느껴보세요</h3>
+              <h3 className="text-xl md:text-2xl font-semibold text-gray-800">ZenGo</h3>
             </div>
             <p className="text-base md:text-lg text-gray-700 flex-grow">
               정보를 얼마나 효과적으로 붙잡아두는지, 당신의 <strong className="font-semibold text-purple-700">작업 기억력(Working Memory) 크기</strong>를 직접 확인해 보세요.

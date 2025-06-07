@@ -25,7 +25,7 @@ export default function ProblemDiagnosisSection() {
             너무 많은 정보가 한꺼번에 밀려오면, 일부를 흘려보냅니다. 
             이는 잘못이 아닌, <strong className="font-semibold text-gray-900">자연스러운 반응</strong>입니다. 
             하지만 이런 경험이 반복되면, 들인 노력이 쌓이지 않아 
-            <strong className="font-semibold text-gray-900">멍해지는 기분</strong>이 들 수 있습니다.
+            <strong className="font-semibold text-gray-900"> 멍해지는 기분</strong>이 들 수 있습니다.
           </p>
         </motion.div>
       </div>

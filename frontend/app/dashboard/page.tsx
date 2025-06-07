@@ -488,7 +488,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.primary}`}>TS : Atomic-Reading</h2> {/* Theme text */}
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>당신만의 읽기 리듬을 찾아보세요</p> {/* Theme text */}
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>작고 강한 몰입, 오늘의 리듬을 찾으세요.</p> {/* Theme text */}
               </div>
               <div className="mt-6">
                  <button className={`w-full ${habitus33Theme.buttonPrimaryBg} ${habitus33Theme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
@@ -504,7 +504,7 @@ export default function DashboardPage() {
                <div>
                  <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.secondary}`}>ZenGo : Work-Memory</h2> {/* Theme text */} 
                  <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */} 
-                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>자연스러운 기억의 흐름을 경험하세요</p> {/* Theme text */} 
+                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>기억의 초점을 다시 모으세요</p> {/* Theme text */} 
                </div>
                <div className="mt-6">
                  <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
@@ -524,7 +524,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}>직접 만든 ZenGo</p>
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>생각이 자라나는 공간을 만들어 보세요</p>
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>스스로 만들고 오래동안 기억하세요</p>
               </div>
               <div className="mt-6">
                 <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-medium text-indigo-800">
-                    당신만의 고유한 리듬을 찾아보세요
+                    작은 노력도 모두 성장으로
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
