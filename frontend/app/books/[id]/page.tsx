@@ -535,7 +535,7 @@ export default function BookDetailPage() {
               className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border flex items-center`}
             >
               <AiOutlineArrowLeft className="mr-2 h-4 w-4" />
-              나의 독서 공간
+              나의 도서관
             </Button>
           </Link>
         </div>
@@ -570,7 +570,7 @@ export default function BookDetailPage() {
               aria-label="TS 모드 시작"
               className={`text-white`}
             >
-              TS 모드 시작
+              Atomic-Reading
             </Button>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
