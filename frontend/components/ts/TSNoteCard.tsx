@@ -75,28 +75,28 @@ export interface TSSessionDetails {
 // 목적별 4단계 질문/가이드/placeholder 매핑
 const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder: string }>> = {
   exam_prep: [
-    { question: '이 메모, 시험에 왜 중요할까요?', placeholder: '(핵심 키워드: )' },
-    { question: '이 메모로 어떤 시험 문제를 예상하나요?', placeholder: '(출제 유형: )' },
-    { question: '메모 내용을 어떤 기존 지식과 연결할까요?', placeholder: '(연관 개념/암기팁: )' },
-    { question: '완벽 암기를 위해 지금 할 행동은 무엇인가요?', placeholder: '(예: 오답노트 정리, 백지 복습)' },
+    { question: '이 메모, 시험에 왜 중요할까요?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
+    { question: '이 내용을 처음 봤을 때, 어떤 부분이 가장 헷갈렸나요?', placeholder: '(예: 용어가 생소함, 공식 유도 과정)' },
+    { question: '메모 내용을 어떤 기존 지식과 연결할까요?', placeholder: '(예: 유사 개념, 반대 이론, 상위 분류)' },
+    { question: '이 개념을 그림이나 도표로 표현한다면?', placeholder: '(예: 마인드맵, 관계도, 암기용 그림)' },
   ],
   practical_knowledge: [
-    { question: '이 메모, 내 업무/기술에 어떻게 바로 쓸 수 있나요?', placeholder: '(구체적 아이디어: )' },
-    { question: '메모 내용을 업무에 적용할 때, 첫 단계는 무엇일까요?', placeholder: '(당장 실행할 액션: )' },
-    { question: '이 메모는 기존 내 경험/지식과 어떤 점이 다른가요?', placeholder: '(주요 차별점/새로운 가치: )' },
-    { question: '이 지식, 내 업무 역량 향상에 어떻게 기여할까요?', placeholder: '(기대되는 성과/변화: )' },
+    { question: '이 메모, 내 업무/기술에 어떻게 바로 쓸 수 있나요?', placeholder: '(예: 특정 문제 해결, 프로세스 개선)' },
+    { question: '이 지식이 필요했던 구체적인 상황은 무엇이었나요?', placeholder: '(예: 버그 해결 중, 보고서 작성 시)' },
+    { question: '이 메모는 기존 내 경험/지식과 어떤 점이 다른가요?', placeholder: '(예: 기존 방식과의 차이, 새로운 가치)' },
+    { question: '이 지식의 핵심 원리를 하나의 비유로 설명한다면?', placeholder: '(예: \'이 알고리즘은 잘 정리된 도서관 같다\')' },
   ],
   humanities_self_reflection: [
-    { question: '이 메모, 어떤 감정/생각을 불러일으켰나요?', placeholder: '(나의 주요 감정/생각: )' },
-    { question: '메모 내용이 나의 어떤 경험을 떠올리게 하나요?', placeholder: '(관련된 내 경험: )' },
-    { question: '이 메모, 어떤 다른 작품/지식과 연결되나요?', placeholder: '(예: 책, 영화, 개념)' },
-    { question: '이 메모에서 얻은 깨달음, 어떻게 삶에 적용할까요?', placeholder: '(나의 작은 실천/변화: )' },
+    { question: '이 메모, 어떤 감정/생각을 불러일으켰나요?', placeholder: '(예: 특정 감정, 떠오른 질문)' },
+    { question: '메모 내용이 나의 어떤 경험을 떠올리게 하나요?', placeholder: '(예: 어린 시절의 기억, 특정 인물)' },
+    { question: '이 메모, 어떤 다른 작품/지식과 연결되나요?', placeholder: '(예: 다른 책, 영화, 역사적 사건)' },
+    { question: '이 메모의 내용을 한 폭의 그림이나 장면으로 묘사한다면?', placeholder: '(예: \'노을 지는 바다를 혼자 보는 모습\')' },
   ],
   reading_pleasure: [
-    { question: '이 메모, 어떤 점이 가장 흥미로웠나요?', placeholder: '(재미/감동 포인트: )' },
-    { question: '메모 내용 중 가장 기억에 남는 것은 무엇인가요?', placeholder: '(장면/대사/캐릭터: )' },
-    { question: '이 메모의 즐거움, 어떤 다른 작품/경험을 떠올리게 하나요?', placeholder: '(비슷한 재미를 준 작품/경험: )' },
-    { question: '이 즐거움/감동, 어떻게 기억하고 공유할까요?', placeholder: '(나만의 감상평/추천 이유: )' },
+    { question: '이 메모, 어떤 점이 가장 흥미로웠나요?', placeholder: '(예: 반전, 문체, 대사의 맛)' },
+    { question: '이 구절을 읽을 때, 어떤 기분이었나요?', placeholder: '(예: 짜릿함, 평온함, 슬픔, 웃음)' },
+    { question: '이 메모의 즐거움, 어떤 다른 작품/경험을 떠올리게 하나요?', placeholder: '(예: 영화 A의 한 장면, 어릴 적 놀이공원 갔던 경험)' },
+    { question: '책 속의 어떤 장면이 머릿속에 생생하게 그려졌나요?', placeholder: '(예: 인물의 표정, 배경 묘사, 분위기)' },
   ],
 };
 

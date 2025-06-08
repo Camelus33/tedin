@@ -1,9 +1,19 @@
 {
+  "name": "habitus33-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run dev --workspace=frontend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "lint": "npm run lint --workspace=frontend && npm run lint --workspace=backend",
+    "test": "npm test --workspace=frontend && npm test --workspace=backend",
     "start": "next start",
-    "lint": "next lint",
     "update-zengo-data": "node scripts/update-zengo-data.js",
     "check-zengo-data": "node scripts/check-zengo-data.js",
     "analyze-zengo-distribution": "node scripts/analyze-zengo-distribution.js",
@@ -28,6 +38,7 @@
   "devDependencies": {
     "@types/node": "^22.15.18",
     "chalk": "^4.1.2",
-    "node-fetch": "^2.6.9"
+    "node-fetch": "^2.6.9",
+    "typescript": "^5.1.3"
   }
 }

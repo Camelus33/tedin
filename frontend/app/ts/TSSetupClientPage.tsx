@@ -185,15 +185,15 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           if (process.env.NODE_ENV === 'development') {
             const testBooks: Book[] = [/* 테스트 데이터 */];
             setBooks(testBooks);
-            setError('서버 연결 실패, 테스트 데이터를 사용합니다');
+            setError('서버 연결에 잠시 문제가 생겼나 봐요. 개발용 테스트 데이터로 안내할게요.');
           } else {
-            setError(err.message || '내 서재 목록을 가져오는 데 문제가 생겼어요');
+            setError('내 서재 정보를 가져오는 중에 작은 문제가 발생했어요. 잠시 후 다시 시도해 주시겠어요?');
             setBookSource('new');
           }
         } else { // API 실패했으나 로컬 캐시가 있으면 그걸로 일단 보여줌
            console.log('API 호출 실패했지만 캐시된 책 목록으로 계속 진행');
            if (books.length === 0) setBooks(localBooks); // books 상태가 비어있으면 로컬 캐시로 채움
-           setError('최신 책 정보를 불러올 수 없습니다. 캐시된 데이터를 사용합니다.');
+           setError('새로운 책 정보를 불러오지 못했어요. 마지막으로 저장된 서재 정보를 보여드릴게요.');
         }
       } finally {
         setIsLoading(false);
@@ -218,7 +218,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
       if (typeof window === "undefined") return;
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("로그인이 필요합니다");
+        setError("다시 만나서 반가워요! 계속하려면 로그인이 필요해요.");
         setIsStarting(false);
         return;
       }
@@ -227,27 +227,27 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
         return;
       }
       if (!selectedBookId) {
-        setError("읽을 책을 선택해주세요");
+        setError("어떤 책과 함께할까요? 먼저 읽을 책을 선택해주세요.");
         setIsStarting(false);
         return;
       }
       if (!selectedBook) {
-        setError('선택된 책 정보를 찾을 수 없습니다');
+        setError('앗, 선택한 책 정보를 다시 확인해 주시겠어요?');
         setIsStarting(false);
         return;
       }
       if (startPage >= endPage) {
-        setError('시작 페이지는 종료 페이지보다 작아야 합니다.');
+        setError('시작 페이지는 종료 페이지보다 앞에 있어야겠죠?');
         setIsStarting(false);
         return;
       }
       if (endPage > selectedBook.totalPages) {
-        setError('종료 페이지가 책의 총 페이지를 초과할 수 없습니다.');
+        setError('설정한 페이지가 책의 전체 분량을 넘지 않도록 확인해주세요.');
         setIsStarting(false);
         return;
       }
       if (focusDuration <= 0) {
-        setError('집중 시간은 1분 이상이어야 합니다.');
+        setError('최소 1분 이상 집중하는 시간을 가져보는 건 어떨까요?');
         setIsStarting(false);
         return;
       }
@@ -262,7 +262,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
       const res = await api.post("/sessions", payload, { headers: { Authorization: `Bearer ${token}` } });
       const newSession = res.data;
       if (!newSession || !newSession._id) {
-        setError("세션 생성 실패");
+        setError("측정을 시작하는 데 실패했어요. 잠시 후 다시 시도해 주세요.");
         setIsStarting(false);
         return;
       }
@@ -272,20 +272,20 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
         if (getRes.data && getRes.data._id) {
           // durationSec sanity check
           if (getRes.data.durationSec < 60) {
-            setError("세션 집중 시간이 비정상적으로 짧게 저장되었습니다. 다시 시도해 주세요.");
+            setError("세션 집중 시간이 비정상적으로 짧게 저장되었어요. 다시 시도해 주시겠어요?");
             setIsStarting(false);
             return;
           }
         router.push(`/ts/session/${newSession._id}`);
       } else {
-          setError("세션 생성 후 조회 실패");
+          setError("세션을 만들고 확인하는 과정에서 문제가 발생했어요.");
         }
       } catch (err) {
-        setError("세션 생성 후 조회 실패(404)");
+        setError("세션을 만들고 확인하는 과정에서 문제가 발생했어요 (404).");
       }
       setIsStarting(false);
     } catch (err: any) {
-      setError(err?.response?.data?.error || "세션 시작 중 오류 발생");
+      setError(err?.response?.data?.error || "세션을 시작하는 중에 예상치 못한 오류가 발생했어요. 다시 한번 시도해주세요.");
       setIsStarting(false);
     }
   };
@@ -309,7 +309,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
               Time Sprint 설정
             </h1>
             <p className={`${cyberTheme.textMuted} text-sm mb-4`}>
-              읽을 범위를 설정하고, 측정을 시작하세요.
+              여정에 앞서 읽을 범위를 정하고, 시작하세요.
             </p>
           </div>
 
@@ -321,7 +321,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           ) : (
             <>
           <div>
-            <label htmlFor="book-select" className={`block text-sm font-medium mb-1 ${cyberTheme.textLight}`}>1. 어떤 기억을 활성화할까요? (책 선택)</label>
+            <label htmlFor="book-select" className={`block text-sm font-medium mb-1 ${cyberTheme.textLight}`}>1. 어떤 책을 읽을까요? (책 선택)</label>
             <div className="flex items-center gap-2 mt-1">
               <select
                 id="book-select"
@@ -353,7 +353,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
             <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>2. 어디부터 어디까지 읽을까요? (페이지 범위)</h2>
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <div className="flex-1 w-full">
-                <label htmlFor="start-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>시작 페이지</label>
+                <label htmlFor="start-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>시작</label>
                 <input
                   type="number"
                   id="start-page"
@@ -367,7 +367,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
               </div>
               <span className={`text-lg font-medium ${cyberTheme.textMuted} sm:mt-4`}>~</span>
               <div className="flex-1 w-full">
-                <label htmlFor="end-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>종료 페이지</label>
+                <label htmlFor="end-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>끝</label>
                 <input
                   type="number"
                   id="end-page"
@@ -391,7 +391,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           <div className="space-y-2">
             <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>3. 추가 설정</h2>
             <div className="flex items-center justify-between py-1">
-              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>속독 팁 활성화 (뇌 준비 운동)</label>
+              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>읽기 리듬 팁</label>
               <button
                 id="warmup-toggle"
                 type="button"
@@ -401,7 +401,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                 disabled={!selectedBookId} // 책이 선택되지 않으면 비활성화
                 className={`${enableWarmup ? cyberTheme.buttonPrimaryBg : 'bg-gray-600'} relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50`}
               >
-                <span className="sr-only">속독 팁 활성화</span>
+                <span className="sr-only">읽기 리듬 팁 활성화</span>
                 <span aria-hidden="true" className={`${enableWarmup ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}></span>
               </button>
             </div>
@@ -423,7 +423,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                  <span className={`text-lg font-semibold ${cyberTheme.secondary} w-10 text-center`}>{focusDuration}</span>
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                최소 3분, 최대 17분까지 설정 가능합니다.
+                최소 3분, 최대 17분까지 리듬을 만들어 보세요.
               </p>
             </div>
           </div>
@@ -441,7 +441,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
               ) : (
                 <PlayIcon className="h-5 w-5" />
               )}
-              측정 시작 ({selectedBook ? (endPage - startPage + 1) : 0} 페이지)
+              Start ({selectedBook ? (endPage - startPage + 1) : 0} 페이지)
             </Button>
           </div>
             </>

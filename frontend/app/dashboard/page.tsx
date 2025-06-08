@@ -488,11 +488,11 @@ export default function DashboardPage() {
               <div>
                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.primary}`}>TS : Atomic-Reading</h2> {/* Theme text */}
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>작고 강한 몰입, 오늘의 리듬을 찾으세요.</p> {/* Theme text */}
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>작지만 깊은 몰입을 느껴 보시겠어요?</p> {/* Theme text */}
               </div>
               <div className="mt-6">
                  <button className={`w-full ${habitus33Theme.buttonPrimaryBg} ${habitus33Theme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
-                    Rhythm {/* Calm flow */} 
+                    Dive {/* Calm flow */} 
                  </button>
               </div>
               {/* Removed emoji div */}
@@ -504,11 +504,11 @@ export default function DashboardPage() {
                <div>
                  <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.secondary}`}>ZenGo : Work-Memory</h2> {/* Theme text */} 
                  <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */} 
-                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>기억의 초점을 다시 모으세요</p> {/* Theme text */} 
+                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>내 안에 잠든 기억력, 깨워 보시죠!</p> {/* Theme text */} 
                </div>
                <div className="mt-6">
                  <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
-                   Depth {/* Inner space */} 
+                   Find {/* Inner space */} 
                  </button>
                </div>
                {/* Removed emoji div */}
@@ -523,12 +523,12 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}>직접 만든 ZenGo</p>
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>스스로 만들고 오래동안 기억하세요</p>
+                <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p>
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>꼭 기억하고 싶은 것이 있나요?</p>
               </div>
               <div className="mt-6">
                 <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
-                  <span className="relative z-10 font-barlow tracking-wider">Begin</span>
+                  <span className="relative z-10 font-barlow tracking-wider">Try</span>
                   <span className="cyber-rect-anim pointer-events-none absolute inset-0 rounded-lg"></span>
                 </button>
               </div>
@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-medium text-indigo-800">
-                    나만의 리듬, 나만의 도전!
+                    당신의 소중한 33일을 항상 같이 하겠습니다.
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
@@ -564,13 +564,13 @@ export default function DashboardPage() {
                     aria-label="브레인핵 루틴 시작"
                     type="button"
                   >
-                    Atomic-Reading
+                    Atomic Reading
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
                   <div className="bg-white/90 py-1 px-4 rounded-full flex items-center space-x-2 border border-indigo-100 shadow-sm">
                     <p className="text-xs font-medium text-indigo-800"> 
-                      오늘의 작은 성장
+                      오늘의 작은 성공
                     </p>
                     <span 
                       className={`text-sm ${routineData?.todayTsExecuted ? 'text-indigo-600' : 'text-indigo-200'}`}
@@ -609,7 +609,7 @@ export default function DashboardPage() {
               </p>
               <p className="text-sm text-indigo-600 mt-2">
                 <span className="font-medium text-indigo-900">{routineData?.consecutiveStreak || 0}일째</span> 함께하는 여정 - 
-                <span className="font-medium text-indigo-900"> 작은 성장이 쌓여 큰 변화</span>가 됩니다
+                <span className="font-medium text-indigo-900"> 작은 성공이 쌓이면 큰 변화</span>가 됩니다
               </p>
             </div>
           </div>
@@ -663,7 +663,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-indigo-800 mb-1">Atomic-Reading</p>
+                <p className="text-sm text-indigo-800 mb-1">Atomic Reading</p>
                 <p className="text-xl font-medium text-indigo-700">
                   {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className="text-xs text-indigo-500">페이지/분</span>
                 </p>
@@ -691,7 +691,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">TS 횟수</p>
+                <p className="text-sm text-gray-200 mb-1">TS</p>
                 <p className="text-xl font-bold text-indigo-400">{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
               </div>
             </div>
@@ -717,7 +717,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Zm4.28 2.53a.75.75 0 0 1 1.06.22A3.25 3.25 0 0 0 12 16.25a3.25 3.25 0 0 0 1.91-1.5.75.75 0 1 1 1.28.78A4.75 4.75 0 0 1 12 17.75a4.75 4.75 0 0 1-3.19-1.47.75.75 0 0 1 .22-1.06ZM9.25 10a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75A.75.75 0 0 1 9.25 10Zm5.5 0a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">ZenGo 점수</p>
+                <p className="text-sm text-gray-200 mb-1">ZenGo</p>
                 <p className="text-xl font-bold text-green-400">{stats?.todayZengoScore != null && stats?.totalZengoScore != null ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
               </div>
             </div>
@@ -743,7 +743,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">내가 등록한 책</p>
+                <p className="text-sm text-gray-200 mb-1">등록한 책</p>
                 <p className="text-xl font-bold text-purple-400">{stats ? `${stats.totalBooks}권` : '-'}</p>
               </div>
             </div>
@@ -755,18 +755,18 @@ export default function DashboardPage() {
           {/* 왼쪽: 현재 읽고 있는 책 */}
           <div className="bg-white p-8 border border-indigo-100 rounded-xl shadow-sm">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-medium text-indigo-900">현재의 독서 여정</h2>
+              <h2 className="text-xl font-medium text-indigo-900">현재 읽기 여정</h2>
               <Button 
                 href="/books" 
                 variant="outline"
               >
-                모든 여정 보기
+                나의 도서관
               </Button>
             </div>
             
             {currentBooks.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-indigo-600 mb-6">새로운 독서 여정을 시작해 보세요</p>
+                <p className="text-indigo-600 mb-6">새로운 읽기 여정을 시작해 보세요</p>
                 <Button 
                   href="/books/new" 
                   variant="default"

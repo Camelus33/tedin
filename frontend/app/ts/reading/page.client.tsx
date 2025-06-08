@@ -134,7 +134,7 @@ export default function TSReadingPage() {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
         <Spinner size="lg" color="cyan" />
-        <p className={`mt-4 ${cyberTheme.textMuted}`}>피드백 루프 실행 준비 중...</p>
+        <p className={`mt-4 ${cyberTheme.textMuted}`}>준비 중입니다. 잠시만 기다려 주시겠어요?</p>
       </div>
     );
   }
@@ -144,15 +144,15 @@ export default function TSReadingPage() {
       <div className={`min-h-screen flex items-center justify-center ${cyberTheme.gradient} p-4`}>
         <div className={`bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full border border-red-500/50`}>
           <h1 className="text-xl font-bold text-red-400 mb-4 flex items-center">
-            <ExclamationTriangleIcon className="h-6 w-6 mr-2" /> 오류 발생
+            <ExclamationTriangleIcon className="h-6 w-6 mr-2" /> 문제를 해결하고 있습니다.
           </h1>
-          <p className={`mb-6 ${cyberTheme.textMuted}`}>{error || '세션 정보를 찾을 수 없습니다.'}</p>
+          <p className={`mb-6 ${cyberTheme.textMuted}`}>{error || '세션 정보를 열심히 찾고 있습니다'}</p>
           <Button
             href="/ts"
             variant="outline"
             className={`w-full !border-red-500/50 !text-red-400 hover:!bg-red-900/30`}
           >
-            루프 설정으로 돌아가기
+            TS 설정으로 돌아가기
           </Button>
         </div>
       </div>
@@ -168,7 +168,7 @@ export default function TSReadingPage() {
             <div>
               <h1 className={`font-bold text-xl ${cyberTheme.textLight}`}>{sessionData.bookId.title}</h1>
               <p className={`text-sm ${cyberTheme.textMuted} mt-1`}>({sessionData.startPage} - {sessionData.endPage} 페이지)</p>
-              <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>작업 기억 처리 중...</p>
+              <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>나만의 읽기 리듬...</p>
             </div>
             
             <div className={`text-center p-3 rounded-lg border ${cyberTheme.inputBorder} bg-gray-900/50 shadow-inner min-w-[120px]`}>
@@ -179,7 +179,7 @@ export default function TSReadingPage() {
               >
                 {formatTime(timeRemaining)}
               </div>
-              <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>루프 잔여 시간</div>
+              <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>남은 시간</div>
               
               <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-1.5 mt-2 overflow-hidden`}>
                 <div 
@@ -190,7 +190,7 @@ export default function TSReadingPage() {
                   }}
                 ></div>
               </div>
-              <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>처리 진행률: {Math.round(progressPercentage)}%</div>
+              <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>진행률: {Math.round(progressPercentage)}%</div>
             </div>
           </div>
         </div>
@@ -213,7 +213,7 @@ export default function TSReadingPage() {
             }`}
           >
             {isPaused ? <PlayIcon className="h-5 w-5 mr-2" /> : <PauseIcon className="h-5 w-5 mr-2" />}
-            {isPaused ? '루프 재개' : '루프 일시정지'}
+            {isPaused ? '다시 시작' : '잠시 멈춤'}
           </Button>
           <Button
             type="button"
@@ -222,7 +222,7 @@ export default function TSReadingPage() {
             className={`!px-6 !py-3 !rounded-xl !font-medium flex items-center transition-all !border-red-500/50 ${cyberTheme.cardBg} !text-red-400 hover:!bg-red-900/30 hover:!border-red-600/50`}
           >
             <StopIcon className="h-5 w-5 mr-2" />
-            처리 완료 (수동 종료)
+            끝 (수동 종료)
           </Button>
         </div>
       </div>
@@ -244,7 +244,7 @@ function BreathingText() {
         ease: "easeInOut"
       }}
     >
-      코로 깊게 호흡하세요.
+      코로 깊게 마시세요. 기억도 깊어집니다.
     </motion.div>
   );
 }

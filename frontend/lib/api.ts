@@ -19,7 +19,7 @@ export const API_ERRORS = {
 
 // Create axios instance with configuration
 const api = axios.create({
-  baseURL: `${API_HOST}/api`, // Prepended /api to the host
+  baseURL: API_HOST, // Prepended /api to the host
   headers: {
     'Content-Type': 'application/json',
   },

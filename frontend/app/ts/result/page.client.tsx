@@ -80,10 +80,10 @@ export default function TSResultPage() {
 
   // Get a performance message based on PPM
   const getPerformanceMessage = (ppm: number) => {
-    if (ppm > 2) return '놀라운 집중력을 보여주셨어요!';
-    if (ppm > 1.5) return '평균 이상의 좋은 성과예요!';
-    if (ppm > 1) return '꾸준한 리듬을 유지하셨어요!';
-    return '첫 시작을 축하드려요!';
+    if (ppm > 2) return '집중력이 대단하시군요!';
+    if (ppm > 1.5) return '평소보다 좋은 성과예요!';
+    if (ppm > 1) return '꾸준하게 리듬을 유지하셨어요!';
+    return '첫 작은 성공을 축하드려요!';
   };
 
   // Handle share action
@@ -101,7 +101,7 @@ export default function TSResultPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-blue-50">
-        <p>결과 로딩 중...</p>
+        <p>결과를 불러오는 중...</p>
       </div>
     );
   }
@@ -110,8 +110,8 @@ export default function TSResultPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4">
         <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-red-600 mb-4">오류 발생</h1>
-          <p className="mb-6">{error || '세션 결과를 찾을 수 없습니다.'}</p>
+          <h1 className="text-xl font-bold text-red-600 mb-4">고치는 중</h1>
+          <p className="mb-6">{error || '세션 결과를 찾고 있습니다.'}</p>
           <Button
             href="/ts"
             variant="default"
@@ -132,8 +132,8 @@ export default function TSResultPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4">
         <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-red-600 mb-4">오류 발생</h1>
-          <p className="mb-6">세션 결과 데이터가 올바르지 않습니다.</p>
+          <h1 className="text-xl font-bold text-red-600 mb-4">앗! 실수를 했어요!</h1>
+          <p className="mb-6">세션 결과 데이터가 올바르지 않다고 나오네요.</p>
           <Button
             href="/ts"
             variant="default"
@@ -178,7 +178,7 @@ export default function TSResultPage() {
             
             {/* Achievement Title */}
             <div className="text-center mb-2 mt-4">
-              <h1 className="text-2xl tracking-wider font-bold text-gray-800 uppercase">YOUR SPEED</h1>
+              <h1 className="text-2xl tracking-wider font-bold text-gray-800 uppercase">YOUR RHYTHM</h1>
             </div>
             
             {/* Achievement Label based on performance */}
@@ -325,7 +325,7 @@ export default function TSResultPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>Showcase Achievement</span>
+                <span>Showcase Your Success</span>
               </button>
             </div>
           </div>

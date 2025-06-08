@@ -64,7 +64,7 @@ export default function SessionHubPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
         <Spinner size="lg" color="cyan" />
-        <p className="mt-4 text-gray-400">세션 정보를 불러오는 중...</p>
+        <p className="mt-4 text-gray-400">정보를 불러오는 중...</p>
       </div>
     );
   }

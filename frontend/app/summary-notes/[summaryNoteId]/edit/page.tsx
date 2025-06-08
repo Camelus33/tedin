@@ -366,7 +366,7 @@ export default function EditSummaryNotePage() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="단권화 노트 제목"
+                placeholder="제목"
                 className={`text-3xl font-bold ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} focus:ring-cyan-500 focus:border-cyan-500 w-full sm:w-auto`}
               />
             ) : (
@@ -410,7 +410,7 @@ export default function EditSummaryNotePage() {
             <Textarea 
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
-              placeholder="노트에 대한 간략한 설명을 추가하세요... (선택 사항)"
+              placeholder="작성 목표와 주제, 내용을 남겨 보세요. 기억에 도움이 됩니다. (선택)"
               rows={3}
               className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
             />
@@ -478,7 +478,7 @@ export default function EditSummaryNotePage() {
                   );
                 })
               ) : (
-                <p className={`${cyberTheme.textMuted}`}>포함된 1줄 메모가 없습니다.</p>
+                <p className={`${cyberTheme.textMuted}`}>포함된 1줄 메모카드가 없습니다.</p>
               )}
             </div>
           </Panel>
@@ -489,7 +489,7 @@ export default function EditSummaryNotePage() {
           {/* Right Panel: Markdown Editor */}
           <Panel defaultSize={50} minSize={25} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
-                생각 확장 노트
+                Insight
               </h2>
             <div className="flex-grow h-full" data-color-mode="dark"> {/* data-color-mode for MDEditor dark theme */}
               {isEditing ? (

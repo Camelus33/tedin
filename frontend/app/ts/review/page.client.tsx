@@ -198,7 +198,7 @@ export default function TSReviewPage() {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
         <Spinner size="lg" color="cyan" />
-        <p className={`mt-4 ${cyberTheme.textMuted}`}>읽기 기록 불러오는 중...</p>
+        <p className={`mt-4 ${cyberTheme.textMuted}`}>읽은 기록을 불러오고 있어요...</p>
       </div>
     );
   }
@@ -217,7 +217,7 @@ export default function TSReviewPage() {
             className={`w-full !border-red-500/50 !text-red-400 hover:!bg-red-900/30`}
           >
             <ArrowUturnLeftIcon className="h-5 w-5 mr-2" />
-            설정으로 돌아가기
+            TS 설정으로
           </Button>
         </div>
       </div>
@@ -228,21 +228,21 @@ export default function TSReviewPage() {
     <div className={`min-h-screen ${cyberTheme.gradient} p-6 md:p-10 ${cyberTheme.textLight}`}>
       <div className={`max-w-2xl mx-auto ${cyberTheme.bgSecondary} ${cyberTheme.cardBg} rounded-xl shadow-2xl p-6 md:p-8 border ${cyberTheme.inputBorder}`}>
         <div className="flex justify-between items-center mb-8">
-          <h1 className={`text-xl md:text-2xl font-bold ${cyberTheme.textLight}`}>되돌려 떠올리기</h1>
+          <h1 className={`text-xl md:text-2xl font-bold ${cyberTheme.textLight}`}>다시 떠올려 보세요</h1>
           <div className={`flex items-center gap-2 p-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} shadow-inner`}>
             <ClockIcon className={`h-5 w-5 ${cyberTheme.secondary}`} />
             <div>
               <div className={`text-lg font-mono font-bold ${timeLeft < 30 ? 'text-red-400 animate-pulse' : cyberTheme.textLight}`}>
                 {formatTime(timeLeft)}
               </div>
-              <div className={`text-xs ${cyberTheme.textMuted}`}>정리 시간</div>
+              <div className={`text-xs ${cyberTheme.textMuted}`}>떠올리는 시간</div>
             </div>
           </div>
         </div>
 
         <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSubmitReview(); }}>
           <div>
-            <label htmlFor="actualEndPage" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>최종 읽은 페이지 번호</label>
+            <label htmlFor="actualEndPage" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>마지막 읽은 페이지 번호</label>
             <input
               type="number"
               id="actualEndPage"
@@ -261,9 +261,9 @@ export default function TSReviewPage() {
             <label className={`block text-sm font-medium mb-1.5 ${cyberTheme.textMuted}`}>1줄 메모 성격 선택</label>
             <div className="flex space-x-2">
               {[
-                { id: 'thought', label: '💭 단상' },
-                { id: 'quote', label: '💬 인용' },
-                { id: 'question', label: '❓ 질문' },
+                { id: 'thought', label: '생각' },
+                { id: 'quote', label: '인용' },
+                { id: 'question', label: '질문' },
               ].map((type) => (
                 <button
                   key={type.id}
@@ -282,34 +282,34 @@ export default function TSReviewPage() {
           </div>
 
           <div>
-            <label htmlFor="memo" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>1줄 메모 (핵심 생각)</label>
+            <label htmlFor="memo" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>1줄 메모</label>
             <textarea
               id="memo"
               name="memo"
               rows={3}
               value={reviewData.memo}
               onChange={handleChange}
-              placeholder="인상깊은 문장 혹은 떠오른 생각을 적어보세요."
+              placeholder="인상깊은 문장 혹은 떠오른 생각을 있으셨나요?"
               className={`w-full p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
             />
           </div>
 
           <div>
-            <label htmlFor="summary" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>주제어 도출</label>
+            <label htmlFor="summary" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>키워드를 부탁드려도 될까요?</label>
             <input
               type="text"
               id="summary"
               name="summary"
               value={reviewData.summary}
               onChange={handleChange}
-              placeholder="읽은 내용을 10단어 이내로 간추려 보세요"
+              placeholder="10단어 이내로 부탁드려요"
               className={`w-full p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
             />
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>자가 평가</label>
-            <p className={`text-xs mb-2 ${cyberTheme.textMuted}`}>집중도와 이해도를 스스로 평가해주세요. 잠시 후 결과에서 확인할 실제 처리 속도(객관적 피드백)와 비교해 보세요.</p>
+            <label className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>셀프 칭찬</label>
+            <p className={`text-xs mb-2 ${cyberTheme.textMuted}`}>스스로에게 후한 점수를 주세요.</p>
             <div className="flex space-x-1 justify-center">
               {[1, 2, 3, 4, 5].map((rating) => (
                 <button

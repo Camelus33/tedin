@@ -10,7 +10,7 @@ const TSSetupClientPage = dynamic(() => import('./TSSetupClientPage'), {
   loading: () => (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-4">
       <Spinner size="lg" color="cyan" />
-      <p className="mt-4 text-gray-400">페이지 로딩 중...</p>
+      <p className="mt-4 text-gray-400">페이지 읽어 오는 중...</p>
     </div>
   ),
 });
