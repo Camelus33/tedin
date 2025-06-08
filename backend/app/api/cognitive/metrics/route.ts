@@ -634,14 +634,14 @@ export async function GET(req: NextRequest) {
 
   } catch (error) {
     console.error('Error in /api/cognitive/metrics:', error);
-    let errorMessage = '서버 내부 오류가 발생했습니다.';
+    let errorMessage = '시스템이 잠시 쉬는 중이에요. 금방 돌아올게요.';
     if (error instanceof Error) {
       errorMessage = error.message;
     }
     if (error instanceof mongoose.Error.CastError && error.path === '_id') {
-        errorMessage = '유효하지 않은 사용자 ID 형식입니다.';
+        errorMessage = '사용자 정보를 찾지 못했어요. 다시 로그인해 주실래요?';
         return NextResponse.json({ message: errorMessage }, { status: 400 });
     }
-    return NextResponse.json({ message: '인지 능력 데이터 조회 중 오류 발생: ' + errorMessage }, { status: 500 });
+    return NextResponse.json({ message: '데이터를 가져오는 중 문제가 있어요. 다시 시도해 주실래요?' }, { status: 500 });
   }
 } 

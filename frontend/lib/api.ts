@@ -9,12 +9,12 @@ const DEFAULT_TIMEOUT = 10000; // 10 seconds
 
 // Error messages
 export const API_ERRORS = {
-  NETWORK_ERROR: '네트워크 연결에 문제가 있습니다. 인터넷 연결을 확인해주세요.',
-  TIMEOUT_ERROR: '서버 응답이 너무 오래 걸립니다. 나중에 다시 시도해주세요.',
-  AUTH_ERROR: '로그인이 필요하거나 세션이 만료되었습니다.',
-  SERVER_ERROR: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-  NOT_FOUND: '요청한 리소스를 찾을 수 없습니다.',
-  UNKNOWN_ERROR: '알 수 없는 오류가 발생했습니다.',
+  NETWORK_ERROR: '인터넷 연결이 불안정해요. 조금만 기다려주실래요?',
+  TIMEOUT_ERROR: '연결이 지연되고 있어요. 금방 돌아올게요.',
+  AUTH_ERROR: '로그인이 필요해요. 함께 시작하면 어떨까요?',
+  SERVER_ERROR: '시스템이 잠시 쉬고 있어요. 조금만 기다려 주세요.',
+  NOT_FOUND: '찾으시는 페이지가 숨어있네요. 다른 곳에서 만나요!',
+  UNKNOWN_ERROR: '작은 문제가 생겼어요. 다시 시작해 볼까요?',
 };
 
 // Create axios instance with configuration

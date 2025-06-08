@@ -455,27 +455,25 @@
 
 /* Error container */
 .zengo-error-container {
-  background: white;
-  border-radius: 12px;
-  padding: 2.5rem;
-  max-width: 550px;
+  background-color: #1e293b; /* bg-gray-900 - 브랜드 bgPrimary 색상 */
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 500px;
   margin: 0 auto;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  border-top: 5px solid #f44336;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-top: 5px solid #22d3ee; /* Cyan-400 - 브랜드 primary 색상 */
 }
 
 .zengo-error-container h2 {
-  color: #d32f2f;
-  margin-bottom: 1.2rem;
-  font-size: 1.8rem;
+  color: #22d3ee; /* Cyan-400 - 브랜드 primary 색상 */
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .zengo-error-container p {
-  color: #555;
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
-  line-height: 1.5;
+  color: #e2e8f0; /* 밝은 회색 - 브랜드 textLight 색상 */
+  margin-bottom: 1.5rem;
 }
 
 .retry-button-error {
@@ -492,9 +490,7 @@
 }
 
 .retry-button-error:hover {
-  background: linear-gradient(135deg, #1976d2 0%, #0d5ca2 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(33, 150, 243, 0.4);
+  background-color: #0ea5e9; /* Cyan-500 - 약간 더 진한 색상 */
 }
 
 /* 훈련 화면 스타일 */
@@ -654,29 +650,28 @@ a:focus-visible {
 }
 
 .error-message {
-  color: #dc2626; /* Red-600 */
-  background-color: #fee2e2; /* Red-100 */
-  border: 1px solid #fca5a5; /* Red-300 */
-  border-radius: 4px;
-  padding: 8px 12px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  color: #22d3ee; /* Cyan-400 - 브랜드 primary 색상 */
+  background-color: rgba(34, 211, 238, 0.1); /* Cyan with opacity */
+  border: 1px solid rgba(34, 211, 238, 0.3); /* Cyan border with opacity */
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  margin-bottom: 12px;
   font-size: 0.9em;
   display: flex; /* For icon alignment */
   align-items: center;
 }
 
-/* Optional: Add an error icon */
+/* 아이콘 변경 - 경고 아이콘 대신 더 친근한 아이콘 */
 .error-message::before {
-  content: '⚠️'; /* Or use an SVG icon */
-  margin-right: 8px;
+  content: '💡'; /* Light bulb instead of warning */
+  margin-right: 10px;
   font-size: 1.1em;
 }
 
 /* Style for a retry button specifically for errors */
 .retry-button-error {
-  /* Style similar to other buttons but maybe smaller or different color */
-  background-color: #fb923c; /* Orange-400 */
+  background-color: #22d3ee; /* Cyan-400 - 브랜드 primary 색상 */
   color: white;
   border: none;
   border-radius: 4px;
@@ -684,47 +679,11 @@ a:focus-visible {
   margin-left: 10px; /* Space from error message */
   cursor: pointer;
   font-size: 0.85em;
-}
-
-.retry-button-error:hover {
-  background-color: #f97316; /* Orange-500 */
-}
-
-/* Add styles for the error container */
-.zengo-error-container {
-  background-color: white;
-  border-radius: 10px;
-  padding: 2rem;
-  max-width: 500px;
-  margin: 0 auto;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-top: 5px solid #f44336;
-}
-
-.zengo-error-container h2 {
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.zengo-error-container p {
-  color: #666;
-  margin-bottom: 1.5rem;
-}
-
-.retry-button-error {
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .retry-button-error:hover {
-  background-color: #1976d2;
+  background-color: #0ea5e9; /* Cyan-500 - 약간 더 진한 색상 */
 }
 
 /* 설정 페이지 스타일 */

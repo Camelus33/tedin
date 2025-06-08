@@ -19,11 +19,11 @@ export const createSummaryNote = async (req: Request, res: Response) => {
     const userId = (req as any).user?.id;
 
     if (!userId) {
-      return res.status(401).json({ message: 'User not authenticated' });
+      return res.status(401).json({ message: '로그인이 필요해요. 함께 시작하면 어떨까요?' });
     }
 
     if (!orderedNoteIds || !Array.isArray(orderedNoteIds) || orderedNoteIds.length === 0) {
-      return res.status(400).json({ message: 'orderedNoteIds are required and must be a non-empty array.' });
+      return res.status(400).json({ message: '메모가 아직 선택되지 않았어요. 메모를 선택해 볼까요?' });
     }
 
     const uniqueBookIds = bookIds && Array.isArray(bookIds) ? [...new Set(bookIds.map(String))] : [];
@@ -42,7 +42,7 @@ export const createSummaryNote = async (req: Request, res: Response) => {
     res.status(201).json(newSummaryNote);
   } catch (error: any) {
     console.error('[CreateSummaryNote Error]', error);
-    res.status(500).json({ message: 'Error creating summary note', error: error.message });
+    res.status(500).json({ message: '시스템이 잠시 쉬고 있어요. 조금만 기다려 주세요.', error: error.message });
   }
 };
 
@@ -62,24 +62,24 @@ export const getSummaryNoteById = async (req: Request, res: Response) => {
     const userId = (req as any).user?.id;
 
     if (!mongoose.Types.ObjectId.isValid(summaryNoteId)) {
-        return res.status(400).json({ message: 'Invalid SummaryNote ID format' });
+        return res.status(400).json({ message: '노트 정보가 조금 달라요. 다시 시도해 볼래요?' });
     }
 
     const summaryNote = await SummaryNote.findById(summaryNoteId);
 
     if (!summaryNote) {
-      return res.status(404).json({ message: 'Summary note not found' });
+      return res.status(404).json({ message: '찾으시는 노트가 숨어있네요. 다른 곳에서 만나볼까요?' });
     }
 
     // Optional: Check if the note belongs to the user
     if (summaryNote.userId.toString() !== userId) {
-      return res.status(403).json({ message: 'User not authorized to view this summary note' });
+      return res.status(403).json({ message: '이 노트에 접근할 수 없어요. 내 노트로 돌아갈까요?' });
     }
 
     res.status(200).json(summaryNote);
   } catch (error: any) {
     console.error('[GetSummaryNoteById Error]', error);
-    res.status(500).json({ message: 'Error fetching summary note', error: error.message });
+    res.status(500).json({ message: '데이터를 가져오는 중 문제가 있어요. 다시 시도해 주실래요?', error: error.message });
   }
 };
 
@@ -126,7 +126,7 @@ export const updateSummaryNote = async (req: Request, res: Response) => {
     res.status(200).json(summaryNote);
   } catch (error: any) {
     console.error('[UpdateSummaryNote Error]', error);
-    res.status(500).json({ message: 'Error updating summary note', error: error.message });
+    res.status(500).json({ message: '노트 수정이 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?', error: error.message });
   }
 };
 
@@ -172,30 +172,29 @@ export const deleteSummaryNote = async (req: Request, res: Response) => {
     const { summaryNoteId } = req.params;
     const userId = (req as any).user?.id;
 
-    if (!mongoose.Types.ObjectId.isValid(summaryNoteId)) {
-      return res.status(400).json({ message: 'Invalid SummaryNote ID format' });
+    if (!userId) {
+      return res.status(401).json({ message: '로그인이 필요해요. 함께 시작하면 어떨까요?' });
     }
 
-    if (!userId) {
-      return res.status(401).json({ message: 'User not authenticated for deleting summary note' });
+    if (!mongoose.Types.ObjectId.isValid(summaryNoteId)) {
+      return res.status(400).json({ message: '노트 정보가 조금 달라요. 다시 시도해 볼래요?' });
     }
 
     const summaryNote = await SummaryNote.findById(summaryNoteId);
 
     if (!summaryNote) {
-      return res.status(404).json({ message: 'Summary note not found' });
+      return res.status(404).json({ message: '찾으시는 노트가 숨어있네요. 다른 곳에서 만나볼까요?' });
     }
 
     if (summaryNote.userId.toString() !== userId) {
-      return res.status(403).json({ message: 'User not authorized to delete this summary note' });
+      return res.status(403).json({ message: '이 노트에 접근할 수 없어요. 내 노트로 돌아갈까요?' });
     }
 
-    await summaryNote.deleteOne(); // Changed from remove() to deleteOne()
-
-    res.status(200).json({ message: 'Summary note deleted successfully' });
+    await SummaryNote.findByIdAndDelete(summaryNoteId);
+    res.status(200).json({ message: '단권화 노트가 성공적으로 삭제되었습니다.' });
   } catch (error: any) {
     console.error('[DeleteSummaryNote Error]', error);
-    res.status(500).json({ message: 'Error deleting summary note', error: error.message });
+    res.status(500).json({ message: '노트 삭제가 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?', error: error.message });
   }
 };
 

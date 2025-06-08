@@ -188,7 +188,7 @@ export default function EditSummaryNotePage() {
         }
       } catch (err) {
         console.error('Failed to fetch summary note details:', err);
-        setError('단권화 노트 정보를 불러오는데 실패했습니다.');
+        setError('단권화 노트를 불러오는 중 잠시 멈춤이 있어요. 조금 후에 다시 시도해 볼래요?');
       } finally {
         // 모든 데이터가 준비된 후 한 번에 상태를 설정합니다.
         setFetchedNotes(finalNotes);
@@ -256,7 +256,7 @@ export default function EditSummaryNotePage() {
       return true;
     } catch (err: any) {
       console.error('Failed to save summary note:', err);
-      toast.error('단권화 노트 저장 중 오류가 발생했습니다.');
+      toast.error('단권화 노트 저장이 지금은 어려워요. 조금 있다 다시 해볼래요?');
       return false;
     } finally {
       setLoading(false);
@@ -280,7 +280,7 @@ export default function EditSummaryNotePage() {
         router.push('/books?tab=summary'); // Redirect to My Library, summary tab
       } catch (err) {
         console.error('Failed to delete summary note:', err);
-        toast.error('단권화 노트 삭제 중 오류가 발생했습니다.');
+        toast.error('단권화 노트 삭제가 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
         setLoading(false);
       }
     }
@@ -353,7 +353,7 @@ export default function EditSummaryNotePage() {
 
   if (loading) return <div className="flex justify-center items-center h-screen"><Spinner size="lg" /></div>;
   if (error) return <div className="text-red-500 text-center mt-10 p-4 bg-red-900/20 rounded-md">{error}</div>;
-  if (!summaryNote) return <div className="text-center mt-10">단권화 노트를 찾을 수 없습니다.</div>;
+  if (!summaryNote) return <div className="text-center mt-10">찾으시는 노트가 잠시 숨어있네요. 다른 곳에서 만나볼까요?</div>;
 
   return (
     <div className={`min-h-screen ${cyberTheme.bgPrimary} ${cyberTheme.textLight} p-4 md:p-8`}>

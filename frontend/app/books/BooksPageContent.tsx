@@ -478,8 +478,8 @@ export default function BooksPageContent() {
             )}
             {summaryNotesError && (
               <div className={`text-center py-10 ${cyberTheme.errorText} bg-red-900/20 p-4 rounded-md`}>
-                <p>오류: {summaryNotesError}</p>
-                <Button onClick={fetchSummaryNotes} variant="outline" className="mt-4">재시도</Button>
+                <p>소중한 단권화 노트를 불러오는 중 문제가 생겼어요. 조금 있다 다시 시도해 볼래요?</p>
+                <Button onClick={fetchSummaryNotes} variant="outline" className="mt-4">다시 시도하기</Button>
               </div>
             )}
             {!summaryNotesLoading && !summaryNotesError && summaryNotes.length === 0 && (

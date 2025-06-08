@@ -45,7 +45,7 @@ class ApiClient {
         const url = `${API_BASE_URL}/api${endpoint}`;
         return await apiDebug.logApiRequest(url, config, 'apiClient');
       } catch (error: any) {
-        const errorMessage = error.message || '서버와 통신 중 오류가 발생했습니다.';
+        const errorMessage = error.message || '서버와 연결이 어려워요. 잠시 후 다시 시도해 주세요.';
         toast.error(errorMessage);
         throw error;
       }
@@ -55,7 +55,7 @@ class ApiClient {
         const response = await fetch(`${API_BASE_URL}/api${endpoint}`, config);
         return await this.handleResponse(response, endpoint);
       } catch (error: any) {
-        const errorMessage = error.message || '서버와 통신 중 오류가 발생했습니다.';
+        const errorMessage = error.message || '서버와 연결이 어려워요. 잠시 후 다시 시도해 주세요.';
         toast.error(errorMessage);
         throw error;
       }
@@ -133,10 +133,10 @@ class ApiClient {
     try {
       errorData = await response.json();
     } catch (e) {
-      errorData = { message: 'Failed to parse error response' };
+      errorData = { message: '응답을 읽기 어려워요. 페이지를 새로고침 해주실래요?' };
     }
 
-    const error = new Error(errorData.message || `API 요청 실패: ${response.status}`);
+    const error = new Error(errorData.message || `연결이 원활하지 않아요. 다시 시도해 볼까요?`);
     (error as any).status = response.status;
     (error as any).errorData = errorData;
 
@@ -148,7 +148,7 @@ class ApiClient {
         localStorage.removeItem('token');
         
         // 로그인 페이지로 리디렉션 (토스트 메시지 표시 후)
-        toast.error('세션이 만료되었습니다. 다시 로그인해 주세요.');
+        toast.error('로그인 시간이 지났어요. 다시 만나볼래요?');
         
         // 약간의 지연 후 리디렉션 (토스트 메시지를 볼 수 있도록)
         setTimeout(() => {

@@ -121,14 +121,14 @@ console.log(`[App] API routes configured.`);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Not Found' });
+  res.status(404).json({ error: '찾으시는 페이지가 숨어있네요. 다른 곳에서 만나요!' });
 });
 
 // Error handler
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
+    error: err.message || '시스템이 잠시 쉬고 있어요. 조금만 기다려 주세요.',
   });
 });
 

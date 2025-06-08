@@ -782,13 +782,13 @@ export default function ZengoPage(
           if (!currentContent.wordMappings || !Array.isArray(currentContent.wordMappings)) {
               console.error('Invalid content structure:', currentContent);
               return <div className="zengo-container zengo-error-container">
-                  <h2>데이터 구조 오류</h2>
-                  <p>게임을 표시할 수 없습니다. 다시 시도해주세요.</p>
+                  <h2>준비가 안 된 것 같아요</h2>
+                  <p>게임 데이터가 아직 준비 중이에요. 다시 시도해 볼까요?</p>
                   <button 
                       className="retry-button-error"
                       onClick={() => dispatch(resetGame())}
                   >
-                      다시 시작하기
+                      새로 시작하기
                   </button>
               </div>;
           }
@@ -928,8 +928,8 @@ export default function ZengoPage(
             return (
               <div className="zengo-container">
                 <div className="loading-container" style={{ textAlign: 'center', padding: '30px' }}>
-                  <h3>ZenGo 결과 제출 중...</h3>
-                  <p>잠시만 기다려주세요.</p>
+                  <h3>당신의 소중한 결과를 저장하고 있어요</h3>
+                  <p>조금만 기다려 주실래요?</p>
                 </div>
               </div>
             );

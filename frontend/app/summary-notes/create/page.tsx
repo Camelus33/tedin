@@ -36,7 +36,7 @@ export default function CreateSummaryNotePage() {
   useEffect(() => {
     // 스토어 rehydration이 완료되고, 노트 로딩도 끝났는데 카트가 비어있으면 리디렉션
     if (_hasHydrated && cartItems.length === 0 && !isLoading) {
-      toast.error('카트에 담긴 내용이 없습니다. 먼저 1줄 메모를 카트에 추가해주세요.');
+      toast.error('지식 카트가 비어있어요. 먼저 1줄 메모를 담아볼까요?');
       router.push('/books');
     }
   }, [_hasHydrated, cartItems, isLoading, router]);
@@ -68,7 +68,7 @@ export default function CreateSummaryNotePage() {
         setOrderedNotes(sortedFullNotes);
       } catch (err: any) {
         console.error('Error fetching full notes for summary:', err);
-        setError('노트 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.');
+        setError('소중한 메모들을 불러오는 중 잠시 멈춤이 있어요. 다시 시도해 볼래요?');
         setOrderedNotes([]);
       } finally {
         setIsLoading(false);
@@ -100,7 +100,7 @@ export default function CreateSummaryNotePage() {
    */
   const handleSaveSummaryNote = async () => {
     if (orderedNotes.length === 0) {
-      toast.error('저장할 노트가 없습니다.');
+      toast.error('저장할 메모가 아직 없어요. 메모를 추가해 볼까요?');
       return;
     }
     setIsSaving(true);
@@ -130,11 +130,11 @@ export default function CreateSummaryNotePage() {
       } else {
         // 예상치 못한 성공 상태 코드 처리 (예: 200 OK 또는 ID 없음)
         console.warn('Summary note saved, but with unexpected status or missing ID:', response);
-        setError('노트 저장에 성공했으나, 예상치 못한 응답을 받았습니다. 잠시 후 다시 시도해 주세요.');
+        setError('노트가 저장되었지만 약간 불안정해요. 조금 기다렸다가 다시 시도해 주실래요?');
       }
     } catch (err: any) {
       console.error('Error saving summary note:', err);
-      let errorMessage = '단권화 노트 저장 중 오류가 발생했습니다.';
+      let errorMessage = '단권화 노트 저장이 지금은 어려워요. 조금 있다 다시 해볼래요?';
       if (err.response && err.response.data && err.response.data.message) {
         errorMessage += ` (${err.response.data.message})`;
       }
@@ -173,7 +173,7 @@ export default function CreateSummaryNotePage() {
           {error || '카트에 담긴 노트 정보를 불러올 수 없습니다. 네트워크 연결을 확인하거나 다시 시도해주세요.'}
         </p>
         <Button onClick={() => router.push('/books')} variant="outline">
-          내 서재로 돌아가기
+          나의 도서관으로 돌아가기
         </Button>
       </div>
     );
@@ -202,7 +202,7 @@ export default function CreateSummaryNotePage() {
               type="text"
               value={title}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
-              placeholder="예: 객체지향 프로그래밍 핵심 원리" 
+              placeholder="예: 오늘 학습의 핵심 주제" 
               className="w-full bg-gray-700/50 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500/50 text-lg"
             />
           </div>
@@ -212,7 +212,7 @@ export default function CreateSummaryNotePage() {
               id="summaryDescription"
               value={description}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-              placeholder="이 단권화 노트에 대한 간략한 소개를 적어주세요."
+              placeholder="이 단권화 노트에 대한 간략한 설명을 적어두면, 휠씬 오래 기억에 남아요."
               rows={3}
               className="w-full bg-gray-700/50 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500/50 text-base"
             />
@@ -235,7 +235,7 @@ export default function CreateSummaryNotePage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 italic">표시할 메모가 없습니다. (오류 또는 빈 카트)</p>
+            <p className="text-gray-500 italic">표시할 메모가 안 보이네요! (오류 또는 빈 카트)</p>
           )}
         </section>
 
@@ -250,7 +250,7 @@ export default function CreateSummaryNotePage() {
             {isSaving ? (
               <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> ⏳ 저장 중...</>
             ) : (
-              <><Save className="mr-2 h-5 w-5" /> 💾 단권화 노트 저장하기</>
+              <><Save className="mr-2 h-5 w-5" /> 저장</>
             )}
           </Button>
         </footer>
