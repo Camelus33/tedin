@@ -306,7 +306,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           <div>
             <h1 className={`text-2xl font-bold mb-2 ${cyberTheme.primary} flex items-center gap-2`}> 
               <Cog6ToothIcon className="h-6 w-6" />
-              Time Sprint 설정
+              Tiny Sprint Setting
             </h1>
             <p className={`${cyberTheme.textMuted} text-sm mb-4`}>
               여정에 앞서 읽을 범위를 정하고, 시작하세요.

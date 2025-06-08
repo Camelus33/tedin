@@ -488,7 +488,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.primary}`}>TS : Atomic-Reading</h2> {/* Theme text */}
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>작지만 깊은 몰입을 느껴 보시겠어요?</p> {/* Theme text */}
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>작고 강한 몰입, 느껴 보시겠어요?</p> {/* Theme text */}
               </div>
               <div className="mt-6">
                  <button className={`w-full ${habitus33Theme.buttonPrimaryBg} ${habitus33Theme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
@@ -504,7 +504,7 @@ export default function DashboardPage() {
                <div>
                  <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.secondary}`}>ZenGo : Work-Memory</h2> {/* Theme text */} 
                  <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */} 
-                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>내 안에 잠든 기억력, 깨워 보시죠!</p> {/* Theme text */} 
+                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>내 안에 잠자는 기억력, 깨워 보시겠어요?</p> {/* Theme text */} 
                </div>
                <div className="mt-6">
                  <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
@@ -524,7 +524,7 @@ export default function DashboardPage() {
               <div>
                 <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
                 <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p>
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>꼭 기억하고 싶은 것이 있나요?</p>
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>꼭 기억하고 싶은 것, 카드로 만들어 보시겠어요?</p>
               </div>
               <div className="mt-6">
                 <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
@@ -554,7 +554,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-medium text-indigo-800">
-                    당신의 소중한 33일을 항상 같이 하겠습니다.
+                    안녕하세요. 33일간 잘 부탁드릴게요!
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
@@ -570,7 +570,7 @@ export default function DashboardPage() {
                 <div className="flex-1 flex justify-end">
                   <div className="bg-white/90 py-1 px-4 rounded-full flex items-center space-x-2 border border-indigo-100 shadow-sm">
                     <p className="text-xs font-medium text-indigo-800"> 
-                      오늘의 작은 성공
+                      Today's Atomic Success
                     </p>
                     <span 
                       className={`text-sm ${routineData?.todayTsExecuted ? 'text-indigo-600' : 'text-indigo-200'}`}

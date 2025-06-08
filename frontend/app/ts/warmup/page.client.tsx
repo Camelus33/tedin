@@ -153,8 +153,8 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
   {
     id: 'guided_breathing',
     title: '마음챙김 호흡',
-    generalDescription: '편안한 자세로 화면의 안내에 따라 숨을 조절하여 뇌에 신선한 산소를 공급하고 마음을 안정시킵니다.',
-    tip: '숨을 내쉴 때 몸의 긴장이 함께 빠져나간다고 상상해보세요. 편안함이 중요합니다.',
+    generalDescription: '편안한 자세로 화면의 안내에 따라 숨을 조절하여 뇌에 신선한 산소를 듬뿍 넣어주세요.',
+    tip: '숨을 내쉴 때 마음 속 긴장이 함께 빠져나가는 장면을 떠올려 보세요.',
     variations: [
       // Placeholder - will be filled in later
       { 
@@ -181,7 +181,7 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
     id: 'peripheral_vision_expansion',
     title: '고정점 응시와 주변 시야 확장',
     generalDescription: '중앙의 한 점에 시선을 고정한 채, 주변에 나타나는 시각적 자극을 인지하여 시야 범위를 넓히는 훈련입니다. 시선을 옮기지 않는 것이 중요합니다.',
-    tip: '중심점을 계속 바라보면서 주변에 무엇이 나타나는지 느껴보세요. 모든 것을 명확히 볼 필요는 없습니다.',
+    tip: '중심점을 계속 바라보면서 주변에 무엇이 나타나는지 느껴보세요. 모든 것을 다 볼 필요는 없어요.',
     variations: [
       {
         name: '단일 자극 순차 제시',
@@ -195,14 +195,14 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
           { top: '50%', left: '15%' }, { top: '50%', left: '85%' },
           { top: '85%', left: '15%' }, { top: '85%', left: '50%' }, { top: '85%', left: '85%' },
         ],
-        instructionText: '중앙의 고정점을 응시하세요. 주변에 짧게 나타나는 도형을 인지해보세요.'
+        instructionText: '중앙의 점을 응시하세요. 주변에 나타나는 도형을 인지해 보세요.'
       } as EyeTrackingVariationParams,
     ],
   },
   {
     id: 'visual_span',
     title: '동적 시야 확장',
-    generalDescription: '중심을 주시하면서 주변에 나타나는 시각 정보를 빠르게 포착하여 한 번에 더 넓은 범위를 인식하는 능력을 훈련합니다.',
+    generalDescription: '중심을 주시하면서 주변에 나타나는 시각 정보를 빠르게 포착하여 한 번에 더 넓은 범위를 인식하는 능력이 생깁니다.',
     tip: '중심에 시선을 고정한 채 주변을 넓게 인지하려고 노력하세요.',
     variations: [
       // Placeholder - will be filled in later
