@@ -51,160 +51,81 @@ Habitus33는 사용자의 문해력과 기억력, 지식 확장을 극대화하�
 
 ---
 
-## 설치 및 실행
+## ⚡️ 설치 및 실행 (Installation & Usage)
 
-### 필수 조건
-- Node.js v16 이상
+이 프로젝트는 [NPM Workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces)를 사용하여 `frontend`와 `backend`를 모노레포(monorepo) 구조로 관리합니다.
+
+### 1. 필수 조건
+- Node.js v18 이상
+- npm v7 이상
 - MongoDB Atlas 계정 및 Connection String
 
-### 백엔드
+### 2. 의존성 설치
+프로젝트 루트 디렉토리에서 아래 명령어를 실행하면, `frontend`와 `backend`의 모든 패키지가 한 번에 설치됩니다.
 ```bash
-cd backend
 npm install
-# .env 파일에 MONGODB_URI, JWT_SECRET 등 환경 변수 설정
-npm run dev
 ```
 
-### 프론트엔드
+### 3. 환경 변수 설정
+실행에 필요한 환경 변수 파일을 각각 생성하고 내용을 채워야 합니다.
+- **백엔드:** `backend/.env` 파일을 생성하고 아래 내용을 참고하여 채웁니다.
+  ```
+  PORT=8000
+  MONGODB_URI=your_mongodb_connection_string
+  JWT_SECRET=your_jwt_secret
+  ```
+- **프론트엔드:** `frontend/.env.local` 파일을 생성하고, 백엔드 서버 주소를 지정합니다.
+  ```
+  NEXT_PUBLIC_API_URL=http://localhost:8000/api
+  ```
+
+### 4. 개발 서버 실행
+각 워크스페이스(frontend, backend)의 개발 서버를 개별적으로 실행할 수 있습니다.
+
+**프론트엔드 서버 실행 (http://localhost:3000):**
 ```bash
-cd frontend
-npm install
-# .env.local 파일에 NEXT_PUBLIC_API_URL 등 환경 변수 설정 (필요시)
-npm run dev
+npm run dev --workspace=frontend
 ```
-- 프론트엔드: `http://localhost:3000`
-- 백엔드: `http://localhost:8000` (또는 .env 설정 포트)
+
+**백엔드 서버 실행 (http://localhost:8000):**
+```bash
+npm run dev --workspace=backend
+```
+
+**✅ 모든 서버 동시에 실행하기:**
+```bash
+npm run dev --workspaces
+```
 
 ---
 
-## 환경 변수
-
-### 백엔드 (`backend/.env`)
-```
-PORT=8000
-MONGODB_URI=...
-JWT_SECRET=...
-```
-
-### 프론트엔드 (`frontend/.env.local`)
-```
-# NEXT_PUBLIC_API_URL=http://localhost:8000/api
-```
-
----
-
-## 디렉토리 구조 (2024.06 기준, 상세 주석 포함)
+## 📂 디렉토리 구조 (Directory Structure)
 
 ```
 habitus33/
 │
-├── README.md                # 프로젝트 소개 및 사용법 문서
-├── package.json             # 루트 패키지 매니저(워크스페이스/공통 의존성)
+├── README.md                # 👈 바로 이 파일!
+├── package.json             # ✅ 루트 패키지 매니저 (워크스페이스 설정)
 ├── package-lock.json        # 의존성 lock 파일
-├── .gitignore               # Git 관리 제외 파일 목록
-├── tsconfig.json            # TypeScript 공통 설정
+├── .gitignore
+├── tsconfig.json            # 공통 TypeScript 설정
 │
-├── app/                     # (루트) 앱 레벨 공통 코드/설정 (Next.js SSR 등)
-│   ├── api/                 # API 라우트(Next.js)
-│   ├── auth/                # 인증 관련 라우트
-│   └── ui/                  # 공통 UI 컴포넌트
+├── backend/                 # 📦 Express + MongoDB 기반 API 서버 (워크스페이스)
+│   ├── package.json         # 백엔드 의존성 및 스크립트
+│   ├── src/                 # 핵심 서버 코드 (controllers, models, routes 등)
+│   └── ...
 │
-├── public/                  # 정적 파일(이미지, 사운드 등)
-│   └── sounds/              # 효과음 등 오디오 파일
+├── frontend/                # 📦 Next.js 기반 프론트엔드 앱 (워크스페이스)
+│   ├── package.json         # 프론트엔드 의존성 및 스크립트
+│   ├── app/                 # App Router 기반 페이지/라우트
+│   ├── components/          # 재사용 UI 컴포넌트
+│   ├── store/               # Redux Toolkit 상태 관리
+│   └── ...
 │
-├── scripts/                 # 데이터 가공, 배치, 분석 등 유틸리티 스크립트
-│   ├── zengo-proverbs-*.js  # 젠고 게임용 속담 데이터/분석/변환 스크립트
-│   ├── check-zengo-data.js  # 젠고 데이터 검증
-│   ├── insert-zengo-proverbs.js # DB에 젠고 속담 삽입
-│   ├── ...                  # 기타 데이터 처리/백업/분석 스크립트
-│
-├── dump/                    # 데이터 백업, 임시 저장소
-│   └── habitus33/           # 백업 데이터 하위 폴더
-│
-├── backend/                 # Express + MongoDB 기반 API 서버
-│   ├── package.json         # 백엔드 의존성/스크립트
-│   ├── package-lock.json
-│   ├── tsconfig.json        # 백엔드 TypeScript 설정
-│   ├── .env                 # 백엔드 환경 변수(비공개)
-│   ├── app/                 # (신규) Next.js API 라우트/핸들러
-│   │   ├── api/             # 결제, 유저, 웹훅 등 API 엔드포인트
-│   │   │   ├── payments/    # 결제 관련 API (Stripe 등)
-│   │   │   ├── user/        # 유저 관련 API
-│   │   │   └── webhooks/    # 외부 서비스 웹훅
-│   │   └── lib/             # API 라우트용 라이브러리
-│   ├── src/                 # 핵심 서버 코드
-│   │   ├── app.ts           # Express 앱 진입점
-│   │   ├── database.ts      # DB 연결/설정
-│   │   ├── controllers/     # 각 도메인별 요청 처리 로직
-│   │   │   ├── zengoController.ts      # 젠고 게임/오리지널/마이버스
-│   │   │   ├── myverseGameController.ts# 마이버스(사용자 제작 게임)
-│   │   │   ├── noteController.ts       # 메모진화/노트
-│   │   │   ├── bookController.ts       # 도서/내서재
-│   │   │   ├── ...                     # 기타(유저, 세션, 루틴 등)
-│   │   ├── models/          # Mongoose 스키마/모델
-│   │   │   ├── Zengo.ts, MyverseGame.ts, Note.ts, ... # 각 도메인별 모델
-│   │   ├── routes/          # API 라우트 정의
-│   │   │   ├── zengo.ts, myverseGames.ts, notes.ts, ... # 각 도메인별 라우트
-│   │   ├── services/        # 비즈니스 로직/서비스 계층
-│   │   ├── middlewares/     # 인증, 권한 등 미들웨어
-│   │   ├── utils/           # 공통 유틸리티 함수
-│   │   ├── types/           # 타입 정의
-│   │   ├── scripts/         # 서버 데이터 마이그레이션/유틸
-│   │   └── backups/         # 서버 데이터 백업
-│   ├── prisma/              # Prisma ORM 스키마/마이그레이션
-│   │   └── schema.prisma
-│   └── scripts/             # 서버 데이터 초기화/마이그레이션 스크립트
-│
-├── frontend/                # Next.js 기반 사용자 앱(프론트엔드)
-│   ├── package.json         # 프론트엔드 의존성/스크립트
-│   ├── package-lock.json
-│   ├── tsconfig.json        # 프론트엔드 TypeScript 설정
-│   ├── .eslintrc.json       # 린트 설정
-│   ├── next.config.js       # Next.js 설정
-│   ├── tailwind.config.js   # TailwindCSS 설정
-│   ├── postcss.config.js    # PostCSS 설정
-│   ├── app/                 # App Router 기반 페이지/라우트(도메인별 폴더)
-│   │   ├── ts/              # 마이크로 리딩(TS모드)
-│   │   ├── zengo/           # 젠고 기본/오리지널/마이버스
-│   │   ├── books/           # 내 서재/도서
-│   │   ├── brain-hack-routine/ # 루틴/습관
-│   │   ├── dashboard/       # 인지 대시보드
-│   │   ├── profile/         # 사용자 프로필
-│   │   ├── reading-session/ # 리딩 세션
-│   │   ├── myverse/         # 마이버스(사용자 제작 게임)
-│   │   ├── share/           # 공유 기능
-│   │   ├── onboarding/      # 온보딩
-│   │   ├── notifications/   # 알림
-│   │   ├── analytics/       # 통계/분석
-│   │   └── ...              # 기타(약관, 정책 등)
-│   ├── components/          # 재사용 UI 컴포넌트(도메인별/공통)
-│   │   ├── ts/              # TS모드 관련 컴포넌트
-│   │   ├── zengo/           # 젠고 관련 컴포넌트
-│   │   ├── flashcard/       # 플래시카드
-│   │   ├── landing/         # 랜딩/소개
-│   │   ├── onboarding/      # 온보딩
-│   │   ├── common/          # 공통 UI
-│   │   ├── debug/           # 디버그/개발용
-│   │   ├── dev/             # 개발용
-│   │   ├── cognitive/       # 인지 관련
-│   │   └── ...              # 기타
-│   ├── store/               # Redux Toolkit 스토어/슬라이스
-│   │   ├── store.ts         # 스토어 설정
-│   │   ├── provider.tsx     # Provider 컴포넌트
-│   │   └── slices/          # 도메인별 슬라이스(book, zengo, myverse 등)
-│   ├── lib/                 # API 클라이언트, 유틸 함수 등
-│   ├── hooks/               # 커스텀 훅(useAuth, useBooks, useTS 등)
-│   ├── styles/              # 글로벌/모듈 CSS, Tailwind 등
-│   ├── public/              # 정적 파일(이미지 등)
-│   │   └── images/          # 이미지 리소스
-│   ├── scripts/             # 프론트엔드 유틸 스크립트
-│   └── src/                 # 타입, 유틸, 스타일 등(분리 관리)
-│       ├── types/           # 타입 정의(zengo 등)
-│       ├── utils/           # 유틸 함수
-│       └── styles/          # 테마 등 스타일
-│
-└── node_modules/            # 공통 의존성(루트/백엔드/프론트엔드)
+├── node_modules/            # 🤖 설치된 모든 의존성 (루트/워크스페이스 공통)
+└── scripts/                 # 유틸리티 스크립트
 ```
+> 상세한 내부 구조는 각 `backend`와 `frontend` 디렉토리 내부를 참고해주세요.
 
 ---
 

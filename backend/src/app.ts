@@ -93,29 +93,29 @@ console.log(`[App] Attempting to serve static files from resolved path: ${upload
 app.use('/uploads', express.static(uploadsPath));
 
 // API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/books', bookRoutes);
-app.use('/api/sessions', sessionRoutes);
-app.use('/api/notes', noteRoutes);
-app.use('/api/zengo', zengoRoutes);
-app.use('/api/leaderboard', leaderboardRoutes);
-app.use('/api/badges', badgeRoutes);
-app.use('/api/invites', inviteRoutes);
-app.use('/api/collections', collectionRoutes);
-app.use('/api/myverse', myverseGamesRoutes);
-app.use('/api/routines', routineRoutes);
-app.use('/api/flashcards', flashcardRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/summary-notes', summaryNoteRoutes);
+app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
+app.use('/books', bookRoutes);
+app.use('/sessions', sessionRoutes);
+app.use('/notes', noteRoutes);
+app.use('/zengo', zengoRoutes);
+app.use('/leaderboard', leaderboardRoutes);
+app.use('/badges', badgeRoutes);
+app.use('/invites', inviteRoutes);
+app.use('/collections', collectionRoutes);
+app.use('/myverse', myverseGamesRoutes);
+app.use('/routines', routineRoutes);
+app.use('/flashcards', flashcardRoutes);
+app.use('/notifications', notificationRoutes);
+app.use('/summary-notes', summaryNoteRoutes);
 
 // Cognitive metrics API route
 import cognitiveRoutes from './routes/cognitive';
-app.use('/api/cognitive', cognitiveRoutes);
+app.use('/cognitive', cognitiveRoutes);
 
 // 헬스 체크 라우트
 import healthRoutes from './routes/health';
-app.use('/api/health', healthRoutes);
+app.use('/health', healthRoutes);
 
 console.log(`[App] API routes configured.`);
 
