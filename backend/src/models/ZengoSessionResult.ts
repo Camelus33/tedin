@@ -46,6 +46,11 @@ export interface IZengoSessionResult extends Document {
     correctPositions: { x: number; y: number }[];
     sequentialAccuracy: number;
     temporalOrderViolations: number;
+    spatialPatternRecognition: number;
+    cognitiveLoadManagement: number;
+    taskSwitchingCost: number;
+    errorAdaptability: number;
+    emotionalRegulation: number;
   };
 }
 
@@ -186,6 +191,11 @@ const ZengoSessionResultSchema: Schema = new Schema(
       correctPositions: { type: [Object] }, // { x: Number, y: Number }
       sequentialAccuracy: { type: Number }, // 0~1 사이의 값
       temporalOrderViolations: { type: Number },
+      spatialPatternRecognition: { type: Number },
+      cognitiveLoadManagement: { type: Number },
+      taskSwitchingCost: { type: Number },
+      errorAdaptability: { type: Number },
+      emotionalRegulation: { type: Number },
     },
   },
   {

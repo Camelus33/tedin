@@ -798,80 +798,105 @@ export const getProverbContent = async (req: Request, res: Response) => {
 
 // Zengo 게임 세션 결과 저장 (v3.2 - DB 스키마 V2 필드 연동 완료)
 export const saveSessionResult = async (req: Request, res: Response) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const userId = req.user?.id;
-    console.log(`[ZengoSubmit] 🚀 세션 결과 저장 시도. 사용자 ID: ${userId}`);
-
     if (!userId) {
-      console.error('[ZengoSubmit] 🚨 인증된 사용자가 없어 저장을 중단합니다.');
-      return res.status(401).json({ message: '인증이 필요합니다.' });
+      return res.status(401).json({ message: '인증되지 않은 사용자입니다.' });
     }
 
     const {
+      contentId,
       level,
-      score,
+      language,
+      usedStonesCount,
       correctPlacements,
       incorrectPlacements,
       timeTakenMs,
       completedSuccessfully,
       resultType,
-      detailedMetrics,
-      detailedDataVersion,
+      score,
+      orderCorrect,
+      placementOrder,
+      detailedMetrics // V2 상세 데이터 수신
     } = req.body;
 
-    console.log(`[ZengoSubmit] 📥 수신 데이터: level=${level}, score=${score}, completed=${completedSuccessfully}, v2=${detailedDataVersion}`);
+    // 필수 필드 유효성 검사
+    if (!contentId || !level || !language) {
+      return res.status(400).json({ message: '필수 필드가 누락되었습니다: contentId, level, language' });
+    }
 
-    const newSessionResult = new ZengoSessionResult({
-      userId,
+    const newSessionResultData: Partial<IZengoSessionResult> = {
+      userId: new Types.ObjectId(userId),
+      contentId: new Types.ObjectId(contentId),
       level,
-      score,
+      language,
+      usedStonesCount,
       correctPlacements,
       incorrectPlacements,
       timeTakenMs,
       completedSuccessfully,
       resultType,
-      // V2 데이터가 있을 경우에만 해당 필드들을 추가
-      ...(detailedDataVersion === 'v2.0' && detailedMetrics && {
-        detailedMetrics: {
-            firstClickLatency: detailedMetrics.firstClickLatency,
-            interClickIntervals: detailedMetrics.interClickIntervals,
-            hesitationPeriods: detailedMetrics.hesitationPeriods,
-            spatialErrors: detailedMetrics.spatialErrors,
-            clickPositions: detailedMetrics.clickPositions,
-            correctPositions: detailedMetrics.correctPositions,
-            sequentialAccuracy: detailedMetrics.sequentialAccuracy,
-            temporalOrderViolations: detailedMetrics.temporalOrderViolations,
-        },
-        detailedDataVersion: 'v2.0',
-      }),
-    });
+      score,
+      orderCorrect,
+      placementOrder,
+      detailedDataVersion: 'v2.0', // 데이터 버전 명시
+      detailedMetrics: {
+        // 모든 13개 지표를 안전하게 매핑
+        firstClickLatency: detailedMetrics?.firstClickLatency || 0,
+        interClickIntervals: detailedMetrics?.interClickIntervals || [],
+        hesitationPeriods: detailedMetrics?.hesitationPeriods || [],
+        spatialErrors: detailedMetrics?.spatialErrors || [],
+        clickPositions: detailedMetrics?.clickPositions || [],
+        correctPositions: detailedMetrics?.correctPositions || [],
+        sequentialAccuracy: detailedMetrics?.sequentialAccuracy || 0,
+        temporalOrderViolations: detailedMetrics?.temporalOrderViolations || 0,
+        spatialPatternRecognition: detailedMetrics?.spatialPatternRecognition || 0,
+        cognitiveLoadManagement: detailedMetrics?.cognitiveLoadManagement || 0,
+        taskSwitchingCost: detailedMetrics?.taskSwitchingCost || 0,
+        errorAdaptability: detailedMetrics?.errorAdaptability || 0,
+        emotionalRegulation: detailedMetrics?.emotionalRegulation || 0,
+      }
+    };
 
-    await newSessionResult.save();
-    console.log(`[ZengoSubmit] ✅ 사용자 [${userId}]의 세션 결과가 DB에 성공적으로 저장되었습니다. 세션 ID: ${newSessionResult._id}`);
+    const newSessionResult = new ZengoSessionResult(newSessionResultData);
+    const savedResult = await newSessionResult.save({ session });
 
     const { earnedNewBadge, newBadge } = await processCommonSessionResultTasks(
-      userId, newSessionResult, level, completedSuccessfully
+      userId,
+      savedResult,
+      savedResult.level,
+      savedResult.completedSuccessfully
     );
-    console.log(`[ZengoSubmit] ⚙️ 사용자 [${userId}]의 통계/루틴 업데이트 완료. 새 배지 획득: ${earnedNewBadge}`);
-
-    const responsePayload = {
-      message: '세션 결과가 성공적으로 저장되었습니다.',
-      result: newSessionResult,
-      score: newSessionResult.score,
-      completedSuccessfully: newSessionResult.completedSuccessfully,
-      newBadge: earnedNewBadge ? newBadge : null,
-    };
     
-    if (earnedNewBadge) {
-      responsePayload.message = '세션 결과가 저장되었고 새로운 배지를 획득했습니다!';
-    }
+    await session.commitTransaction();
 
-    return res.status(201).json(responsePayload);
+    res.status(201).json({
+      message: '세션 결과가 성공적으로 저장되었습니다.',
+      data: {
+        resultId: savedResult._id,
+        earnedBadge: earnedNewBadge ? {
+          _id: newBadge._id,
+          name: newBadge.name,
+          description: newBadge.description,
+          imageUrl: newBadge.imageUrl
+        } : null,
+      },
+      code: 'SUCCESS'
+    });
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
-    console.error('[ZengoSubmit] 💥 세션 저장 중 심각한 오류 발생:', errorMessage, error);
-    return res.status(500).json({ message: '세션 결과를 저장하는 중 서버에 문제가 발생했습니다.' });
+    await session.abortTransaction();
+    console.error('세션 결과 저장 중 오류 발생:', error);
+    // V2: 좀 더 구체적인 오류 메시지 제공
+    if (error instanceof mongoose.Error.ValidationError) {
+        return res.status(400).json({ message: '데이터 유효성 검사 실패', details: error.errors });
+    }
+    res.status(500).json({ message: '서버 내부 오류로 인해 세션 결과를 저장하지 못했습니다.' });
+  } finally {
+    session.endSession();
   }
 };
 
