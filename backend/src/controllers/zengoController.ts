@@ -804,61 +804,64 @@ export const saveSessionResult = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(401).json({ message: '인증되지 않은 사용자입니다.' });
     }
 
-  const { 
-    contentId, 
-    level, 
-    language, 
-    usedStonesCount, 
-    correctPlacements, 
-    incorrectPlacements, 
-    timeTakenMs, 
-    completedSuccessfully, 
+    const {
+      contentId,
+      level,
+      language,
+      usedStonesCount,
+      correctPlacements,
+      incorrectPlacements,
+      timeTakenMs,
+      completedSuccessfully,
       resultType,
       score,
       orderCorrect,
       placementOrder,
       detailedMetrics // V2 상세 데이터 수신
-  } = req.body;
+    } = req.body;
 
     // 필수 필드 유효성 검사
     if (!contentId || !level || !language) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(400).json({ message: '필수 필드가 누락되었습니다: contentId, level, language' });
-  }
+    }
 
     const newSessionResultData: Partial<IZengoSessionResult> = {
       userId: new Types.ObjectId(userId),
       contentId: new Types.ObjectId(contentId),
-    level,
-    language,
-    usedStonesCount,
-    correctPlacements,
-    incorrectPlacements,
-    timeTakenMs,
-    completedSuccessfully,
+      level,
+      language,
+      usedStonesCount,
+      correctPlacements,
+      incorrectPlacements,
+      timeTakenMs,
+      completedSuccessfully,
       resultType,
       score,
       orderCorrect,
       placementOrder,
-      detailedDataVersion: 'v2.0', // 데이터 버전 명시
-      detailedMetrics: {
-        // 모든 13개 지표를 안전하게 매핑
-        firstClickLatency: detailedMetrics?.firstClickLatency || 0,
-        interClickIntervals: detailedMetrics?.interClickIntervals || [],
-        hesitationPeriods: detailedMetrics?.hesitationPeriods || [],
-        spatialErrors: detailedMetrics?.spatialErrors || [],
-        clickPositions: detailedMetrics?.clickPositions || [],
-        correctPositions: detailedMetrics?.correctPositions || [],
-        sequentialAccuracy: detailedMetrics?.sequentialAccuracy || 0,
-        temporalOrderViolations: detailedMetrics?.temporalOrderViolations || 0,
-        spatialPatternRecognition: detailedMetrics?.spatialPatternRecognition || 0,
-        cognitiveLoadManagement: detailedMetrics?.cognitiveLoadManagement || 0,
-        taskSwitchingCost: detailedMetrics?.taskSwitchingCost || 0,
-        errorAdaptability: detailedMetrics?.errorAdaptability || 0,
-        emotionalRegulation: detailedMetrics?.emotionalRegulation || 0,
-      }
+      detailedDataVersion: detailedMetrics ? 'v2.0' : 'v1.0', // 데이터 버전을 조건부로 명시
+      detailedMetrics: detailedMetrics ? {
+        firstClickLatency: detailedMetrics.firstClickLatency || 0,
+        interClickIntervals: detailedMetrics.interClickIntervals || [],
+        hesitationPeriods: detailedMetrics.hesitationPeriods || [],
+        spatialErrors: detailedMetrics.spatialErrors || [],
+        clickPositions: detailedMetrics.clickPositions || [],
+        correctPositions: detailedMetrics.correctPositions || [],
+        sequentialAccuracy: detailedMetrics.sequentialAccuracy || 0,
+        temporalOrderViolations: detailedMetrics.temporalOrderViolations || 0,
+        spatialPatternRecognition: detailedMetrics.spatialPatternRecognition || 0,
+        cognitiveLoadManagement: detailedMetrics.cognitiveLoadManagement || 0,
+        taskSwitchingCost: detailedMetrics.taskSwitchingCost || 0,
+        errorAdaptability: detailedMetrics.errorAdaptability || 0,
+        emotionalRegulation: detailedMetrics.emotionalRegulation || 0,
+      } : undefined
     };
 
     const newSessionResult = new ZengoSessionResult(newSessionResultData);
@@ -873,11 +876,11 @@ export const saveSessionResult = async (req: Request, res: Response) => {
 
     await session.commitTransaction();
 
-        res.status(201).json({ 
-            message: '세션 결과가 성공적으로 저장되었습니다.', 
+    res.status(201).json({
+      message: '세션 결과가 성공적으로 저장되었습니다.',
       data: {
         resultId: savedResult._id,
-        earnedBadge: earnedNewBadge ? {
+        earnedBadge: earnedNewBadge && newBadge ? {
           _id: newBadge._id,
           name: newBadge.name,
           description: newBadge.description,
@@ -890,9 +893,8 @@ export const saveSessionResult = async (req: Request, res: Response) => {
   } catch (error) {
     await session.abortTransaction();
     console.error('세션 결과 저장 중 오류 발생:', error);
-    // V2: 좀 더 구체적인 오류 메시지 제공
     if (error instanceof mongoose.Error.ValidationError) {
-        return res.status(400).json({ message: '데이터 유효성 검사 실패', details: error.errors });
+      return res.status(400).json({ message: '데이터 유효성 검사 실패', details: error.errors });
     }
     res.status(500).json({ message: '서버 내부 오류로 인해 세션 결과를 저장하지 못했습니다.' });
   } finally {

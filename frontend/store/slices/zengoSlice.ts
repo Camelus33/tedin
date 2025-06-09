@@ -196,10 +196,9 @@ export const submitResultThunk = createAsyncThunk<
                     incorrectPlacements: incorrectPlacementsCount,
                     usedStonesCount,
                     completedSuccessfully,
-                    orderCorrect, // Standard Zengo는 어순 정확성 포함 가능성 있음
+                    orderCorrect,
                     resultType,
-                    score, // 누락되었던 점수(score) 필드 추가
-                    // placementOrder 계산 (Standard Zengo에 필요 시)
+                    score,
                     placementOrder: correctPlacedStones
                         .filter(stone => stone.placementIndex !== undefined)
                         .sort((a, b) => (a.placementIndex || 0) - (b.placementIndex || 0))
@@ -209,20 +208,13 @@ export const submitResultThunk = createAsyncThunk<
                             return index;
                         }),
                     
-                    // === V2 상세 데이터 추가 ===
-                    ...(detailedData && detailedData.detailedDataVersion === 'v2.0' ? {
-                        firstClickLatency: detailedData.firstClickLatency,
-                        interClickIntervals: detailedData.interClickIntervals,
-                        hesitationPeriods: detailedData.hesitationPeriods,
-                        spatialErrors: detailedData.spatialErrors,
-                        clickPositions: detailedData.clickPositions,
-                        correctPositions: detailedData.correctPositions,
-                        sequentialAccuracy: detailedData.sequentialAccuracy,
-                        temporalOrderViolations: detailedData.temporalOrderViolations,
-                        detailedDataVersion: detailedData.detailedDataVersion
-                    } : {})
+                    // === V2 상세 데이터 구조 수정 ===
+                    // 백엔드가 기대하는 `detailedMetrics` 객체로 감싸서 전송
+                    detailedMetrics: (detailedData && detailedData.detailedDataVersion === 'v2.0') ? detailedData : undefined
                 };
-                console.log('Standard 세션 결과 제출 데이터:', standardPayload);
+
+                console.log('Standard 세션 결과 제출 데이터 (V2 구조화):', JSON.stringify(standardPayload, null, 2));
+                
                 // Use apiClient directly as before for the standard endpoint
                 const response = await apiClient.post<ZengoSessionResult>('/api/zengo/session-result', standardPayload);
                 responseData = response.data;
