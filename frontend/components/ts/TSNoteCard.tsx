@@ -712,7 +712,7 @@ export default function TSNoteCard({
               value={fields[activeTabKey]}
               onChange={(e) => handleFieldChange(activeTabKey, e.target.value)}
               placeholder={prompts[tabKeys.indexOf(activeTabKey)]?.placeholder}
-              className="w-full h-32 p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none custom-scrollbar"
+              className="w-full min-h-[80px] flex-grow p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none custom-scrollbar"
             />
           </div>
 
