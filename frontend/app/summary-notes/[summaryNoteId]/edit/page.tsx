@@ -40,6 +40,8 @@ interface SummaryNoteData {
   tags: string[];
   userId?: string; 
   userMarkdownContent?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Ensure FetchedNoteDetails inherits bookId from TSNote
@@ -355,25 +357,36 @@ export default function EditSummaryNotePage() {
   if (error) return <div className="text-red-500 text-center mt-10 p-4 bg-red-900/20 rounded-md">{error}</div>;
   if (!summaryNote) return <div className="text-center mt-10">찾으시는 노트가 잠시 숨어있네요. 다른 곳에서 만나볼까요?</div>;
 
+  const displayDate = summaryNote?.updatedAt && summaryNote.updatedAt !== summaryNote.createdAt
+    ? `Last updated: ${new Date(summaryNote.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`
+    : summaryNote?.createdAt
+    ? `Created: ${new Date(summaryNote.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`
+    : null;
+
   return (
     <div className={`min-h-screen ${cyberTheme.bgPrimary} ${cyberTheme.textLight} p-4 md:p-8`}>
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-          <div>
+          <div className='flex-grow'>
             {isEditing ? (
               <Input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목"
-                className={`text-3xl font-bold ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} focus:ring-cyan-500 focus:border-cyan-500 w-full sm:w-auto`}
+                className={`text-3xl font-bold ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} focus:ring-cyan-500 focus:border-cyan-500 w-full`}
               />
             ) : (
-              <h1 className={`text-3xl md:text-4xl font-bold ${cyberTheme.primary} break-all`}>{title}</h1>
+              <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
+                <h1 className={`text-3xl md:text-4xl font-bold ${cyberTheme.primary} break-all`}>{title}</h1>
+                {displayDate && (
+                  <span className="text-sm italic text-gray-500 mt-2 sm:mt-0">{displayDate}</span>
+                )}
+              </div>
             )}
           </div>
-          <div className="flex space-x-2 mt-4 sm:mt-0">
+          <div className="flex space-x-2 mt-4 sm:mt-0 flex-shrink-0">
             {isEditing ? (
               <>
                 <Button onClick={handleSaveAndToggleMode} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}>
@@ -410,7 +423,7 @@ export default function EditSummaryNotePage() {
             <Textarea 
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
-              placeholder="작성 목표와 주제, 내용을 남겨 보세요. 기억에 도움이 됩니다. (선택)"
+              placeholder="읽고 기록한 1줄메모를 요약정리하고 인사이트를 기록하는 곳이에요. 독서,학습, 연구 일지나 요약 보고서를 작성할 수 있어요."
               rows={3}
               className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
             />

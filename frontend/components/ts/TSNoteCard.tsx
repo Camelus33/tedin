@@ -76,20 +76,20 @@ export interface TSSessionDetails {
 const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder: string }>> = {
   exam_prep: [
     { question: '이 메모, 시험에 왜 중요할까요?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
-    { question: '이 내용을 처음 봤을 때, 어떤 부분이 가장 헷갈렸나요?', placeholder: '(예: 용어가 생소함, 공식 유도 과정)' },
-    { question: '메모 내용을 어떤 기존 지식과 연결할까요?', placeholder: '(예: 유사 개념, 반대 이론, 상위 분류)' },
-    { question: '이 개념을 그림이나 도표로 표현한다면?', placeholder: '(예: 마인드맵, 관계도, 암기용 그림)' },
+    { question: '이 내용을 처음 봤을 때, 어떤 부분이 가장 어려웠나요?', placeholder: '(예: 용어가 생소함, 공식 유도 과정)' },
+    { question: '메모 내용을 기존의 어떤 지식과 연결할까요?', placeholder: '(예: 특정 책, 인물, 영상)' },
+    { question: '이 것을 머리 속 한 장면으로 묘사한다면?', placeholder: '(예: 마인드맵, 차트, 표)' },
   ],
   practical_knowledge: [
-    { question: '이 메모, 내 업무/기술에 어떻게 바로 쓸 수 있나요?', placeholder: '(예: 특정 문제 해결, 프로세스 개선)' },
-    { question: '이 지식이 필요했던 구체적인 상황은 무엇이었나요?', placeholder: '(예: 버그 해결 중, 보고서 작성 시)' },
-    { question: '이 메모는 기존 내 경험/지식과 어떤 점이 다른가요?', placeholder: '(예: 기존 방식과의 차이, 새로운 가치)' },
-    { question: '이 지식의 핵심 원리를 하나의 비유로 설명한다면?', placeholder: '(예: \'이 알고리즘은 잘 정리된 도서관 같다\')' },
+    { question: '이 메모, 내 업무/기술에 어떻게 쓸 수 있나요?', placeholder: '(예: 특정 문제 해결, 프로세스 개선)' },
+    { question: '이 지식이 필요했던 과거 상황은 무엇이었나요?', placeholder: '(예: 버그 해결 중, 보고서 작성 시)' },
+    { question: '이 메모는 기존의 어떤 경험/지식과 연상시키나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
+    { question: '이 지식의 핵심 원리를 누구에게 설명해 본다면?', placeholder: '(예: \'이 건 우리가 알고 있는 피라미드와 비슷해요\')' },
   ],
   humanities_self_reflection: [
     { question: '이 메모, 어떤 감정/생각을 불러일으켰나요?', placeholder: '(예: 특정 감정, 떠오른 질문)' },
-    { question: '메모 내용이 나의 어떤 경험을 떠올리게 하나요?', placeholder: '(예: 어린 시절의 기억, 특정 인물)' },
-    { question: '이 메모, 어떤 다른 작품/지식과 연결되나요?', placeholder: '(예: 다른 책, 영화, 역사적 사건)' },
+    { question: '메모를 적던 당시 상황은 무엇을 떠올리게 하나요?', placeholder: '(예: 특정 장소, 인물, 경험)' },
+    { question: '이 메모, 어떤 다른 지식을 연상시키나요?', placeholder: '(예: 책, 영화, 역사적 사건)' },
     { question: '이 메모의 내용을 한 폭의 그림이나 장면으로 묘사한다면?', placeholder: '(예: \'노을 지는 바다를 혼자 보는 모습\')' },
   ],
   reading_pleasure: [
@@ -293,7 +293,7 @@ export default function TSNoteCard({
 
   const tabList = [
     { key: 'importanceReason', label: '적은 이유' },
-    { key: 'momentContext', label: '적던 순간' },
+    { key: 'momentContext', label: '적었던 당시 상황' },
     { key: 'relatedKnowledge', label: '연상된 지식' },
     { key: 'mentalImage', label: '떠오른 장면' },
   ];
@@ -436,7 +436,7 @@ export default function TSNoteCard({
       className={`absolute bottom-2 left-2 z-30 p-1.5 rounded-full bg-gray-700/70 hover:bg-cyan-600/90
                   text-gray-300 hover:text-white transition-all duration-200
                   focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-      aria-label="TS 세션 정보 보기"
+      aria-label="TS 세션 정보"
     >
       <AiOutlineInfoCircle className="h-4 w-4" />
     </button>
@@ -450,11 +450,11 @@ export default function TSNoteCard({
     >
       <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1`}>TS 세션</h4>
       {sessionDetails?.createdAtISO && <p className="mt-1">기록일: {displaySessionCreatedAt}</p>}
-      {sessionDetails?.durationSeconds !== undefined && <p>독서 시간: {displaySessionDuration}</p>}
+      {sessionDetails?.durationSeconds !== undefined && <p>읽은 시간: {displaySessionDuration}</p>}
       {sessionDetails && (sessionDetails.startPage !== undefined || sessionDetails.actualEndPage !== undefined) && (
         <p>페이지: {displaySessionPageProgress}</p>
       )}
-      {sessionDetails?.ppm !== undefined && <p>독서 속도: {displayPPM}</p>}
+      {sessionDetails?.ppm !== undefined && <p>읽은 속도: {displayPPM}</p>}
       {(!sessionDetails || Object.keys(sessionDetails).length === 0) && <p className="text-gray-400 italic">세션 정보가 없습니다.</p>}
     </div>
   );
@@ -505,7 +505,7 @@ export default function TSNoteCard({
     const evolutionFieldsToShow: { key: MemoEvolutionFieldKey; label: string }[] = [
       { key: 'importanceReason', label: '작성한 이유' },
       { key: 'momentContext', label: '작성한 당시 상황' },
-      { key: 'relatedKnowledge', label: '연셩되는 지식' },
+      { key: 'relatedKnowledge', label: '연상되는 지식' },
       { key: 'mentalImage', label: '떠오른 장면' },
     ];
 
