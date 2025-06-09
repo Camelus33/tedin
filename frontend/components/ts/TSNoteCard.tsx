@@ -274,8 +274,6 @@ export default function TSNoteCard({
   const [note, setNote] = useState(initialNote);
   const [isOpen, setIsOpen] = useState(false); // 오버레이 UI 표시 상태
   const [isInlineEditing, setIsInlineEditing] = useState(false); // 새로운 상태: 인라인 편집 활성화 여부
-  const [cardMinHeight, setCardMinHeight] = useState<number | null>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -386,14 +384,6 @@ export default function TSNoteCard({
   const toggleInlineEdit = () => {
     // 오버레이 모드가 아니고 최소 표시 모드가 아닐 때만 동작
     if (!enableOverlayEvolutionMode && !minimalDisplay) {
-      // 편집 모드로 '진입'하는 경우, 현재 카드 높이를 측정하여 최소 높이로 설정
-      if (!isInlineEditing && cardRef.current) {
-        setCardMinHeight(cardRef.current.offsetHeight);
-      } else {
-        // 편집 모드에서 '나오는' 경우, 최소 높이 설정을 제거
-        setCardMinHeight(null);
-      }
-
       setIsInlineEditing(prev => {
         const nextInlineState = !prev;
         if (nextInlineState && isOpen) {
@@ -555,7 +545,6 @@ export default function TSNoteCard({
 
   return (
     <div
-      ref={cardRef}
       className={cn(
         "relative p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
         (isOpen && enableOverlayEvolutionMode) || (isInlineEditing && isPageEditing && !enableOverlayEvolutionMode) ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
@@ -563,7 +552,6 @@ export default function TSNoteCard({
         className
       )}
       onClick={handleCardClick}
-      style={{ minHeight: cardMinHeight ? `${cardMinHeight}px` : undefined }}
     >
       {!minimalDisplay && sessionDetails && Object.keys(sessionDetails).length > 0 && ( 
         <>
@@ -592,17 +580,29 @@ export default function TSNoteCard({
           </div>
         )}
         
-        {/* 조건부 렌더링 로직 수정 - 렌더링 함수는 항상 React 요소를 반환하도록 */}
-        {(() => {
-          if (isInlineEditing) {
-            // 인라인 편집 모드가 켜져 있으면 항상 편집 UI 표시
-            return renderInlineMemoEvolutionEditUI() || null;
-          } else if (!isOpen) { // 오버레이가 열려있지 않을 때만 요약 표시
-            // 메모 진화 요약 표시
-            return renderMemoEvolutionSummary() || null;
-          } 
-          return null;
-        })()}
+        <div className="grid">
+          {/* Summary View - always rendered, visibility toggled */}
+          <div
+            className={cn(
+              "transition-opacity duration-300 col-start-1 row-start-1",
+              isInlineEditing ? "opacity-0 pointer-events-none" : "opacity-100"
+            )}
+            aria-hidden={isInlineEditing}
+          >
+            {renderMemoEvolutionSummary()}
+          </div>
+
+          {/* Edit View - always rendered, visibility toggled */}
+          <div
+            className={cn(
+              "transition-opacity duration-300 col-start-1 row-start-1",
+              isInlineEditing ? "opacity-100" : "opacity-0 pointer-events-none"
+            )}
+            aria-hidden={!isInlineEditing}
+          >
+            {renderInlineMemoEvolutionEditUI()}
+          </div>
+        </div>
 
       </div>
       
