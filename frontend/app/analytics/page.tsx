@@ -313,7 +313,7 @@ export default function AnalyticsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <TimeSeriesChartCard
                         title="기억판"
-                        description="한 번에 얼마나 많이 떠올릴 수 있는가입니다."
+                        description="한 번에 여러 생각을 다루는 힘의 변화입니다."
                         data={timeSeriesData.workingMemory}
                         metricLabel="기억판"
                       />

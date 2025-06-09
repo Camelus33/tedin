@@ -65,12 +65,12 @@ export function mapV1ToExtended(v1Metrics: {
 
 // V2 확장 메트릭을 포함한 전체 메트릭 표시명
 export const extendedMetricDisplayNames: Record<keyof ExtendedCognitiveMetrics, string> = {
-  workingMemoryCapacity: '멀티태스킹',
-  sustainedAttention: '몰입',
-  processingSpeed: '눈치',
-  cognitiveFlexibility: '틀깨기',
+  workingMemoryCapacity: '기억판',
   visuospatialPrecision: '길찾기',
+  processingSpeed: '눈치',
+  sustainedAttention: '몰입',
   patternRecognition: '규칙찾기',
+  cognitiveFlexibility: '틀깨기',
   hippocampusActivation: '지식체화',
   executiveFunction: '목표달성',
   spatialMemoryAccuracy: '공간기억',

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 
 // page.tsx에 정의된 CognitiveMetrics와 동일한 구조를 가정합니다.
 // 실제 애플리케이션에서는 공유 타입 파일을 통해 import하는 것이 좋습니다.
@@ -52,20 +53,12 @@ const metricDescriptions: Partial<Record<keyof CognitiveMetricsStubForSW, string
 const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({ strengths, weaknesses }) => {
   const [appear, setAppear] = useState(false);
   const [activeTab, setActiveTab] = useState<'strengths' | 'weaknesses'>('strengths');
-  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     // 부드러운 등장 효과
     const timer = setTimeout(() => setAppear(true), 1200);
     return () => clearTimeout(timer);
   }, []);
-
-  const toggleExpand = (itemId: string) => {
-    setExpandedItems(prev => ({
-      ...prev,
-      [itemId]: !prev[itemId]
-    }));
-  };
 
   // 브랜드 컬러 시스템에 따른 메트릭 카드 스타일
   const getMetricCardStyle = (score: number, isStrength: boolean) => {
@@ -170,26 +163,22 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                 strengths.map((strength, index) => (
                   <div 
                     key={`strength-${index}`}
-                    className="p-4 rounded-lg transition-all duration-300 ease-in-out cursor-pointer"
+                    className="p-4 rounded-lg transition-all duration-300 ease-in-out"
                     style={getMetricCardStyle(strength.score, true)}
-                    onClick={() => toggleExpand(`strength-${index}`)}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h4 className="font-medium" style={{ color: 'rgb(var(--secondary-green))' }}>
                           {strength.metric}
                         </h4>
-                        <p className="text-sm text-gray-600">현재 당신의 주요 강점입니다.</p>
                       </div>
-                      <div 
-                        className="px-2 py-1 rounded-full text-xs font-medium"
-                        style={getScoreBadgeStyle(strength.score, true)}
-                      >
-                        {strength.score}
+                      <div className="flex items-center space-x-2">
+                        <span className="font-semibold text-sm" style={{ color: 'rgb(var(--secondary-green))' }}>{strength.score}</span>
                       </div>
                     </div>
+                     <Progress value={strength.score} className="h-2 [&>div]:bg-green-400" />
                     
-                    {expandedItems[`strength-${index}`] && strength.recommendedActivities && (
+                    {strength.recommendedActivities && (
                       <div className="mt-4 pt-4 border-t border-gray-100 animate-fadeIn">
                         <h5 
                           className="text-xs font-medium mb-2"
@@ -207,12 +196,6 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                         </ul>
                       </div>
                     )}
-                    
-                    <div className="flex justify-center mt-2">
-                      <span className="text-xs text-gray-400">
-                        {expandedItems[`strength-${index}`] ? '접기 ▲' : '더 보기 ▼'}
-                      </span>
-                    </div>
                   </div>
                 ))
               ) : (
@@ -235,26 +218,22 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                 weaknesses.map((weakness, index) => (
                   <div 
                     key={`weakness-${index}`}
-                    className="p-4 rounded-lg transition-all duration-300 ease-in-out cursor-pointer"
+                    className="p-4 rounded-lg transition-all duration-300 ease-in-out"
                     style={getMetricCardStyle(weakness.score, false)}
-                    onClick={() => toggleExpand(`weakness-${index}`)}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h4 className="font-medium" style={{ color: 'rgb(var(--primary-turquoise))' }}>
                           {weakness.metric}
                         </h4>
-                        <p className="text-sm text-gray-600">이 영역은 더 성장할 잠재력이 있습니다.</p>
                       </div>
-                      <div 
-                        className="px-2 py-1 rounded-full text-xs font-medium"
-                        style={getScoreBadgeStyle(weakness.score, false)}
-                      >
-                        {weakness.score}
+                       <div className="flex items-center space-x-2">
+                        <span className="font-semibold text-sm" style={{ color: 'rgb(var(--primary-turquoise))' }}>{weakness.score}</span>
                       </div>
                     </div>
+                    <Progress value={weakness.score} className="h-2 [&>div]:bg-cyan-400" />
                     
-                    {expandedItems[`weakness-${index}`] && weakness.improvementSuggestions && (
+                    {weakness.improvementSuggestions && (
                       <div className="mt-4 pt-4 border-t border-gray-100 animate-fadeIn">
                         <h5 
                           className="text-xs font-medium mb-2"
@@ -272,12 +251,6 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                         </ul>
                       </div>
                     )}
-                    
-                    <div className="flex justify-center mt-2">
-                      <span className="text-xs text-gray-400">
-                        {expandedItems[`weakness-${index}`] ? '접기 ▲' : '더 보기 ▼'}
-                      </span>
-                    </div>
                   </div>
                 ))
               ) : (
