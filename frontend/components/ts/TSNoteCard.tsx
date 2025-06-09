@@ -274,6 +274,8 @@ export default function TSNoteCard({
   const [note, setNote] = useState(initialNote);
   const [isOpen, setIsOpen] = useState(false); // 오버레이 UI 표시 상태
   const [isInlineEditing, setIsInlineEditing] = useState(false); // 새로운 상태: 인라인 편집 활성화 여부
+  const [cardMinHeight, setCardMinHeight] = useState<number | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -384,6 +386,14 @@ export default function TSNoteCard({
   const toggleInlineEdit = () => {
     // 오버레이 모드가 아니고 최소 표시 모드가 아닐 때만 동작
     if (!enableOverlayEvolutionMode && !minimalDisplay) {
+      // 편집 모드로 '진입'하는 경우, 현재 카드 높이를 측정하여 최소 높이로 설정
+      if (!isInlineEditing && cardRef.current) {
+        setCardMinHeight(cardRef.current.offsetHeight);
+      } else {
+        // 편집 모드에서 '나오는' 경우, 최소 높이 설정을 제거
+        setCardMinHeight(null);
+      }
+
       setIsInlineEditing(prev => {
         const nextInlineState = !prev;
         if (nextInlineState && isOpen) {
@@ -464,7 +474,7 @@ export default function TSNoteCard({
     if (enableOverlayEvolutionMode || minimalDisplay || !isInlineEditing) return null;
 
     return (
-      <div className="mt-4 pt-3 border-t border-gray-700/50 space-y-3 min-h-[280px]">
+      <div className="mt-4 pt-3 border-t border-gray-700/50 space-y-3">
         <h4 className="text-xs font-semibold text-gray-400 mb-2">
           메모 진화 (인라인 편집 중):
         </h4>
@@ -545,6 +555,7 @@ export default function TSNoteCard({
 
   return (
     <div
+      ref={cardRef}
       className={cn(
         "relative p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
         (isOpen && enableOverlayEvolutionMode) || (isInlineEditing && isPageEditing && !enableOverlayEvolutionMode) ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
@@ -552,6 +563,7 @@ export default function TSNoteCard({
         className
       )}
       onClick={handleCardClick}
+      style={{ minHeight: cardMinHeight ? `${cardMinHeight}px` : undefined }}
     >
       {!minimalDisplay && sessionDetails && Object.keys(sessionDetails).length > 0 && ( 
         <>
