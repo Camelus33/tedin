@@ -127,7 +127,7 @@ export const submitResultThunk = createAsyncThunk<
     'zengoProverb/submitResult',
     async (_, { getState, rejectWithValue }) => {
         const { zengoProverb } = getState();
-        const { currentContent, startTime, revealedWords, resultType, placedStones, usedStonesCount } = zengoProverb;
+        const { currentContent, startTime, revealedWords, resultType, placedStones, usedStonesCount, score } = zengoProverb;
 
         if (!currentContent || !startTime) {
             return rejectWithValue('No active game session');
@@ -198,6 +198,7 @@ export const submitResultThunk = createAsyncThunk<
                     completedSuccessfully,
                     orderCorrect, // Standard Zengo는 어순 정확성 포함 가능성 있음
                     resultType,
+                    score, // 누락되었던 점수(score) 필드 추가
                     // placementOrder 계산 (Standard Zengo에 필요 시)
                     placementOrder: correctPlacedStones
                         .filter(stone => stone.placementIndex !== undefined)
@@ -386,6 +387,7 @@ interface ZengoState {
   revealedWords: string[]; 
   usedStonesCount: number;
   startTime: number | null;
+  score: number; // 점수 필드 추가
   // Result & Error Handling
   lastResult: ZengoSessionResult | IMyVerseSessionResult | null; // Uses imported type
   resultType: ResultType; // 결과 타입 (EXCELLENT, SUCCESS, FAIL)
@@ -406,6 +408,7 @@ const initialState: ZengoState = {
   revealedWords: [],
   usedStonesCount: 0,
   startTime: null,
+  score: 0,
   lastResult: null,
   resultType: null,
   shouldKeepContent: false,
@@ -688,6 +691,45 @@ const zengoProverbSlice = createSlice({
       state.isMyVerseGame = action.payload.level.includes('-myverse') || action.payload.level.includes('-custom');
       console.log(`Content set: ID=${action.payload._id}, isMyVerse=${state.isMyVerseGame}`);
     },
+    calculateAndSetScore(state) {
+      if (!state.currentContent || !state.startTime) return;
+
+      const timeTakenMs = Date.now() - state.startTime;
+      const timeTakenSec = timeTakenMs / 1000;
+
+      const correctCount = state.placedStones.filter(s => s.correct).length;
+      const totalWords = state.currentContent.totalWords;
+
+      // 기본 점수: (정확도 점수 + 시간 점수) / 2
+      const accuracyScore = totalWords > 0 ? (correctCount / totalWords) * 100 : 0;
+      
+      // 시간 점수: 목표 시간(단어당 5초) 대비, 최대 100점
+      const targetTimeSec = totalWords * 5;
+      const timeRatio = timeTakenSec / targetTimeSec;
+      let timeScore = 0;
+      if (timeRatio <= 1) { // 목표 시간 내 성공
+        timeScore = 100 - (timeRatio * 40); // 60-100점
+      } else if (timeRatio <= 2) { // 목표 시간 2배 내 성공
+        timeScore = 60 - ((timeRatio - 1) * 30); // 30-60점
+      } else { // 그 이상
+        timeScore = 30 - ((timeRatio - 2) * 10); // 10-30점
+      }
+      timeScore = Math.max(10, Math.min(100, timeScore));
+      
+      let baseScore = (accuracyScore * 0.7) + (timeScore * 0.3); // 정확도 가중치 70%
+      
+      // 순서 보너스
+      const isOrderCorrect = state.resultType === 'EXCELLENT';
+      if (isOrderCorrect && state.placedStones.length === totalWords) {
+        baseScore += 15; // 순서 정확도 보너스
+      }
+      
+      // 최종 점수는 0~100 사이로 제한
+      state.score = Math.round(Math.max(0, Math.min(100, baseScore)));
+    },
+    setResultType(state, action: PayloadAction<ResultType>) {
+      state.resultType = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -784,6 +826,8 @@ export const {
     prepareNextGame,
     generateWordPlaceholders,
     setContent,
+    calculateAndSetScore,
+    setResultType,
 } = zengoProverbSlice.actions
 
 export default zengoProverbSlice.reducer 
