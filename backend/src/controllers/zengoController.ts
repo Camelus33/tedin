@@ -807,37 +807,37 @@ export const saveSessionResult = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증되지 않은 사용자입니다.' });
     }
 
-    const {
-      contentId,
-      level,
-      language,
-      usedStonesCount,
-      correctPlacements,
-      incorrectPlacements,
-      timeTakenMs,
-      completedSuccessfully,
+  const { 
+    contentId, 
+    level, 
+    language, 
+    usedStonesCount, 
+    correctPlacements, 
+    incorrectPlacements, 
+    timeTakenMs, 
+    completedSuccessfully, 
       resultType,
       score,
       orderCorrect,
       placementOrder,
       detailedMetrics // V2 상세 데이터 수신
-    } = req.body;
+  } = req.body;
 
     // 필수 필드 유효성 검사
     if (!contentId || !level || !language) {
       return res.status(400).json({ message: '필수 필드가 누락되었습니다: contentId, level, language' });
-    }
+  }
 
     const newSessionResultData: Partial<IZengoSessionResult> = {
       userId: new Types.ObjectId(userId),
       contentId: new Types.ObjectId(contentId),
-      level,
-      language,
-      usedStonesCount,
-      correctPlacements,
-      incorrectPlacements,
-      timeTakenMs,
-      completedSuccessfully,
+    level,
+    language,
+    usedStonesCount,
+    correctPlacements,
+    incorrectPlacements,
+    timeTakenMs,
+    completedSuccessfully,
       resultType,
       score,
       orderCorrect,
@@ -870,11 +870,11 @@ export const saveSessionResult = async (req: Request, res: Response) => {
       savedResult.level,
       savedResult.completedSuccessfully
     );
-    
+
     await session.commitTransaction();
 
-    res.status(201).json({
-      message: '세션 결과가 성공적으로 저장되었습니다.',
+        res.status(201).json({ 
+            message: '세션 결과가 성공적으로 저장되었습니다.', 
       data: {
         resultId: savedResult._id,
         earnedBadge: earnedNewBadge ? {

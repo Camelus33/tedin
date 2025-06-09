@@ -358,7 +358,7 @@ const PersonalizedSuggestions: React.FC<PersonalizedSuggestionsProps> = ({
                     }`,
                   }}
                 >
-                  <div
+                  <div 
                     className="flex justify-between items-start cursor-pointer"
                     onClick={() => setExpandedSuggestion(
                       expandedSuggestion === suggestion.id ? null : suggestion.id
@@ -368,16 +368,16 @@ const PersonalizedSuggestions: React.FC<PersonalizedSuggestionsProps> = ({
                       <h4 className={`font-medium ${
                         suggestion.isCompleted ? 'text-gray-500 line-through' : 'text-gray-800'
                       }`}>
-                        {suggestion.title}
+                          {suggestion.title}
                       </h4>
                       <div className="flex items-center space-x-2 mt-1 text-xs">
-                        <span
+                        <span 
                           className="px-2 py-0.5 rounded-full"
                           style={getDifficultyBadgeStyle(suggestion.difficulty)}
                         >
                           {getDifficultyLabel(suggestion.difficulty)}
                         </span>
-                        <span
+                        <span 
                           className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600"
                         >
                           {getCategoryLabel(suggestion.category)}

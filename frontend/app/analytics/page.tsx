@@ -279,13 +279,13 @@ export default function AnalyticsPage() {
               />
             )}
             {strengthsWeaknesses && (
-              <StrengthsWeaknessesDisplay 
+            <StrengthsWeaknessesDisplay 
                 strengths={strengthsWeaknesses.strengths} 
                 weaknesses={strengthsWeaknesses.weaknesses}
-              />
+            />
             )}
           </div>
-
+          
           {/* 성찰일지와 맞춤형 제안을 상단으로 이동 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <ReflectionJournal metricName="cognitive" />
@@ -328,36 +328,36 @@ export default function AnalyticsPage() {
 
                   <TabsContent value="attention" className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <TimeSeriesChartCard
+            <TimeSeriesChartCard 
                         title="몰입"
                         description="주변의 방해로부터 당신을 지키는 힘의 변화입니다."
                         data={timeSeriesData.attention}
                         metricLabel="몰입"
-                      />
-                      <TimeSeriesChartCard
+            />
+            <TimeSeriesChartCard 
                         title="길찾기감각"
                         description="머릿속에 지도를 그리는 힘의 변화입니다."
                         data={timeSeriesData.visuospatialPrecision}
                         metricLabel="길찾기감각"
-                      />
-                    </div>
+            />
+          </div>
                   </TabsContent>
-
+          
                   <TabsContent value="processing" className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <TimeSeriesChartCard
+            <TimeSeriesChartCard 
                         title="눈치"
                         description="상황의 핵심을 빠르게 파악하는 힘의 변화입니다."
                         data={timeSeriesData.processingSpeed}
                         metricLabel="눈치"
-                      />
-                      <TimeSeriesChartCard
+            />
+            <TimeSeriesChartCard 
                         title="규칙찾기"
                         description="복잡함 속에서 질서를 발견하는 힘의 변화입니다."
                         data={timeSeriesData.patternRecognition}
                         metricLabel="규칙찾기"
-                      />
-                    </div>
+            />
+          </div>
                   </TabsContent>
 
                   <TabsContent value="executive" className="pt-4">
@@ -373,8 +373,8 @@ export default function AnalyticsPage() {
                         description="'시작'을 '완성'으로 만드는 힘의 변화입니다."
                         data={timeSeriesData.executiveFunction}
                         metricLabel="끈기"
-                      />
-                    </div>
+            />
+          </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>

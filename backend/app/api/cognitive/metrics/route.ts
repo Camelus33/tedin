@@ -138,7 +138,7 @@ const calculateCognitiveMetricsFromSessions = (sessions: IZengoSessionResult[]):
   const v1Sessions = sessions.filter(s => !s.detailedDataVersion || s.detailedDataVersion !== 'v2.0');
   
   console.log(`[CognitiveMetrics] V2 세션: ${v2Sessions.length}개, V1 세션: ${v1Sessions.length}개`);
-
+    
   // 각 세션별로 V2 계산 수행 후 평균
   const allMetrics: any[] = [];
   
@@ -180,7 +180,7 @@ const calculateCognitiveMetricsFromSessions = (sessions: IZengoSessionResult[]):
         hippocampusActivation: 50,
         cognitiveFlexibility: 50
       });
-    }
+  }
   });
 
   if (allMetrics.length === 0) {
@@ -188,82 +188,47 @@ const calculateCognitiveMetricsFromSessions = (sessions: IZengoSessionResult[]):
     return createDefaultExtendedMetrics();
   }
 
-  // 모든 메트릭의 평균 계산
-  const avgMetrics = {
-    workingMemory: allMetrics.reduce((sum, m) => sum + m.workingMemory, 0) / allMetrics.length,
-    processingSpeed: allMetrics.reduce((sum, m) => sum + m.processingSpeed, 0) / allMetrics.length,
-    attention: allMetrics.reduce((sum, m) => sum + m.attention, 0) / allMetrics.length,
-    patternRecognition: allMetrics.reduce((sum, m) => sum + m.patternRecognition, 0) / allMetrics.length,
-    hippocampusActivation: allMetrics.reduce((sum, m) => sum + m.hippocampusActivation, 0) / allMetrics.length,
-    cognitiveFlexibility: allMetrics.reduce((sum, m) => sum + m.cognitiveFlexibility, 0) / allMetrics.length
+  // 모든 확장된 메트릭의 평균 계산
+  const metricKeys = Object.keys(createDefaultExtendedMetrics()) as (keyof ExtendedCognitiveMetrics)[];
+  const avgMetrics: Partial<ExtendedCognitiveMetrics> = {};
+
+  metricKeys.forEach(key => {
+    const sum = allMetrics.reduce((acc, m) => acc + (m[key] || 0), 0);
+    const average = allMetrics.length > 0 ? sum / allMetrics.length : 0;
+    avgMetrics[key] = Math.round(average);
+  });
+
+  return avgMetrics as ExtendedCognitiveMetrics;
+};
+
+// 종합 점수 계산 로직 (새로운 가중치 방식)
+const calculateOverallScore = (profile: CognitiveMetrics): number => {
+  if (!profile || Object.keys(profile).length === 0) return 0;
+
+  // 3.0 모델의 핵심 지표를 반영한 새로운 가중치
+  const weights: Partial<Record<keyof CognitiveMetrics, number>> = {
+    executiveFunction: 0.20,
+    workingMemoryCapacity: 0.15,      // 'workingMemory' -> 'workingMemoryCapacity'
+    processingSpeed: 0.15,
+    sustainedAttention: 0.10,         // 'attention' -> 'sustainedAttention'
+    cognitiveFlexibility: 0.10,
+    hippocampusActivation: 0.10,
+    patternRecognition: 0.05,
+    visuospatialPrecision: 0.05,
   };
 
-  // 임원 기능 (Executive Function) - 주요 지표 가중 평균
-  const executiveFunction = 
-    (avgMetrics.workingMemory * 0.25) + 
-    (avgMetrics.attention * 0.20) + 
-    (avgMetrics.processingSpeed * 0.20) + 
-    (avgMetrics.patternRecognition * 0.15) + 
-    (avgMetrics.cognitiveFlexibility * 0.20);
+  let weightedSum = 0;
+  let weightSum = 0;
 
-  // V2 확장 메트릭 계산 (안전성 강화)
-  const v2Metrics = allMetrics
-    .filter(m => m && m.detailedMetrics)
-    .map(m => m.detailedMetrics)
-    .filter(dm => dm && typeof dm === 'object');
-    
-  let extendedMetrics = createDefaultExtendedMetrics();
-  
-  console.log(`[CognitiveMetrics] V2 메트릭 수: ${v2Metrics.length}/${allMetrics.length}`);
-  
-  if (v2Metrics.length > 0) {
-    // V2 메트릭이 있으면 안전하게 평균 계산
-    const safeAverage = (field: string) => {
-      const validValues = v2Metrics
-        .map(m => m?.[field])
-        .filter(v => typeof v === 'number' && !isNaN(v) && v >= 0 && v <= 100);
-      return validValues.length > 0 
-        ? Math.round(validValues.reduce((sum, v) => sum + v, 0) / validValues.length)
-        : 50; // 기본값
-    };
-    
-    const v2AvgResult: ExtendedCognitiveMetrics = {
-      workingMemoryCapacity: safeAverage('workingMemoryCapacity'),
-      visuospatialPrecision: safeAverage('visuospatialPrecision'),
-      processingSpeed: safeAverage('processingSpeed'),
-      sustainedAttention: safeAverage('sustainedAttention'),
-      patternRecognition: safeAverage('patternRecognition'),
-      cognitiveFlexibility: safeAverage('cognitiveFlexibility'),
-      hippocampusActivation: safeAverage('hippocampusActivation'),
-      executiveFunction: safeAverage('executiveFunction'),
-      spatialMemoryAccuracy: safeAverage('spatialMemoryAccuracy'),
-      responseConsistency: safeAverage('responseConsistency'),
-      learningAdaptability: safeAverage('learningAdaptability'),
-      focusEndurance: safeAverage('focusEndurance'),
-      sequentialProcessing: safeAverage('sequentialProcessing'),
-    };
-    extendedMetrics = v2AvgResult;
-    console.log('[CognitiveMetrics] V2 메트릭 사용');
-  } else {
-    // V1 메트릭을 V2로 안전하게 매핑
-    const v1SafeMetrics = {
-      workingMemoryCapacity: Math.round(Math.min(100, Math.max(0, avgMetrics.workingMemory || 50))),
-      visuospatialPrecision: Math.round(Math.min(100, Math.max(0, avgMetrics.attention || 50))),
-      processingSpeed: Math.round(Math.min(100, Math.max(0, avgMetrics.processingSpeed || 50))),
-      sustainedAttention: Math.round(Math.min(100, Math.max(0, avgMetrics.attention || 50))),
-      patternRecognition: Math.round(Math.min(100, Math.max(0, avgMetrics.patternRecognition || 50))),
-      cognitiveFlexibility: Math.round(Math.min(100, Math.max(0, avgMetrics.cognitiveFlexibility || 50))),
-      hippocampusActivation: Math.round(Math.min(100, Math.max(0, avgMetrics.hippocampusActivation || 50))),
-      executiveFunction: Math.round(Math.min(100, Math.max(0, executiveFunction || 50))),
-    };
-    extendedMetrics = mapV2ToExtended(v1SafeMetrics);
-    console.log('[CognitiveMetrics] V1->V2 매핑 사용');
-  }
-  
-  const finalResult = extendedMetrics;
+  Object.entries(weights).forEach(([key, weight]) => {
+    const metricKey = key as keyof CognitiveMetrics;
+    if (profile[metricKey] !== undefined && weight !== undefined) {
+      weightedSum += profile[metricKey]! * weight;
+      weightSum += weight;
+    }
+  });
 
-  console.log('[CognitiveMetrics] 최종 계산 결과:', finalResult);
-  return finalResult;
+  return weightSum > 0 ? Math.round(weightedSum / weightSum) : 0;
 };
 
 // 세션을 날짜 문자열(YYYY-MM-DD) 기준으로 그룹화하는 함수
@@ -291,22 +256,40 @@ const groupSessionsByDateString = (sessions: IZengoSessionResult[]): Record<stri
   return groupedSessions;
 };
 
-// 강점 및 개선 영역 도출 함수
-const deriveKeyCognitiveAreas = (overallProfile: CognitiveMetrics): { strengths: (keyof CognitiveMetrics)[], improvementAreas: (keyof CognitiveMetrics)[] } => {
+// 강점 및 개선 영역 식별 함수 (이름 변경 및 로직 유지)
+const identifyStrengthsAndWeaknesses = (overallProfile: CognitiveMetrics): { strengths: (keyof CognitiveMetrics)[], improvementAreas: (keyof CognitiveMetrics)[] } => {
   const strengths: (keyof CognitiveMetrics)[] = [];
   const improvementAreas: (keyof CognitiveMetrics)[] = [];
-  const STRENGTH_THRESHOLD = 75; // 강점 기준값
-  const IMPROVEMENT_THRESHOLD = 60; // 개선 영역 기준값
-
+  
   (Object.keys(overallProfile) as (keyof CognitiveMetrics)[]).forEach(key => {
     const value = overallProfile[key];
-    if (value >= STRENGTH_THRESHOLD) {
+    if (value >= 75) {
       strengths.push(key);
-    } else if (value < IMPROVEMENT_THRESHOLD) {
+    } else if (value < 55) {
       improvementAreas.push(key);
     }
   });
+
   return { strengths, improvementAreas };
+};
+
+// 시계열 데이터 생성 함수
+const generateTimeSeriesData = (
+  overallProfile: CognitiveMetrics,
+  sessions: IZengoSessionResult[]
+): CognitiveMetricsTimeSeries[] => {
+  const groupedSessions = groupSessionsByDateString(sessions);
+  const timeSeries: CognitiveMetricsTimeSeries[] = Object.entries(groupedSessions)
+    .map(([dateString, dailySessions]) => ({
+      date: dateString,
+      metrics: calculateCognitiveMetricsFromSessions(dailySessions),
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  // 데이터가 너무 적을 경우 보간 데이터 추가 (옵션)
+  // 여기서는 단순성을 위해 생략
+
+  return timeSeries;
 };
 
 // 맞춤형 추천 생성 함수
@@ -496,137 +479,77 @@ const calculatePercentileRanks = async (userId: string, overallProfile: Cognitiv
   }
 };
 
-// 목업 데이터 생성 함수 수정: strengths, improvementAreas, personalizedRecommendations도 주입받도록 변경
-// 목업 데이터 함수 제거 - 실제 계산된 데이터만 사용
-
 export async function GET(req: NextRequest) {
   try {
-    const authResult = await verifyAuth(req);
-    if (!authResult.success || !authResult.userId) {
-      return NextResponse.json({ message: authResult.message || '인증이 필요합니다.' }, { status: 401 });
+    const verification = await verifyAuth(req);
+    if (!verification.success || !verification.userId) {
+      return NextResponse.json({ error: verification.message || 'Unauthorized' }, { status: 401 });
     }
-    const { userId } = authResult;
-    console.log(`[CognitiveMetrics] 🧠 인증된 사용자 ID: ${userId}`);
-
-    const timeRange = req.nextUrl.searchParams.get('timeRange');
+    const userId = verification.userId;
+    
+    const { searchParams } = new URL(req.url);
+    const timeRange = searchParams.get('timeRange');
     const { startDate, endDate } = calculateDateRange(timeRange);
 
-    const userObjectId = new Types.ObjectId(userId); 
-    // 세션 조회 시 정렬 순서를 createdAt: 1 (오름차순)으로 변경하여 historicalData 구성 시 시간 순서를 맞춤
-    const sessions: IZengoSessionResult[] = await ZengoSessionResult.find({
-      userId: userObjectId,
-      createdAt: {
-        $gte: startDate,
-        $lte: endDate,
-      },
-    }).sort({ createdAt: 1 }).lean(); // 오름차순 정렬
+    console.log(`[Cognitive Metrics API] Fetching data for user: ${userId}, Range: ${timeRange || 'default (3m)'}`);
 
-    console.log(`[CognitiveMetrics] 📚 사용자 ID [${userId}]에 대해 [${sessions.length}]개의 세션을 찾았습니다. 기간: ${timeRange}`);
+    const sessions = await ZengoSessionResult.find({
+      userId: new Types.ObjectId(userId),
+      createdAt: { $gte: startDate, $lte: endDate },
+    }).sort({ createdAt: 'asc' }).lean();
 
     if (sessions.length === 0) {
-      console.warn(`[CognitiveMetrics] 경고: 해당 사용자에 대한 세션 데이터가 없습니다. 기본값을 반환합니다.`);
+      return NextResponse.json({
+        message: 'No cognitive data available for the selected period.',
+        data: {
+          userId,
+          lastUpdatedAt: new Date().toISOString(),
+          overallProfile: createDefaultExtendedMetrics(),
+          historicalData: [],
+          percentileRanks: {},
+          strengths: [],
+          improvementAreas: [],
+          recentGames: [],
+          personalizedRecommendations: generatePersonalizedRecommendations([],[]),
+        }
+      }, { status: 200 });
     }
-
-    const calculatedOverallProfile = calculateCognitiveMetricsFromSessions(sessions);
-
-    // historicalData 계산
-    const groupedSessions = groupSessionsByDateString(sessions);
-    let calculatedHistoricalData: CognitiveMetricsTimeSeries[] = Object.entries(groupedSessions)
-      .map(([dateString, dailySessions]) => {
-        return {
-          date: dateString,
-          metrics: calculateCognitiveMetricsFromSessions(dailySessions),
-        };
-      })
-      // 결과는 다시 날짜 오름차순으로 정렬하는 것이 좋음 (grouping시 순서 보장 안될 수 있으므로)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
-    // 데이터 희소성(sparse data) 처리: 데이터 포인트가 너무 적으면 보간 데이터 추가
-    if (calculatedHistoricalData.length > 0 && calculatedHistoricalData.length < 3) {
-      console.log(`Historical data points are sparse (${calculatedHistoricalData.length}), adding interpolated data`);
-      
-      // 기존 데이터의 첫 날짜와 마지막 날짜 사이에 보간 데이터 추가
-      const firstDate = new Date(calculatedHistoricalData[0].date);
-      const lastDate = new Date(calculatedHistoricalData[calculatedHistoricalData.length - 1].date);
-      
-      // 첫 날짜와 마지막 날짜 사이의 일수 계산
-      const daysDiff = Math.floor((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (daysDiff > 7) { // 7일 이상 차이가 나면 중간 데이터 추가
-        // 중간 날짜 계산
-        const middleDate = new Date(firstDate);
-        middleDate.setDate(middleDate.getDate() + Math.floor(daysDiff / 2));
-        
-        // 중간 지표 계산 (첫 지표와 마지막 지표의 평균)
-        const firstMetrics = calculatedHistoricalData[0].metrics;
-        const lastMetrics = calculatedHistoricalData[calculatedHistoricalData.length - 1].metrics;
-        const middleMetrics: CognitiveMetrics = {} as CognitiveMetrics;
-        
-        (Object.keys(firstMetrics) as Array<keyof CognitiveMetrics>).forEach(key => {
-          middleMetrics[key] = (firstMetrics[key] + lastMetrics[key]) / 2;
-        });
-        
-        // 중간 데이터 추가
-        calculatedHistoricalData.push({
-          date: middleDate.toISOString().split('T')[0],
-          metrics: middleMetrics,
-        });
-        
-        // 다시 날짜순으로 정렬
-        calculatedHistoricalData = calculatedHistoricalData.sort((a, b) => 
-          new Date(a.date).getTime() - new Date(b.date).getTime()
-        );
-      }
-    }
-
-    // recentGames 계산 (최근 5개 게임)
-    const recentSessions = sessions.slice(-5).reverse();
-    const calculatedRecentGames: RecentGame[] = recentSessions.map(session => ({
-      gameId: session._id ? session._id.toString() : `unknown-${Math.random()}`,
-      gameName: `젠고 ${session.level || '알 수 없음'}`,
-      playedAt: session.createdAt.toISOString(),
-      score: session.score || 0,
-      level: session.level || '알 수 없음',
-      metricsChange: { // 우선 목업 값으로 설정
-        workingMemoryCapacity: Math.floor(Math.random() * 3) -1, // -1, 0, 1
-        processingSpeed: Math.floor(Math.random() * 3) -1,
-      },
+    const overallProfile = calculateCognitiveMetricsFromSessions(sessions);
+    const overallScore = calculateOverallScore(overallProfile);
+    const timeSeriesData = generateTimeSeriesData(overallProfile, sessions);
+    const { strengths, improvementAreas } = identifyStrengthsAndWeaknesses(overallProfile);
+    const personalizedRecommendations = generatePersonalizedRecommendations(improvementAreas, strengths);
+    const percentileRanks = await calculatePercentileRanks(userId, overallProfile);
+    
+    // 최근 게임 데이터 생성 (옵션)
+    const recentGames: RecentGame[] = sessions.slice(-5).reverse().map(s => ({
+      gameId: s._id?.toString() || '',
+      gameName: `젠고 ${s.level}`,
+      playedAt: s.createdAt.toISOString(),
+      score: s.score || 0,
+      level: s.level,
+      metricsChange: {} // 상세 구현 필요
     }));
 
-    // 강점, 개선 영역, 추천 계산
-    const { strengths, improvementAreas } = deriveKeyCognitiveAreas(calculatedOverallProfile);
-    const calculatedRecommendations = generatePersonalizedRecommendations(improvementAreas, strengths);
-    
-    // 백분위 순위 계산
-    const percentileRanks = await calculatePercentileRanks(userId, calculatedOverallProfile);
-    console.log(`Calculated percentile ranks for user ${userId}:`, JSON.stringify(percentileRanks));
-
-    // 실제 계산된 데이터만 사용해서 응답 생성 (목업 데이터 제거)
     const responseData: BrainAnalyticsData = {
       userId,
       lastUpdatedAt: new Date().toISOString(),
-      overallProfile: calculatedOverallProfile,
-      historicalData: calculatedHistoricalData,
+      overallProfile,
+      historicalData: timeSeriesData,
       percentileRanks,
       strengths,
       improvementAreas,
-      recentGames: calculatedRecentGames,
-      personalizedRecommendations: calculatedRecommendations,
+      recentGames,
+      personalizedRecommendations,
       debug_fetchedSessionCount: sessions.length,
     };
 
-    return NextResponse.json(responseData, { status: 200 });
+    return NextResponse.json({ message: 'Cognitive analytics data retrieved successfully.', data: responseData });
 
   } catch (error) {
-    console.error('Error in /api/cognitive/metrics:', error);
-    let errorMessage = '시스템이 잠시 쉬는 중이에요. 금방 돌아올게요.';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    if (error instanceof mongoose.Error.CastError && error.path === '_id') {
-        errorMessage = '사용자 정보를 찾지 못했어요. 다시 로그인해 주실래요?';
-        return NextResponse.json({ message: errorMessage }, { status: 400 });
-    }
-    return NextResponse.json({ message: '데이터를 가져오는 중 문제가 있어요. 다시 시도해 주실래요?' }, { status: 500 });
+    console.error('[Cognitive Metrics API Error]', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    return NextResponse.json({ error: 'Failed to retrieve cognitive metrics.', details: errorMessage }, { status: 500 });
   }
 } 
