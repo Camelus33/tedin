@@ -9,16 +9,21 @@ import StrengthsWeaknessesDisplay from '@/components/analytics/StrengthsWeakness
 import ReflectionJournal from '@/components/analytics/ReflectionJournal';
 import PersonalizedSuggestions from '@/components/analytics/PersonalizedSuggestions';
 import { ExtendedCognitiveMetrics, extendedMetricDisplayNames } from '../../src/types/cognitiveMetricsExtended';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 // V2 확장 타입 사용
 type CognitiveMetrics = ExtendedCognitiveMetrics;
 
-// 시계열 데이터 구조 정의
+// 시계열 데이터 구조를 모든 메트릭을 포함하도록 확장
 interface TimeSeriesData {
-  workingMemory: { date: string; value: number; baseline?: number }[];
-  attention: { date: string; value: number; baseline?: number }[];
-  processingSpeed: { date: string; value: number; baseline?: number }[];
-  cognitiveFlexibility: { date: string; value: number; baseline?: number }[];
+  workingMemory: { date: string; value: number }[];
+  attention: { date: string; value: number }[];
+  processingSpeed: { date: string; value: number }[];
+  cognitiveFlexibility: { date: string; value: number }[];
+  visuospatialPrecision: { date: string; value: number }[];
+  patternRecognition: { date: string; value: number }[];
+  hippocampusActivation: { date: string; value: number }[];
+  executiveFunction: { date: string; value: number }[];
 }
 
 // V2 확장 메트릭 표시명 사용
@@ -33,8 +38,8 @@ export default function AnalyticsPage() {
   const [percentileRanks, setPercentileRanks] = useState<Partial<CognitiveMetrics> | null>(null);
   const [timeSeriesData, setTimeSeriesData] = useState<TimeSeriesData | null>(null);
   const [strengthsWeaknesses, setStrengthsWeaknesses] = useState<{
-    strengths: { metric: keyof CognitiveMetrics; score: number; tip: string }[];
-    weaknesses: { metric: keyof CognitiveMetrics; score: number; tip: string }[];
+    strengths: { metric: keyof CognitiveMetrics; score: number; description: string }[];
+    weaknesses: { metric: keyof CognitiveMetrics; score: number; description: string }[];
   } | null>(null);
   const [overallScore, setOverallScore] = useState<number | null>(null);
   const [growthStage, setGrowthStage] = useState<string | null>(null);
@@ -80,31 +85,58 @@ export default function AnalyticsPage() {
       
       console.log('📊 Analytics API 원본 응답:', JSON.stringify(analyticsData, null, 2));
 
-      if (!analyticsData) {
-        throw new Error('분석 데이터가 비어있습니다.');
+      // API 응답 구조에 맞게 `data` 객체 추출
+      const { data } = analyticsData;
+
+      if (!data) {
+        // 데이터가 없는 경우의 처리 (예: 기본값 설정 또는 오류 메시지)
+        setError('분석 데이터가 없습니다. 젠고 게임을 플레이하여 데이터를 생성해주세요.');
+        setPercentileRanks(null);
+        setTimeSeriesData(null);
+        setStrengthsWeaknesses(null);
+        setOverallScore(50); // 기본 점수 설정
+        setGrowthStage('초보자');
+        setLoading(false);
+        return;
       }
       
       // V2 확장 메트릭을 포함한 백분위 순위 설정
-      setPercentileRanks(analyticsData.percentileRanks || null);
+      setPercentileRanks(data.percentileRanks || null);
       
-      // historicalData를 timeSeriesData 형식으로 변환
-      if (analyticsData.historicalData && analyticsData.historicalData.length > 0) {
+      // timeSeriesData를 프론트엔드 형식으로 변환 (API 응답 키 이름 'timeSeriesData' 사용)
+      if (data.timeSeriesData && data.timeSeriesData.length > 0) {
         const converted: TimeSeriesData = {
-          workingMemory: analyticsData.historicalData.map((item: any) => ({
+          workingMemory: data.timeSeriesData.map((item: any) => ({
             date: item.date,
             value: item.metrics.workingMemoryCapacity || 0,
           })),
-          attention: analyticsData.historicalData.map((item: any) => ({
+          attention: data.timeSeriesData.map((item: any) => ({
             date: item.date,
             value: item.metrics.sustainedAttention || 0,
           })),
-          processingSpeed: analyticsData.historicalData.map((item: any) => ({
+          processingSpeed: data.timeSeriesData.map((item: any) => ({
             date: item.date,
             value: item.metrics.processingSpeed || 0,
           })),
-          cognitiveFlexibility: analyticsData.historicalData.map((item: any) => ({
+          cognitiveFlexibility: data.timeSeriesData.map((item: any) => ({
             date: item.date,
             value: item.metrics.cognitiveFlexibility || 0,
+          })),
+          visuospatialPrecision: data.timeSeriesData.map((item: any) => ({
+            date: item.date,
+            value: item.metrics.visuospatialPrecision || 0,
+          })),
+          patternRecognition: data.timeSeriesData.map((item: any) => ({
+            date: item.date,
+            value: item.metrics.patternRecognition || 0,
+          })),
+          hippocampusActivation: data.timeSeriesData.map((item: any) => ({
+            date: item.date,
+            value: item.metrics.hippocampusActivation || 0,
+          })),
+          executiveFunction: data.timeSeriesData.map((item: any) => ({
+            date: item.date,
+            value: item.metrics.executiveFunction || 0,
           })),
         };
         setTimeSeriesData(converted);
@@ -112,41 +144,33 @@ export default function AnalyticsPage() {
         setTimeSeriesData(null);
       }
       
-      // 강점/약점 데이터 설정
-      if (analyticsData.strengths && analyticsData.improvementAreas) {
-        const overallProfile = analyticsData.overallProfile || {};
+      // 강점/약점 데이터 설정 (API 응답 키 이름 'weaknesses' 사용)
+      if (data.strengths && data.weaknesses) {
+        const latestMetrics = data.metrics || {};
         setStrengthsWeaknesses({
-          strengths: analyticsData.strengths.map((metric: keyof CognitiveMetrics) => ({
-            metric,
-            score: overallProfile[metric] || 50,
-            tip: `${metricDisplayNames[metric]} 능력이 뛰어납니다!`,
+          strengths: data.strengths.map((metric: keyof CognitiveMetrics) => ({
+            metric: metricDisplayNames[metric],
+            score: latestMetrics[metric] || 50,
+            description: `${metricDisplayNames[metric]} 능력이 뛰어납니다!`,
           })),
-          weaknesses: analyticsData.improvementAreas.map((metric: keyof CognitiveMetrics) => ({
-            metric,
-            score: overallProfile[metric] || 50,
-            tip: `${metricDisplayNames[metric]} 향상을 위해 더 연습해보세요.`,
+          weaknesses: data.weaknesses.map((metric: keyof CognitiveMetrics) => ({
+            metric: metricDisplayNames[metric],
+            score: latestMetrics[metric] || 50,
+            description: `${metricDisplayNames[metric]} 향상을 위해 더 연습해보세요.`,
           })),
         });
       } else {
         setStrengthsWeaknesses(null);
       }
       
-      // 전체 점수 계산 (V2 확장 메트릭 포함, 안전성 강화)
-      let calculatedAvgScore = 50; // 기본값
-      if (analyticsData.overallProfile) {
-        const metrics = analyticsData.overallProfile;
-        const values = Object.values(metrics)
-          .filter((v): v is number => typeof v === 'number' && !isNaN(v) && v >= 0 && v <= 100);
-        if (values.length > 0) {
-          calculatedAvgScore = Math.round(values.reduce((sum, v) => sum + v, 0) / values.length);
-        }
-      }
-      setOverallScore(calculatedAvgScore);
+      // 전체 점수 설정 (API에서 직접 제공하는 값 사용)
+      const finalScore = data.overallScore || 50;
+      setOverallScore(finalScore);
       
       // 성장 단계 설정 (계산된 점수 기반)
-      if (calculatedAvgScore >= 80) setGrowthStage('전문가');
-      else if (calculatedAvgScore >= 70) setGrowthStage('숙련자');
-      else if (calculatedAvgScore >= 60) setGrowthStage('중급자');
+      if (finalScore >= 80) setGrowthStage('전문가');
+      else if (finalScore >= 70) setGrowthStage('숙련자');
+      else if (finalScore >= 60) setGrowthStage('중급자');
       else setGrowthStage('초보자');
       
     } catch (err) {
@@ -247,66 +271,115 @@ export default function AnalyticsPage() {
         </div>
       ) : (
         <>
+          {/* 종합 점수와 강점/약점을 최상단에 다시 배치 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {overallScore !== null && <OverallScoreCard score={overallScore} />}
-            <PercentileRankCard 
-              percentileRanksData={percentileRanks} 
-              metricDisplayNames={metricDisplayNames} 
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 gap-6 mb-6">
-            <StrengthsWeaknessesDisplay 
-              strengths={strengthsWeaknesses?.strengths.map(s => ({ ...s, metric: metricDisplayNames[s.metric], description: s.tip })) || []} 
-              weaknesses={strengthsWeaknesses?.weaknesses.map(w => ({ ...w, metric: metricDisplayNames[w.metric], description: w.tip })) || []} 
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <TimeSeriesChartCard 
-              title="작업 기억력 추이"
-              description="시간에 따른 작업 기억 용량의 변화를 추적합니다."
-              data={timeSeriesData?.workingMemory || []}
-              metricLabel="작업 기억력"
-              yAxisLabel="점수"
-              showBaseline={true}
-            />
-            <TimeSeriesChartCard 
-              title="집중력 추이"
-              description="시간에 따른 주의력 지속성의 변화를 추적합니다."
-              data={timeSeriesData?.attention || []}
-              metricLabel="집중력"
-              yAxisLabel="점수"
-              showBaseline={true}
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <TimeSeriesChartCard 
-              title="처리 속도 추이"
-              description="시간에 따른 정보 처리 속도의 변화를 추적합니다."
-              data={timeSeriesData?.processingSpeed || []}
-              metricLabel="처리 속도"
-              yAxisLabel="점수"
-              showBaseline={true}
-            />
-            <TimeSeriesChartCard 
-              title="인지적 유연성 추이"
-              description="시간에 따른 인지적 유연성의 변화를 추적합니다."
-              data={timeSeriesData?.cognitiveFlexibility || []}
-              metricLabel="인지적 유연성"
-              yAxisLabel="점수"
-              showBaseline={true}
-            />
+            {overallScore && (
+              <OverallScoreCard 
+                score={overallScore}
+              />
+            )}
+            {strengthsWeaknesses && (
+              <StrengthsWeaknessesDisplay 
+                strengths={strengthsWeaknesses.strengths} 
+                weaknesses={strengthsWeaknesses.weaknesses}
+              />
+            )}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* 성찰일지와 맞춤형 제안을 상단으로 이동 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <ReflectionJournal metricName="cognitive" />
-            <PersonalizedSuggestions 
-              currentGoals={['overall', 'workingMemory', 'attention']} 
-              metricScores={percentileRanks || undefined}
-            />
+            <PersonalizedSuggestions />
           </div>
+
+          {timeSeriesData && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>능력별 성장 추이</CardTitle>
+                <CardDescription>
+                  관심 있는 인지 능력 영역을 선택하여 시간의 흐름에 따른 성장 과정을 확인해보세요.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="memory" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+                    <TabsTrigger value="memory">기억과 학습</TabsTrigger>
+                    <TabsTrigger value="attention">주의와 집중</TabsTrigger>
+                    <TabsTrigger value="processing">정보 처리</TabsTrigger>
+                    <TabsTrigger value="executive">실행 기능</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="memory" className="pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <TimeSeriesChartCard
+                        title="작업 기억력"
+                        description="정보를 일시적으로 저장하고 처리하는 능력의 변화입니다."
+                        data={timeSeriesData.workingMemory}
+                        metricLabel="작업 기억력"
+                      />
+                      <TimeSeriesChartCard
+                        title="해마 활성화"
+                        description="새로운 지식을 장기 기억으로 전환하는 능력의 변화입니다."
+                        data={timeSeriesData.hippocampusActivation}
+                        metricLabel="해마 활성화"
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="attention" className="pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <TimeSeriesChartCard
+                        title="지속 주의력"
+                        description="시간이 지나도 집중을 유지하는 능력의 변화입니다."
+                        data={timeSeriesData.attention}
+                        metricLabel="지속 주의력"
+                      />
+                      <TimeSeriesChartCard
+                        title="시공간 정확도"
+                        description="시각적 정보와 공간 관계를 정확히 파악하는 능력의 변화입니다."
+                        data={timeSeriesData.visuospatialPrecision}
+                        metricLabel="시공간 정확도"
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="processing" className="pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <TimeSeriesChartCard
+                        title="처리 속도"
+                        description="시각 정보를 빠르고 효율적으로 처리하는 능력의 변화입니다."
+                        data={timeSeriesData.processingSpeed}
+                        metricLabel="처리 속도"
+                      />
+                      <TimeSeriesChartCard
+                        title="패턴 인식"
+                        description="데이터나 정보 속에서 규칙과 패턴을 찾아내는 능력의 변화입니다."
+                        data={timeSeriesData.patternRecognition}
+                        metricLabel="패턴 인식"
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="executive" className="pt-4">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                       <TimeSeriesChartCard
+                        title="인지 유연성"
+                        description="변화하는 상황에 맞춰 생각과 행동을 전환하는 능력의 변화입니다."
+                        data={timeSeriesData.cognitiveFlexibility}
+                        metricLabel="인지 유연성"
+                      />
+                      <TimeSeriesChartCard
+                        title="실행 기능"
+                        description="목표를 설정하고, 계획을 세우며, 자신을 통제하는 능력의 변화입니다."
+                        data={timeSeriesData.executiveFunction}
+                        metricLabel="실행 기능"
+                      />
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
 

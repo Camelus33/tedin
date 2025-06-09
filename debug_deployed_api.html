@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HABITUS33 V2 API 디버그</title>
+    <style>
+        body { font-family: monospace; margin: 20px; background: #1a1a1a; color: #00ffff; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .result { background: #2d2d2d; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffcccc; color: #800000; }
+        .success { background: #ccffcc; color: #008000; }
+        button { background: #007acc; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 5px; }
+        input { padding: 8px; margin: 5px; width: 300px; }
+        pre { background: #333; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 HABITUS33 V2 인지측정 API 디버그</h1>
+        
+        <div>
+            <h3>1. 인증 토큰 입력</h3>
+            <input id="tokenInput" placeholder="Bearer 토큰을 입력하세요" type="password">
+            <button onclick="testAuth()">토큰 테스트</button>
+        </div>
+
+        <div>
+            <h3>2. V2 인지측정 API 테스트</h3>
+            <select id="timeRange">
+                <option value="1m">1개월</option>
+                <option value="3m" selected>3개월</option>
+                <option value="6m">6개월</option>
+                <option value="all">전체</option>
+            </select>
+            <button onclick="testCognitiveAPI()">V2 API 테스트</button>
+            <button onclick="getTokenFromStorage()">저장된 토큰 사용</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://habitus33-api.onrender.com';
+        
+        function addResult(content, className = '') {
+            const div = document.createElement('div');
+            div.className = `result ${className}`;
+            div.innerHTML = content;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function getTokenFromStorage() {
+            // localStorage나 sessionStorage에서 토큰 찾기
+            const token = localStorage.getItem('token') || 
+                         sessionStorage.getItem('token') ||
+                         localStorage.getItem('authToken') ||
+                         sessionStorage.getItem('authToken');
+            
+            if (token) {
+                document.getElementById('tokenInput').value = token;
+                addResult(`✅ 저장된 토큰 발견: ${token.substring(0, 20)}...`, 'success');
+            } else {
+                addResult('❌ 저장된 토큰을 찾을 수 없습니다.', 'error');
+            }
+        }
+
+        async function testAuth() {
+            const token = document.getElementById('tokenInput').value;
+            if (!token) {
+                addResult('❌ 토큰을 입력해주세요.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/health`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                addResult(`✅ 헬스체크 응답 (${response.status}):<pre>${JSON.stringify(data, null, 2)}</pre>`, 'success');
+            } catch (error) {
+                addResult(`❌ 헬스체크 오류: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCognitiveAPI() {
+            const token = document.getElementById('tokenInput').value;
+            const timeRange = document.getElementById('timeRange').value;
+            
+            if (!token) {
+                addResult('❌ 토큰을 먼저 입력해주세요.', 'error');
+                return;
+            }
+
+            addResult(`🔍 V2 인지측정 API 테스트 시작 (시간범위: ${timeRange})`);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/cognitive/metrics?timeRange=${timeRange}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const responseText = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    addResult(`❌ JSON 파싱 오류. 응답: ${responseText}`, 'error');
+                    return;
+                }
+
+                if (!response.ok) {
+                    addResult(`❌ API 오류 (${response.status}): ${data.message || data.error}`, 'error');
+                    return;
+                }
+
+                // 핵심 디버그 정보 추출
+                const debugInfo = {
+                    fetchedSessionCount: data.debug_fetchedSessionCount,
+                    overallProfileSample: Object.keys(data.overallProfile || {}).reduce((acc, key) => {
+                        acc[key] = Math.round(data.overallProfile[key] || 0);
+                        return acc;
+                    }, {}),
+                    historicalDataCount: data.historicalData?.length || 0,
+                    hasV2Metrics: !!(data.overallProfile?.spatialMemoryAccuracy),
+                    strengths: data.strengths,
+                    improvementAreas: data.improvementAreas
+                };
+
+                addResult(`📊 V2 API 응답 성공!<pre>${JSON.stringify(debugInfo, null, 2)}</pre>`, 'success');
+
+                // 문제 진단
+                if (debugInfo.fetchedSessionCount === 0) {
+                    addResult(`🚨 문제 발견: 젠고 세션 데이터가 0개 조회됨. 데이터베이스 연결 또는 사용자 ID 문제 가능성`, 'error');
+                } else if (debugInfo.fetchedSessionCount > 0) {
+                    const avgScore = Object.values(debugInfo.overallProfileSample).reduce((a, b) => a + b, 0) / Object.keys(debugInfo.overallProfileSample).length;
+                    if (Math.abs(avgScore - 50) < 5) {
+                        addResult(`🚨 문제 발견: ${debugInfo.fetchedSessionCount}개 세션이 있지만 평균점수가 ${avgScore.toFixed(1)}점 (기본값 50에 가까움). V2 계산 로직 문제 가능성`, 'error');
+                    } else {
+                        addResult(`✅ 정상: ${debugInfo.fetchedSessionCount}개 세션으로 평균점수 ${avgScore.toFixed(1)}점 계산됨`, 'success');
+                    }
+                }
+
+                // 전체 응답 데이터 표시 (접을 수 있게)
+                addResult(`
+                    <details>
+                        <summary>전체 응답 데이터 보기</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `);
+
+            } catch (error) {
+                addResult(`❌ 네트워크 오류: ${error.message}`, 'error');
+            }
+        }
+
+        // 페이지 로드 시 자동으로 저장된 토큰 찾기
+        window.onload = function() {
+            getTokenFromStorage();
+        };
+    </script>
+</body>
+</html>
