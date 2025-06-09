@@ -78,7 +78,7 @@ export default function AnalyticsPage() {
       
       const analyticsData = await response.json();
       
-      console.log('Analytics API 응답:', analyticsData);
+      console.log('📊 Analytics API 원본 응답:', JSON.stringify(analyticsData, null, 2));
 
       if (!analyticsData) {
         throw new Error('분석 데이터가 비어있습니다.');

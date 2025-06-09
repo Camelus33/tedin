@@ -35,6 +35,18 @@ export interface IZengoSessionResult extends Document {
   
   // 메타 정보
   detailedDataVersion?: string; // 상세 데이터 버전 (예: "v2.0")
+
+  // --- V2 상세 데이터 필드 (v2.0) ---
+  detailedMetrics: {
+    firstClickLatency: number;
+    interClickIntervals: number[];
+    hesitationPeriods: { duration: number; position: { x: number; y: number } }[];
+    spatialErrors: { expected: { x: number; y: number }; actual: { x: number; y: number }; distance: number }[];
+    clickPositions: { x: number; y: number; timestamp: number }[];
+    correctPositions: { x: number; y: number }[];
+    sequentialAccuracy: number;
+    temporalOrderViolations: number;
+  };
 }
 
 // Mongoose Schema definition for ZengoSessionResult
@@ -162,7 +174,19 @@ const ZengoSessionResultSchema: Schema = new Schema(
     detailedDataVersion: {
       type: String,
       default: 'v1.0'
-    }
+    },
+
+    // --- V2 상세 데이터 필드 (v2.0) ---
+    detailedMetrics: {
+      firstClickLatency: { type: Number },
+      interClickIntervals: { type: [Number] },
+      hesitationPeriods: { type: [Object] }, // { duration: Number, position: {x,y} }
+      spatialErrors: { type: [Object] }, // { expected: {x,y}, actual: {x,y}, distance: Number }
+      clickPositions: { type: [Object] }, // { x: Number, y: Number, timestamp: Number }
+      correctPositions: { type: [Object] }, // { x: Number, y: Number }
+      sequentialAccuracy: { type: Number }, // 0~1 사이의 값
+      temporalOrderViolations: { type: Number },
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false }, // Only add createdAt automatically

@@ -506,6 +506,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: authResult.message || '인증이 필요합니다.' }, { status: 401 });
     }
     const { userId } = authResult;
+    console.log(`[CognitiveMetrics] 🧠 인증된 사용자 ID: ${userId}`);
 
     const timeRange = req.nextUrl.searchParams.get('timeRange');
     const { startDate, endDate } = calculateDateRange(timeRange);
@@ -520,7 +521,11 @@ export async function GET(req: NextRequest) {
       },
     }).sort({ createdAt: 1 }).lean(); // 오름차순 정렬
 
-    console.log(`Fetched ${sessions.length} sessions for user ${userId} in range ${startDate.toISOString()} - ${endDate.toISOString()}`);
+    console.log(`[CognitiveMetrics] 📚 사용자 ID [${userId}]에 대해 [${sessions.length}]개의 세션을 찾았습니다. 기간: ${timeRange}`);
+
+    if (sessions.length === 0) {
+      console.warn(`[CognitiveMetrics] 경고: 해당 사용자에 대한 세션 데이터가 없습니다. 기본값을 반환합니다.`);
+    }
 
     const calculatedOverallProfile = calculateCognitiveMetricsFromSessions(sessions);
 
