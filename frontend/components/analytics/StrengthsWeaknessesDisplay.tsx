@@ -176,7 +176,7 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                         <span className="font-semibold text-sm" style={{ color: 'rgb(var(--secondary-green))' }}>{strength.score}</span>
                       </div>
                     </div>
-                     <Progress value={strength.score} className="h-2 [&>div]:bg-green-400" />
+                     <Progress value={strength.score} className="h-2 bg-gray-700 rounded-full [&>div]:bg-gradient-to-r [&>div]:from-green-400 [&>div]:to-teal-400" />
                     
                     {strength.recommendedActivities && (
                       <div className="mt-4 pt-4 border-t border-gray-100 animate-fadeIn">
@@ -231,7 +231,7 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                         <span className="font-semibold text-sm" style={{ color: 'rgb(var(--primary-turquoise))' }}>{weakness.score}</span>
                       </div>
                     </div>
-                    <Progress value={weakness.score} className="h-2 [&>div]:bg-cyan-400" />
+                    <Progress value={weakness.score} className="h-2 bg-gray-700 rounded-full [&>div]:bg-gradient-to-r [&>div]:from-cyan-400 [&>div]:to-purple-400" />
                     
                     {weakness.improvementSuggestions && (
                       <div className="mt-4 pt-4 border-t border-gray-100 animate-fadeIn">
