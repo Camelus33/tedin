@@ -464,7 +464,7 @@ export default function TSNoteCard({
     if (enableOverlayEvolutionMode || minimalDisplay || !isInlineEditing) return null;
 
     return (
-      <div className="mt-4 pt-3 border-t border-gray-700/50 space-y-3">
+      <div className="mt-4 pt-3 border-t border-gray-700/50 space-y-3 min-h-[280px]">
         <h4 className="text-xs font-semibold text-gray-400 mb-2">
           메모 진화 (인라인 편집 중):
         </h4>
