@@ -573,12 +573,12 @@ export default function TSNoteCard({
         </p>
 
         {/* 책 제목(출처) 표시 조건을 수정 */}
-        {bookTitle && !isPageEditing && !isOpen && !minimalDisplay && !isInlineEditing && (
-          <div className="mt-2 text-xs text-gray-400 flex items-center">
+        <div className={cn("mt-2 text-xs text-gray-400 flex items-center", {
+          "invisible": isInlineEditing || !bookTitle || minimalDisplay || isOpen || isPageEditing
+        })}>
             <SolidBookOpenIcon className="h-3 w-3 mr-1.5 text-gray-500" />
             출처: {displayBookTitle}
-          </div>
-        )}
+        </div>
         
         <div className="grid">
           {/* Summary View - always rendered, visibility toggled */}
@@ -606,32 +606,32 @@ export default function TSNoteCard({
 
       </div>
       
-      {!isPageEditing && !isOpen && !minimalDisplay && !isInlineEditing && note.relatedLinks && note.relatedLinks.length > 0 && (
-        <div className="mt-3 pt-2 border-t border-gray-700/50">
-          <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
-            <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
-            관련 링크
-          </h4>
-          <ul className="space-y-1">
-            {note.relatedLinks.map((link, idx) => (
-              <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150">
-                <ArrowTopRightOnSquareIcon className="h-3 w-3 mr-1.5 flex-shrink-0 text-gray-500" />
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="truncate"
-                  title={link.url}
-                  onClick={(e) => e.stopPropagation()}
-                  data-no-toggle
-                >
-                  {link.reason || getDomainFromUrl(link.url)}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className={cn("mt-3 pt-2 border-t border-gray-700/50", {
+        "invisible": isInlineEditing || !note.relatedLinks || note.relatedLinks?.length === 0 || minimalDisplay || isOpen || isPageEditing
+      })}>
+        <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
+          <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
+          관련 링크
+        </h4>
+        <ul className="space-y-1">
+          {note.relatedLinks?.map((link, idx) => (
+            <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150">
+              <ArrowTopRightOnSquareIcon className="h-3 w-3 mr-1.5 flex-shrink-0 text-gray-500" />
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate"
+                title={link.url}
+                onClick={(e) => e.stopPropagation()}
+                data-no-toggle
+              >
+                {link.reason || getDomainFromUrl(link.url)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-700/50">
