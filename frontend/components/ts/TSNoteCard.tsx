@@ -382,7 +382,7 @@ export default function TSNoteCard({
   };
 
   const toggleInlineEdit = () => {
-    // 오버레이 모드가 아니고 최소 표시 모드가 아닐 때만 동작 (isPageEditing 조건 제거)
+    // 오버레이 모드가 아니고 최소 표시 모드가 아닐 때만 동작
     if (!enableOverlayEvolutionMode && !minimalDisplay) {
       setIsInlineEditing(prev => {
         const nextInlineState = !prev;
@@ -485,7 +485,8 @@ export default function TSNoteCard({
                 }
               }}
               placeholder={prompts[index]?.placeholder || '내용 입력'}
-              className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 h-24 resize-none text-gray-200 custom-scrollbar"
+              rows={2}
+              className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 h-auto resize-none text-gray-200 custom-scrollbar"
             />
           </div>
         ))}
