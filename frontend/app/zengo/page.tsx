@@ -27,6 +27,7 @@ import ZengoResultPage from '@/components/zengo/ZengoResultPage';
 import { BoardStoneData, PlacedStone, BoardSize, InteractionMode } from '@/src/types/zengo';
 import { LightBulbIcon, FireIcon, QuestionMarkCircleIcon, DocumentTextIcon, UserIcon, ArrowTrendingUpIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import { playSound } from '@/lib/audioUtils';
+import { zengoDataCollector, DetailedSessionData } from '@/lib/zengoDataCollector';
 
 // [ZenGo 모드 분리 원칙]
 // ZenGo는 세 가지 모드(젠고 기본, 젠고 마이버스, 젠고 오리지널/브랜디드)를 별도로 운영합니다.
@@ -160,6 +161,26 @@ export default function ZengoPage(
   // Animation state for Original cards
   const [originalCardsVisible, setOriginalCardsVisible] = useState(false);
 
+  // === V2 데이터 수집 관련 상태 ===
+  const [collectedDetailedData, setCollectedDetailedData] = useState<DetailedSessionData | null>(null);
+  const [enableDataCollection, setEnableDataCollection] = useState<boolean>(true); // 기본적으로 활성화
+
+  // === V2 정답 위치 추출 함수 ===
+  const getCorrectPositions = (): { x: number; y: number }[] => {
+    if (!currentContent || !currentContent.wordMappings) return [];
+    
+    return currentContent.wordMappings.map((wordMapping: any) => ({
+      x: wordMapping.coords.x,
+      y: wordMapping.coords.y
+    }));
+  };
+
+  // === V2 데이터 수집 완료 핸들러 ===
+  const handleDataCollected = (data: DetailedSessionData) => {
+    console.log('[ZengoPage] 상세 데이터 수집 완료:', data);
+    setCollectedDetailedData(data);
+  };
+
   useEffect(() => {
     // Trigger animation for Original cards shortly after component mounts or uiState changes to selection
     if (uiState === 'selection') {
@@ -218,6 +239,13 @@ export default function ZengoPage(
     if ((gameState === 'finished_success' || gameState === 'finished_fail') && !hasSubmitted) {
       console.log(`결과 제출 시작: 게임 상태=${gameState}, 결과 유형=${resultType}`);
       
+      // === V2 데이터 수집 완료 처리 ===
+      if (enableDataCollection && !collectedDetailedData) {
+        console.log('[ZengoPage] 게임 종료 - 데이터 수집 완료 요청');
+        const finalData = zengoDataCollector.finishSession();
+        setCollectedDetailedData(finalData);
+      }
+      
       // 결과 제출 요청
       dispatch(submitResultThunk());
       setHasSubmitted(true);
@@ -225,10 +253,11 @@ export default function ZengoPage(
       console.log('결과 제출 후 상태:', { 
         gameState, 
         resultType,
-        hasSubmitted: true
+        hasSubmitted: true,
+        collectedDetailedData: collectedDetailedData || '수집 중'
       });
     }
-  }, [gameState, dispatch, hasSubmitted, resultType]);
+  }, [gameState, dispatch, hasSubmitted, resultType, enableDataCollection, collectedDetailedData]);
 
   // Effect to automatically start the game once content is loaded
   useEffect(() => {
@@ -896,6 +925,9 @@ export default function ZengoPage(
                       }
                     }}
                     isShowing={gameState === 'showing'}
+                    enableDataCollection={enableDataCollection && gameState === 'playing'}
+                    correctPositions={getCorrectPositions()}
+                    onDataCollected={handleDataCollected}
                   />
                   <div className="status-card-responsive">
                     <ZengoStatusDisplay

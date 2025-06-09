@@ -12,6 +12,7 @@ import {
 } from '../../src/types/zengo'; // Adjust path if necessary
 import axios from 'axios';
 import { myverseApi } from '@/lib/api'; // Import myverseApi for the new endpoint
+import { zengoDataCollector } from '@/lib/zengoDataCollector'; // V2 데이터 수집기 추가
 
 // API URL 설정
 const apiUrl = process.env.NEXT_PUBLIC_API_URL; // 올바른 환경 변수 이름 사용
@@ -176,6 +177,16 @@ export const submitResultThunk = createAsyncThunk<
 
             } else {
                 // --- Standard/Original Zengo 결과 제출 --- 
+                
+                // === V2 상세 데이터 수집 ===
+                const detailedData = zengoDataCollector.getCurrentData();
+                console.log('[submitResultThunk] V2 상세 데이터 수집 상태:', {
+                    hasDetailedData: !!detailedData,
+                    dataVersion: detailedData?.detailedDataVersion,
+                    clickCount: detailedData?.clickPositions?.length || 0,
+                    spatialErrorCount: detailedData?.spatialErrors?.length || 0
+                });
+
                 const standardPayload = {
                     contentId: currentContent._id,
                     level: currentContent.level,
@@ -195,7 +206,20 @@ export const submitResultThunk = createAsyncThunk<
                             const index = currentContent.wordMappings.findIndex(wm =>
                                 wm.coords.x === stone.x && wm.coords.y === stone.y);
                             return index;
-                        })
+                        }),
+                    
+                    // === V2 상세 데이터 추가 ===
+                    ...(detailedData && detailedData.detailedDataVersion === 'v2.0' ? {
+                        firstClickLatency: detailedData.firstClickLatency,
+                        interClickIntervals: detailedData.interClickIntervals,
+                        hesitationPeriods: detailedData.hesitationPeriods,
+                        spatialErrors: detailedData.spatialErrors,
+                        clickPositions: detailedData.clickPositions,
+                        correctPositions: detailedData.correctPositions,
+                        sequentialAccuracy: detailedData.sequentialAccuracy,
+                        temporalOrderViolations: detailedData.temporalOrderViolations,
+                        detailedDataVersion: detailedData.detailedDataVersion
+                    } : {})
                 };
                 console.log('Standard 세션 결과 제출 데이터:', standardPayload);
                 // Use apiClient directly as before for the standard endpoint

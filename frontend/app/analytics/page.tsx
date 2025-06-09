@@ -8,18 +8,10 @@ import OverallScoreCard from '@/components/analytics/OverallScoreCard';
 import StrengthsWeaknessesDisplay from '@/components/analytics/StrengthsWeaknessesDisplay';
 import ReflectionJournal from '@/components/analytics/ReflectionJournal';
 import PersonalizedSuggestions from '@/components/analytics/PersonalizedSuggestions';
+import { ExtendedCognitiveMetrics, extendedMetricDisplayNames } from '../../src/types/cognitiveMetricsExtended';
 
-// 인지 능력 메트릭 구조 정의
-interface CognitiveMetrics {
-  workingMemoryCapacity: number;
-  visuospatialPrecision: number;
-  processingSpeed: number;
-  sustainedAttention: number;
-  patternRecognition: number;
-  cognitiveFlexibility: number;
-  hippocampusActivation: number;
-  executiveFunction: number;
-}
+// V2 확장 타입 사용
+type CognitiveMetrics = ExtendedCognitiveMetrics;
 
 // 시계열 데이터 구조 정의
 interface TimeSeriesData {
@@ -29,17 +21,8 @@ interface TimeSeriesData {
   cognitiveFlexibility: { date: string; value: number; baseline?: number }[];
 }
 
-// 메트릭 이름 매핑 데이터
-const metricDisplayNames: Record<keyof CognitiveMetrics, string> = {
-  workingMemoryCapacity: '작업 기억 용량',
-  visuospatialPrecision: '시공간 정확도',
-  processingSpeed: '처리 속도',
-  sustainedAttention: '주의 지속성',
-  patternRecognition: '패턴 인식',
-  cognitiveFlexibility: '인지적 유연성',
-  hippocampusActivation: '해마 활성화',
-  executiveFunction: '실행 기능',
-};
+// V2 확장 메트릭 표시명 사용
+const metricDisplayNames = extendedMetricDisplayNames;
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<string>('3m');
@@ -93,29 +76,78 @@ export default function AnalyticsPage() {
         return; // 오류 발생 시 함수 종료
       }
       
-      const responseData = await response.json();
+      const analyticsData = await response.json();
       
-      // 백엔드 응답 데이터를 각 상태에 할당
-      // 백엔드 응답이 { message, code, data: { ... } } 구조로 오므로 data.data를 사용
-      const analyticsData = responseData.data;
+      console.log('Analytics API 응답:', analyticsData);
 
       if (!analyticsData) {
         throw new Error('분석 데이터가 비어있습니다.');
       }
       
+      // V2 확장 메트릭을 포함한 백분위 순위 설정
       setPercentileRanks(analyticsData.percentileRanks || null);
-      setTimeSeriesData(analyticsData.timeSeriesData || null);
-      // 백엔드에서 strengths, weaknesses가 별도로 올 수 있으므로 이를 합쳐서 상태 설정
-      if (analyticsData.strengths && analyticsData.weaknesses) {
+      
+      // historicalData를 timeSeriesData 형식으로 변환
+      if (analyticsData.historicalData && analyticsData.historicalData.length > 0) {
+        const converted: TimeSeriesData = {
+          workingMemory: analyticsData.historicalData.map((item: any) => ({
+            date: item.date,
+            value: item.metrics.workingMemoryCapacity || 0,
+          })),
+          attention: analyticsData.historicalData.map((item: any) => ({
+            date: item.date,
+            value: item.metrics.sustainedAttention || 0,
+          })),
+          processingSpeed: analyticsData.historicalData.map((item: any) => ({
+            date: item.date,
+            value: item.metrics.processingSpeed || 0,
+          })),
+          cognitiveFlexibility: analyticsData.historicalData.map((item: any) => ({
+            date: item.date,
+            value: item.metrics.cognitiveFlexibility || 0,
+          })),
+        };
+        setTimeSeriesData(converted);
+      } else {
+        setTimeSeriesData(null);
+      }
+      
+      // 강점/약점 데이터 설정
+      if (analyticsData.strengths && analyticsData.improvementAreas) {
+        const overallProfile = analyticsData.overallProfile || {};
         setStrengthsWeaknesses({
-          strengths: analyticsData.strengths,
-          weaknesses: analyticsData.weaknesses,
+          strengths: analyticsData.strengths.map((metric: keyof CognitiveMetrics) => ({
+            metric,
+            score: overallProfile[metric] || 50,
+            tip: `${metricDisplayNames[metric]} 능력이 뛰어납니다!`,
+          })),
+          weaknesses: analyticsData.improvementAreas.map((metric: keyof CognitiveMetrics) => ({
+            metric,
+            score: overallProfile[metric] || 50,
+            tip: `${metricDisplayNames[metric]} 향상을 위해 더 연습해보세요.`,
+          })),
         });
       } else {
         setStrengthsWeaknesses(null);
       }
-      setOverallScore(analyticsData.overallScore || null);
-      setGrowthStage(analyticsData.growthStage || null);
+      
+      // 전체 점수 계산 (V2 확장 메트릭 포함, 안전성 강화)
+      let calculatedAvgScore = 50; // 기본값
+      if (analyticsData.overallProfile) {
+        const metrics = analyticsData.overallProfile;
+        const values = Object.values(metrics)
+          .filter((v): v is number => typeof v === 'number' && !isNaN(v) && v >= 0 && v <= 100);
+        if (values.length > 0) {
+          calculatedAvgScore = Math.round(values.reduce((sum, v) => sum + v, 0) / values.length);
+        }
+      }
+      setOverallScore(calculatedAvgScore);
+      
+      // 성장 단계 설정 (계산된 점수 기반)
+      if (calculatedAvgScore >= 80) setGrowthStage('전문가');
+      else if (calculatedAvgScore >= 70) setGrowthStage('숙련자');
+      else if (calculatedAvgScore >= 60) setGrowthStage('중급자');
+      else setGrowthStage('초보자');
       
     } catch (err) {
       console.error('데이터 로딩 오류:', err);

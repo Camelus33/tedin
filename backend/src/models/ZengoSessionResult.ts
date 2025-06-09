@@ -17,6 +17,24 @@ export interface IZengoSessionResult extends Document {
   orderCorrect?: boolean; // Whether the placement order was correct
   placementOrder?: number[]; // The order in which stones were placed
   createdAt: Date; // Timestamp of session completion
+  
+  // === 새로운 인지과학적 측정 변수들 (V2) ===
+  // 시간 분석 변수
+  firstClickLatency?: number; // 첫 클릭까지의 지연시간 (ms)
+  interClickIntervals?: number[]; // 클릭 간 간격 배열 (ms)
+  hesitationPeriods?: number[]; // 망설임 기간 배열 (ms)
+  
+  // 공간 인지 변수  
+  spatialErrors?: number[]; // 실제 위치와 클릭 위치 간 거리 배열
+  clickPositions?: { x: number; y: number; timestamp: number }[]; // 클릭 위치와 시간
+  correctPositions?: { x: number; y: number }[]; // 정답 위치들
+  
+  // 순서 및 패턴 변수
+  sequentialAccuracy?: number; // 순서 정확도 (0-1)
+  temporalOrderViolations?: number; // 시간순서 위반 횟수
+  
+  // 메타 정보
+  detailedDataVersion?: string; // 상세 데이터 버전 (예: "v2.0")
 }
 
 // Mongoose Schema definition for ZengoSessionResult
@@ -90,6 +108,60 @@ const ZengoSessionResultSchema: Schema = new Schema(
     placementOrder: {
       type: [Number],
       default: []
+    },
+    
+    // === V2 인지과학적 측정 변수들 ===
+    // 시간 분석 변수 (모두 optional)
+    firstClickLatency: {
+      type: Number,
+      min: 0
+    },
+    interClickIntervals: {
+      type: [Number],
+      default: []
+    },
+    hesitationPeriods: {
+      type: [Number], 
+      default: []
+    },
+    
+    // 공간 인지 변수 (모두 optional)
+    spatialErrors: {
+      type: [Number],
+      default: []
+    },
+    clickPositions: {
+      type: [{
+        x: { type: Number, required: true },
+        y: { type: Number, required: true },
+        timestamp: { type: Number, required: true }
+      }],
+      default: []
+    },
+    correctPositions: {
+      type: [{
+        x: { type: Number, required: true },
+        y: { type: Number, required: true }
+      }],
+      default: []
+    },
+    
+    // 순서 및 패턴 변수 (모두 optional)
+    sequentialAccuracy: {
+      type: Number,
+      min: 0,
+      max: 1
+    },
+    temporalOrderViolations: {
+      type: Number,
+      min: 0,
+      default: 0
+    },
+    
+    // 메타 정보
+    detailedDataVersion: {
+      type: String,
+      default: 'v1.0'
     }
   },
   {

@@ -2,19 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose, { Types } from 'mongoose'; // mongoose 추가, ObjectId 타입 사용을 위해 추가
 import { verifyAuth } from '../../../lib/auth';
 import ZengoSessionResult, { IZengoSessionResult } from '../../../../src/models/ZengoSessionResult'; // 경로 수정
+import { calculateCognitiveMetricsV2, DetailedSessionData } from '../../../../src/utils/cognitiveMetricsV2'; // V2 계산 로직 추가
+import { ExtendedCognitiveMetrics, createDefaultExtendedMetrics, mapV2ToExtended } from '../../../../src/types/cognitiveMetricsExtended'; // V2 확장 타입
 // import db from '../../../lib/db'; // Prisma Client 대신 Mongoose 모델 사용
 
-// 프론트엔드와 동일한 타입 정의 (추후 공유 타입으로 분리 권장)
-interface CognitiveMetrics {
-  workingMemoryCapacity: number;
-  visuospatialPrecision: number; // 프론트엔드에서 사용하는 필드명
-  processingSpeed: number;
-  sustainedAttention: number;
-  patternRecognition: number;
-  cognitiveFlexibility: number;
-  hippocampusActivation: number;
-  executiveFunction: number;
-}
+// ExtendedCognitiveMetrics를 CognitiveMetrics 별명으로 사용 (13개 인지능력)
+type CognitiveMetrics = ExtendedCognitiveMetrics;
 
 interface CognitiveMetricsTimeSeries {
   date: string; // YYYY-MM-DD
@@ -106,89 +99,171 @@ const getLevelMetricsFactors = (level: string): LevelFactors => {
   return { totalItems, difficultyWeight };
 };
 
-// 세션 데이터로부터 인지 지표 계산 함수
-const calculateCognitiveMetricsFromSessions = (sessions: IZengoSessionResult[]): CognitiveMetrics => {
-  if (!sessions || sessions.length === 0) {
-    // 기본값 또는 적절한 초기값 반환
+// === V2 상세 데이터 변환 함수 ===
+const convertToDetailedData = (session: IZengoSessionResult): DetailedSessionData | null => {
+  // V2 데이터가 있는지 확인
+  if (session.detailedDataVersion === 'v2.0') {
     return {
-      workingMemoryCapacity: 50,
-      visuospatialPrecision: 50,
-      processingSpeed: 50,
-      sustainedAttention: 50,
-      patternRecognition: 50,
-      cognitiveFlexibility: 50,
-      hippocampusActivation: 50,
-      executiveFunction: 50,
+      firstClickLatency: session.firstClickLatency,
+      interClickIntervals: session.interClickIntervals || [],
+      hesitationPeriods: session.hesitationPeriods || [],
+      spatialErrors: session.spatialErrors || [],
+      clickPositions: session.clickPositions || [],
+      correctPositions: session.correctPositions || [],
+      sequentialAccuracy: session.sequentialAccuracy,
+      temporalOrderViolations: session.temporalOrderViolations,
+      detailedDataVersion: session.detailedDataVersion
     };
   }
+  return null;
+};
 
-  let totalWMC = 0, totalVP = 0, totalPS_numerator = 0, totalTimeSec = 0, sessionCountForPS = 0;
-  let totalScore = 0, validSessions = 0;
+// 바둑판 크기 추출 함수
+const extractBoardSize = (level: string): number => {
+  const match = level.match(/(\d+)x\d+/);
+  return match ? parseInt(match[1], 10) : 5; // 기본값 5
+};
 
-  sessions.forEach(session => {
-    if (!session.level || typeof session.correctPlacements !== 'number' || typeof session.usedStonesCount !== 'number') {
-        return; // 필수 데이터 없으면 스킵
-    }
-    validSessions++;
-    const factors = getLevelMetricsFactors(session.level);
-    
-    // 작업 기억 용량 (Working Memory Capacity)
-    if (factors.totalItems > 0) {
-      totalWMC += (session.correctPlacements / factors.totalItems) * 100;
-    }
-    
-    // 시공간 정확도 (Visuospatial Precision)
-    if (session.usedStonesCount > 0) {
-      totalVP += (session.correctPlacements / session.usedStonesCount) * 100;
-    } else if (session.correctPlacements > 0) { // 모든 돌을 맞췄지만 usedStonesCount가 0인 경우 (이론상 없지만 방어)
-      totalVP += 100;
-    }
-
-    // 처리 속도 (Processing Speed)
-    if (session.timeTakenMs && session.timeTakenMs > 0) {
-      const timeSec = session.timeTakenMs / 1000;
-      totalPS_numerator += (factors.totalItems / timeSec) * factors.difficultyWeight;
-      totalTimeSec += timeSec; 
-      sessionCountForPS++;
-    }
-
-    // 패턴 인식 (Pattern Recognition) - 점수 기반
-    totalScore += session.score || 0;
-  });
-
-  if (validSessions === 0) { // 모든 세션이 유효하지 않은 경우
-    return { workingMemoryCapacity: 50, visuospatialPrecision: 50, processingSpeed: 50, sustainedAttention: 50, patternRecognition: 50, cognitiveFlexibility: 50, hippocampusActivation: 50, executiveFunction: 50 };
+// 세션 데이터로부터 인지 지표 계산 함수 (V2 업그레이드)
+const calculateCognitiveMetricsFromSessions = (sessions: IZengoSessionResult[]): CognitiveMetrics => {
+  if (!sessions || sessions.length === 0) {
+    // V2 확장된 기본값 반환
+    return createDefaultExtendedMetrics();
   }
 
-  const avgWMC = totalWMC / validSessions;
-  const avgVP = totalVP / validSessions;
-  const avgPatternRecognition = totalScore / validSessions;
-  // 처리 속도는 단순 평균 대신 가중치 적용된 값의 평균 또는 총합 기반으로 계산 가능
-  const avgPS = sessionCountForPS > 0 ? (totalPS_numerator / sessionCountForPS) * 5 : 50; // 임의의 스케일링 (5) 및 기본값
+  console.log(`[CognitiveMetrics] ${sessions.length}개 세션으로 인지능력 계산 시작`);
+  
+  // V2 데이터가 있는 세션과 없는 세션 분리
+  const v2Sessions = sessions.filter(s => s.detailedDataVersion === 'v2.0');
+  const v1Sessions = sessions.filter(s => !s.detailedDataVersion || s.detailedDataVersion !== 'v2.0');
+  
+  console.log(`[CognitiveMetrics] V2 세션: ${v2Sessions.length}개, V1 세션: ${v1Sessions.length}개`);
 
-  // 다른 지표들은 우선 평균 점수 또는 WMC, VP 기반으로 단순 할당
-  const avgSustainedAttention = avgPatternRecognition; // 예시: 패턴인식 점수 활용
-  const avgCognitiveFlexibility = (avgWMC + avgVP) / 2; // 예시: 작업기억,시공간 정확도 평균
-  const avgHippocampusActivation = avgWMC; // 예시: 작업기억용량 활용
+  // 각 세션별로 V2 계산 수행 후 평균
+  const allMetrics: any[] = [];
+  
+  sessions.forEach((session, index) => {
+    try {
+      const boardSize = extractBoardSize(session.level);
+      const detailedData = convertToDetailedData(session);
+      
+      // 기본 결과 데이터 구성
+      const basicResult = {
+        correctPlacements: session.correctPlacements,
+        incorrectPlacements: session.incorrectPlacements,
+        timeTakenMs: session.timeTakenMs,
+        completedSuccessfully: session.completedSuccessfully,
+        orderCorrect: session.orderCorrect || false
+      };
+      
+      // V2 계산 수행
+      const metrics = calculateCognitiveMetricsV2(basicResult, detailedData, boardSize);
+      allMetrics.push(metrics);
+      
+      console.log(`[CognitiveMetrics] 세션 ${index + 1} 계산 완료:`, {
+        hasV2Data: !!detailedData,
+        boardSize,
+        metrics: Object.keys(metrics).reduce((acc, key) => {
+          acc[key] = Math.round(metrics[key as keyof typeof metrics]);
+          return acc;
+        }, {} as any)
+      });
+      
+    } catch (error) {
+      console.error(`[CognitiveMetrics] 세션 ${index + 1} 계산 오류:`, error);
+      // 오류 발생 시 기본값 추가
+      allMetrics.push({
+        workingMemory: 50,
+        processingSpeed: 50,
+        attention: 50,
+        patternRecognition: 50,
+        hippocampusActivation: 50,
+        cognitiveFlexibility: 50
+      });
+    }
+  });
+
+  if (allMetrics.length === 0) {
+    console.log('[CognitiveMetrics] 계산된 메트릭이 없음 - V2 기본값 반환');
+    return createDefaultExtendedMetrics();
+  }
+
+  // 모든 메트릭의 평균 계산
+  const avgMetrics = {
+    workingMemory: allMetrics.reduce((sum, m) => sum + m.workingMemory, 0) / allMetrics.length,
+    processingSpeed: allMetrics.reduce((sum, m) => sum + m.processingSpeed, 0) / allMetrics.length,
+    attention: allMetrics.reduce((sum, m) => sum + m.attention, 0) / allMetrics.length,
+    patternRecognition: allMetrics.reduce((sum, m) => sum + m.patternRecognition, 0) / allMetrics.length,
+    hippocampusActivation: allMetrics.reduce((sum, m) => sum + m.hippocampusActivation, 0) / allMetrics.length,
+    cognitiveFlexibility: allMetrics.reduce((sum, m) => sum + m.cognitiveFlexibility, 0) / allMetrics.length
+  };
 
   // 임원 기능 (Executive Function) - 주요 지표 가중 평균
   const executiveFunction = 
-    (avgWMC * 0.25) + 
-    (avgVP * 0.20) + 
-    (avgPS * 0.20) + 
-    (avgSustainedAttention * 0.15) + 
-    (avgPatternRecognition * 0.20);
+    (avgMetrics.workingMemory * 0.25) + 
+    (avgMetrics.attention * 0.20) + 
+    (avgMetrics.processingSpeed * 0.20) + 
+    (avgMetrics.patternRecognition * 0.15) + 
+    (avgMetrics.cognitiveFlexibility * 0.20);
 
-  return {
-    workingMemoryCapacity: Math.min(100, Math.max(0, avgWMC)),
-    visuospatialPrecision: Math.min(100, Math.max(0, avgVP)),
-    processingSpeed: Math.min(100, Math.max(0, avgPS)), // 0-100 범위 보장
-    sustainedAttention: Math.min(100, Math.max(0, avgSustainedAttention)),
-    patternRecognition: Math.min(100, Math.max(0, avgPatternRecognition)),
-    cognitiveFlexibility: Math.min(100, Math.max(0, avgCognitiveFlexibility)),
-    hippocampusActivation: Math.min(100, Math.max(0, avgHippocampusActivation)),
-    executiveFunction: Math.min(100, Math.max(0, executiveFunction)),
-  };
+  // V2 확장 메트릭 계산 (안전성 강화)
+  const v2Metrics = allMetrics
+    .filter(m => m && m.detailedMetrics)
+    .map(m => m.detailedMetrics)
+    .filter(dm => dm && typeof dm === 'object');
+    
+  let extendedMetrics = createDefaultExtendedMetrics();
+  
+  console.log(`[CognitiveMetrics] V2 메트릭 수: ${v2Metrics.length}/${allMetrics.length}`);
+  
+  if (v2Metrics.length > 0) {
+    // V2 메트릭이 있으면 안전하게 평균 계산
+    const safeAverage = (field: string) => {
+      const validValues = v2Metrics
+        .map(m => m?.[field])
+        .filter(v => typeof v === 'number' && !isNaN(v) && v >= 0 && v <= 100);
+      return validValues.length > 0 
+        ? Math.round(validValues.reduce((sum, v) => sum + v, 0) / validValues.length)
+        : 50; // 기본값
+    };
+    
+    const v2AvgResult: ExtendedCognitiveMetrics = {
+      workingMemoryCapacity: safeAverage('workingMemoryCapacity'),
+      visuospatialPrecision: safeAverage('visuospatialPrecision'),
+      processingSpeed: safeAverage('processingSpeed'),
+      sustainedAttention: safeAverage('sustainedAttention'),
+      patternRecognition: safeAverage('patternRecognition'),
+      cognitiveFlexibility: safeAverage('cognitiveFlexibility'),
+      hippocampusActivation: safeAverage('hippocampusActivation'),
+      executiveFunction: safeAverage('executiveFunction'),
+      spatialMemoryAccuracy: safeAverage('spatialMemoryAccuracy'),
+      responseConsistency: safeAverage('responseConsistency'),
+      learningAdaptability: safeAverage('learningAdaptability'),
+      focusEndurance: safeAverage('focusEndurance'),
+      sequentialProcessing: safeAverage('sequentialProcessing'),
+    };
+    extendedMetrics = v2AvgResult;
+    console.log('[CognitiveMetrics] V2 메트릭 사용');
+  } else {
+    // V1 메트릭을 V2로 안전하게 매핑
+    const v1SafeMetrics = {
+      workingMemoryCapacity: Math.round(Math.min(100, Math.max(0, avgMetrics.workingMemory || 50))),
+      visuospatialPrecision: Math.round(Math.min(100, Math.max(0, avgMetrics.attention || 50))),
+      processingSpeed: Math.round(Math.min(100, Math.max(0, avgMetrics.processingSpeed || 50))),
+      sustainedAttention: Math.round(Math.min(100, Math.max(0, avgMetrics.attention || 50))),
+      patternRecognition: Math.round(Math.min(100, Math.max(0, avgMetrics.patternRecognition || 50))),
+      cognitiveFlexibility: Math.round(Math.min(100, Math.max(0, avgMetrics.cognitiveFlexibility || 50))),
+      hippocampusActivation: Math.round(Math.min(100, Math.max(0, avgMetrics.hippocampusActivation || 50))),
+      executiveFunction: Math.round(Math.min(100, Math.max(0, executiveFunction || 50))),
+    };
+    extendedMetrics = mapV2ToExtended(v1SafeMetrics);
+    console.log('[CognitiveMetrics] V1->V2 매핑 사용');
+  }
+  
+  const finalResult = extendedMetrics;
+
+  console.log('[CognitiveMetrics] 최종 계산 결과:', finalResult);
+  return finalResult;
 };
 
 // 세션을 날짜 문자열(YYYY-MM-DD) 기준으로 그룹화하는 함수
@@ -339,7 +414,7 @@ const calculatePercentileRanks = async (userId: string, overallProfile: Cognitiv
           return Math.min(100, Math.max(0, mean + z0 * stdDev)); // 0-100 범위로 제한
         };
         
-        // 각 지표별 평균과 표준편차 설정
+        // 각 지표별 평균과 표준편차 설정 (V2 확장 메트릭 포함)
         const metrics: CognitiveMetrics = {
           workingMemoryCapacity: generateNormalDistValue(65, 15),
           visuospatialPrecision: generateNormalDistValue(60, 12),
@@ -349,6 +424,12 @@ const calculatePercentileRanks = async (userId: string, overallProfile: Cognitiv
           cognitiveFlexibility: generateNormalDistValue(58, 13),
           hippocampusActivation: generateNormalDistValue(63, 15),
           executiveFunction: generateNormalDistValue(67, 14),
+          // V2 확장 필드 추가
+          spatialMemoryAccuracy: generateNormalDistValue(64, 16),
+          responseConsistency: generateNormalDistValue(66, 13),
+          learningAdaptability: generateNormalDistValue(61, 15),
+          focusEndurance: generateNormalDistValue(69, 17),
+          sequentialProcessing: generateNormalDistValue(65, 14),
         };
         
         allUsersMetrics.push(metrics);
@@ -416,108 +497,7 @@ const calculatePercentileRanks = async (userId: string, overallProfile: Cognitiv
 };
 
 // 목업 데이터 생성 함수 수정: strengths, improvementAreas, personalizedRecommendations도 주입받도록 변경
-const getMockBrainAnalyticsData = (
-  userId: string, 
-  fetchedSessionCount?: number, 
-  calculatedOverallProfile?: CognitiveMetrics,
-  calculatedHistoricalData?: CognitiveMetricsTimeSeries[],
-  calculatedRecentGames?: RecentGame[],
-  calculatedStrengths?: (keyof CognitiveMetrics)[],
-  calculatedImprovementAreas?: (keyof CognitiveMetrics)[],
-  calculatedRecommendations?: BrainAnalyticsData['personalizedRecommendations']
-): BrainAnalyticsData => {
-  const today = new Date();
-  const mockHistorical: CognitiveMetricsTimeSeries[] = [];
-  for (let i = 5; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - i * 7);
-    mockHistorical.push({
-      date: date.toISOString().split('T')[0],
-      metrics: { // 이전 목업 지표 사용
-        workingMemoryCapacity: Math.floor(Math.random() * 40) + 40,
-        visuospatialPrecision: Math.floor(Math.random() * 40) + 40,
-        processingSpeed: Math.floor(Math.random() * 40) + 40,
-        sustainedAttention: Math.floor(Math.random() * 40) + 40,
-        patternRecognition: Math.floor(Math.random() * 40) + 40,
-        cognitiveFlexibility: Math.floor(Math.random() * 40) + 40,
-        hippocampusActivation: Math.floor(Math.random() * 40) + 40,
-        executiveFunction: Math.floor(Math.random() * 40) + 40,
-      },
-    });
-  }
-
-  // 계산된 값이 있으면 사용하고, 없으면 목업 데이터 사용
-  const overallProfileToUse = calculatedOverallProfile || {
-    workingMemoryCapacity: 78,
-    visuospatialPrecision: 65,
-    processingSpeed: 82,
-    sustainedAttention: 70,
-    patternRecognition: 75,
-    cognitiveFlexibility: 68,
-    hippocampusActivation: 72,
-    executiveFunction: 73,
-  };
-
-  const historicalDataToUse = calculatedHistoricalData && calculatedHistoricalData.length > 0
-    ? calculatedHistoricalData
-    : mockHistorical;
-
-  const recentGamesToUse = calculatedRecentGames && calculatedRecentGames.length > 0
-    ? calculatedRecentGames
-    : [
-        {
-          gameId: '1',
-          gameName: '젠고 5x5-medium',
-          playedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-          score: 85,
-          level: '5x5-medium',
-          metricsChange: {
-            workingMemoryCapacity: 1,
-            processingSpeed: -1,
-          },
-        },
-        // ... 기타 목업 게임 데이터
-      ];
-
-  const strengthsToUse = calculatedStrengths && calculatedStrengths.length > 0
-    ? calculatedStrengths
-    : ['workingMemoryCapacity', 'processingSpeed', 'patternRecognition'] as (keyof CognitiveMetrics)[];
-
-  const improvementAreasToUse = calculatedImprovementAreas && calculatedImprovementAreas.length > 0
-    ? calculatedImprovementAreas
-    : ['visuospatialPrecision', 'cognitiveFlexibility'] as (keyof CognitiveMetrics)[];
-
-  const recommendationsToUse = calculatedRecommendations && calculatedRecommendations.length > 0
-    ? calculatedRecommendations
-    : [
-        {
-          title: '시공간 정확도 향상',
-          description: '시공간 정확도를 높이는 젠고 게임을 더 플레이해보세요.',
-          action: '게임 시작',
-          link: '/zengo/session/new?focus=spatial',
-        },
-        // ... 기타 목업 추천 데이터
-      ];
-
-  return {
-    userId,
-    lastUpdatedAt: new Date().toISOString(),
-    overallProfile: overallProfileToUse,
-    historicalData: historicalDataToUse, // 계산된 값 또는 목업 사용
-    percentileRanks: { // 목업 데이터 개선 (정규분포에 가까운 값으로)
-      workingMemoryCapacity: 65 + Math.floor(Math.random() * 20) - 10,
-      processingSpeed: 70 + Math.floor(Math.random() * 20) - 10,
-      executiveFunction: 68 + Math.floor(Math.random() * 20) - 10,
-      patternRecognition: 72 + Math.floor(Math.random() * 20) - 10,
-      visuospatialPrecision: 63 + Math.floor(Math.random() * 20) - 10,
-    },
-    strengths: strengthsToUse,
-    improvementAreas: improvementAreasToUse,
-    recentGames: recentGamesToUse, // 계산된 값 또는 목업 사용
-    personalizedRecommendations: recommendationsToUse,
-    debug_fetchedSessionCount: fetchedSessionCount,
-  };
-};
+// 목업 데이터 함수 제거 - 실제 계산된 데이터만 사용
 
 export async function GET(req: NextRequest) {
   try {
@@ -616,19 +596,19 @@ export async function GET(req: NextRequest) {
     const percentileRanks = await calculatePercentileRanks(userId, calculatedOverallProfile);
     console.log(`Calculated percentile ranks for user ${userId}:`, JSON.stringify(percentileRanks));
 
-    const responseData = getMockBrainAnalyticsData(
-      userId, 
-      sessions.length, 
-      calculatedOverallProfile, 
-      calculatedHistoricalData,
-      calculatedRecentGames,
-      strengths, // 전달
-      improvementAreas, // 전달
-      calculatedRecommendations // 전달
-    );
-    
-    // 계산된 백분위 순위로 업데이트
-    responseData.percentileRanks = percentileRanks;
+    // 실제 계산된 데이터만 사용해서 응답 생성 (목업 데이터 제거)
+    const responseData: BrainAnalyticsData = {
+      userId,
+      lastUpdatedAt: new Date().toISOString(),
+      overallProfile: calculatedOverallProfile,
+      historicalData: calculatedHistoricalData,
+      percentileRanks,
+      strengths,
+      improvementAreas,
+      recentGames: calculatedRecentGames,
+      personalizedRecommendations: calculatedRecommendations,
+      debug_fetchedSessionCount: sessions.length,
+    };
 
     return NextResponse.json(responseData, { status: 200 });
 

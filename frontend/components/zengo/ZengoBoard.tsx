@@ -7,6 +7,7 @@ import { clearStoneFeedback } from '@/store/slices/zengoSlice';
 import './ZengoBoard.css';
 import { BoardStoneData, BoardSize, InteractionMode } from '@/src/types/zengo';
 import { splitStoneText } from '@/src/utils/splitStoneText';
+import { zengoDataCollector } from '@/lib/zengoDataCollector';
 
 // Stone component - extracted to prevent re-renders
 const Stone = React.memo(({ stone, cellSize, boardSize }: { stone: BoardStoneData; cellSize?: number; boardSize: number }) => {
@@ -61,7 +62,7 @@ interface BoardIntersectionProps {
   isStarPoint: boolean;
   placeable: boolean;
   isShowing: boolean;
-  onIntersectionClick: (position: [number, number]) => void;
+  onIntersectionClick: (position: [number, number], event?: React.MouseEvent) => void;
   cellSize?: number;
   boardSize: number;
 }
@@ -76,8 +77,8 @@ const BoardIntersection = React.memo(({
   cellSize,
   boardSize,
 }: BoardIntersectionProps) => {
-  const handleClick = useCallback(() => {
-    onIntersectionClick([x, y]);
+  const handleClick = useCallback((event: React.MouseEvent) => {
+    onIntersectionClick([x, y], event);
   }, [x, y, onIntersectionClick]);
 
   return (
@@ -99,6 +100,10 @@ interface ZengoBoardProps {
   interactionMode: InteractionMode;
   onIntersectionClick: (position: [number, number]) => void;
   isShowing?: boolean;
+  // === V2 데이터 수집 관련 ===
+  enableDataCollection?: boolean; // 데이터 수집 활성화 여부
+  correctPositions?: { x: number; y: number }[]; // 정답 위치들
+  onDataCollected?: (data: any) => void; // 데이터 수집 완료 콜백
 }
 
 const ZengoBoard: React.FC<ZengoBoardProps> = ({
@@ -107,10 +112,37 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
   interactionMode,
   onIntersectionClick,
   isShowing = false,
+  enableDataCollection = false,
+  correctPositions = [],
+  onDataCollected,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const boardContainerRef = useRef<HTMLDivElement>(null);
   const [feedbackStones, setFeedbackStones] = useState<BoardStoneData[]>([]);
+  
+  // === V2 데이터 수집 관련 상태 ===
+  const [dataCollectionInitialized, setDataCollectionInitialized] = useState<boolean>(false);
+
+  // === V2 데이터 수집 초기화 ===
+  useEffect(() => {
+    if (enableDataCollection && correctPositions.length > 0 && !dataCollectionInitialized) {
+      console.log('[ZengoBoard] 데이터 수집 초기화 시작');
+      zengoDataCollector.startSession(correctPositions);
+      setDataCollectionInitialized(true);
+    }
+  }, [enableDataCollection, correctPositions, dataCollectionInitialized]);
+
+  // === V2 마우스 움직임 추적 ===
+  const handleMouseMove = useCallback((event: React.MouseEvent) => {
+    if (enableDataCollection && dataCollectionInitialized) {
+      const rect = boardContainerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        zengoDataCollector.trackMouseMovement(x, y);
+      }
+    }
+  }, [enableDataCollection, dataCollectionInitialized]);
   
   // 모바일: w-full, max-w-[95vw], aspect-square, clamp() 등으로 완전 반응형
   // PC/패드: 기존 크기 유지
@@ -285,14 +317,33 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
     });
   }, [gridTemplateStyle, boardSize, boardWidthPx, isShowing]);
 
-  const handleIntersectionClick = useCallback((position: [number, number]) => {
+  const handleIntersectionClick = useCallback((position: [number, number], event?: React.MouseEvent) => {
     if (interactionMode === 'click') {
+      // === V2 데이터 수집 ===
+      if (enableDataCollection && dataCollectionInitialized && event) {
+        const rect = boardContainerRef.current?.getBoundingClientRect();
+        if (rect) {
+          const clickX = event.clientX - rect.left;
+          const clickY = event.clientY - rect.top;
+          zengoDataCollector.recordClick(clickX, clickY, position[0], position[1]);
+        }
+      }
+      
       onIntersectionClick(position);
     }
-  }, [interactionMode, onIntersectionClick]);
+  }, [interactionMode, onIntersectionClick, enableDataCollection, dataCollectionInitialized]);
 
   // Dynamic cell size for stone rendering
   const cellSize = boardWidthPx / boardSize;
+
+  // === V2 데이터 수집 완료 처리 ===
+  const finishDataCollection = useCallback(() => {
+    if (enableDataCollection && dataCollectionInitialized && onDataCollected) {
+      const collectedData = zengoDataCollector.finishSession();
+      onDataCollected(collectedData);
+      console.log('[ZengoBoard] 데이터 수집 완료 및 콜백 호출');
+    }
+  }, [enableDataCollection, dataCollectionInitialized, onDataCollected]);
 
   return (
     <div className="board w-full max-w-[95vw] sm:max-w-[650px] aspect-square mx-auto">
@@ -301,6 +352,7 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
         className="zengo-board w-full h-full aspect-square"
         style={gridTemplateStyle}
         data-board-size={boardSize}
+        onMouseMove={enableDataCollection ? handleMouseMove : undefined}
       >
         {positions.map(([x, y]) => {
           const stone = getStoneAtPosition([x, y]);

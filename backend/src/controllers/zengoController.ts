@@ -808,7 +808,17 @@ export const saveSessionResult = async (req: Request, res: Response) => {
     incorrectPlacements, 
     timeTakenMs, 
     completedSuccessfully, 
-    resultType // New field: EXCELLENT, SUCCESS, FAIL
+    resultType, // New field: EXCELLENT, SUCCESS, FAIL
+    // === V2 상세 데이터 필드들 ===
+    firstClickLatency,
+    interClickIntervals,
+    hesitationPeriods,
+    spatialErrors,
+    clickPositions,
+    correctPositions,
+    sequentialAccuracy,
+    temporalOrderViolations,
+    detailedDataVersion
   } = req.body;
 
   if (!userId) {
@@ -830,6 +840,31 @@ export const saveSessionResult = async (req: Request, res: Response) => {
   // Calculate score before creating the result document
   const score = calculateScore(); // Keep the helper function locally or move it too if preferred
 
+  // === V2 상세 데이터 구성 ===
+  const detailedDataFields: any = {};
+  
+  // V2 데이터가 있는 경우에만 추가
+  if (detailedDataVersion === 'v2.0') {
+    console.log('[SaveSessionResult] V2 상세 데이터 저장:', {
+      hasFirstClickLatency: firstClickLatency !== undefined,
+      interClickCount: interClickIntervals?.length || 0,
+      hesitationCount: hesitationPeriods?.length || 0,
+      spatialErrorCount: spatialErrors?.length || 0,
+      clickPositionCount: clickPositions?.length || 0,
+      correctPositionCount: correctPositions?.length || 0
+    });
+    
+    detailedDataFields.firstClickLatency = firstClickLatency;
+    detailedDataFields.interClickIntervals = interClickIntervals || [];
+    detailedDataFields.hesitationPeriods = hesitationPeriods || [];
+    detailedDataFields.spatialErrors = spatialErrors || [];
+    detailedDataFields.clickPositions = clickPositions || [];
+    detailedDataFields.correctPositions = correctPositions || [];
+    detailedDataFields.sequentialAccuracy = sequentialAccuracy;
+    detailedDataFields.temporalOrderViolations = temporalOrderViolations || 0;
+    detailedDataFields.detailedDataVersion = detailedDataVersion;
+  }
+
   const newResult = new ZengoSessionResult({
     userId,
     contentId, // Standard Zengo content ID
@@ -842,6 +877,7 @@ export const saveSessionResult = async (req: Request, res: Response) => {
     completedSuccessfully,
     resultType: resultType || (completedSuccessfully ? 'SUCCESS' : 'FAIL'),
     score: score,
+    ...detailedDataFields // V2 상세 데이터 추가
   });
 
   try {
