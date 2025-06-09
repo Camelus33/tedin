@@ -148,9 +148,9 @@ const ReflectionJournal: React.FC<ReflectionJournalProps> = ({ metricName }) => 
   return (
     <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl sm:text-2xl">인지 성찰 저널</CardTitle>
+        <CardTitle className="text-xl sm:text-2xl">나의 성장 노트</CardTitle>
         <CardDescription className="text-sm sm:text-md">
-          당신의 인지적 여정에 대한 생각과 느낌을 기록하세요
+          훈련 과정에서 발견한 생각과 느낌을 기록하며 성장의 순간을 포착하세요.
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4">
@@ -217,7 +217,7 @@ const ReflectionJournal: React.FC<ReflectionJournalProps> = ({ metricName }) => 
                 className="text-xs mb-3"
                 onClick={selectPrompt}
               >
-                프롬프트 생성
+                생각의 실마리 얻기
               </Button>
             </div>
             
@@ -249,11 +249,14 @@ const ReflectionJournal: React.FC<ReflectionJournalProps> = ({ metricName }) => 
         ) : (
           <div className="mb-6">
             <Button 
-              className="w-full"
-              style={{ backgroundColor: 'rgb(var(--primary-indigo))' }}
+              className="w-full habitus-transition" 
+              style={{ 
+                backgroundColor: 'rgba(var(--primary-indigo), 0.1)',
+                color: 'rgb(var(--primary-indigo))' 
+              }}
               onClick={() => setIsWriting(true)}
             >
-              새 성찰 작성하기
+              + 새로운 성장 기록 추가하기
             </Button>
           </div>
         )}

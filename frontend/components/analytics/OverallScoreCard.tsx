@@ -15,62 +15,62 @@ interface OverallScoreCardProps {
 // 인지 여정 스테이지 정의
 const cognitiveStages = [
   { 
-    name: '씨앗 단계', 
+    name: '씨앗', 
     threshold: 0,
-    description: '인지 능력의 첫 번째 씨앗이 발아하는 단계입니다. 당신의 인지 능력 씨앗이 막 발아를 시작했습니다.',
-    tipTitle: '씨앗 단계의 팁',
+    description: "새로운 성장의 가능성이 발견된 '씨앗' 단계입니다. 꾸준한 활동으로 자신만의 성장 리듬을 찾아가는 시기입니다.",
+    tipTitle: '성장의 시작점을 위한 조언',
     tips: [
-      '꾸준한 훈련으로 씨앗에 물을 주세요',
-      '다양한 인지 활동을 시도해보세요',
-      '결과보다 과정에 집중하세요'
+      '결과보다 과정 자체에 집중해보세요',
+      '다양한 유형의 훈련을 탐색하며 즐거움을 찾아보세요',
+      '작은 성공 하나하나를 기록하고 축하해주세요'
     ],
     icon: '🌱'
   },
   { 
-    name: '새싹 단계', 
+    name: '새싹', 
     threshold: 20,
-    description: '씨앗이 자라 작은 새싹이 된 단계입니다. 당신의 인지 능력이 점점 성장하고 있습니다.',
-    tipTitle: '새싹 단계의 팁',
+    description: "성장의 '새싹'이 돋아난 단계입니다. 익숙해진 훈련을 기반으로 안정적인 성장 리듬을 만들어가고 있습니다.",
+    tipTitle: '안정적인 성장을 위한 조언',
     tips: [
-      '지식의 폭을 넓혀 보세요',
-      '새로운 도전을 두려워하지 마세요',
-      '훈련의 강도를 조금씩 높여보세요'
+      '자신에게 맞는 훈련 패턴을 찾아보세요',
+      '조금 더 도전적인 난이도를 시도해보는 것도 좋습니다',
+      '자신의 성장을 시각적으로 확인하며 동기를 부여하세요'
     ],
     icon: '🌿'
   },
   { 
-    name: '성장 단계', 
+    name: '성장', 
     threshold: 40,
-    description: '새싹이 자라 튼튼한 줄기를 형성한 단계입니다. 당신의 인지 능력이 안정적으로 발전하고 있습니다.',
-    tipTitle: '성장 단계의 팁',
+    description: "꾸준한 훈련으로 자신만의 리듬이 생긴 '성장' 단계입니다. 인지 능력이 안정적으로 발전하며 자신감이 붙습니다.",
+    tipTitle: '성장 가속을 위한 조언',
     tips: [
-      '다양한 분야의 지식을 연결해보세요',
-      '도전적인 과제에 정기적으로 도전하세요',
-      '실패를 두려워하지 말고 경험으로 받아들이세요'
+      '자신의 강점을 활용해 약점을 보완해보세요',
+      '정기적으로 어려운 과제에 도전하며 한계를 넓혀보세요',
+      '자신의 성장 과정을 다른 사람과 공유하며 영감을 얻으세요'
     ],
     icon: '🌳'
   },
   { 
-    name: '꽃피움 단계', 
+    name: '꽃', 
     threshold: 60,
-    description: '줄기에서 아름다운 꽃이 피어나는 단계입니다. 당신의 인지 능력이 높은 수준으로 발전했습니다.',
-    tipTitle: '꽃피움 단계의 팁',
+    description: "성장의 '꽃'이 피어난 단계입니다. 숙련된 인지 능력을 바탕으로 복잡한 문제도 해결할 수 있습니다.",
+    tipTitle: '능력 활용을 위한 조언',
     tips: [
-      '자신만의 인지 스타일을 발견하세요',
-      '복잡한 문제에 도전하세요',
-      '다른 사람과 지식을 나누세요'
+      '자신만의 인지 전략을 만들어 활용해보세요',
+      '다양한 분야의 지식을 연결하여 새로운 통찰을 얻어보세요',
+      '자신의 능력을 활용해 다른 사람을 돕는 경험도 좋습니다'
     ],
     icon: '🌸'
   },
   { 
-    name: '열매 단계', 
+    name: '열매', 
     threshold: 80,
-    description: '꽃이 열매를 맺는 단계입니다. 당신의 인지 능력이 높은 수준에 도달했습니다.',
-    tipTitle: '열매 단계의 팁',
+    description: "성장의 '열매'를 맺은 단계입니다. 높은 수준의 인지 능력을 안정적으로 발휘하고 있습니다.",
+    tipTitle: '지속적인 발전을 위한 조언',
     tips: [
-      '자신의 지식을 다른 사람에게 가르쳐보세요',
-      '새로운 분야에 도전하세요',
-      '전문성을 더욱 깊이 있게 발전시키세요'
+      '자신의 지식과 경험을 체계적으로 정리해보세요',
+      '완전히 새로운 분야에 도전하며 뇌를 자극해보세요',
+      '자신의 전문성을 더욱 깊이 있게 발전시키세요'
     ],
     icon: '🍎'
   }
@@ -139,20 +139,10 @@ const OverallScoreCard: React.FC<OverallScoreCardProps> = ({
   }, [score]);
   
   // 지난 기록과 비교한 변화 메시지
-  const getChangeMessage = () => {
-    if (!previousScore || !changeDelta) return null;
-    
-    if (changeDelta > 5) {
-      return "놀라운 성장을 이루었습니다!";
-    } else if (changeDelta > 0) {
-      return "꾸준히 성장하고 있습니다.";
-    } else if (changeDelta === 0) {
-      return "안정적인 수준을 유지하고 있습니다.";
-    } else if (changeDelta > -5) {
-      return "작은 변동이 있습니다. 지속적인 연습이 도움이 됩니다.";
-    } else {
-      return "새로운 도전이 필요합니다.";
-    }
+  const getChangeMessage = (change: number) => {
+    if (change === 0) return null;
+    const direction = change > 0 ? '상승' : '변화';
+    return `지난 측정 대비 ${Math.abs(change)} 포인트 ${direction}했습니다. 당신의 노력이 만들어낸 의미 있는 변화입니다.`;
   };
 
   // 점수에 따른 색상 그라데이션 생성
@@ -167,9 +157,9 @@ const OverallScoreCard: React.FC<OverallScoreCardProps> = ({
   return (
     <Card className={`habitus-transition quiet-victory ${appear ? 'appear' : ''}`}>
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl sm:text-2xl">인지 여정 단계</CardTitle>
+        <CardTitle className="text-xl sm:text-2xl">나의 성장 리듬</CardTitle>
         <CardDescription className="text-sm sm:text-md">
-          당신만의 인지적 여정을 단계별로 확인하세요
+          당신의 인지적 성장을 리듬에 따라 확인하세요
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4">
@@ -229,27 +219,6 @@ const OverallScoreCard: React.FC<OverallScoreCardProps> = ({
                   }}
                 />
               </div>
-              <div className="mt-2 text-xs text-gray-500 text-center">
-                다음 단계까지 {Math.round(currentStage.nextStage.threshold - score)} 포인트 남았습니다
-              </div>
-            </div>
-          )}
-          
-          {/* 성장 메시지 */}
-          {getChangeMessage() && (
-            <div 
-              className="mt-4 py-2 px-4 rounded-lg text-sm text-center habitus-transition"
-              style={{ 
-                backgroundColor: 'rgba(var(--primary-indigo), 0.1)',
-                color: 'rgb(var(--primary-indigo))'
-              }}
-            >
-              {getChangeMessage()}
-              {changeDelta && changeDelta !== 0 && (
-                <span className="ml-1 font-medium">
-                  ({changeDelta > 0 ? '+' : ''}{changeDelta})
-                </span>
-              )}
             </div>
           )}
           

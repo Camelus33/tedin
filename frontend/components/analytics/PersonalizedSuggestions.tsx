@@ -156,6 +156,7 @@ const PersonalizedSuggestions: React.FC<PersonalizedSuggestionsProps> = ({
   const [selectedGoal, setSelectedGoal] = useState<GoalType>('overall');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [expandedSuggestion, setExpandedSuggestion] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(4);
   const storageKey = 'personalized-suggestions-state';
 
   // 저장된 상태 불러오기
@@ -247,6 +248,8 @@ const PersonalizedSuggestions: React.FC<PersonalizedSuggestionsProps> = ({
     });
   }, [filteredSuggestions, metricScores, selectedGoal]);
 
+  const visibleSuggestions = sortedSuggestions.slice(0, visibleCount);
+
   // 난이도 뱃지 스타일
   const getDifficultyBadgeStyle = (difficulty: Suggestion['difficulty']) => {
     switch (difficulty) {
@@ -280,30 +283,30 @@ const PersonalizedSuggestions: React.FC<PersonalizedSuggestionsProps> = ({
   // 카테고리 한글 변환
   const getCategoryLabel = (category: Suggestion['category']) => {
     switch (category) {
-      case 'exercise': return '인지 운동';
-      case 'habit': return '일상 습관';
-      case 'practice': return '연습 활동';
-      case 'lifestyle': return '생활 방식';
+      case 'exercise': return '두뇌 훈련';
+      case 'habit': return '성장 습관';
+      case 'practice': return '연습';
+      case 'lifestyle': return '생활';
     }
   };
 
   // 목표 유형 한글 변환
   const getGoalTypeLabel = (goalType: GoalType) => {
     switch (goalType) {
-      case 'workingMemory': return '작업 기억력';
-      case 'attention': return '주의력';
-      case 'processingSpeed': return '처리 속도';
-      case 'cognitiveFlexibility': return '인지적 유연성';
-      case 'overall': return '전반적 인지';
+      case 'workingMemory': return '기억력';
+      case 'attention': return '주의집중';
+      case 'processingSpeed': return '처리속도';
+      case 'cognitiveFlexibility': return '유연성';
+      case 'overall': return '전반적 성장';
     }
   };
 
   return (
     <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl sm:text-2xl">개인 맞춤 추천</CardTitle>
+        <CardTitle className="text-xl sm:text-2xl">성장을 위한 다음 걸음</CardTitle>
         <CardDescription className="text-sm sm:text-md">
-          당신의 인지 능력 향상을 위한 맞춤형 활동과 습관을 제안합니다
+          현재 당신의 데이터에 기반하여, 성장을 가속화할 수 있는 활동들을 탐색해보세요.
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4">
@@ -335,142 +338,92 @@ const PersonalizedSuggestions: React.FC<PersonalizedSuggestionsProps> = ({
             {getGoalTypeLabel(selectedGoal)} 향상을 위한 추천 ({sortedSuggestions.length})
           </h3>
           
-          {sortedSuggestions.length === 0 ? (
+          {visibleSuggestions.length === 0 ? (
             <p className="text-center text-sm text-gray-500 py-4">
               이 목표에 대한 추천이 없습니다.
             </p>
           ) : (
             <div className="space-y-3">
-              {sortedSuggestions.map(suggestion => (
+              {visibleSuggestions.map(suggestion => (
                 <div 
                   key={suggestion.id}
-                  className={`border rounded-lg overflow-hidden transition-all duration-300 ${
+                  className={`p-4 rounded-lg transition-all duration-300 ease-in-out ${
                     suggestion.isCompleted ? 'bg-gray-50' : 'bg-white'
                   }`}
+                  style={{
+                    borderLeft: `4px solid ${
+                      suggestion.isCompleted
+                        ? 'rgb(var(--secondary-beige))'
+                        : 'rgb(var(--primary-turquoise))'
+                    }`,
+                  }}
                 >
-                  <div 
-                    className="p-3 cursor-pointer"
+                  <div
+                    className="flex justify-between items-start cursor-pointer"
                     onClick={() => setExpandedSuggestion(
                       expandedSuggestion === suggestion.id ? null : suggestion.id
                     )}
                   >
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center space-x-3">
-                        <Button
-                          variant="ghost"
-                          className={`p-1 h-8 w-8 rounded-full ${
-                            suggestion.isCompleted ? 'text-green-500' : 'text-gray-400'
-                          }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleSuggestionCompletion(suggestion.id);
-                          }}
-                        >
-                          <svg 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            width="20" 
-                            height="20" 
-                            viewBox="0 0 24 24" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="2" 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            className={suggestion.isCompleted ? 'opacity-100' : 'opacity-50'}
-                          >
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            {suggestion.isCompleted && <path d="M22 4L12 14.01l-3-3"></path>}
-                          </svg>
-                        </Button>
-                        <h3 className={`text-sm font-medium ${suggestion.isCompleted ? 'text-gray-500 line-through' : ''}`}>
-                          {suggestion.title}
-                        </h3>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span 
-                          className="text-xs py-1 px-2 rounded-full hidden sm:inline-block"
-                          style={{ 
-                            backgroundColor: getDifficultyBadgeStyle(suggestion.difficulty).bg,
-                            color: getDifficultyBadgeStyle(suggestion.difficulty).color
-                          }}
+                    <div className="flex-1">
+                      <h4 className={`font-medium ${
+                        suggestion.isCompleted ? 'text-gray-500 line-through' : 'text-gray-800'
+                      }`}>
+                        {suggestion.title}
+                      </h4>
+                      <div className="flex items-center space-x-2 mt-1 text-xs">
+                        <span
+                          className="px-2 py-0.5 rounded-full"
+                          style={getDifficultyBadgeStyle(suggestion.difficulty)}
                         >
                           {getDifficultyLabel(suggestion.difficulty)}
                         </span>
-                        <svg 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          width="16" 
-                          height="16" 
-                          viewBox="0 0 24 24" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          strokeWidth="2" 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                          className={`transition-transform duration-300 ${
-                            expandedSuggestion === suggestion.id ? 'rotate-90' : ''
-                          }`}
+                        <span
+                          className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600"
                         >
-                          <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {expandedSuggestion === suggestion.id && (
-                    <div className="px-4 pb-4 pt-1">
-                      <p className="text-sm text-gray-700 mb-3">{suggestion.description}</p>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        <span className="text-xs py-1 px-2 bg-gray-100 rounded-full text-gray-600">
-                          {suggestion.duration}
-                        </span>
-                        <span 
-                          className="text-xs py-1 px-2 rounded-full"
-                          style={{ 
-                            backgroundColor: getDifficultyBadgeStyle(suggestion.difficulty).bg,
-                            color: getDifficultyBadgeStyle(suggestion.difficulty).color
-                          }}
-                        >
-                          {getDifficultyLabel(suggestion.difficulty)}
-                        </span>
-                        <span className="text-xs py-1 px-2 bg-gray-100 rounded-full text-gray-600">
                           {getCategoryLabel(suggestion.category)}
                         </span>
+                        <span className="text-gray-500">{suggestion.duration}</span>
                       </div>
-                      
-                      <div className="mb-3">
-                        <h4 className="text-xs font-medium mb-1 text-gray-500">개선 영역:</h4>
-                        <div className="flex flex-wrap gap-1">
-                          {suggestion.goalTypes.map(goalType => (
-                            <span 
-                              key={goalType} 
-                              className="text-xs py-1 px-2 rounded-full"
-                              style={{ 
-                                backgroundColor: 'rgba(var(--primary-indigo), 0.1)',
-                                color: 'rgb(var(--primary-indigo))'
-                              }}
-                            >
-                              {getGoalTypeLabel(goalType)}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-between">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => toggleSuggestionCompletion(suggestion.id)}
-                        >
-                          {suggestion.isCompleted ? '완료 취소' : '완료 표시'}
-                        </Button>
-                        
-                        {suggestion.isCompleted && suggestion.lastCompleted && (
-                          <span className="text-xs text-gray-500 self-center">
-                            완료일: {new Date(suggestion.lastCompleted).toLocaleDateString()}
-                          </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="ml-4"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSuggestionCompletion(suggestion.id);
+                      }}
+                    >
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          suggestion.isCompleted
+                            ? 'bg-green-500 border-green-500'
+                            : 'border-gray-400'
+                        }`}
+                      >
+                        {suggestion.isCompleted && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={3}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
                         )}
                       </div>
+                    </Button>
+                  </div>
+
+                  {expandedSuggestion === suggestion.id && (
+                    <div className="mt-4 pt-4 border-t border-gray-100 animate-fadeIn">
+                      <p className="text-sm text-gray-600">{suggestion.description}</p>
                     </div>
                   )}
                 </div>
@@ -478,6 +431,18 @@ const PersonalizedSuggestions: React.FC<PersonalizedSuggestionsProps> = ({
             </div>
           )}
         </div>
+        
+        {sortedSuggestions.length > visibleCount && (
+          <div className="mt-6 text-center">
+            <Button
+              variant="outline"
+              className="habitus-transition"
+              onClick={() => setVisibleCount(sortedSuggestions.length)}
+            >
+              더 보기 ({sortedSuggestions.length - visibleCount}개)
+            </Button>
+          </div>
+        )}
         
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
           <p className="text-sm text-gray-600 mb-2">

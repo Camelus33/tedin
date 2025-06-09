@@ -118,9 +118,9 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
   return (
     <Card className={`habitus-transition quiet-victory ${appear ? 'appear' : ''}`}>
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl sm:text-2xl">강점과 발전 영역</CardTitle>
+        <CardTitle className="text-xl sm:text-2xl">나의 강점과 발전 영역</CardTitle>
         <CardDescription className="text-sm sm:text-md">
-          당신만의 고유한 인지적 특성을 살펴보세요
+          데이터를 통해 발견한 당신의 고유한 인지적 특성입니다
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4">
@@ -179,7 +179,7 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                         <h4 className="font-medium" style={{ color: 'rgb(var(--secondary-green))' }}>
                           {strength.metric}
                         </h4>
-                        <p className="text-sm text-gray-600">{strength.description}</p>
+                        <p className="text-sm text-gray-600">현재 당신의 주요 강점입니다.</p>
                       </div>
                       <div 
                         className="px-2 py-1 rounded-full text-xs font-medium"
@@ -195,7 +195,7 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                           className="text-xs font-medium mb-2"
                           style={{ color: 'rgb(var(--secondary-green))' }}
                         >
-                          이 강점을 더 발전시키는 활동
+                          강점을 더 발전시키기 위한 활동 제안
                         </h5>
                         <ul className="space-y-1">
                           {strength.recommendedActivities.map((activity, actIndex) => (
@@ -224,7 +224,7 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
             
             <div className="mt-6 p-4 rounded-lg bg-gray-50 text-center">
               <p className="text-sm text-gray-600 italic">
-                "강점은 당신의 인지적 정원에서 가장 잘 자라는 식물과 같습니다. 그들을 꾸준히 가꾸고 발전시키세요."
+                "강점은 당신의 가능성을 보여주는 거울입니다. 꾸준한 관심으로 더욱 빛나게 하세요."
               </p>
             </div>
           </TabsContent>
@@ -244,7 +244,7 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                         <h4 className="font-medium" style={{ color: 'rgb(var(--primary-turquoise))' }}>
                           {weakness.metric}
                         </h4>
-                        <p className="text-sm text-gray-600">{weakness.description}</p>
+                        <p className="text-sm text-gray-600">이 영역은 더 성장할 잠재력이 있습니다.</p>
                       </div>
                       <div 
                         className="px-2 py-1 rounded-full text-xs font-medium"
@@ -260,7 +260,7 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
                           className="text-xs font-medium mb-2"
                           style={{ color: 'rgb(var(--primary-turquoise))' }}
                         >
-                          발전을 위한 제안
+                          성장을 위한 추천 활동
                         </h5>
                         <ul className="space-y-1">
                           {weakness.improvementSuggestions.map((suggestion, sugIndex) => (
@@ -289,7 +289,7 @@ const StrengthsWeaknessesDisplay: React.FC<StrengthsWeaknessesDisplayProps> = ({
             
             <div className="mt-6 p-4 rounded-lg bg-gray-50 text-center">
               <p className="text-sm text-gray-600 italic">
-                "발전 영역은 성장의 잠재적 기회입니다. 부족함이 아닌, 더 나은 자신이 될 수 있는 기회로 바라보세요."
+                "발전 영역의 발견은 성장의 시작입니다. 새로운 가능성을 탐색해보세요."
               </p>
             </div>
           </TabsContent>

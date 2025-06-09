@@ -63,24 +63,21 @@ export function mapV1ToExtended(v1Metrics: {
   };
 }
 
-// 메트릭 표시명 매핑
+// V2 확장 메트릭을 포함한 전체 메트릭 표시명
 export const extendedMetricDisplayNames: Record<keyof ExtendedCognitiveMetrics, string> = {
-  // V1 메트릭 (8개)
-  workingMemoryCapacity: '작업 기억 용량',
-  visuospatialPrecision: '시공간 정확도',
-  processingSpeed: '처리 속도',
-  sustainedAttention: '주의 지속성',
-  patternRecognition: '패턴 인식',
-  cognitiveFlexibility: '인지적 유연성',
-  hippocampusActivation: '해마 활성화',
-  executiveFunction: '실행 기능',
-  
-  // V2 "감각/감" 시리즈 (5개)
-  spatialMemoryAccuracy: '🗺️ 길찾기감각',
-  responseConsistency: '🎵 리듬감',
-  learningAdaptability: '📈 성장감각',
-  focusEndurance: '🔥 몰입감',
-  sequentialProcessing: '📋 순서감',
+  workingMemoryCapacity: '멀티태스킹',
+  sustainedAttention: '몰입',
+  processingSpeed: '눈치',
+  cognitiveFlexibility: '틀깨기',
+  visuospatialPrecision: '길찾기',
+  patternRecognition: '규칙찾기',
+  hippocampusActivation: '지식체화',
+  executiveFunction: '목표달성',
+  spatialMemoryAccuracy: '공간기억',
+  responseConsistency: '리듬감',
+  learningAdaptability: '성장가속',
+  focusEndurance: '집중유지',
+  sequentialProcessing: '순서기억',
 };
 
 // Analytics 페이지에서 사용할 메트릭 그룹

@@ -295,9 +295,9 @@ export default function AnalyticsPage() {
           {timeSeriesData && (
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>능력별 성장 추이</CardTitle>
+                <CardTitle>성장 추이</CardTitle>
                 <CardDescription>
-                  관심 있는 인지 능력 영역을 선택하여 시간의 흐름에 따른 성장 과정을 확인해보세요.
+                  관심 있는 분야를 선택하여 성장 과정을 확인해보세요.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -312,16 +312,16 @@ export default function AnalyticsPage() {
                   <TabsContent value="memory" className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <TimeSeriesChartCard
-                        title="작업 기억력"
-                        description="정보를 일시적으로 저장하고 처리하는 능력의 변화입니다."
+                        title="기억판"
+                        description="한 번에 얼마나 많이 떠올릴 수 있는가입니다."
                         data={timeSeriesData.workingMemory}
-                        metricLabel="작업 기억력"
+                        metricLabel="기억판"
                       />
                       <TimeSeriesChartCard
-                        title="해마 활성화"
-                        description="새로운 지식을 장기 기억으로 전환하는 능력의 변화입니다."
+                        title="장기 기억"
+                        description="오늘의 배움이 얼마나 오래 지속되는가입니다."
                         data={timeSeriesData.hippocampusActivation}
-                        metricLabel="해마 활성화"
+                        metricLabel="장기 기억"
                       />
                     </div>
                   </TabsContent>
@@ -329,16 +329,16 @@ export default function AnalyticsPage() {
                   <TabsContent value="attention" className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <TimeSeriesChartCard
-                        title="지속 주의력"
-                        description="시간이 지나도 집중을 유지하는 능력의 변화입니다."
+                        title="몰입"
+                        description="주변의 방해로부터 당신을 지키는 힘의 변화입니다."
                         data={timeSeriesData.attention}
-                        metricLabel="지속 주의력"
+                        metricLabel="몰입"
                       />
                       <TimeSeriesChartCard
-                        title="시공간 정확도"
-                        description="시각적 정보와 공간 관계를 정확히 파악하는 능력의 변화입니다."
+                        title="길찾기감각"
+                        description="머릿속에 지도를 그리는 힘의 변화입니다."
                         data={timeSeriesData.visuospatialPrecision}
-                        metricLabel="시공간 정확도"
+                        metricLabel="길찾기감각"
                       />
                     </div>
                   </TabsContent>
@@ -346,16 +346,16 @@ export default function AnalyticsPage() {
                   <TabsContent value="processing" className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                        <TimeSeriesChartCard
-                        title="처리 속도"
-                        description="시각 정보를 빠르고 효율적으로 처리하는 능력의 변화입니다."
+                        title="눈치"
+                        description="상황의 핵심을 빠르게 파악하는 힘의 변화입니다."
                         data={timeSeriesData.processingSpeed}
-                        metricLabel="처리 속도"
+                        metricLabel="눈치"
                       />
                       <TimeSeriesChartCard
-                        title="패턴 인식"
-                        description="데이터나 정보 속에서 규칙과 패턴을 찾아내는 능력의 변화입니다."
+                        title="규칙찾기"
+                        description="복잡함 속에서 질서를 발견하는 힘의 변화입니다."
                         data={timeSeriesData.patternRecognition}
-                        metricLabel="패턴 인식"
+                        metricLabel="규칙찾기"
                       />
                     </div>
                   </TabsContent>
@@ -363,16 +363,16 @@ export default function AnalyticsPage() {
                   <TabsContent value="executive" className="pt-4">
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                        <TimeSeriesChartCard
-                        title="인지 유연성"
-                        description="변화하는 상황에 맞춰 생각과 행동을 전환하는 능력의 변화입니다."
+                        title="틀깨기"
+                        description="익숙함에서 벗어나 새로움을 보는 힘의 변화입니다."
                         data={timeSeriesData.cognitiveFlexibility}
-                        metricLabel="인지 유연성"
+                        metricLabel="틀깨기"
                       />
                       <TimeSeriesChartCard
-                        title="실행 기능"
-                        description="목표를 설정하고, 계획을 세우며, 자신을 통제하는 능력의 변화입니다."
+                        title="끈기"
+                        description="'시작'을 '완성'으로 만드는 힘의 변화입니다."
                         data={timeSeriesData.executiveFunction}
-                        metricLabel="실행 기능"
+                        metricLabel="끈기"
                       />
                     </div>
                   </TabsContent>
@@ -384,10 +384,10 @@ export default function AnalyticsPage() {
       )}
 
       <div className="text-center py-8 text-gray-500 text-sm">
-        <p>당신의 인지 능력 데이터는 {timeRange === '1m' ? '최근 1개월' : timeRange === '3m' ? '최근 3개월' : timeRange === '6m' ? '최근 6개월' : '전체 기간'}의 활동을 기반으로 분석되었습니다.</p>
+        <p>이 데이터는 {timeRange === '1m' ? '최근 1개월' : timeRange === '3m' ? '최근 3개월' : timeRange === '6m' ? '최근 6개월' : '전체 기간'}의 활동을 기반으로 분석되었습니다.</p>
         <p className="mt-1">
           이 분석은 정보 제공 목적으로만 사용되며, 의학적 진단을 대체하지 않습니다. 
-          더 많은 활동을 수행할수록 더 정확한 분석이 가능합니다.
+          더 많은 활동을 수행할수록 점점 더 정확해져요.
         </p>
       </div>
     </div>
