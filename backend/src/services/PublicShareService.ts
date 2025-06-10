@@ -147,11 +147,23 @@ class PublicShareService {
       result.notes.find((n: TSNote) => n._id.toString() === id.toString())
     ).filter((n?: TSNote): n is TSNote => !!n);
 
+    // --- 총 독서 시간 계산 ---
+    const totalDurationSeconds = orderedNotes.reduce(
+      (total, note) => total + (note.sessionDetails?.durationSeconds || 0),
+      0
+    );
+    const totalReadingTimeISO = `PT${Math.floor(totalDurationSeconds / 3600)}H${Math.floor((totalDurationSeconds % 3600) / 60)}M${totalDurationSeconds % 60}S`;
+
+    // --- 전체 태그 목록 생성 ---
+    const allTags = [...new Set(orderedNotes.flatMap(note => note.tags || []))];
+
     const dataForBuilder = {
       ...summaryNote,
       user: result.user || { name: '알 수 없는 사용자', email: ''},
       notes: orderedNotes,
-      readingPurpose: summaryNote.readingPurpose || 'general_knowledge', 
+      readingPurpose: summaryNote.readingPurpose || 'general_knowledge',
+      totalReadingTimeISO,
+      allTags,
     };
 
     const jsonLdData = buildJsonLd(dataForBuilder as any);

@@ -75,6 +75,8 @@ interface SummaryNoteData {
   user: UserInfo; // Assume user info is populated
   notes: PopulatedTSNote[];
   readingPurpose?: string; // Pass reading purpose for context
+  totalReadingTimeISO?: string; // 총 독서 시간 (ISO 8601 형식)
+  allTags?: string[]; // 모든 노트의 태그 집합
 }
 
 // Mapping of reading purposes to question sets for memo evolution
@@ -298,7 +300,18 @@ const analyzeCognitiveProvenance = (note: PopulatedTSNote): CognitiveProvenance 
  * @returns {object} A JSON-LD object following schema.org standards.
  */
 export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
-  const { title, description, userMarkdownContent, createdAt, user, notes, readingPurpose } = summaryNoteData;
+  const {
+    _id,
+    title,
+    description,
+    createdAt,
+    user,
+    notes,
+    readingPurpose = 'general_knowledge',
+    userMarkdownContent,
+    totalReadingTimeISO,
+    allTags = [],
+  } = summaryNoteData;
 
   // --- 총 독서 시간 계산 ---
   const totalReadingDurationSeconds = notes?.reduce((total, note) => {
@@ -573,7 +586,18 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
       "@type": "EducationalAudience",
       "educationalRole": "학습자, 연구자, 지식 관리 전문가"
     },
-    "genre": "지식관리, 학습분석, 개인화 교육"
+    "genre": "지식관리, 학습분석, 개인화 교육",
+    "totalTime": totalReadingTimeISO,
+    "keywords": allTags.join(', '),
+    "isBasedOn": notes.map(note => ({
+      '@type': 'Book',
+      name: note.book?.title || 'Unknown Title',
+      author: {
+        '@type': 'Person',
+        name: note.book?.author || 'Unknown Author',
+      },
+      isbn: note.book?.isbn,
+    })).filter((v, i, a) => a.findIndex(t => (t.isbn === v.isbn)) === i),
   };
 
   // 사용자가 작성한 마크다운 인사이트를 구조화된 형태로 포함
