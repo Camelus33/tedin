@@ -27,6 +27,15 @@ const nextConfig = {
       },
     ],
   },
+  // API 프록시 설정
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://habitus33-api.onrender.com/api/:path*',
+      },
+    ];
+  },
   // 백엔드 연결 문제 시 오류 페이지 표시 방지
   onDemandEntries: {
     // 개발 중에 페이지를 메모리에 유지하는 시간 (ms)
