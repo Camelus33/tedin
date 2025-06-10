@@ -2,11 +2,9 @@ import api from '@/lib/api';
 import { notFound } from 'next/navigation';
 import { AlertTriangle, BookOpen, Calendar, Link as LinkIcon, MessageSquare, Microscope, Paperclip } from 'lucide-react';
 
-interface SharePageProps {
-  params: {
-    shareId: string;
-  };
-}
+// interface SharePageProps {
+//   params: { shareId: string };
+// }
 
 async function getShareData(shareId: string) {
   try {
@@ -37,7 +35,7 @@ const ErrorDisplay = ({ message, reason }: { message: string, reason: string }) 
   </div>
 );
 
-export default async function SharePage({ params }: SharePageProps) {
+export default async function SharePage({ params }: { params: { shareId: string } }) {
   const data = await getShareData(params.shareId);
 
   // Case 1: Server error during fetch
