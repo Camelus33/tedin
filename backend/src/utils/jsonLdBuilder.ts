@@ -1,3 +1,9 @@
+import {
+  ActionModule,
+  CognitiveProvenance,
+  KnowledgePersonality,
+} from '../types/common';
+
 // frontend/components/ts/TSNoteCard.tsx 에서 가져온 타입 정의를
 // 백엔드에서 사용할 수 있도록 아래에 직접 정의하거나, 공유 타입 파일에서 가져와야 합니다.
 // 여기서는 직접 정의하여 의존성 문제를 해결합니다.
@@ -37,8 +43,8 @@ export interface TSSessionDetails {
 }
 
 // --- Type Definitions for Builder ---
-// These interfaces should ideally be imported from a central type definition file.
-// We define them here based on available information for clarity.
+// These interfaces are now partially imported from PublicShareService
+// We keep local definitions for clarity and potential backend-specific extensions.
 
 interface BookInfo {
   _id: string;
@@ -91,6 +97,200 @@ const getMemoEvolutionQuestion = (fieldKey: string, purpose: string = 'humanitie
 };
 
 
+// =================================================================
+// PHASE 1: 상수 및 헬퍼 함수 정의
+// =================================================================
+
+// --- 1. 목표 기반 액션 모듈 상수 ---
+const ACTION_MODULES = {
+  exam_prep: [
+    {
+      '@type': 'HowToAction',
+      name: '시험 대비 모의고사 즉시 생성',
+      description: "중요 개념 기반으로 객관식, 단답형, 서술형 문항을 포함한 모의고사를 생성합니다.",
+      llmPrompt: "제공된 노트 중 '중요성'이 강조된 내용을 중심으로, 객관식 5문제, 단답형 3문제, 그리고 여러 노트의 개념을 통합해야 하는 서술형 2문제로 구성된 총 10문항의 모의고사를 즉시 생성하고, 상세한 해설을 포함한 정답지를 제공하시오."
+    },
+    {
+      '@type': 'HowToAction',
+      name: '학습 취약점 분석 및 보완 전략 제시',
+      description: "메모 진화 단계를 분석하여 학습 취약점을 식별하고 구체적인 보완 전략을 제안합니다.",
+      llmPrompt: "모든 노트의 '메모 진화' 단계를 분석하여, '중요성은 알지만(importanceReason) 구체적인 심상(mentalImage)이나 연결 지식(relatedKnowledge)이 부족한' 개념들을 '학습 취약점'으로 식별하시오. 각 취약점별로 구체적인 보완 학습 전략(예: 관련 유튜브 영상 추천, 추가 읽기 자료 제안)을 보고서 형태로 제시하시오."
+    }
+  ],
+  practical_knowledge: [
+    {
+      '@type': 'HowToAction',
+      name: '원페이지 실행 보고서 초안 작성',
+      description: "팀장에게 보고할 수 있는 형식의 원페이지 실행 보고서 초안을 작성합니다.",
+      llmPrompt: "모든 노트를 종합하여, 팀장에게 보고할 수 있는 '원페이지 실행 보고서' 초안을 작성하시오. 보고서에는 [핵심 인사이트], [근거 데이터(노트 내용 인용)], [당장 실행할 액션 아이템 3가지] 항목이 반드시 포함되어야 합니다."
+    },
+    {
+      '@type': 'HowToAction',
+      name: '내부 발표 자료 자동 생성',
+      description: "노트 내용을 기반으로 5장짜리 내부 발표 자료의 개요를 생성합니다.",
+      llmPrompt: "이 노트들을 기반으로, 5장짜리 내부 발표 자료의 개요를 마크다운 형식으로 생성하시오. 각 슬라이드는 [제목], [핵심 메시지(3줄 요약)], [관련 노트 내용]으로 구성되어야 합니다."
+    }
+  ]
+} as const;
+
+// --- 2. 지식 페르소나 상수 ---
+const KNOWLEDGE_PERSONAS = {
+  Visualizer: {
+    profileDescription: "이 학습자는 개념을 공고히 하기 위해 '시각적 이미지'를 활용하는 경향이 강합니다.",
+    interactionStrategyForLLM: {
+      communicationStyle: "아이디어들을 시각적으로 구조화할 수 있도록 마인드맵이나 순서도 생성을 먼저 제안하시오.",
+      questioningStyle: "'이것을 그림으로 표현한다면 어떤 모습일까요?' 와 같이 시각화를 유도하는 질문을 던져 학습자의 사고를 자극하시오."
+    }
+  },
+  Connector: {
+    profileDescription: "이 학습자는 새로운 정보를 기존 지식과 '연결'하여 이해하는 것을 선호합니다.",
+    interactionStrategyForLLM: {
+      communicationStyle: "유추와 비유를 적극적으로 사용하여 설명하시오.",
+      questioningStyle: "'이것은 무엇을 떠오르게 하나요?' 와 같이 연결을 유도하는 질문을 던져 학습자의 사고를 자극하시오."
+    }
+  },
+  Theorist: {
+    profileDescription: "이 학습자는 개별 사실보다 그背后의 '핵심 원리나 이론'을 파악하는 것을 중요하게 생각합니다.",
+    interactionStrategyForLLM: {
+      communicationStyle: "논리적이고 체계적인 구조로 설명하고, 관련 이론이나 모델을 함께 제시하시오.",
+      questioningStyle: "'이 현상의 근본적인 원칙은 무엇일까요?' 와 같이 본질을 탐구하는 질문을 던지시오."
+    }
+  },
+  Pragmatist: {
+    profileDescription: "이 학습자는 지식이 '실제 어떤 상황'에서 어떻게 사용되는지에 대한 실용적 맥락을 중시합니다.",
+    interactionStrategyForLLM: {
+      communicationStyle: "구체적인 사례나 실제 적용 예시를 중심으로 설명하시오.",
+      questioningStyle: "'이 지식을 실제로 어떻게 사용할 수 있을까요?' 와 같이 적용을 유도하는 질문을 던지시오."
+    }
+  }
+};
+
+
+// =================================================================
+// PHASE 2: 핵심 기능 헬퍼 함수 구현
+// =================================================================
+
+/**
+ * @function buildActionModules
+ * @description 독서 목적에 맞는 액션 모듈 배열을 반환합니다.
+ */
+const buildActionModules = (readingPurpose: string = 'general_knowledge') => {
+  return ACTION_MODULES[readingPurpose as keyof typeof ACTION_MODULES] || [];
+};
+
+/**
+ * @function analyzeKnowledgePersonality
+ * @description 노트 리스트를 분석하여 지식 페르소나를 결정합니다.
+ */
+const analyzeKnowledgePersonality = (notes: PopulatedTSNote[]): KnowledgePersonality | null => {
+  if (!notes || notes.length === 0) {
+    return {
+      '@type': 'KnowledgePersonality',
+      primaryType: 'Balanced',
+      profileDescription: "이 학습자는 다양한 메모 방식을 균형있게 활용합니다.",
+      interactionStrategyForLLM: {
+        communicationStyle: "상황에 맞는 다양한 설명 방식을 사용하고, 학습자의 다음 행동을 예측하여 여러 옵션을 제안하시오.",
+        questioningStyle: "개방형 질문과 구체적인 질문을 조합하여 학습자의 사고를 다각도로 자극하시오."
+      }
+    };
+  }
+
+  const counts = { Visualizer: 0, Connector: 0, Theorist: 0, Pragmatist: 0 };
+  notes.forEach(note => {
+    if (note.mentalImage) counts.Visualizer++;
+    if (note.relatedKnowledge) counts.Connector++;
+    if (note.importanceReason) counts.Theorist++;
+    if (note.momentContext) counts.Pragmatist++;
+  });
+
+  const totalCounts = Object.values(counts).reduce((sum, count) => sum + count, 0);
+
+  if (totalCounts === 0) {
+    return {
+      '@type': 'KnowledgePersonality',
+      primaryType: 'Balanced',
+      profileDescription: "이 학습자는 다양한 메모 방식을 균형있게 활용하거나, 아직 메모 진화 기능을 사용하지 않았습니다.",
+      interactionStrategyForLLM: {
+        communicationStyle: "상황에 맞는 다양한 설명 방식을 사용하고, 학습자의 다음 행동을 예측하여 여러 옵션을 제안하시오.",
+        questioningStyle: "개방형 질문과 구체적인 질문을 조합하여 학습자의 사고를 다각도로 자극하시오."
+      }
+    };
+  }
+
+  const primaryType = Object.keys(counts).reduce((a, b) => counts[a as keyof typeof counts] > counts[b as keyof typeof counts] ? a : b) as keyof typeof KNOWLEDGE_PERSONAS;
+
+  const personaData = KNOWLEDGE_PERSONAS[primaryType];
+
+  return {
+    '@type': 'KnowledgePersonality',
+    primaryType: primaryType,
+    ...personaData
+  };
+};
+
+/**
+ * @function analyzeCognitiveProvenance
+ * @description 개별 노트의 인지적 출처를 분석합니다.
+ */
+const analyzeCognitiveProvenance = (note: PopulatedTSNote): CognitiveProvenance => {
+  // --- 방어 코드 강화: sessionDetails가 없는 경우 즉시 기본값 반환 ---
+  if (!note.sessionDetails) {
+    return {
+      '@type': 'CognitiveContext',
+      readingPace: 'unknown',
+      timeOfDayContext: 'unknown',
+      memoMaturity: 'initial_idea',
+      description: 'This note was recorded without a session, so detailed context is unavailable.'
+    };
+  }
+
+  let readingPace: CognitiveProvenance['readingPace'] = 'unknown';
+  const ppm = note.sessionDetails?.ppm;
+  const duration = note.sessionDetails?.durationSeconds;
+
+  // --- 방어 코드 강화: ppm과 duration이 유효한 숫자인지 확인 ---
+  if (typeof ppm === 'number' && typeof duration === 'number') {
+    if (ppm < 2 && duration > 180) {
+      readingPace = 'deep_focus';
+    } else if (ppm > 4 && duration < 180) {
+      readingPace = 'skimming_review';
+    } else {
+      readingPace = 'steady_reading';
+    }
+  }
+  
+  let timeOfDayContext: CognitiveProvenance['timeOfDayContext'] = 'unknown';
+  // --- 방어 코드 강화: createdAtISO가 유효한 날짜 문자열인지 확인 ---
+  if(note.sessionDetails?.createdAtISO && !isNaN(new Date(note.sessionDetails.createdAtISO).getTime())) {
+    const hour = new Date(note.sessionDetails.createdAtISO).getUTCHours();
+    if (hour >= 0 && hour < 5) timeOfDayContext = 'late_night_insight';
+    else if (hour >= 6 && hour < 10) timeOfDayContext = 'morning_routine';
+    else if (hour >= 10 && hour < 18) timeOfDayContext = 'day_activity';
+    else timeOfDayContext = 'evening_learning';
+  }
+
+  const memoMaturity: CognitiveProvenance['memoMaturity'] = 
+    note.mentalImage ? 'fully_evolved' :
+    note.relatedKnowledge ? 'partially_evolved' :
+    'initial_idea';
+
+  const description = `This note was likely recorded during a session with a '${readingPace}' pace, identified as a '${timeOfDayContext}'. The memo itself is considered '${memoMaturity}'.`;
+
+  return {
+    '@type': 'CognitiveContext',
+    readingPace,
+    sessionPPM: ppm,
+    timeOfDayContext,
+    memoMaturity,
+    description,
+  };
+};
+
+
+// =================================================================
+// PHASE 3: buildJsonLd 메인 함수 통합
+// =================================================================
+
 /**
  * @function buildJsonLd
  * @description Takes aggregated summary note data and builds a JSON-LD object for SEO and AI crawlers.
@@ -99,6 +299,11 @@ const getMemoEvolutionQuestion = (fieldKey: string, purpose: string = 'humanitie
  */
 export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   const { title, description, userMarkdownContent, createdAt, user, notes, readingPurpose } = summaryNoteData;
+
+  // --- 신규 기능 호출 ---
+  const actionableModules = buildActionModules(readingPurpose);
+  const knowledgePersonality = analyzeKnowledgePersonality(notes);
+
 
   // 하비투스33 학습 방법론 및 시스템 맥락 정보
   const methodologyContext = {
@@ -154,12 +359,16 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
       relatedLinks,
     } = note;
 
+    // --- 개별 노트의 인지 출처 분석 ---
+    const cognitiveProvenance = analyzeCognitiveProvenance(note);
+
     const notePart: any = {
       "@type": "NoteDigitalDocument",
       "text": content,
       "identifier": `atomic-note-${index + 1}`,
       "description": `하비투스33 Atomic Reading 방법론으로 추출된 ${index + 1}번째 1줄메모`,
       "educationalUse": "지식의 원자 단위로 분해된 핵심 인사이트",
+      "cognitiveProvenance": cognitiveProvenance, // 인지 출처 데이터 추가
     };
 
     // 세션 정보: Atomic Reading의 핵심 데이터
@@ -404,6 +613,14 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   if (hasPart.length > 0) {
     jsonLd.hasPart = hasPart;
   }
+
+  if (actionableModules.length > 0) {
+    jsonLd.actionableModules = actionableModules;
+  }
+  if (knowledgePersonality) {
+    jsonLd.knowledgePersonality = knowledgePersonality;
+  }
+
 
   // 전체 문서에 대한 외부 리소스 크롤링 안내
   const allExternalLinks = notes?.flatMap(note => note.relatedLinks || []) || [];

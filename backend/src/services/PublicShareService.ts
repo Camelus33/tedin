@@ -6,6 +6,11 @@ import Session from '../models/Session';
 import User from '../models/User';
 import { buildJsonLd, TSNote } from '../utils/jsonLdBuilder';
 import mongoose from 'mongoose';
+import {
+  ActionModule,
+  CognitiveProvenance,
+  KnowledgePersonality,
+} from '../types/common';
 
 // Define a comprehensive type for the aggregated data
 // This should align with the input type for jsonLdBuilder
