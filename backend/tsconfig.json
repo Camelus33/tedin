@@ -13,7 +13,6 @@
     "resolveJsonModule": true,
     "lib": ["es2017", "dom"],
     "types": ["node"],
-    "typeRoots": ["./node_modules/@types", "./src/types"],
     "noImplicitThis": false,
     "strictNullChecks": false,
     "noEmitOnError": false
