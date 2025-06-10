@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "frontend/next.config.js",
-      "use": "@vercel/next"
-    }
-  ],
+  "installCommand": "npm install",
+  "buildCommand": "npm run build:frontend",
+  "outputDirectory": "frontend/.next",
   "routes": [
     {
       "src": "/api/(.*)",
