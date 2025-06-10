@@ -31,6 +31,7 @@ import routineRoutes from './routes/routineRoutes';
 import flashcardRoutes from './routes/flashcards';
 import notificationRoutes from './routes/notifications';
 import summaryNoteRoutes from './routes/summaryNoteRoutes';
+import publicShareRoutes from './routes/publicShareRoutes';
 
 // Initialize Express app
 const app: Express = express();
@@ -108,6 +109,7 @@ app.use('/api/routines', routineRoutes);
 app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/summary-notes', summaryNoteRoutes);
+app.use('/api/public-shares', publicShareRoutes);
 
 // Cognitive metrics API route
 import cognitiveRoutes from './routes/cognitive';

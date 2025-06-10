@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon, EllipsisVerticalIcon, ArrowPathIcon, EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { RocketIcon } from 'lucide-react';
 import { AiFillYoutube } from 'react-icons/ai';
 import { NewspaperIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
@@ -17,8 +18,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AiLinkModal } from '@/components/summary-notes/AiLinkModal';
 
 // 마크다운 에디터 및 리사이저블 패널 추가
 import MDEditor from '@uiw/react-md-editor';
@@ -117,6 +120,9 @@ export default function EditSummaryNotePage() {
   const [noteForFlashcardModal, setNoteForFlashcardModal] = useState<FetchedNoteDetails | null>(null);
   const [showFlashcardModal, setShowFlashcardModal] = useState(false);
   
+  // State for AI Link Modal
+  const [isAiLinkModalOpen, setIsAiLinkModalOpen] = useState(false);
+
   // 데이터 가져오기 및 저장 로직 (기존 코드 유지)
   useEffect(() => {
     if (!summaryNoteId) return;
@@ -365,6 +371,11 @@ export default function EditSummaryNotePage() {
 
   return (
     <div className={`min-h-screen ${cyberTheme.bgPrimary} ${cyberTheme.textLight} p-4 md:p-8`}>
+      <AiLinkModal
+        isOpen={isAiLinkModalOpen}
+        onOpenChange={setIsAiLinkModalOpen}
+        summaryNoteId={summaryNoteId}
+      />
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
@@ -404,13 +415,19 @@ export default function EditSummaryNotePage() {
             {/* Dropdown Menu for Delete */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} border-gray-600 hover:border-gray-500`}>
-                  <EllipsisVerticalIcon className="w-5 h-5" />
+                <Button variant="ghost" className="p-2">
+                  <EllipsisVerticalIcon className="h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className={`${cyberTheme.cardBg} border-gray-700`}>
-                <DropdownMenuItem onClick={handleDeleteSummaryNote} className={`hover:!bg-red-800/50 ${cyberTheme.textLight} focus:!bg-red-700/60`}>
-                  <TrashIcon className="w-4 h-4 mr-2" /> 삭제하기
+              <DropdownMenuContent align="end" className={`${cyberTheme.bgSecondary} border-gray-700 text-gray-200`}>
+                <DropdownMenuItem onClick={() => setIsAiLinkModalOpen(true)} className="hover:bg-gray-700 cursor-pointer focus:bg-gray-600">
+                  <RocketIcon className={`mr-2 h-4 w-4 ${cyberTheme.primary}`} />
+                  <span>AI 분석 링크 생성</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem onClick={handleDeleteSummaryNote} className="hover:bg-red-900/50 cursor-pointer text-red-400 focus:text-red-400 focus:bg-red-900/50">
+                  <TrashIcon className="mr-2 h-4 w-4" />
+                  <span>이 노트 삭제</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

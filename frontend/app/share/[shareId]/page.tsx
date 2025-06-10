@@ -1,204 +1,151 @@
-'use client';
+import api from '@/lib/api';
+import { notFound } from 'next/navigation';
+import { AlertTriangle, BookOpen, Calendar, Link as LinkIcon, MessageSquare, Microscope, Paperclip } from 'lucide-react';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Button from '@/components/common/Button';
-
-type ShareData = {
-  _id: string;
-  userId: {
-    nickname: string;
+interface SharePageProps {
+  params: {
+    shareId: string;
   };
-  bookId: {
-    title: string;
-    author: string;
-    coverImage?: string;
-  };
-  startPage: number;
-  actualEndPage: number;
-  durationSec: number;
-  memo?: string;
-  summary10words?: string;
-  ppm: number;
-  createdAt: string;
-  badges: {
-    _id: string;
-    type: string;
-    title: string;
-  }[];
-};
+}
 
-export default function SharePage() {
-  const router = useRouter();
-  const params = useParams();
-  const shareId = params.shareId as string;
-  
-  const [shareData, setShareData] = useState<ShareData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-
-  useEffect(() => {
-    const fetchShareData = async () => {
-      if (!shareId) return;
-
-      try {
-        const response = await fetch(`/api/share/${shareId}`);
-
-        if (!response.ok) {
-          throw new Error('공유 정보를 불러오는 데 실패했습니다.');
-        }
-
-        const data = await response.json();
-        setShareData(data.share);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchShareData();
-  }, [shareId]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+async function getShareData(shareId: string) {
+  try {
+    // This API call is made server-side
+    const response = await api.get(`/public-shares/${shareId}`, {
+      // Use a longer timeout for server-side rendering if needed
+      timeout: 10000, 
     });
-  };
+    return response.data;
+  } catch (error: any) {
+    console.error(`Failed to fetch share data for ${shareId}:`, error.message);
+    if (error.response && error.response.status === 404) {
+      return null; // Share link not found
+    }
+    // For server errors, we can pass a specific state
+    return { error: 'server_error' };
+  }
+}
 
-  // Get a performance message based on PPM
-  const getPerformanceMessage = (ppm: number) => {
-    if (ppm > 2) return '놀라운 집중력을 보여주셨어요!';
-    if (ppm > 1.5) return '평균 이상의 좋은 성과예요!';
-    if (ppm > 1) return '꾸준한 리듬을 유지하셨어요!';
-    return '첫 시작을 축하드려요!';
-  };
+// A more robust and visually appealing component for missing data
+const ErrorDisplay = ({ message, reason }: { message: string, reason: string }) => (
+  <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-gray-700">
+    <div className="bg-white p-12 rounded-xl shadow-lg text-center">
+      <AlertTriangle className="mx-auto h-16 w-16 text-red-400 mb-6" />
+      <h1 className="text-3xl font-bold text-gray-800">{message}</h1>
+      <p className="mt-2 text-lg">{reason}</p>
+    </div>
+  </div>
+);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 flex items-center justify-center">
-        <p>로딩 중...</p>
-      </div>
-    );
+export default async function SharePage({ params }: SharePageProps) {
+  const data = await getShareData(params.shareId);
+
+  // Case 1: Server error during fetch
+  if (data?.error === 'server_error') {
+    return <ErrorDisplay message="노트를 불러올 수 없습니다." reason="서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요." />;
+  }
+  
+  // Case 2: Not found or data is incomplete
+  if (!data || !data.htmlData) {
+    notFound(); // Use Next.js's standard 404 page for clean handling
   }
 
-  if (error || !shareData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-red-600 mb-4">오류 발생</h1>
-          <p className="mb-6">{error || '공유 정보를 찾을 수 없습니다.'}</p>
-          <Link href="/" className="inline-block text-indigo-600 font-medium">
-            홈으로 가기
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const { htmlData, jsonLdData } = data;
+  const { title, description, notes, user, createdAt } = htmlData;
 
-  // Calculate various metrics
-  const totalPagesRead = shareData.actualEndPage - shareData.startPage;
-  const readingTimeMinutes = Math.round(shareData.durationSec / 60);
+  // Helper to format date nicely
+  const formatDate = (isoString?: string) => isoString ? new Date(isoString).toLocaleDateString('ko-KR', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  }) : '날짜 정보 없음';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 p-4">
-      <div className="container mx-auto max-w-md">
-        {/* Share Card */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-          <div className="bg-indigo-600 text-white p-4 text-center">
-            <h1 className="text-xl font-bold">독서 상장</h1>
-            <p className="text-indigo-100">
-              {formatDate(shareData.createdAt)}
-            </p>
-          </div>
-          
-          <div className="p-6">
-            <div className="text-center mb-4">
-              <h2 className="text-lg font-bold text-gray-800">{shareData.bookId.title}</h2>
-              <p className="text-gray-600">{shareData.bookId.author}</p>
-              <p className="text-gray-500 text-sm mt-1">
-                <span className="font-medium">{shareData.userId.nickname}</span>님의 독서 성과
-              </p>
+    <>
+      {/* 
+        This script tag injects the structured data into the page head.
+        AI Crawlers like Google NotebookLM will read this for deep context.
+      */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
+      />
+      
+      {/* 
+        This is the human-readable content, styled minimally but structured semantically.
+        It serves as a fallback for crawlers that don't process JSON-LD and for direct viewing.
+      */}
+      <main className="font-sans bg-gray-100 text-gray-800 p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-2xl shadow-lg">
+          <header className="border-b-2 border-gray-200 pb-6 mb-8">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 break-words">{title ?? '제목 없음'}</h1>
+            {description && <p className="mt-4 text-lg text-gray-600">{description}</p>}
+             <div className="mt-4 text-sm text-gray-500">
+                <span>{`작성자: ${user?.name ?? '알 수 없음'}`}</span>
+                <span className="mx-2">·</span>
+                <span>{`공유일: ${formatDate(createdAt)}`}</span>
             </div>
-            
-            <div className="flex justify-between mb-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-indigo-600">{totalPagesRead}</div>
-                <div className="text-xs text-gray-500">페이지</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-indigo-600">{readingTimeMinutes}</div>
-                <div className="text-xs text-gray-500">분</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-indigo-600">{shareData.ppm.toFixed(1)}</div>
-                <div className="text-xs text-gray-500">PPM</div>
-              </div>
-            </div>
-            
-            {shareData.memo && (
-              <div className="bg-indigo-50 p-4 rounded-lg mb-4">
-                <h3 className="font-bold text-indigo-700 mb-2">메모</h3>
-                <p className="text-gray-700">{shareData.memo}</p>
-              </div>
-            )}
-            
-            {shareData.summary10words && (
-              <div className="bg-blue-50 p-4 rounded-lg mb-4">
-                <h3 className="font-bold text-blue-700 mb-2">10단어 요약</h3>
-                <p className="text-gray-700">{shareData.summary10words}</p>
-              </div>
-            )}
-            
-            <div className="mb-4">
-              <h3 className="font-bold text-gray-700 mb-2">성과</h3>
-              <p className="text-gray-700">{getPerformanceMessage(shareData.ppm)}</p>
-            </div>
-            
-            {shareData.badges && shareData.badges.length > 0 && (
-              <div className="mb-4">
-                <h3 className="font-bold text-gray-700 mb-2">획득 뱃지</h3>
-                <div className="flex flex-wrap gap-2">
-                  {shareData.badges.map((badge) => (
-                    <div 
-                      key={badge._id} 
-                      className="bg-yellow-50 border border-yellow-200 rounded-full px-3 py-1 text-sm text-yellow-700"
-                    >
-                      {badge.title}
-                    </div>
-                  ))}
+          </header>
+
+          <div className="space-y-10">
+            {notes && notes.length > 0 ? (
+              notes.map((note: any, index: number) => (
+              <article key={note._id || index} className="border-t border-gray-200 pt-8">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0 bg-cyan-500 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">{index + 1}</div>
+                  <h2 className="flex-1 text-2xl font-semibold text-gray-800 break-words">{note.content ?? '내용 없음'}</h2>
                 </div>
+                
+                <div className="mt-6 pl-12 space-y-6">
+                  {note.sessionDetails && (
+                    <section className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-gray-800 flex items-center"><Paperclip className="h-4 w-4 mr-2 text-gray-500" />메타 정보</h3>
+                      <ul className="mt-2 text-sm text-gray-700 space-y-1">
+                        {note.sessionDetails?.createdAtISO && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>기록일:</strong> {formatDate(note.sessionDetails.createdAtISO)}</li>}
+                        {note.book?.title && <li><BookOpen className="inline h-4 w-4 mr-1"/><strong>출처:</strong> {note.book.title} {note.book.author && `(${note.book.author})`}</li>}
+                        {(note.sessionDetails?.startPage && note.sessionDetails?.actualEndPage) && 
+                          <li><strong>페이지:</strong> {note.sessionDetails.startPage}p ~ {note.sessionDetails.actualEndPage}p</li>
+                        }
+                      </ul>
+                    </section>
+                  )}
+
+                  {(note.importanceReason || note.momentContext || note.relatedKnowledge || note.mentalImage) && (
+                    <section>
+                      <h3 className="font-semibold text-gray-800 flex items-center"><Microscope className="h-4 w-4 mr-2 text-gray-500" />메모 진화</h3>
+                      <ul className="mt-2 text-sm text-gray-700 space-y-1 list-inside">
+                        {note.importanceReason && <li><strong className="text-purple-600">작성 이유:</strong> {note.importanceReason}</li>}
+                        {note.momentContext && <li><strong className="text-purple-600">당시 상황:</strong> {note.momentContext}</li>}
+                        {note.relatedKnowledge && <li><strong className="text-purple-600">연상 지식:</strong> {note.relatedKnowledge}</li>}
+                        {note.mentalImage && <li><strong className="text-purple-600">떠오른 장면:</strong> {note.mentalImage}</li>}
+                      </ul>
+                    </section>
+                  )}
+
+                  {note.relatedLinks && note.relatedLinks.length > 0 && (
+                     <section>
+                      <h3 className="font-semibold text-gray-800 flex items-center"><LinkIcon className="h-4 w-4 mr-2 text-gray-500" />연결된 지식</h3>
+                       <ul className="mt-2 text-sm text-gray-700 space-y-2">
+                        {note.relatedLinks.map((link: any) => (
+                          <li key={link.url} className="flex items-start">
+                             <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{link.url}</a>
+                            {link.reason && <p className="text-gray-600 text-sm ml-2">-&nbsp;{link.reason}</p>}
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                </div>
+              </article>
+            ))
+            ) : (
+              <div className="text-center py-10 text-gray-500">
+                  <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-lg">아직 이 노트에 담긴 내용이 없습니다.</p>
+                  <p>첫 페이지를 넘기는 용기가 곧 위대한 시작입니다.</p>
               </div>
             )}
           </div>
         </div>
-        
-        {/* Call to Action */}
-        <div className="text-center mb-8">
-          <h3 className="text-xl font-medium text-gray-800 mb-4">
-            나도 도전해보고 싶다면?
-          </h3>
-          <div className="flex space-x-3">
-            <Button 
-              href="/auth/register" 
-              variant="default" 
-              fullWidth
-            >
-              지금 시작하기
-            </Button>
-            <Button 
-              href="/" 
-              variant="outline" 
-              fullWidth
-            >
-              더 알아보기
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 } 

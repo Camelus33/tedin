@@ -4,7 +4,8 @@ import {
   getSummaryNoteById,
   updateSummaryNote,
   getSummaryNotesByUserId,
-  deleteSummaryNote
+  deleteSummaryNote,
+  createPublicShareLink
 } from '../controllers/summaryNoteController';
 import { authenticate } from '../middlewares/auth'; // 인증 미들웨어 임포트
 
@@ -59,5 +60,12 @@ router.put('/:summaryNoteId', updateSummaryNote);
  * @handler summaryNoteController.deleteSummaryNote
  */
 router.delete('/:summaryNoteId', deleteSummaryNote);
+
+/**
+ * @route POST /api/summary-notes/:id/public-link
+ * @description Creates a new public share link for a specific summary note.
+ * @access Private (Requires authentication)
+ */
+router.post('/:id/public-link', authenticate, createPublicShareLink);
 
 export default router; 

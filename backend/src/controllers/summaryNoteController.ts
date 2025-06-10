@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import SummaryNote, { ISummaryNote } from '../models/SummaryNote';
 import Note from '../models/Note'; // Assuming Note model is in the same directory
 import mongoose from 'mongoose';
+import PublicShare from '../models/PublicShare';
+import { nanoid } from 'nanoid';
 
 /**
  * @function createSummaryNote
@@ -195,6 +197,41 @@ export const deleteSummaryNote = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('[DeleteSummaryNote Error]', error);
     res.status(500).json({ message: '노트 삭제가 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?', error: error.message });
+  }
+};
+
+/**
+ * @description Creates a new public, shareable link for a summary note.
+ */
+export const createPublicShareLink = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const userId = (req as any).user.id; // Assuming user ID is attached by auth middleware
+
+    // 1. Verify ownership
+    const summaryNote = await SummaryNote.findOne({ _id: id, userId });
+    if (!summaryNote) {
+      res.status(404).json({ message: '해당 노트를 찾을 수 없거나 소유자가 아닙니다.' });
+      return;
+    }
+
+    // 2. Generate a unique ID for the share link
+    const shareId = nanoid(12); // Generate a 12-character unique ID
+
+    // 3. Create and save the new PublicShare document
+    const newShare = new PublicShare({
+      _id: shareId,
+      summaryNoteId: summaryNote._id,
+      userId: userId,
+    });
+    await newShare.save();
+
+    // 4. Return the new shareId
+    res.status(201).json({ shareId });
+
+  } catch (error) {
+    console.error('Error creating public share link:', error);
+    res.status(500).json({ message: '링크를 생성하는 중 서버 오류가 발생했습니다.' });
   }
 };
 
