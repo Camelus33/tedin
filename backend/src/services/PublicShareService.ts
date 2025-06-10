@@ -85,11 +85,29 @@ class PublicShareService {
               }
             },
             { $unwind: { path: '$bookArr', preserveNullAndEmptyArrays: true } },
-            // 4c. Add default values for missing data
+            // 4c. Add default values for missing data and transform session date
             {
               $addFields: {
                 sessionDetails: {
-                  $ifNull: ['$sessionDetailsArr', { createdAt: new Date(), durationSeconds: 0, startPage: 0, actualEndPage: 0, targetPage: 0, ppm: 0 }]
+                  $cond: {
+                    if: { $ne: ['$sessionDetailsArr', null] },
+                    then: {
+                      createdAtISO: { $dateToString: { date: '$sessionDetailsArr.createdAt', format: '%Y-%m-%dT%H:%M:%S.%LZ' } },
+                      durationSeconds: { $ifNull: ['$sessionDetailsArr.durationSeconds', 0] },
+                      startPage: { $ifNull: ['$sessionDetailsArr.startPage', 0] },
+                      actualEndPage: { $ifNull: ['$sessionDetailsArr.actualEndPage', 0] },
+                      targetPage: { $ifNull: ['$sessionDetailsArr.targetPage', 0] },
+                      ppm: { $ifNull: ['$sessionDetailsArr.ppm', 0] }
+                    },
+                    else: { 
+                      createdAtISO: null,
+                      durationSeconds: 0, 
+                      startPage: 0, 
+                      actualEndPage: 0, 
+                      targetPage: 0, 
+                      ppm: 0 
+                    }
+                  }
                 },
                 book: {
                   $ifNull: ['$bookArr', { title: '연결된 책 정보 없음', author: '알 수 없음' }]
