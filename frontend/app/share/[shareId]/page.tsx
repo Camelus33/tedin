@@ -49,7 +49,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
   }
 
   const { htmlData, jsonLdData } = data;
-  const { title, description, notes, user, createdAt } = htmlData;
+  const { title, description, userMarkdownContent, notes, user, createdAt } = htmlData;
 
   // Helper to format date nicely
   const formatDate = (isoString?: string) => isoString ? new Date(isoString).toLocaleDateString('ko-KR', {
@@ -82,6 +82,24 @@ export default async function SharePage({ params }: { params: { shareId: string 
                 <span>{`공유일: ${formatDate(createdAt)}`}</span>
             </div>
           </header>
+
+          {/* 사용자 마크다운 인사이트 섹션 */}
+          {userMarkdownContent && userMarkdownContent.trim() !== '' && (
+            <section className="mb-10 p-6 bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg border-l-4 border-purple-500">
+              <header className="mb-4">
+                <h2 className="text-2xl font-semibold text-gray-800 flex items-center">
+                  <MessageSquare className="h-6 w-6 mr-2 text-purple-600" />
+                  개인적 인사이트 & 분석
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  작성자가 이 노트들을 통해 얻은 핵심 통찰과 개인적 분석입니다.
+                </p>
+              </header>
+              <div className="prose prose-gray max-w-none bg-white p-4 rounded border border-purple-200">
+                <pre className="whitespace-pre-wrap text-gray-700 font-sans leading-relaxed">{userMarkdownContent}</pre>
+              </div>
+            </section>
+          )}
 
           <div className="space-y-10">
             {notes && notes.length > 0 ? (

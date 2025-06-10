@@ -19,6 +19,7 @@ interface PopulatedSummaryNote {
     _id: mongoose.Types.ObjectId;
     title: string;
     description: string;
+    userMarkdownContent?: string;
     orderedNoteIds: string[];
     //... other fields
     userId: {

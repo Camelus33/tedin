@@ -122,7 +122,7 @@ export default function EditSummaryNotePage() {
   
   // State for AI Link Modal
   const [isAiLinkModalOpen, setIsAiLinkModalOpen] = useState(false);
-
+  
   // 데이터 가져오기 및 저장 로직 (기존 코드 유지)
   useEffect(() => {
     if (!summaryNoteId) return;
