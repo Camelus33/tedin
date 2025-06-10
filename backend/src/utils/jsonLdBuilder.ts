@@ -300,6 +300,22 @@ const analyzeCognitiveProvenance = (note: PopulatedTSNote): CognitiveProvenance 
 export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   const { title, description, userMarkdownContent, createdAt, user, notes, readingPurpose } = summaryNoteData;
 
+  // --- 총 독서 시간 계산 ---
+  const totalReadingDurationSeconds = notes?.reduce((total, note) => {
+    return total + (note.sessionDetails?.durationSeconds || 0);
+  }, 0) || 0;
+
+  // 초를 ISO 8601 기간 형식으로 변환 (e.g., PT1H30M5S)
+  const formatDurationISO8601 = (seconds: number) => {
+    if (seconds === 0) return "PT0S";
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    return `PT${h > 0 ? h + 'H' : ''}${m > 0 ? m + 'M' : ''}${s > 0 ? s + 'S' : ''}`;
+  };
+  const timeRequired = formatDurationISO8601(totalReadingDurationSeconds);
+
+
   // --- 신규 기능 호출 ---
   const actionableModules = buildActionModules(readingPurpose);
   const knowledgePersonality = analyzeKnowledgePersonality(notes);
@@ -357,6 +373,7 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
       relatedKnowledge,
       mentalImage,
       relatedLinks,
+      tags,
     } = note;
 
     // --- 개별 노트의 인지 출처 분석 ---
@@ -370,6 +387,11 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
       "educationalUse": "지식의 원자 단위로 분해된 핵심 인사이트",
       "cognitiveProvenance": cognitiveProvenance, // 인지 출처 데이터 추가
     };
+
+    // --- 태그 정보 추가 ---
+    if (tags && tags.length > 0) {
+      notePart.keywords = tags.join(', ');
+    }
 
     // 세션 정보: Atomic Reading의 핵심 데이터
     if (sessionDetails?.createdAtISO) {
@@ -543,15 +565,10 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
       "roleName": "능동적 학습자 (Active Learner)"
     },
     "datePublished": createdAt ? new Date(createdAt).toISOString() : new Date().toISOString(),
+    "timeRequired": timeRequired, // 총 독서 시간 추가
     "educationalFramework": methodologyContext,
     "learningResourceType": "종합적 지식관리 노트 (Comprehensive Knowledge Management Note)",
-    "educationalUse": [
-      "개인화된 학습 패턴 분석",
-      "지식 네트워크 시각화", 
-      "학습 효율성 최적화",
-      "장기기억 전환 지원",
-      "메타인지 능력 향상"
-    ],
+    "educationalUse": readingPurpose || "General Knowledge Acquisition",
     "audience": {
       "@type": "EducationalAudience",
       "educationalRole": "학습자, 연구자, 지식 관리 전문가"
