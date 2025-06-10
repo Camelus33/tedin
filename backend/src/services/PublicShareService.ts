@@ -35,11 +35,10 @@ class PublicShareService {
    * @returns An object containing data for HTML rendering and for the JSON-LD script, or null if not found.
    */
   public static async getShareData(shareId: string): Promise<AggregatedShareData | null> {
-    const objectIdShareId = new mongoose.Types.ObjectId(shareId);
-
+    // shareId는 nanoid로 생성된 문자열이므로 ObjectId로 변환하지 않음
     const results = await PublicShare.aggregate([
-      // 1. Find the share document
-      { $match: { _id: objectIdShareId } },
+      // 1. Find the share document by string _id
+      { $match: { _id: shareId } },
       
       // 2. Fetch the summary note details
       {
