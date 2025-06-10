@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/.next",
-  "installCommand": "npm install",
   "builds": [
     {
       "src": "frontend/next.config.js",
