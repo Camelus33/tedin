@@ -27,28 +27,6 @@ const nextConfig = {
       },
     ],
   },
-  // API 프록시 설정 강화
-  async rewrites() {
-    // 기본 개발 환경 API 프록시
-    if (process.env.NODE_ENV === 'development') {
-      return [
-        {
-          source: '/api/:path*',
-          destination: `${process.env.LOCAL_BACKEND_URL || 'http://localhost:8000'}/api/:path*`,
-          has: [
-            {
-              type: 'header',
-              key: 'accept',
-              value: '(.*)',
-            },
-          ],
-        },
-      ];
-    }
-    
-    // 프로덕션 환경 API 프록시 (필요시)
-    return [];
-  },
   // 백엔드 연결 문제 시 오류 페이지 표시 방지
   onDemandEntries: {
     // 개발 중에 페이지를 메모리에 유지하는 시간 (ms)
