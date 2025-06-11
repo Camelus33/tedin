@@ -114,25 +114,11 @@ class PublicShareService {
                 }
               }
             },
+            // 임시 배열이었던 필드들을 제거하여 최종 데이터를 정리합니다.
             { 
               $project: { 
                 sessionDetailsArr: 0, 
-                bookArr: 0,
-                // --- 명시적으로 모든 필드를 다시 한번 선언하여 누락 방지 ---
-                _id: 1,
-                userId: 1,
-                bookId: 1,
-                content: 1,
-                tags: 1,
-                originSession: 1,
-                importanceReason: 1,
-                momentContext: 1,
-                relatedKnowledge: 1,
-                mentalImage: 1,
-                relatedLinks: 1,
-                createdAt: 1,
-                sessionDetails: 1,
-                book: 1,
+                bookArr: 0
               } 
             }
           ],
