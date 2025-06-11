@@ -71,7 +71,7 @@
 }
 
 .book-cover {
-  transform: transition-transform 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .book-item:hover .book-cover {
@@ -132,7 +132,7 @@
 
 /* 버튼 개선 */
 .action-button {
-  transform: transition-transform 0.3s ease;
+  transition: transform 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
@@ -240,7 +240,7 @@
 .action-card-emoji {
   font-size: 3rem;
   opacity: 0.9;
-  transform: transition-transform 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .action-card:hover .action-card-emoji {

@@ -137,7 +137,7 @@ export default function DevPage() {
                         <p className="font-medium mb-1">해결 방법:</p>
                         <ol className="list-decimal pl-5">
                           <li>프로젝트 루트에 <code className="font-mono bg-gray-200 px-1 rounded">.env.local</code> 파일을 만들거나 편집하세요.</li>
-                          <li>다음 내용을 추가하세요: <code className="font-mono bg-gray-200 px-1 rounded">NEXT_PUBLIC_API_URL=http://localhost:8000/api</code></li>
+                          <li>다음 내용을 추가하세요: <code className="font-mono bg-gray-200 px-1 rounded">NEXT_PUBLIC_API_URL=http://localhost:8000</code></li>
                           <li>개발 서버를 재시작하세요.</li>
                         </ol>
                       </div>

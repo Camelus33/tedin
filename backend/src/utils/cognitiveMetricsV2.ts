@@ -323,4 +323,7 @@ function applyDifficultyBonus(value: number, multiplier: number): number {
 /**
  * 기존 V1 함수 (하위 호환성)
  */
-export const calculateCognitiveMetrics = calculateCognitiveMetricsV2; 
+export const calculateCognitiveMetrics = calculateCognitiveMetricsV2;
+
+// 테스트를 위해 private 함수를 export합니다.
+export { applyDifficultyBonus }; 

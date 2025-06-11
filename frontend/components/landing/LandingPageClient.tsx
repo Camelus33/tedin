@@ -12,14 +12,13 @@ import AppLogo from '@/components/common/AppLogo';
 import HeroSection from './sections/HeroSection';
 import ProblemDiagnosisSection from './sections/ProblemDiagnosisSection';
 import SolutionSection from './sections/SolutionSection';
-import MeasurementSection from './sections/MeasurementSection';
+// import MeasurementSection from './sections/MeasurementSection';
 import CoreFeaturesFreeSection from './sections/CoreFeaturesFreeSection';
 import ZengoMyVerseTeaserSection from './sections/ZengoMyVerseTeaserSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import FinalCtaSection from './sections/FinalCtaSection';
 import FaqSection from './sections/FAQSection';
 import FinalHookSection from './sections/FinalHookSection';
-// Removed other section imports
 
 export default function LandingPageClient() {
   const router = useRouter();
@@ -76,27 +75,13 @@ export default function LandingPageClient() {
         <HeroSection />
         <ProblemDiagnosisSection />
         <SolutionSection />
-        <MeasurementSection />
+        {/* <MeasurementSection /> */}
         <CoreFeaturesFreeSection />
         <ZengoMyVerseTeaserSection />
         <TestimonialsSection />
         <FinalCtaSection />
         <FaqSection />
         <FinalHookSection />
-        
-        {/* Removing old/placeholder sections for now to focus on the new flow */}
-        {/* <StoryStruggleSection /> */}
-        {/* <StoryEpiphanySection /> */}
-        {/* <OfferSection /> */}
-
-        {/* Remove the remaining placeholder div */}
-        {/* 
-        <div className="py-16 bg-gray-50 text-center">
-          <p className="text-xl text-gray-500">[Placeholder for Step 5: Offer - Features/Benefits]</p>
-        </div>
-        */}
-        {/* ... other placeholders ... */}
-
       </main>
 
       {/* Footer is rendered globally in layout.tsx */}

@@ -5,10 +5,23 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FiArrowLeft, FiUpload, FiX } from 'react-icons/fi';
 import Button from '@/components/common/Button';
-// import { books as booksApi } from '@/lib/api'; // 직접 fetch를 사용하므로 주석 처리 또는 삭제 가능
 
-// API base URL - 파일 최상단으로 이동하여 정의
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// fallback 주소에서 /api 제거
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+// 이 페이지에서 사용할 Book 타입 정의
+type Book = {
+  _id: string;
+  title: string;
+  author: string;
+  coverImage?: string;
+  totalPages: number;
+  genre?: string;
+  status?: 'reading' | 'completed' | 'to-read';
+  tags?: string[];
+  memos?: any[]; // 간단하게 any로 처리, 필요시 상세화
+  summaryNotes?: any[]; // 간단하게 any로 처리
+};
 
 // 장르 옵션
 const genres = [
@@ -126,8 +139,8 @@ export default function EditBookPage() {
             // 만약 백엔드가 완전한 URL을 반환한다면 이 로직은 필요 없을 수 있습니다.
             // process.env.NEXT_PUBLIC_API_URL이 /api로 끝난다면, 이미지 경로는 그 이전이어야 합니다.
             // 예: API_URL = http://localhost:8000, coverImage = /uploads/image.jpg -> http://localhost:8000/uploads/image.jpg
-            const baseUrlForImage = process.env.NEXT_PUBLIC_API_URL?.replace('/api', ''); // /api 접미사 제거
-            setCoverImage(book.coverImage.startsWith('http') ? book.coverImage : `${baseUrlForImage || ''}${book.coverImage}`);
+            const baseUrlForImage = API_BASE_URL.replace('/api', ''); // /api 접미사 제거
+            setCoverImage(book.coverImage.startsWith('http') ? book.coverImage : `${baseUrlForImage}${book.coverImage.startsWith('/') ? '' : '/'}${book.coverImage}`);
           }
         }
       } catch (err: any) {

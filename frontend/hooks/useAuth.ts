@@ -73,27 +73,16 @@ export default function useAuth() {
     try {
       dispatch(loginStart());
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      });
+      // Use the shared API function
+      const data = await authApi.login(email, password);
       
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to login');
-      }
-      
-      const data = await response.json();
-      localStorage.setItem('token', data.token);
+      // The token is already stored by authApi.login, so no need to do it here.
       
       dispatch(loginSuccess(data.user));
       router.push('/dashboard');
       return data;
     } catch (error: any) {
-      dispatch(loginFailure(error.message));
+      dispatch(loginFailure(error.message || '로그인 중 오류가 발생했습니다.'));
       throw error;
     }
   };
