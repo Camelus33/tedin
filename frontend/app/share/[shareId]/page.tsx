@@ -90,6 +90,23 @@ export default async function SharePage({ params }: { params: { shareId: string 
             </div>
           </header>
 
+          {/* Table of Contents Section */}
+          {notes && notes.length > 0 && (
+            <section className="mb-10 p-6 bg-gray-50 rounded-lg border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">핵심 내용 바로가기</h2>
+              <ul className="space-y-2">
+                {notes.map((note: any, index: number) => (
+                  <li key={`toc-${note._id || index}`} className="text-gray-700 hover:text-cyan-600 transition-colors">
+                    <a href={`#note-${note._id || index}`} className="flex items-start">
+                      <span className="mr-3 text-cyan-500 font-semibold">{index + 1}.</span>
+                      <span className="flex-1">{note.content?.substring(0, 50) ?? '내용 없음'}{note.content?.length > 50 ? '...' : ''}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {/* 사용자 마크다운 인사이트 섹션 */}
           {userMarkdownContent && userMarkdownContent.trim() !== '' && (
             <section className="mb-10 p-6 bg-gradient-to-r from-purple-50 to-cyan-50 rounded-lg border-l-4 border-purple-500">
@@ -111,7 +128,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
           <div className="space-y-10">
             {notes && notes.length > 0 ? (
               notes.map((note: any, index: number) => (
-              <article key={note._id || index} className="border-t border-gray-200 pt-8">
+              <article key={note._id || index} id={`note-${note._id || index}`} className="border-t border-gray-200 pt-8 scroll-mt-20">
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0 bg-cyan-500 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">{index + 1}</div>
                   <h2 className="flex-1 text-2xl font-semibold text-gray-800 break-words">{note.content ?? '내용 없음'}</h2>

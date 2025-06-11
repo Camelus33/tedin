@@ -296,7 +296,7 @@ function UniversalFeedbackLoopsSection() {
     >
       {/* 안내문구 추가 */}
       <div className="text-center mb-6">
-        <p className="text-base text-gray-300">내가 겪는 문제를 골라보세요. 각 상황에 맞는 뇌 최적화 루프를 안내합니다.</p>
+        <p className="text-base text-gray-300">처음은 모든 게 낯설죠. 작은 실천으로 큰 변화를 만들어 봐요.</p>
       </div>
       {/* 탭 버튼 */}
       <div className="flex justify-center gap-4 mb-8">
@@ -457,13 +457,13 @@ export default function CyberneticsFeedbackLoopPage() {
         
         <SectionParagraph>
           
-          Habitus33의 <Highlight color={cyberTheme.primary}>핵심</Highlight>을 관통하는 핵심 엔진, 바로 <Highlight color={cyberTheme.secondary}>Atomic-Reading</Highlight>입니다. 이는 단순히 책장을 빠르게 넘기는 속독과는 차원이 다른, <Highlight color={cyberTheme.primary}>인지과학 기반의 정교한 독서 전략</Highlight>입니다. 마치 최정상급 운동선수가 과학적인 인터벌 트레이닝(HIIT)으로 경기 능력을 극한까지 끌어올리듯, Atomic-Reading은 사용자의 두뇌가 정보를 가장 효율적으로 처리하고 깊이 있는 학습이 가능하도록 설계되었습니다. 핵심은 <Highlight color={cyberTheme.secondary}>짧은 단위의 명확한 목표 설정</Highlight>과 <Highlight color={cyberTheme.secondary}>초고도 몰입 독서</Highlight>, 그리고 세션 직후 이어지는 <Highlight color={cyberTheme.secondary}>즉각적인 독서 메모</Highlight>의 반복 사이클입니다.
+          Habitus33의 <Highlight color={cyberTheme.primary}>핵심</Highlight>을 관통하는 핵심 엔진, 바로 <Highlight color={cyberTheme.secondary}>Atomic-Reading</Highlight>입니다. 이는 단순히 빠르게 넘기는 속독과는 차원이 다른, <Highlight color={cyberTheme.primary}>인지과학 기반의 정교한 독서 전략</Highlight>입니다. 엘리트 운동선수가 인터벌 트레이닝(HIIT)으로 경기 능력을 끌어올리듯, Atomic-Reading은 정보를 가장 효율적으로 처리하고 깊이 있는 학습이 가능하도록 설계되었습니다. 핵심은 <Highlight color={cyberTheme.secondary}>짧은 단위의 명확한 목표 설정</Highlight>과 <Highlight color={cyberTheme.secondary}>초고도 몰입 독서</Highlight>, 그리고 세션 직후 이어지는 <Highlight color={cyberTheme.secondary}>1줄 메모</Highlight>의 반복 사이클입니다.
         </SectionParagraph>
 
         <div className="my-12 p-6 md:p-8 bg-gray-900/60 rounded-2xl shadow-xl border border-cyan-600/40">
           <h3 className={`text-2xl md:text-3xl font-semibold mb-8 text-center ${cyberTheme.primary} flex items-center justify-center`}>
             <ArrowPathIcon className="h-8 w-8 md:h-9 md:w-9 mr-3 animate-spin-slow" />
-            5단계 선순환 피드백 루프
+            5단계 사이클
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 md:gap-4 items-start">
             {diagramSteps.map((step, index) => {
@@ -485,20 +485,20 @@ export default function CyberneticsFeedbackLoopPage() {
             })}
           </div>
           <p className={`${cyberTheme.textLight} text-sm text-center mt-8 leading-relaxed`}>
-            Habitus33의 <Highlight color={cyberTheme.primary}>TS 모드</Highlight>는 이 5단계 루프를 유기적으로 지원하며, 반복적인 훈련을 통해 독서 능력 뿐 아니라 <Highlight color={cyberTheme.secondary}>메타인지</Highlight> 능력까지 극적으로 향상시킵니다.
+            Habitus33의 <Highlight color={cyberTheme.primary}>Atomic reading</Highlight>은 이 사이클을 통해 읽기 능력 뿐 아니라 <Highlight color={cyberTheme.secondary}>인지능력</Highlight>까지 극적으로 향상시킵니다.
           </p>
         </div>
 
         <SectionParagraph>
           <BoltIcon className="inline-block h-6 w-6 mr-2 text-purple-400 align-middle" />
-          Atomic-Reading의 진정한 위력은 <Highlight color={cyberTheme.primary}>지속적이고 즉각적인 셀프 피드백</Highlight> 시스템에 있습니다. 매 TS 모드 세션 종료 시, Habitus33은 사용자의 이해도, 집중 시간, 독서 속도 등 핵심 성과 지표를 <Highlight color={cyberTheme.secondary}>객관적인 데이터로 명확히 제시</Highlight>합니다. 이 데이터 기반의 성찰 과정은 독서 시 흔히 발생하는 <Highlight color={cyberTheme.primary}>지루함과 정신적 방황을 효과적으로 차단</Highlight>하고, 매 순간 <Highlight color={cyberTheme.secondary}>학습의 주도권을 사용자에게 부여</Highlight>합니다. 이는 단순한 기능이 아닌, <Highlight color={cyberTheme.primary}>사이버네틱스 AI</Highlight>의 정교한 시스템적 구현이며, 사용자는 마치 노련한 항해사가 첨단 항법 장치를 사용하듯 자신의 학습 여정을 능동적으로 설계하고 최적의 성장 경로로 나아갈 수 있도록 지원합니다.
+          Atomic-Reading의 진정한 위력은 <Highlight color={cyberTheme.primary}>지속적이고 즉각적인 셀프 피드백</Highlight> 시스템에 있습니다. 매 세션 종료 시, Habitus33은 사용자의 이해도, 집중 시간, 읽기 속도 등 핵심 성과 지표를 <Highlight color={cyberTheme.secondary}>객관적인 데이터로 명확히 제시</Highlight>합니다. 이 데이터 기반의 성찰 과정은 학습 시 흔히 발생하는 <Highlight color={cyberTheme.primary}>지루함과 정신적 방황을 효과적으로 차단</Highlight>하고, 매 순간 <Highlight color={cyberTheme.secondary}>학습의 주도권을 사용자에게 부여</Highlight>합니다. 이는 단순한 기능이 아닌, <Highlight color={cyberTheme.primary}>사이버네틱스 AI</Highlight>의 정교한 구현이며, 사용자는 마치 노련한 항해사가 첨단 항법 장치를 사용하듯 자신의 학습 여정에 활기를 불어 넣습니다.
         </SectionParagraph>
 
         <div className="mt-12 grid md:grid-cols-2 gap-x-10 gap-y-8">
           <div>
             <h4 className={`text-2xl font-semibold mb-5 ${cyberTheme.primary} flex items-center`}>
               <BriefcaseIcon className="h-7 w-7 mr-3" />
-              이럴 때 활용하세요
+              현재
             </h4>
             <ul className={`list-none ${cyberTheme.textLight} space-y-1`}>
               {utilityItems.map((item, index) => {
@@ -525,7 +525,7 @@ export default function CyberneticsFeedbackLoopPage() {
           <div>
             <h4 className={`text-2xl font-semibold mb-5 ${cyberTheme.primary} flex items-center`}>
               <SparklesIcon className="h-7 w-7 mr-3" />
-              이렇게 바뀝니다
+              미래
             </h4>
             <ul className={`list-none ${cyberTheme.textLight} space-y-1`}>
               {effectItems.map((item, index) => {
@@ -562,12 +562,12 @@ export default function CyberneticsFeedbackLoopPage() {
       <hr className={`my-16 border-t ${cyberTheme.hrBorder} max-w-4xl mx-auto`} />
       <Section
         id="user-types"
-        title="목표에 맞는 루프를 선택하세요"
+        title="목표에 맞는 사이클을 선택하세요"
         icon={UserGroupIcon}
         width="wide"
       >
         <div className="text-center mb-6">
-          <p className="text-base text-gray-300">내가 이루고 싶은 목표를 골라보세요. 목표별로 최적화된 루프와 실전 전략을 안내합니다.</p>
+          <p className="text-base text-gray-300">목표별로 최적화된 실전 전략을 안내합니다.</p>
         </div>
         <UserTypeTabs />
       </Section>
@@ -580,13 +580,13 @@ export default function CyberneticsFeedbackLoopPage() {
         variant="filled"
       >
         <SectionParagraph>
-           <Highlight color={cyberTheme.primary}>사이버네틱스</Highlight>는 목표를 향해 스스로 조절하는 시스템의 원리입니다. 복잡한 세상을 항해하는 우리 뇌도 이 원리를 따르죠. Habitus33은 이 원리를 활용하여 당신의 <Highlight color={cyberTheme.secondary}>작업 기억 엔진</Highlight>을 최적화합니다.
+           <Highlight color={cyberTheme.primary}>사이버네틱스</Highlight>는 목표를 향해 스스로 조절하는 원리입니다. 복잡한 세상을 항해하는 우리 뇌도 이 원리를 따르죠. Habitus33은 이 원리를 활용하여 당신의 <Highlight color={cyberTheme.secondary}>기억력</Highlight>을 최적화합니다.
         </SectionParagraph>
         <SectionParagraph>
-          우리가 목표를 향해 나아갈 때, 우리 뇌는 마치 정교한 <Highlight color={cyberTheme.primary}>자동 항법 장치</Highlight>처럼 작동합니다. 
+          우리가 목표를 향해 나아갈 때, 우리 뇌는 <Highlight color={cyberTheme.primary}>GPS</Highlight>처럼 작동합니다. 
         </SectionParagraph>
         <SectionParagraph>
-          <Highlight color={cyberTheme.secondary}>목표 설정</Highlight> (예: '이 내용을 빠르게 이해하겠다!') → <Highlight color={cyberTheme.secondary}>실행</Highlight> (TS 모드로 읽기 시작) → <Highlight color={cyberTheme.secondary}>결과 확인</Highlight> (나의 읽기 속도 데이터 피드백) → <Highlight color={cyberTheme.secondary}>계획 수정/조절</Highlight> (ZenGo로 작업 기억 훈련, 또는 다음 TS 목표 재설정) → 다시 목표 설정... 이 끊임없는 순환이 바로 <Highlight color={cyberTheme.primary}>피드백 루프</Highlight>입니다.
+          <Highlight color={cyberTheme.secondary}>목표 설정</Highlight> (예: '이 내용을 빠르게 이해하겠다!') → <Highlight color={cyberTheme.secondary}>실행</Highlight> (TS 시작) → <Highlight color={cyberTheme.secondary}>결과 확인</Highlight> (읽기 속도 피드백) → <Highlight color={cyberTheme.secondary}>계획 수정/조절</Highlight> (ZenGo로 작업 기억 훈련, 또는 다음 TS 목표 재설정) → 다시 목표 설정... 이 끊임없는 순환이 바로 <Highlight color={cyberTheme.primary}>피드백 루프</Highlight>입니다.
         </SectionParagraph>
         {/* TODO: 피드백 루프 다이어그램 추가 (아이콘으로 임시 대체) */}
         <div className="my-8 flex justify-center items-center space-x-4 text-gray-500">
@@ -600,7 +600,7 @@ export default function CyberneticsFeedbackLoopPage() {
           <ArrowDownCircleIcon className="h-8 w-8 ml-4 transform rotate-90" /> {/* 순환 표시 */} 
       </div>
         <SectionParagraph>
-          Habitus33은 <Highlight color={cyberTheme.primary}>TS 모드</Highlight>의 즉각적인 처리 속도 피드백과 <Highlight color={cyberTheme.secondary}>ZenGo</Highlight>의 작업 기억 부하 조절 훈련을 통해, 당신의 <Highlight color={cyberTheme.primary}>전전두엽</Highlight>을 활성화하고 이 피드백 루프를 강화합니다. 결과적으로 <Highlight color={cyberTheme.secondary}>작업 기억의 속도와 용량/지속 시간</Highlight>이 눈에 띄게 향상됩니다.
+          Habitus33은 <Highlight color={cyberTheme.primary}>TS 모드</Highlight>의 즉각적인 피드백과 <Highlight color={cyberTheme.secondary}>ZenGo</Highlight>의 작업 기억 훈련을 통해, 당신의 <Highlight color={cyberTheme.primary}>전전두엽</Highlight>을 활성화합니다. 결과적으로 <Highlight color={cyberTheme.secondary}>기억 속도와 용량/지속 시간</Highlight>이 눈에 띄게 향상됩니다.
         </SectionParagraph>
       </Section>
       <hr className={`my-16 border-t ${cyberTheme.hrBorder} max-w-4xl mx-auto`} /> 
@@ -612,7 +612,7 @@ export default function CyberneticsFeedbackLoopPage() {
         variant="centered"
       >
          <SectionParagraph>
-           대시보드에서 당신의 성장을 직접 확인하세요!
+           대시보드에서 성장을 확인하세요!
          </SectionParagraph>
         <Link href="/dashboard" className={`inline-flex items-center ${cyberTheme.primary} font-medium hover:underline text-lg`}>
           대시보드 이동

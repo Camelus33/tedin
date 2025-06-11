@@ -102,18 +102,18 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
         <DialogHeader>
           <DialogTitle className={`flex items-center space-x-2 ${cyberTheme.primary} text-lg`}>
             <RocketIcon className="h-5 w-5" />
-            <span>AI 분석용 공개 링크 생성</span>
+            <span>AI 링크 생성</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-2">
-            이 노트의 모든 내용을 AI가 이해할 수 있는 공개 링크로 만듭니다.
-            생성된 링크는 누구나 접근할 수 있으니 주의하세요.
+            모든 지식과 맥락을 AI에게 맞춰 구조화합니다.(고품질 AI 답변유도)
+            링크를 공유받은 사람만 내용을 볼 수 있습니다.
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">
           {generatedUrl ? (
             <div className="space-y-3">
-              <p className="text-sm text-gray-300">링크가 생성되었습니다. 아래 주소를 복사하여 사용하세요.</p>
+              <p className="text-sm text-gray-300">링크 생성. 복사하여 사용하세요.</p>
               <div className="flex items-center space-x-2">
                 <Input
                   readOnly
@@ -132,7 +132,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
           ) : (
             <div className="text-center">
               <p className="text-gray-300">
-                현재 단권화 노트의 내용을 기반으로<br/>NotebookLM과 같은 AI 서비스에서 사용할 수 있는<br/>공개 링크를 생성합니다.
+                현재 <br/>NotebookLM, ChatGPT, Gemini 등이 쉽게 읽을 수 있는<br/>AI 링크를 생성합니다.
               </p>
             </div>
           )}

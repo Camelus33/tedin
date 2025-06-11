@@ -408,9 +408,14 @@ export default function EditSummaryNotePage() {
                 </Button>
               </>
             ) : (
-              <Button onClick={handleEditToggle} className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg}`}>
-                <PencilIcon className="w-5 h-5 mr-2" /> 편집하기
-              </Button>
+              <>
+                <Button onClick={() => setIsAiLinkModalOpen(true)} className={`${cyberTheme.buttonPrimaryBg}`}>
+                  <RocketIcon className="w-5 h-5 mr-2" /> AI 링크 생성
+                </Button>
+                <Button onClick={handleEditToggle} className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg}`}>
+                  <PencilIcon className="w-5 h-5 mr-2" /> 편집하기
+                </Button>
+              </>
             )}
             {/* Dropdown Menu for Delete */}
             <DropdownMenu>
@@ -420,11 +425,6 @@ export default function EditSummaryNotePage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className={`${cyberTheme.bgSecondary} border-gray-700 text-gray-200`}>
-                <DropdownMenuItem onClick={() => setIsAiLinkModalOpen(true)} className="hover:bg-gray-700 cursor-pointer focus:bg-gray-600">
-                  <RocketIcon className={`mr-2 h-4 w-4 ${cyberTheme.primary}`} />
-                  <span>AI 분석 링크 생성</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-700" />
                 <DropdownMenuItem onClick={handleDeleteSummaryNote} className="hover:bg-red-900/50 cursor-pointer text-red-400 focus:text-red-400 focus:bg-red-900/50">
                   <TrashIcon className="mr-2 h-4 w-4" />
                   <span>이 노트 삭제</span>
