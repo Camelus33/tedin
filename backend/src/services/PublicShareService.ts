@@ -99,6 +99,7 @@ class PublicShareService {
                     if: { $ne: ['$sessionDetailsArr', null] },
                     then: {
                       createdAtISO: { $dateToString: { date: '$sessionDetailsArr.createdAt', format: '%Y-%m-%dT%H:%M:%S.%LZ' } },
+                      createdAt: '$sessionDetailsArr.createdAt',
                       durationSeconds: { $ifNull: ['$sessionDetailsArr.durationSec', null] },
                       startPage: { $ifNull: ['$sessionDetailsArr.startPage', null] },
                       actualEndPage: { $ifNull: ['$sessionDetailsArr.actualEndPage', null] },
@@ -113,7 +114,27 @@ class PublicShareService {
                 }
               }
             },
-            { $project: { sessionDetailsArr: 0, bookArr: 0 } } // Clean up temp arrays
+            { 
+              $project: { 
+                sessionDetailsArr: 0, 
+                bookArr: 0,
+                // --- 명시적으로 모든 필드를 다시 한번 선언하여 누락 방지 ---
+                _id: 1,
+                userId: 1,
+                bookId: 1,
+                content: 1,
+                tags: 1,
+                originSession: 1,
+                importanceReason: 1,
+                momentContext: 1,
+                relatedKnowledge: 1,
+                mentalImage: 1,
+                relatedLinks: 1,
+                createdAt: 1,
+                sessionDetails: 1,
+                book: 1,
+              } 
+            }
           ],
           as: 'notesWithDetails'
         }

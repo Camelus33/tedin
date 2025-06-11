@@ -1,6 +1,6 @@
 import api from '@/lib/api';
 import { notFound } from 'next/navigation';
-import { AlertTriangle, BookOpen, Calendar, Link as LinkIcon, MessageSquare, Microscope, Paperclip } from 'lucide-react';
+import { AlertTriangle, BookOpen, Calendar, Link as LinkIcon, MessageSquare, Microscope, Paperclip, Tag } from 'lucide-react';
 
 // interface SharePageProps {
 //   params: { shareId: string };
@@ -25,9 +25,9 @@ async function getShareData(shareId: string) {
 }
 
 // Helper functions for formatting session details (from TSNoteCard)
-const formatSessionCreatedAt = (isoString?: string): string => {
-  if (!isoString) return '정보 없음';
-  return new Date(isoString).toLocaleString('ko-KR', {
+const formatSessionCreatedAt = (date?: Date | string): string => {
+  if (!date) return '정보 없음';
+  return new Date(date).toLocaleString('ko-KR', {
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',
@@ -163,13 +163,24 @@ export default async function SharePage({ params }: { params: { shareId: string 
                   <div className="flex-shrink-0 bg-cyan-500 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">{index + 1}</div>
                   <h2 className="flex-1 text-2xl font-semibold text-gray-800 break-words">{note.content ?? '내용 없음'}</h2>
                 </div>
+
+                {note.tags && note.tags.length > 0 && (
+                  <div className="mt-4 pl-12 flex items-center gap-2 flex-wrap">
+                    <Tag className="h-4 w-4 text-gray-500" />
+                    {note.tags.map((tag: string) => (
+                      <span key={tag} className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 
                 <div className="mt-6 pl-12 space-y-6">
                   {note.sessionDetails && (
                     <section className="bg-gray-50 p-4 rounded-lg">
                       <h3 className="font-semibold text-gray-800 flex items-center"><Paperclip className="h-4 w-4 mr-2 text-gray-500" />메타 정보</h3>
                       <ul className="mt-2 text-sm text-gray-700 space-y-1">
-                        {note.sessionDetails?.createdAtISO && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>기록 시점:</strong> {formatSessionCreatedAt(note.sessionDetails.createdAtISO)}</li>}
+                        {note.sessionDetails?.createdAt && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>기록 시점:</strong> {formatSessionCreatedAt(note.sessionDetails.createdAt)}</li>}
                         {note.sessionDetails?.durationSeconds !== undefined && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>읽은 시간:</strong> {formatSessionDuration(note.sessionDetails.durationSeconds)}</li>}
                         {note.sessionDetails?.ppm !== undefined && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>읽기 속도:</strong> {formatPPM(note.sessionDetails.ppm)}</li>}
                         {note.book?.title && <li><BookOpen className="inline h-4 w-4 mr-1"/><strong>출처:</strong> {note.book.title} {note.book.author && `(${note.book.author})`}</li>}
