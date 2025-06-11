@@ -105,15 +105,16 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             <span>AI 링크 생성</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-2">
-            모든 지식과 맥락을 AI에게 맞춰 구조화합니다.(고품질 AI 답변유도)
-            링크를 공유받은 사람만 내용을 볼 수 있습니다.
+            AI가 원하는 형식으로 지식과 맥락을 구조화합니다.
+            고품질 AI 답변을 유도합니다.
+            링크 공유시 상대방이 볼 수 있습니다.
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">
           {generatedUrl ? (
             <div className="space-y-3">
-              <p className="text-sm text-gray-300">링크 생성. 복사하여 사용하세요.</p>
+              <p className="text-sm text-gray-300">링크 생성 성공! 복사하세요.</p>
               <div className="flex items-center space-x-2">
                 <Input
                   readOnly
@@ -132,7 +133,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
           ) : (
             <div className="text-center">
               <p className="text-gray-300">
-                현재 <br/>NotebookLM, ChatGPT, Gemini 등이 쉽게 읽을 수 있는<br/>AI 링크를 생성합니다.
+                이제 <br/>NotebookLM, ChatGPT, Gemini 등 모든 AI가 <br/>보다 깊고 넓게 맥락을 이해합니다.
               </p>
             </div>
           )}
@@ -150,7 +151,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
                 ) : (
                   <RocketIcon className="h-4 w-4 mr-2" />
                 )}
-                {isLoading ? '생성 중...' : '링크 생성하기'}
+                {isLoading ? '생성 중...' : '링크 생성'}
               </Button>
           )}
            <Button variant="outline" onClick={() => handleModalOpenChange(false)} className="border-gray-600 hover:bg-gray-700">

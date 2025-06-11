@@ -27,8 +27,14 @@ async function getShareData(shareId: string) {
 // Helper functions for formatting session details (from TSNoteCard)
 const formatSessionCreatedAt = (isoString?: string): string => {
   if (!isoString) return '정보 없음';
-  const date = new Date(isoString);
-  return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}. ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  return new Date(isoString).toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
 };
 
 const formatSessionDuration = (seconds?: number): string => {
@@ -137,7 +143,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
               <header className="mb-4">
                 <h2 className="text-2xl font-semibold text-gray-800 flex items-center">
                   <MessageSquare className="h-6 w-6 mr-2 text-purple-600" />
-                  개인적 인사이트 & 분석
+                  Summary & Insight
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
                   작성자가 이 노트들을 통해 얻은 핵심 통찰과 개인적 분석입니다.
