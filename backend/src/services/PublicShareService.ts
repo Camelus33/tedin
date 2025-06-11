@@ -99,20 +99,13 @@ class PublicShareService {
                     if: { $ne: ['$sessionDetailsArr', null] },
                     then: {
                       createdAtISO: { $dateToString: { date: '$sessionDetailsArr.createdAt', format: '%Y-%m-%dT%H:%M:%S.%LZ' } },
-                      durationSeconds: { $ifNull: ['$sessionDetailsArr.durationSeconds', 0] },
-                      startPage: { $ifNull: ['$sessionDetailsArr.startPage', 0] },
-                      actualEndPage: { $ifNull: ['$sessionDetailsArr.actualEndPage', 0] },
-                      targetPage: { $ifNull: ['$sessionDetailsArr.targetPage', 0] },
-                      ppm: { $ifNull: ['$sessionDetailsArr.ppm', 0] }
+                      durationSeconds: { $ifNull: ['$sessionDetailsArr.durationSeconds', null] },
+                      startPage: { $ifNull: ['$sessionDetailsArr.startPage', null] },
+                      actualEndPage: { $ifNull: ['$sessionDetailsArr.actualEndPage', null] },
+                      targetPage: { $ifNull: ['$sessionDetailsArr.targetPage', null] },
+                      ppm: { $ifNull: ['$sessionDetailsArr.ppm', null] }
                     },
-                    else: { 
-                      createdAtISO: null,
-                      durationSeconds: 0, 
-                      startPage: 0, 
-                      actualEndPage: 0, 
-                      targetPage: 0, 
-                      ppm: 0 
-                    }
+                    else: null
                   }
                 },
                 book: {

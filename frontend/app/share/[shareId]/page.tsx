@@ -24,6 +24,30 @@ async function getShareData(shareId: string) {
   }
 }
 
+// Helper functions for formatting session details (from TSNoteCard)
+const formatSessionCreatedAt = (isoString?: string): string => {
+  if (!isoString) return '정보 없음';
+  const date = new Date(isoString);
+  return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}. ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+};
+
+const formatSessionDuration = (seconds?: number): string => {
+  if (seconds === undefined || seconds < 0) return '정보 없음';
+  if (seconds === 0) return '0분';
+  const totalMinutes = Math.floor(seconds / 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  let durationString = "";
+  if (h > 0) durationString += `${h}시간 `;
+  if (m > 0 || h === 0) durationString += `${m}분`;
+  return durationString.trim();
+};
+
+const formatPPM = (ppm?: number): string => {
+  if (ppm === undefined) return '정보 없음';
+  return `분당 ${ppm.toFixed(1)} 페이지`;
+};
+
 // A more robust and visually appealing component for missing data
 const ErrorDisplay = ({ message, reason }: { message: string, reason: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-gray-700">
@@ -120,7 +144,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
                 </p>
               </header>
               <div className="prose prose-gray max-w-none bg-white p-4 rounded border border-purple-200">
-                <pre className="whitespace-pre-wrap text-gray-700 font-sans leading-relaxed">{userMarkdownContent}</pre>
+                <pre className="whitespace-pre-wrap font-sans text-lg text-gray-200 leading-loose">{userMarkdownContent}</pre>
               </div>
             </section>
           )}
@@ -139,9 +163,11 @@ export default async function SharePage({ params }: { params: { shareId: string 
                     <section className="bg-gray-50 p-4 rounded-lg">
                       <h3 className="font-semibold text-gray-800 flex items-center"><Paperclip className="h-4 w-4 mr-2 text-gray-500" />메타 정보</h3>
                       <ul className="mt-2 text-sm text-gray-700 space-y-1">
-                        {note.sessionDetails?.createdAtISO && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>기록일:</strong> {formatDate(note.sessionDetails.createdAtISO)}</li>}
+                        {note.sessionDetails?.createdAtISO && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>기록 시점:</strong> {formatSessionCreatedAt(note.sessionDetails.createdAtISO)}</li>}
+                        {note.sessionDetails?.durationSeconds !== undefined && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>읽은 시간:</strong> {formatSessionDuration(note.sessionDetails.durationSeconds)}</li>}
+                        {note.sessionDetails?.ppm !== undefined && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>읽기 속도:</strong> {formatPPM(note.sessionDetails.ppm)}</li>}
                         {note.book?.title && <li><BookOpen className="inline h-4 w-4 mr-1"/><strong>출처:</strong> {note.book.title} {note.book.author && `(${note.book.author})`}</li>}
-                        {(note.sessionDetails?.startPage && note.sessionDetails?.actualEndPage) && 
+                        {(note.sessionDetails?.startPage && note.sessionDetails?.actualEndPage) &&
                           <li><strong>페이지:</strong> {note.sessionDetails.startPage}p ~ {note.sessionDetails.actualEndPage}p</li>
                         }
                       </ul>

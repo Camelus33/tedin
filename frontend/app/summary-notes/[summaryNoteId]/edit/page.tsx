@@ -440,7 +440,7 @@ export default function EditSummaryNotePage() {
             <Textarea 
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
-              placeholder="읽고 기록한 1줄메모를 요약정리하고 인사이트를 기록하는 곳이에요. 독서,학습, 연구 일지나 요약 보고서를 작성할 수 있어요."
+              placeholder="읽고 기록한 메모카드를 요약정리하고 인사이트를 얻는 공간이에요. 독서, 학습, 과제 및 연구 보고서를 작성할 수 있어요."
               rows={3}
               className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
             />
@@ -458,7 +458,7 @@ export default function EditSummaryNotePage() {
           {/* Left Panel: Notes List */}
           <Panel minSize={30} className="overflow-y-auto pr-2 pb-6 h-full custom-scrollbar">
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-300 mb-3">1줄 메모 카드 ({fetchedNotes.length})</h3>
+              <h3 className="text-lg font-semibold text-gray-300 mb-3">메모 카드 ({fetchedNotes.length})</h3>
               {fetchedNotes.length > 0 ? (
                 fetchedNotes.map((note, idx) => {
                   const noteBookTitle = bookInfoMap.get(note.bookId)?.title;
@@ -519,7 +519,7 @@ export default function EditSummaryNotePage() {
           {/* Right Panel: Markdown Editor */}
           <Panel defaultSize={50} minSize={25} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
-                Insight
+                Summary & Insight 
               </h2>
             <div className="flex-grow h-full" data-color-mode="dark"> {/* data-color-mode for MDEditor dark theme */}
               {isEditing ? (
