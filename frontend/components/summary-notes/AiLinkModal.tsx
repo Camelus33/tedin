@@ -100,14 +100,12 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
     <Dialog open={isOpen} onOpenChange={handleModalOpenChange}>
       <DialogContent className={`${cyberTheme.cardBg} ${cyberTheme.borderPrimary} text-gray-200 border`}>
         <DialogHeader>
-          <DialogTitle className={`flex items-center space-x-2 ${cyberTheme.primary} text-lg`}>
+          <DialogTitle className={`flex items-center justify-center space-x-2 ${cyberTheme.primary} text-lg`}>
             <RocketIcon className="h-5 w-5" />
             <span>AI 링크 생성</span>
           </DialogTitle>
-          <DialogDescription className="text-gray-400 pt-2">
-            AI가 원하는 형식으로 지식과 맥락을 구조화합니다.
-            고품질 AI 답변을 유도합니다.
-            링크 공유시 상대방이 볼 수 있습니다.
+          <DialogDescription className="text-gray-400 pt-4 text-center">
+            AI가 당신의 노트를 더 깊이 이해하도록<br/>특별한 링크를 생성합니다.
           </DialogDescription>
         </DialogHeader>
 
@@ -133,13 +131,13 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
           ) : (
             <div className="text-center">
               <p className="text-gray-300">
-                이제 <br/>NotebookLM, ChatGPT, Gemini 등 모든 AI가 <br/>보다 깊고 넓게 맥락을 이해합니다.
+                NotebookLM, Gemini 등 AI에게 공유하여<br/>더 풍부한 답변을 얻어보세요.
               </p>
             </div>
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-col sm:flex-col sm:space-x-0 gap-2">
           {!generatedUrl && (
              <Button
                 onClick={handleGenerateLink}
@@ -154,8 +152,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
                 {isLoading ? '생성 중...' : '링크 생성'}
               </Button>
           )}
-           <Button variant="outline" onClick={() => handleModalOpenChange(false)} className="border-gray-600 hover:bg-gray-700">
-              <XIcon className="h-4 w-4 mr-2" />
+           <Button variant="outline" onClick={() => handleModalOpenChange(false)} className="w-full bg-gray-700 hover:bg-gray-600 border-gray-600 text-gray-300">
               닫기
             </Button>
         </DialogFooter>
