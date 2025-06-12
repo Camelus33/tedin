@@ -75,10 +75,10 @@ export interface TSSessionDetails {
 // 목적별 4단계 질문/가이드/placeholder 매핑
 const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder: string }>> = {
   exam_prep: [
-    { question: '이 메모, 시험에 왜 중요할까요?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
-    { question: '이 내용을 처음 봤을 때, 어떤 부분이 가장 어려웠나요?', placeholder: '(예: 용어가 생소함, 공식 유도 과정)' },
-    { question: '메모 내용을 기존의 어떤 지식과 연결할까요?', placeholder: '(예: 특정 책, 인물, 영상)' },
-    { question: '이 것을 머리 속 한 장면으로 묘사한다면?', placeholder: '(예: 마인드맵, 차트, 표)' },
+    { question: '이 메모의 어떤 부분이 중요했나요?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
+    { question: '이 내용을 처음 봤을 때, 어떤 느낌이었나요?', placeholder: '(예: 용어가 생소함, 공식 유도 과정)' },
+    { question: '이 것은 기존의 어떤 지식과 연결될까요?', placeholder: '(예: 특정 책, 인물, 영상)' },
+    { question: '이 것은 무엇으로 표현할 수 있나요?', placeholder: '(예: 마인드맵, 차트, 표)' },
   ],
   practical_knowledge: [
     { question: '이 메모, 내 업무/기술에 어떻게 쓸 수 있나요?', placeholder: '(예: 특정 문제 해결, 프로세스 개선)' },
@@ -611,7 +611,7 @@ export default function TSNoteCard({
       })}>
         <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
           <LinkIcon className="h-3.5 w-3.5 mr-1.5 text-gray-500" />
-          관련 링크
+          지식 연결
         </h4>
         <ul className="space-y-1">
           {note.relatedLinks?.map((link, idx) => (
@@ -699,7 +699,7 @@ export default function TSNoteCard({
                   )}
                   {onRelatedLinks && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText}`}>
-                      <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 링크 연결
+                      <LinkIcon className={`h-4 w-4 mr-2 ${cyberTheme.primaryText}`} /> 지식 연결
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>

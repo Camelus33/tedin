@@ -440,7 +440,7 @@ export default function EditSummaryNotePage() {
             <Textarea 
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
-              placeholder="읽고 기록한 메모카드를 요약정리하고 인사이트를 얻는 공간이에요. 독서, 학습, 과제 및 연구 보고서를 작성할 수 있어요."
+              placeholder="선택한 메모카드의 공통주제를 뽑고, 깊이 이해하여 인사이트를 도출하는 공간입니다. 독서 및 학습일지, 각종 과제, 보고서를 작성할 수 있어요."
               rows={3}
               className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
             />
@@ -519,7 +519,7 @@ export default function EditSummaryNotePage() {
           {/* Right Panel: Markdown Editor */}
           <Panel defaultSize={50} minSize={25} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
-                Summary & Insight 
+                Deep Dive
               </h2>
             <div className="flex-grow h-full" data-color-mode="dark"> {/* data-color-mode for MDEditor dark theme */}
               {isEditing ? (
@@ -616,7 +616,7 @@ export default function EditSummaryNotePage() {
                   rows={2}
                 />
                 <Button onClick={handleAddRelatedLinkInModal} size="sm" className="text-white bg-cyan-600 hover:bg-cyan-700">
-                  링크 추가하기
+                  링크 추가
                 </Button>
               </div>
 
