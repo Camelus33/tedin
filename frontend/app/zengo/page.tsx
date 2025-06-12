@@ -24,8 +24,10 @@ import './zengo.css';
 import ZengoBoard from '@/components/zengo/ZengoBoard';
 import ZengoStatusDisplay from '@/components/zengo/ZengoStatusDisplay';
 import ZengoResultPage from '@/components/zengo/ZengoResultPage';
+import CognitiveEffectModal from '@/components/zengo/CognitiveEffectModal';
 import { BoardStoneData, PlacedStone, BoardSize, InteractionMode } from '@/src/types/zengo';
-import { LightBulbIcon, FireIcon, QuestionMarkCircleIcon, DocumentTextIcon, UserIcon, ArrowTrendingUpIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
+import { UserIcon, ArrowTrendingUpIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
+import { BrainCircuit } from 'lucide-react';
 import { playSound } from '@/lib/audioUtils';
 import { zengoDataCollector, DetailedSessionData } from '@/lib/zengoDataCollector';
 
@@ -142,6 +144,7 @@ export default function ZengoPage(
   const [uiState, setUiState] = useState<'intro' | 'selection'>('selection');
   const [selectedBoardSize, setSelectedBoardSize] = useState<number>(3);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('ko'); // Default to Korean
+  const [isInfoModalOpen, setInfoModalOpen] = useState(false);
   const categories = [
     "수능·시험",
     "외국어·편입",
@@ -989,7 +992,16 @@ export default function ZengoPage(
       return (
         <div className="zengo-container">
           <div className="zengo-selector">
-            <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo : 기억 착수</h2>
+            <div className="flex items-center justify-center mb-2">
+              <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo : 기억 착수</h2>
+              <button 
+                onClick={() => setInfoModalOpen(true)}
+                className="ml-2 text-cyan-500 hover:text-purple-500 transition-colors"
+                aria-label="젠고 인지 효과 알아보기"
+              >
+                <BrainCircuit className="w-6 h-6" />
+              </button>
+            </div>
             <p className="settings-intro">
               바둑판에 나타나는 단어들을 기억하고 순서대로 배치하는 게임입니다
             </p>
@@ -1070,6 +1082,10 @@ export default function ZengoPage(
               >
                 뒤로 가기
               </button>
+              <CognitiveEffectModal 
+                isOpen={isInfoModalOpen} 
+                onClose={() => setInfoModalOpen(false)} 
+              />
             </div>
           </div>
         </div>
