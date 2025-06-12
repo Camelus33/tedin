@@ -558,11 +558,11 @@ export default function DashboardPage() {
                 <div className="flex-1 flex justify-center">
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
-                    className="min-w-[200px] px-8 py-3 rounded-xl border border-indigo-300 bg-white text-indigo-800 font-medium text-lg transition-all duration-700 ease-in-out hover:bg-indigo-50 hover:border-indigo-400 hover:shadow-md hover:scale-[1.02] focus:bg-indigo-100 focus:border-indigo-500 focus:shadow-md focus:scale-[1.02] active:bg-indigo-200 active:scale-100 outline-none"
+                    className="min-w-[240px] px-10 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold text-xl transition-all duration-500 ease-in-out hover:from-cyan-600 hover:to-purple-600 hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-[1.05] focus:from-cyan-600 focus:to-purple-600 focus:shadow-xl focus:shadow-cyan-500/25 focus:scale-[1.05] active:scale-[1.02] outline-none transform"
                     aria-label="AMFA 가이드"
                     type="button"
                   >
-                    AMFA
+                    🎯 AMFA 가이드
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
