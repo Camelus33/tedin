@@ -44,6 +44,34 @@ interface Particle {
   rotationSpeed: number;
 }
 
+// 소용돌이 인터페이스 추가
+interface Vortex {
+  x: number;
+  y: number;
+  strength: number;
+  radius: number;
+  life: number;
+  maxLife: number;
+  rotation: number;
+  rotationSpeed: number;
+  particles: VortexParticle[];
+}
+
+// 소용돌이에 빨려들어가는 파티클
+interface VortexParticle {
+  x: number;
+  y: number;
+  angle: number;
+  distance: number;
+  speed: number;
+  size: number;
+  opacity: number;
+  life: number;
+  maxLife: number;
+  spiralSpeed: number;
+  color: { r: number; g: number; b: number };
+}
+
 interface Foam {
   x: number;
   y: number;
@@ -76,10 +104,14 @@ export function WaveAnimation({
   const [linearWaves, setLinearWaves] = useState<LinearWave[]>([]);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [foams, setFoams] = useState<Foam[]>([]);
+  const [vortexes, setVortexes] = useState<Vortex[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [mouseTrail, setMouseTrail] = useState<{x: number, y: number, time: number}[]>([]);
   const [animationTime, setAnimationTime] = useState(0); // 배경 애니메이션용 시간
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{x: number, y: number} | null>(null);
+  const [dragCurrent, setDragCurrent] = useState<{x: number, y: number} | null>(null);
 
   // 사이버 테마 색상 팔레트 - 더 짙고 진한 색상
   const cyberColors = {
@@ -99,6 +131,100 @@ export function WaveAnimation({
     const b = Math.round(color1.b + (color2.b - color1.b) * factor);
     return { r, g, b };
   };
+
+  // 소용돌이 생성 함수
+  const createVortex = useCallback((x: number, y: number, dragDistance: number) => {
+    const strength = Math.min(dragDistance / 100, 3.0); // 드래그 거리에 따른 강도
+    const radius = Math.min(dragDistance * 0.8, 200); // 최대 반지름 200px
+    
+    const newVortex: Vortex = {
+      x,
+      y,
+      strength,
+      radius,
+      life: 0,
+      maxLife: 5000, // 5초 지속
+      rotation: 0,
+      rotationSpeed: strength * 0.02, // 강도에 따른 회전 속도
+      particles: []
+    };
+    
+    // 소용돌이 주변에 파티클 생성
+    const particleCount = Math.floor(strength * 20 + 30); // 30-90개 파티클
+    for (let i = 0; i < particleCount; i++) {
+      const angle = (i / particleCount) * Math.PI * 2;
+      const distance = radius * 0.3 + Math.random() * radius * 0.7;
+      
+      const vortexParticle: VortexParticle = {
+        x: x + Math.cos(angle) * distance,
+        y: y + Math.sin(angle) * distance,
+        angle,
+        distance,
+        speed: 0.5 + Math.random() * 1.5,
+        size: 2 + Math.random() * 4,
+        opacity: 0.8 + Math.random() * 0.2,
+        life: 0,
+        maxLife: 3000 + Math.random() * 2000,
+        spiralSpeed: 0.02 + Math.random() * 0.03,
+        color: {
+          r: 6 + Math.random() * 50,
+          g: 182 + Math.random() * 50,
+          b: 212 + Math.random() * 43
+        }
+      };
+      
+      newVortex.particles.push(vortexParticle);
+    }
+    
+    setVortexes(prev => [...prev, newVortex]);
+  }, []);
+  
+  // 소용돌이 업데이트 함수
+  const updateVortexes = useCallback((deltaTime: number) => {
+    setVortexes(prev => prev.map(vortex => {
+      // 소용돌이 생명주기 업데이트
+      const newLife = vortex.life + deltaTime;
+      if (newLife > vortex.maxLife) return null;
+      
+      // 소용돌이 회전
+      const newRotation = vortex.rotation + vortex.rotationSpeed * deltaTime;
+      
+      // 파티클 업데이트
+      const updatedParticles = vortex.particles.map(particle => {
+        const particleLife = particle.life + deltaTime;
+        if (particleLife > particle.maxLife) return null;
+        
+        // 나선 궤도 계산
+        const spiralProgress = particleLife / particle.maxLife;
+        const newAngle = particle.angle + particle.spiralSpeed * deltaTime;
+        const newDistance = particle.distance * (1 - spiralProgress * 0.8); // 점점 중심으로
+        
+        // 새 위치 계산
+        const newX = vortex.x + Math.cos(newAngle) * newDistance;
+        const newY = vortex.y + Math.sin(newAngle) * newDistance;
+        
+        // 투명도 감소
+        const newOpacity = particle.opacity * (1 - spiralProgress);
+        
+        return {
+          ...particle,
+          x: newX,
+          y: newY,
+          angle: newAngle,
+          distance: newDistance,
+          life: particleLife,
+          opacity: newOpacity
+        };
+      }).filter(Boolean) as VortexParticle[];
+      
+      return {
+        ...vortex,
+        life: newLife,
+        rotation: newRotation,
+        particles: updatedParticles
+      };
+    }).filter(Boolean) as Vortex[]);
+  }, []);
 
   // 시간 기반 색상 생성 - 더 진하고 극적인 색상 변화
   const getTimeBasedColor = (time: number, alpha: number = 1) => {
@@ -281,6 +407,91 @@ export function WaveAnimation({
     }
   }, []);
 
+  // 소용돌이 렌더링 함수
+  const renderVortexes = useCallback((ctx: CanvasRenderingContext2D) => {
+    vortexes.forEach(vortex => {
+      const lifeProgress = vortex.life / vortex.maxLife;
+      const alpha = 1 - lifeProgress;
+      
+      // 소용돌이 중심 렌더링
+      ctx.save();
+      ctx.translate(vortex.x, vortex.y);
+      ctx.rotate(vortex.rotation);
+      
+      // 소용돌이 중심 글로우 효과
+      const centerGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, vortex.radius * 0.3);
+      centerGradient.addColorStop(0, `rgba(6, 182, 212, ${alpha * 0.8})`);
+      centerGradient.addColorStop(0.5, `rgba(147, 51, 234, ${alpha * 0.6})`);
+      centerGradient.addColorStop(1, `rgba(6, 182, 212, ${alpha * 0.2})`);
+      
+      ctx.fillStyle = centerGradient;
+      ctx.beginPath();
+      ctx.arc(0, 0, vortex.radius * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // 소용돌이 나선 라인 렌더링
+      ctx.strokeStyle = `rgba(6, 182, 212, ${alpha * 0.4})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      
+      const spiralTurns = 3;
+      const steps = 100;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const angle = t * spiralTurns * Math.PI * 2;
+        const radius = vortex.radius * (1 - t * 0.8);
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+      
+      ctx.restore();
+      
+      // 소용돌이 파티클 렌더링
+      vortex.particles.forEach(particle => {
+        if (particle.opacity <= 0) return;
+        
+        ctx.save();
+        ctx.globalAlpha = particle.opacity;
+        
+        // 파티클 글로우 효과
+        const particleGradient = ctx.createRadialGradient(
+          particle.x, particle.y, 0,
+          particle.x, particle.y, particle.size * 2
+        );
+        particleGradient.addColorStop(0, `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 1)`);
+        particleGradient.addColorStop(0.5, `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0.6)`);
+        particleGradient.addColorStop(1, `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, 0)`);
+        
+        ctx.fillStyle = particleGradient;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 파티클 궤적 라인
+        const trailLength = particle.size * 3;
+        const trailAngle = particle.angle + Math.PI;
+        const trailX = particle.x + Math.cos(trailAngle) * trailLength;
+        const trailY = particle.y + Math.sin(trailAngle) * trailLength;
+        
+        ctx.strokeStyle = `rgba(${particle.color.r}, ${particle.color.g}, ${particle.color.b}, ${particle.opacity * 0.3})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(particle.x, particle.y);
+        ctx.lineTo(trailX, trailY);
+        ctx.stroke();
+        
+        ctx.restore();
+      });
+    });
+  }, [vortexes]);
+
   // 궤적 기반 물보라 파티클 생성
   const createTrailParticles = useCallback((segment: TrailSegment) => {
     const newParticles: Particle[] = [];
@@ -381,6 +592,44 @@ export function WaveAnimation({
     return newFoams;
   }, []);
 
+  // 드래그 이벤트 핸들러
+  const handleMouseDown = useCallback((event: MouseEvent) => {
+    if (!canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    setIsDragging(true);
+    setDragStart({ x, y });
+    setDragCurrent({ x, y });
+  }, []);
+  
+  const handleMouseUp = useCallback((event: MouseEvent) => {
+    if (!isDragging || !dragStart || !dragCurrent) return;
+    
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const endX = event.clientX - rect.left;
+    const endY = event.clientY - rect.top;
+    
+    // 드래그 거리 계산
+    const dragDistance = Math.sqrt(
+      Math.pow(endX - dragStart.x, 2) + Math.pow(endY - dragStart.y, 2)
+    );
+    
+    // 최소 드래그 거리 체크 (30px 이상)
+    if (dragDistance > 30) {
+      // 드래그 끝점에 소용돌이 생성
+      createVortex(endX, endY, dragDistance);
+    }
+    
+    setIsDragging(false);
+    setDragStart(null);
+    setDragCurrent(null);
+  }, [isDragging, dragStart, dragCurrent, createVortex]);
+
   // 마우스 이벤트 핸들러 (궤적 기반)
   const handleMouseMove = useCallback((event: MouseEvent) => {
     if (!canvasRef.current) return;
@@ -390,6 +639,11 @@ export function WaveAnimation({
     const y = event.clientY - rect.top;
     
     const currentTime = Date.now();
+    
+    // 드래그 중일 때 현재 위치 업데이트
+    if (isDragging) {
+      setDragCurrent({ x, y });
+    }
     
     // 마우스 궤적 업데이트
     setMouseTrail(prevTrail => {
@@ -733,6 +987,39 @@ export function WaveAnimation({
       ctx.globalCompositeOperation = 'source-over'; // 기본 블렌딩으로 복원
     }
     
+    // 소용돌이 렌더링
+    renderVortexes(ctx);
+    
+    // 드래그 중일 때 드래그 라인 표시
+    if (isDragging && dragStart && dragCurrent) {
+      const dragDistance = Math.sqrt(
+        Math.pow(dragCurrent.x - dragStart.x, 2) + Math.pow(dragCurrent.y - dragStart.y, 2)
+      );
+      
+      if (dragDistance > 10) {
+        ctx.save();
+        ctx.strokeStyle = `rgba(6, 182, 212, 0.8)`;
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.setLineDash([5, 5]);
+        
+        ctx.beginPath();
+        ctx.moveTo(dragStart.x, dragStart.y);
+        ctx.lineTo(dragCurrent.x, dragCurrent.y);
+        ctx.stroke();
+        
+        // 드래그 끝점에 미리보기 원
+        const previewRadius = Math.min(dragDistance * 0.3, 60);
+        ctx.strokeStyle = `rgba(147, 51, 234, 0.6)`;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(dragCurrent.x, dragCurrent.y, previewRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        ctx.restore();
+      }
+    }
+    
     // 상태 업데이트
     setTrailSegments(prevSegments => 
       prevSegments
@@ -776,10 +1063,13 @@ export function WaveAnimation({
       prevTrail.filter(point => currentTime - point.time < 3000)
     );
     
+    // 소용돌이 업데이트
+    updateVortexes(16); // 60fps 기준 deltaTime
+    
     // 애니메이션 시간 업데이트
     setAnimationTime(prev => prev + 16); // 60fps 기준
     
-  }, [trailSegments, linearWaves, particles, foams, mouseTrail, canvasSize, waveColor, waveSpeed, dampening, animationTime, drawBackgroundWaves, getTimeBasedColor]);
+  }, [trailSegments, linearWaves, particles, foams, mouseTrail, canvasSize, waveColor, waveSpeed, dampening, animationTime, drawBackgroundWaves, getTimeBasedColor, updateVortexes]);
 
   // 애니메이션 루프
   useEffect(() => {
@@ -808,13 +1098,17 @@ export function WaveAnimation({
     updateCanvasSize();
     
     canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('resize', updateCanvasSize);
     
     return () => {
       canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('resize', updateCanvasSize);
     };
-  }, [isClient, handleMouseMove, updateCanvasSize]);
+  }, [isClient, handleMouseMove, handleMouseDown, handleMouseUp, updateCanvasSize]);
 
 
 
