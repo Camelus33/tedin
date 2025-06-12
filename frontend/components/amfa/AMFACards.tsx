@@ -31,21 +31,21 @@ const amfaSteps: AMFAStep[] = [
   {
     id: 'atomic-reading',
     title: 'Atomic Reading',
-    subtitle: '작고 강한 몰입',
-    description: '3분으로 시작하는 나만의 리듬',
+    subtitle: '짧은 읽기',
+    description: '3분 읽고 1줄 메모',
     icon: BookOpenIcon,
     color: 'text-cyan-400',
     gradient: 'from-cyan-500 to-cyan-600',
     features: [
       '3분씩만 투자하면 충분',
-      '11페이지씩 작게 나누기',
-      '매번 작은 성취감 경험',
-      '부담 없이 시작 가능'
+      '작게 나눠 읽기',
+      '매번 작은 성취감',
+      '부담 없는 읽기'
     ],
     benefits: [
-      '독서가 어렵지 않다는 경험',
+      '읽기가 쉬워지는 경험',
       '나만의 독서 리듬 발견',
-      '집중력이 자연스럽게 향상',
+      '자연스런 몰입',
       '"나도 할 수 있다" 자신감'
     ]
   },
@@ -53,63 +53,63 @@ const amfaSteps: AMFAStep[] = [
     id: 'memo-evolve',
     title: 'Memo Evolve',
     subtitle: '메모 성장',
-    description: '단순 메모가 점점 뻗어나가 자라나는 과정',
+    description: '1줄 메모가 파도차럼 번져가는 과정',
     icon: LightBulbIcon,
     color: 'text-purple-400',
     gradient: 'from-purple-500 to-purple-600',
     features: [
-      '메모가 단계별로 발전',
-      '내 생각과 책 내용 연결',
-      '중요한 부분 자동 정리',
-      '깨달음의 순간 포착'
+      '지식이 점점 더 불어남',
+      '가속화된 지식 축적',
+      '생각과 보태져 기억이 강화됨',
+      '지식의 중심에 다가선 느낌'
     ],
     benefits: [
       '읽은 내용이 오래 기억됨',
-      '내 방식으로 지식 정리',
+      '내 방식으로 지식 연결',
       '새로운 아이디어 발견',
-      '깊이 있는 이해 경험'
+      '더 넓은 이해의 폭'
     ]
   },
   {
     id: 'furnace-knowledge',
     title: 'Furnace Knowledge',
     subtitle: '지식 융합',
-    description: '원하는 지식들을 모아 나만의 통찰 도출',
+    description: '원하는 메모들로 자기만의 통찰노트 작성',
     icon: FireIcon,
     color: 'text-orange-400',
     gradient: 'from-orange-500 to-red-500',
     features: [
       '여러 책의 내용이 연결됨',
       '숨겨진 패턴 자동 발견',
-      '나만의 통찰 생성',
+      '나만의 관점과 요점 생성',
       '지혜로 축적되는 경험'
     ],
     benefits: [
       '창의적 사고력 개발',
       '복잡한 문제 해결 능력',
-      '전체적인 관점 형성',
-      '혁신적 아이디어 창출'
+      '숲을 보는 관점 형성',
+      '남다른 지식체계 확립'
     ]
   },
   {
     id: 'ai-link',
     title: 'AI Link',
-    subtitle: 'AI 맞춤',
-    description: 'AI가 이해하기 편하게 나를 설명',
+    subtitle: '맥락 전송',
+    description: '내게 딱 맞는 고품질 AI답변 유도',
     icon: CpuChipIcon,
     color: 'text-blue-400',
     gradient: 'from-blue-500 to-indigo-500',
     features: [
-      '나에게 맞는 책 추천',
-      '개인 맞춤 학습 가이드',
+      '나에게 맞는 책/자료 추천',
+      '맞춤형 학습플랜 가이드',
       '학습 패턴 지능형 분석',
-      '끝없이 확장되는 가능성'
+      '맥락축적에 따른 확장성'
     ],
     benefits: [
-      '나만을 위한 성장 경험',
-      '효율적인 학습 방법 발견',
-      '미래를 준비하는 학습',
-      '무한한 성장 가능성 실현'
+      '나만을 위한 지적 성장',
+      '나에게 맞는 학습 방법',
+      '내 미래에 맞는 학습',
+      '점점 더 정교한 AI코칭'
     ]
   }
 ];
