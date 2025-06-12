@@ -48,7 +48,7 @@ export default function HeroSection() {
             느낌이 드시나요?
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-700 max-w-xl mx-auto">
-            괜찮습니다. 다시 '나만의 리듬'으로 돌아오세요. <br className="hidden sm:block" />
+            괜찮습니다. <span className="text-cyan-400 font-semibold">3분 11페이지, 나만의 리듬을 찾으세요.</span> <br className="hidden sm:block" />
             그것이 바로, 성장입니다.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">

@@ -14,7 +14,6 @@ import ProblemDiagnosisSection from './sections/ProblemDiagnosisSection';
 import SolutionSection from './sections/SolutionSection';
 // import MeasurementSection from './sections/MeasurementSection';
 import CoreFeaturesFreeSection from './sections/CoreFeaturesFreeSection';
-import ZengoMyVerseTeaserSection from './sections/ZengoMyVerseTeaserSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import FinalCtaSection from './sections/FinalCtaSection';
 import FaqSection from './sections/FAQSection';
@@ -77,7 +76,6 @@ export default function LandingPageClient() {
         <SolutionSection />
         {/* <MeasurementSection /> */}
         <CoreFeaturesFreeSection />
-        <ZengoMyVerseTeaserSection />
         <TestimonialsSection />
         <FinalCtaSection />
         <FaqSection />
