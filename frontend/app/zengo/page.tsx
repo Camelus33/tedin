@@ -138,8 +138,8 @@ export default function ZengoPage(
   const feedbackClearTimeouts = useRef<{ [key: string]: NodeJS.Timeout }>({}); // Ref for feedback clearing timeouts
 
   // Local state for managing UI flow (intro/selection) before game starts
-  // ZengoPageProps에서 오던 initialUiState를 임시로 'intro'로 설정
-  const [uiState, setUiState] = useState<'intro' | 'selection'>('intro');
+  // 사용자 경험 개선: 바로 게임 설정으로 시작
+  const [uiState, setUiState] = useState<'intro' | 'selection'>('selection');
   const [selectedBoardSize, setSelectedBoardSize] = useState<number>(3);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('ko'); // Default to Korean
   const categories = [
@@ -986,13 +986,22 @@ export default function ZengoPage(
       return (
         <div className="zengo-container">
           <div className="zengo-selector">
-            <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo Game</h2>
+            <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo : 기억 착수</h2>
             <p className="settings-intro">
-              자신의 성장 목표에 맞는 메모리보드 사이즈와 목표 언어를 선택하세요
+              바둑판에 나타나는 단어들을 기억하고 순서대로 배치하는 게임입니다
             </p>
+            <div className="flex justify-center mb-6">
+              <button
+                className="text-primary-600 hover:text-primary-800 underline text-sm"
+                onClick={() => setUiState('intro')}
+                onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+              >
+                📖 게임 방법 자세히 보기
+              </button>
+            </div>
             {/* 보드 크기 선택 + Myverse 카드 */}
             <section className="settings-section">
-              <h3 className="text-xl font-semibold text-gray-700 mb-6">메모리보드</h3>
+              <h3 className="text-xl font-semibold text-gray-700 mb-6">메모리보드 크기 선택</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" role="radiogroup" aria-label="레벨 선택">
                 {[{ size: 3, desc: '매일 꾸준히 해 보세요', IconComponent: UserIcon },
                   { size: 5, desc: '점점 더 쉬워집니다', IconComponent: ArrowTrendingUpIcon },
