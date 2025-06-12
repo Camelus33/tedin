@@ -484,14 +484,14 @@ export default function DashboardPage() {
         <div className="mb-12 text-center animate-slideUp">
           <div className="bg-gradient-to-r from-cyan-50 to-purple-50 rounded-2xl p-8 border border-cyan-100 mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              🎯 오늘의 3분 독서
+              오늘의 3분 읽기
             </h1>
             <p className="text-gray-600 text-lg mb-6">
-              "11페이지씩, 나만의 리듬으로"
+              "11페이지, 작지만 깊은 몰입"
             </p>
             <Link href="/ts" className="inline-block">
               <button className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                TS: Atomic Reading 시작하기
+                Atomic Reading
               </button>
             </Link>
           </div>
@@ -503,12 +503,12 @@ export default function DashboardPage() {
           <Link href="/zengo" className="block">
             <div className={`h-full p-4 rounded-lg shadow-md transition-all hover:shadow-lg border ${habitus33Theme.cardBg} border-purple-500/20 hover:border-purple-500/40 flex flex-col justify-between`}> 
                <div>
-                 <h2 className={`text-lg md:text-xl font-semibold mb-2 ${habitus33Theme.secondary}`}>🧠 ZenGo</h2>
-                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>작업 기억력 훈련으로 뇌 근육 키우기</p>
+                 <h2 className={`text-lg md:text-xl font-semibold mb-2 ${habitus33Theme.secondary}`}>ZenGo</h2>
+                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>내 안에 잠자는 기억력을 깨우세요</p>
                </div>
                <div className="mt-4">
                  <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm`}>
-                   훈련하기
+                   START
                  </button>
                </div>
             </div>
@@ -522,12 +522,12 @@ export default function DashboardPage() {
                 <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-1.5 py-0.5 rounded-full text-[8px] shadow-md border border-white/30 tracking-widest uppercase">PREMIUM</span>
               </div>
               <div>
-                <h2 className="text-lg md:text-xl font-semibold mb-2 text-emerald-600">📚 ZenGo Myverse</h2>
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>나만의 기억 카드 만들기</p>
+                <h2 className="text-lg md:text-xl font-semibold mb-2 text-emerald-600">ZenGo Myverse</h2>
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>나만의 암기 카드 만들기</p>
               </div>
               <div className="mt-4">
                 <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
-                  체험하기
+                  TRY NOW
                 </button>
               </div>
             </div>
@@ -552,7 +552,7 @@ export default function DashboardPage() {
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
                   <h2 className="text-xl font-medium text-indigo-800">
-                    안녕하세요. 33일간 잘 부탁드릴게요!
+                    33일간 여정을 환영합니다!
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
@@ -562,7 +562,7 @@ export default function DashboardPage() {
                     aria-label="AMFA 가이드"
                     type="button"
                   >
-                    🎯 AMFA 가이드
+                    AMFA FRAMEWORK
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
