@@ -165,7 +165,7 @@ export function BrandSloganTyping({
   className = '', 
   onComplete 
 }: BrandSloganTypingProps) {
-  const text = "3분 11페이지, 지식의 파도를 만드세요";
+  const text = "3분 1줄메모로 지식의 파도를 만드세요";
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [waveChars, setWaveChars] = useState<WaveTypingChar[]>([]);
