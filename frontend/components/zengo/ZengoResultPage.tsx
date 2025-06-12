@@ -68,7 +68,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
               다시 도전하기
             </button>
             <button className={styles.backButton} onClick={onBackToIntro}>
-              콜렉션 이동
+              게임 설정
             </button>
           </div>
         </div>
@@ -233,7 +233,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
 
         <div className={styles.buttonContainer}>
           <button className={styles.backButton} onClick={onBackToIntro}>
-            콜렉션 이동
+            게임 설정
           </button>
         </div>
       </div>

@@ -24,8 +24,8 @@ const Stone = React.memo(({ stone, cellSize, boardSize }: { stone: BoardStoneDat
   }
   
   // Calculate stone size and dynamic font size based on line count
-  const sizeFactor = boardSize > 3 ? 0.7 : 0.6;
-  const baseFontFactor = 0.16;
+  const sizeFactor = boardSize > 3 ? 0.7 : 0.7;
+  const baseFontFactor = boardSize === 3 ? 0.17 : 0.16;
   const shrinkMultiplier = 1 - (lines.length - 1) * 0.2; // 1 line:1, 2 lines:0.8, 3 lines:0.6
   const fontFactor = baseFontFactor * shrinkMultiplier;
   const style = cellSize
@@ -150,11 +150,12 @@ const ZengoBoard: React.FC<ZengoBoardProps> = ({
     if (typeof window === 'undefined') return 400;
     const vw = window.innerWidth;
     if (vw <= 640) {
-      // 모바일: 거의 전체 화면 사용, 최대 95vw
-      return Math.max(220, Math.min(vw * 0.95, 400));
+      // 모바일: 95vw 또는 500px 이하 중 큰 값을 사용해 3×3에서도 충분한 크기 확보
+      const maxMobileSize = boardSize === 3 ? 500 : 400;
+      return Math.max(220, Math.min(vw * 0.95, maxMobileSize));
     }
     // PC/패드: 기존 상한 유지
-    if (boardSize === 3) return 400;
+    if (boardSize === 3) return 500;
     if (boardSize === 5) return 500;
     if (boardSize === 7) return 650;
     return 350;

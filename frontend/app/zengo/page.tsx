@@ -976,7 +976,7 @@ export default function ZengoPage(
                 error={zengoError}
                 onNextGame={handleNextGame}
                 onRetrySameContent={handleRetrySameContent}
-                onBackToIntro={() => setUiState('intro')}
+                onBackToIntro={() => setUiState('selection')}
               />
             </div>
           );
@@ -1001,23 +1001,23 @@ export default function ZengoPage(
             </div>
             {/* 보드 크기 선택 + Myverse 카드 */}
             <section className="settings-section">
-              <h3 className="text-xl font-semibold text-gray-700 mb-6">메모리보드 크기 선택</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" role="radiogroup" aria-label="레벨 선택">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">메모리보드 크기 선택</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6" role="radiogroup" aria-label="레벨 선택">
                 {[{ size: 3, desc: '매일 꾸준히 해 보세요', IconComponent: UserIcon },
                   { size: 5, desc: '점점 더 쉬워집니다', IconComponent: ArrowTrendingUpIcon },
                   { size: 7, desc: '성취감을 느껴 보세요', IconComponent: RocketLaunchIcon }
                 ].map(level => (
                   <div
                     key={level.size}
-                    className={`p-6 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg flex flex-col items-center justify-center text-center ${selectedBoardSize === level.size ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
+                    className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg flex flex-col items-center justify-center text-center ${selectedBoardSize === level.size ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
                     onClick={() => setSelectedBoardSize(level.size)}
                     onKeyPress={(e) => handleKeyPress(e, () => setSelectedBoardSize(level.size))}
                     role="radio"
                     aria-checked={selectedBoardSize === level.size}
                     tabIndex={0}
                   >
-                    <level.IconComponent className="w-12 h-12 text-primary-600 mb-3" />
-                    <h4 className="text-3xl font-bold text-gray-800 mb-2">{`${level.size}x${level.size}`}</h4>
+                    <level.IconComponent className="w-10 h-10 text-primary-600 mb-2" />
+                    <h4 className="text-2xl font-bold text-gray-800 mb-1">{`${level.size}x${level.size}`}</h4>
                     <p className="text-sm text-gray-600">{level.desc}</p>
                   </div>
                 ))}
@@ -1025,14 +1025,14 @@ export default function ZengoPage(
             </section>
             {/* 언어 선택 */}
             <section className="settings-section">
-              <h3 className="text-xl font-semibold text-gray-700 mb-6">목표 언어</h3>
-              <div className="flex flex-wrap gap-4 mb-8" role="radiogroup" aria-label="언어 선택">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">목표 언어</h3>
+              <div className="flex flex-wrap gap-3 mb-6" role="radiogroup" aria-label="언어 선택">
                 {[{ code: 'ko', name: '한국어', flag: '🇰🇷' },
                   { code: 'en', name: 'English', flag: '🇺🇸' }
                 ].map(lang => (
                   <div
                     key={lang.code}
-                    className={`flex items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg ${selectedLanguage === lang.code ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
+                    className={`flex items-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg ${selectedLanguage === lang.code ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
                     onClick={() => setSelectedLanguage(lang.code)}
                     onKeyPress={(e) => handleKeyPress(e, () => setSelectedLanguage(lang.code))}
                     role="radio"
