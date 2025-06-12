@@ -992,31 +992,41 @@ export default function ZengoPage(
       return (
         <div className="zengo-container">
           <div className="zengo-selector">
-            <div className="flex items-center justify-center mb-2">
-              <h2 className="settings-title" style={{ color: '#1a237e' }}>ZenGo : 기억 착수</h2>
-              <button 
-                onClick={() => setInfoModalOpen(true)}
-                className="ml-2 text-cyan-500 hover:text-purple-500 transition-colors"
-                aria-label="젠고 인지 효과 알아보기"
-              >
-                <BrainCircuit className="w-6 h-6" />
-              </button>
+            <div className="text-center mb-6">
+              <h2 className="settings-title text-3xl font-bold mb-2" style={{ color: '#1a237e' }}>ZenGo : 기억 착수</h2>
+              <p className="settings-intro text-gray-600 mb-4">
+                바둑판에 나타나는 단어들을 기억하고 순서대로 배치하는 게임입니다
+              </p>
+              
+              {/* 정보 버튼들을 가로로 배치 */}
+              <div className="flex justify-center items-center space-x-4 mb-6">
+                <button
+                  className="text-primary-600 hover:text-primary-800 underline text-sm flex items-center space-x-1"
+                  onClick={() => setUiState('intro')}
+                  onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+                >
+                  <span>📖</span>
+                  <span>게임 방법 자세히 보기</span>
+                </button>
+                
+                <div className="w-px h-4 bg-gray-300"></div>
+                
+                <button 
+                  onClick={() => setInfoModalOpen(true)}
+                  className="group flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-50 to-purple-50 hover:from-cyan-100 hover:to-purple-100 border border-cyan-200 hover:border-cyan-300 transition-all duration-200"
+                  aria-label="젠고가 키워주는 인지 능력 알아보기"
+                >
+                  <BrainCircuit className="w-5 h-5 text-cyan-600 group-hover:text-cyan-700" />
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                    뇌 훈련 효과 보기
+                  </span>
+                </button>
+              </div>
             </div>
-            <p className="settings-intro">
-              바둑판에 나타나는 단어들을 기억하고 순서대로 배치하는 게임입니다
-            </p>
-            <div className="flex justify-center mb-6">
-              <button
-                className="text-primary-600 hover:text-primary-800 underline text-sm"
-                onClick={() => setUiState('intro')}
-                onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
-              >
-                📖 게임 방법 자세히 보기
-              </button>
-            </div>
+            
             {/* 보드 크기 선택 + Myverse 카드 */}
-            <section className="settings-section">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">메모리보드 크기 선택</h3>
+            <section className="settings-section mb-8">
+              <h3 className="text-xl font-semibold text-gray-700 mb-6 text-center">메모리보드 크기 선택</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6" role="radiogroup" aria-label="레벨 선택">
                 {[{ size: 3, desc: '매일 꾸준히 해 보세요', IconComponent: UserIcon },
                   { size: 5, desc: '점점 더 쉬워집니다', IconComponent: ArrowTrendingUpIcon },
@@ -1038,16 +1048,17 @@ export default function ZengoPage(
                 ))}
               </div>
             </section>
+            
             {/* 언어 선택 */}
-            <section className="settings-section">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">목표 언어</h3>
-              <div className="flex flex-wrap gap-3 mb-6" role="radiogroup" aria-label="언어 선택">
+            <section className="settings-section mb-8">
+              <h3 className="text-xl font-semibold text-gray-700 mb-6 text-center">목표 언어</h3>
+              <div className="flex justify-center gap-4 mb-6" role="radiogroup" aria-label="언어 선택">
                 {[{ code: 'ko', name: '한국어', flag: '🇰🇷' },
                   { code: 'en', name: 'English', flag: '🇺🇸' }
                 ].map(lang => (
                   <div
                     key={lang.code}
-                    className={`flex items-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg ${selectedLanguage === lang.code ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
+                    className={`flex items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg min-w-[140px] justify-center ${selectedLanguage === lang.code ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
                     onClick={() => setSelectedLanguage(lang.code)}
                     onKeyPress={(e) => handleKeyPress(e, () => setSelectedLanguage(lang.code))}
                     role="radio"
@@ -1059,12 +1070,13 @@ export default function ZengoPage(
                   </div>
                 ))}
               </div>
-              {!selectedLanguage && <p className="text-sm text-red-500 selection-guide">언어를 선택해주세요</p>}
+              {!selectedLanguage && <p className="text-sm text-red-500 selection-guide text-center">언어를 선택해주세요</p>}
             </section>
+            
             {/* Start Game Button */}
-            <div className="action-buttons-container">
+            <div className="action-buttons-container text-center space-y-4">
               <button
-                className="start-button"
+                className="start-button w-full max-w-md mx-auto block bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleStartGame}
                 onKeyPress={(e) => handleKeyPress(e, handleStartGame)}
                 disabled={loading || !selectedBoardSize || !selectedLanguage}
@@ -1073,8 +1085,9 @@ export default function ZengoPage(
               >
                 {loading ? '로딩 중...' : (!selectedBoardSize || !selectedLanguage ? '옵션을 모두 선택하세요' : 'ZenGo 시작')}
               </button>
+              
               <button
-                className="back-button"
+                className="back-button text-gray-500 hover:text-gray-700 underline text-sm"
                 onClick={() => setUiState('intro')}
                 onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
                 aria-label="인트로 화면으로 돌아가기"

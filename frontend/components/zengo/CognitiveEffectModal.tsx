@@ -8,7 +8,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Map, ListOrdered, Combine } from 'lucide-react';
+import { Brain, Target, Zap, X } from 'lucide-react';
 
 interface CognitiveEffectModalProps {
   isOpen: boolean;
@@ -18,64 +18,113 @@ interface CognitiveEffectModalProps {
 export default function CognitiveEffectModal({ isOpen, onClose }: CognitiveEffectModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="bg-gray-900 border-cyan-500 text-gray-200 max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-2xl text-cyan-400">젠고의 비밀: 당신의 뇌를 위한 보이지 않는 훈련</DialogTitle>
-          <DialogDescription className="text-gray-400 pt-2">
-            젠고는 단순한 게임을 넘어, 뇌의 핵심 인지 능력을 강화하는 정교한 훈련 도구입니다.
-          </DialogDescription>
+      <DialogContent className="bg-gray-900 border-2 border-cyan-500/50 text-gray-100 max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="relative pb-4">
+          <button
+            onClick={onClose}
+            className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
+            aria-label="닫기"
+          >
+            <X className="w-4 h-4 text-gray-400" />
+          </button>
+          
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 flex items-center justify-center">
+              <Brain className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <DialogTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+                젠고가 키워주는 3가지 능력
+              </DialogTitle>
+              <DialogDescription className="text-gray-400 text-sm mt-1">
+                3분만 투자해도 뇌가 달라집니다
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
         
-        <div className="py-4 space-y-6 text-gray-300">
-          <div className="flex items-start space-x-4">
-            <Map className="w-8 h-8 text-cyan-400 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-purple-400">1. '머릿속의 내비게이션'이 정교해져요 (공간 작업 기억력)</h3>
-              <p className="text-sm mt-1">
-                <strong className="text-cyan-400">훈련:</strong> 바둑돌의 '위치'를 기억하는 것은 뇌의 '공간 작업 기억'을 직접적으로 자극합니다.
-              </p>
-              <p className="text-sm mt-1">
-                <strong className="text-purple-400">실생활 효과:</strong> 복잡한 공간 속에서 원하는 정보를 놓치지 않고 정확히 찾아내는 힘이 길러집니다. 더 이상 "어디에 뒀더라?"하며 헤매는 시간이 줄어들 거예요.
-              </p>
+        <div className="space-y-6">
+          {/* 공간 기억력 */}
+          <div className="bg-gray-800/50 rounded-xl p-5 border border-cyan-500/20">
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                <Target className="w-6 h-6 text-cyan-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-cyan-400 mb-2">
+                  공간 기억력
+                </h3>
+                <p className="text-gray-300 text-sm leading-relaxed mb-3">
+                  바둑돌의 위치를 기억하는 훈련으로 <strong className="text-white">머릿속 지도</strong>가 정교해집니다.
+                </p>
+                <div className="bg-gray-900/50 rounded-lg p-3 border-l-4 border-cyan-500">
+                  <p className="text-xs text-gray-400">
+                    💡 <strong className="text-cyan-300">실생활 효과:</strong> 
+                    물건을 어디에 뒀는지 기억하고, 복잡한 자료에서 원하는 정보를 빠르게 찾을 수 있어요.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-start space-x-4">
-            <ListOrdered className="w-8 h-8 text-cyan-400 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-purple-400">2. '이야기의 순서'를 꿰뚫는 힘이 생겨요 (순차 기억력)</h3>
-              <p className="text-sm mt-1">
-                <strong className="text-cyan-400">훈련:</strong> 단어의 '순서'를 기억하고 그대로 재현하는 과정은, 뇌가 시간의 흐름에 따라 정보를 조직화하는 능력을 키웁니다.
-              </p>
-              <p className="text-sm mt-1">
-                <strong className="text-purple-400">실생활 효과:</strong> 회의 내용을 순서대로 기억하거나, 요리 레시피를 따라 하는 것처럼 순서가 중요한 모든 작업의 효율이 극적으로 향상됩니다.
-              </p>
+          {/* 순차 기억력 */}
+          <div className="bg-gray-800/50 rounded-xl p-5 border border-purple-500/20">
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                <Zap className="w-6 h-6 text-purple-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-purple-400 mb-2">
+                  순서 기억력
+                </h3>
+                <p className="text-gray-300 text-sm leading-relaxed mb-3">
+                  단어의 순서를 기억하며 <strong className="text-white">논리적 사고</strong>가 체계화됩니다.
+                </p>
+                <div className="bg-gray-900/50 rounded-lg p-3 border-l-4 border-purple-500">
+                  <p className="text-xs text-gray-400">
+                    💡 <strong className="text-purple-300">실생활 효과:</strong> 
+                    회의 내용을 순서대로 기억하고, 단계별 작업을 놓치지 않고 처리할 수 있어요.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-start space-x-4">
-            <Combine className="w-8 h-8 text-cyan-400 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-purple-400">3. '흩어진 정보'를 하나로 묶어내요 (정보 통합 능력)</h3>
-              <p className="text-sm mt-1">
-                <strong className="text-cyan-400">훈련:</strong> '어떤 단어'가 '어느 위치'에 '몇 번째'로 나타났는지, 이 세 가지 정보를 통합하는 것은 고차원적인 인지 활동입니다.
-              </p>
-              <p className="text-sm mt-1">
-                <strong className="text-purple-400">실생활 효과:</strong> 여러 보고서를 읽고 핵심을 요약하거나, 다양한 데이터를 종합해 새로운 아이디어를 떠올리는 등, 흩어진 조각들을 모아 의미 있는 그림을 만드는 '지식 건축가'가 될 수 있습니다.
-              </p>
+          {/* 통합 사고력 */}
+          <div className="bg-gray-800/50 rounded-xl p-5 border border-gradient-to-r from-cyan-500/20 to-purple-500/20">
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-cyan-500/20 to-purple-500/20 flex items-center justify-center flex-shrink-0">
+                <Brain className="w-6 h-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-2">
+                  통합 사고력
+                </h3>
+                <p className="text-gray-300 text-sm leading-relaxed mb-3">
+                  위치, 내용, 순서를 동시에 처리하며 <strong className="text-white">종합적 판단력</strong>이 향상됩니다.
+                </p>
+                <div className="bg-gray-900/50 rounded-lg p-3 border-l-4 border-gradient-to-b from-cyan-500 to-purple-500">
+                  <p className="text-xs text-gray-400">
+                    💡 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">실생활 효과:</strong> 
+                    복잡한 정보를 정리하고, 창의적인 아이디어를 떠올리는 능력이 생겨요.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="mt-2 border-t border-gray-700 pt-4">
-          <div className="text-xs text-gray-500 text-left w-full">
-            <p>* 게임 결과 화면의 '인지능력 프로필'과 '분석 페이지'에서 당신의 성장 과정을 직접 확인해 보세요.</p>
+        <DialogFooter className="mt-6 pt-4 border-t border-gray-700">
+          <div className="w-full text-center">
+            <p className="text-xs text-gray-500 mb-4">
+              🎯 게임 결과에서 <strong className="text-cyan-400">인지능력 분석</strong>을 확인해 보세요
+            </p>
+            <DialogClose asChild>
+              <Button className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-medium px-8 py-2 rounded-lg transition-all duration-200">
+                시작할 준비 완료!
+              </Button>
+            </DialogClose>
           </div>
-          <DialogClose asChild>
-            <Button type="button" variant="secondary" className="bg-purple-500 hover:bg-purple-600 text-white">
-              닫기
-            </Button>
-          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
