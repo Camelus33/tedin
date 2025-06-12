@@ -976,7 +976,10 @@ export default function ZengoPage(
                 error={zengoError}
                 onNextGame={handleNextGame}
                 onRetrySameContent={handleRetrySameContent}
-                onBackToIntro={() => setUiState('selection')}
+                onBackToIntro={() => {
+                  dispatch(resetGame({ onlyGameState: true }));
+                  setUiState('selection');
+                }}
               />
             </div>
           );
