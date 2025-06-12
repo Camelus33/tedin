@@ -98,9 +98,31 @@ module.exports = {
   			sans: ['Pretendard Variable', ...fontFamily.sans],
   			serif: ['var(--font-noto-serif-kr)', ...fontFamily.serif],
   		},
-  		animation: {
-  			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-  		},
+  				animation: {
+			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+			'bounce-gentle': 'bounce-gentle 3s ease-in-out infinite',
+			'fadeIn': 'fadeIn 0.5s ease-in-out'
+		},
+		keyframes: {
+			'bounce-gentle': {
+				'0%, 100%': {
+					transform: 'translateY(0)'
+				},
+				'50%': {
+					transform: 'translateY(-8px)'
+				}
+			},
+			'fadeIn': {
+				'0%': {
+					opacity: '0',
+					transform: 'translateY(10px)'
+				},
+				'100%': {
+					opacity: '1',
+					transform: 'translateY(0)'
+				}
+			}
+		},
   		fontSize: {
   			'heading-lg': [
   				'36px',

@@ -561,10 +561,10 @@ export default function DashboardPage() {
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
                     className="min-w-[200px] px-8 py-3 rounded-xl border border-indigo-300 bg-white text-indigo-800 font-medium text-lg transition-all duration-700 ease-in-out hover:bg-indigo-50 hover:border-indigo-400 hover:shadow-md hover:scale-[1.02] focus:bg-indigo-100 focus:border-indigo-500 focus:shadow-md focus:scale-[1.02] active:bg-indigo-200 active:scale-100 outline-none"
-                    aria-label="브레인핵 루틴 시작"
+                    aria-label="AMFA 가이드"
                     type="button"
                   >
-                    Atomic Reading
+                    AMFA
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
