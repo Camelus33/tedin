@@ -20,38 +20,38 @@ import { books as booksApi, user as userApi /*, zengo as zengoApi */ } from '@/l
 // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts'; // Commented out
 import api from '@/lib/api';
 
-// Cyber Theme Definition (Added)
+// Cyber Theme Definition (Updated to match brand guidelines)
 const habitus33Theme = {
-  primary: 'text-indigo-900',
-  secondary: 'text-emerald-700',
-  bgPrimary: 'bg-blue-50',
-  bgSecondary: 'bg-indigo-50',
-  cardBg: 'bg-white/90',
-  borderPrimary: 'border-indigo-200',
-  borderSecondary: 'border-emerald-200',
-  gradient: 'bg-gradient-to-br from-blue-50 via-indigo-50 to-warmgray-50',
-  textMuted: 'text-warmgray-500',
-  textLight: 'text-indigo-700',
-  inputBg: 'bg-white',
-  inputBorder: 'border-indigo-100',
-  inputFocusBorder: 'focus:border-indigo-300',
-  inputFocusRing: 'focus:ring-indigo-200/50',
-  progressBarBg: 'bg-indigo-100',
-  progressFg: 'bg-gradient-to-r from-indigo-400 to-indigo-600',
-  buttonPrimaryBg: 'bg-indigo-600',
-  buttonPrimaryHoverBg: 'hover:bg-indigo-700',
-  buttonSecondaryBg: 'bg-white',
-  buttonSecondaryHoverBg: 'hover:bg-indigo-50',
-  buttonOutlineBorder: 'border-indigo-300',
-  buttonOutlineText: 'text-indigo-700',
-  buttonOutlineHoverBg: 'hover:bg-indigo-50',
-  buttonDisabledBg: 'bg-gray-200',
-  errorText: 'text-rose-600',
-  errorBorder: 'border-rose-200',
-  menuBg: 'bg-white',
-  menuItemHover: 'hover:bg-indigo-50',
-  tooltipBg: 'bg-indigo-700',
-  tooltipText: 'text-white',
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400', 
+  bgPrimary: 'bg-gray-900',
+  bgSecondary: 'bg-gray-800',
+  cardBg: 'bg-gray-800/90',
+  borderPrimary: 'border-cyan-500/20',
+  borderSecondary: 'border-purple-500/20',
+  gradient: 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900',
+  textMuted: 'text-gray-400',
+  textLight: 'text-cyan-300',
+  inputBg: 'bg-gray-700',
+  inputBorder: 'border-gray-600',
+  inputFocusBorder: 'focus:border-cyan-400',
+  inputFocusRing: 'focus:ring-cyan-400/20',
+  progressBarBg: 'bg-gray-700',
+  progressFg: 'bg-gradient-to-r from-cyan-500 to-purple-500',
+  buttonPrimaryBg: 'bg-cyan-600',
+  buttonPrimaryHoverBg: 'hover:bg-cyan-700',
+  buttonSecondaryBg: 'bg-gray-700',
+  buttonSecondaryHoverBg: 'hover:bg-gray-600',
+  buttonOutlineBorder: 'border-cyan-400',
+  buttonOutlineText: 'text-cyan-400',
+  buttonOutlineHoverBg: 'hover:bg-cyan-400/10',
+  buttonDisabledBg: 'bg-gray-600',
+  errorText: 'text-red-400',
+  errorBorder: 'border-red-400/20',
+  menuBg: 'bg-gray-800',
+  menuItemHover: 'hover:bg-gray-700',
+  tooltipBg: 'bg-gray-700',
+  tooltipText: 'text-cyan-300',
 };
 
 // Chart.js 등록
@@ -422,17 +422,17 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className={`min-h-screen ${habitus33Theme.gradient}`}> {/* Applied calm gradient */}
-      {/* 고정 헤더 - 배경색 변경 */}
-      <header className={`sticky top-0 z-10 glass-header py-4 px-4 animate-fadeIn ${habitus33Theme.bgSecondary}`}>
+    <div className={`min-h-screen ${habitus33Theme.gradient}`}> {/* Applied cyber theme gradient */}
+      {/* 고정 헤더 - 사이버 테마 적용 */}
+      <header className={`sticky top-0 z-10 glass-header py-4 px-4 animate-fadeIn ${habitus33Theme.bgSecondary} border-b ${habitus33Theme.borderPrimary}`}>
         <div className="container mx-auto max-w-6xl flex justify-between items-center">
           <Link href="/dashboard" className="flex items-center space-x-3 group">
             <AppLogo className="w-11 h-11 group-hover:opacity-90 transition-opacity" />
             <div>
-                              <h1 className={`font-medium text-2xl tracking-tight text-indigo-900 group-hover:text-indigo-700 transition-colors duration-500`}> 
+              <h1 className={`font-medium text-2xl tracking-tight ${habitus33Theme.primary} group-hover:text-cyan-300 transition-colors duration-500`}> 
                 Habitus33
               </h1>
-              <p className={`text-xs font-medium tracking-wider text-indigo-700`}> 
+              <p className={`text-xs font-medium tracking-wider ${habitus33Theme.textLight}`}> 
                 Read Short. Deep Dive
               </p>
             </div>
@@ -443,20 +443,20 @@ export default function DashboardPage() {
             <NotificationBell />
             <div className="flex items-center">
               <div className="mr-3 text-right">
-                <p className={`font-medium text-indigo-900`}> 
+                <p className={`font-medium ${habitus33Theme.primary}`}> 
                   {user?.nickname || '사용자'}
                 </p>
               </div>
               <div className="relative">
                 <div 
-                  className="w-11 h-11 rounded-full flex items-center justify-center cursor-pointer shadow-sm overflow-hidden border border-indigo-200 transition-all duration-500 hover:border-indigo-300" 
+                  className={`w-11 h-11 rounded-full flex items-center justify-center cursor-pointer shadow-sm overflow-hidden border ${habitus33Theme.borderPrimary} transition-all duration-500 hover:border-cyan-400/40 hover:shadow-lg hover:shadow-cyan-400/20`}
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                 >
                   {user?.profileImage ? (
                     <img src={user.profileImage} alt={user?.nickname || '사용자'} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-indigo-200 to-blue-100 flex items-center justify-center"> 
-                      <span className="text-indigo-800 font-medium">{user?.nickname?.charAt(0) || '?'}</span>
+                    <div className="w-full h-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center"> 
+                      <span className={`${habitus33Theme.primary} font-medium`}>{user?.nickname?.charAt(0) || '?'}</span>
                     </div>
                   )}
                 </div>
@@ -480,53 +480,67 @@ export default function DashboardPage() {
       </header>
 
       <div className="container mx-auto max-w-6xl py-8 px-4">
-        {/* AMFA Hero 섹션 - 새로 추가 */}
-        <div className="mb-12 text-center animate-slideUp">
-          <div className="bg-gradient-to-r from-cyan-50 to-purple-50 rounded-2xl p-8 border border-cyan-100 mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              오늘의 3분 읽기
-            </h1>
-            <p className="text-gray-600 text-lg mb-6">
-              "11페이지, 작지만 깊은 몰입"
-            </p>
-            <Link href="/ts" className="inline-block">
-              <button className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                Atomic Reading
-              </button>
-            </Link>
+        {/* AMFA Hero 섹션 - 사이버 테마 적용 */}
+        <div className="mb-16 text-center animate-slideUp">
+          <div className={`${habitus33Theme.cardBg} rounded-2xl p-8 border ${habitus33Theme.borderPrimary} mb-8 backdrop-blur-sm relative overflow-hidden`}>
+            {/* 배경 그라데이션 효과 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
+            <div className="relative z-10">
+              <h1 className={`text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-4`}>
+                오늘의 3분 읽기
+              </h1>
+              <p className={`${habitus33Theme.textMuted} text-lg mb-6`}>
+                "11페이지, 작지만 깊은 몰입"
+              </p>
+              <Link href="/ts" className="inline-block">
+                <button className={`${habitus33Theme.progressFg} text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
+                  Atomic Reading
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* 주요 액션 버튼 영역 - 크기 조정 및 재배치 */}
-        <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6 animate-slideUp">
-          {/* ZenGo Card - 크기 축소 */}
-          <Link href="/zengo" className="block">
-            <div className={`h-full p-4 rounded-lg shadow-md transition-all hover:shadow-lg border ${habitus33Theme.cardBg} border-purple-500/20 hover:border-purple-500/40 flex flex-col justify-between`}> 
-               <div>
-                 <h2 className={`text-lg md:text-xl font-semibold mb-2 ${habitus33Theme.secondary}`}>ZenGo</h2>
-                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>내 안에 잠자는 기억력을 깨우세요</p>
-               </div>
-               <div className="mt-4">
-                 <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm`}>
-                   START
-                 </button>
-               </div>
+        {/* 주요 액션 버튼 영역 - 공간감 개선 */}
+        <div className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-8 animate-slideUp">
+          {/* ZenGo Card - 사이버 테마 + 호버 효과 */}
+          <Link href="/zengo" className="block group">
+            <div className={`h-full p-6 rounded-xl ${habitus33Theme.cardBg} border ${habitus33Theme.borderSecondary} transition-all duration-300 hover:border-purple-400/60 hover:shadow-xl hover:shadow-purple-500/20 hover:scale-105 backdrop-blur-sm relative overflow-hidden flex flex-col justify-between`}> 
+              {/* 호버 시 글로우 효과 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
+                  <h2 className={`text-xl font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
+                </div>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>내 안에 잠자는 기억력을 깨우세요</p>
+              </div>
+              <div className="mt-6 relative z-10">
+                <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30`}>
+                  START
+                </button>
+              </div>
             </div>
           </Link>
           
-          {/* ZenGo Myverse Card - 더 작게 축소 */}
-          <Link href="/myverse" className="block">
-            <div className={`relative h-full p-4 rounded-lg shadow-md transition-all hover:shadow-lg border ${habitus33Theme.cardBg} border-emerald-400/20 hover:border-emerald-400/40 flex flex-col justify-between`}>
-              {/* PREMIUM 뱃지 - 크기 축소 */}
-              <div className="absolute top-2 right-2 z-10 pointer-events-none select-none">
-                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-1.5 py-0.5 rounded-full text-[8px] shadow-md border border-white/30 tracking-widest uppercase">PREMIUM</span>
+          {/* ZenGo Myverse Card - 사이버 테마 + 호버 효과 */}
+          <Link href="/myverse" className="block group">
+            <div className={`relative h-full p-6 rounded-xl ${habitus33Theme.cardBg} border border-emerald-400/20 transition-all duration-300 hover:border-emerald-400/60 hover:shadow-xl hover:shadow-emerald-500/20 hover:scale-105 backdrop-blur-sm overflow-hidden flex flex-col justify-between`}>
+              {/* 호버 시 글로우 효과 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              {/* PREMIUM 뱃지 */}
+              <div className="absolute top-3 right-3 z-20 pointer-events-none select-none">
+                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-2 py-1 rounded-full text-[10px] shadow-md border border-white/30 tracking-widest uppercase">PREMIUM</span>
               </div>
-              <div>
-                <h2 className="text-lg md:text-xl font-semibold mb-2 text-emerald-600">ZenGo Myverse</h2>
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>나만의 암기 카드 만들기</p>
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse" />
+                  <h2 className="text-xl font-semibold text-emerald-400">ZenGo Myverse</h2>
+                </div>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>나만의 암기 카드 만들기</p>
               </div>
-              <div className="mt-4">
-                <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
+              <div className="mt-6 relative z-10">
+                <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30">
                   TRY NOW
                 </button>
               </div>
@@ -535,30 +549,27 @@ export default function DashboardPage() {
         </div>
         
         {error && (
-          <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6">
+          <div className={`bg-red-900/20 ${habitus33Theme.errorText} p-4 rounded-lg mb-6 border ${habitus33Theme.errorBorder}`}>
             {error}
           </div>
         )}
         
-        {/* 33일 루틴 트래커 */}
+        {/* 33일 루틴 트래커 - 사이버 테마 적용 */}
         {routineData ? (
-          <div className="relative p-6 mb-10 rounded-2xl border border-indigo-200 shadow-md bg-gradient-to-br from-blue-50/80 via-indigo-50/80 to-white overflow-hidden">
-            {/* metallic noise/texture SVG 배경 */}
-            <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 400 120" fill="none">
-              <filter id="metallicNoise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" result="turb"/><feColorMatrix type="saturate" values="0.2"/><feComponentTransfer><feFuncA type="linear" slope="0.2"/></feComponentTransfer></filter>
-              <rect width="400" height="120" fill="#fff" filter="url(#metallicNoise)"/>
-            </svg>
-            <div className="flex justify-between items-center mb-4 relative z-10">
+          <div className={`relative p-8 mb-12 rounded-2xl border ${habitus33Theme.borderPrimary} shadow-xl ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500`}>
+            {/* 배경 그라데이션 효과 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
+            <div className="flex justify-between items-center mb-6 relative z-10">
               <div className="flex flex-row items-center w-full">
                 <div className="flex-1 flex justify-start">
-                  <h2 className="text-xl font-medium text-indigo-800">
+                  <h2 className={`text-xl font-medium ${habitus33Theme.primary}`}>
                     33일간 여정을 환영합니다!
                   </h2>
                 </div>
                 <div className="flex-1 flex justify-center">
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
-                    className="min-w-[240px] px-10 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold text-xl transition-all duration-500 ease-in-out hover:from-cyan-600 hover:to-purple-600 hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-[1.05] focus:from-cyan-600 focus:to-purple-600 focus:shadow-xl focus:shadow-cyan-500/25 focus:scale-[1.05] active:scale-[1.02] outline-none transform"
+                    className={`min-w-[240px] px-10 py-4 rounded-2xl ${habitus33Theme.progressFg} text-white font-bold text-xl transition-all duration-500 ease-in-out hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-[1.05] focus:shadow-xl focus:shadow-cyan-500/25 focus:scale-[1.05] active:scale-[1.02] outline-none transform`}
                     aria-label="AMFA 가이드"
                     type="button"
                   >
@@ -566,18 +577,18 @@ export default function DashboardPage() {
                   </button>
                 </div>
                 <div className="flex-1 flex justify-end">
-                  <div className="bg-white/90 py-1 px-4 rounded-full flex items-center space-x-2 border border-indigo-100 shadow-sm">
-                    <p className="text-xs font-medium text-indigo-800"> 
+                  <div className={`${habitus33Theme.cardBg} py-2 px-4 rounded-full flex items-center space-x-2 border ${habitus33Theme.borderPrimary} shadow-sm backdrop-blur-sm`}>
+                    <p className={`text-xs font-medium ${habitus33Theme.textLight}`}> 
                       Today's Atomic Success
                     </p>
                     <span 
-                      className={`text-sm ${routineData?.todayTsExecuted ? 'text-indigo-600' : 'text-indigo-200'}`}
+                      className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`}
                       title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}
                     >
                       🌱
                     </span>
                     <span 
-                      className={`text-sm ${routineData?.todayZengoCompleted ? 'text-indigo-600' : 'text-indigo-200'}`}
+                      className={`text-sm ${routineData?.todayZengoCompleted ? 'text-purple-400' : 'text-gray-600'}`}
                       title={routineData?.todayZengoCompleted ? "오늘 ZenGo 경험 완료" : "오늘의 ZenGo 경험 대기 중"}
                     >
                       🌿
@@ -586,206 +597,205 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-            <div className="mb-6 relative h-2 z-10">
-              <div className="absolute top-0 left-0 w-full h-full bg-indigo-100/70 rounded-full overflow-hidden"></div>
+            <div className="mb-8 relative h-3 z-10">
+              <div className={`absolute top-0 left-0 w-full h-full ${habitus33Theme.progressBarBg} rounded-full overflow-hidden`}></div>
               <div
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-400 to-indigo-500 rounded-full transition-all duration-1000 ease-in-out"
+                className={`absolute top-0 left-0 h-full ${habitus33Theme.progressFg} rounded-full transition-all duration-1000 ease-in-out shadow-lg`}
                 style={{ width: `${(routineData.currentDay / 33) * 100}%` }}
               >
                 {/* gentle flow overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-full" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-full" />
               </div>
-              <div className="absolute top-[-20px] right-0 flex items-center">
-                <span className="text-xs font-medium text-indigo-700"> 
+              <div className="absolute top-[-24px] right-0 flex items-center">
+                <span className={`text-xs font-medium ${habitus33Theme.textLight}`}> 
                   Day {routineData.currentDay} / 33
                 </span>
               </div>
             </div>
-            <div className="mt-6 text-center relative z-10">
-              <p className="text-lg font-medium text-indigo-800"> 
+            <div className="mt-8 text-center relative z-10">
+              <p className={`text-lg font-medium ${habitus33Theme.primary}`}> 
                 {getMilestoneMessage(routineData?.currentDay)}
               </p>
-              <p className="text-sm text-indigo-600 mt-2">
-                <span className="font-medium text-indigo-900">{routineData?.consecutiveStreak || 0}일째</span> 함께하는 여정 - 
-                <span className="font-medium text-indigo-900"> 작은 성공이 쌓이면 큰 변화</span>가 됩니다
+              <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}>
+                <span className={`font-medium ${habitus33Theme.secondary}`}>{routineData?.consecutiveStreak || 0}일째</span> 함께하는 여정 - 
+                <span className={`font-medium ${habitus33Theme.primary}`}> 작은 성공이 쌓이면 큰 변화</span>가 됩니다
               </p>
             </div>
           </div>
         ) : (
-          <div className="p-6 mb-10 text-center rounded-2xl border border-slate-700/80 ring-1 ring-slate-500/30 shadow-2xl bg-gradient-to-br from-gray-950 via-slate-900 to-gray-800 overflow-hidden relative">
-            <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 400 120" fill="none">
-              <filter id="metallicNoise2"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" result="turb"/><feColorMatrix type="saturate" values="0.2"/><feComponentTransfer><feFuncA type="linear" slope="0.2"/></feComponentTransfer></filter>
-              <rect width="400" height="120" fill="#fff" filter="url(#metallicNoise2)"/>
-            </svg>
-            <p className="text-slate-400 mb-4">진행 중인 33일 루틴이 없습니다.</p>
-            <button
-              className="mt-2 px-6 py-2 bg-cyan-600 text-white rounded-lg font-bold hover:bg-cyan-700 transition disabled:opacity-60"
-              onClick={async () => {
-                setIsLoading(true);
-                setError('');
-                try {
-                  await api.post('/routines', { goal: '뇌 최적화 루틴' });
-                  await fetchRoutines();
-                } catch (e) {
-                  setError('루틴 생성에 실패했습니다');
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-              disabled={isLoading}
-            >
-              {isLoading ? '루틴 생성 중...' : '루틴 시작'}
-            </button>
+          <div className={`p-8 mb-12 text-center rounded-2xl border ${habitus33Theme.borderPrimary} shadow-xl ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden relative`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
+            <div className="relative z-10">
+              <p className={`${habitus33Theme.textMuted} mb-4`}>진행 중인 33일 루틴이 없습니다.</p>
+              <button
+                className={`mt-2 px-6 py-3 ${habitus33Theme.buttonPrimaryBg} text-white rounded-lg font-bold ${habitus33Theme.buttonPrimaryHoverBg} transition-all duration-300 disabled:opacity-60 hover:shadow-lg hover:shadow-cyan-500/30`}
+                onClick={async () => {
+                  setIsLoading(true);
+                  setError('');
+                  try {
+                    await api.post('/routines', { goal: '뇌 최적화 루틴' });
+                    await fetchRoutines();
+                  } catch (e) {
+                    console.error('루틴 생성 실패:', e);
+                    setError('루틴 생성에 실패했습니다.');
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                disabled={isLoading}
+              >
+                {isLoading ? '루틴 생성 중...' : '루틴 시작'}
+              </button>
+            </div>
           </div>
         )}
         
-        {/* 통계 요약 카드 - Atomic Reading 강조 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
+        {/* 통계 요약 카드 - 사이버 테마 적용 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {/* Atomic Reading - 강조된 스타일 */}
-          <div className="relative p-6 rounded-xl shadow-lg border-2 border-cyan-200 bg-gradient-to-br from-cyan-50 to-white backdrop-blur-sm overflow-hidden">
-            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
-              <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern1)" />
-              <defs>
-                <linearGradient id="cyberPattern1" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#0ea5e9" />
-                  <stop offset="1" stopColor="#06b6d4" />
-                </linearGradient>
-              </defs>
-              <line x1="10" y1="10" x2="190" y2="10" stroke="#38bdf8" strokeWidth="1" />
-              <circle cx="50" cy="30" r="8" stroke="#06b6d4" strokeWidth="1" fill="none" />
-            </svg>
+          <div className={`relative p-6 rounded-xl shadow-xl border-2 ${habitus33Theme.borderPrimary} ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-2xl hover:shadow-cyan-500/20 transition-all duration-300 hover:scale-105`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center space-x-4">
-              <div className="bg-cyan-100 rounded-full p-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
+              <div className="bg-cyan-500/20 rounded-full p-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className={`w-7 h-7 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-cyan-800 mb-1 font-semibold">⚡ Atomic Reading</p>
-                <p className="text-xl font-bold text-cyan-700">
-                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className="text-xs text-cyan-500">페이지/분</span>
+                <p className={`text-sm ${habitus33Theme.primary} mb-1 font-semibold`}>⚡ Atomic Reading</p>
+                <p className={`text-xl font-bold ${habitus33Theme.primary}`}>
+                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className={`text-xs ${habitus33Theme.textMuted}`}>페이지/분</span>
                 </p>
               </div>
             </div>
           </div>
 
-          {/* TS - 축소된 스타일 */}
-          <div className="relative p-4 rounded-lg shadow-sm border border-gray-300 bg-white/90 backdrop-blur-sm overflow-hidden">
+          {/* TS - 사이버 테마 */}
+          <div className={`relative p-5 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderPrimary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 hover:scale-105`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center space-x-3">
-              <div className="bg-indigo-50 rounded-full p-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
+              <div className="bg-cyan-500/20 rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
               </div>
               <div>
-                <p className="text-xs text-gray-600 mb-1">TS 세션</p>
-                <p className="text-lg font-medium text-gray-700">{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
+                <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>TS 세션</p>
+                <p className={`text-lg font-medium ${habitus33Theme.textLight}`}>{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
               </div>
             </div>
           </div>
 
-          {/* ZenGo - 축소된 스타일 */}
-          <div className="relative p-4 rounded-lg shadow-sm border border-gray-300 bg-white/90 backdrop-blur-sm overflow-hidden">
+          {/* ZenGo - 사이버 테마 */}
+          <div className={`relative p-5 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderSecondary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 hover:scale-105`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center space-x-3">
-              <div className="bg-purple-50 rounded-full p-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Zm4.28 2.53a.75.75 0 0 1 1.06.22A3.25 3.25 0 0 0 12 16.25a3.25 3.25 0 0 0 1.91-1.5.75.75 0 1 1 1.28.78A4.75 4.75 0 0 1 12 17.75a4.75 4.75 0 0 1-3.19-1.47.75.75 0 0 1 .22-1.06ZM9.25 10a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75A.75.75 0 0 1 9.25 10Zm5.5 0a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd"/></svg>
+              <div className="bg-purple-500/20 rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${habitus33Theme.secondary}`} fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Zm4.28 2.53a.75.75 0 0 1 1.06.22A3.25 3.25 0 0 0 12 16.25a3.25 3.25 0 0 0 1.91-1.5.75.75 0 1 1 1.28.78A4.75 4.75 0 0 1 12 17.75a4.75 4.75 0 0 1-3.19-1.47.75.75 0 0 1 .22-1.06ZM9.25 10a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75A.75.75 0 0 1 9.25 10Zm5.5 0a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-xs text-gray-600 mb-1">ZenGo 점수</p>
-                <p className="text-lg font-medium text-gray-700">{stats?.todayZengoScore != null && stats?.totalZengoScore != null ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
+                <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>ZenGo 점수</p>
+                <p className={`text-lg font-medium ${habitus33Theme.textLight}`}>{stats?.todayZengoScore != null && stats?.totalZengoScore != null ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
               </div>
             </div>
           </div>
 
-          {/* 총 등록 도서 - 축소된 스타일 */}
-          <div className="relative p-4 rounded-lg shadow-sm border border-gray-300 bg-white/90 backdrop-blur-sm overflow-hidden">
+          {/* 총 등록 도서 - 사이버 테마 */}
+          <div className={`relative p-5 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderPrimary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 hover:scale-105`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative flex items-center space-x-3">
-              <div className="bg-emerald-50 rounded-full p-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
+              <div className="bg-emerald-500/20 rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
               </div>
               <div>
-                <p className="text-xs text-gray-600 mb-1">등록한 책</p>
-                <p className="text-lg font-medium text-gray-700">{stats ? `${stats.totalBooks}권` : '-'}</p>
+                <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>등록한 책</p>
+                <p className={`text-lg font-medium ${habitus33Theme.textLight}`}>{stats ? `${stats.totalBooks}권` : '-'}</p>
               </div>
             </div>
           </div>
         </div>
         
-        {/* 재구성된 메인 콘텐츠 - 책 섹션 확대 */}
+        {/* 재구성된 메인 콘텐츠 - 책 섹션 사이버 테마 적용 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-slideUp" style={{animationDelay: '200ms'}}>
-          {/* 왼쪽: 현재 읽고 있는 책 - 확대 */}
-          <div className="bg-white p-8 border-2 border-cyan-100 rounded-xl shadow-lg">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-bold text-cyan-800">📚 현재 읽기 여정</h2>
-              <Button 
-                href="/books" 
-                variant="outline"
-              >
-                나의 도서관
-              </Button>
-            </div>
-            
-            {currentBooks.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-cyan-600 mb-6 text-lg">새로운 읽기 여정을 시작해 보세요</p>
+          {/* 왼쪽: 현재 읽고 있는 책 - 사이버 테마 */}
+          <div className={`${habitus33Theme.cardBg} p-8 border-2 ${habitus33Theme.borderPrimary} rounded-xl shadow-xl backdrop-blur-sm relative overflow-hidden group hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
+            <div className="relative z-10">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className={`text-2xl font-bold ${habitus33Theme.primary}`}>📚 현재 읽기 여정</h2>
                 <Button 
-                  href="/books/new" 
-                  variant="default"
+                  href="/books" 
+                  variant="outline"
                 >
-                  나만의 책 담기
+                  나의 도서관
                 </Button>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-6">
-                {currentBooks.map((book) => {
-                  // 백엔드에서 받은 예상 시간 사용
-                  const estimatedTimeString = formatEstimatedTime(book.estimatedRemainingMinutes);
-                  const progress = Math.round((book.currentPage / book.totalPages) * 100);
+            </div>
+            
+            <div className="relative z-10">
+              {currentBooks.length === 0 ? (
+                <div className="text-center py-16">
+                  <p className={`${habitus33Theme.primary} mb-6 text-lg`}>새로운 읽기 여정을 시작해 보세요</p>
+                  <Button 
+                    href="/books/new" 
+                    variant="default"
+                  >
+                    나만의 책 담기
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-6">
+                  {currentBooks.map((book) => {
+                    // 백엔드에서 받은 예상 시간 사용
+                    const estimatedTimeString = formatEstimatedTime(book.estimatedRemainingMinutes);
+                    const progress = Math.round((book.currentPage / book.totalPages) * 100);
 
-                  return (
-                    <Link href={`/books/${book._id}`} key={book._id} className="block">
-                      <div className="book-item flex items-start p-4 rounded-lg border border-cyan-100 hover:border-cyan-200 hover:shadow-md transition-all">
-                        <div className="w-24 h-auto aspect-[2/3] relative bg-gray-700/50 flex-shrink-0 rounded shadow-sm book-cover">
-                          {book.coverImage ? (
-                            <img
-                              src={book.coverImage}
-                              alt={book.title}
-                              className="object-cover w-full h-full rounded"
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center w-full h-full text-gray-400">
-                              <FiBook className="w-8 h-8" /> 
-                            </div>
-                          )}
-                        </div>
-                        <div className="ml-6 flex-1 min-w-0">
-                          <h3 className={`font-bold text-xl text-cyan-600 truncate mb-2`} title={book.title}>{book.title}</h3>
-                          <p className={`${habitus33Theme.textMuted} text-base mb-4 truncate`} title={book.author}>{book.author}</p>
-                          <div className="flex items-center mb-3">
-                            <div className={`w-full h-2 bg-cyan-100 rounded-full overflow-hidden`}>
-                              <div 
-                                className={`h-full bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-full`} 
-                                style={{ width: `${progress}%` }}
-                              >
+                    return (
+                      <Link href={`/books/${book._id}`} key={book._id} className="block">
+                        <div className={`book-item flex items-start p-4 rounded-lg border ${habitus33Theme.borderPrimary} hover:border-cyan-400/60 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 ${habitus33Theme.cardBg} backdrop-blur-sm group`}>
+                          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+                          <div className="w-24 h-auto aspect-[2/3] relative bg-gray-700/50 flex-shrink-0 rounded shadow-sm book-cover z-10">
+                            {book.coverImage ? (
+                              <img
+                                src={book.coverImage}
+                                alt={book.title}
+                                className="object-cover w-full h-full rounded"
+                              />
+                            ) : (
+                              <div className={`flex items-center justify-center w-full h-full ${habitus33Theme.textMuted}`}>
+                                <FiBook className="w-8 h-8" /> 
                               </div>
-                            </div>
-                            <span className={`ml-4 text-sm font-medium text-cyan-600`}> 
-                              {book.currentPage}/{book.totalPages} ({progress}%)
-                            </span>
+                            )}
                           </div>
-                          {book.status !== 'completed' && estimatedTimeString && (
-                            <p className={`text-sm text-cyan-700 font-medium mt-2`}>
-                              ⏱️ {estimatedTimeString}
-                            </p>
-                          )}
-                           {book.status !== 'completed' && !book.estimatedRemainingMinutes && book.currentPage < book.totalPages && (
-                             <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}> 
-                               TS로 예상 완독 시간을 확인해보세요
-                             </p>
-                           )}
+                          <div className="ml-6 flex-1 min-w-0 relative z-10">
+                            <h3 className={`font-bold text-xl ${habitus33Theme.primary} truncate mb-2`} title={book.title}>{book.title}</h3>
+                            <p className={`${habitus33Theme.textMuted} text-base mb-4 truncate`} title={book.author}>{book.author}</p>
+                            <div className="flex items-center mb-3">
+                              <div className={`w-full h-2 ${habitus33Theme.progressBarBg} rounded-full overflow-hidden`}>
+                                <div 
+                                  className={`h-full ${habitus33Theme.progressFg} rounded-full`} 
+                                  style={{ width: `${progress}%` }}
+                                >
+                                </div>
+                              </div>
+                              <span className={`ml-4 text-sm font-medium ${habitus33Theme.primary}`}> 
+                                {book.currentPage}/{book.totalPages} ({progress}%)
+                              </span>
+                            </div>
+                            {book.status !== 'completed' && estimatedTimeString && (
+                              <p className={`text-sm ${habitus33Theme.textLight} font-medium mt-2`}>
+                                ⏱️ {estimatedTimeString}
+                              </p>
+                            )}
+                             {book.status !== 'completed' && !book.estimatedRemainingMinutes && book.currentPage < book.totalPages && (
+                               <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}> 
+                                 TS로 예상 완독 시간을 확인해보세요
+                               </p>
+                             )}
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
           
           {/* 오른쪽: 인지 능력 측정 */}
