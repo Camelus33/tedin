@@ -233,18 +233,24 @@ export default function TSReadingPage() {
 function BreathingText() {
   return (
     <motion.div
-      className={`text-5xl font-bold mb-10 ${cyberTheme.textMuted}`}
-      initial={{ opacity: 0.3 }}
+      className={`text-center mb-10 ${cyberTheme.textMuted}`}
+      initial={{ opacity: 0.2, scale: 0.9 }}
       animate={{
-        opacity: [0.3, 0.8, 0.3], // 숨쉬는 효과
+        opacity: [0.2, 1, 0.2], // 흐려졌다가 뚜렷해지는 효과
+        scale: [0.9, 1.05, 0.9], // 작아졌다가 커지는 효과
       }}
       transition={{
-        duration: 3,
+        duration: 4.5, // 더 천천히
         repeat: Infinity,
         ease: "easeInOut"
       }}
     >
-      코로 깊게 마시세요. 기억도 깊어집니다.
+      <div className="text-4xl font-bold leading-relaxed">
+        코로 깊게 호흡하세요.
+      </div>
+      <div className="text-3xl font-medium mt-2">
+        기억도 깊어집니다.
+      </div>
     </motion.div>
   );
 }
