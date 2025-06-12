@@ -480,56 +480,54 @@ export default function DashboardPage() {
       </header>
 
       <div className="container mx-auto max-w-6xl py-8 px-4">
-        {/* 주요 액션 버튼 영역 - Applying Habitus33 calm styles */}
-        <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6 animate-slideUp">
-          {/* Time Sprint Card */}
-          <Link href="/ts" className="block">
-            <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${habitus33Theme.cardBg} border-cyan-500/30 hover:border-cyan-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
-              <div>
-                <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.primary}`}>TS : Atomic-Reading</h2> {/* Theme text */}
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */}
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>작고 강한 몰입, 느껴 보시겠어요?</p> {/* Theme text */}
-              </div>
-              <div className="mt-6">
-                 <button className={`w-full ${habitus33Theme.buttonPrimaryBg} ${habitus33Theme.buttonPrimaryHoverBg} text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Theme button */}
-                    Dive {/* Calm flow */} 
-                 </button>
-              </div>
-              {/* Removed emoji div */}
-            </div>
-          </Link>
-          {/* ZenGo Card */}
+        {/* AMFA Hero 섹션 - 새로 추가 */}
+        <div className="mb-12 text-center animate-slideUp">
+          <div className="bg-gradient-to-r from-cyan-50 to-purple-50 rounded-2xl p-8 border border-cyan-100 mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+              🎯 오늘의 3분 독서
+            </h1>
+            <p className="text-gray-600 text-lg mb-6">
+              "11페이지씩, 나만의 리듬으로"
+            </p>
+            <Link href="/ts" className="inline-block">
+              <button className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                TS: Atomic Reading 시작하기
+              </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* 주요 액션 버튼 영역 - 크기 조정 및 재배치 */}
+        <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6 animate-slideUp">
+          {/* ZenGo Card - 크기 축소 */}
           <Link href="/zengo" className="block">
-            <div className={`h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${habitus33Theme.cardBg} border-purple-500/30 hover:border-purple-500/60 flex flex-col justify-between`}> {/* Theme card styles */} 
+            <div className={`h-full p-4 rounded-lg shadow-md transition-all hover:shadow-lg border ${habitus33Theme.cardBg} border-purple-500/20 hover:border-purple-500/40 flex flex-col justify-between`}> 
                <div>
-                 <h2 className={`text-2xl md:text-3xl font-orbitron font-bold mb-3 ${habitus33Theme.secondary}`}>ZenGo : Work-Memory</h2> {/* Theme text */} 
-                 <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p> {/* Revised Text & Theme */} 
-                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>내 안에 잠자는 기억력, 깨워 보시겠어요?</p> {/* Theme text */} 
+                 <h2 className={`text-lg md:text-xl font-semibold mb-2 ${habitus33Theme.secondary}`}>🧠 ZenGo</h2>
+                 <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>작업 기억력 훈련으로 뇌 근육 키우기</p>
                </div>
-               <div className="mt-6">
-                 <button className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-barlow font-medium py-2 px-4 rounded-lg transition-colors`}> {/* Custom purple button for variety, uses theme concepts */} 
-                   Find {/* Inner space */} 
+               <div className="mt-4">
+                 <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm`}>
+                   훈련하기
                  </button>
                </div>
-               {/* Removed emoji div */}
             </div>
           </Link>
-          {/* Myverse Card (was: 내 서재) */}
+          
+          {/* ZenGo Myverse Card - 더 작게 축소 */}
           <Link href="/myverse" className="block">
-            <div className={`relative h-full p-6 rounded-lg shadow-lg transition-all hover:shadow-xl border ${habitus33Theme.cardBg} border-emerald-400/30 hover:border-emerald-400/80 flex flex-col justify-between`}> {/* Neon green cybernetic theme */}
-              {/* PREMIUM 뱃지 */}
-              <div className="absolute top-4 right-4 z-10 pointer-events-none select-none">
-                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-2 py-0.5 rounded-full text-[10px] shadow-lg border border-white/30 tracking-widest uppercase animate-premium-wave" style={{letterSpacing:'0.08em', backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>PREMIUM</span>
+            <div className={`relative h-full p-4 rounded-lg shadow-md transition-all hover:shadow-lg border ${habitus33Theme.cardBg} border-emerald-400/20 hover:border-emerald-400/40 flex flex-col justify-between`}>
+              {/* PREMIUM 뱃지 - 크기 축소 */}
+              <div className="absolute top-2 right-2 z-10 pointer-events-none select-none">
+                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-1.5 py-0.5 rounded-full text-[8px] shadow-md border border-white/30 tracking-widest uppercase">PREMIUM</span>
               </div>
               <div>
-                <h2 className="text-2xl md:text-3xl font-orbitron font-bold mb-3 text-emerald-400">ZenGo Myverse</h2>
-                <p className={`opacity-90 text-base md:text-lg mb-2 ${habitus33Theme.textLight}`}></p>
-                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>꼭 기억하고 싶은 것, 카드로 만들어 보시겠어요?</p>
+                <h2 className="text-lg md:text-xl font-semibold mb-2 text-emerald-600">📚 ZenGo Myverse</h2>
+                <p className={`opacity-80 text-sm ${habitus33Theme.textMuted}`}>나만의 기억 카드 만들기</p>
               </div>
-              <div className="mt-6">
-                <button className="relative w-full bg-gradient-to-r from-cyan-800 via-fuchsia-700 via-purple-800 to-emerald-700 text-white font-barlow font-semibold py-2 px-4 rounded-lg transition-colors shadow-[0_0_8px_2px_rgba(16,185,129,0.5)] animate-cyber-wave hover:brightness-110" style={{backgroundSize:'200% 200%', backgroundPosition:'0% 50%'}}>
-                  <span className="relative z-10 font-barlow tracking-wider">Try</span>
-                  <span className="cyber-rect-anim pointer-events-none absolute inset-0 rounded-lg"></span>
+              <div className="mt-4">
+                <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
+                  체험하기
                 </button>
               </div>
             </div>
@@ -641,121 +639,80 @@ export default function DashboardPage() {
           </div>
         )}
         
-        {/* 통계 요약 카드 */}
+        {/* 통계 요약 카드 - Atomic Reading 강조 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
-          {/* 정보 처리 속도 */}
-          <div className="relative p-6 rounded-xl shadow-sm border border-indigo-100 bg-white/90 backdrop-blur-sm overflow-hidden">
-            {/* 사이버 패턴 SVG 배경 - 파랑 계열 */}
+          {/* Atomic Reading - 강조된 스타일 */}
+          <div className="relative p-6 rounded-xl shadow-lg border-2 border-cyan-200 bg-gradient-to-br from-cyan-50 to-white backdrop-blur-sm overflow-hidden">
             <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
               <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern1)" />
               <defs>
                 <linearGradient id="cyberPattern1" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#0ea5e9" />
-                  <stop offset="1" stopColor="#6366f1" />
+                  <stop offset="1" stopColor="#06b6d4" />
                 </linearGradient>
               </defs>
               <line x1="10" y1="10" x2="190" y2="10" stroke="#38bdf8" strokeWidth="1" />
-              <circle cx="50" cy="30" r="8" stroke="#818cf8" strokeWidth="1" fill="none" />
+              <circle cx="50" cy="30" r="8" stroke="#06b6d4" strokeWidth="1" fill="none" />
             </svg>
             <div className="relative flex items-center space-x-4">
-              <div className="bg-indigo-50 rounded-full p-3">
-                {/* Heroicons solid ClockIcon */}
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
+              <div className="bg-cyan-100 rounded-full p-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-cyan-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-indigo-800 mb-1">Atomic Reading</p>
-                <p className="text-xl font-medium text-indigo-700">
-                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className="text-xs text-indigo-500">페이지/분</span>
+                <p className="text-sm text-cyan-800 mb-1 font-semibold">⚡ Atomic Reading</p>
+                <p className="text-xl font-bold text-cyan-700">
+                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className="text-xs text-cyan-500">페이지/분</span>
                 </p>
               </div>
             </div>
           </div>
 
-          {/* TS */}
-          <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-indigo-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
-            {/* 사이버 패턴 SVG 배경 - 인디고 계열 */}
-            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
-              <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern2)" />
-              <defs>
-                <linearGradient id="cyberPattern2" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#6366f1" />
-                  <stop offset="1" stopColor="#0ea5e9" />
-                </linearGradient>
-              </defs>
-              <rect x="30" y="20" width="40" height="10" stroke="#6366f1" strokeWidth="1" fill="none" />
-              <line x1="60" y1="40" x2="160" y2="40" stroke="#818cf8" strokeWidth="1" />
-            </svg>
-            <div className="relative flex items-center space-x-4">
-              <div className="bg-white/70 rounded-full p-3">
-                {/* Heroicons solid BoltIcon */}
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
+          {/* TS - 축소된 스타일 */}
+          <div className="relative p-4 rounded-lg shadow-sm border border-gray-300 bg-white/90 backdrop-blur-sm overflow-hidden">
+            <div className="relative flex items-center space-x-3">
+              <div className="bg-indigo-50 rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">TS</p>
-                <p className="text-xl font-bold text-indigo-400">{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
+                <p className="text-xs text-gray-600 mb-1">TS 세션</p>
+                <p className="text-lg font-medium text-gray-700">{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
               </div>
             </div>
           </div>
 
-          {/* ZenGo */}
-          <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-green-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
-            {/* 사이버 패턴 SVG 배경 - 그린 계열 */}
-            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
-              <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern3)" />
-              <defs>
-                <linearGradient id="cyberPattern3" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#22c55e" />
-                  <stop offset="1" stopColor="#0ea5e9" />
-                </linearGradient>
-              </defs>
-              <circle cx="100" cy="30" r="18" stroke="#22c55e" strokeWidth="1" fill="none" />
-              <rect x="140" y="10" width="30" height="8" stroke="#0ea5e9" strokeWidth="1" fill="none" />
-            </svg>
-            <div className="relative flex items-center space-x-4">
-              <div className="bg-white/70 rounded-full p-3">
-                {/* Heroicons solid FaceSmileIcon */}
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Zm4.28 2.53a.75.75 0 0 1 1.06.22A3.25 3.25 0 0 0 12 16.25a3.25 3.25 0 0 0 1.91-1.5.75.75 0 1 1 1.28.78A4.75 4.75 0 0 1 12 17.75a4.75 4.75 0 0 1-3.19-1.47.75.75 0 0 1 .22-1.06ZM9.25 10a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75A.75.75 0 0 1 9.25 10Zm5.5 0a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd"/></svg>
+          {/* ZenGo - 축소된 스타일 */}
+          <div className="relative p-4 rounded-lg shadow-sm border border-gray-300 bg-white/90 backdrop-blur-sm overflow-hidden">
+            <div className="relative flex items-center space-x-3">
+              <div className="bg-purple-50 rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Zm4.28 2.53a.75.75 0 0 1 1.06.22A3.25 3.25 0 0 0 12 16.25a3.25 3.25 0 0 0 1.91-1.5.75.75 0 1 1 1.28.78A4.75 4.75 0 0 1 12 17.75a4.75 4.75 0 0 1-3.19-1.47.75.75 0 0 1 .22-1.06ZM9.25 10a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75A.75.75 0 0 1 9.25 10Zm5.5 0a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">ZenGo</p>
-                <p className="text-xl font-bold text-green-400">{stats?.todayZengoScore != null && stats?.totalZengoScore != null ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
+                <p className="text-xs text-gray-600 mb-1">ZenGo 점수</p>
+                <p className="text-lg font-medium text-gray-700">{stats?.todayZengoScore != null && stats?.totalZengoScore != null ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
               </div>
             </div>
           </div>
 
-          {/* 총 등록 도서 */}
-          <div className="relative p-6 rounded-xl shadow-md border border-gray-700 bg-gradient-to-br from-gray-900/80 via-purple-900/60 to-gray-800/80 backdrop-blur-md overflow-hidden">
-            {/* 사이버 패턴 SVG 배경 - 퍼플 계열 */}
-            <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none" viewBox="0 0 200 60" fill="none">
-              <rect x="0" y="0" width="200" height="60" fill="url(#cyberPattern4)" />
-              <defs>
-                <linearGradient id="cyberPattern4" x1="0" y1="0" x2="200" y2="60" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#a21caf" />
-                  <stop offset="1" stopColor="#818cf8" />
-                </linearGradient>
-              </defs>
-              <rect x="60" y="20" width="30" height="15" stroke="#a21caf" strokeWidth="1" fill="none" />
-              <circle cx="160" cy="30" r="10" stroke="#818cf8" strokeWidth="1" fill="none" />
-            </svg>
-            <div className="relative flex items-center space-x-4">
-              <div className="bg-white/70 rounded-full p-3">
-                {/* Heroicons solid BookOpenIcon */}
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
+          {/* 총 등록 도서 - 축소된 스타일 */}
+          <div className="relative p-4 rounded-lg shadow-sm border border-gray-300 bg-white/90 backdrop-blur-sm overflow-hidden">
+            <div className="relative flex items-center space-x-3">
+              <div className="bg-emerald-50 rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
               </div>
               <div>
-                <p className="text-sm text-gray-200 mb-1">등록한 책</p>
-                <p className="text-xl font-bold text-purple-400">{stats ? `${stats.totalBooks}권` : '-'}</p>
+                <p className="text-xs text-gray-600 mb-1">등록한 책</p>
+                <p className="text-lg font-medium text-gray-700">{stats ? `${stats.totalBooks}권` : '-'}</p>
               </div>
             </div>
           </div>
         </div>
         
-        {/* 재구성된 메인 콘텐츠 */}
+        {/* 재구성된 메인 콘텐츠 - 책 섹션 확대 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-slideUp" style={{animationDelay: '200ms'}}>
-          {/* 왼쪽: 현재 읽고 있는 책 */}
-          <div className="bg-white p-8 border border-indigo-100 rounded-xl shadow-sm">
+          {/* 왼쪽: 현재 읽고 있는 책 - 확대 */}
+          <div className="bg-white p-8 border-2 border-cyan-100 rounded-xl shadow-lg">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-medium text-indigo-900">현재 읽기 여정</h2>
+              <h2 className="text-2xl font-bold text-cyan-800">📚 현재 읽기 여정</h2>
               <Button 
                 href="/books" 
                 variant="outline"
@@ -766,7 +723,7 @@ export default function DashboardPage() {
             
             {currentBooks.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-indigo-600 mb-6">새로운 읽기 여정을 시작해 보세요</p>
+                <p className="text-cyan-600 mb-6 text-lg">새로운 읽기 여정을 시작해 보세요</p>
                 <Button 
                   href="/books/new" 
                   variant="default"
@@ -775,7 +732,7 @@ export default function DashboardPage() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-5">
+              <div className="grid grid-cols-1 gap-6">
                 {currentBooks.map((book) => {
                   // 백엔드에서 받은 예상 시간 사용
                   const estimatedTimeString = formatEstimatedTime(book.estimatedRemainingMinutes);
@@ -783,8 +740,8 @@ export default function DashboardPage() {
 
                   return (
                     <Link href={`/books/${book._id}`} key={book._id} className="block">
-                      <div className="book-item flex items-start">
-                        <div className="w-20 h-auto aspect-[2/3] relative bg-gray-700/50 flex-shrink-0 rounded shadow-sm book-cover">
+                      <div className="book-item flex items-start p-4 rounded-lg border border-cyan-100 hover:border-cyan-200 hover:shadow-md transition-all">
+                        <div className="w-24 h-auto aspect-[2/3] relative bg-gray-700/50 flex-shrink-0 rounded shadow-sm book-cover">
                           {book.coverImage ? (
                             <img
                               src={book.coverImage}
@@ -797,28 +754,28 @@ export default function DashboardPage() {
                             </div>
                           )}
                         </div>
-                        <div className="ml-5 flex-1 min-w-0">
-                          <h3 className={`font-bold text-lg text-indigo-400 truncate`} title={book.title}>{book.title}</h3>
-                          <p className={`${habitus33Theme.textMuted} text-sm mb-3 truncate`} title={book.author}>{book.author}</p>
-                          <div className="flex items-center mb-2">
-                            <div className={`w-full h-1.5 ${habitus33Theme.progressBarBg} rounded-full overflow-hidden`}>
+                        <div className="ml-6 flex-1 min-w-0">
+                          <h3 className={`font-bold text-xl text-cyan-600 truncate mb-2`} title={book.title}>{book.title}</h3>
+                          <p className={`${habitus33Theme.textMuted} text-base mb-4 truncate`} title={book.author}>{book.author}</p>
+                          <div className="flex items-center mb-3">
+                            <div className={`w-full h-2 bg-cyan-100 rounded-full overflow-hidden`}>
                               <div 
-                                className={`h-full ${habitus33Theme.progressFg} rounded-full`} 
+                                className={`h-full bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-full`} 
                                 style={{ width: `${progress}%` }}
                               >
                               </div>
                             </div>
-                            <span className={`ml-3 text-xs font-medium ${habitus33Theme.textMuted}`}> 
+                            <span className={`ml-4 text-sm font-medium text-cyan-600`}> 
                               {book.currentPage}/{book.totalPages} ({progress}%)
                             </span>
                           </div>
                           {book.status !== 'completed' && estimatedTimeString && (
-                            <p className={`text-xs ${habitus33Theme.secondary} font-medium mt-1`}>
-                              {estimatedTimeString}
+                            <p className={`text-sm text-cyan-700 font-medium mt-2`}>
+                              ⏱️ {estimatedTimeString}
                             </p>
                           )}
                            {book.status !== 'completed' && !book.estimatedRemainingMinutes && book.currentPage < book.totalPages && (
-                             <p className={`text-xs ${habitus33Theme.textMuted} mt-1`}> 
+                             <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}> 
                                TS로 예상 완독 시간을 확인해보세요
                              </p>
                            )}
@@ -831,7 +788,7 @@ export default function DashboardPage() {
             )}
           </div>
           
-          {/* 오른쪽: 인지 능력 측정 (기존 '내 서재 현황' 대체) */}
+          {/* 오른쪽: 인지 능력 측정 */}
           <CognitiveProfileContainer className="glass-card hover:shadow-xl transition-all duration-300" />
         </div>
       </div>
