@@ -977,7 +977,7 @@ export default function ZengoPage(
                 onNextGame={handleNextGame}
                 onRetrySameContent={handleRetrySameContent}
                 onBackToIntro={() => {
-                  dispatch(resetGame({ onlyGameState: true }));
+                  dispatch(resetGame());
                   setUiState('selection');
                 }}
               />
