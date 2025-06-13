@@ -18,13 +18,14 @@ export default function ProblemDiagnosisSection() {
           className="text-center"
         >
           <h2 className="text-3xl sm:text-4xl font-bold font-serif text-brand-primary tracking-tight">
-            깊은 바다에 다이브하고 싶은데,<br />
-            수면에서만 맴돌고 있지 않나요?
+            이런 경험, 혹시 있으신가요?
           </h2>
           <p className="mt-6 text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-            많이 읽어도 얕게 흐르고, 열심히 공부해도 <strong className="font-semibold text-gray-900">깊이가 느껴지지 않는</strong> 경험. 
-            이는 잘못이 아닙니다. 단지 <strong className="font-semibold text-gray-900">올바른 잠수법</strong>을 
-            아직 발견하지 못했을 뿐입니다.
+            책을 읽어도 <strong className="font-semibold text-gray-900">며칠 뒤면 기억이 흐릿해지고</strong>, 
+            열심히 메모해도 <strong className="font-semibold text-gray-900">나중에 찾아보지 않게 되는</strong> 경험. 
+            <br /><br />
+            분명 좋은 내용이었는데 <strong className="font-semibold text-gray-900">내 것이 된 느낌이 들지 않는</strong> 아쉬움. 
+            이제 그 아쉬움을 <strong className="font-semibold text-cyan-600">깊은 만족감</strong>으로 바꿔보세요.
           </p>
         </motion.div>
       </div>

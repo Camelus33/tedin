@@ -94,7 +94,7 @@ export default function CoreFeaturesFreeSection() {
             <span className="text-gray-800">평생 무료로 시작하세요</span>
           </h2>
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-            <span className="text-cyan-600 font-semibold">작은 돌멩이 하나</span>가 만들어내는 
+            <span className="text-cyan-600 font-semibold">작은 물방울 하나</span>가 만들어내는 
             <span className="text-purple-600 font-semibold"> 무한한 파도</span>를 경험하세요
           </p>
         </motion.div>

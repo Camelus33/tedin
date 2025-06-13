@@ -57,7 +57,7 @@ export default function SolutionSection() {
           <div className="max-w-4xl mx-auto">
             <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
               <strong className="font-semibold text-gray-900">read short, deep dive</strong><br />
-              3분 읽고 1줄 메모라는 작은 돌멩이 하나가 당신의 지식 바다에 첫 파문을 만들어냅니다.
+              3분 읽고 1줄 메모라는 작은 물방울 하나가 당신의 지식 바다에 첫 파문을 만들어냅니다.
               <br /><br />
               그 파문은 멈추지 않습니다.<br />
               1줄 메모에서 시작된 생각이 연결되고 진화하며 상상을 넘어서는 깊이로 확장됩니다.
@@ -66,13 +66,13 @@ export default function SolutionSection() {
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
                 <h3 className="text-lg font-semibold text-cyan-400 mb-3">파도의 시작점</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  3분 11페이지라는 작은 돌멩이 하나가 당신의 지식 바다에 첫 파문을 만들어냅니다.
+                  3분 읽고 1줄 메모라는 작은 물방울이 당신의 지식 바다에 첫 번째 기적을 만들어냅니다.
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
                 <h3 className="text-lg font-semibold text-purple-400 mb-3">무한한 확산</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  1줄 메모에서 시작된 생각이 연결되고 진화하며 상상을 넘어서는 깊이로 확장됩니다.
+                  1줄 메모에서 시작된 생각이 바다로 퍼져나가며 깊은 통찰의 파도로 진화합니다.
                 </p>
               </div>
             </div>

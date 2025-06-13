@@ -44,12 +44,12 @@ export default function HeroSection() {
         >
           {/* Hook Question */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
-            작은 돌멩이가<br />
+            한 방울의 물이<br />
             큰 파도를 만든다면?
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-700 max-w-xl mx-auto">
-            <span className="text-cyan-500 font-semibold">3분으로 시작해서 깊이 잠수하세요.</span> <br className="hidden sm:block" />
-            당신만의 지식 파도가 시작됩니다.
+            얕은 학습에서 깊은 통찰로, <br className="hidden sm:block" />
+            당신의 지식 여정이 시작됩니다.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
             <Link
