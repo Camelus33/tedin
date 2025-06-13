@@ -14,9 +14,10 @@ interface AMFAStep {
   title: string;
   subtitle: string;
   description: string;
+  detailedDescription: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
-  gradient: string;
+  bgGradient: string;
   features: string[];
   benefits: string[];
 }
@@ -27,15 +28,16 @@ interface AMFACardsProps {
 }
 
 // AMFA 4단계 데이터 - 브랜드 가이드라인 적용
-const amfaSteps: AMFAStep[] = [
+const steps: AMFAStep[] = [
   {
-    id: 'atomic-reading',
+    id: 'atomic',
     title: 'Atomic Reading',
-    subtitle: '짧은 읽기',
-    description: '3분 읽고 1줄 메모',
+    subtitle: 'The Drop Moment',
+    description: '물 한방울이 만드는 첫 번째 기적',
+    detailedDescription: '고요한 지식의 바다에 떨어지는 첫 번째 물방울. 3분 읽고 1줄 메모로 작지만 완벽한 원형의 파문이 시작됩니다.',
     icon: BookOpenIcon,
-    color: 'text-cyan-400',
-    gradient: 'from-cyan-500 to-cyan-600',
+    color: 'from-cyan-400 to-blue-500',
+    bgGradient: 'from-cyan-50 to-blue-50',
     features: [
       '3분씩만 투자하면 충분',
       '작게 나눠 읽기',
@@ -50,13 +52,14 @@ const amfaSteps: AMFAStep[] = [
     ]
   },
   {
-    id: 'memo-evolve',
+    id: 'memo',
     title: 'Memo Evolve',
-    subtitle: '메모 성장',
-    description: '1줄 메모가 파도차럼 번져가는 과정',
+    subtitle: 'The First Ripple',
+    description: '생각이 바다로 퍼져나가는 여행',
+    detailedDescription: '작은 파문이 동심원을 그리며 지식의 바다로 확산되는 과정. 5단계 질문을 통해 개인의 경험과 만나며 새로운 섬들을 발견합니다.',
     icon: LightBulbIcon,
-    color: 'text-purple-400',
-    gradient: 'from-purple-500 to-purple-600',
+    color: 'from-blue-400 to-purple-500',
+    bgGradient: 'from-blue-50 to-purple-50',
     features: [
       '지식이 점점 더 불어남',
       '가속화된 지식 축적',
@@ -71,13 +74,14 @@ const amfaSteps: AMFAStep[] = [
     ]
   },
   {
-    id: 'furnace-knowledge',
+    id: 'furnace',
     title: 'Furnace Knowledge',
-    subtitle: '지식 융합',
-    description: '원하는 메모들로 자기만의 통찰노트 작성',
+    subtitle: 'The Deep Current',
+    description: '심해 속 지식의 용광로에서 단련되다',
+    detailedDescription: '표면의 파도를 넘어 깊은 심해 해류로 잠수하는 여정. 압력과 어둠 속에서 지식이 단단한 보석으로 변화합니다.',
     icon: FireIcon,
-    color: 'text-orange-400',
-    gradient: 'from-orange-500 to-red-500',
+    color: 'from-purple-400 to-pink-500',
+    bgGradient: 'from-purple-50 to-pink-50',
     features: [
       '여러 책의 내용이 연결됨',
       '숨겨진 패턴 자동 발견',
@@ -92,13 +96,14 @@ const amfaSteps: AMFAStep[] = [
     ]
   },
   {
-    id: 'ai-link',
+    id: 'ai',
     title: 'AI Link',
-    subtitle: '맥락 전송',
-    description: '내게 딱 맞는 고품질 AI답변 유도',
+    subtitle: 'The Infinite Wave',
+    description: '무한한 지식 바다에서의 자유로운 항해',
+    detailedDescription: '개인의 한계를 넘어 광활한 지식 대양으로의 모험. 예상치 못한 해류를 타고 새로운 대륙을 발견하는 기쁨을 경험합니다.',
     icon: CpuChipIcon,
-    color: 'text-blue-400',
-    gradient: 'from-blue-500 to-indigo-500',
+    color: 'from-pink-400 to-violet-500',
+    bgGradient: 'from-pink-50 to-violet-50',
     features: [
       '나에게 맞는 책/자료 추천',
       '맞춤형 학습플랜 가이드',
@@ -139,7 +144,7 @@ export function AMFACards({ className = '', onStepSelect }: AMFACardsProps) {
   if (!isClient) {
     return (
       <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 ${className}`}>
-        {amfaSteps.map((step) => (
+        {steps.map((step) => (
           <div key={step.id} className="bg-gray-800 rounded-xl p-6 h-80">
             <div className="text-4xl mb-4">
               <step.icon className={`h-12 w-12 ${step.color}`} />
@@ -156,7 +161,7 @@ export function AMFACards({ className = '', onStepSelect }: AMFACardsProps) {
     <div className={`relative ${className}`}>
       {/* AMFA 카드 그리드 - 4개 균등 배치 */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-        {amfaSteps.map((step, index) => {
+        {steps.map((step, index) => {
           const isSelected = selectedStep === step.id;
           const isHovered = hoveredStep === step.id;
           const isActive = isSelected || isHovered;
@@ -192,7 +197,7 @@ export function AMFACards({ className = '', onStepSelect }: AMFACardsProps) {
                   <div
                     className={`
                       absolute inset-0 opacity-20
-                      bg-gradient-to-br ${step.gradient}
+                      bg-gradient-to-br ${step.bgGradient}
                       animate-pulse
                     `}
                   />
@@ -245,7 +250,7 @@ export function AMFACards({ className = '', onStepSelect }: AMFACardsProps) {
                       text-center py-2 px-4 rounded-lg font-medium text-sm
                       transition-all duration-300
                       ${isSelected 
-                        ? `bg-gradient-to-r ${step.gradient} text-white` 
+                        ? `bg-gradient-to-r ${step.bgGradient} text-white` 
                         : 'bg-gray-700 text-gray-300 group-hover:bg-gray-600'
                       }
                     `}>
@@ -256,7 +261,7 @@ export function AMFACards({ className = '', onStepSelect }: AMFACardsProps) {
               </div>
 
               {/* 연결선 (다음 단계로) */}
-              {index < amfaSteps.length - 1 && (
+              {index < steps.length - 1 && (
                 <div className="hidden xl:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-20">
                   <div className="w-6 h-0.5 bg-gradient-to-r from-cyan-500 to-purple-500 opacity-60" />
                   <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1">
@@ -272,7 +277,7 @@ export function AMFACards({ className = '', onStepSelect }: AMFACardsProps) {
       {/* 진행 표시기 */}
       <div className="mt-12 flex justify-center">
         <div className="flex items-center space-x-4">
-          {amfaSteps.map((step, index) => (
+          {steps.map((step, index) => (
             <React.Fragment key={step.id}>
               <div
                 className={`
@@ -288,10 +293,10 @@ export function AMFACards({ className = '', onStepSelect }: AMFACardsProps) {
               >
                 <span className="text-xs font-bold">{index + 1}</span>
               </div>
-              {index < amfaSteps.length - 1 && (
+              {index < steps.length - 1 && (
                 <div className={`
                   w-8 h-0.5 transition-colors duration-300
-                  ${selectedStep === step.id || selectedStep === amfaSteps[index + 1]?.id
+                  ${selectedStep === step.id || selectedStep === steps[index + 1]?.id
                     ? 'bg-cyan-400' 
                     : 'bg-gray-600'
                   }
@@ -307,7 +312,7 @@ export function AMFACards({ className = '', onStepSelect }: AMFACardsProps) {
         <div className="mt-8 text-center">
           <p className="text-gray-400 text-sm">
             <span className="text-cyan-400 font-medium">
-              {amfaSteps.find(step => step.id === selectedStep)?.subtitle}
+              {steps.find(step => step.id === selectedStep)?.subtitle}
             </span>
             에 대해 더 자세히 알아보세요
           </p>
@@ -367,7 +372,7 @@ export function AMFACard({
           <div
             className={`
               absolute inset-0 opacity-20
-              bg-gradient-to-br ${step.gradient}
+              bg-gradient-to-br ${step.bgGradient}
               animate-pulse
             `}
           />

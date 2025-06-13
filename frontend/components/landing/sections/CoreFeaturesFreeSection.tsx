@@ -1,48 +1,48 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { BookOpen, Edit3, Zap, Link as LinkIcon, Gift, ArrowRight, Sparkles } from 'lucide-react';
+import { BookOpen, Edit3, Zap, Link as LinkIcon, Gift, ArrowRight, Sparkles, Lightbulb, Flame, Cpu } from 'lucide-react';
 
-const amfaFeatures = [
+const features = [
   {
     icon: BookOpen,
     title: "Atomic Reading",
-    subtitle: "The Drop",
-    description: "3분 읽고 1줄 메모. 작은 돌멩이가 잔잔한 물에 떨어지는 순간처럼 시작하세요.",
+    subtitle: "The Drop Moment",
+    description: "물 한방울이 만드는 첫 번째 기적. 고요한 지식의 바다에 떨어지는 3분 읽고 1줄 메모.",
     highlight: "무료",
     color: "text-cyan-400",
-    bgColor: "bg-cyan-500/10",
-    borderColor: "border-cyan-500/20"
+    bgColor: "bg-cyan-50",
+    borderColor: "border-cyan-200"
   },
   {
-    icon: Edit3,
-    title: "Memo Evolve", 
+    icon: Lightbulb,
+    title: "Memo Evolve",
     subtitle: "The First Ripple",
-    description: "1줄 메모에서 시작되는 첫 번째 파문. 생각이 확산되기 시작합니다.",
+    description: "생각이 바다로 퍼져나가는 여행. 작은 파문이 동심원을 그리며 지식의 바다로 확산됩니다.",
     highlight: "무료",
     color: "text-blue-400",
-    bgColor: "bg-blue-500/10",
-    borderColor: "border-blue-500/20"
+    bgColor: "bg-blue-50",
+    borderColor: "border-blue-200"
   },
   {
-    icon: Zap,
+    icon: Flame,
     title: "Furnace Knowledge",
     subtitle: "The Deep Current",
-    description: "깊은 해류처럼 지식이 체계적으로 흐르며 내면에 새겨집니다.",
-    highlight: "무료",
+    description: "심해 속 지식의 용광로에서 단련되다. 압력과 어둠 속에서 지식이 단단한 보석으로 변화합니다.",
+    highlight: "프리미엄",
     color: "text-purple-400",
-    bgColor: "bg-purple-500/10",
-    borderColor: "border-purple-500/20"
+    bgColor: "bg-purple-50",
+    borderColor: "border-purple-200"
   },
   {
-    icon: LinkIcon,
+    icon: Cpu,
     title: "AI Link",
     subtitle: "The Infinite Wave",
-    description: "AI와 함께 무한히 확산되는 파도. 예상치 못한 연결과 통찰을 발견합니다.",
-    highlight: "무료",
+    description: "무한한 지식 바다에서의 자유로운 항해. 예상치 못한 해류를 타고 새로운 대륙을 발견합니다.",
+    highlight: "프리미엄",
     color: "text-violet-400",
-    bgColor: "bg-violet-500/10",
-    borderColor: "border-violet-500/20"
+    bgColor: "bg-violet-50",
+    borderColor: "border-violet-200"
   }
 ];
 
@@ -106,7 +106,7 @@ export default function CoreFeaturesFreeSection() {
           viewport={{ once: true, amount: 0.3 }}
           className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
         >
-          {amfaFeatures.map((feature, index) => (
+          {features.map((feature, index) => (
             <motion.div
               key={feature.title}
               variants={itemVariants}

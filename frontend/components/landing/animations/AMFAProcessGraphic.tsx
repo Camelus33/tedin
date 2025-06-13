@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useAnimation } from 'framer-motion';
-import { BookOpen, Edit3, Zap, Link, ArrowRight, Sparkles } from 'lucide-react';
+import { BookOpen, Edit3, Zap, Link, ArrowRight, Sparkles, Lightbulb, Flame, Cpu } from 'lucide-react';
 
 interface AMFAStep {
   id: string;
@@ -16,12 +16,12 @@ interface AMFAStep {
   delay: number;
 }
 
-const amfaSteps: AMFAStep[] = [
+const steps: AMFAStep[] = [
   {
     id: 'atomic',
     title: 'Atomic Reading',
-    subtitle: 'The Drop',
-    description: '3분 읽고 1줄 메모. 작은 돌멩이가 잔잔한 물에 떨어지는 순간처럼 시작하세요.',
+    subtitle: 'The Drop Moment',
+    description: '물 한방울이 만드는 첫 번째 기적. 고요한 지식의 바다에 떨어지는 3분 읽고 1줄 메모.',
     icon: BookOpen,
     color: 'from-cyan-400 to-blue-500',
     gradient: 'from-cyan-500/20 to-cyan-600/20',
@@ -32,9 +32,9 @@ const amfaSteps: AMFAStep[] = [
     id: 'memo',
     title: 'Memo Evolve',
     subtitle: 'The First Ripple',
-    description: '1줄 메모에서 시작되는 첫 번째 파문. 생각이 확산되기 시작합니다.',
-    icon: Edit3,
-    color: 'text-blue-400',
+    description: '생각이 바다로 퍼져나가는 여행. 작은 파문이 동심원을 그리며 지식의 바다로 확산됩니다.',
+    icon: Lightbulb,
+    color: 'from-blue-400 to-purple-500',
     gradient: 'from-blue-500/20 to-cyan-500/20',
     energyPattern: 'spiral-growth',
     delay: 0
@@ -43,20 +43,20 @@ const amfaSteps: AMFAStep[] = [
     id: 'furnace',
     title: 'Furnace Knowledge',
     subtitle: 'The Deep Current',
-    description: '깊은 해류처럼 지식이 체계적으로 흐르며 내면에 새겨집니다.',
-    icon: Zap,
-    color: 'text-purple-400',
+    description: '심해 속 지식의 용광로에서 단련되다. 압력과 어둠 속에서 지식이 단단한 보석으로 변화합니다.',
+    icon: Flame,
+    color: 'from-purple-400 to-pink-500',
     gradient: 'from-purple-500/20 to-blue-500/20',
     energyPattern: 'intense-forge',
     delay: 0
   },
   {
-    id: 'link',
+    id: 'ai',
     title: 'AI Link',
     subtitle: 'The Infinite Wave',
-    description: 'AI와 함께 무한히 확산되는 파도. 예상치 못한 연결과 통찰을 발견합니다.',
-    icon: Link,
-    color: 'text-violet-400',
+    description: '무한한 지식 바다에서의 자유로운 항해. 예상치 못한 해류를 타고 새로운 대륙을 발견합니다.',
+    icon: Cpu,
+    color: 'from-pink-400 to-violet-500',
     gradient: 'from-violet-500/20 to-purple-500/20',
     energyPattern: 'neural-network',
     delay: 0
@@ -80,7 +80,7 @@ export default function AMFAProcessGraphic() {
     if (isHovered) return;
     
     const interval = setInterval(() => {
-      setActiveStep((prev) => (prev + 1) % amfaSteps.length);
+      setActiveStep((prev) => (prev + 1) % steps.length);
     }, 3000);
 
     return () => clearInterval(interval);
@@ -297,7 +297,7 @@ export default function AMFAProcessGraphic() {
                 </filter>
               </defs>
               
-              {amfaSteps.map((step, index) => (
+              {steps.map((step, index) => (
                 <EnergyFlow 
                   key={step.id}
                   step={step}
@@ -308,7 +308,7 @@ export default function AMFAProcessGraphic() {
             </svg>
 
             <div className="grid grid-cols-4 gap-8 relative z-10">
-              {amfaSteps.map((step, index) => {
+              {steps.map((step, index) => {
                 // 파도 기반 3D 레이어 계산 - 자연스러운 흐름과 연쇄 반응
                 const isActive = activeStep === index;
                 
@@ -622,7 +622,7 @@ export default function AMFAProcessGraphic() {
         </div>
 
         <div className="lg:hidden space-y-6">
-          {amfaSteps.map((step, index) => (
+          {steps.map((step, index) => (
             <motion.div
               key={step.id}
               variants={stepVariants}
@@ -646,7 +646,7 @@ export default function AMFAProcessGraphic() {
                 </div>
               </div>
               
-              {index < amfaSteps.length - 1 && (
+              {index < steps.length - 1 && (
                 <div className="flex justify-center py-2">
                   <ArrowRight className="w-5 h-5 text-gray-600" />
                 </div>

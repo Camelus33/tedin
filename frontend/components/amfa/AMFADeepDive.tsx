@@ -48,86 +48,88 @@ export default function AMFADeepDive() {
     router.push('/books');
   };
 
-  const getStepDetails = (stepId: string) => {
-    const details = {
-      'atomic-reading': {
-        title: 'Atomic Reading',
-        subtitle: 'The Drop',
-        icon: BookOpenIcon,
-        color: 'text-cyan-400',
-        description: '3분 읽고 1줄 메모로 시작하는 작은 독서 습관',
-        features: [
-          '3분 집중 독서',
-          '1줄 메모로 핵심 압축',
-          '부담 없는 시작점',
-          '매일 지속 가능한 루틴'
-        ],
-        benefits: [
-          '독서가 어렵지 않다는 경험',
-          '나만의 독서 리듬 발견',
-          '집중력이 자연스럽게 향상',
-          '"나도 할 수 있다" 자신감'
-        ]
-      },
-      'memo-evolve': {
-        title: 'Memo Evolve',
-        subtitle: '메모 성장',
-        icon: LightBulbIcon,
-        color: 'text-purple-400',
-        description: '단순한 기록이 나만의 지식으로 자라나는 과정',
-        features: [
-          '메모가 단계별로 발전',
-          '내 생각과 책 내용 연결',
-          '중요한 부분 자동 정리',
-          '깨달음의 순간 포착'
-        ],
-        benefits: [
-          '읽은 내용이 오래 기억됨',
-          '내 방식으로 지식 정리',
-          '새로운 아이디어 발견',
-          '깊이 있는 이해 경험'
-        ]
-      },
-      'furnace-knowledge': {
-        title: 'Furnace Knowledge',
-        subtitle: '지식 융합',
-        icon: FireIcon,
-        color: 'text-orange-400',
-        description: '흩어진 지식들이 하나로 연결되어 새로운 통찰 탄생',
-        features: [
-          '여러 책의 내용이 연결됨',
-          '숨겨진 패턴 자동 발견',
-          '나만의 통찰 생성',
-          '지혜로 축적되는 경험'
-        ],
-        benefits: [
-          '창의적 사고력 개발',
-          '복잡한 문제 해결 능력',
-          '전체적인 관점 형성',
-          '혁신적 아이디어 창출'
-        ]
-      },
-      'ai-link': {
-        title: 'AI Link',
-        subtitle: 'AI 동반자',
-        icon: CpuChipIcon,
-        color: 'text-blue-400',
-        description: 'AI와 함께 무한히 확장되는 학습 여정의 시작',
-        features: [
-          '나에게 맞는 책 추천',
-          '개인 맞춤 학습 가이드',
-          '학습 패턴 지능형 분석',
-          '끝없이 확장되는 가능성'
-        ],
-        benefits: [
-          '나만을 위한 성장 경험',
-          '효율적인 학습 방법 발견',
-          '미래를 준비하는 학습',
-          '무한한 성장 가능성 실현'
-        ]
-      }
-    };
-    return details[stepId as keyof typeof details];
+  // 각 단계별 상세 정보
+  const stepDetails = {
+    'atomic': {
+      title: 'Atomic Reading',
+      subtitle: 'The Drop Moment',
+      icon: BookOpenIcon,
+      color: 'text-cyan-400',
+      description: '물 한방울이 만드는 첫 번째 기적',
+      detailedDescription: '고요한 지식의 바다에 떨어지는 첫 번째 물방울. 3분 읽고 1줄 메모로 작지만 완벽한 원형의 파문이 시작됩니다.',
+      features: [
+        '3분 집중 독서',
+        '1줄 메모로 핵심 압축',
+        '부담 없는 시작점',
+        '매일 지속 가능한 루틴'
+      ],
+      benefits: [
+        '완벽한 집중력 경험',
+        '작은 성취감의 축적',
+        '지속 가능한 학습 습관',
+        '부담 없는 시작의 기쁨'
+      ]
+    },
+    'memo': {
+      title: 'Memo Evolve',
+      subtitle: 'The First Ripple',
+      icon: LightBulbIcon,
+      color: 'text-blue-400',
+      description: '생각이 바다로 퍼져나가는 여행',
+      detailedDescription: '작은 파문이 동심원을 그리며 지식의 바다로 확산되는 과정. 5단계 질문을 통해 개인의 경험과 만나며 새로운 섬들을 발견합니다.',
+      features: [
+        '5단계 진화 질문',
+        '개인 경험과의 연결',
+        '생각의 자연스러운 확산',
+        '통찰의 순간들 포착'
+      ],
+      benefits: [
+        '깊이 있는 사고력 개발',
+        '개인화된 지식 체계',
+        '창의적 연결의 발견',
+        '진정한 이해의 경험'
+      ]
+    },
+    'furnace': {
+      title: 'Furnace Knowledge',
+      subtitle: 'The Deep Current',
+      icon: FireIcon,
+      color: 'text-purple-400',
+      description: '심해 속 지식의 용광로에서 단련되다',
+      detailedDescription: '표면의 파도를 넘어 깊은 심해 해류로 잠수하는 여정. 압력과 어둠 속에서 지식이 단단한 보석으로 변화합니다.',
+      features: [
+        '지식의 체계적 융합',
+        '개인만의 통찰 노트',
+        '깊이 있는 내재화',
+        '실용적 지혜로 변환'
+      ],
+      benefits: [
+        '체화된 지식 획득',
+        '실전 적용 가능한 통찰',
+        '개인만의 지식 체계',
+        '진짜 내 것이 된 학습'
+      ]
+    },
+    'ai': {
+      title: 'AI Link',
+      subtitle: 'The Infinite Wave',
+      icon: CpuChipIcon,
+      color: 'text-violet-400',
+      description: '무한한 지식 바다에서의 자유로운 항해',
+      detailedDescription: '개인의 한계를 넘어 광활한 지식 대양으로의 모험. 예상치 못한 해류를 타고 새로운 대륙을 발견하는 기쁨을 경험합니다.',
+      features: [
+        '맞춤형 AI 파트너십',
+        '예상치 못한 연결 발견',
+        '무한한 지식 확장',
+        '새로운 관점의 획득'
+      ],
+      benefits: [
+        '개인 한계를 넘어선 학습',
+        '창발적 통찰의 경험',
+        '지식의 자유로운 항해',
+        '경이로운 발견의 기쁨'
+      ]
+    }
   };
 
   return (
@@ -207,7 +209,7 @@ export default function AMFADeepDive() {
         <section ref={detailSectionRef} className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 relative">
           <div className="container mx-auto px-6 py-16">
             {(() => {
-              const details = getStepDetails(selectedStep);
+              const details = stepDetails[selectedStep as keyof typeof stepDetails];
               if (!details) return null;
               
               return (
