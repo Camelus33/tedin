@@ -11,12 +11,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: 'Habitus33 | Less read, More memory',
   description:
-    'Habitus33은 Atomic Reading으로 작고 강한 집중을, 정교한 AI로 당신만의 리듬을 찾아 드립니다. 작은 노력도 모두 성공으로 만드세요.',
+    'Habitus33은 3분 읽고 1줄 메모로 작은 물방울을 만들고, 정교한 AI로 당신만의 파도를 키워 드립니다. 작은 시작이 깊은 학습으로 확산됩니다.',
   // Add other relevant metadata: keywords, open graph tags, etc.
-  keywords: ['학습 번아웃', '학습 리듬', 'Atomic Reading', 'Deep Focus', '작업 기억력', '작고 강한 몰입', '인지력', '집중력', '기억력', 'Habitus33', 'ZenGo'],
+  keywords: ['학습 번아웃', '학습 파도', 'Atomic Reading', 'Deep Focus', '작업 기억력', '작고 강한 몰입', '인지력', '집중력', '기억력', 'Habitus33', 'ZenGo', '3분 읽고 1줄 메모', '물방울 학습'],
   openGraph: {
-    title: 'Habitus33 | 작고 깊게 읽고, 오래 기억하세요',
-    description: '작은 성공을 통해 끊임없는 성장의 즐거움을 맛보세요.',
+    title: 'Habitus33 | 작은 물방울이 만드는 깊은 학습의 파도',
+    description: '3분 읽고 1줄 메모로 시작하는 당신만의 지식 파도를 경험하세요.',
     // images: ['/og-image.png'], // Add OG image path later
     url: '/', // Relative to metadataBase
     siteName: 'Habitus33',

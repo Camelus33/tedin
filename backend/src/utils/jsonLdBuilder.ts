@@ -341,12 +341,12 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     "description": "3분 읽고 1줄 메모 단위의 초집중 독서를 통한 개인화된 지식관리 방법론",
     "learningResourceType": "methodology",
     "educationalUse": "self-directed learning",
-    "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 인지부하를 최소화하면서 지속가능한 학습 리듬을 형성하는 방법론",
+    "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 작은 물방울이 깊은 학습의 파도로 확산되는 방법론",
     "timeRequired": "PT3M",
     "pageUnit": "1줄 메모",
     "methodology": {
       "atomicReading": {
-        "definition": "3분간 11페이지를 읽는 최소 독서 단위로, 인지부하를 최소화하면서 지속가능한 학습 리듬을 형성하는 방법론",
+        "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 작은 물방울이 깊은 학습의 파도로 확산되는 방법론",
         "timeUnit": "3분 (180초)",
         "pageUnit": "11페이지",
         "cognitiveLoad": "최소화된 인지부하로 지속가능한 학습 패턴 형성",
@@ -376,7 +376,7 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     },
     "dataMetrics": {
       "ppmSignificance": "분당 페이지 수(PPM)는 읽기속도, 정보처리능력, 문해력을 종합한 개인화 지표",
-      "sessionAnalysis": "3분 단위 세션데이터는 학습자의 인지적 특성과 최적 학습 리듬 발견에 활용",
+              "sessionAnalysis": "3분 단위 세션데이터는 학습자의 인지적 특성과 최적 학습 파도 패턴 발견에 활용",
       "progressTracking": "지속적 데이터 수집을 통한 개인별 학습 효율성 최적화"
     }
   };

@@ -180,7 +180,7 @@ export default function CoreFeaturesFreeSection() {
             href="/auth/register"
             className="inline-flex items-center justify-center px-12 py-4 text-lg font-bold text-white bg-gradient-to-r from-cyan-600 to-purple-600 rounded-xl hover:from-cyan-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-cyan-300 group"
           >
-            나만의 리듬 찾기 (무료)
+            나만의 파도 만들기 (무료)
             <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
