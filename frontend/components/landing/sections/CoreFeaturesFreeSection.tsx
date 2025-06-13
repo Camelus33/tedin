@@ -7,8 +7,8 @@ const amfaFeatures = [
   {
     icon: BookOpen,
     title: "Atomic Reading",
-    subtitle: "3분 11페이지",
-    description: "작은 시작의 마법을 경험하세요. 부담 없는 분량으로 독서의 즐거움을 되찾습니다.",
+    subtitle: "The Drop Moment",
+    description: "3분, 11페이지. 작은 돌멩이가 잔잔한 물에 떨어지는 순간처럼 시작하세요.",
     highlight: "무료",
     color: "text-cyan-400",
     bgColor: "bg-cyan-500/10",
@@ -17,8 +17,8 @@ const amfaFeatures = [
   {
     icon: Edit3,
     title: "Memo Evolve", 
-    subtitle: "생각의 진화",
-    description: "5단계 메모 시스템으로 단순한 기록을 깊은 통찰로 발전시킵니다.",
+    subtitle: "The First Ripple",
+    description: "1줄 메모에서 시작되는 첫 번째 파문. 생각이 확산되기 시작합니다.",
     highlight: "무료",
     color: "text-blue-400",
     bgColor: "bg-blue-500/10",
@@ -27,8 +27,8 @@ const amfaFeatures = [
   {
     icon: Zap,
     title: "Furnace Knowledge",
-    subtitle: "지식 단련소",
-    description: "개인화된 학습 공간에서 지식을 체계적으로 단련하고 내재화합니다.",
+    subtitle: "The Deep Current",
+    description: "깊은 해류처럼 지식이 체계적으로 흐르며 내면에 새겨집니다.",
     highlight: "무료",
     color: "text-purple-400",
     bgColor: "bg-purple-500/10",
@@ -37,8 +37,8 @@ const amfaFeatures = [
   {
     icon: LinkIcon,
     title: "AI Link",
-    subtitle: "지능적 연결",
-    description: "AI와 함께 지식을 연결하고 확장하여 새로운 통찰을 발견합니다.",
+    subtitle: "The Infinite Wave",
+    description: "AI와 함께 무한히 확산되는 파도. 예상치 못한 연결과 통찰을 발견합니다.",
     highlight: "무료",
     color: "text-violet-400",
     bgColor: "bg-violet-500/10",
@@ -88,14 +88,14 @@ export default function CoreFeaturesFreeSection() {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-gradient-to-r from-cyan-600 via-purple-600 to-violet-600 bg-clip-text text-transparent">
-              AMFA 4단계
+              깊은 학습의 파급 효과
             </span>
             <br />
             <span className="text-gray-800">평생 무료로 시작하세요</span>
           </h2>
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-            <span className="text-cyan-600 font-semibold">3분 11페이지</span>부터 시작하는 학습 혁신, 
-            <span className="text-purple-600 font-semibold"> 나만의 리듬</span> 발견까지
+            <span className="text-cyan-600 font-semibold">작은 돌멩이 하나</span>가 만들어내는 
+            <span className="text-purple-600 font-semibold"> 무한한 파도</span>를 경험하세요
           </p>
         </motion.div>
         
@@ -162,10 +162,10 @@ export default function CoreFeaturesFreeSection() {
               <Sparkles className="w-6 h-6 text-purple-600" />
             </div>
             <p className="text-lg font-semibold text-gray-800 mb-2">
-              완전한 AMFA 경험이 추가 비용 없이 평생 무료
+              첫 파도부터 무한한 확산까지, 모든 AMFA 경험이 평생 무료
             </p>
             <p className="text-gray-600">
-              3분 11페이지부터 AI 연결까지, 모든 핵심 기능을 제한 없이 사용하세요
+              3분의 시작부터 AI와의 깊은 연결까지, 모든 핵심 기능을 제한 없이 사용하세요
             </p>
           </div>
         </motion.div>

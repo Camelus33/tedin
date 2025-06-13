@@ -18,14 +18,13 @@ export default function ProblemDiagnosisSection() {
           className="text-center"
         >
           <h2 className="text-3xl sm:text-4xl font-bold font-serif text-brand-primary tracking-tight">
-            우리는 한 번에 하나에만<br />
-            집중할 수 있습니다.
+            깊은 바다에 다이브하고 싶은데,<br />
+            수면에서만 맴돌고 있지 않나요?
           </h2>
           <p className="mt-6 text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-            너무 많은 정보가 한꺼번에 밀려오면, 일부를 흘려보냅니다. 
-            이는 잘못이 아닌, <strong className="font-semibold text-gray-900">자연스러운 반응</strong>입니다. 
-            하지만 이런 경험이 반복되면, 들인 노력이 쌓이지 않아 
-            <strong className="font-semibold text-gray-900"> 멍해지는 기분</strong>이 들 수 있습니다.
+            많이 읽어도 얕게 흐르고, 열심히 공부해도 <strong className="font-semibold text-gray-900">깊이가 느껴지지 않는</strong> 경험. 
+            이는 잘못이 아닙니다. 단지 <strong className="font-semibold text-gray-900">올바른 잠수법</strong>을 
+            아직 발견하지 못했을 뿐입니다.
           </p>
         </motion.div>
       </div>

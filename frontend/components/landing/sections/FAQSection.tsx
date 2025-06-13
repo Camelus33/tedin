@@ -50,7 +50,7 @@ export default function FAQSection() {
             궁금한 게 있으시죠?
           </h2>
           <p className="text-gray-600 text-lg">
-            처음엔 다들 이런 걱정을 하세요. 하지만 시작해보면 생각보다 쉬워요.
+            처음 파도를 만들기 전에는 다들 이런 걸 궁금해하세요. 시작해보면 생각보다 자연스러워요.
           </p>
         </div>
         <div className="space-y-0">
@@ -90,10 +90,10 @@ export default function FAQSection() {
         <div className="mt-16 text-center">
           <div className="bg-gradient-to-r from-cyan-50 to-purple-50 rounded-2xl p-8 border border-cyan-100">
             <p className="text-gray-700 text-lg font-medium mb-2">
-              "처음엔 반신반의했는데, 정말 달라졌어요. 이제 공부가 재미있습니다."
+              "처음엔 3분이었는데, 어느새 나만의 지식 바다가 생겼어요. 정말 신기해요."
             </p>
             <p className="text-cyan-600 text-sm font-medium">
-              — AMFA 3개월 사용자
+              — AMFA 파도 경험자
             </p>
           </div>
         </div>

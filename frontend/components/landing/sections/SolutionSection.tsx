@@ -19,17 +19,18 @@ export default function SolutionSection() {
           >
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
               <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
-                지식의 주변에서
+                read short,
               </span>
               <br />
               <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
-                지식의 중심으로
+                deep dive
               </span>
             </h2>
             <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              <span className="text-cyan-400 font-semibold">AMFA 프레임워크</span>로 불가능한 독서를 가능하게 만드세요.
+              <span className="text-cyan-400 font-semibold">3분의 작은 시작</span>이 만들어내는
+              <span className="text-purple-400 font-semibold"> 깊은 학습의 파도</span>.
               <br className="hidden sm:block" />
-              4단계 학습 여정을 통해 <span className="text-purple-400 font-semibold">나만의 리듬</span>을 발견합니다.
+              AMFA와 함께 당신만의 지식 바다를 탐험하세요.
             </p>
           </motion.div>
         </div>
@@ -55,21 +56,21 @@ export default function SolutionSection() {
         >
           <div className="max-w-4xl mx-auto">
             <p className="text-lg text-gray-400 leading-relaxed mb-6">
-              <span className="text-cyan-400 font-semibold">Atomic Reading</span>부터 
-              <span className="text-purple-400 font-semibold"> AI Link</span>까지, 
-              체계적인 4단계 프로세스로 학습의 질을 혁신적으로 향상시킵니다.
+              <span className="text-cyan-400 font-semibold">The Drop</span>에서 시작해 
+              <span className="text-purple-400 font-semibold"> The Infinite Wave</span>까지, 
+              당신의 학습이 자연스럽게 확산되는 깊이의 여정을 경험하세요.
             </p>
             <div className="grid md:grid-cols-2 gap-8 text-left">
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
-                <h3 className="text-lg font-semibold text-cyan-400 mb-3">개인화된 학습 리듬</h3>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">파도의 시작점</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  3분 11페이지라는 과학적 단위로 시작하여, 데이터 기반으로 당신만의 최적 학습 패턴을 발견합니다.
+                  3분 11페이지라는 작은 돌멩이 하나가 당신의 지식 바다에 첫 파문을 만들어냅니다.
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
-                <h3 className="text-lg font-semibold text-purple-400 mb-3">지속 가능한 성장</h3>
+                <h3 className="text-lg font-semibold text-purple-400 mb-3">무한한 확산</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  작은 성취의 누적을 통해 선순환 구조를 만들고, 장기적인 학습 동기를 유지합니다.
+                  1줄 메모에서 시작된 생각이 연결되고 진화하며 상상을 넘어서는 깊이로 확장됩니다.
                 </p>
               </div>
             </div>

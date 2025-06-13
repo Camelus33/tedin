@@ -44,12 +44,12 @@ export default function HeroSection() {
         >
           {/* Hook Question */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
-            혹시, 힘들다는<br />
-            느낌이 드시나요?
+            작은 돌멩이가<br />
+            큰 파도를 만든다면?
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-700 max-w-xl mx-auto">
-            괜찮습니다. <span className="text-cyan-400 font-semibold">3분 11페이지, 나만의 리듬을 찾으세요.</span> <br className="hidden sm:block" />
-            그것이 바로, 성장입니다.
+            <span className="text-cyan-500 font-semibold">3분으로 시작해서 깊이 잠수하세요.</span> <br className="hidden sm:block" />
+            당신만의 지식 파도가 시작됩니다.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
             <Link
@@ -57,7 +57,7 @@ export default function HeroSection() {
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-primary hover:opacity-90 transition duration-150 ease-in-out w-full sm:w-auto"
             >
               <SparklesIconOutline className="w-5 h-5 mr-2 -ml-1" aria-hidden="true" /> 
-              나만의 리듬 찾기
+              첫 파도 만들기
             </Link>
             {/* Optional secondary CTA (e.g., learn more) */}
             {/* <Link

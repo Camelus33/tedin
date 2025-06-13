@@ -19,8 +19,8 @@ const amfaSteps: AMFAStep[] = [
   {
     id: 'atomic',
     title: 'Atomic Reading',
-    subtitle: '3분 11페이지',
-    description: '작은 시작의 마법을 경험하세요. 부담 없는 분량으로 독서의 즐거움을 되찾습니다.',
+    subtitle: 'The Drop Moment',
+    description: '3분, 11페이지. 작은 돌멩이가 잔잔한 물에 떨어지는 순간처럼 시작하세요.',
     icon: BookOpen,
     color: 'text-cyan-400',
     gradient: 'from-cyan-500/20 to-cyan-600/20',
@@ -29,8 +29,8 @@ const amfaSteps: AMFAStep[] = [
   {
     id: 'memo',
     title: 'Memo Evolve',
-    subtitle: '생각의 진화',
-    description: '5단계 메모 시스템으로 단순한 기록을 깊은 통찰로 발전시킵니다.',
+    subtitle: 'The First Ripple',
+    description: '1줄 메모에서 시작되는 첫 번째 파문. 생각이 확산되기 시작합니다.',
     icon: Edit3,
     color: 'text-blue-400',
     gradient: 'from-blue-500/20 to-cyan-500/20',
@@ -39,8 +39,8 @@ const amfaSteps: AMFAStep[] = [
   {
     id: 'furnace',
     title: 'Furnace Knowledge',
-    subtitle: '지식 단련소',
-    description: '개인화된 학습 공간에서 지식을 체계적으로 단련하고 내재화합니다.',
+    subtitle: 'The Deep Current',
+    description: '깊은 해류처럼 지식이 체계적으로 흐르며 내면에 새겨집니다.',
     icon: Zap,
     color: 'text-purple-400',
     gradient: 'from-purple-500/20 to-blue-500/20',
@@ -49,8 +49,8 @@ const amfaSteps: AMFAStep[] = [
   {
     id: 'link',
     title: 'AI Link',
-    subtitle: '지능적 연결',
-    description: 'AI와 함께 지식을 연결하고 확장하여 새로운 통찰을 발견합니다.',
+    subtitle: 'The Infinite Wave',
+    description: 'AI와 함께 무한히 확산되는 파도. 예상치 못한 연결과 통찰을 발견합니다.',
     icon: Link,
     color: 'text-violet-400',
     gradient: 'from-violet-500/20 to-purple-500/20',
@@ -252,7 +252,7 @@ export default function AMFAProcessGraphic() {
             AMFA Framework
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            지식의 주변에서 중심으로, 4단계 학습 여정
+            작은 시작이 만들어내는 깊은 학습의 파급 효과
           </p>
         </motion.div>
 
@@ -483,7 +483,7 @@ export default function AMFAProcessGraphic() {
                             inline-flex items-center justify-center w-16 h-16 rounded-full mb-6
                             ${isWaveCenter 
                               ? 'bg-gradient-to-r from-cyan-500 to-purple-500 shadow-lg shadow-cyan-500/40' 
-                              : isWaveNear
+                              : isWaveNear 
                               ? 'bg-gradient-to-r from-cyan-500/70 to-purple-500/70 shadow-md shadow-cyan-500/20'
                               : 'bg-gray-800 border border-gray-600'
                             }
@@ -657,7 +657,7 @@ export default function AMFAProcessGraphic() {
           <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20">
             <Sparkles className="w-5 h-5 text-cyan-400" />
             <span className="text-sm font-medium text-gray-300">
-              4단계 여정을 통해 불가능한 독서를 가능하게
+              작은 돌멩이가 만드는 무한한 파도를 경험하세요
             </span>
           </div>
         </motion.div>
