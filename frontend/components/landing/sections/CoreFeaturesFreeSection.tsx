@@ -7,8 +7,8 @@ const amfaFeatures = [
   {
     icon: BookOpen,
     title: "Atomic Reading",
-    subtitle: "The Drop Moment",
-    description: "3분, 11페이지. 작은 돌멩이가 잔잔한 물에 떨어지는 순간처럼 시작하세요.",
+    subtitle: "The Drop",
+    description: "3분 읽고 1줄 메모. 작은 돌멩이가 잔잔한 물에 떨어지는 순간처럼 시작하세요.",
     highlight: "무료",
     color: "text-cyan-400",
     bgColor: "bg-cyan-500/10",

@@ -52,15 +52,15 @@ export default function AMFADeepDive() {
     const details = {
       'atomic-reading': {
         title: 'Atomic Reading',
-        subtitle: '3분 독서',
+        subtitle: 'The Drop',
         icon: BookOpenIcon,
         color: 'text-cyan-400',
-        description: '3분 11페이지로 시작하는 작은 독서 습관',
+        description: '3분 읽고 1줄 메모로 시작하는 작은 독서 습관',
         features: [
-          '3분만 투자하면 충분',
-          '11페이지씩 작게 나누기',
-          '매일 작은 성취감 경험',
-          '부담 없이 시작 가능'
+          '3분 집중 독서',
+          '1줄 메모로 핵심 압축',
+          '부담 없는 시작점',
+          '매일 지속 가능한 루틴'
         ],
         benefits: [
           '독서가 어렵지 않다는 경험',

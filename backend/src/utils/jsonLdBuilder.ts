@@ -337,8 +337,13 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   // 하비투스33 학습 방법론 및 시스템 맥락 정보
   const methodologyContext = {
     "@type": "EducationalFramework",
-    "name": "하비투스33 Atomic Reading 학습 시스템",
-    "description": "3분 11페이지 단위의 초집중 독서를 통한 개인화된 지식관리 방법론",
+    "name": "Atomic Reading",
+    "description": "3분 읽고 1줄 메모 단위의 초집중 독서를 통한 개인화된 지식관리 방법론",
+    "learningResourceType": "methodology",
+    "educationalUse": "self-directed learning",
+    "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 인지부하를 최소화하면서 지속가능한 학습 리듬을 형성하는 방법론",
+    "timeRequired": "PT3M",
+    "pageUnit": "1줄 메모",
     "methodology": {
       "atomicReading": {
         "definition": "3분간 11페이지를 읽는 최소 독서 단위로, 인지부하를 최소화하면서 지속가능한 학습 리듬을 형성하는 방법론",
@@ -429,7 +434,7 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
           "efficiency": sessionDetails.ppm && sessionDetails.ppm > 3 ? "높은 정보처리능력" : 
                        sessionDetails.ppm && sessionDetails.ppm > 2 ? "보통 정보처리능력" : "신중한 독서 패턴"
         },
-        "educationalContext": "3분 11페이지 Atomic Reading 원칙에 따른 지속가능한 학습 세션"
+        "educationalContext": "3분 읽고 1줄 메모 Atomic Reading 원칙에 따른 지속가능한 학습 세션"
       };
     }
 

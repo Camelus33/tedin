@@ -13,18 +13,20 @@ interface AMFAStep {
   color: string;
   gradient: string;
   energyPattern: string;
+  delay: number;
 }
 
 const amfaSteps: AMFAStep[] = [
   {
     id: 'atomic',
     title: 'Atomic Reading',
-    subtitle: 'The Drop Moment',
-    description: '3분, 11페이지. 작은 돌멩이가 잔잔한 물에 떨어지는 순간처럼 시작하세요.',
+    subtitle: 'The Drop',
+    description: '3분 읽고 1줄 메모. 작은 돌멩이가 잔잔한 물에 떨어지는 순간처럼 시작하세요.',
     icon: BookOpen,
-    color: 'text-cyan-400',
+    color: 'from-cyan-400 to-blue-500',
     gradient: 'from-cyan-500/20 to-cyan-600/20',
-    energyPattern: 'gentle-waves'
+    energyPattern: 'gentle-waves',
+    delay: 0
   },
   {
     id: 'memo',
@@ -34,7 +36,8 @@ const amfaSteps: AMFAStep[] = [
     icon: Edit3,
     color: 'text-blue-400',
     gradient: 'from-blue-500/20 to-cyan-500/20',
-    energyPattern: 'spiral-growth'
+    energyPattern: 'spiral-growth',
+    delay: 0
   },
   {
     id: 'furnace',
@@ -44,7 +47,8 @@ const amfaSteps: AMFAStep[] = [
     icon: Zap,
     color: 'text-purple-400',
     gradient: 'from-purple-500/20 to-blue-500/20',
-    energyPattern: 'intense-forge'
+    energyPattern: 'intense-forge',
+    delay: 0
   },
   {
     id: 'link',
@@ -54,7 +58,8 @@ const amfaSteps: AMFAStep[] = [
     icon: Link,
     color: 'text-violet-400',
     gradient: 'from-violet-500/20 to-purple-500/20',
-    energyPattern: 'neural-network'
+    energyPattern: 'neural-network',
+    delay: 0
   }
 ];
 

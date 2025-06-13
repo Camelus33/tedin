@@ -55,10 +55,12 @@ export default function SolutionSection() {
           className="text-center mt-16"
         >
           <div className="max-w-4xl mx-auto">
-            <p className="text-lg text-gray-400 leading-relaxed mb-6">
-              <span className="text-cyan-400 font-semibold">The Drop</span>에서 시작해 
-              <span className="text-purple-400 font-semibold"> The Infinite Wave</span>까지, 
-              당신의 학습이 자연스럽게 확산되는 깊이의 여정을 경험하세요.
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
+              <strong className="font-semibold text-gray-900">read short, deep dive</strong><br />
+              3분 읽고 1줄 메모라는 작은 돌멩이 하나가 당신의 지식 바다에 첫 파문을 만들어냅니다.
+              <br /><br />
+              그 파문은 멈추지 않습니다.<br />
+              1줄 메모에서 시작된 생각이 연결되고 진화하며 상상을 넘어서는 깊이로 확장됩니다.
             </p>
             <div className="grid md:grid-cols-2 gap-8 text-left">
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
