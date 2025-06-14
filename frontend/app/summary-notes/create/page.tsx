@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCartStore } from '@/store/cartStore';
+import { useCartStore, CartItem } from '@/store/cartStore';
 import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard'; // TSNote 타입도 함께 임포트
 import api from '@/lib/api';
 import { Input } from '@/components/ui/input'; // shadcn/ui에서 추가된 Input 경로
 import { Textarea } from '@/components/ui/textarea'; // shadcn/ui에서 추가된 Textarea 경로
 import Button from '@/components/common/Button'; // 기존 Button 컴포넌트
 import { Loader2, Save } from 'lucide-react'; // 아이콘 복구 시도
-import toast from 'react-hot-toast';
+import { showSuccess, showError } from '@/lib/toast';
 
 /**
  * @page CreateSummaryNotePage
@@ -32,14 +32,24 @@ export default function CreateSummaryNotePage() {
   const [isLoading, setIsLoading] = useState<boolean>(true); // 카트에 담긴 노트들의 상세 정보 로딩
   const [isSaving, setIsSaving] = useState<boolean>(false); // 단권화 노트 서버 저장 진행
   const [error, setError] = useState<string | null>(null); // 오류 메시지 표시용
+  // 의도적 리디렉션 중 상태 추가
+  const [isIntentionalRedirect, setIsIntentionalRedirect] = useState<boolean>(false);
 
   useEffect(() => {
     // 스토어 rehydration이 완료되고, 노트 로딩도 끝났는데 카트가 비어있으면 리디렉션
     if (_hasHydrated && cartItems.length === 0 && !isLoading) {
-      toast.error('지식 카트가 비어있어요. 먼저 1줄 메모를 담아볼까요?');
-      router.push('/books');
+      // 의도적 리디렉션이거나 저장 중인 경우는 무시
+      if (isSaving || isIntentionalRedirect) return;
+      
+      showError('지식 카트가 비어있어요. 먼저 1줄 메모를 담아볼까요?');
+      
+      const redirectTimer = setTimeout(() => {
+        router.push('/books');
+      }, 1500);
+      
+      return () => clearTimeout(redirectTimer);
     }
-  }, [_hasHydrated, cartItems, isLoading, router]);
+  }, [_hasHydrated, cartItems, isLoading, router, isSaving, isIntentionalRedirect]);
 
   useEffect(() => {
     // rehydration이 완료된 후에만 노트 정보를 가져옵니다.
@@ -57,11 +67,11 @@ export default function CreateSummaryNotePage() {
       setIsLoading(true);
       setError(null);
       try {
-        const noteIds = cartItems.map(item => item.noteId);
+        const noteIds = cartItems.map((item: CartItem) => item.noteId);
         const response = await api.post('/notes/batch', { noteIds });
         const fullNotesData: TSNote[] = response.data || [];
 
-        const sortedFullNotes = cartItems.map(cartItem => 
+        const sortedFullNotes = cartItems.map((cartItem: CartItem) => 
           fullNotesData.find(note => note._id === cartItem.noteId)
         ).filter(Boolean) as TSNote[];
         
@@ -76,6 +86,13 @@ export default function CreateSummaryNotePage() {
     };
     fetchFullNotes();
   }, [cartItems, _hasHydrated]);
+
+  // 컴포넌트 언마운트 시 플래그 초기화
+  useEffect(() => {
+    return () => {
+      setIsIntentionalRedirect(false);
+    };
+  }, []);
 
   /**
    * @function handleNoteUpdateInList
@@ -100,7 +117,7 @@ export default function CreateSummaryNotePage() {
    */
   const handleSaveSummaryNote = async () => {
     if (orderedNotes.length === 0) {
-      toast.error('저장할 메모가 아직 없어요. 메모를 추가해 볼까요?');
+      showError('저장할 메모가 아직 없어요. 메모를 추가해 볼까요?');
       return;
     }
     setIsSaving(true);
@@ -124,9 +141,15 @@ export default function CreateSummaryNotePage() {
       
       if (response.status === 201 && response.data?._id) { // HTTP 201 Created 성공 응답 및 ID 확인
         const newNoteId = response.data._id;
-        toast.success('단권화 노트가 성공적으로 저장되었습니다!');
+        // 의도적 리디렉션 상태를 true로 설정하여 useEffect의 자동 리디렉션 방지
+        setIsIntentionalRedirect(true); 
+        showSuccess('단권화 노트가 성공적으로 저장되었습니다!');
         clearCart(); // 카트 비우기
-        router.push(`/summary-notes/${newNoteId}/edit`); // 새로 생성된 노트의 편집 페이지로 이동
+        
+        // 약간의 지연 후 리디렉션 (toast 메시지가 보일 수 있도록)
+        setTimeout(() => {
+          router.push(`/summary-notes/${newNoteId}/edit`); // 새로 생성된 노트의 편집 페이지로 이동
+        }, 300);
       } else {
         // 예상치 못한 성공 상태 코드 처리 (예: 200 OK 또는 ID 없음)
         console.warn('Summary note saved, but with unexpected status or missing ID:', response);
@@ -136,9 +159,10 @@ export default function CreateSummaryNotePage() {
       console.error('Error saving summary note:', err);
       let errorMessage = '단권화 노트 저장이 지금은 어려워요. 조금 있다 다시 해볼래요?';
       if (err.response && err.response.data && err.response.data.message) {
-        errorMessage += ` (${err.response.data.message})`;
+        errorMessage = err.response.data.message;
       }
       setError(errorMessage);
+      showError(errorMessage);
     } finally {
       setIsSaving(false);
     }
