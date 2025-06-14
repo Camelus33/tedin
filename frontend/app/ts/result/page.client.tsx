@@ -82,7 +82,7 @@ export default function TSResultPage() {
   const getPerformanceMessage = (ppm: number) => {
     if (ppm > 2) return '집중력이 대단하시군요!';
     if (ppm > 1.5) return '평소보다 좋은 성과예요!';
-    if (ppm > 1) return '꾸준하게 리듬을 유지하셨어요!';
+    if (ppm > 1) return '멋진 파도를 만드셨어요!';
     return '첫 작은 성공을 축하드려요!';
   };
 
@@ -178,7 +178,7 @@ export default function TSResultPage() {
             
             {/* Achievement Title */}
             <div className="text-center mb-2 mt-4">
-              <h1 className="text-2xl tracking-wider font-bold text-gray-800 uppercase">YOUR RHYTHM</h1>
+              <h1 className="text-2xl tracking-wider font-bold text-gray-800 uppercase">YOUR WAVE</h1>
             </div>
             
             {/* Achievement Label based on performance */}

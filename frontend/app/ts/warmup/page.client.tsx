@@ -231,7 +231,7 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
   {
     id: 'text_flow',
     title: '텍스트 흐름 훈련',
-    generalDescription: '다양한 방식으로 제시되는 텍스트의 흐름을 따라가며 시각적 처리 속도와 리듬감을 훈련합니다.',
+    generalDescription: '다양한 방식으로 제시되는 텍스트의 흐름을 따라가며 시각적 처리 속도와 흐름 감각을 훈련합니다.',
     tip: '텍스트의 흐름에 몸을 맡기듯 자연스럽게 따라가세요. 모든 단어를 이해하려 애쓰지 않아도 괜찮습니다.',
     variations: [
       {
@@ -397,7 +397,7 @@ export default function TSWarmupPage() {
       question: '목표 지점을 놓치지 않고 눈으로 따라오셨나요?',
       options: ['네, 잘 따라했습니다'], // Simple confirmation
       correctAnswer: '네, 잘 따라했습니다',
-      tip: '머리는 최대한 움직이지 않고 눈동자만 빠르게 움직이는 것이 중요해요! 리듬을 타면서 다음 지점으로 점프하듯 시선을 옮겨보세요.',
+      tip: '머리는 최대한 움직이지 않고 눈동자만 빠르게 움직이는 것이 중요해요! 흐름을 따라 다음으로 시선을 부드럽게 옮겨보세요.',
     },
     {
       type: 'chunking_practice',
@@ -935,7 +935,7 @@ export default function TSWarmupPage() {
     <div className={`min-h-screen flex flex-col ${cyberTheme.gradient} text-gray-100`}>
       {/* Header */}
       <header className={`p-4 ${cyberTheme.bgSecondary} shadow-md flex justify-between items-center`}>
-        <h1 className={`text-xl font-bold ${cyberTheme.primary}`}>집중력 예열 ({currentExerciseIndex + 1}/{EXERCISE_CONFIGURATIONS.length})</h1>
+        <h1 className={`text-xl font-bold ${cyberTheme.primary}`}>준비 운동 ({currentExerciseIndex + 1}/{EXERCISE_CONFIGURATIONS.length})</h1>
         <div className="flex items-center">
           <ClockIcon className={`h-5 w-5 mr-2 ${cyberTheme.secondary}`} />
           <span className={`text-lg font-mono ${cyberTheme.textLight}`}>{formatTime(timeLeft)}</span>
