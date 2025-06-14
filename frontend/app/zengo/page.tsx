@@ -767,7 +767,7 @@ export default function ZengoPage(
           onKeyPress={(e) => handleKeyPress(e, () => setUiState('selection'))}
           tabIndex={0}
         >
-          ZenGo 기억 착수 시작
+          ZenGo 설정하기
         </button>
       </div>
     </div>
@@ -992,6 +992,20 @@ export default function ZengoPage(
       return (
         <div className="zengo-container">
           <div className="zengo-selector">
+            {/* 대시보드로 이동하는 버튼 추가 */}
+            <div className="absolute top-4 left-4">
+              <button 
+                onClick={() => router.push('/dashboard')}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-cyan-50 to-cyan-100 hover:from-cyan-100 hover:to-cyan-200 border border-cyan-200 hover:border-cyan-300 transition-all duration-200 shadow-sm hover:shadow"
+                aria-label="대시보드로 이동"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium text-cyan-800">대시보드</span>
+              </button>
+            </div>
+            
             <div className="text-center mb-6">
               <h2 className="settings-title text-3xl font-bold mb-2" style={{ color: '#1a237e' }}>ZenGo : 기억 착수</h2>
               <p className="settings-intro text-gray-600 mb-4">
