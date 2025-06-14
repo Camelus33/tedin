@@ -9,7 +9,7 @@ import FlashcardForm from '@/components/flashcard/FlashcardForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon, EllipsisVerticalIcon, ArrowPathIcon, EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon, EllipsisVerticalIcon, ArrowPathIcon, EyeIcon, PencilIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { RocketIcon } from 'lucide-react';
 import { AiFillYoutube } from 'react-icons/ai';
 import { NewspaperIcon } from '@heroicons/react/24/solid';
@@ -80,6 +80,8 @@ const cyberTheme = {
   buttonSecondaryBg: 'bg-purple-600 hover:bg-purple-700',
   buttonSecondaryHoverBg: 'hover:bg-purple-700',
   buttonDisabledBg: 'bg-gray-600 opacity-50 cursor-not-allowed',
+  textAccent: 'text-cyan-400',
+  bgHover: 'bg-gray-800',
 };
 
 // Related Link Tabs definition (similar to books/[id]/page.tsx but using TSNoteCard's RelatedLink type)
@@ -236,6 +238,13 @@ export default function EditSummaryNotePage() {
 
   const handleSaveSummaryNote = async () => {
     if (!summaryNote) return false;
+    
+    // 메모가 없는 경우 저장을 방지하고 알림 표시
+    if (fetchedNotes.length === 0) {
+      showError('메모가 없는 단권화 노트는 저장할 수 없습니다. 메모를 추가해 주세요.');
+      return false;
+    }
+
     setLoading(true);
     try {
       if (changedNoteIds.size > 0) {
@@ -377,6 +386,29 @@ export default function EditSummaryNotePage() {
         summaryNoteId={summaryNoteId}
       />
       <div className="max-w-7xl mx-auto">
+        {/* 나의 도서관으로 이동하는 버튼 */}
+        <div className="mb-6">
+          <Button
+            onClick={() => {
+              // 저장되지 않은 변경사항이 있는지 확인
+              if (isEditing || changedNoteIds.size > 0) {
+                if (confirm('저장되지 않은 변경사항이 있습니다. 페이지를 나가시겠습니까?')) {
+                  router.push('/books');
+                }
+              } else {
+                router.push('/books');
+              }
+            }}
+            variant="ghost"
+            size="sm"
+            aria-label="나의 도서관으로 이동"
+            className={`flex items-center gap-1 text-sm ${cyberTheme.textAccent} hover:${cyberTheme.bgHover} transition-all duration-200`}
+          >
+            <ArrowLeftIcon className="w-4 h-4" />
+            <span>나의 도서관</span>
+          </Button>
+        </div>
+        
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div className='flex-grow'>
