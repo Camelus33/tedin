@@ -52,7 +52,7 @@ export default function CognitiveEffectModal({ isOpen, onClose }: CognitiveEffec
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-cyan-400 mb-2">
-                  공간 기억력
+                  어디에 뒀더라?
                 </h3>
                 <p className="text-gray-300 text-sm leading-relaxed mb-3">
                   바둑돌의 위치를 기억하는 훈련으로 <strong className="text-white">머릿속 지도</strong>가 정교해집니다.
@@ -75,7 +75,7 @@ export default function CognitiveEffectModal({ isOpen, onClose }: CognitiveEffec
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-purple-400 mb-2">
-                  순서 기억력
+                  다음 순서가 뭐였지?
                 </h3>
                 <p className="text-gray-300 text-sm leading-relaxed mb-3">
                   단어의 순서를 기억하며 <strong className="text-white">논리적 사고</strong>가 체계화됩니다.
@@ -83,7 +83,7 @@ export default function CognitiveEffectModal({ isOpen, onClose }: CognitiveEffec
                 <div className="bg-gray-900/50 rounded-lg p-3 border-l-4 border-purple-500">
                   <p className="text-xs text-gray-400">
                     💡 <strong className="text-purple-300">실생활 효과:</strong> 
-                    회의 내용을 순서대로 기억하고, 단계별 작업을 놓치지 않고 처리할 수 있어요.
+                    낯선 곳에서 길을 찾고, 상대가 말한 내용을 순서대로 기억할 수 있어요.
                   </p>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export default function CognitiveEffectModal({ isOpen, onClose }: CognitiveEffec
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-2">
-                  통합 사고력
+                  복잡한데?
                 </h3>
                 <p className="text-gray-300 text-sm leading-relaxed mb-3">
                   위치, 내용, 순서를 동시에 처리하며 <strong className="text-white">종합적 판단력</strong>이 향상됩니다.
@@ -106,7 +106,7 @@ export default function CognitiveEffectModal({ isOpen, onClose }: CognitiveEffec
                 <div className="bg-gray-900/50 rounded-lg p-3 border-l-4 border-gradient-to-b from-cyan-500 to-purple-500">
                   <p className="text-xs text-gray-400">
                     💡 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300">실생활 효과:</strong> 
-                    복잡한 정보를 정리하고, 창의적인 아이디어를 떠올리는 능력이 생겨요.
+                    복잡한 정보를 빠르게 정리하고, 해결 방법을 떠올리게 합니다.
                   </p>
                 </div>
               </div>
