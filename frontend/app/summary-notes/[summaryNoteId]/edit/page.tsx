@@ -13,7 +13,7 @@ import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon, EllipsisVerticalI
 import { RocketIcon } from 'lucide-react';
 import { AiFillYoutube } from 'react-icons/ai';
 import { NewspaperIcon } from '@heroicons/react/24/solid';
-import toast from 'react-hot-toast';
+import { showSuccess, showError } from '@/lib/toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -259,12 +259,12 @@ export default function EditSummaryNotePage() {
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
       setChangedNoteIds(new Set());
-      toast.success('단권화 노트가 성공적으로 저장되었습니다.');
+      showSuccess('단권화 노트가 성공적으로 저장되었습니다.');
       setSummaryNote(prev => prev ? { ...prev, ...updatedSummaryNoteData, userMarkdownContent } : null);
       return true;
     } catch (err: any) {
       console.error('Failed to save summary note:', err);
-      toast.error('단권화 노트 저장이 지금은 어려워요. 조금 있다 다시 해볼래요?');
+      showError('단권화 노트 저장이 지금은 어려워요. 조금 있다 다시 해볼래요?');
       return false;
     } finally {
       setLoading(false);
@@ -284,11 +284,11 @@ export default function EditSummaryNotePage() {
       setLoading(true);
       try {
         await api.delete(`/summary-notes/${summaryNoteId}`);
-        toast.success('단권화 노트가 삭제되었습니다.');
+        showSuccess('단권화 노트가 삭제되었습니다.');
         router.push('/books?tab=summary'); // Redirect to My Library, summary tab
       } catch (err) {
         console.error('Failed to delete summary note:', err);
-        toast.error('단권화 노트 삭제가 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
+        showError('단권화 노트 삭제가 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
         setLoading(false);
       }
     }
@@ -337,7 +337,7 @@ export default function EditSummaryNotePage() {
     setCurrentLinkUrl('');
     setCurrentLinkReason('');
     // setShowLinkModal(false); // Optionally close modal, or allow adding more
-    toast.success('링크가 추가되었습니다. 저장 버튼을 눌러야 최종 반영됩니다.');
+    showSuccess('링크가 추가되었습니다. 저장 버튼을 눌러야 최종 반영됩니다.');
   };
 
   const handleDeleteRelatedLinkInModal = async (linkIndexToDelete: number) => {
@@ -353,7 +353,7 @@ export default function EditSummaryNotePage() {
       )
     );
     setChangedNoteIds(prev => new Set(prev).add(selectedNoteForLinkModal._id!));
-    toast.success('링크가 삭제되었습니다. 저장 버튼을 눌러야 최종 반영됩니다.');
+    showSuccess('링크가 삭제되었습니다. 저장 버튼을 눌러야 최종 반영됩니다.');
   };
 
   // Flashcard Modal Handlers
@@ -562,7 +562,7 @@ export default function EditSummaryNotePage() {
                 note={noteForFlashcardModal} // Pass the full note object, changed from noteContext
                 onCreated={(createdCard) => {
                   console.log('Flashcard created/updated:', createdCard);
-                  toast.success(`플래시카드가 성공적으로 ${createdCard.question.includes(noteForFlashcardModal.content.substring(0,10)) ? '생성' : '수정'}되었습니다!`); // Basic feedback
+                  showSuccess(`플래시카드가 성공적으로 ${createdCard.question.includes(noteForFlashcardModal.content.substring(0,10)) ? '생성' : '수정'}되었습니다!`); // Basic feedback
                   setShowFlashcardModal(false);
                   setNoteForFlashcardModal(null);
                 }}
@@ -665,9 +665,9 @@ export default function EditSummaryNotePage() {
                                            }
                                        }
                                        if(foundOriginalIndex !== -1) handleDeleteRelatedLinkInModal(foundOriginalIndex);
-                                       else toast.error("삭제할 링크를 찾는 데 문제가 발생했습니다.");
+                                       else showError("삭제할 링크를 찾는 데 문제가 발생했습니다.");
                                   } else {
-                                      toast.error("삭제할 링크를 찾는 데 문제가 발생했습니다. (filtered)");
+                                      showError("삭제할 링크를 찾는 데 문제가 발생했습니다. (filtered)");
                                   }
                               }
                           }} 

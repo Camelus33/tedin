@@ -16,7 +16,7 @@ import { ShareIcon } from '@heroicons/react/24/solid';
 import { AiFillYoutube } from 'react-icons/ai';
 import api from '@/lib/api'; // Added import for central api instance
 import { useCartStore } from '@/store/cartStore'; // Uncommented
-import toast from 'react-hot-toast'; // Added toast import
+import { showSuccess, showError } from '@/lib/toast';
 
 // API base URL - this should match what's used elsewhere in the app (REMOVING THIS)
 // const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'; // Commented out
@@ -420,7 +420,7 @@ export default function BookDetailPage() {
   const handleNoteUpdate = async (updatedNoteFields: Partial<PageNote>) => {
     if (!updatedNoteFields._id) {
       console.error("Note ID is missing in updatedNoteFields");
-      toast.error("메모를 업데이트하려면 정보가 조금 더 필요해요.");
+      showError("메모를 업데이트하려면 정보가 조금 더 필요해요.");
       return Promise.reject("Note ID missing");
     }
 
@@ -439,7 +439,7 @@ export default function BookDetailPage() {
         setSelectedRelatedNote(prev => prev ? { ...prev, ...response.data } : null);
       }
       
-      toast.success("메모가 성공적으로 저장되었습니다.");
+      showSuccess("메모가 성공적으로 저장되었습니다.");
       return Promise.resolve(); // Resolve the promise on success
 
     } catch (error) {
@@ -451,7 +451,7 @@ export default function BookDetailPage() {
           typeof error.response.data.message === 'string') {
         errorMessage = error.response.data.message;
       }
-      toast.error(errorMessage);
+      showError(errorMessage);
       return Promise.reject(errorMessage); // Reject the promise on error
     }
   };
@@ -490,7 +490,7 @@ export default function BookDetailPage() {
       contentPreview: noteToAdd.content.substring(0, 50) + (noteToAdd.content.length > 50 ? '...' : ''),
     });
     // 사용자에게 카트 추가 성공 알림을 표시합니다. (react-hot-toast 등 사용 가능)
-    toast.success(`'${noteToAdd.content.substring(0,20)}...' 메모 조각을 소중히 담았어요.`);
+    showSuccess(`'${noteToAdd.content.substring(0,20)}...' 메모 조각을 소중히 담았어요.`);
   };
 
   if (isLoading || sessionsLoading) {

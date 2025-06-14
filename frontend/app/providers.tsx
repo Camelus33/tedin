@@ -15,15 +15,24 @@ export function Providers({ children }: ProvidersProps) {
         toastOptions={{
           duration: 3000,
           style: {
-            background: '#363636',
+            background: '#1e293b',
             color: '#fff',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            border: '1px solid rgba(6, 182, 212, 0.15)',
+            maxWidth: '420px',
+            fontWeight: '500',
           },
           success: {
             duration: 3000,
             iconTheme: {
-              primary: '#10B981',
+              primary: '#06b6d4',
               secondary: '#fff',
             },
+            style: {
+              border: '1px solid rgba(6, 182, 212, 0.3)',
+            }
           },
           error: {
             duration: 4000,
@@ -31,6 +40,9 @@ export function Providers({ children }: ProvidersProps) {
               primary: '#EF4444',
               secondary: '#fff',
             },
+            style: {
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+            }
           },
         }}
       />

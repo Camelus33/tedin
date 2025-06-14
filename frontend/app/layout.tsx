@@ -2,7 +2,6 @@ import '@/styles/globals.css'
 import { Noto_Serif_KR } from 'next/font/google'
 import { Providers as ReduxProvider } from '@/store/provider'
 import { Providers } from './providers'
-import { Toaster } from 'react-hot-toast'
 import Head from 'next/head'
 import './dashboard/styles/dashboard.css';
 import Footer from '@/components/common/Footer';
@@ -52,18 +51,6 @@ export default function RootLayout({
             <div id="debug-panel-root" />
           )}
           
-          <Toaster
-            position="bottom-center"
-            toastOptions={{
-              duration: 3000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-                borderRadius: '8px',
-                padding: '12px 16px',
-              },
-            }}
-          />
           <Footer />
         </Providers>
       </body>
