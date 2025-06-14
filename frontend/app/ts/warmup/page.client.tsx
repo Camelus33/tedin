@@ -231,8 +231,8 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
   {
     id: 'text_flow',
     title: '텍스트 흐름 훈련',
-    generalDescription: '다양한 방식으로 제시되는 텍스트의 흐름을 따라가며 시각적 처리 속도와 흐름 감각을 훈련합니다.',
-    tip: '텍스트의 흐름에 몸을 맡기듯 자연스럽게 따라가세요. 모든 단어를 이해하려 애쓰지 않아도 괜찮습니다.',
+    generalDescription: '시야가 넓어질수록 파도는 더 멀리 퍼져나갑니다.',
+    tip: '물결처럼 흐르는 텍스트를 따라가며 깊은 바다로 들어가세요. 물결 위에 떠 있듯 자연스럽게 흐름을 타보세요.',
     variations: [
       {
         name: '가속 단어 하이라이트',
@@ -397,7 +397,7 @@ export default function TSWarmupPage() {
       question: '목표 지점을 놓치지 않고 눈으로 따라오셨나요?',
       options: ['네, 잘 따라했습니다'], // Simple confirmation
       correctAnswer: '네, 잘 따라했습니다',
-      tip: '머리는 최대한 움직이지 않고 눈동자만 빠르게 움직이는 것이 중요해요! 흐름을 따라 다음으로 시선을 부드럽게 옮겨보세요.',
+      tip: '머리는 최대한 움직이지 않고 눈동자만 빠르게 움직이는 것이 중요해요! 파도가 퍼져나가듯 시선을 넓혀보세요.',
     },
     {
       type: 'chunking_practice',
@@ -989,25 +989,36 @@ export default function TSWarmupPage() {
                 ) : (
                   // Default Circle Breathing UI
                   <div className="relative w-32 h-32 mx-auto mb-4">
+                    {/* 물방울 내부 (물리적 효과를 위한 그라데이션) */}
                     <div 
-                      className={`absolute inset-0 rounded-full ${cyberTheme.primary} opacity-30 transition-all ease-in-out`}
+                      className={`absolute inset-0 rounded-full bg-gradient-to-b from-cyan-300 to-cyan-500 opacity-30 transition-all`}
                       style={{ 
                         transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
-                        transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
+                        transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`,
+                        transitionTimingFunction: breathingPhase === 'inhale' ? 'cubic-bezier(0.34, 1.56, 0.64, 1)' : 'cubic-bezier(0.47, 0, 0.745, 0.715)'
                       }}
                     />
+                    {/* 물방울 테두리 (빛 반사 효과) */}
                     <div 
-                      className={`absolute inset-0 rounded-full border-2 ${cyberTheme.borderPrimary} flex items-center justify-center transition-transform ease-in-out`}
+                      className={`absolute inset-0 rounded-full border-2 ${cyberTheme.borderPrimary} flex items-center justify-center transition-all overflow-hidden`}
                       style={{
                          transform: breathingPhase === 'inhale' || breathingPhase === 'hold1' ? 'scale(1)' : 'scale(0.5)',
-                         transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`
+                         transitionDuration: `${breathingPhase === 'inhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.inhale : breathingPhase === 'exhale' ? (activeExerciseDetail.variationParams as BreathingVariationParams).durations.exhale : 1000}ms`,
+                         transitionTimingFunction: breathingPhase === 'inhale' ? 'cubic-bezier(0.34, 1.56, 0.64, 1)' : 'cubic-bezier(0.47, 0, 0.745, 0.715)'
                       }}
                     >
+                      {/* 물방울 내부 빛 반사 효과 */}
+                      <div 
+                        className="absolute w-full h-1/3 top-0 left-0 bg-gradient-to-b from-white to-transparent opacity-30"
+                        style={{
+                          borderRadius: '50% 50% 100% 100% / 60% 60% 100% 100%',
+                        }}
+                      />
                     </div>
                      <div className="absolute inset-0 flex items-center justify-center">
-                          {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>들이쉬세요</p>}
-                          {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>멈추세요</p>}
-                          {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>내쉬세요</p>}
+                          {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>물방울이 형성되고(들이쉬기)</p>}
+                          {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>떨어지고(멈추기)</p>}
+                          {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>퍼져나가는(내쉬기)</p>}
                           {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
                           {breathingPhase === 'done' && <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />}
                       </div>
@@ -1015,11 +1026,11 @@ export default function TSWarmupPage() {
                 )}
 
                 <p className={`text-lg ${cyberTheme.textLight}`}>
-                  {breathingPhase === 'inhale' && `숨을 깊게 들이쉬세요 (${(exercise.variationParams as BreathingVariationParams).durations.inhale / 1000}초)`}
-                  {breathingPhase === 'hold1' && (exercise.variationParams as BreathingVariationParams).durations.hold1 && `잠시 멈추세요 (${(exercise.variationParams as BreathingVariationParams).durations.hold1! / 1000}초)`}
-                  {breathingPhase === 'exhale' && `천천히 내쉬세요 (${(exercise.variationParams as BreathingVariationParams).durations.exhale / 1000}초)`}
+                  {breathingPhase === 'inhale' && `물방울이 떨어지는 순간처럼, 호흡에 집중하세요 (${(exercise.variationParams as BreathingVariationParams).durations.inhale / 1000}초)`}
+                  {breathingPhase === 'hold1' && (exercise.variationParams as BreathingVariationParams).durations.hold1 && `물방울이 떨어지는 순간을 느껴보세요 (${(exercise.variationParams as BreathingVariationParams).durations.hold1! / 1000}초)`}
+                  {breathingPhase === 'exhale' && `물방울이 퍼져나가는 리듬을 느껴보세요 (${(exercise.variationParams as BreathingVariationParams).durations.exhale / 1000}초)`}
                   {breathingPhase === 'hold2' && (exercise.variationParams as BreathingVariationParams).durations.hold2 && `잠시 멈추세요 (${(exercise.variationParams as BreathingVariationParams).durations.hold2! / 1000}초)`}
-                  {breathingPhase === 'done' && '호흡을 마쳤습니다!'}
+                  {breathingPhase === 'done' && '물방울이 완성되었습니다!'}
                 </p>
               </div>
             )}
@@ -1036,16 +1047,32 @@ export default function TSWarmupPage() {
                   />
                 )}
                 {peripheralStimulus && peripheralStimulus.visible && (
-                  <div
-                    key={peripheralStimulus.id}
-                    className={`absolute w-8 h-8 rounded-md transition-opacity duration-100 ${peripheralStimulus.color} ${peripheralStimulus.shape === 'square' ? '' : 'rounded-full'}`}
-                    style={{
-                      top: peripheralStimulus.location.top,
-                      left: peripheralStimulus.location.left,
-                      transform: 'translate(-50%, -50%)',
-                      opacity: 1,
-                    }}
-                  />
+                  <>
+                    {/* 주 자극 */}
+                    <div
+                      key={peripheralStimulus.id}
+                      className={`absolute w-8 h-8 rounded-md transition-all duration-300 ${peripheralStimulus.color} ${peripheralStimulus.shape === 'square' ? '' : 'rounded-full'}`}
+                      style={{
+                        top: peripheralStimulus.location.top,
+                        left: peripheralStimulus.location.left,
+                        transform: 'translate(-50%, -50%)',
+                        opacity: 1,
+                        boxShadow: '0 0 10px rgba(139, 92, 246, 0.5)'
+                      }}
+                    />
+                    {/* 파도 효과 - 첫 번째 파동 */}
+                    <div
+                      className="absolute rounded-full bg-purple-400 opacity-0 animate-ripple"
+                      style={{
+                        top: peripheralStimulus.location.top,
+                        left: peripheralStimulus.location.left,
+                        transform: 'translate(-50%, -50%)',
+                        width: '8px',
+                        height: '8px',
+                        animation: 'ripple 1s ease-out'
+                      }}
+                    />
+                  </>
                 )}
                 {eyeTrackingPhase === 'done' && (
                   <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />
@@ -1098,17 +1125,58 @@ export default function TSWarmupPage() {
                  <div className="text-center w-full overflow-hidden relative flex items-center justify-center" style={{ height: '150px' }}>
                       { (exercise.variationParams as TextFlowVariationParams).flowType === 'highlight' && textFlowPhase === 'running' && textFlowContent.length > 0 && (
                           <p className={`text-xl ${cyberTheme.textLight} p-4`}>
-                              {textFlowContent.map((word, index) => (
-                                  <span key={index} className={`${index === currentHighlightIndex ? `${cyberTheme.primary} font-bold underline` : ''}`}>
-                                      {word}{' '}
-                                  </span>
-                              ))}
+                              {textFlowContent.map((word, index) => {
+                                  // 현재 강조 단어와 그 주변 단어들에 대한 스타일 계산
+                                  let highlightClass = '';
+                                  let transformStyle = {};
+                                  
+                                  if (index === currentHighlightIndex) {
+                                      // 현재 강조 단어
+                                      highlightClass = `${cyberTheme.primary} font-bold`;
+                                      transformStyle = { 
+                                          transform: 'translateY(-2px) scale(1.05)',
+                                          transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                                      };
+                                  } else if (index === currentHighlightIndex - 1 || index === currentHighlightIndex + 1) {
+                                      // 인접 단어들 - 약간의 강조
+                                      highlightClass = 'text-cyan-300';
+                                  }
+                                  
+                                  return (
+                                      <span 
+                                          key={index} 
+                                          className={`inline-block transition-all ${highlightClass}`}
+                                          style={transformStyle}
+                                      >
+                                          {word}{' '}
+                                      </span>
+                                  );
+                              })}
                           </p>
                       )}
                       { (exercise.variationParams as TextFlowVariationParams).flowType === 'flash' && textFlowPhase === 'running' && currentWordGroup && (
-                         <p className={`text-2xl font-semibold ${cyberTheme.textLight} p-4`}>
-                            {currentWordGroup}
-                         </p>
+                         <div className="relative">
+                           {/* 파도 배경 효과 */}
+                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent animate-wave"></div>
+                           <p className={`text-2xl font-semibold ${cyberTheme.textLight} p-4 relative z-10`}
+                              style={{
+                                animation: 'fadeInOut 0.8s ease-in-out',
+                                animationFillMode: 'both'
+                              }}
+                           >
+                              {currentWordGroup.split(' ').map((word, idx) => (
+                                <span 
+                                  key={idx} 
+                                  className="inline-block mx-1"
+                                  style={{
+                                    animation: `floatIn 0.5s ease-out ${idx * 0.1}s both`
+                                  }}
+                                >
+                                  {word}
+                                </span>
+                              ))}
+                           </p>
+                         </div>
                       )}
                       {textFlowPhase === 'done' && (
                           <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary} m-auto`} />
@@ -1130,7 +1198,7 @@ export default function TSWarmupPage() {
             (exercise.id === 'visual_span' && visualSpanPhase === 'done') || 
             (exercise.id === 'text_flow' && textFlowPhase === 'done') ? 
             (
-              <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>훈련을 완료했습니다. 다음으로 진행하세요.</p>
+              <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>준비 끝! 이제 파도를 만날 준비가 되었어요.</p>
             ) : (
               <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>화면의 안내에 따라 훈련을 진행하세요.</p>
             )
@@ -1188,7 +1256,7 @@ export default function TSWarmupPage() {
               disabled={!userInteracted}
               className={`w-full flex-grow ${!userInteracted ? cyberTheme.buttonDisabledBg : cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}
             >
-              {currentExerciseIndex === EXERCISE_CONFIGURATIONS.length - 1 ? '집중 독서 시작' : '다음 훈련'} 
+              {currentExerciseIndex === EXERCISE_CONFIGURATIONS.length - 1 ? '이제 물결 속으로' : '다음 훈련'} 
               <ChevronRightIcon className="h-5 w-5 ml-2" />
             </Button>
           </div>
