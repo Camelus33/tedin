@@ -102,14 +102,10 @@
 }
 
 @layer components {
-  }
   body {
     @apply bg-white text-neutral-900 font-sans leading-relaxed;
     font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
   }
-}
-
-@layer components {
   .container {
     @apply px-4 mx-auto max-w-7xl sm:px-6 lg:px-8;
   }
