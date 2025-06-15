@@ -1,6 +1,8 @@
 import api from '@/lib/api';
 import { notFound } from 'next/navigation';
 import { AlertTriangle, BookOpen, Calendar, Link as LinkIcon, MessageSquare, Microscope, Paperclip, Tag } from 'lucide-react';
+import LearningJourneyVisualization from '@/components/share/LearningJourneyVisualization';
+import AIAccessibleData from '@/components/share/AIAccessibleData';
 
 // interface SharePageProps {
 //   params: { shareId: string };
@@ -119,6 +121,21 @@ export default async function SharePage({ params }: { params: { shareId: string 
                 <span>{`공유일: ${formatDate(createdAt)}`}</span>
             </div>
           </header>
+
+          {/* Learning Journey Visualization - 성공한 서비스들의 UX 패턴 적용 */}
+          {jsonLdData?.learningJourney && (
+            <section className="mb-10">
+              <LearningJourneyVisualization 
+                learningJourney={jsonLdData.learningJourney}
+                className="mb-8"
+              />
+              {/* AI 접근성을 위한 구조화된 데이터 */}
+              <AIAccessibleData 
+                learningJourney={jsonLdData.learningJourney}
+                title={title ?? '제목 없음'}
+              />
+            </section>
+          )}
 
           {/* Table of Contents Section */}
           {notes && notes.length > 0 && (
