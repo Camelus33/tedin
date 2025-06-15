@@ -5,6 +5,7 @@ import Book from '../models/Book';
 import Session from '../models/Session';
 import User from '../models/User';
 import { buildJsonLd, TSNote } from '../utils/jsonLdBuilder';
+import { TimeUtils } from '../utils/timeUtils';
 import mongoose from 'mongoose';
 import {
   ActionModule,
@@ -110,7 +111,46 @@ class PublicShareService {
                   }
                 },
                 book: {
-                  $ifNull: ['$bookArr', { title: '연결된 책 정보 없음', author: '알 수 없음' }]
+                  $cond: {
+                    if: { $ne: ['$bookArr', null] },
+                    then: {
+                      title: '$bookArr.title',
+                      author: '$bookArr.author',
+                      isbn: '$bookArr.isbn',
+                      category: '$bookArr.category',
+                      readingPurpose: '$bookArr.readingPurpose',
+                      purchaseLink: '$bookArr.purchaseLink',
+                      createdAt: '$bookArr.createdAt'
+                    },
+                    else: { 
+                      title: '연결된 책 정보 없음', 
+                      author: '알 수 없음',
+                      isbn: null,
+                      category: null,
+                      readingPurpose: null,
+                      purchaseLink: null,
+                      createdAt: null
+                    }
+                  }
+                },
+                // Note의 type 필드와 생성 시간을 명시적으로 포함
+                noteType: '$type',
+                noteCreatedAt: '$createdAt',
+                // 메모 진화 필드들의 시간 정보 (현재는 updatedAt으로 추정)
+                memoEvolutionTimestamp: '$updatedAt',
+                // relatedLinks에 시간 정보 추가하면서 _id 필드 유지
+                relatedLinksWithTimestamp: {
+                  $map: {
+                    input: { $ifNull: ['$relatedLinks', []] },
+                    as: 'link',
+                    in: {
+                      _id: '$$link._id', // _id 필드 유지 (데이터 무결성 보장)
+                      type: '$$link.type',
+                      url: '$$link.url',
+                      reason: '$$link.reason',
+                      addedAt: '$updatedAt' // 현재는 updatedAt으로 추정, 향후 개별 타임스탬프 필요
+                    }
+                  }
                 }
               }
             },
@@ -118,7 +158,9 @@ class PublicShareService {
             { 
               $project: { 
                 sessionDetailsArr: 0, 
-                bookArr: 0
+                bookArr: 0,
+                // 기존 relatedLinks를 새로운 relatedLinksWithTimestamp로 교체
+                relatedLinks: '$relatedLinksWithTimestamp'
               } 
             }
           ],
@@ -152,7 +194,7 @@ class PublicShareService {
       (total, note) => total + (note.sessionDetails?.durationSeconds || 0),
       0
     );
-    const totalReadingTimeISO = `PT${Math.floor(totalDurationSeconds / 3600)}H${Math.floor((totalDurationSeconds % 3600) / 60)}M${totalDurationSeconds % 60}S`;
+    const totalReadingTimeISO = TimeUtils.formatDurationISO8601(totalDurationSeconds);
 
     // --- 전체 태그 목록 생성 ---
     const allTags = [...new Set(orderedNotes.flatMap(note => note.tags || []))];

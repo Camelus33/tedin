@@ -3,6 +3,7 @@ import {
   CognitiveProvenance,
   KnowledgePersonality,
 } from '../types/common';
+import { TimeUtils } from './timeUtils';
 
 // frontend/components/ts/TSNoteCard.tsx 에서 가져온 타입 정의를
 // 백엔드에서 사용할 수 있도록 아래에 직접 정의하거나, 공유 타입 파일에서 가져와야 합니다.
@@ -13,6 +14,7 @@ export interface RelatedLink {
   url: string;
   reason?: string;
   _id?: string;
+  addedAt?: Date | string; // 링크 추가 시점
 }
 
 export interface TSNote {
@@ -30,6 +32,9 @@ export interface TSNote {
   isArchived?: boolean;
   isTemporary?: boolean;
   originSession?: string;
+  noteType?: 'quote' | 'thought' | 'question'; // 1줄메모 유형
+  noteCreatedAt?: Date | string; // 메모 생성 시점
+  memoEvolutionTimestamp?: Date | string; // 메모 진화 시점
 }
 
 export interface TSSessionDetails {
@@ -51,6 +56,10 @@ interface BookInfo {
   title: string;
   author?: string;
   isbn?: string;
+  category?: string; // 책 장르/카테고리
+  readingPurpose?: 'exam_prep' | 'practical_knowledge' | 'humanities_self_reflection' | 'reading_pleasure'; // 읽는 목적
+  purchaseLink?: string; // 구매 링크
+  createdAt?: Date | string; // 책 등록 시점
 }
 
 interface UserInfo {
@@ -318,21 +327,244 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     return total + (note.sessionDetails?.durationSeconds || 0);
   }, 0) || 0;
 
-  // 초를 ISO 8601 기간 형식으로 변환 (e.g., PT1H30M5S)
-  const formatDurationISO8601 = (seconds: number) => {
-    if (seconds === 0) return "PT0S";
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = Math.floor(seconds % 60);
-    return `PT${h > 0 ? h + 'H' : ''}${m > 0 ? m + 'M' : ''}${s > 0 ? s + 'S' : ''}`;
-  };
-  const timeRequired = formatDurationISO8601(totalReadingDurationSeconds);
+  // TimeUtils를 사용하여 ISO 8601 기간 형식으로 변환
+  const timeRequired = TimeUtils.formatDurationISO8601(totalReadingDurationSeconds);
 
 
   // --- 신규 기능 호출 ---
   const actionableModules = buildActionModules(readingPurpose);
   const knowledgePersonality = analyzeKnowledgePersonality(notes);
 
+  // --- 학습 여정 시간 흐름 빌더 함수 ---
+  const buildLearningJourney = (summaryNoteData: SummaryNoteData): any => {
+    const learningEvents: Array<{
+      timestamp: Date;
+      type: string;
+      description: string;
+      data: any;
+    }> = [];
+
+    // 1. 책 등록 시점들 수집
+    const bookRegistrations = new Map<string, Date>();
+    notes?.forEach(note => {
+      if (note.book?.createdAt && note.book._id) {
+        const bookCreatedAt = TimeUtils.ensureDate(note.book.createdAt);
+        if (!bookRegistrations.has(note.book._id) || bookRegistrations.get(note.book._id)! > bookCreatedAt) {
+          bookRegistrations.set(note.book._id, bookCreatedAt);
+        }
+      }
+    });
+
+    bookRegistrations.forEach((createdAt, bookId) => {
+      const book = notes?.find(n => n.book?._id === bookId)?.book;
+      if (book) {
+        learningEvents.push({
+          timestamp: createdAt,
+          type: 'book_registration',
+          description: '책 등록',
+          data: {
+            '@type': 'RegisterAction',
+            object: {
+              '@type': 'Book',
+              name: book.title,
+              author: book.author,
+              category: book.category,
+              readingPurpose: book.readingPurpose,
+              purchaseLink: book.purchaseLink
+            },
+            startTime: TimeUtils.toISOString(createdAt)
+          }
+        });
+      }
+    });
+
+    // 2. 아토믹 리딩 세션들 수집
+    notes?.forEach((note, index) => {
+      if (note.sessionDetails?.createdAtISO) {
+        const sessionTime = TimeUtils.ensureDate(note.sessionDetails.createdAtISO);
+        learningEvents.push({
+          timestamp: sessionTime,
+          type: 'atomic_reading_session',
+          description: `아토믹 리딩 세션 ${index + 1}`,
+          data: {
+            '@type': 'ReadAction',
+            object: {
+              '@type': 'Book',
+              name: note.book?.title || '알 수 없는 책'
+            },
+            startTime: TimeUtils.toISOString(sessionTime),
+            duration: TimeUtils.formatDurationISO8601(note.sessionDetails.durationSeconds || 0),
+            result: {
+              '@type': 'Note',
+              text: note.content,
+              noteType: note.noteType || 'thought',
+              pageRange: {
+                startPage: note.sessionDetails.startPage,
+                endPage: note.sessionDetails.actualEndPage
+              },
+              performanceMetrics: {
+                ppm: note.sessionDetails.ppm,
+                efficiency: note.sessionDetails.ppm && note.sessionDetails.ppm > 3 ? 'high' : 'normal'
+              }
+            }
+          }
+        });
+      }
+
+      // 3. 1줄 메모 작성 시점 (세션과 다를 수 있음)
+      if (note.noteCreatedAt) {
+        const noteTime = TimeUtils.ensureDate(note.noteCreatedAt);
+        learningEvents.push({
+          timestamp: noteTime,
+          type: 'memo_creation',
+          description: `1줄 메모 작성: "${note.content.substring(0, 30)}..."`,
+          data: {
+            '@type': 'WriteAction',
+            result: {
+              '@type': 'Note',
+              text: note.content,
+              noteType: note.noteType,
+              tags: note.tags
+            },
+            startTime: TimeUtils.toISOString(noteTime)
+          }
+        });
+      }
+
+      // 4. 메모 진화 시점들
+      if (note.memoEvolutionTimestamp) {
+        const evolutionTime = TimeUtils.ensureDate(note.memoEvolutionTimestamp);
+        const evolutionStages = [];
+        
+        if (note.importanceReason) evolutionStages.push('중요성 인식');
+        if (note.momentContext) evolutionStages.push('맥락 기록');
+        if (note.relatedKnowledge) evolutionStages.push('지식 연결');
+        if (note.mentalImage) evolutionStages.push('심상 형성');
+
+        if (evolutionStages.length > 0) {
+          learningEvents.push({
+            timestamp: evolutionTime,
+            type: 'memo_evolution',
+            description: `메모 진화: ${evolutionStages.join(', ')}`,
+            data: {
+              '@type': 'UpdateAction',
+              object: {
+                '@type': 'Note',
+                text: note.content
+              },
+              result: {
+                '@type': 'EnhancedNote',
+                evolutionStages: evolutionStages,
+                importanceReason: note.importanceReason,
+                momentContext: note.momentContext,
+                relatedKnowledge: note.relatedKnowledge,
+                mentalImage: note.mentalImage
+              },
+              startTime: TimeUtils.toISOString(evolutionTime)
+            }
+          });
+        }
+      }
+
+      // 5. 관련 링크 추가 시점들
+      note.relatedLinks?.forEach((link, linkIndex) => {
+        if (link.addedAt) {
+          const linkTime = TimeUtils.ensureDate(link.addedAt);
+          learningEvents.push({
+            timestamp: linkTime,
+            type: 'knowledge_linking',
+            description: `지식 연결: ${link.type} 링크 추가`,
+            data: {
+              '@type': 'LinkAction',
+              object: {
+                '@type': 'Note',
+                text: note.content
+              },
+              target: {
+                '@type': 'WebPage',
+                url: link.url,
+                linkType: link.type
+              },
+              reason: link.reason,
+              startTime: TimeUtils.toISOString(linkTime)
+            }
+          });
+        }
+      });
+    });
+
+    // 6. 단권화 노트 생성 시점
+    if (summaryNoteData.createdAt) {
+      const summaryTime = TimeUtils.ensureDate(summaryNoteData.createdAt);
+      learningEvents.push({
+        timestamp: summaryTime,
+        type: 'summary_note_creation',
+        description: '단권화 노트 생성',
+        data: {
+          '@type': 'CreateAction',
+          result: {
+            '@type': 'Article',
+            headline: summaryNoteData.title,
+            description: summaryNoteData.description,
+            articleBody: summaryNoteData.userMarkdownContent,
+            hasPart: notes?.map(n => ({ '@type': 'Note', text: n.content }))
+          },
+          startTime: TimeUtils.toISOString(summaryTime)
+        }
+      });
+    }
+
+    // 7. AI 링크 생성 시점 (현재 시점으로 추정)
+    const currentTime = new Date();
+    learningEvents.push({
+      timestamp: currentTime,
+      type: 'ai_link_generation',
+      description: 'AI 링크 생성',
+      data: {
+        '@type': 'ShareAction',
+        object: {
+          '@type': 'Article',
+          headline: summaryNoteData.title
+        },
+        result: {
+          '@type': 'WebPage',
+          description: 'AI 에이전트가 분석 가능한 구조화된 학습 데이터'
+        },
+        startTime: TimeUtils.toISOString(currentTime)
+      }
+    });
+
+    // 시간순으로 정렬
+    learningEvents.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+    // Schema.org HowTo 구조로 변환
+    return {
+      '@type': 'HowTo',
+      name: '하비투스33 학습 여정',
+      description: '아토믹 리딩부터 AI 링크 생성까지의 완전한 학습 과정',
+      totalTime: timeRequired,
+      step: learningEvents.map((event, index) => ({
+        '@type': 'HowToStep',
+        position: index + 1,
+        name: event.description,
+        description: `${event.type} 단계: ${event.description}`,
+        startTime: TimeUtils.toISOString(event.timestamp),
+        action: event.data
+      })),
+      learningOutcome: {
+        '@type': 'LearningOutcome',
+        description: '체계적인 지식 관리와 AI 에이전트와의 효과적 상호작용을 위한 구조화된 학습 데이터 생성',
+        totalSteps: learningEvents.length,
+        timeSpan: learningEvents.length > 0 ? {
+          startDate: TimeUtils.toISOString(learningEvents[0].timestamp),
+          endDate: TimeUtils.toISOString(learningEvents[learningEvents.length - 1].timestamp)
+        } : null
+      }
+    };
+  };
+
+  // 학습 여정 생성
+  const learningJourney = buildLearningJourney(summaryNoteData);
 
   // 하비투스33 학습 방법론 및 시스템 맥락 정보
   const methodologyContext = {
@@ -667,6 +899,8 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     jsonLd.knowledgePersonality = knowledgePersonality;
   }
 
+  // 학습 여정 추가
+  jsonLd.learningJourney = learningJourney;
 
   // 전체 문서에 대한 외부 리소스 크롤링 안내
   const allExternalLinks = notes?.flatMap(note => note.relatedLinks || []) || [];
