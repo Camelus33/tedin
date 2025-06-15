@@ -154,13 +154,19 @@ class PublicShareService {
                 }
               }
             },
-            // 임시 배열이었던 필드들을 제거하여 최종 데이터를 정리합니다.
+            // 임시 배열이었던 필드들을 제거하고 relatedLinks를 새로운 데이터로 교체합니다.
+            { 
+              $addFields: {
+                // 기존 relatedLinks를 새로운 relatedLinksWithTimestamp로 교체
+                relatedLinks: '$relatedLinksWithTimestamp'
+              }
+            },
+            // 임시 필드들을 제거합니다.
             { 
               $project: { 
                 sessionDetailsArr: 0, 
                 bookArr: 0,
-                // 기존 relatedLinks를 새로운 relatedLinksWithTimestamp로 교체
-                relatedLinks: '$relatedLinksWithTimestamp'
+                relatedLinksWithTimestamp: 0
               } 
             }
           ],
