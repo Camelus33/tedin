@@ -116,8 +116,6 @@ export default async function SharePage({ params }: { params: { shareId: string 
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 break-words">{title ?? '제목 없음'}</h1>
             {description && <p className="mt-4 text-lg text-gray-600">{description}</p>}
              <div className="mt-4 text-sm text-gray-500">
-                <span>{`작성자: ${user?.name ?? '알 수 없음'}`}</span>
-                <span className="mx-2">·</span>
                 <span>{`공유일: ${formatDate(createdAt)}`}</span>
             </div>
           </header>
