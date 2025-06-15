@@ -88,10 +88,10 @@ export default function CoreFeaturesFreeSection() {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-gradient-to-r from-cyan-600 via-purple-600 to-violet-600 bg-clip-text text-transparent">
-              깊은 학습의 파급 효과
+              작지만 강한 몰입
             </span>
             <br />
-            <span className="text-gray-800">평생 무료로 시작하세요</span>
+            <span className="text-gray-800">평생 무료</span>
           </h2>
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
             <span className="text-cyan-600 font-semibold">작은 물방울 하나</span>가 만들어내는 

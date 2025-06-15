@@ -62,8 +62,8 @@ export default function TestimonialsSection() {
           <div className="max-w-4xl mx-auto">
             <blockquote className="text-2xl md:text-3xl font-serif text-gray-700 italic leading-relaxed">
               "처음엔 그냥 3분이었는데,<br />
-              어느새 공부하는 방식이 완전히 바뀌었어요.<br />
-              정말 신기해요."
+              어느새 습관이 완전히 바뀌었어요.<br />
+              만족합니다!"
             </blockquote>
             <cite className="block mt-6 text-lg text-gray-500 not-italic">
               — 실제 사용자
