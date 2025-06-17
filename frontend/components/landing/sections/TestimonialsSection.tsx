@@ -33,7 +33,7 @@ export default function TestimonialsSection() {
           AI가 내 생각을 읽는 것 같아요
         </h2>
         <p className="text-lg md:text-xl text-gray-600 text-center mb-16 max-w-3xl mx-auto">
-           복잡한 프롬프트 작성 없이, AI와 진정한 협업을 시작한 사용자들의 실제 경험담입니다.
+           일일이 사실 확인하거나 다시 설명하는 것, 그리고 간간히 섞인 할루시네이션 걱정 없이 안심학 사용해요! 대박이죠.
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-10">
