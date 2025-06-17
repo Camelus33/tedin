@@ -40,33 +40,41 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="max-w-3xl mx-auto text-center"
+          className="max-w-5xl mx-auto"
         >
-          {/* Hook Question */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
-            작은 물방울 하나가<br />
-            큰 파도가 됩니다.
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl text-gray-700 max-w-xl mx-auto">
-            얕은 학습에서 지혜의 심연으로, <br className="hidden sm:block" />
-            이제, 당신의 여정이 시작됩니다.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
-            <Link
-              href="/auth/register"
-              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-primary hover:opacity-90 transition duration-150 ease-in-out w-full sm:w-auto"
-            >
-              <SparklesIconOutline className="w-5 h-5 mr-2 -ml-1" aria-hidden="true" /> 
-              첫 파도 만들기
-            </Link>
-            {/* Optional secondary CTA (e.g., learn more) */}
-            {/* <Link
-              href="#epiphany" // Scroll link
-              className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-indigo-700 bg-white hover:bg-gray-50 transition duration-150 ease-in-out w-full sm:w-auto"
-            >
-              진짜 이유 알아보기
-              <ArrowRightIcon className="w-5 h-5 ml-2" aria-hidden="true" />
-            </Link> */}
+          <div className="flex items-center justify-center gap-12">
+            {/* Text Content */}
+            <div className="max-w-xl text-left">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
+                작은 물방울 하나가<br />
+                큰 파도가 됩니다.
+              </h1>
+              <p className="mt-6 text-lg sm:text-xl text-gray-700">
+                얕은 학습에서 지혜의 심연으로, <br className="hidden sm:block" />
+                이제, 당신의 여정이 시작됩니다.
+              </p>
+              <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
+                <Link
+                  href="/auth/register"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-primary hover:opacity-90 transition duration-150 ease-in-out w-full sm:w-auto"
+                >
+                  <SparklesIconOutline className="w-5 h-5 mr-2 -ml-1" aria-hidden="true" />
+                  첫 파도 만들기
+                </Link>
+              </div>
+            </div>
+            
+            {/* Video Content */}
+            <div className="w-1/4">
+              <video
+                className="rounded-lg shadow-2xl w-full aspect-[2/3] object-cover"
+                src="/20250617_0407_Chaos_to_Clarity_gen_01jxy13sb5egns3xcgs3ffdqvg.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+            </div>
           </div>
         </motion.div>
       </div>
