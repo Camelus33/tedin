@@ -30,7 +30,7 @@ export default function SolutionSection() {
               <span className="text-cyan-400 font-semibold">3분의 작은 시작</span>이 만들어내는
               <span className="text-purple-400 font-semibold"> 깊은 학습의 파도</span>.
               <br className="hidden sm:block" />
-              AMFA와 함께 당신만의 지식 바다를 탐험하세요.
+              지혜로운 물개처럼, AMFA와 함께 지식의 바다를 맘껏 유영하세요.
             </p>
           </motion.div>
         </div>
@@ -55,24 +55,23 @@ export default function SolutionSection() {
           className="text-center mt-16"
         >
           <div className="max-w-4xl mx-auto">
-            <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
-              <strong className="font-semibold text-gray-900">read short, deep dive</strong><br />
-              3분 읽고 1줄 메모라는 작은 물방울 하나가 당신을 지혜의 심연으로 이끕니다.
+            <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-8">
+              <strong className="font-semibold text-gray-100">read short, deep dive</strong><br />
+              3분 읽고 1줄 메모라는 작은 시작이 지식의 여정을 열어줍니다.
               <br /><br />
-              그 파문은 멈추지 않습니다.<br />
-              1줄 메모에서 시작된 생각이 연결되고 진화하며 어느새 큰 파도가 됩니다.
+              이 메모는 진화하고 융합되어 단권화 노트로 성장하고, 마침내 당신만의 AI-Link라는 지식 캡슐로 응축됩니다. 프롬프트 없이도 AI와 깊이 소통할 수 있는 열쇠가 완성되는 순간입니다.
             </p>
             <div className="grid md:grid-cols-2 gap-8 text-left">
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
-                <h3 className="text-lg font-semibold text-cyan-400 mb-3">파도의 시작점</h3>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">지식의 시작점</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  3분 읽고 1줄 메모, 당신의 작은 물방울이 첫 번째 기적을 만들어냅니다.
+                  3분 읽고 1줄 메모, 이 작은 실천이 메모 진화의 첫 단계입니다. 당신의 생각이 구조화되기 시작합니다.
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
-                <h3 className="text-lg font-semibold text-purple-400 mb-3">무한한 확산</h3>
+                <h3 className="text-lg font-semibold text-purple-400 mb-3">지식의 융합</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  1줄 메모에서 시작된 생각이 바다로 퍼져나가며 깊은 통찰의 파도로 진화합니다.
+                  개별 메모가 서로 연결되고 융합되어 단권화 노트로 발전합니다. 이 과정에서 당신의 지식은 깊이와 넓이를 동시에 얻습니다.
                 </p>
               </div>
             </div>
