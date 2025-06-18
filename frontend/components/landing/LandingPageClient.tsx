@@ -17,7 +17,6 @@ import CoreFeaturesFreeSection from './sections/CoreFeaturesFreeSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import FinalCtaSection from './sections/FinalCtaSection';
 import FaqSection from './sections/FAQSection';
-import FinalHookSection from './sections/FinalHookSection';
 
 export default function LandingPageClient() {
   const router = useRouter();
@@ -62,7 +61,7 @@ export default function LandingPageClient() {
                 href="/auth/register"
                 className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                나의 파도 만들기
+                나의 AI-Link 만들기
               </Link>
             </div>
           </div>
@@ -79,7 +78,6 @@ export default function LandingPageClient() {
         <TestimonialsSection />
         <FinalCtaSection />
         <FaqSection />
-        <FinalHookSection />
       </main>
 
       {/* Footer is rendered globally in layout.tsx */}

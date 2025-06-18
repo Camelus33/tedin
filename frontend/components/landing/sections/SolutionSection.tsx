@@ -19,18 +19,17 @@ export default function SolutionSection() {
           >
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
               <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
-                read short,
+                당신의 메모,
               </span>
               <br />
               <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
-                deep dive
+                AI-Link로 진화합니다.
               </span>
             </h2>
             <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              <span className="text-cyan-400 font-semibold">3분의 작지만 강한 몰입</span>이 만들어내는
-              <span className="text-purple-400 font-semibold"> 지식의 파도</span>.
+              생각은 메모가 되고, 메모는 연결되어 단권화 됩니다.
               <br className="hidden sm:block" />
-              AMFA와 함께 지혜의 심연을 향해 Dive.
+              이 단권화를 다시 모아 지식캡슐, <strong className="font-semibold text-purple-300">AI-Link</strong>로 만듭니다.
             </p>
           </motion.div>
         </div>
@@ -56,22 +55,20 @@ export default function SolutionSection() {
         >
           <div className="max-w-4xl mx-auto">
             <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-8">
-              <strong className="font-semibold text-gray-100">read short, deep dive</strong><br />
-              3분 읽고 1줄 메모, 지식의 파도가 시작됩니다.
-              <br /><br />
-              이 메모는 진화하고 융합되어 단권화 노트로 성장하고, 마침내 AI-Link라는 지식 캡슐로 응축됩니다. Prompt Free AI 답변 완성!
+              <strong className="font-semibold text-gray-100">‘AI-Link’는 살아있는 지식입니다.</strong><br />
+              당신이 학습할수록 함께 성장하고 진화하며, 프롬프트 없이도 당신의 의도를 먼저 파악하는 강력한 지능으로 거듭납니다.
             </p>
             <div className="grid md:grid-cols-2 gap-8 text-left">
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
-                <h3 className="text-lg font-semibold text-cyan-400 mb-3">Atomic Reading</h3>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">메모 (The Seed)</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  3분 읽고 1줄 메모, 당신의 생각이 구조화되기 시작합니다.
+                  모든 위대한 진화는 하나의 작은 씨앗에서 시작됩니다. 당신의 메모가 바로 그 씨앗입니다.
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
-                <h3 className="text-lg font-semibold text-purple-400 mb-3">AI - Link</h3>
+                <h3 className="text-lg font-semibold text-purple-400 mb-3">AI-Link (The Organism)</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  개별 메모가 서로 연결 - 진화 - 융합 - 구조화 - 응축. 이 과정을 통해 당신의 지식 캡슐이 생성됩니다.
+                  씨앗(메모)들이 모여 서로 연결되고 융합하며, 당신의 생각을 대변하는 고유한 지적 생명체로 태어납니다.
                 </p>
               </div>
             </div>

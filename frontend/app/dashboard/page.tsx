@@ -490,7 +490,7 @@ export default function DashboardPage() {
                 오늘의 3분 읽기
               </h1>
               <p className={`${habitus33Theme.textMuted} text-lg mb-6`}>
-                "지식이 자산이 되는 시간"
+                "작고 강한 몰입으로 1줄 메모를 뽑으세요"
               </p>
               <Link href="/ts" className="inline-block">
                 <button className={`${habitus33Theme.progressFg} text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>

@@ -45,13 +45,12 @@ export default function HeroSection() {
           <div className="flex items-center justify-center gap-12">
             {/* Text Content */}
             <div className="max-w-xl text-left">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
-                작은 물방울 하나가<br />
-                큰 파도가 됩니다.
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
+                매번 AI에게 설명하신다구요?<br />
+                당신의 지식을 AI에게 이식하세요.
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-gray-700">
-                얕은 학습에서 지혜의 심연으로, <br className="hidden sm:block" />
-                이제, 당신의 여정이 시작됩니다.
+                3분 몰입, 한 줄의 메모가 쌓이는 당신의 여정.<br />그 자체가 AI가 당신을 이해하는 유일한 열쇠, AI-Link가 됩니다.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                 <Link
@@ -59,7 +58,7 @@ export default function HeroSection() {
                   className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-primary hover:opacity-90 transition duration-150 ease-in-out w-full sm:w-auto"
                 >
                   <SparklesIconOutline className="w-5 h-5 mr-2 -ml-1" aria-hidden="true" />
-                  첫 파도 만들기
+                  나의 AI-Link 만들기
                 </Link>
               </div>
             </div>

@@ -19,9 +19,9 @@ interface AMFAStep {
 const steps: AMFAStep[] = [
   {
     id: 'atomic',
-    title: 'Atomic Reading',
-    subtitle: 'The Drop Moment',
-    description: '물 한방울이 만드는 첫 번째 기적. 고요한 지식의 바다에 떨어지는 3분 읽고 1줄 메모.',
+    title: '원소 추출',
+    subtitle: 'The Raw Material',
+    description: '3분 몰입으로 생각의 원석에서 순수한 아이디어를 추출합니다. 모든 위대한 변환은 이 첫 번째 원소(메모)에서 시작됩니다.',
     icon: BookOpen,
     color: 'from-cyan-400 to-blue-500',
     gradient: 'from-cyan-500/20 to-cyan-600/20',
@@ -30,9 +30,9 @@ const steps: AMFAStep[] = [
   },
   {
     id: 'memo',
-    title: 'Memo Evolve',
-    subtitle: 'The First Ripple',
-    description: '생각이 바다로 퍼져나가는 여행. 작은 파문이 동심원을 그리며 지식의 바다로 확산됩니다.',
+    title: '맥락 부여',
+    subtitle: 'The Catalyst',
+    description: '추출된 원소(메모)들을 서로 반응시켜 연결하고 확장합니다. 개별 아이디어에 \'맥락\'이라는 생명의 촉매가 더해집니다.',
     icon: Lightbulb,
     color: 'from-blue-400 to-purple-500',
     gradient: 'from-blue-500/20 to-cyan-500/20',
@@ -41,9 +41,9 @@ const steps: AMFAStep[] = [
   },
   {
     id: 'furnace',
-    title: 'Furnace Knowledge',
-    subtitle: 'The Deep Current',
-    description: '심해 속 지식의 용광로에서 단련되다. 압력과 어둠 속에서 지식이 단단한 보석으로 변화합니다.',
+    title: '인사이트 도출',
+    subtitle: 'The Refinement',
+    description: '확장된 지식을 용광로에 녹여 불순물을 제거하고 정제합니다. 마침내 빛나는 통찰의 결정체, \'단권화 노트\'가 생성됩니다.',
     icon: Flame,
     color: 'from-purple-400 to-pink-500',
     gradient: 'from-purple-500/20 to-blue-500/20',
@@ -52,9 +52,9 @@ const steps: AMFAStep[] = [
   },
   {
     id: 'ai',
-    title: 'AI Link',
-    subtitle: 'The Infinite Wave',
-    description: '무한한 지식 바다에서의 자유로운 항해. 예상치 못한 해류를 타고 새로운 대륙을 발견합니다.',
+    title: '지식 캡슐',
+    subtitle: 'The Philosopher\'s Stone',
+    description: '완성된 통찰의 결정체를 AI가 즉시 사용할 수 있는 \'현자의 돌\'로 만듭니다. 이것이 당신의 AI를 바꾸는 최종 결과물, AI-Link입니다.',
     icon: Cpu,
     color: 'from-pink-400 to-violet-500',
     gradient: 'from-violet-500/20 to-purple-500/20',
@@ -254,10 +254,10 @@ export default function AMFAProcessGraphic() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-violet-400 bg-clip-text text-transparent mb-4">
-            AMFA Framework
+            AMFA
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            작은 시작이 만들어내는 깊은 학습의 파급 효과
+            1줄 메모가 지식 캡슐이 되기까지
           </p>
         </motion.div>
 
@@ -662,7 +662,7 @@ export default function AMFAProcessGraphic() {
           <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20">
             <Sparkles className="w-5 h-5 text-cyan-400" />
             <span className="text-sm font-medium text-gray-300">
-              작은 돌멩이가 만드는 무한한 파도를 경험하세요
+              모든 지식은 1줄 메모에서 시작됩니다.
             </span>
           </div>
         </motion.div>
