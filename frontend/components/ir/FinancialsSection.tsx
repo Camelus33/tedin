@@ -122,7 +122,7 @@ const FinancialsSection = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full">
-              <h3 className="text-2xl md:text-3xl font-bold mb-4 text-center md:text-left">Seed 투자금(5억) 활용 계획</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-4 text-center md:text-left">투자금 활용 계획</h3>
               <p className="text-gray-400 text-center md:text-left mb-6">조달된 자금은 성장을 가속화하고 시장 지배력을 확보하는 데 사용됩니다.</p>
               <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">

@@ -83,10 +83,10 @@ const ProblemSection = () => {
     },
     {
       icon: <FiAlertTriangle size={24} />,
-      title: '컨텍스트 붕괴',
+      title: '컨텍스트 끊김',
       value: '275',
       unit: '회',
-      source: '하루 평균 업무 중단 횟수. 2분마다 맥락이 끊깁니다.',
+      source: '하루 평균 업무 중단 횟수. 2분마다 업무 맥락이 끊깁니다.',
       delay: 0.4,
     },
   ];
@@ -103,10 +103,10 @@ const ProblemSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            프롬프트 번아웃 : <span className="text-indigo-400">컨텍스트 붕괴</span>
+            프롬프트 번아웃 : <span className="text-indigo-400">컨텍스트 고갈</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            AI는 대단한 혁신을 가져왔지만, 지식 근로자의 현실은 번아웃입니다. 고품질 답변에는 더 많은 도메인 컨텍스트가 필요합니다.
+            AI는 대단한 혁신을 가져왔지만, 지식 근로자의 현실은 번아웃입니다. 고품질 답변에는 더 높은 수준의 도메인 컨텍스트가 필요합니다.
           </motion.p>
         </motion.div>
 
