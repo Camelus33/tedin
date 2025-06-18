@@ -9,6 +9,52 @@ interface AMFAAnimationProps {
 
 const NUM_PARTICLES = 80;
 
+// A single particle component that can safely use hooks
+const Particle = ({ particle, stage }: { particle: any, stage: MotionValue<number> }) => {
+  const x = useTransform(stage, [1, 2, 3, 4], [
+    0.5 + Math.cos(particle.angle) * particle.distance,
+    0.5 + Math.cos(particle.angle) * particle.distance * 0.5,
+    0.5,
+    0.5
+  ]);
+  const y = useTransform(stage, [1, 2, 3, 4], [
+    0.5 + Math.sin(particle.angle) * particle.distance,
+    0.5 + Math.sin(particle.angle) * particle.distance * 0.5,
+    0.5,
+    0.5
+  ]);
+  const r = useTransform(stage, [1, 2, 3, 4], [0.015, 0.03, 0.06, 0.01]);
+
+  return <motion.circle cx={x} cy={y} r={r} fill="rgba(165, 180, 252, 0.7)" />;
+};
+
+const ConnectingLine = ({ p1, p2, stage }: { p1: any, p2: any, stage: MotionValue<number> }) => {
+  const opacity = useTransform(stage, [1, 1.8, 2.2, 3], [0, 0.5, 0.5, 0]);
+
+  // Use static values for line positions, but animate opacity
+  const x1 = 0.5 + Math.cos(p1.angle) * p1.distance * 0.5;
+  const y1 = 0.5 + Math.sin(p1.angle) * p1.distance * 0.5;
+  const x2 = 0.5 + Math.cos(p2.angle) * p2.distance * 0.5;
+  const y2 = 0.5 + Math.sin(p2.angle) * p2.distance * 0.5;
+  
+  const animatedX1 = useTransform(stage, [1, 2], [0.5 + Math.cos(p1.angle) * p1.distance, x1]);
+  const animatedY1 = useTransform(stage, [1, 2], [0.5 + Math.sin(p1.angle) * p1.distance, y1]);
+  const animatedX2 = useTransform(stage, [1, 2], [0.5 + Math.cos(p2.angle) * p2.distance, x2]);
+  const animatedY2 = useTransform(stage, [1, 2], [0.5 + Math.sin(p2.angle) * p2.distance, y2]);
+
+  return (
+    <motion.line
+      x1={animatedX1}
+      y1={animatedY1}
+      x2={animatedX2}
+      y2={animatedY2}
+      stroke="rgba(129, 140, 248, 0.3)"
+      strokeWidth="0.002"
+      style={{ opacity }}
+    />
+  );
+};
+
 const AMFAAnimation: React.FC<AMFAAnimationProps> = ({ scrollYProgress }) => {
   const particles = React.useMemo(() => {
     return Array.from({ length: NUM_PARTICLES }).map(() => ({
@@ -36,43 +82,16 @@ const AMFAAnimation: React.FC<AMFAAnimationProps> = ({ scrollYProgress }) => {
       </defs>
       
       <g style={{ filter: 'url(#goo)' }}>
-        {particles.map((p, i) => {
-          const x = useTransform(stage, [1, 2, 3, 4], [
-            0.5 + Math.cos(p.angle) * p.distance,
-            0.5 + Math.cos(p.angle) * p.distance * 0.5,
-            0.5,
-            0.5
-          ]);
-          const y = useTransform(stage, [1, 2, 3, 4], [
-            0.5 + Math.sin(p.angle) * p.distance,
-            0.5 + Math.sin(p.angle) * p.distance * 0.5,
-            0.5,
-            0.5
-          ]);
-          const r = useTransform(stage, [1, 2, 3, 4], [0.015, 0.03, 0.06, 0.01]);
-
-          return <motion.circle key={i} cx={x} cy={y} r={r} fill="rgba(165, 180, 252, 0.7)" />;
-        })}
+        {particles.map((p, i) => (
+          <Particle key={i} particle={p} stage={stage} />
+        ))}
       </g>
       
       {/* Stage 2: Lines connecting particles */}
       <g>
         {particles.map((p1, i) => {
-           // Connect to next particle for simplicity
           const p2 = particles[(i + 1) % NUM_PARTICLES];
-          const opacity = useTransform(stage, [1, 1.8, 2.2, 3], [0, 0.5, 0.5, 0]);
-          return (
-             <motion.line
-               key={i}
-               x1={0.5 + Math.cos(p1.angle) * p1.distance}
-               y1={0.5 + Math.sin(p1.angle) * p1.distance}
-               x2={0.5 + Math.cos(p2.angle) * p2.distance}
-               y2={0.5 + Math.sin(p2.angle) * p2.distance}
-               stroke="rgba(129, 140, 248, 0.3)"
-               strokeWidth="0.002"
-               style={{ opacity }}
-             />
-          )
+          return <ConnectingLine key={`line-${i}`} p1={p1} p2={p2} stage={stage} />
         })}
       </g>
       
