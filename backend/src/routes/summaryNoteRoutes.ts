@@ -5,7 +5,8 @@ import {
   updateSummaryNote,
   getSummaryNotesByUserId,
   deleteSummaryNote,
-  createPublicShareLink
+  createPublicShareLink,
+  getSummaryNoteData
 } from '../controllers/summaryNoteController';
 import { authenticate } from '../middlewares/auth'; // 인증 미들웨어 임포트
 
@@ -44,6 +45,15 @@ router.post('/', createSummaryNote);
 router.get('/:summaryNoteId', getSummaryNoteById);
 
 /**
+ * @route GET /api/summary-notes/:summaryNoteId/data
+ * @description 특정 ID를 가진 단권화 노트의 순수 데이터(JSON)를 조회합니다. AI-Link 컨텍스트 주입에 사용됩니다.
+ * @access Private (인증 필요)
+ * @param {string} summaryNoteId - 조회할 단권화 노트의 ID
+ * @handler summaryNoteController.getSummaryNoteData
+ */
+router.get('/:summaryNoteId/data', getSummaryNoteData);
+
+/**
  * @route PUT /api/summary-notes/:summaryNoteId
  * @description 특정 ID를 가진 단권화 노트를 업데이트합니다.
  * @access Private (인증 필요)
@@ -62,10 +72,10 @@ router.put('/:summaryNoteId', updateSummaryNote);
 router.delete('/:summaryNoteId', deleteSummaryNote);
 
 /**
- * @route POST /api/summary-notes/:id/public-link
+ * @route POST /api/summary-notes/:summaryNoteId/public-link
  * @description Creates a new public share link for a specific summary note.
  * @access Private (Requires authentication)
  */
-router.post('/:id/public-link', authenticate, createPublicShareLink);
+router.post('/:summaryNoteId/public-link', createPublicShareLink);
 
 export default router; 

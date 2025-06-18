@@ -1,0 +1,71 @@
+{
+  "@context": {
+    "h33o": "https://habitus33.ai/ontology/core#",
+    "h33r": "https://habitus33.ai/resource/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "id": "@id",
+    "type": "@type",
+    
+    "AiLink": "h33o:AiLink",
+    
+    "summaryNoteId": {
+        "@id": "prov:wasDerivedFrom",
+        "@type": "@id"
+    },
+    "shareId": {
+        "@id": "h33o:hasShareId",
+        "@type": "xsd:string"
+    },
+    "createdAt": {
+        "@id": "prov:generatedAtTime",
+        "@type": "xsd:dateTime"
+    },
+    "learningJourney": {
+      "@id": "h33o:describesJourney"
+    },
+    "totalTime": "h33o:hasTotalDuration",
+    "totalSteps": "h33o:hasTotalSteps",
+    "step": {
+      "@id": "h33o:hasStep",
+      "@container": "@list"
+    },
+    "position": "h33o:hasStepNumber",
+    "name": "skos:prefLabel",
+    "description": "skos:definition",
+    "startTime": {
+      "@id": "prov:startedAtTime",
+      "@type": "xsd:dateTime"
+    },
+    "action": "h33o:hasAction",
+
+    "knowledgeGraph": {
+        "@id": "h33o:containsKnowledgeGraph"
+    },
+    "nodes": {
+        "@id": "h33o:hasNode",
+        "@container": "@set"
+    },
+    "edges": {
+        "@id": "h33o:hasEdge",
+        "@container": "@set"
+    },
+    "title": "skos:prefLabel",
+    "relevanceScore": "h33o:hasRelevanceScore",
+    "source": {
+        "@id": "h33o:sourceNode",
+        "@type": "@id"
+    },
+    "target": {
+        "@id": "h33o:targetNode",
+        "@type": "@id"
+    },
+    "strength": "h33o:hasStrength",
+    
+    "cognitiveProfile": "h33o:hasCognitiveProfile",
+    
+    "aiInterpretationProtocol": "h33o:hasInterpretationProtocol"
+  }
+} 

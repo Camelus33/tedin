@@ -205,11 +205,11 @@ export const deleteSummaryNote = async (req: Request, res: Response) => {
  */
 export const createPublicShareLink = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const { summaryNoteId } = req.params;
     const userId = (req as any).user.id; // Assuming user ID is attached by auth middleware
 
     // 1. Verify ownership
-    const summaryNote = await SummaryNote.findOne({ _id: id, userId });
+    const summaryNote = await SummaryNote.findOne({ _id: summaryNoteId, userId });
     if (!summaryNote) {
       res.status(404).json({ message: '해당 노트를 찾을 수 없거나 소유자가 아닙니다.' });
       return;
@@ -232,6 +232,43 @@ export const createPublicShareLink = async (req: Request, res: Response): Promis
   } catch (error) {
     console.error('Error creating public share link:', error);
     res.status(500).json({ message: '링크를 생성하는 중 서버 오류가 발생했습니다.' });
+  }
+};
+
+/**
+ * @function getSummaryNoteData
+ * @description ID를 사용하여 특정 단권화 노트의 순수 JSON 데이터를 조회합니다. AI-Link 생성을 위해 사용됩니다.
+ * 해당 단권화 노트가 요청한 사용자의 소유인지 확인하는 로직이 포함됩니다.
+ * @param {Request} req - Express 요청 객체. params에 summaryNoteId 포함.
+ * @param {Response} res - Express 응답 객체.
+ * @returns {Promise<void>} 성공 시 200 상태 코드와 조회된 단권화 노트의 순수 데이터 객체를 JSON으로 반환합니다.
+ */
+export const getSummaryNoteData = async (req: Request, res: Response) => {
+  try {
+    const { summaryNoteId } = req.params;
+    const userId = (req as any).user?.id;
+
+    if (!mongoose.Types.ObjectId.isValid(summaryNoteId)) {
+        return res.status(400).json({ message: '유효하지 않은 노트 ID 형식입니다.' });
+    }
+
+    // .lean()을 사용하여 순수 JavaScript 객체로 바로 조회합니다.
+    const summaryNoteData = await SummaryNote.findById(summaryNoteId).lean();
+
+    if (!summaryNoteData) {
+        return res.status(404).json({ message: '찾으시는 노트가 숨어있네요. 다른 곳에서 만나볼까요?' });
+    }
+
+    // 권한 검증: 요청한 사용자가 노트의 소유주인지 확인합니다.
+    if (summaryNoteData.userId.toString() !== userId) {
+      return res.status(403).json({ message: '이 노트에 접근할 수 없어요. 내 노트로 돌아갈까요?' });
+    }
+    
+    res.status(200).json(summaryNoteData);
+    
+  } catch (error: any) {
+    console.error('[GetSummaryNoteData Error]', error);
+    res.status(500).json({ message: '데이터를 가져오는 중 문제가 있어요. 다시 시도해 주실래요?', error: error.message });
   }
 };
 

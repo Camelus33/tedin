@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -8,6 +8,7 @@ import { RocketIcon, CheckIcon, ClipboardIcon, XIcon } from 'lucide-react';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AiLinkModalProps {
   summaryNoteId: string;
@@ -35,6 +36,36 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
   const [isLoading, setIsLoading] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState('');
   const [isCopied, setIsCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState('share');
+  
+  // For Ontology Feature
+  const [aiLinkData, setAiLinkData] = useState<object | null>(null);
+  const [displayedData, setDisplayedData] = useState<object | null>(null);
+  const [isOntologyApplied, setIsOntologyApplied] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(false);
+  const [isAiDataCopied, setIsAiDataCopied] = useState(false);
+
+  useEffect(() => {
+    const fetchSummaryNoteData = async () => {
+      if (activeTab === 'ai-data' && isOpen && !aiLinkData) {
+        setIsDataLoading(true);
+        try {
+          // NOTE: Assuming this API endpoint exists to fetch the raw summary note data.
+          const response = await api.get(`/summary-notes/${summaryNoteId}/data`);
+          setAiLinkData(response.data);
+          setDisplayedData(response.data);
+          toast.success('AI-Link 데이터를 성공적으로 불러왔습니다.');
+        } catch (error) {
+          console.error('Failed to fetch AI link data:', error);
+          toast.error('AI-Link 데이터를 불러오는 데 실패했습니다.');
+        } finally {
+          setIsDataLoading(false);
+        }
+      }
+    };
+
+    fetchSummaryNoteData();
+  }, [activeTab, isOpen, summaryNoteId, aiLinkData]);
 
   const handleGenerateLink = useCallback(async () => {
     setIsLoading(true);
@@ -83,6 +114,36 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
   };
+
+  const handleToggleOntology = () => {
+    if (!aiLinkData) return;
+
+    const newIsOntologyApplied = !isOntologyApplied;
+    setIsOntologyApplied(newIsOntologyApplied);
+
+    if (newIsOntologyApplied) {
+      // NOTE: For this to work reliably in production, 
+      // NEXT_PUBLIC_FRONTEND_URL environment variable should be set in your .env.local file.
+      // Example: NEXT_PUBLIC_FRONTEND_URL=https://www.habitus33.com
+      const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || window.location.origin;
+      const dataWithContext = {
+        '@context': `${baseUrl}/ai-link-context.jsonld`,
+        ...aiLinkData,
+      };
+      setDisplayedData(dataWithContext);
+    } else {
+      setDisplayedData(aiLinkData);
+    }
+  };
+
+  const handleCopyAiData = () => {
+    if (!displayedData) return;
+    const dataString = JSON.stringify(displayedData, null, 2);
+    navigator.clipboard.writeText(dataString);
+    setIsAiDataCopied(true);
+    toast.success('AI 데이터가 클립보드에 복사되었습니다.');
+    setTimeout(() => setIsAiDataCopied(false), 2000);
+  };
   
   // Reset state when modal is closed
   const handleModalOpenChange = (open: boolean) => {
@@ -91,6 +152,12 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
         setGeneratedUrl('');
         setIsLoading(false);
         setIsCopied(false);
+        // Reset new states as well
+        setAiLinkData(null);
+        setDisplayedData(null);
+        setIsOntologyApplied(false);
+        setActiveTab('share');
+        setIsAiDataCopied(false);
       }, 300); // Allow for closing animation
     }
     onOpenChange(open);
@@ -102,56 +169,92 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
         <DialogHeader>
           <DialogTitle className={`flex items-center justify-center space-x-2 ${cyberTheme.primary} text-lg`}>
             <RocketIcon className="h-5 w-5" />
-            <span>AI 링크 생성</span>
+            <span>AI-Link 활용</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-4 text-center">
-            AI가 당신의 노트를 더 깊이 이해하도록<br/>특별한 링크를 생성합니다.
+            생성된 링크를 공유하거나, 데이터를 복사하여<br/>다양한 AI 모델에 당신의 생각을 전달하세요.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4">
-          {generatedUrl ? (
-            <div className="space-y-3">
-              <p className="text-sm text-gray-300">링크 생성 성공! 복사하세요.</p>
-              <div className="flex items-center space-x-2">
-                <Input
-                  readOnly
-                  value={generatedUrl}
-                  className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} text-cyan-300`}
-                />
-                <Button 
-                  size="icon" 
-                  onClick={handleCopyToClipboard} 
-                  className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg}`}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-900">
+            <TabsTrigger value="share">공유 링크</TabsTrigger>
+            <TabsTrigger value="ai-data">AI용 데이터</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="share" className="py-4">
+            {generatedUrl ? (
+              <div className="space-y-3">
+                <p className="text-sm text-gray-300">링크 생성 성공! 복사하여 공유하세요.</p>
+                <div className="flex items-center space-x-2">
+                  <Input
+                    readOnly
+                    value={generatedUrl}
+                    className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} text-cyan-300`}
+                  />
+                  <Button 
+                    size="icon" 
+                    onClick={handleCopyToClipboard} 
+                    className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg}`}
+                  >
+                    {isCopied ? <CheckIcon className="h-4 w-4" /> : <ClipboardIcon className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center space-y-4">
+                 <p className="text-gray-300">
+                  NotebookLM, Gemini 등 AI에게 공유하여<br/>더 풍부한 답변을 얻어보세요.
+                </p>
+                <Button
+                  onClick={handleGenerateLink}
+                  disabled={isLoading}
+                  className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}
                 >
-                  {isCopied ? <CheckIcon className="h-4 w-4" /> : <ClipboardIcon className="h-4 w-4" />}
+                  {isLoading ? (
+                     <span className="animate-spin h-4 w-4 border-2 border-white/20 border-t-white rounded-full mr-2"></span>
+                  ) : (
+                    <RocketIcon className="h-4 w-4 mr-2" />
+                  )}
+                  {isLoading ? '생성 중...' : '공유 링크 생성'}
                 </Button>
               </div>
-            </div>
-          ) : (
-            <div className="text-center">
-              <p className="text-gray-300">
-                NotebookLM, Gemini 등 AI에게 공유하여<br/>더 풍부한 답변을 얻어보세요.
-              </p>
-            </div>
-          )}
-        </div>
+            )}
+          </TabsContent>
 
-        <DialogFooter className="flex-col sm:flex-col sm:space-x-0 gap-2">
-          {!generatedUrl && (
-             <Button
-                onClick={handleGenerateLink}
-                disabled={isLoading}
-                className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}
-              >
-                {isLoading ? (
-                   <span className="animate-spin h-4 w-4 border-2 border-white/20 border-t-white rounded-full mr-2"></span>
-                ) : (
-                  <RocketIcon className="h-4 w-4 mr-2" />
-                )}
-                {isLoading ? '생성 중...' : '링크 생성'}
-              </Button>
-          )}
+          <TabsContent value="ai-data" className="py-4">
+            {isDataLoading ? (
+              <div className="flex justify-center items-center h-24">
+                <span className="animate-spin h-8 w-8 border-4 border-white/20 border-t-cyan-400 rounded-full"></span>
+              </div>
+            ) : aiLinkData ? (
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-gray-300">
+                    {isOntologyApplied ? '온톨로지 적용 (JSON-LD)' : '원본 데이터 (JSON)'}
+                  </p>
+                  <Button size="sm" variant="outline" onClick={handleToggleOntology} className="text-xs h-7">
+                    {isOntologyApplied ? '원본 보기' : '온톨로지 적용'}
+                  </Button>
+                </div>
+                <div className="relative p-4 rounded-md bg-gray-900/70 border border-gray-700 max-h-64 overflow-y-auto">
+                  <Button size="icon" variant="ghost" onClick={handleCopyAiData} className="absolute top-2 right-2 h-7 w-7">
+                    {isAiDataCopied ? <CheckIcon className="h-4 w-4 text-green-400" /> : <ClipboardIcon className="h-4 w-4" />}
+                  </Button>
+                  <pre className="text-sm text-cyan-300 whitespace-pre-wrap break-all">
+                    <code>{JSON.stringify(displayedData, null, 2)}</code>
+                  </pre>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-gray-400">
+                <p>AI-Link 데이터를 불러오는 데 실패했거나,<br/>데이터가 존재하지 않습니다.</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+
+        <DialogFooter>
            <Button variant="outline" onClick={() => handleModalOpenChange(false)} className="w-full bg-gray-700 hover:bg-gray-600 border-gray-600 text-gray-300">
               닫기
             </Button>
