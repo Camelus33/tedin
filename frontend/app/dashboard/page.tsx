@@ -513,7 +513,7 @@ export default function DashboardPage() {
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
                   <h2 className={`text-xl font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>내 안에 잠자는 기억력을 깨우세요</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>녹슨 기억력을 다시 깨우고 싶으시다구오?</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30`}>
@@ -530,14 +530,14 @@ export default function DashboardPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               {/* PREMIUM 뱃지 */}
               <div className="absolute top-3 right-3 z-20 pointer-events-none select-none">
-                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-2 py-1 rounded-full text-[10px] shadow-md border border-white/30 tracking-widest uppercase">PREMIUM</span>
+                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-2 py-1 rounded-full text-[10px] shadow-md border border-white/30 tracking-widest uppercase">Pro</span>
               </div>
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse" />
                   <h2 className="text-xl font-semibold text-emerald-400">ZenGo Myverse</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>직접 만든 암기 게임을 즐겨보세요.</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>1줄 메모 암기 게임, 깊게 새기세요</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30">
