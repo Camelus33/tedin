@@ -53,6 +53,9 @@ export default function Footer() {
                 <Link href="/terms-of-service" className="hover:text-gray-100 hover:underline transition-colors">
                   Terms of Service
                 </Link>
+                <Link href="/ir" className="hover:text-gray-100 hover:underline transition-colors">
+                  Investor Relations
+                </Link>
                 <Link href="#faq" className="hover:text-gray-100 hover:underline transition-colors">
                    FAQ
                 </Link>

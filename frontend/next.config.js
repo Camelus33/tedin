@@ -6,12 +6,6 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   },
   images: {
-    domains: [
-      'habitus33-api.onrender.com',
-      'localhost',
-      'placehold.it',
-      'picsum.photos',
-    ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -23,6 +17,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'habitus33-api.onrender.com',
         port: '',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8000',
         pathname: '/uploads/**',
       },
     ],
