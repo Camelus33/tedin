@@ -1,8 +1,8 @@
 import api from '@/lib/api';
 import { notFound } from 'next/navigation';
 import { AlertTriangle, BookOpen, Calendar, Link as LinkIcon, MessageSquare, Microscope, Paperclip, Tag } from 'lucide-react';
-import LearningJourneyVisualization from '@/components/share/LearningJourneyVisualization';
 import AIAccessibleData from '@/components/share/AIAccessibleData';
+import SharePageClient from './SharePageClient';
 
 // interface SharePageProps {
 //   params: { shareId: string };
@@ -111,6 +111,13 @@ export default async function SharePage({ params }: { params: { shareId: string 
         It serves as a fallback for crawlers that don't process JSON-LD and for direct viewing.
       */}
       <main className="font-sans bg-gray-100 text-gray-800 p-4 sm:p-8">
+        {/* AI 접근성 데이터를 페이지 상단으로 이동시켜 AI가 우선적으로 인식하도록 함 */}
+        {jsonLdData?.learningJourney && (
+          <AIAccessibleData 
+            learningJourney={jsonLdData.learningJourney}
+            title={title ?? '제목 없음'}
+          />
+        )}
         <div className="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-2xl shadow-lg">
           <header className="border-b-2 border-gray-200 pb-6 mb-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 break-words">{title ?? '제목 없음'}</h1>
@@ -120,19 +127,15 @@ export default async function SharePage({ params }: { params: { shareId: string 
             </div>
           </header>
 
-          {/* Learning Journey Visualization - 성공한 서비스들의 UX 패턴 적용 */}
+          {/* 
+            LearningJourneyVisualization을 SharePageClient로 대체.
+            이 컴포넌트는 클라이언트 사이드에서만 렌더링됨.
+          */}
           {jsonLdData?.learningJourney && (
-            <section className="mb-10">
-              <LearningJourneyVisualization 
-                learningJourney={jsonLdData.learningJourney}
-                className="mb-8"
-              />
-              {/* AI 접근성을 위한 구조화된 데이터 */}
-              <AIAccessibleData 
-                learningJourney={jsonLdData.learningJourney}
-                title={title ?? '제목 없음'}
-              />
-            </section>
+            <SharePageClient
+              learningJourney={jsonLdData.learningJourney}
+              className="mb-8"
+            />
           )}
 
           {/* Table of Contents Section */}
