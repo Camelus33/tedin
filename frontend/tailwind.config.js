@@ -101,7 +101,11 @@ module.exports = {
   				animation: {
 			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 			'bounce-gentle': 'bounce-gentle 3s ease-in-out infinite',
-			'fadeIn': 'fadeIn 0.5s ease-in-out'
+			'fadeIn': 'fadeIn 0.5s ease-in-out',
+      'flow1': 'flow1 3s ease-in-out infinite',
+      'flow2': 'flow2 3s ease-in-out infinite',
+      'flow3': 'flow3 3s ease-in-out infinite',
+      'draw-path': 'draw-path 2s ease-in-out infinite'
 		},
 		keyframes: {
 			'bounce-gentle': {
@@ -121,7 +125,26 @@ module.exports = {
 					opacity: '1',
 					transform: 'translateY(0)'
 				}
-			}
+			},
+      'flow1': {
+        '0%, 100%': { opacity: '0', transform: 'translateX(0) translateY(0) scale(0.5)' },
+        '50%': { opacity: '1', transform: 'translateX(40px) translateY(-20px) scale(1)' },
+        '99%': { opacity: '0' }
+      },
+      'flow2': {
+        '0%, 100%': { opacity: '0', transform: 'translateX(0) translateY(0) scale(0.5)' },
+        '50%': { opacity: '1', transform: 'translateX(20px) translateY(30px) scale(1)' },
+        '99%': { opacity: '0' }
+      },
+      'flow3': {
+        '0%, 100%': { opacity: '0', transform: 'translateX(0) translateY(0) scale(0.5)' },
+        '50%': { opacity: '1', transform: 'translateX(30px) translateY(-40px) scale(1)' },
+        '99%': { opacity: '0' }
+      },
+      'draw-path': {
+        '0%': { 'stroke-dashoffset': '1000' },
+        '100%': { 'stroke-dashoffset': '0' },
+      }
 		},
   		fontSize: {
   			'heading-lg': [

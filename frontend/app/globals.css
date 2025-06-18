@@ -183,4 +183,10 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.path-animate {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw-path 2s ease-in-out forwards;
 } 
