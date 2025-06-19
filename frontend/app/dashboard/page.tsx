@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/common/Button';
@@ -153,8 +153,8 @@ export default function DashboardPage() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
 
-  // 기존 useEffect 내부 fetchDashboardData를 바깥으로 분리
-  const fetchDashboardData = async () => {
+  // 기존 useEffect 내부 fetchDashboardData를 바깥으로 분리하고 useCallback으로 최적화
+  const fetchDashboardData = useCallback(async () => {
     setIsLoading(true);
     setError('');
     try {
@@ -229,11 +229,26 @@ export default function DashboardPage() {
       setIsLoading(false);
       setRoutineData(null); // Ensure routine data is null on general error
     }
-  };
+  }, [router, dispatch]);
 
   useEffect(() => {
     fetchDashboardData();
-  }, [router, user]);
+  }, [fetchDashboardData, user]);
+
+  // 페이지가 다시 활성화될 때 데이터를 새로고침하는 로직 추가
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchDashboardData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fetchDashboardData]);
 
   useEffect(() => {
     async function fetchProfile() {
