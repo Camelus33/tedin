@@ -66,6 +66,35 @@
     
     "cognitiveProfile": "h33o:hasCognitiveProfile",
     
-    "aiInterpretationProtocol": "h33o:hasInterpretationProtocol"
+    "aiInterpretationProtocol": "h33o:hasInterpretationProtocol",
+    "persona": "h33o:hasPersona",
+    "primaryFocus": "h33o:hasPrimaryFocus",
+    "focusDirectives": {
+      "@id": "h33o:hasFocusDirective",
+      "@container": "@list"
+    },
+    "ignoreDirectives": {
+      "@id": "h33o:hasIgnoreDirective", 
+      "@container": "@list"
+    },
+    "ethicalGuardrails": {
+      "@id": "h33o:hasEthicalGuardrail",
+      "@container": "@list"
+    },
+    "responseStrategy": "h33o:hasResponseStrategy",
+    "contextualPriority": "h33o:hasContextualPriority",
+    "operationalInstruction": "h33o:hasOperationalInstruction",
+    "ontologicalReasoningDirectives": "h33o:hasOntologicalReasoningDirectives",
+    "qualityAssuranceProtocol": "h33o:hasQualityAssuranceProtocol",
+    "instruction": "h33o:hasInstruction",
+    "implementation": {
+      "@id": "h33o:hasImplementation",
+      "@container": "@list"
+    },
+    "depthRequirement": "h33o:hasDepthRequirement",
+    "personalizationLevel": "h33o:hasPersonalizationLevel",
+    "connectionFocus": "h33o:hasConnectionFocus",
+    "actionableGuidance": "h33o:hasActionableGuidance",
+    "respectfulTone": "h33o:hasRespectfulTone"
   }
 } 
