@@ -169,17 +169,17 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
         <DialogHeader>
           <DialogTitle className={`flex items-center justify-center space-x-2 ${cyberTheme.primary} text-lg`}>
             <RocketIcon className="h-5 w-5" />
-            <span>AI-Link 활용</span>
+            <span>지식 캡슐 활용법</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-4 text-center">
-            생성된 링크를 공유하거나, 데이터를 복사하여<br/>다양한 AI 모델에 당신의 생각을 전달하세요.
+            놀라운 경험이 시작됩니다.<br/> AI에 입력하고, "연결된 링크를 직접 방문해 내용을 읽어와"라고 해보세요.
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-gray-900">
             <TabsTrigger value="share">공유 링크</TabsTrigger>
-            <TabsTrigger value="ai-data">AI용 데이터</TabsTrigger>
+            <TabsTrigger value="ai-data">AI제공 데이터</TabsTrigger>
           </TabsList>
           
           <TabsContent value="share" className="py-4">
@@ -204,7 +204,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             ) : (
               <div className="text-center space-y-4">
                  <p className="text-gray-300">
-                  NotebookLM, Gemini 등 AI에게 공유하여<br/>더 풍부한 답변을 얻어보세요.
+                  Gemini, ChatGPT, Perplexity에 입력 후<br/>  딥리서치로 보고서를 작성해 보세요.
                 </p>
                 <Button
                   onClick={handleGenerateLink}
