@@ -4,24 +4,24 @@ import Image from 'next/image';
 const testimonials = [
   {
     id: 1,
-    title: "논문 14개의 관계, AI가 제 관점을 이해해요",
+    title: "친구들이 '너만 뭔가 특별한 답을 받는다'고 해요",
     name: '대학생',
     image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1061&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    quote: "리뷰 과제때문에 논문 14개를 읽어야 했는데, ChatGPT는 이전 내용을 기억못해서 매번 길게 프롬프팅을 했어요. 논문 주요 페이지마다 1줄 메모를 달고 AI-Link로 뽑아서 필요할 때 입력하고 답변을 뽑으니 너무 편하네요.",
+    quote: "같은 ChatGPT를 써도 제가 받는 답변이 확실히 달라요. AI-Link 덕분에 AI가 제 맥락을 완전히 이해하거든요. 친구들이 신기해하면서 비결을 물어보는데, 이건 제 비밀 무기예요.",
   },
   {
     id: 2,
-    title: "제 관점의 보고서를 만들어 주네요",
+    title: "동료들이 '어떻게 그런 통찰을 얻냐'고 물어봐요",
     name: '직장인',
     image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    quote: "경영진 보고를 위해 6개월치 회의록과 운영 데이터를 분석해야 했습니다. 중요 페이지마다 1줄 메모, 메모진화 답변을 달아 AI-Link를 생성하고 NotebookLM에 입력했습니다. 음성오버뷰에 숫자오류가 하나도 없더군요. 만족합니다!",
+    quote: "AI-Link로 만든 보고서를 보고 팀장님이 '이 수준의 분석은 컨설팅 회사 수준이다'라고 하셨어요. 같은 데이터를 봐도 제가 뽑아내는 인사이트가 다르다고 동료들이 놀라워해요.",
   },
   {
     id: 3,
-    title: "AI가 제 도메인 컨텍스트 수준을 이해해요",
+    title: "AI가 제 전문성 수준에 맞춰 대화해줘요",
     name: '연구자',
     image: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    quote: "AI에게 나의 지식정도를 설명하는 게 가장 큰 숙제였습니다. 내가 모르는 것만 답해주길 원했거든요. 읽은 자료중 중요 페이지별로 1줄 메모, 태그를 달아 AI-Link를 뽑았죠. 맥락추론을 하더군요. 당분간 계속 쓸 생각입니다.",
+    quote: "이제 AI에게 배경 설명할 필요가 없어요. 제 연구 분야와 지식 수준을 완벽히 파악하고 그에 맞는 깊이 있는 답변을 줍니다. 마치 해당 분야 최고 전문가와 대화하는 것 같아요.",
   },
 ];
 
@@ -30,10 +30,10 @@ export default function TestimonialsSection() {
     <section className="py-20 md:py-28 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold font-serif text-gray-800 text-center mb-6">
-          AI가 제 말을 잘 알아들어요
+          남들이 궁금해하는 비밀
         </h2>
         <p className="text-lg md:text-xl text-gray-600 text-center mb-16 max-w-3xl mx-auto">
-           일일이 사실 대조하거나 다시 설명, 간간히 섞인 할루시네이션도 걱정 없습니다.
+           같은 AI를 써도 왜 이 사람들만 다른 답변을 받을까요?
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-10">
@@ -65,10 +65,10 @@ export default function TestimonialsSection() {
         <div className="mt-20 text-center">
           <div className="max-w-4xl mx-auto">
             <blockquote className="text-2xl md:text-3xl font-serif text-gray-700 italic leading-relaxed">
-              "시간을 많이 아낄 수 있었어요. 만족합니다!"
+              "이제 저도 남들이 궁금해하는 사람이 됐어요"
             </blockquote>
             <cite className="block mt-6 text-lg text-gray-500 not-italic">
-              — Habitus33 -
+              — AI-Link 사용자들의 공통된 경험 —
             </cite>
           </div>
         </div>

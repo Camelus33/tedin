@@ -19,17 +19,17 @@ export default function SolutionSection() {
           >
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
               <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
-                당신의 메모,
+                평범한 메모가
               </span>
               <br />
               <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
-                AI-Link로 진화합니다.
+                천재의 통찰로
               </span>
             </h2>
             <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              생각은 메모가 되고, 메모는 연결되어 단권화 됩니다.
+              당신이 끄적인 한 줄이 어떻게 교수님을 놀라게 하고, 상사를 감탄시키는가?
               <br className="hidden sm:block" />
-              이 단권화를 다시 모아 지식캡슐, <strong className="font-semibold text-purple-300">AI-Link</strong>로 만듭니다.
+              <strong className="font-semibold text-purple-300">메모의 연금술, AI-Link가 그 마법을 보여드립니다.</strong>
             </p>
           </motion.div>
         </div>
@@ -55,20 +55,20 @@ export default function SolutionSection() {
         >
           <div className="max-w-4xl mx-auto">
             <p className="text-lg md:text-xl text-gray-300 leading-relaxed mb-8">
-              <strong className="font-semibold text-gray-100">‘AI-Link’는 살아있는 지식입니다.</strong><br />
-              당신이 학습할수록 함께 성장하고 진화하며, 프롬프트 없이도 당신의 의도를 먼저 파악하는 강력한 지능으로 거듭납니다.
+              <strong className="font-semibold text-gray-100">어떻게 평범한 메모가 천재의 통찰이 될까요?</strong><br />
+              비밀은 당신의 모든 생각이 하나의 고맥락 지식으로 도출되는 순간에 있습니다.
             </p>
             <div className="grid md:grid-cols-2 gap-8 text-left">
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
-                <h3 className="text-lg font-semibold text-cyan-400 mb-3">메모 (The Seed)</h3>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">당신의 메모들이</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  모든 위대한 진화는 하나의 작은 씨앗에서 시작됩니다. 당신의 메모가 바로 그 씨앗입니다.
+                  서로 연결되고, 다른 지식과 융합되어, 남다른 통찰로 재탄생합니다.
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
-                <h3 className="text-lg font-semibold text-purple-400 mb-3">AI-Link (The Organism)</h3>
+                <h3 className="text-lg font-semibold text-purple-400 mb-3">결과는 놀라움</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  씨앗(메모)들이 모여 서로 연결되고 융합하며, 당신의 생각을 대변하는 고유한 지적 생명체로 태어납니다.
+                  당신도 예상 못한 새로운 관점으로 모든 사람을 감탄시킵니다
                 </p>
               </div>
             </div>
