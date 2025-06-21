@@ -504,10 +504,10 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
             <div className="relative z-10">
               <h1 className={`text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-4`}>
-                오늘의 1줄 메모
+                Small Step, One Line
               </h1>
               <p className={`${habitus33Theme.textMuted} text-base sm:text-lg mb-6`}>
-                "읽은 후 꼭 남기세요. 나중에 큰 도움이 됩니다"
+                "1줄 메모. 당신의 자산이 됩니다"
               </p>
               <Link href="/ts" className="inline-block">
                 <button className={`${habitus33Theme.progressFg} text-white font-bold text-lg sm:text-xl px-8 sm:px-12 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>

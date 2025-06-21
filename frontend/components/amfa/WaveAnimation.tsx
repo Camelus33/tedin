@@ -1147,10 +1147,10 @@ export function WaveAnimation({
           {/* 메인 타이틀 - 폰트 크기 축소 및 간격 조정 */}
           <div className="space-y-3">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-cyan-400 leading-tight drop-shadow-lg">
-              1줄 메모에서
+              Small Step
             </h1>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-purple-400 leading-tight drop-shadow-lg">
-              지혜의 심연으로
+              One Line
             </h1>
           </div>
 
