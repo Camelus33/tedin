@@ -286,13 +286,18 @@ export default function BooksPageContent() {
   
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (showMenu) setShowMenu(null);
-      if (showSortOptions && sortButtonRef.current && !sortButtonRef.current.contains(event.target as Node) && sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
-          setShowSortOptions(false);
+      const target = event.target as HTMLElement;
+      if (showMenu &&
+          !target.closest('.action-menu') &&
+          !target.closest('.toggle-menu-button')) {
+        setShowMenu(null);
+      }
+      if (showSortOptions && sortButtonRef.current && !sortButtonRef.current.contains(target) && sortDropdownRef.current && !sortDropdownRef.current.contains(target)) {
+        setShowSortOptions(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, [showMenu, showSortOptions]);
 
   const handleViewBookDetails = (bookId: string) => router.push(`/books/${bookId}`);
@@ -417,11 +422,10 @@ export default function BooksPageContent() {
 
                   return (
                     <div key={book._id} onClick={() => handleViewBookDetails(book._id)} className={`relative ${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-cyan-500/30 border ${cyberTheme.inputBorder}`}>
-                      <button onClick={(e) => toggleMenu(book._id, e)} aria-label="기억 관리 메뉴" className={`absolute top-2 right-2 p-1.5 rounded-full ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted} z-10`}><FiMoreVertical className="h-5 w-5" /></button>
+                      <button onClick={(e) => toggleMenu(book._id, e)} aria-label="기억 관리 메뉴" className={`toggle-menu-button absolute top-2 right-2 p-1.5 rounded-full ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted} z-10`}><FiMoreVertical className="h-5 w-5" /></button>
                       {showMenu === book._id && (
                         <div className={`action-menu absolute top-10 right-2 mt-1 w-36 ${cyberTheme.menuBg} rounded-md shadow-lg z-20 border ${cyberTheme.inputBorder}`}>
                            <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineEdit className="h-4 w-4" /> 수정하기</Link>
-                           <button onClick={(e) => { e.stopPropagation(); handleDeleteBook(book._id); }} className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.errorText} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineDelete className="h-4 w-4" /> 삭제하기</button>
                         </div>
                       )}
                       <div className={`w-full h-32 md:h-40 ${cyberTheme.inputBg} flex items-center justify-center ${cyberTheme.textMuted}`}>
