@@ -507,7 +507,7 @@ export default function DashboardPage() {
                 Small Step, One Line
               </h1>
               <p className={`${habitus33Theme.textMuted} text-base sm:text-lg mb-6`}>
-                "1줄 메모. 당신의 자산이 됩니다"
+                "1줄 메모, 지혜를 얻는 첫 걸음"
               </p>
               <Link href="/ts" className="inline-block">
                 <button className={`${habitus33Theme.progressFg} text-white font-bold text-lg sm:text-xl px-8 sm:px-12 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
@@ -530,7 +530,7 @@ export default function DashboardPage() {
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
                   <h2 className={`text-xl font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>읽기능력 향상 게임 어떠세요?</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>비범한 읽기 통찰력을 키우세요.</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30`}>
@@ -554,11 +554,11 @@ export default function DashboardPage() {
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse" />
                   <h2 className="text-xl font-semibold text-emerald-400">ZenGo Myverse</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>중요한 내용을 ZenGo로 암기하세요.</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>중요한 1줄은 바로 암기하세요.</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30">
-                  TRY NOW
+                  TRY
                 </button>
               </div>
             </div>

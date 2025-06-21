@@ -46,12 +46,12 @@ export default function HeroSection() {
             {/* Text Content */}
             <div className="max-w-xl text-left">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
-                "이 사람, 뭔가 다르네"<br />
-                <span className="text-lg font-normal text-gray-600">소리 듣고 싶지 않나요?</span>
+                "이 사람, 뭔가 다르네!"<br />
+                <span className="text-lg font-normal text-gray-600">듣고 싶지 않나요?</span>
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-gray-700">
-                교수님이 주목하는 리포트, 상사가 감탄하는 보고서.<br />
-                <span className="font-semibold text-brand-primary">당신만의 지식 DNA로 빗어낸 남다른 결과물로 주목받으세요.</span>
+                모두가 주목하는 리포트, 상사가 감탄하는 보고서.<br />
+                <span className="font-semibold text-brand-primary">당신만의 지식 DNA로 남다른 결과물을 창출하세요.</span>
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                 <Link
@@ -59,7 +59,7 @@ export default function HeroSection() {
                   className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-primary hover:opacity-90 transition duration-150 ease-in-out w-full sm:w-auto"
                 >
                   <SparklesIconOutline className="w-5 h-5 mr-2 -ml-1" aria-hidden="true" />
-                  나의 AI-Link 만들기
+                  나만의 AI-Link 만들기
                 </Link>
               </div>
             </div>
