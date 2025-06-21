@@ -10,7 +10,7 @@ import { zengo as zengoApi } from '@/lib/api';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import CognitiveProfileContainer from '@/components/cognitive/CognitiveProfileContainer';
-import { FiHelpCircle, FiBook } from 'react-icons/fi';
+import { FiHelpCircle, FiBook, FiTrendingUp, FiTarget, FiZap, FiAward } from 'react-icons/fi';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import AppLogo from '@/components/common/AppLogo';
 import NotificationBell from '@/components/common/NotificationBell';
@@ -19,6 +19,7 @@ import { apiClient } from '@/lib/apiClient';
 import { books as booksApi, user as userApi /*, zengo as zengoApi */ } from '@/lib/api';
 // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts'; // Commented out
 import api from '@/lib/api';
+import { ChevronDownIcon } from '@heroicons/react/24/solid';
 
 // Cyber Theme Definition (Updated to match brand guidelines)
 const habitus33Theme = {
@@ -153,6 +154,7 @@ export default function DashboardPage() {
   const [showZengoCard, setShowZengoCard] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
+  const [isRoutineTrackerExpanded, setIsRoutineTrackerExpanded] = useState(false);
 
   // 기존 useEffect 내부 fetchDashboardData를 바깥으로 분리하고 useCallback으로 최적화
   const fetchDashboardData = useCallback(async () => {
@@ -444,7 +446,7 @@ export default function DashboardPage() {
           <Link href="/dashboard" className="flex items-center space-x-3 group">
             <AppLogo className="w-11 h-11 group-hover:opacity-90 transition-opacity" />
             <div>
-              <h1 className={`font-medium text-2xl tracking-tight ${habitus33Theme.primary} group-hover:text-cyan-300 transition-colors duration-500`}> 
+              <h1 className={`font-medium text-xl sm:text-2xl tracking-tight ${habitus33Theme.primary} group-hover:text-cyan-300 transition-colors duration-500`}> 
                 Habitus33
               </h1>
               <p className={`text-xs font-medium tracking-wider ${habitus33Theme.textLight}`}> 
@@ -497,18 +499,18 @@ export default function DashboardPage() {
       <div className="container mx-auto max-w-6xl py-8 px-4">
         {/* AMFA Hero 섹션 - 사이버 테마 적용 */}
         <div className="mb-16 text-center animate-slideUp">
-          <div className={`${habitus33Theme.cardBg} rounded-2xl p-8 border ${habitus33Theme.borderPrimary} mb-8 backdrop-blur-sm relative overflow-hidden`}>
+          <div className={`${habitus33Theme.cardBg} rounded-2xl p-6 sm:p-8 border ${habitus33Theme.borderPrimary} mb-8 backdrop-blur-sm relative overflow-hidden`}>
             {/* 배경 그라데이션 효과 */}
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
             <div className="relative z-10">
               <h1 className={`text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-4`}>
                 오늘의 1줄 메모
               </h1>
-              <p className={`${habitus33Theme.textMuted} text-lg mb-6`}>
+              <p className={`${habitus33Theme.textMuted} text-base sm:text-lg mb-6`}>
                 "읽은 후 꼭 남기세요. 나중에 큰 도움이 됩니다"
               </p>
               <Link href="/ts" className="inline-block">
-                <button className={`${habitus33Theme.progressFg} text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
+                <button className={`${habitus33Theme.progressFg} text-white font-bold text-lg sm:text-xl px-8 sm:px-12 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
                   Atomic Reading
                 </button>
               </Link>
@@ -571,70 +573,71 @@ export default function DashboardPage() {
         
         {/* 33일 루틴 트래커 - 사이버 테마 적용 */}
         {routineData ? (
-          <div className={`relative p-8 mb-12 rounded-2xl border ${habitus33Theme.borderPrimary} shadow-xl ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500`}>
-            {/* 배경 그라데이션 효과 */}
+          <div className={`relative p-4 sm:p-6 mb-12 rounded-2xl border ${habitus33Theme.borderPrimary} shadow-xl ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500`}>
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
-            <div className="flex justify-between items-center mb-6 relative z-10">
-              <div className="flex flex-row items-center w-full">
-                <div className="flex-1 flex justify-start">
-                  <h2 className={`text-xl font-medium ${habitus33Theme.primary}`}>
-                    33일간 여정을 환영합니다!
-                  </h2>
-                </div>
-                <div className="flex-1 flex justify-center">
+            
+            {/* 클릭 가능한 헤더 */}
+            <div 
+              className="flex justify-between items-center relative z-10 cursor-pointer md:cursor-default" 
+              onClick={() => {
+                if (window.innerWidth < 768) {
+                  setIsRoutineTrackerExpanded(prev => !prev);
+                }
+              }}
+            >
+              <h2 className={`text-lg sm:text-xl font-medium ${habitus33Theme.primary}`}>
+                33일간 여정을 환영합니다!
+              </h2>
+              <button
+                className="p-1 rounded-full block md:hidden"
+                aria-expanded={isRoutineTrackerExpanded}
+                aria-label="루틴 상세 정보 토글"
+              >
+                <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isRoutineTrackerExpanded ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+
+            {/* 접히는 콘텐츠 */}
+            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isRoutineTrackerExpanded ? 'max-h-[500px] pt-6' : 'max-h-0'} md:max-h-full md:block md:pt-6`}>
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 relative z-10">
+                <div className="order-2 md:order-1">
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
-                    className={`min-w-[240px] px-10 py-4 rounded-2xl ${habitus33Theme.progressFg} text-white font-bold text-xl transition-all duration-500 ease-in-out hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-[1.05] focus:shadow-xl focus:shadow-cyan-500/25 focus:scale-[1.05] active:scale-[1.02] outline-none transform`}
+                    className={`min-w-[200px] px-8 py-3 rounded-2xl ${habitus33Theme.progressFg} text-white font-bold text-lg transition-all duration-500 ease-in-out hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-[1.05] focus:shadow-xl focus:shadow-cyan-500/25 focus:scale-[1.05] active:scale-[1.02] outline-none transform`}
                     aria-label="AMFA 가이드"
                     type="button"
                   >
                     AMFA
                   </button>
                 </div>
-                <div className="flex-1 flex justify-end">
-                  <div className={`${habitus33Theme.cardBg} py-2 px-4 rounded-full flex items-center space-x-2 border ${habitus33Theme.borderPrimary} shadow-sm backdrop-blur-sm`}>
-                    <p className={`text-xs font-medium ${habitus33Theme.textLight}`}> 
-                      Today's Atomic Success
-                    </p>
-                    <span 
-                      className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`}
-                      title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}
-                    >
-                      🌱
-                    </span>
-                    <span 
-                      className={`text-sm ${routineData?.todayZengoCompleted ? 'text-purple-400' : 'text-gray-600'}`}
-                      title={routineData?.todayZengoCompleted ? "오늘 ZenGo 경험 완료" : "오늘의 ZenGo 경험 대기 중"}
-                    >
-                      🌿
-                    </span>
+                <div className="order-1 md:order-2">
+                  <div className={`${habitus33Theme.cardBg} py-2 px-3 rounded-full flex items-center space-x-2 border ${habitus33Theme.borderPrimary} shadow-sm backdrop-blur-sm`}>
+                    <p className={`text-xs font-medium ${habitus33Theme.textLight}`}>Today's Atomic Success</p>
+                    <span className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`} title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}>🌱</span>
+                    <span className={`text-sm ${routineData?.todayZengoCompleted ? 'text-purple-400' : 'text-gray-600'}`} title={routineData?.todayZengoCompleted ? "오늘 ZenGo 경험 완료" : "오늘의 ZenGo 경험 대기 중"}>🌿</span>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="mb-8 relative h-3 z-10">
-              <div className={`absolute top-0 left-0 w-full h-full ${habitus33Theme.progressBarBg} rounded-full overflow-hidden`}></div>
-              <div
-                className={`absolute top-0 left-0 h-full ${habitus33Theme.progressFg} rounded-full transition-all duration-1000 ease-in-out shadow-lg`}
-                style={{ width: `${(routineData.currentDay / 33) * 100}%` }}
-              >
-                {/* gentle flow overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-full" />
+
+              <div className="mb-8 relative h-3 z-10">
+                <div className={`absolute top-0 left-0 w-full h-full ${habitus33Theme.progressBarBg} rounded-full overflow-hidden`}></div>
+                <div
+                  className={`absolute top-0 left-0 h-full ${habitus33Theme.progressFg} rounded-full transition-all duration-1000 ease-in-out shadow-lg`}
+                  style={{ width: `${(routineData.currentDay / 33) * 100}%` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-full" />
+                </div>
+                <div className="absolute top-[-24px] right-0 flex items-center">
+                  <span className={`text-xs font-medium ${habitus33Theme.textLight}`}>Day {routineData.currentDay} / 33</span>
+                </div>
               </div>
-              <div className="absolute top-[-24px] right-0 flex items-center">
-                <span className={`text-xs font-medium ${habitus33Theme.textLight}`}> 
-                  Day {routineData.currentDay} / 33
-                </span>
+
+              <div className="mt-8 text-center relative z-10">
+                <p className={`text-lg font-medium ${habitus33Theme.primary}`}>{getMilestoneMessage(routineData?.currentDay)}</p>
+                <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}>
+                  <span className={`font-medium ${habitus33Theme.secondary}`}>{routineData?.consecutiveStreak || 0}일째</span> 함께하는 여정 - <span className={`font-medium ${habitus33Theme.primary}`}> 작은 성공이 쌓이면 큰 변화</span>가 됩니다
+                </p>
               </div>
-            </div>
-            <div className="mt-8 text-center relative z-10">
-              <p className={`text-lg font-medium ${habitus33Theme.primary}`}> 
-                {getMilestoneMessage(routineData?.currentDay)}
-              </p>
-              <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}>
-                <span className={`font-medium ${habitus33Theme.secondary}`}>{routineData?.consecutiveStreak || 0}일째</span> 함께하는 여정 - 
-                <span className={`font-medium ${habitus33Theme.primary}`}> 작은 성공이 쌓이면 큰 변화</span>가 됩니다
-              </p>
             </div>
           </div>
         ) : (
@@ -743,15 +746,16 @@ export default function DashboardPage() {
               ) : (
                 <div className="grid grid-cols-1 gap-6">
                   {currentBooks.map((book) => {
-                    // 백엔드에서 받은 예상 시간 사용
-                    const estimatedTimeString = formatEstimatedTime(book.estimatedRemainingMinutes);
                     const progress = Math.round((book.currentPage / book.totalPages) * 100);
+                    const estimatedTimeString = book.estimatedRemainingMinutes 
+                      ? `완독까지 약 ${book.estimatedRemainingMinutes}분` 
+                      : null;
 
                     return (
                       <Link href={`/books/${book._id}`} key={book._id} className="block">
-                        <div className={`book-item flex items-start p-4 rounded-lg border ${habitus33Theme.borderPrimary} hover:border-cyan-400/60 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 ${habitus33Theme.cardBg} backdrop-blur-sm group`}>
+                        <div className={`book-item flex flex-col sm:flex-row items-start p-4 rounded-lg border ${habitus33Theme.borderPrimary} hover:border-cyan-400/60 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 ${habitus33Theme.cardBg} backdrop-blur-sm group`}>
                           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
-                          <div className="w-24 h-auto aspect-[2/3] relative bg-gray-700/50 flex-shrink-0 rounded shadow-sm book-cover z-10">
+                          <div className="w-full sm:w-24 h-auto aspect-[2/3] relative bg-gray-700/50 flex-shrink-0 rounded shadow-sm book-cover z-10 mb-4 sm:mb-0">
                             {book.coverImage ? (
                               <img
                                 src={book.coverImage}
@@ -764,9 +768,9 @@ export default function DashboardPage() {
                               </div>
                             )}
                           </div>
-                          <div className="ml-6 flex-1 min-w-0 relative z-10">
-                            <h3 className={`font-bold text-xl ${habitus33Theme.primary} truncate mb-2`} title={book.title}>{book.title}</h3>
-                            <p className={`${habitus33Theme.textMuted} text-base mb-4 truncate`} title={book.author}>{book.author}</p>
+                          <div className="w-full sm:ml-6 flex-1 min-w-0 relative z-10">
+                            <h3 className={`font-bold text-lg sm:text-xl ${habitus33Theme.primary} truncate mb-2`} title={book.title}>{book.title}</h3>
+                            <p className={`${habitus33Theme.textMuted} text-sm sm:text-base mb-4 truncate`} title={book.author}>{book.author}</p>
                             <div className="flex items-center mb-3">
                               <div className={`w-full h-2 ${habitus33Theme.progressBarBg} rounded-full overflow-hidden`}>
                                 <div 
@@ -775,7 +779,7 @@ export default function DashboardPage() {
                                 >
                                 </div>
                               </div>
-                              <span className={`ml-4 text-sm font-medium ${habitus33Theme.primary}`}> 
+                              <span className={`ml-4 text-xs sm:text-sm font-medium ${habitus33Theme.primary}`}> 
                                 {book.currentPage}/{book.totalPages} ({progress}%)
                               </span>
                             </div>
@@ -785,7 +789,7 @@ export default function DashboardPage() {
                               </p>
                             )}
                              {book.status !== 'completed' && !book.estimatedRemainingMinutes && book.currentPage < book.totalPages && (
-                               <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}> 
+                               <p className={`text-xs sm:text-sm ${habitus33Theme.textMuted} mt-2`}> 
                                  TS로 예상 완독 시간을 확인해보세요
                                </p>
                              )}
@@ -798,143 +802,8 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
-          
-          {/* 오른쪽: 인지 능력 측정 */}
-          <CognitiveProfileContainer className="glass-card hover:shadow-xl transition-all duration-300" />
         </div>
-
-        {/* ZenGo Stats Card */}
-        {showZengoCard && (
-          <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/20 shadow-lg hover:border-purple-500/40 transition-all duration-300">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-purple-300">ZenGo Score</h3>
-              <Link href="/zengo">
-                <div className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer">
-                  Play ZenGo &rarr;
-                </div>
-              </Link>
-            </div>
-            {zengoStats ? (
-              <div>
-                <div className="text-center mb-4">
-                  <p className="text-gray-400 text-sm">Today's Score</p>
-                  <p className="text-5xl font-bold text-white">
-                    {stats?.todayZengoScore ?? 'N/A'}
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <p className="text-gray-400 text-sm">Total Score</p>
-                    <p className="text-2xl font-semibold text-white">
-                      {stats?.totalZengoScore ?? 'N/A'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 text-sm">Activities</p>
-                    <p className="text-2xl font-semibold text-white">
-                      {zengoStats.totalActivities}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500">Zengo 데이터를 불러오는 중...</p>
-              </div>
-            )}
-          </div>
-        )}
       </div>
-      
-      {/* CSS 애니메이션 스타일 - dashboard.css로 이동했으므로 전역 폰트만 유지 */}
-      <style jsx global>{`
-        * {
-          font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-          letter-spacing: -0.02em;
-        }
-        @keyframes premium-wave {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-premium-wave {
-          animation: premium-wave 2.5s linear infinite;
-          background-size: 200% 200%;
-          background-clip: padding-box;
-          -webkit-background-clip: padding-box;
-        }
-        @keyframes cyber-wave {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-cyber-wave {
-          animation: cyber-wave 2.5s linear infinite;
-          background-size: 200% 200%;
-          background-clip: padding-box;
-          -webkit-background-clip: padding-box;
-        }
-        @keyframes cyber-rect-move {
-          0%, 100% {
-            border-top-color: #22d3ee;
-            border-right-color: transparent;
-            border-bottom-color: transparent;
-            border-left-color: transparent;
-          }
-          25% {
-            border-top-color: transparent;
-            border-right-color: #a21caf;
-            border-bottom-color: transparent;
-            border-left-color: transparent;
-          }
-          50% {
-            border-top-color: transparent;
-            border-right-color: transparent;
-            border-bottom-color: #059669;
-            border-left-color: transparent;
-          }
-          75% {
-            border-top-color: transparent;
-            border-right-color: transparent;
-            border-bottom-color: transparent;
-            border-left-color: #7c3aed;
-          }
-        }
-        .cyber-rect-anim {
-          border-width: 2px;
-          border-style: solid;
-          border-radius: 0.5rem;
-          border-color: transparent;
-          animation: cyber-rect-move 2s linear infinite;
-          box-shadow: 0 0 8px 2px rgba(34,211,238,0.3);
-          pointer-events: none;
-        }
-        @keyframes cyber-glow {
-          0% {
-            border-image-source: linear-gradient(270deg, #22d3ee, #818cf8, #a21caf, #22d3ee);
-            filter: drop-shadow(0 0 6px #22d3ee88);
-          }
-          50% {
-            border-image-source: linear-gradient(90deg, #a21caf, #22d3ee, #818cf8, #a21caf);
-            filter: drop-shadow(0 0 12px #818cf888);
-          }
-          100% {
-            border-image-source: linear-gradient(270deg, #22d3ee, #818cf8, #a21caf, #22d3ee);
-            filter: drop-shadow(0 0 6px #22d3ee88);
-          }
-        }
-        .animate-cyber-glow {
-          border-width: 2px;
-          border-style: solid;
-          border-radius: 9999px;
-          border-image: linear-gradient(270deg, #22d3ee, #818cf8, #a21caf, #22d3ee) 1;
-          animation: cyber-glow 2.5s linear infinite;
-          box-shadow: 0 0 12px 2px #22d3ee44, 0 0 24px 4px #818cf844;
-        }
-        .three-d-btn-text {
-          text-shadow: 0 2px 8px #0ff3, 0 1px 0 #2228;
-        }
-      `}</style>
     </div>
   );
-} 
+}
