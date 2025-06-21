@@ -715,21 +715,19 @@ export default function DashboardPage() {
           </div>
         </div>
         
-        {/* 재구성된 메인 콘텐츠 - 책 섹션 사이버 테마 적용 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-slideUp" style={{animationDelay: '200ms'}}>
-          {/* 왼쪽: 현재 읽고 있는 책 - 사이버 테마 */}
-          <div className={`${habitus33Theme.cardBg} p-8 border-2 ${habitus33Theme.borderPrimary} rounded-xl shadow-xl backdrop-blur-sm relative overflow-hidden group hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300`}>
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
-            <div className="relative z-10">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className={`text-2xl font-bold ${habitus33Theme.primary}`}>현재 읽고 있는...</h2>
+        {/* 현재 읽고 있는 책 목록 및 인지 프로필 */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-12">
+          {/* 왼쪽: 현재 읽고 있는 책 목록 (Lg 스크린에서 3/5 너비) */}
+          <div className={`lg:col-span-3 mt-12 p-4 sm:p-6 rounded-2xl border ${habitus33Theme.borderPrimary} ${habitus33Theme.cardBg} backdrop-blur-sm shadow-xl`}>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className={`text-xl font-bold ${habitus33Theme.primary}`}>Currently Reading</h2>
+              <Link href="/books">
                 <Button 
-                  href="/books" 
                   variant="outline"
                 >
                   나의 도서관
                 </Button>
-              </div>
+              </Link>
             </div>
             
             <div className="relative z-10">
@@ -801,6 +799,11 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* 오른쪽: 인지 능력 측정 (Lg 스크린에서 2/5 너비) */}
+          <div className="lg:col-span-2 mt-12">
+            <CognitiveProfileContainer className="glass-card h-full" />
           </div>
         </div>
       </div>
