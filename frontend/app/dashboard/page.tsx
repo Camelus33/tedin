@@ -150,6 +150,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string>('');
   const [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showZengoCard, setShowZengoCard] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
 
@@ -527,7 +528,7 @@ export default function DashboardPage() {
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
                   <h2 className={`text-xl font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>기억력 향상 게임 어떠세요?</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>읽기능력 향상 게임 어떠세요?</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30`}>
@@ -696,20 +697,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* ZenGo - 사이버 테마 */}
-          <div className={`relative p-5 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderSecondary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 hover:scale-105`}>
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center space-x-3">
-              <div className="bg-purple-500/20 rounded-full p-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${habitus33Theme.secondary}`} fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Zm4.28 2.53a.75.75 0 0 1 1.06.22A3.25 3.25 0 0 0 12 16.25a3.25 3.25 0 0 0 1.91-1.5.75.75 0 1 1 1.28.78A4.75 4.75 0 0 1 12 17.75a4.75 4.75 0 0 1-3.19-1.47.75.75 0 0 1 .22-1.06ZM9.25 10a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75A.75.75 0 0 1 9.25 10Zm5.5 0a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-1.5 0V10.75a.75.75 0 0 1 .75-.75Z" clipRule="evenodd"/></svg>
-              </div>
-              <div>
-                <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>ZenGo 점수</p>
-                <p className={`text-lg font-medium ${habitus33Theme.textLight}`}>{stats?.todayZengoScore != null && stats?.totalZengoScore != null ? `${stats.todayZengoScore}/${stats.totalZengoScore}` : '-'}</p>
-              </div>
-            </div>
-          </div>
-
           {/* 총 등록 도서 - 사이버 테마 */}
           <div className={`relative p-5 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderPrimary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 hover:scale-105`}>
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -815,6 +802,48 @@ export default function DashboardPage() {
           {/* 오른쪽: 인지 능력 측정 */}
           <CognitiveProfileContainer className="glass-card hover:shadow-xl transition-all duration-300" />
         </div>
+
+        {/* ZenGo Stats Card */}
+        {showZengoCard && (
+          <div className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-2xl border border-purple-500/20 shadow-lg hover:border-purple-500/40 transition-all duration-300">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-purple-300">ZenGo Score</h3>
+              <Link href="/zengo">
+                <div className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer">
+                  Play ZenGo &rarr;
+                </div>
+              </Link>
+            </div>
+            {zengoStats ? (
+              <div>
+                <div className="text-center mb-4">
+                  <p className="text-gray-400 text-sm">Today's Score</p>
+                  <p className="text-5xl font-bold text-white">
+                    {stats?.todayZengoScore ?? 'N/A'}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div>
+                    <p className="text-gray-400 text-sm">Total Score</p>
+                    <p className="text-2xl font-semibold text-white">
+                      {stats?.totalZengoScore ?? 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Activities</p>
+                    <p className="text-2xl font-semibold text-white">
+                      {zengoStats.totalActivities}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Zengo 데이터를 불러오는 중...</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       
       {/* CSS 애니메이션 스타일 - dashboard.css로 이동했으므로 전역 폰트만 유지 */}
