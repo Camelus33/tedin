@@ -501,10 +501,10 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
             <div className="relative z-10">
               <h1 className={`text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-4`}>
-                오늘의 3분 읽기
+                오늘의 1줄 메모
               </h1>
               <p className={`${habitus33Theme.textMuted} text-lg mb-6`}>
-                "중요하다 싶으면 1줄 메모로 꼭 남기세요"
+                "읽은 후 꼭 남기세요. 나중에 큰 도움이 됩니다"
               </p>
               <Link href="/ts" className="inline-block">
                 <button className={`${habitus33Theme.progressFg} text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
@@ -527,7 +527,7 @@ export default function DashboardPage() {
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
                   <h2 className={`text-xl font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>기억 착수 게임 3번 어떠세요?</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>기억력 향상 게임 어떠세요?</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30`}>
@@ -551,7 +551,7 @@ export default function DashboardPage() {
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse" />
                   <h2 className="text-xl font-semibold text-emerald-400">ZenGo Myverse</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>중요한 내용은 ZenGo로 암기하세요.</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>중요한 내용을 ZenGo로 암기하세요.</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30">
@@ -732,7 +732,7 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
             <div className="relative z-10">
               <div className="flex justify-between items-center mb-8">
-                <h2 className={`text-2xl font-bold ${habitus33Theme.primary}`}>📚 현재 읽기 여정</h2>
+                <h2 className={`text-2xl font-bold ${habitus33Theme.primary}`}>현재 읽고 있는...</h2>
                 <Button 
                   href="/books" 
                   variant="outline"
@@ -745,12 +745,12 @@ export default function DashboardPage() {
             <div className="relative z-10">
               {currentBooks.length === 0 ? (
                 <div className="text-center py-16">
-                  <p className={`${habitus33Theme.primary} mb-6 text-lg`}>새로운 읽기 여정을 시작해 보세요</p>
+                  <p className={`${habitus33Theme.primary} mb-6 text-lg`}>새로운 자료를 등록해 보세요</p>
                   <Button 
                     href="/books/new" 
                     variant="default"
                   >
-                    나만의 책 담기
+                    자료 등록
                   </Button>
                 </div>
               ) : (

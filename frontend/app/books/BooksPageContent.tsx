@@ -349,10 +349,10 @@ export default function BooksPageContent() {
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
             <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>나의 도서관</h1>
             <button onClick={handleAddBook} aria-label="새 책 등록" className={`flex items-center gap-2 px-4 py-2 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-medium transition-colors w-full sm:w-auto mt-3 sm:mt-0`}>
-              <AiOutlinePlus className="h-5 w-5" /><span>새 책 등록</span>
+              <AiOutlinePlus className="h-5 w-5" /><span>NEW</span>
             </button>
           </div>
-          <p className={`text-sm ${cyberTheme.textMuted}`}>이곳은 당신의 생각과 노력이 차곡차곡 쌓이는 소중한 공간이에요. 책, 논문, 학습자료 등 성장의 재료들을 기록해보세요.</p>
+          <p className={`text-sm ${cyberTheme.textMuted}`}>이곳은 당신이 등록한 자료, 1줄메모를 진화시키고, 단권화 노트로 융합하는 공간입니다. 보고서, 책, 논문, 학습자료 및 각종 문서 를 관리하세요.</p>
         </div>
         <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 ${cyberTheme.bgSecondary} rounded-lg`}>
           <div className="relative w-full sm:w-auto flex-grow">
@@ -386,7 +386,7 @@ export default function BooksPageContent() {
                 : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-cyan-300 border-transparent hover:bg-gray-700/70`}
             `}
           >
-            <FiBook className="inline mr-2 mb-0.5" />등록한 책
+            <FiBook className="inline mr-2 mb-0.5" />등록한 자료
           </button>
           <button
             onClick={() => setActiveTab('summaryNotes')}

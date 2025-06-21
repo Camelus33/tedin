@@ -222,13 +222,13 @@ export default function NewBookPage() {
             className="flex items-center text-cyan-400 hover:text-cyan-300 transition-colors text-xs font-mono"
           >
             <FiArrowLeft className="mr-1" />
-            <span>나의 독서 공간으로 돌아가기</span>
+            <span>나의 도서관으로 돌아가기</span>
           </Link>
         </div>
         
         {/* 메인 카드 */}
         <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-cyan-500/10 border border-cyan-500/40 p-4">
-          <h1 className="text-xl font-bold text-cyan-300 mb-3 font-orbitron tracking-wide">새로운 성장 기록하기</h1>
+          <h1 className="text-xl font-bold text-cyan-300 mb-3 font-orbitron tracking-wide">NEW</h1>
           
           {error && (
             <div className="bg-red-900/30 border-l-4 border-red-500 p-2 rounded-md mb-3">
@@ -253,14 +253,14 @@ export default function NewBookPage() {
                     onChange={handleInputChange}
                     required
                     className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all"
-                    placeholder="어떤 책과 함께 성장할 예정인가요?"
+                    placeholder="이번엔 어떤 내용을 추가할 예정인가요?"
                   />
                 </div>
                 
                 {/* 저자 */}
                 <div>
                   <label htmlFor="author" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
-                    저자 <span className="text-red-400">*</span>
+                    글쓴이 <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -287,7 +287,7 @@ export default function NewBookPage() {
                     required
                     className="w-full px-3 py-2 border border-purple-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-purple-400/60 focus:border-purple-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all appearance-none"
                   >
-                    <option value="">어떤 분야의 책인가요?</option>
+                    <option value="">어떤 분야인가요?</option>
                     {genres.map((genre) => (
                       <option key={genre.id} value={genre.id}>
                         {genre.name}
@@ -316,7 +316,7 @@ export default function NewBookPage() {
                 {/* 읽는 목적 */}
                 <div>
                   <label htmlFor="readingPurpose" className="block text-xs font-semibold text-emerald-300 mb-0.5 font-barlow">
-                    성장의 목표
+                    목표
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {readingPurposes.map((purpose) => (
@@ -374,7 +374,7 @@ export default function NewBookPage() {
               <div className="flex flex-col items-center justify-start space-y-2">
                 <div className="w-full text-center">
                   <label className="block text-xs font-semibold text-cyan-300 mb-2 font-barlow">
-                    성장의 표지
+                    표지
                   </label>
                   
                   {coverImage ? (
@@ -418,13 +418,13 @@ export default function NewBookPage() {
                 </div>
                 
                 <div className="bg-cyan-900/30 rounded-md p-2 w-full text-[11px] text-cyan-300 border border-cyan-500/20">
-                  <p>💡 표지는 선택사항이에요. 등록하지 않아도 멋진 기본 표지가 만들어져요.</p>
+                  <p>💡 표지 등록은 선택이에요.</p>
                 </div>
 
                 {/* 인터넷 서점 링크 */}
                 <div>
                   <label htmlFor="purchaseLink" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
-                    인터넷 서점 링크 (선택 사항)
+                    인터넷 서점 구매 링크 (선택)
                   </label>
                   <input
                     type="url"

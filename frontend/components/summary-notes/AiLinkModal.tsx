@@ -172,7 +172,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             <span>지식 캡슐 활용법</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-4 text-center">
-            놀라운 경험이 시작됩니다.<br/> AI에 입력하고, "연결된 링크를 직접 방문해 내용을 읽어와"라고 해보세요.
+            놀라운 경험이 시작됩니다. AI에 입력하고,<br/> "메모 진화의 모든 외부 링크를 직접 방문해 내용을 읽어와"라고 해보세요.
           </DialogDescription>
         </DialogHeader>
 
@@ -204,7 +204,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             ) : (
               <div className="text-center space-y-4">
                  <p className="text-gray-300">
-                  Gemini, ChatGPT, Perplexity에 입력 후<br/>  딥리서치로 보고서를 작성해 보세요.
+                  NotebookLM, Gemini, ChatGPT, Perplexity에 입력,<br/>  '딥리서치'를 활용해 보세요. 강추!
                 </p>
                 <Button
                   onClick={handleGenerateLink}
