@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { AlertTriangle, BookOpen, Calendar, Link as LinkIcon, MessageSquare, Microscope, Paperclip, Tag } from 'lucide-react';
 import AIAccessibleData from '@/components/share/AIAccessibleData';
 import SharePageClient from './SharePageClient';
+import ExpandableText from '@/components/common/ExpandableText';
 
 // interface SharePageProps {
 //   params: { shareId: string };
@@ -212,11 +213,11 @@ export default async function SharePage({ params }: { params: { shareId: string 
                   {(note.importanceReason || note.momentContext || note.relatedKnowledge || note.mentalImage) && (
                     <section>
                       <h3 className="font-semibold text-gray-800 flex items-center"><Microscope className="h-4 w-4 mr-2 text-gray-500" />메모 진화</h3>
-                      <ul className="mt-2 text-sm text-gray-700 space-y-1 list-inside">
-                        {note.importanceReason && <li><strong className="text-indigo-600">작성 이유:</strong> {note.importanceReason}</li>}
-                        {note.momentContext && <li><strong className="text-indigo-600">당시 상황:</strong> {note.momentContext}</li>}
-                        {note.relatedKnowledge && <li><strong className="text-indigo-600">연상 지식:</strong> {note.relatedKnowledge}</li>}
-                        {note.mentalImage && <li><strong className="text-indigo-600">떠오른 장면:</strong> {note.mentalImage}</li>}
+                      <ul className="mt-2 text-sm text-gray-700 space-y-4">
+                        {note.importanceReason && <li><strong className="text-indigo-600 block mb-1">작성 이유:</strong> <ExpandableText text={note.importanceReason} /></li>}
+                        {note.momentContext && <li><strong className="text-indigo-600 block mb-1">당시 상황:</strong> <ExpandableText text={note.momentContext} /></li>}
+                        {note.relatedKnowledge && <li><strong className="text-indigo-600 block mb-1">연상 지식:</strong> <ExpandableText text={note.relatedKnowledge} /></li>}
+                        {note.mentalImage && <li><strong className="text-indigo-600 block mb-1">떠오른 장면:</strong> <ExpandableText text={note.mentalImage} /></li>}
                       </ul>
                     </section>
                   )}
