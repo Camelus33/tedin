@@ -56,7 +56,7 @@ export default function AMFADeepDive() {
       icon: BookOpenIcon,
       color: 'text-cyan-400',
       description: '물 한방울이 만드는 첫 번째 기적',
-      detailedDescription: '고요한 지식의 바다에 떨어지는 첫 번째 물방울. 3분 읽고 1줄 메모로 작지만 완벽한 원형의 파문이 시작됩니다.',
+      detailedDescription: '고요한 지식의 바다에 떨어지는 첫 번째 물방울. 1줄 메모로 작지만 완벽한 원형의 파문이 시작됩니다.',
       features: [
         '3분 집중 독서',
         '1줄 메모로 핵심 압축',
@@ -75,7 +75,7 @@ export default function AMFADeepDive() {
       subtitle: 'The First Ripple',
       icon: LightBulbIcon,
       color: 'text-blue-400',
-      description: '생각이 바다로 퍼져나가는 여행',
+      description: '생각이 젋은 지혜의 바다로 나아가는 여행',
       detailedDescription: '작은 파문이 동심원을 그리며 지식의 바다로 확산되는 과정. 5단계 질문을 통해 개인의 경험과 만나며 새로운 섬들을 발견합니다.',
       features: [
         '5단계 진화 질문',
@@ -95,7 +95,7 @@ export default function AMFADeepDive() {
       subtitle: 'The Deep Current',
       icon: FireIcon,
       color: 'text-purple-400',
-      description: '심해 속 지식의 용광로에서 단련되다',
+      description: '생각을 연결하여 깊은 통찰로 단련되다',
       detailedDescription: '표면의 파도를 넘어 깊은 심해 해류로 잠수하는 여정. 압력과 어둠 속에서 지식이 단단한 보석으로 변화합니다.',
       features: [
         '지식의 체계적 융합',
@@ -115,10 +115,10 @@ export default function AMFADeepDive() {
       subtitle: 'The Infinite Wave',
       icon: CpuChipIcon,
       color: 'text-violet-400',
-      description: '무한한 지식 바다에서의 자유로운 항해',
+      description: '자신만의 도메인 컨텍스트로 무한한 파도를 만드세요',
       detailedDescription: '개인의 한계를 넘어 광활한 지식 대양으로의 모험. 예상치 못한 해류를 타고 새로운 대륙을 발견하는 기쁨을 경험합니다.',
       features: [
-        '맞춤형 AI 파트너십',
+        '고맥락 AI 답변',
         '예상치 못한 연결 발견',
         '무한한 지식 확장',
         '새로운 관점의 획득'
@@ -151,14 +151,14 @@ export default function AMFADeepDive() {
               AMFA 4단계 여정
             </h2>
             <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
-              작게 시작해서 크게 성장하는 나만의 학습 여정을 시작하세요
+              1줄 메모로 시작해 지식 캡슐을 완성하는 나만의 학습 여정을 시작하세요
             </p>
             
             {/* 진행 표시 */}
             <div className="flex items-center justify-center space-x-2">
               <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
               <span className="text-sm text-purple-400 font-medium tracking-wider">
-                3분 독서 → 메모 성장 → 지식 융합 → AI 동반자
+                1줄 메모 → 메모 진화 → 맥락 완성 → 지식 캡슐
               </span>
               <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
             </div>
@@ -181,7 +181,7 @@ export default function AMFADeepDive() {
                   <div className="flex justify-center">
                     <BoltIcon className="h-12 w-12 text-yellow-400" />
                   </div>
-                  <h4 className="font-semibold text-cyan-400 text-lg">3분이면 충분</h4>
+                  <h4 className="font-semibold text-cyan-400 text-lg">3분 1줄이면 충분</h4>
                   <p className="text-base">어떤 바쁜 일상에서도 찾을 수 있는 시간, 3분으로 시작하세요</p>
                 </div>
                 <div className="space-y-3">
@@ -189,7 +189,7 @@ export default function AMFADeepDive() {
                     <SparklesIcon className="h-12 w-12 text-green-400" />
                   </div>
                   <h4 className="font-semibold text-purple-400 text-lg">나만의 속도로</h4>
-                  <p className="text-base">다른 사람과 비교하지 않고, 나만의 리듬으로 성장해요</p>
+                  <p className="text-base">다른 사람과 비교하지 않고, 나만의 파도를 만드세요</p>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-center">

@@ -27,94 +27,94 @@ interface AMFACardsProps {
   onStepSelect?: (stepId: string) => void;
 }
 
-// AMFA 4단계 데이터 - 브랜드 가이드라인 적용
+// AMFA 4단계 데이터 - Rory Sutherland의 행동 마케팅 플레이북 적용
 const steps: AMFAStep[] = [
   {
     id: 'atomic',
     title: 'Atomic Reading',
-    subtitle: 'The Drop Moment',
-    description: '물 한방울이 만드는 첫 번째 기적',
-    detailedDescription: '고요한 지식의 바다에 떨어지는 첫 번째 물방울. 3분 읽고 1줄 메모로 작지만 완벽한 원형의 파문이 시작됩니다.',
+    subtitle: "거장의 첫 번째 신호",
+    description: "남들이 모르는, AI를 길들이는 첫 단계",
+    detailedDescription: "단 3분의 독서가 AI에게 당신을 각인시키는 첫 신호가 됩니다. 이 작은 습관이 당신을 평범한 사용자에서 'AI 마스터'로 가는 여정의 시작입니다.",
     icon: BookOpenIcon,
     color: 'from-cyan-400 to-blue-500',
     bgGradient: 'from-cyan-50 to-blue-50',
     features: [
-      '3분씩만 투자하면 충분',
-      '작게 나눠 읽기',
-      '매번 작은 성취감',
-      '부담 없는 읽기'
+      "3분, AI 조련의 시작",
+      "AI에게 '주인'을 각인",
+      "매일, '마스터'에 한 걸음",
+      "아무도 모르는 나만의 무기"
     ],
     benefits: [
-      '읽기가 쉬워지는 경험',
-      '나만의 독서 리듬 발견',
-      '자연스런 몰입',
-      '"나도 할 수 있다" 자신감'
+      "AI가 나를 기억하기 시작",
+      "미래를 앞서간다는 자신감",
+      "동료와는 다른 출발선",
+      "지식 축적의 '복리' 효과"
     ]
   },
   {
     id: 'memo',
     title: 'Memo Evolve',
-    subtitle: 'The First Ripple',
-    description: '생각이 바다로 퍼져나가는 여행',
-    detailedDescription: '작은 파문이 동심원을 그리며 지식의 바다로 확산되는 과정. 5단계 질문을 통해 개인의 경험과 만나며 새로운 섬들을 발견합니다.',
+    subtitle: "AI의 각성",
+    description: "당신의 생각이 AI의 지능으로 진화합니다",
+    detailedDescription: "단순한 메모가 아닙니다. 당신의 관점과 경험이 AI의 신경망에 연결되어, 세상에 단 하나뿐인 '당신만의 전문가 AI'가 탄생하는 순간입니다.",
     icon: LightBulbIcon,
     color: 'from-blue-400 to-purple-500',
     bgGradient: 'from-blue-50 to-purple-50',
     features: [
-      '지식이 점점 더 불어남',
-      '가속화된 지식 축적',
-      '생각과 보태져 기억이 강화됨',
-      '지식의 중심에 다가선 느낌'
+      "나의 관점을 AI에 주입",
+      "AI, 나처럼 생각하기 시작",
+      "지식 위에 경험을 새기다",
+      "세상 유일한 '개인 AI' 육성"
     ],
     benefits: [
-      '읽은 내용이 오래 기억됨',
-      '내 방식으로 지식 연결',
-      '새로운 아이디어 발견',
-      '더 넓은 이해의 폭'
+      "AI가 내 의도를 예측",
+      "남다른 통찰력과 아이디어",
+      "시간이 지날수록 똑똑해지는 AI",
+      "지적 파트너와의 동반 성장"
     ]
   },
   {
     id: 'furnace',
     title: 'Furnace Knowledge',
-    subtitle: 'The Deep Current',
-    description: '심해 속 지식의 용광로에서 단련되다',
-    detailedDescription: '표면의 파도를 넘어 깊은 심해 해류로 잠수하는 여정. 압력과 어둠 속에서 지식이 단단한 보석으로 변화합니다.',
+    subtitle: "선각자의 통찰",
+    description: "흩어진 지식에서 당신만의 '빅 픽처'를 봅니다",
+    detailedDescription: "여러 분야의 지식이 당신의 AI 안에서 충돌하고 융합하며, 남들은 보지 못하는 연결고리와 패턴을 드러냅니다. 당신은 지식의 소비자를 넘어 '지혜의 창조자'가 됩니다.",
     icon: FireIcon,
     color: 'from-purple-400 to-pink-500',
     bgGradient: 'from-purple-50 to-pink-50',
     features: [
-      '여러 책의 내용이 연결됨',
-      '숨겨진 패턴 자동 발견',
-      '나만의 관점과 요점 생성',
-      '지혜로 축적되는 경험'
+      "지식간의 숨겨진 연결 발견",
+      "시스템적 사고 능력 획득",
+      "나만의 독창적인 프레임워크 구축",
+      "예측 불가능한 통찰의 탄생"
     ],
     benefits: [
-      '창의적 사고력 개발',
-      '복잡한 문제 해결 능력',
-      '숲을 보는 관점 형성',
-      '남다른 지식체계 확립'
+      "복잡한 문제의 본질 간파",
+      "미래를 예측하는 지혜",
+      "누구도 모방 못할 전문가",
+      "학계와 업계를 선도하는 관점"
     ]
   },
   {
     id: 'ai',
     title: 'AI Link',
-    subtitle: 'The Infinite Wave',
-    description: '무한한 지식 바다에서의 자유로운 항해',
-    detailedDescription: '개인의 한계를 넘어 광활한 지식 대양으로의 모험. 예상치 못한 해류를 타고 새로운 대륙을 발견하는 기쁨을 경험합니다.',
+    subtitle: "마스터의 징표",
+    description: "당신의 모든 지성이 담긴, AI를 위한 '단 하나의 키'",
+    detailedDescription: "당신의 모든 지적 여정이 압축된 'AI-Link'는 당신의 정체성이자 권위입니다. 이 링크 하나로 어떤 AI든 즉시 당신의 '개인 전문가'로 변신시켜, 당신이 AI 시대의 리더임을 증명합니다.",
     icon: CpuChipIcon,
     color: 'from-pink-400 to-violet-500',
     bgGradient: 'from-pink-50 to-violet-50',
     features: [
-      '나에게 맞는 책/자료 추천',
-      '맞춤형 학습플랜 가이드',
-      '학습 패턴 지능형 분석',
-      '맥락축적에 따른 확장성'
+      "나의 지능을 '캡슐'에 봉인",
+      "클릭 한 번으로 AI 소환",
+      "어떤 AI든 나만의 전문가로",
+      "나의 지적 권위를 증명"
     ],
     benefits: [
-      '나만을 위한 지적 성장',
-      '나에게 맞는 학습 방법',
-      '내 미래에 맞는 학습',
-      '점점 더 정교한 AI코칭'
+      "AI에게 매번 설명할 필요 없음",
+      "동료들이 부러워하는 AI 활용 능력",
+      "AI 시대의 '지적 자산' 확보",
+      "당신을 중심으로 움직이는 AI 생태계"
     ]
   }
 ];

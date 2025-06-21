@@ -1138,7 +1138,7 @@ export function WaveAnimation({
       
       {/* 안내 텍스트 */}
       <div className="absolute top-4 left-4 text-cyan-400/70 text-sm pointer-events-none">
-        AMFA, 이제 나만의 파도를 만들어 보세요
+        AMFA, 나만의 지식 캡슐을 만들어 보세요
       </div>
       
       {/* 중앙 콘텐츠 영역 - 약간 아래로 이동 */}
@@ -1147,7 +1147,7 @@ export function WaveAnimation({
           {/* 메인 타이틀 - 폰트 크기 축소 및 간격 조정 */}
           <div className="space-y-3">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-cyan-400 leading-tight drop-shadow-lg">
-              얕은 학습에서
+              1줄 메모에서
             </h1>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-purple-400 leading-tight drop-shadow-lg">
               지혜의 심연으로
