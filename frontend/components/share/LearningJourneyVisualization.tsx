@@ -64,6 +64,36 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
     return colors[Math.min(position - 1, colors.length - 1)];
   };
 
+  // ISO 8601 기간을 사람이 읽기 쉬운 형식으로 변환
+  const formatISODuration = (duration: string) => {
+    if (!duration || !duration.startsWith('PT')) return duration;
+
+    const timeString = duration.substring(2);
+    let minutes = 0;
+    let seconds = 0;
+
+    const minuteMatch = timeString.match(/(\d+)M/);
+    if (minuteMatch) {
+      minutes = parseInt(minuteMatch[1], 10);
+    }
+
+    const secondMatch = timeString.match(/(\d+)S/);
+    if (secondMatch) {
+      seconds = parseInt(secondMatch[1], 10);
+    }
+    
+    if (minutes > 0 && seconds > 0) {
+        return `${minutes}분 ${seconds}초`;
+    }
+    if (minutes > 0) {
+        return `${minutes}분`;
+    }
+    if (seconds > 0) {
+        return `${seconds}초`;
+    }
+    return '시간 정보 없음';
+  };
+
   // 시간 포맷팅
   const formatTime = (isoString: string) => {
     return new Date(isoString).toLocaleString('ko-KR', {
@@ -100,7 +130,7 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
           </div>
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-gray-800">학습 여정</h2>
-            <p className="text-sm text-gray-600">작은 물방울이 깊은 학습의 파도로 확산되는 과정</p>
+            <p className="text-sm text-gray-600">1줄 메모로 시작해 지식 캡슐이 되기까지</p>
           </div>
           <div className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +147,7 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
                 <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">총 소요시간</span>
               </div>
-              <div className="text-xl font-bold text-gray-800">{learningJourney.totalTime}</div>
+              <div className="text-xl font-bold text-gray-800">{formatISODuration(learningJourney.totalTime)}</div>
             </div>
             
             <div className="bg-white/70 backdrop-blur-sm rounded-lg p-4 border border-white/20">
@@ -136,7 +166,7 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
               <div className="text-xl font-bold text-gray-800">
                 {learningJourney.timeSpan ? 
                   calculateDuration(learningJourney.timeSpan.startDate, learningJourney.timeSpan.endDate) || '진행중' :
-                  learningJourney.totalTime || '진행중'
+                  formatISODuration(learningJourney.totalTime) || '진행중'
                 }
               </div>
             </div>

@@ -168,7 +168,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
                 </p>
               </header>
               <div className="prose prose-gray max-w-none bg-white p-4 rounded border border-purple-200">
-                <pre className="whitespace-pre-wrap font-sans text-lg text-gray-800 leading-loose">{userMarkdownContent}</pre>
+                <pre className="whitespace-pre-wrap font-sans text-lg text-gray-200 leading-loose">{userMarkdownContent}</pre>
               </div>
             </section>
           )}

@@ -179,7 +179,6 @@ export default function DashboardPage() {
 
       // 사용자 통계 조회
       const statsData: UserDashboardStats = await apiClient.get('/users/me/stats');
-      console.log('Fetched Stats Data:', statsData);
       setStats(statsData);
       
       // 루틴 정보 조회
