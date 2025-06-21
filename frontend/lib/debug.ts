@@ -114,11 +114,13 @@ export const apiDebug = {
       return fetch(url, options);
     }
 
+    const isSensitive = url.includes('/auth/login') || url.includes('/auth/register');
+
     // 요청 정보 로깅
     const method = options.method || 'GET';
     debugLogger.http(`${apiName} 요청: ${method} ${url}`, {
       headers: options.headers,
-      body: options.body,
+      body: isSensitive ? '[SENSITIVE DATA REDACTED]' : options.body,
     });
 
     try {
