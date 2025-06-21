@@ -164,7 +164,7 @@ export default function NewNotePage() {
             href="/books"
             variant="default"
           >
-            나의 독서 공간으로
+            나의 도서관으로
           </Button>
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function NewNotePage() {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 p-4">
       <div className="container mx-auto max-w-2xl">
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold text-center mb-6">성장의 조각 남기기</h1>
+          <h1 className="text-2xl font-bold text-center mb-6">1줄메모 남기기</h1>
           
           {/* Book Info */}
           {book && (
@@ -237,7 +237,7 @@ export default function NewNotePage() {
             {/* Note Content */}
             <div>
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-                생각의 조각을 남겨주세요
+                1줄메모를 남겨주세요
               </label>
               <textarea
                 id="content"

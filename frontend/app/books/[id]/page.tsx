@@ -308,7 +308,7 @@ export default function BookDetailPage() {
         });
         setRelatedLinksMap(initialRelatedLinksMap);
       } catch (err) {
-        console.error('TS 메모 로딩 오류:', err);
+        console.error('1줄 메모 로딩 오류:', err);
         setTsNotes([]);
       }
 
@@ -399,15 +399,15 @@ export default function BookDetailPage() {
     book: '어떤 책과 연결해볼까요? 링크를 남겨주세요.',
     paper: '어떤 자료와 연결해볼까요? 링크를 남겨주세요.',
     youtube: '어떤 영상과 연결해볼까요? 링크를 남겨주세요.',
-    media: '어떤 미디어와 연결해볼까요? 링크를 남겨주세요.',
-    website: '개인 노트에 있는 생각과 연결해볼까요?',
+    media: '어떤 언론기사와 연결해볼까요? 링크를 남겨주세요.',
+    website: '노트앱 및 AI 답변과 연결해볼까요?',
   };
   const reasonPlaceholderMap: Partial<Record<PageRelatedLink['type'], string>> = {
     book: '이 책과 연결한 나만의 이유를 남겨주세요.',
     paper: '이 자료와 연결한 나만의 이유를 남겨주세요.',
     youtube: '이 영상과 연결한 나만의 이유를 남겨주세요.',
-    media: '이 매체와 연결한 나만의 이유를 남겨주세요.',
-    website: '이 노트와 연결한 나만의 이유를 남겨주세요.',
+    media: '이 포스팅과 연결한 나만의 이유를 남겨주세요.',
+    website: '이 노트앱, AI답변과 연결한 이유를 남겨주세요.',
   };
 
   /**
@@ -472,7 +472,7 @@ export default function BookDetailPage() {
     // 책 정보나 노트 정보가 없으면 오류를 발생시키거나 알림을 표시하고 함수를 종료합니다.
     if (!currentBook || !currentBook.title) {
       console.error('Book information is not loaded yet. Cannot add to cart.');
-      alert('책 정보를 아직 불러오고 있어요. 잠시 후 다시 카트에 담아주세요.');
+      alert('정보를 아직 불러오고 있어요. 잠시 후 다시 카트에 담아주세요.');
       return;
     }
     if (!noteToAdd) {
@@ -561,13 +561,13 @@ export default function BookDetailPage() {
               aria-label="책 정보 수정"
               className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border`}
             >
-              책 정보 수정
+              정보 수정
             </Button>
             <Button
               variant="default"
               size="sm"
               onClick={handleStartReading}
-              aria-label="TS 모드 시작"
+              aria-label="TS 세션 시작"
               className={`text-white`}
             >
               Atomic-Reading
@@ -611,7 +611,7 @@ export default function BookDetailPage() {
               {/* Progress Bar */}
               <div className="pt-2" role="group" aria-label={`성장 진행률 ${getProgressPercentage()}%`}>
                 <div className="flex justify-between items-center mb-1 text-sm">
-                  <span className={cyberTheme.textMuted}>성장 진행률</span>
+                  <span className={cyberTheme.textMuted}>진행률</span>
                   <span className={cyberTheme.textLight}>{getProgressPercentage()}%</span>
                 </div>
                 <div className={`w-full ${cyberTheme.progressBarBg} h-2 rounded-full overflow-hidden`}>
@@ -634,7 +634,7 @@ export default function BookDetailPage() {
             className={`px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors ${activeTab === 'memo' ? 'border-cyan-400 text-cyan-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-cyan-200'}`}
             onClick={() => setActiveTab('memo')}
           >
-            메모진화
+            메모 진화
           </button>
           <button
             className={`px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors ${activeTab === 'relatedLinks' ? 'border-green-400 text-green-400 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800'} ${!selectedRelatedNote ? 'opacity-50 cursor-not-allowed' : 'hover:text-green-300'}`}
@@ -642,7 +642,7 @@ export default function BookDetailPage() {
             disabled={!selectedRelatedNote}
             aria-disabled={!selectedRelatedNote}
           >
-            지식연결
+            지식 연결
           </button>
           <button
             className={`px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors ${activeTab === 'flashcard' ? 'border-purple-400 text-purple-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-purple-200'}`}
@@ -658,12 +658,12 @@ export default function BookDetailPage() {
               {/* 왼쪽: 타이틀/설명 */}
               <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
                 <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">Memo Hub</h2>
-                <span className="text-xs text-gray-400 font-medium block mb-2">기록을 넘어 성장으로</span>
-                <p className="text-sm text-cyan-300 mb-2 font-semibold">1줄 메모를 연결-확장해, 학습·업무에 활용해 보세요..</p>
+                <span className="text-xs text-gray-400 font-medium block mb-2">기록에서 자산으로</span>
+                <p className="text-sm text-cyan-300 mb-2 font-semibold">1줄 메모를 확장 연결해, 학습·업무에 활용해 보세요..</p>
                 <ul className="text-xs text-gray-400 leading-relaxed list-disc pl-4 space-y-1">
-                  <li>작은 생각의 조각도 소중하게 기록해보세요.</li>
-                  <li>왜 중요하게 느껴졌는지, 어떻게 활용할 수 있을지 간단히 남겨두면 좋아요.</li>
-                  <li>틈틈이 생각을 더해, 하나의 큰 눈덩이로 키워나가 보세요.</li>
+                  <li>나의 도메인 지식을 더 넓혀 보세요.</li>
+                  <li>왜 중요하게 느껴졌는지, 이 것은 어떤 도메인 지식과 연결되는지 고민해 보세요.</li>
+                  <li>틈틈이 생각을 더해, 나만의 도메인 컨텍스트를 완성하세요.</li>
                 </ul>
               </div>
               {/* 오른쪽: 단계별 카드 grid */}
@@ -832,12 +832,12 @@ export default function BookDetailPage() {
               <div className="flex flex-col md:flex-row gap-12 mb-3">
                 {/* 좌측: 설명 */}
                 <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                  <h2 className="text-xl font-bold text-green-300 mb-1">Connect</h2>
-                  <span className="text-xs text-gray-300 block mb-2">더 많은 지식과 연결하세요</span>
+                  <h2 className="text-xl font-bold text-green-300 mb-1"> Connect </h2>
+                  <span className="text-xs text-gray-300 block mb-2">1줄메모에 더 많은 외부 지식을 연결하세요</span>
                   <ul className="text-xs text-gray-300 list-disc pl-4 space-y-1">
-                    <li>자유롭게 떠오르는 생각들을 연결해보세요.</li>
-                    <li>책, 영상, 웹사이트 등 다양한 지식으로 생각을 넓혀가세요.</li>
-                    <li>'왜 연결했는지'를 남겨두면, 나중에 더 큰 도움이 될 거예요.</li>
+                    <li>도메인 컨텍스트를 더 확장할 수 있는 외부 지식을 연결하세요.</li>
+                    <li>책, AI 딥리서치 답변, 영상, SNS 포스팅 등을 연결해 더 풍성하게 만드세요.</li>
+                    <li>'왜 연결했는지' 이유를 상세하게 남길수록, 나중에 매우 유용한 도메킨 컨텍스트가 됩니다.</li>
                   </ul>
                 </div>
                 {/* 우측: 도해식 flow */}
@@ -858,7 +858,7 @@ export default function BookDetailPage() {
                       <span className="bg-green-600 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
                         <svg xmlns='http://www.w3.org/2000/svg' className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.828 14.828a4 4 0 010-5.656m1.415-1.415a6 6 0 010 8.486m-1.415-1.415a4 4 0 010-5.656' /></svg>
                       </span>
-                      <span className="text-xs text-green-200 mt-1">지식연결</span>
+                      <span className="text-xs text-green-200 mt-1">지식 연결</span>
                       <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">다른 지식과 연결</div>
                     </div>
                     {/* 화살표 */}
@@ -868,7 +868,7 @@ export default function BookDetailPage() {
                       <span className="bg-purple-700 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
                         <svg xmlns='http://www.w3.org/2000/svg' className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' /></svg>
                       </span>
-                      <span className="text-xs text-purple-200 mt-1">지식 확장</span>
+                      <span className="text-xs text-purple-200 mt-1">도메인 확장</span>
                       <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">지식이 넓어짐</div>
                     </div>
                   </div>
@@ -987,7 +987,7 @@ export default function BookDetailPage() {
                   NEW
                 </button>
               </div>
-              <p className="text-sm text-gray-400 mb-4">스스로에게 질문을 던지며, 생각을 더 단단하게 만들어보세요.</p>
+              <p className="text-sm text-gray-400 mb-4">퀴즈로 스스로에게 질문하며, 도메인 컨텍스트를 완성해보세요.</p>
               {showNewFlashcardForm && (
                 <div className="mb-4">
                   <FlashcardForm
