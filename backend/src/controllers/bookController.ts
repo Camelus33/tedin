@@ -51,7 +51,7 @@ const updateEstimatedTime = async (bookId: string, userId: string) => {
 // 사용자의 책 목록 조회
 export const getUserBooks = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?._id;
 
     if (!userId) {
       return res.status(401).json({ message: '인증이 필요합니다.' });
@@ -72,7 +72,7 @@ export const getUserBooks = async (req: Request, res: Response) => {
 export const getBookById = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
-    const userId = req.user?.id;
+    const userId = req.user?._id;
 
     if (!userId) {
       return res.status(401).json({ message: '인증이 필요합니다.' });
@@ -95,7 +95,7 @@ export const getBookById = async (req: Request, res: Response) => {
 // 새 책 추가
 export const addBook = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?._id;
     
     if (!userId) {
       return res.status(401).json({ message: '인증이 필요합니다.' });
@@ -147,7 +147,7 @@ export const addBook = async (req: Request, res: Response) => {
 export const updateBookInfo = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
-    const userId = req.user?.id;
+    const userId = req.user?._id;
     const { title, author, totalPages, currentPage, category, readingPurpose, readingSpeed, removeCoverImage, purchaseLink } = req.body;
     const coverImageFile = req.file as Express.Multer.File;
 
@@ -252,7 +252,7 @@ export const updateBookInfo = async (req: Request, res: Response) => {
 export const updateBookProgress = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
-    const userId = req.user?.id;
+    const userId = req.user?._id;
     const { currentPage, status } = req.body;
 
     if (!userId) {
@@ -337,7 +337,7 @@ export const updateBookProgress = async (req: Request, res: Response) => {
 export const removeBook = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
-    const userId = req.user?.id;
+    const userId = req.user?._id;
 
     if (!userId) {
       return res.status(401).json({ message: '인증이 필요합니다.' });
@@ -382,7 +382,7 @@ export const removeBook = async (req: Request, res: Response) => {
 // 여러 ID로 책 일괄 조회
 export const getBooksByIds = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?._id;
     const { bookIds } = req.body; // 요청 본문에서 bookIds 배열을 가져옵니다.
 
     if (!userId) {
@@ -428,7 +428,7 @@ export const getBooksByIds = async (req: Request, res: Response) => {
 export const updateBook = async (req: Request, res: Response) => {
   try {
     const { bookId } = req.params;
-    const userId = req.user?.id;
+    const userId = req.user?._id;
     const { title, author, totalPages, currentPage, isbn, category, readingPurpose, status, purchaseLink } = req.body;
     const coverImageFile = req.file as Express.Multer.File;
 
