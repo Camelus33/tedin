@@ -225,14 +225,14 @@ export default function TSReviewPage() {
   }
 
   return (
-    <div className={`min-h-screen ${cyberTheme.gradient} p-6 md:p-10 ${cyberTheme.textLight}`}>
-      <div className={`max-w-2xl mx-auto ${cyberTheme.bgSecondary} ${cyberTheme.cardBg} rounded-xl shadow-2xl p-6 md:p-8 border ${cyberTheme.inputBorder}`}>
-        <div className="flex justify-between items-center mb-8">
-          <h1 className={`text-xl md:text-2xl font-bold ${cyberTheme.textLight}`}>다시 떠올려 보세요</h1>
+    <div className={`min-h-screen ${cyberTheme.gradient} p-4 sm:p-6 md:p-10 ${cyberTheme.textLight}`}>
+      <div className={`max-w-2xl mx-auto ${cyberTheme.bgSecondary} ${cyberTheme.cardBg} rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 border ${cyberTheme.inputBorder}`}>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+          <h1 className={`text-lg sm:text-xl md:text-2xl font-bold ${cyberTheme.textLight}`}>다시 떠올려 보세요</h1>
           <div className={`flex items-center gap-2 p-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} shadow-inner`}>
             <ClockIcon className={`h-5 w-5 ${cyberTheme.secondary}`} />
             <div>
-              <div className={`text-lg font-mono font-bold ${timeLeft < 30 ? 'text-red-400 animate-pulse' : cyberTheme.textLight}`}>
+              <div className={`text-base sm:text-lg font-mono font-bold ${timeLeft < 30 ? 'text-red-400 animate-pulse' : cyberTheme.textLight}`}>
                 {formatTime(timeLeft)}
               </div>
               <div className={`text-xs ${cyberTheme.textMuted}`}>떠올리는 시간</div>
@@ -251,7 +251,7 @@ export default function TSReviewPage() {
               onChange={handleChange}
               min={sessionData.startPage}
               max={sessionData.bookId.totalPages}
-              className={`w-full p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
+              className={`w-full p-2 sm:p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`}
               required
             />
             <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>목표: {sessionData.startPage}쪽 ~ {sessionData.endPage}쪽</p>
@@ -259,7 +259,7 @@ export default function TSReviewPage() {
 
           <div>
             <label className={`block text-sm font-medium mb-1.5 ${cyberTheme.textMuted}`}>1줄 메모 성격 선택</label>
-            <div className="flex space-x-2">
+            <div className="flex flex-wrap gap-2">
               {[
                 { id: 'thought', label: '생각' },
                 { id: 'quote', label: '인용' },
@@ -290,7 +290,7 @@ export default function TSReviewPage() {
               value={reviewData.memo}
               onChange={handleChange}
               placeholder="인상깊은 문장 혹은 떠오른 생각을 있으셨나요?"
-              className={`w-full p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
+              className={`w-full p-2 sm:p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
             />
           </div>
 
@@ -303,7 +303,7 @@ export default function TSReviewPage() {
               value={reviewData.summary}
               onChange={handleChange}
               placeholder="10단어 이내로 부탁드려요"
-              className={`w-full p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
+              className={`w-full p-2 sm:p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
             />
           </div>
 
@@ -316,11 +316,11 @@ export default function TSReviewPage() {
                   key={rating}
                   type="button"
                   onClick={() => handleRatingChange(rating)}
-                  className={`p-2 rounded-full transition-colors ${
+                  className={`p-1 sm:p-2 rounded-full transition-colors ${
                     reviewData.selfRating >= rating ? `${cyberTheme.ratingActive}` : `${cyberTheme.ratingInactive} hover:text-yellow-600`
                   }`}
                 >
-                  <StarIcon className="h-6 w-6" />
+                  <StarIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
               ))}
             </div>
@@ -331,7 +331,7 @@ export default function TSReviewPage() {
               type="submit"
               disabled={isLoading || isSubmitting}
               loading={isSubmitting}
-              className="w-full !py-3 !text-base flex items-center justify-center !bg-gradient-to-r !from-cyan-500 !to-blue-600 hover:!from-cyan-600 hover:!to-blue-700 disabled:!opacity-50 disabled:!cursor-not-allowed text-white font-medium rounded-lg shadow-md transition-all"
+              className="w-full !py-2.5 sm:!py-3 !text-sm sm:!text-base flex items-center justify-center !bg-gradient-to-r !from-cyan-500 !to-blue-600 hover:!from-cyan-600 hover:!to-blue-700 disabled:!opacity-50 disabled:!cursor-not-allowed text-white font-medium rounded-lg shadow-md transition-all"
             >
               <CheckCircleIcon className="h-5 w-5 mr-2" />
               완료 & 결과 보기

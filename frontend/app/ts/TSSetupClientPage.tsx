@@ -301,10 +301,10 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
 
   return (
     <div className={`min-h-screen ${cyberTheme.gradient} flex items-center justify-center p-4 md:p-6`}>
-      <div className={`w-full max-w-2xl ${cyberTheme.cardBg} p-6 rounded-lg shadow-xl border ${cyberTheme.borderSecondary}/30`}>
+      <div className={`w-full max-w-2xl ${cyberTheme.cardBg} p-4 sm:p-6 rounded-lg shadow-xl border ${cyberTheme.borderSecondary}/30`}>
         <div className="flex flex-col space-y-4">
           <div>
-            <h1 className={`text-2xl font-bold mb-2 ${cyberTheme.primary} flex items-center gap-2`}> 
+            <h1 className={`text-xl sm:text-2xl font-bold mb-2 ${cyberTheme.primary} flex items-center gap-2`}> 
               <Cog6ToothIcon className="h-6 w-6" />
               Setting
             </h1>
@@ -322,13 +322,13 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
             <>
           <div>
             <label htmlFor="book-select" className={`block text-sm font-medium mb-1 ${cyberTheme.textLight}`}>무엇을 읽을까요?</label>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex flex-col sm:flex-row items-center gap-2 mt-1">
               <select
                 id="book-select"
                 value={selectedBookId} // 이 값은 상태에 따라 올바르게 반영되어야 함
                 onChange={handleBookChange}
                 disabled={isLoading || books.length === 0} // 책이 없거나 로딩 중일 때 비활성화
-                className={`flex-grow ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`w-full ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} ${cyberTheme.textLight} rounded-md p-2 text-sm focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 {books.map((book) => (
                       book._id && (
@@ -342,7 +342,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                  variant="outline"
                  size="sm" 
                  onClick={() => router.push('/books/new')}
-                 className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border whitespace-nowrap`}
+                 className={`w-full sm:w-auto ${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border whitespace-nowrap`}
               >
                 NEW
               </Button>
@@ -434,7 +434,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
             <Button
               onClick={handleStartSession}
               disabled={isStarting || isLoading || !selectedBookId || books.length === 0}
-              className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${cyberTheme.buttonDisabledBg}`}
+              className={`w-full ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${cyberTheme.buttonDisabledBg} text-base`}
             >
               {isStarting ? (
                 <Spinner size="sm" color="white" /> 

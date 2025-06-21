@@ -934,31 +934,31 @@ export default function TSWarmupPage() {
   return (
     <div className={`min-h-screen flex flex-col ${cyberTheme.gradient} text-gray-100`}>
       {/* Header */}
-      <header className={`p-4 ${cyberTheme.bgSecondary} shadow-md flex justify-between items-center`}>
-        <h1 className={`text-xl font-bold ${cyberTheme.primary}`}>준비 운동 ({currentExerciseIndex + 1}/{EXERCISE_CONFIGURATIONS.length})</h1>
+      <header className={`p-3 sm:p-4 ${cyberTheme.bgSecondary} shadow-md flex justify-between items-center`}>
+        <h1 className={`text-lg sm:text-xl font-bold ${cyberTheme.primary}`}>준비 운동 ({currentExerciseIndex + 1}/{EXERCISE_CONFIGURATIONS.length})</h1>
         <div className="flex items-center">
           <ClockIcon className={`h-5 w-5 mr-2 ${cyberTheme.secondary}`} />
-          <span className={`text-lg font-mono ${cyberTheme.textLight}`}>{formatTime(timeLeft)}</span>
+          <span className={`text-base sm:text-lg font-mono ${cyberTheme.textLight}`}>{formatTime(timeLeft)}</span>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-grow container mx-auto p-4 md:p-6 lg:p-8 flex items-center justify-center">
-        <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl p-6 md:p-8 w-full max-w-md sm:max-w-lg md:max-w-xl border ${cyberTheme.borderPrimary}`}>
+      <main className="flex-grow container mx-auto p-3 sm:p-4 md:p-6 lg:p-8 flex items-center justify-center">
+        <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-md sm:max-w-lg md:max-w-xl border ${cyberTheme.borderPrimary}`}>
           
           {/* Progress Bar */}
-          <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-2.5 mb-6`}>
+          <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-2 sm:h-2.5 mb-4 sm:mb-6`}>
             <div 
-              className={`${cyberTheme.progressFg} h-2.5 rounded-full transition-all duration-300 ease-out`}
+              className={`${cyberTheme.progressFg} h-2 sm:h-2.5 rounded-full transition-all duration-300 ease-out`}
               style={{ width: `${((currentExerciseIndex + 1) / EXERCISE_CONFIGURATIONS.length) * 100}%` }}
             ></div>
           </div>
 
-          <h2 className={`text-2xl font-semibold mb-3 ${cyberTheme.secondary}`}>{exercise.title}</h2>
-          <p className={`${cyberTheme.textLight} mb-5 text-sm leading-relaxed`}>{exercise.description}</p>
+          <h2 className={`text-xl sm:text-2xl font-semibold mb-2 sm:mb-3 ${cyberTheme.secondary}`}>{exercise.title}</h2>
+          <p className={`${cyberTheme.textLight} mb-4 sm:mb-5 text-xs sm:text-sm leading-relaxed`}>{exercise.description}</p>
 
           {/* Exercise Content */}
-          <div className={`${cyberTheme.inputBg} p-4 rounded-lg mb-6 border ${cyberTheme.inputBorder} min-h-[120px] flex items-center justify-center`}>
+          <div className={`${cyberTheme.inputBg} p-4 rounded-lg mb-5 sm:mb-6 border ${cyberTheme.inputBorder} min-h-[150px] sm:min-h-[120px] flex items-center justify-center`}>
             {/* Conditional rendering for dynamic content will be added here based on exercise.type */}
             {exercise.id === 'guided_breathing' && (exercise.variationParams as BreathingVariationParams).durations && (
               <div className="text-center w-full">
@@ -968,27 +968,27 @@ export default function TSWarmupPage() {
                 
                 {(exercise.variationParams as BreathingVariationParams).name === '박스 호흡' ? (
                   // Box Breathing UI
-                  <div className="relative w-32 h-32 mx-auto mb-4 border-2 border-gray-600">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 border-2 border-gray-600">
                     {/* Top Side */}
-                    <div className={`absolute top-0 left-0 w-full h-2.5 transition-colors duration-200 ${(breathingPhase === 'inhale') ? cyberTheme.primary : 'bg-gray-600'}`} />
+                    <div className={`absolute top-0 left-0 w-full h-2 sm:h-2.5 transition-colors duration-200 ${(breathingPhase === 'inhale') ? cyberTheme.primary : 'bg-gray-600'}`} />
                     {/* Right Side */}
                     <div className={`absolute top-0 right-0 w-2.5 h-full transition-colors duration-200 ${(breathingPhase === 'hold1') ? cyberTheme.primary : 'bg-gray-600'}`} />
                     {/* Bottom Side */}
-                    <div className={`absolute bottom-0 left-0 w-full h-2.5 transition-colors duration-200 ${(breathingPhase === 'exhale') ? cyberTheme.primary : 'bg-gray-600'}`} />
+                    <div className={`absolute bottom-0 left-0 w-full h-2 sm:h-2.5 transition-colors duration-200 ${(breathingPhase === 'exhale') ? cyberTheme.primary : 'bg-gray-600'}`} />
                     {/* Left Side */}
                     <div className={`absolute top-0 left-0 w-2.5 h-full transition-colors duration-200 ${(breathingPhase === 'hold2') ? cyberTheme.primary : 'bg-gray-600'}`} />
                     
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center text-xs sm:text-base">
                         {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>들이쉬세요</p>}
                         {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>멈추세요</p>}
                         {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>내쉬세요</p>}
                         {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
-                        {breathingPhase === 'done' && <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />}
+                        {breathingPhase === 'done' && <CheckCircleIcon className={`w-12 h-12 sm:w-16 sm:h-16 ${cyberTheme.primary}`} />}
                     </div>
                   </div>
                 ) : (
                   // Default Circle Breathing UI
-                  <div className="relative w-32 h-32 mx-auto mb-4">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4">
                     {/* 물방울 내부 (물리적 효과를 위한 그라데이션) */}
                     <div 
                       className={`absolute inset-0 rounded-full bg-gradient-to-b from-cyan-300 to-cyan-500 opacity-30 transition-all`}
@@ -1015,17 +1015,17 @@ export default function TSWarmupPage() {
                         }}
                       />
                     </div>
-                     <div className="absolute inset-0 flex items-center justify-center">
+                     <div className="absolute inset-0 flex items-center justify-center text-center text-xs sm:text-base px-2">
                           {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>물방울이 형성되고(들이쉬기)</p>}
                           {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>떨어지고(멈추기)</p>}
                           {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>퍼져나가는(내쉬기)</p>}
                           {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
-                          {breathingPhase === 'done' && <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />}
+                          {breathingPhase === 'done' && <CheckCircleIcon className={`w-12 h-12 sm:w-16 sm:h-16 ${cyberTheme.primary}`} />}
                       </div>
                   </div>
                 )}
 
-                <p className={`text-lg ${cyberTheme.textLight}`}>
+                <p className={`text-sm sm:text-lg ${cyberTheme.textLight}`}>
                   {breathingPhase === 'inhale' && `물방울이 떨어지는 순간처럼, 호흡에 집중하세요 (${(exercise.variationParams as BreathingVariationParams).durations.inhale / 1000}초)`}
                   {breathingPhase === 'hold1' && (exercise.variationParams as BreathingVariationParams).durations.hold1 && `물방울이 떨어지는 순간을 느껴보세요 (${(exercise.variationParams as BreathingVariationParams).durations.hold1! / 1000}초)`}
                   {breathingPhase === 'exhale' && `물방울이 퍼져나가는 리듬을 느껴보세요 (${(exercise.variationParams as BreathingVariationParams).durations.exhale / 1000}초)`}
@@ -1035,10 +1035,10 @@ export default function TSWarmupPage() {
               </div>
             )}
             {exercise.id === 'peripheral_vision_expansion' && (
-              <div className="text-center relative w-full h-40 flex items-center justify-center border border-gray-700"> {/* Container for peripheral stimuli */}
+              <div className="text-center relative w-full h-32 sm:h-40 flex items-center justify-center border border-gray-700"> {/* Container for peripheral stimuli */}
                 {showCentralFixation && dotPosition && ( // dotPosition is now central fixation
                   <div
-                    className={`absolute w-3 h-3 bg-red-500 rounded-full`} // Central dot style
+                    className={`absolute w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full`} // Central dot style
                     style={{
                       top: dotPosition.top,
                       left: dotPosition.left,
@@ -1051,7 +1051,7 @@ export default function TSWarmupPage() {
                     {/* 주 자극 */}
                     <div
                       key={peripheralStimulus.id}
-                      className={`absolute w-8 h-8 rounded-md transition-all duration-300 ${peripheralStimulus.color} ${peripheralStimulus.shape === 'square' ? '' : 'rounded-full'}`}
+                      className={`absolute w-6 h-6 sm:w-8 sm:h-8 rounded-md transition-all duration-300 ${peripheralStimulus.color} ${peripheralStimulus.shape === 'square' ? '' : 'rounded-full'}`}
                       style={{
                         top: peripheralStimulus.location.top,
                         left: peripheralStimulus.location.left,
@@ -1075,7 +1075,7 @@ export default function TSWarmupPage() {
                   </>
                 )}
                 {eyeTrackingPhase === 'done' && (
-                  <CheckCircleIcon className={`w-16 h-16 ${cyberTheme.primary}`} />
+                  <CheckCircleIcon className={`w-12 h-12 sm:w-16 sm:h-16 ${cyberTheme.primary}`} />
                 )}
                 {eyeTrackingPhase === 'idle' && <p className={`${cyberTheme.textMuted}`}>고정점 응시 준비 중...</p>}
               </div>
@@ -1083,22 +1083,22 @@ export default function TSWarmupPage() {
             {exercise.id === 'visual_span' && (
               <div className="text-center w-full relative min-h-[100px]">
                 { (visualSpanPhase === 'idle' || visualSpanPhase === 'interval') && 
-                  <p className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl ${cyberTheme.secondary}`}>+</p>
+                  <p className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl sm:text-3xl ${cyberTheme.secondary}`}>+</p>
                 }
                 {(exercise.variationParams as VisualSpanVariationParams).stimulusType === 'letters' && 
                  (exercise.variationParams as VisualSpanVariationParams).gridSize && 
                  visualSpanPhase === 'presenting' && gridStimulus.length > 0 && (
                   <div 
-                    className="grid gap-2 mx-auto"
+                    className="grid gap-1 sm:gap-2 mx-auto"
                     style={{
                       gridTemplateColumns: `repeat(${(exercise.variationParams as VisualSpanVariationParams).gridSize!.cols}, minmax(0, 1fr))`,
-                      width: `${(exercise.variationParams as VisualSpanVariationParams).gridSize!.cols * 3}rem`,
+                      width: `${(exercise.variationParams as VisualSpanVariationParams).gridSize!.cols * 2.5}rem`, // Adjusted for mobile
                     }}
                   >
                     {gridStimulus.map((cell) => (
                       <div 
                         key={cell.id} 
-                        className={`w-10 h-10 flex items-center justify-center border rounded ${cyberTheme.inputBorder} ${cyberTheme.textLight} text-xl`}
+                        className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center border rounded ${cyberTheme.inputBorder} ${cyberTheme.textLight} text-base sm:text-xl`}
                       >
                         {cell.letter}
                       </div>
@@ -1107,9 +1107,9 @@ export default function TSWarmupPage() {
                 )}
                 {(exercise.variationParams as VisualSpanVariationParams).stimulusType === 'words' &&
                   visualSpanPhase === 'presenting' && currentVisualSpanStimulus && Array.isArray(currentVisualSpanStimulus) && (
-                  <div className="flex justify-around items-center w-full px-4">
-                    <span className={`text-2xl font-semibold ${cyberTheme.textLight}`}>{currentVisualSpanStimulus[0]}</span>
-                    <span className={`text-2xl font-semibold ${cyberTheme.textLight}`}>{currentVisualSpanStimulus[1]}</span>
+                  <div className="flex justify-around items-center w-full px-2 sm:px-4">
+                    <span className={`text-lg sm:text-2xl font-semibold ${cyberTheme.textLight}`}>{currentVisualSpanStimulus[0]}</span>
+                    <span className={`text-lg sm:text-2xl font-semibold ${cyberTheme.textLight}`}>{currentVisualSpanStimulus[1]}</span>
                   </div>
                 )}
                 {visualSpanPhase === 'interval' && visualSpanRepetitionCount < (exercise.variationParams as VisualSpanVariationParams).repetitions -1 && (

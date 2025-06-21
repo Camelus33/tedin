@@ -168,7 +168,7 @@ export default function TSResultPage() {
           <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-gray-300"></div>
           
           {/* Main content container */}
-          <div className="relative z-10 p-8 pt-12">
+          <div className="relative z-10 p-6 sm:p-8 pt-12">
             {/* App Logo in top center */}
             <div className="absolute top-2 right-0 left-0 flex justify-center">
               <div className="px-4 py-1.5 bg-gradient-to-r from-gray-800 to-gray-700 rounded-full shadow-md">
@@ -178,13 +178,13 @@ export default function TSResultPage() {
             
             {/* Achievement Title */}
             <div className="text-center mb-2 mt-4">
-              <h1 className="text-2xl tracking-wider font-bold text-gray-800 uppercase">YOUR WAVE</h1>
+              <h1 className="text-xl sm:text-2xl tracking-wider font-bold text-gray-800 uppercase">YOUR WAVE</h1>
             </div>
             
             {/* Achievement Label based on performance */}
             <div className="text-center mb-6">
               <div className="inline-block px-3 py-1 bg-gradient-to-r from-amber-100 to-amber-50 rounded-full border border-amber-200">
-                <span className="text-sm font-semibold text-amber-800 uppercase tracking-wider">
+                <span className="text-xs sm:text-sm font-semibold text-amber-800 uppercase tracking-wider">
                   {sessionResult.ppm > 2 ? 'Elite Reader' : sessionResult.ppm > 1.5 ? 'Advanced Reader' : 'Dedicated Reader'}
                 </span>
               </div>
@@ -200,8 +200,8 @@ export default function TSResultPage() {
                   </div>
                 </div>
                 <div className="flex items-center justify-center">
-                  <span className="text-8xl font-extralight text-gray-800 leading-none">{sessionResult.ppm.toFixed(1)}</span>
-                  <div className="flex flex-col items-start ml-2 mt-6">
+                  <span className="text-6xl sm:text-8xl font-extralight text-gray-800 leading-none">{sessionResult.ppm.toFixed(1)}</span>
+                  <div className="flex flex-col items-start ml-2 mt-4 sm:mt-6">
                     <span className="text-sm text-gray-500 font-medium">PPM</span>
                     <span className="text-xs text-gray-400">pages per minute</span>
                   </div>
@@ -243,7 +243,7 @@ export default function TSResultPage() {
               {/* Book Details with Achievement Styling */}
               <div className="flex-1 border-b border-gray-200 pb-2">
                 <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Conquered</p>
-                <h2 className="text-lg font-semibold text-gray-800">
+                <h2 className="text-base sm:text-lg font-semibold text-gray-800">
                   {sessionResult.bookId && typeof sessionResult.bookId === 'object' 
                     ? sessionResult.bookId.title 
                     : '알 수 없는 책'}
@@ -257,20 +257,20 @@ export default function TSResultPage() {
             </div>
             
             {/* Reading Stats in Trophy Style */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8">
               <div className="text-center border border-gray-200 rounded-lg py-3 px-2 bg-gray-50">
                 <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Coverage</p>
-                <p className="text-xl font-semibold text-gray-800">{sessionResult.actualEndPage - sessionResult.startPage}</p>
+                <p className="text-lg sm:text-xl font-semibold text-gray-800">{sessionResult.actualEndPage - sessionResult.startPage}</p>
                 <p className="text-xs text-gray-500">pages</p>
               </div>
               <div className="text-center border border-gray-200 rounded-lg py-3 px-2 bg-gray-50">
                 <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Duration</p>
-                <p className="text-xl font-semibold text-gray-800">{Math.floor(sessionResult.durationSec / 60)}:{(sessionResult.durationSec % 60).toString().padStart(2, '0')}</p>
+                <p className="text-lg sm:text-xl font-semibold text-gray-800">{Math.floor(sessionResult.durationSec / 60)}:{(sessionResult.durationSec % 60).toString().padStart(2, '0')}</p>
                 <p className="text-xs text-gray-500">hh:mm</p>
               </div>
               <div className="text-center border border-gray-200 rounded-lg py-3 px-2 bg-gray-50">
                 <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Achieved</p>
-                <p className="text-xl font-semibold text-gray-800">
+                <p className="text-lg sm:text-xl font-semibold text-gray-800">
                   {sessionResult?.createdAt && new Date(sessionResult.createdAt).toLocaleDateString('ko-KR', {
                     month: 'numeric',
                     day: 'numeric',
@@ -320,7 +320,7 @@ export default function TSResultPage() {
             <div className="mt-8">
               <button 
                 onClick={handleShare}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-3.5 px-4 rounded-xl shadow-md transition-colors"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-3 sm:py-3.5 px-4 rounded-xl shadow-md transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -337,6 +337,7 @@ export default function TSResultPage() {
             href="/dashboard" 
             variant="outline" 
             fullWidth
+            className="text-xs sm:text-sm"
           >
             대시보드
           </Button>
@@ -346,6 +347,7 @@ export default function TSResultPage() {
               : '/books'}
             variant="outline" 
             fullWidth
+            className="text-xs sm:text-sm"
           >
             책 페이지로
           </Button>
@@ -357,7 +359,7 @@ export default function TSResultPage() {
             } 
             variant="outline" 
             fullWidth
-            className="col-span-2"
+            className="col-span-2 text-sm sm:text-base"
           >
             새 세션 시작
           </Button>

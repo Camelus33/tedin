@@ -161,19 +161,19 @@ export default function TSReadingPage() {
 
   return (
     <div className={`min-h-screen ${cyberTheme.gradient} p-4 flex flex-col text-gray-200`}>
-      <div className="container mx-auto max-w-xl flex-1 flex flex-col">
+      <div className="container mx-auto max-w-2xl flex-1 flex flex-col">
         {/* Reading header - modern design with subtle shadow */}
-        <div className={`${cyberTheme.cardBg} rounded-xl shadow-lg p-6 mb-8 border ${cyberTheme.inputBorder}`}>
-          <div className="flex justify-between items-start gap-4">
-            <div>
-              <h1 className={`font-bold text-xl ${cyberTheme.textLight}`}>{sessionData.bookId.title}</h1>
+        <div className={`${cyberTheme.cardBg} rounded-xl shadow-lg p-4 sm:p-6 mb-8 border ${cyberTheme.inputBorder}`}>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex-grow text-center sm:text-left">
+              <h1 className={`font-bold text-lg sm:text-xl ${cyberTheme.textLight}`}>{sessionData.bookId.title}</h1>
               <p className={`text-sm ${cyberTheme.textMuted} mt-1`}>({sessionData.startPage} - {sessionData.endPage} 페이지)</p>
               <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>몰입하는 중...</p>
             </div>
             
-            <div className={`text-center p-3 rounded-lg border ${cyberTheme.inputBorder} bg-gray-900/50 shadow-inner min-w-[120px]`}>
+            <div className={`text-center p-3 rounded-lg border ${cyberTheme.inputBorder} bg-gray-900/50 shadow-inner min-w-[120px] sm:min-w-[140px]`}>
               <div 
-                className={`text-3xl font-mono font-bold transition-colors ${ 
+                className={`text-3xl sm:text-4xl font-mono font-bold transition-colors ${ 
                   progressPercentage < 80 ? cyberTheme.textLight : 'text-red-400 animate-pulse' 
                 }`}
               >
@@ -201,12 +201,12 @@ export default function TSReadingPage() {
         </div>
 
         {/* Controls - styled buttons */}
-        <div className="flex justify-center space-x-6 mb-6">
+        <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-6 mb-6">
           <Button
             type="button"
             onClick={handlePauseResume}
             variant="outline"
-            className={`!px-6 !py-3 !rounded-xl !font-medium flex items-center transition-all !border-gray-600 ${ 
+            className={`w-full sm:w-auto !px-6 !py-3 !rounded-xl !font-medium flex items-center justify-center transition-all !border-gray-600 ${ 
               isPaused 
                 ? `!bg-emerald-600/80 !text-white !border-emerald-500 hover:!bg-emerald-700/80` 
                 : `${cyberTheme.cardBg} ${cyberTheme.textLight} hover:!border-gray-500 hover:!text-white` 
@@ -219,7 +219,7 @@ export default function TSReadingPage() {
             type="button"
             onClick={handleFinishEarly}
             variant="outline"
-            className={`!px-6 !py-3 !rounded-xl !font-medium flex items-center transition-all !border-red-500/50 ${cyberTheme.cardBg} !text-red-400 hover:!bg-red-900/30 hover:!border-red-600/50`}
+            className={`w-full sm:w-auto !px-6 !py-3 !rounded-xl !font-medium flex items-center justify-center transition-all !border-red-500/50 ${cyberTheme.cardBg} !text-red-400 hover:!bg-red-900/30 hover:!border-red-600/50`}
           >
             <StopIcon className="h-5 w-5 mr-2" />
             끝 (수동 종료)
@@ -245,10 +245,10 @@ function BreathingText() {
         ease: "easeInOut"
       }}
     >
-      <div className="text-4xl font-bold leading-relaxed">
+      <div className="text-3xl sm:text-4xl font-bold leading-relaxed">
         코로 깊게 호흡하세요.
       </div>
-      <div className="text-3xl font-medium mt-2">
+      <div className="text-2xl sm:text-3xl font-medium mt-2">
         기억도 깊어집니다.
       </div>
     </motion.div>
