@@ -294,7 +294,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center ${cyberTheme.gradient} p-4`}>
         <Spinner size="lg" color="cyan" />
-        <p className={`mt-4 ${cyberTheme.textMuted}`}>내 서재 정보 가져오는 중...</p>
+        <p className={`mt-4 ${cyberTheme.textMuted}`}>나의 도서관 정보 가져오는 중...</p>
       </div>
     );
   }
@@ -315,13 +315,13 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
 
           {books.length === 0 && bookSource !== 'new' && !isLoading ? ( // 로딩이 끝났는데도 책이 없으면 새 책 추가 유도
             <div className="flex flex-col items-center gap-4 py-8">
-              <p className={`${cyberTheme.textMuted} text-base`}>등록된 책이 없습니다. 먼저 책을 추가해 주세요.</p>
-              <Button onClick={() => router.push('/books/new')} className={`${cyberTheme.buttonPrimaryBg} text-white`}>새 책 추가</Button>
+              <p className={`${cyberTheme.textMuted} text-base`}>등록된 자료가 없습니다. 먼저 추가해 주세요.</p>
+              <Button onClick={() => router.push('/books/new')} className={`${cyberTheme.buttonPrimaryBg} text-white`}>NEW</Button>
             </div>
           ) : (
             <>
           <div>
-            <label htmlFor="book-select" className={`block text-sm font-medium mb-1 ${cyberTheme.textLight}`}>1. 어떤 책을 읽을까요? (책 선택)</label>
+            <label htmlFor="book-select" className={`block text-sm font-medium mb-1 ${cyberTheme.textLight}`}>무엇을 읽을까요?</label>
             <div className="flex items-center gap-2 mt-1">
               <select
                 id="book-select"
@@ -344,13 +344,13 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                  onClick={() => router.push('/books/new')}
                  className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border whitespace-nowrap`}
               >
-                새 책 추가
+                NEW
               </Button>
             </div>
           </div>
 
           <div className="space-y-2">
-            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>2. 어디부터 어디까지 읽을까요? (페이지 범위)</h2>
+            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>어디부터 어디까지 읽을까요? (페이지 범위)</h2>
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <div className="flex-1 w-full">
                 <label htmlFor="start-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>시작</label>
@@ -389,9 +389,9 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           </div>
 
           <div className="space-y-2">
-            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>3. 추가 설정</h2>
+            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>추가 설정</h2>
             <div className="flex items-center justify-between py-1">
-              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>준비 운동</label>
+              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>읽기 몰입 팁</label>
               <button
                 id="warmup-toggle"
                 type="button"
@@ -401,7 +401,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                 disabled={!selectedBookId} // 책이 선택되지 않으면 비활성화
                 className={`${enableWarmup ? cyberTheme.buttonPrimaryBg : 'bg-gray-600'} relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50`}
               >
-                <span className="sr-only">준비 운동 활성화</span>
+                <span className="sr-only">읽기 몰입 팁 여부</span>
                 <span aria-hidden="true" className={`${enableWarmup ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}></span>
               </button>
             </div>
@@ -423,7 +423,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                  <span className={`text-lg font-semibold ${cyberTheme.secondary} w-10 text-center`}>{focusDuration}</span>
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                최소 3분, 최대 17분까지 당신만의 파도를 만들어 보세요.
+                최소 3분, 최대 17분까지 조정해 보세요. 3분 몰입을 추천합니다.
               </p>
             </div>
           </div>

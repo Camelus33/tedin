@@ -168,7 +168,7 @@ export default function TSReadingPage() {
             <div>
               <h1 className={`font-bold text-xl ${cyberTheme.textLight}`}>{sessionData.bookId.title}</h1>
               <p className={`text-sm ${cyberTheme.textMuted} mt-1`}>({sessionData.startPage} - {sessionData.endPage} 페이지)</p>
-              <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>나만의 물결을 만드는 중...</p>
+              <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>몰입하는 중...</p>
             </div>
             
             <div className={`text-center p-3 rounded-lg border ${cyberTheme.inputBorder} bg-gray-900/50 shadow-inner min-w-[120px]`}>
