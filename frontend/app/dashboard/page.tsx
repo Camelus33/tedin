@@ -599,8 +599,8 @@ export default function DashboardPage() {
 
             {/* 접히는 콘텐츠 */}
             <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isRoutineTrackerExpanded ? 'max-h-[500px] pt-6' : 'max-h-0'} md:max-h-full md:block md:pt-6`}>
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 relative z-10">
-                <div className="order-2 md:order-1">
+              <div className="flex flex-col md:relative md:flex-row md:justify-center items-center gap-4 mb-6 z-10">
+                <div className="order-2 md:order-none">
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
                     className={`min-w-[200px] px-8 py-3 rounded-2xl ${habitus33Theme.progressFg} text-white font-bold text-lg transition-all duration-500 ease-in-out hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-[1.05] focus:shadow-xl focus:shadow-cyan-500/25 focus:scale-[1.05] active:scale-[1.02] outline-none transform`}
@@ -610,7 +610,7 @@ export default function DashboardPage() {
                     AMFA
                   </button>
                 </div>
-                <div className="order-1 md:order-2">
+                <div className="order-1 md:order-none md:absolute md:top-0 md:right-0">
                   <div className={`${habitus33Theme.cardBg} py-2 px-3 rounded-full flex items-center space-x-2 border ${habitus33Theme.borderPrimary} shadow-sm backdrop-blur-sm`}>
                     <p className={`text-xs font-medium ${habitus33Theme.textLight}`}>Today's Atomic Success</p>
                     <span className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`} title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}>🌱</span>
