@@ -102,7 +102,7 @@ export default function EditBookPage() {
           }
         }, 20000);
 
-        const response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/books/${bookId}`, {
           headers: { 'Authorization': `Bearer ${token}` },
           signal,
         });
@@ -268,7 +268,7 @@ export default function EditBookPage() {
       }
       // coverImageFile이 없고 coverImage가 null도 아니면 (즉, 기존 이미지가 있고 변경 안함) coverImage 필드는 보내지 않음.
 
-      const response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/books/${bookId}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` },
         body: apiFormData,
