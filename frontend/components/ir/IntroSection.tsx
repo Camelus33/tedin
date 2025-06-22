@@ -65,10 +65,10 @@ const IntroSection = () => {
           style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
         >
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-            Prompt Free
+            AI로 쓴 보고서, 논문
           </span>
           <br />
-          <span className="text-gray-200">One Capsule</span>
+          <span className="text-gray-200">과연 읽는 이가 모를까요?</span>
         </motion.h1>
 
         <motion.p
@@ -77,7 +77,7 @@ const IntroSection = () => {
           transition={{ duration: 1, delay: 1 }}
           className="mt-6 text-lg md:text-xl text-gray-300 font-medium"
         >
-          이제 AI에게 장황한 배경설명은 그만!
+          이제 더이상 똑같은 AI 보고서, 논문은 그만!
         </motion.p>
       </div>
     </section>

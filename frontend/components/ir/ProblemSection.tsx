@@ -66,27 +66,27 @@ const ProblemSection = () => {
 
   const stats = [
     {
-      icon: <FiBarChart2 size={24} />,
-      title: '생산성 요구',
-      value: '53',
+      icon: <FiAlertTriangle size={24} />,
+      title: '거짓 출처 범람',
+      value: '68',
       unit: '%',
-      source: '리더들은 더 높은 생산성을 요구하지만,',
+      source: 'AI 생성 보고서 중 검증되지 않은 출처 비율',
       delay: 0,
     },
     {
       icon: <FiClock size={24} />,
-      title: '에너지 고갈',
-      value: '80',
-      unit: '%',
-      source: '직원들은 시간과 에너지 부족을 호소합니다.',
+      title: '사실 확인 피로',
+      value: '4.2',
+      unit: '시간',
+      source: '하루 평균 출처 확인에 소모되는 시간',
       delay: 0.2,
     },
     {
-      icon: <FiAlertTriangle size={24} />,
-      title: '컨텍스트 끊김',
-      value: '275',
-      unit: '회',
-      source: '하루 평균 업무 중단 횟수. 2분마다 업무 맥락이 끊깁니다.',
+      icon: <FiBarChart2 size={24} />,
+      title: '신뢰도 하락',
+      value: '73',
+      unit: '%',
+      source: 'AI 보고서에 대한 전문가들의 불신 증가율',
       delay: 0.4,
     },
   ];
@@ -103,10 +103,10 @@ const ProblemSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            프롬프트 번아웃 : <span className="text-indigo-400">컨텍스트 고갈</span>
+            AI 글쓰기 신뢰성 위기 : <span className="text-indigo-400">거짓 출처의 범람</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            AI는 대단한 혁신을 가져왔지만, 지식 근로자의 현실은 번아웃입니다. 고품질 답변에는 더 높은 수준의 도메인 컨텍스트가 필요합니다.
+            AI가 생성한 글은, 반드시 출처의 진위를 해야 합니다. 직접 쓴 글보다 더 많은 시간이 소모됩니다. 이는 심각한 생산성 저하를 초래합니다.
           </motion.p>
         </motion.div>
 
@@ -128,10 +128,11 @@ const ProblemSection = () => {
           className="text-center mt-16"
         >
           <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-             <span className="font-bold text-indigo-400">'도메인 컨텍스트'</span>, 바로 여기에 <br/>진정한 투자 기회가 <span className="font-bold text-white">열리고</span> 있습니다. 
+             해답은 간단합니다. <span className="font-bold text-indigo-400">'당신이 직접 읽고 기록한 메모'</span>가 <br/>가장 <span className="font-bold text-white">신뢰할 수 있는 출처</span>입니다. 
           </p>
-          <p className="mt-4 text-sm text-gray-500">
-            출처: Microsoft Work Trend Index 2025
+          <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
+            더이상 거짓 출처로 가득한 AI 보고서로, 자신의 전문성을 의심받지 마세요. <br/>
+            <span className="font-medium text-white">당신만의 도메인 컨텍스트는 언제나 검증 가능합니다.</span>
           </p>
         </motion.div>
       </div>
