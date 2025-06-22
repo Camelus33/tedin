@@ -316,12 +316,16 @@ export default function EditBookPage() {
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
             <FiArrowLeft className="mr-2" />
-            <span>책 상세 정보로 돌아가기</span>
+            <span className="hidden sm:inline">책 상세 정보로 돌아가기</span>
+            <span className="sm:hidden">돌아가기</span>
           </Link>
         </div>
         
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">성장의 기록 다듬기</h1>
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100 p-4 sm:p-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
+            <span className="hidden sm:inline">성장의 기록 다듬기</span>
+            <span className="sm:hidden">기록 수정</span>
+          </h1>
           
           {error && (
             <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md mb-6">
@@ -344,7 +348,17 @@ export default function EditBookPage() {
                     value={formData.title}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:hidden"
+                    placeholder="책 제목"
+                  />
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    required
+                    className="hidden sm:block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="어떤 책과 함께 성장하고 있나요?"
                   />
                 </div>
@@ -359,7 +373,17 @@ export default function EditBookPage() {
                     value={formData.author}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:hidden"
+                    placeholder="저자명"
+                  />
+                  <input
+                    type="text"
+                    id="author"
+                    name="author"
+                    value={formData.author}
+                    onChange={handleInputChange}
+                    required
+                    className="hidden sm:block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="누구의 지혜와 함께하고 있나요?"
                   />
                 </div>
@@ -372,7 +396,21 @@ export default function EditBookPage() {
                     name="genre"
                     value={formData.genre}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:hidden"
+                  >
+                    <option value="">장르 선택</option>
+                    {genres.map((genre) => (
+                      <option key={genre.id} value={genre.id}>
+                        {genre.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    id="genre"
+                    name="genre"
+                    value={formData.genre}
+                    onChange={handleInputChange}
+                    className="hidden sm:block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   >
                     <option value="">어떤 분야의 책인가요? (선택)</option>
                     {genres.map((genre) => (
@@ -391,7 +429,21 @@ export default function EditBookPage() {
                     name="readingPurpose"
                     value={formData.readingPurpose}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:hidden"
+                  >
+                    <option value="">목적 선택</option>
+                    {readingPurposes.map((purpose) => (
+                      <option key={purpose.id} value={purpose.id}>
+                        {purpose.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    id="readingPurpose"
+                    name="readingPurpose"
+                    value={formData.readingPurpose}
+                    onChange={handleInputChange}
+                    className="hidden sm:block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   >
                     <option value="">이 책을 통해 어떤 성장을 원하시나요? (선택)</option>
                     {readingPurposes.map((purpose) => (
@@ -416,7 +468,17 @@ export default function EditBookPage() {
                     value={formData.totalPages}
                     onChange={handleNumberInput}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:hidden"
+                    placeholder="총 페이지"
+                  />
+                  <input
+                    type="text"
+                    id="totalPages"
+                    name="totalPages"
+                    value={formData.totalPages}
+                    onChange={handleNumberInput}
+                    required
+                    className="hidden sm:block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="성장의 여정은 총 몇 페이지인가요?"
                   />
                 </div>
@@ -430,7 +492,16 @@ export default function EditBookPage() {
                     name="currentPage"
                     value={formData.currentPage}
                     onChange={handleNumberInput}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all sm:hidden"
+                    placeholder="현재 페이지"
+                  />
+                  <input
+                    type="text"
+                    id="currentPage"
+                    name="currentPage"
+                    value={formData.currentPage}
+                    onChange={handleNumberInput}
+                    className="hidden sm:block w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     placeholder="지금은 성장의 몇 페이지를 지나고 있나요?"
                   />
                 </div>
@@ -470,8 +541,9 @@ export default function EditBookPage() {
                         className="w-40 h-56 mx-auto border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-indigo-500 bg-gray-50 hover:bg-gray-100 transition-colors"
                       >
                         <FiUpload size={32} className="text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500">클릭하여 표지 등록</p>
-                        <p className="text-xs text-gray-400 mt-1">5MB 이하의 이미지 파일</p>
+                        <p className="text-sm text-gray-500 hidden sm:block">클릭하여 표지 등록</p>
+                        <p className="text-sm text-gray-500 sm:hidden">표지 등록</p>
+                        <p className="text-xs text-gray-400 mt-1">5MB 이하</p>
                       </div>
                     )}
                     <input
@@ -498,15 +570,24 @@ export default function EditBookPage() {
                     name="purchaseLink"
                     value={formData.purchaseLink}
                     onChange={handleInputChange}
+                    placeholder="구매 링크"
+                    className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400 sm:hidden"
+                  />
+                  <input
+                    type="url"
+                    id="purchaseLink"
+                    name="purchaseLink"
+                    value={formData.purchaseLink}
+                    onChange={handleInputChange}
                     placeholder="이 책을 다시 찾아볼 수 있는 곳이 있나요?"
-                    className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400"
+                    className="hidden sm:block w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400"
                   />
                 </div>
 
               </div>
             </div>
             
-            <div className="flex space-x-4 pt-4">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-4">
               <Button
                 type="submit"
                 variant="default"
@@ -514,7 +595,8 @@ export default function EditBookPage() {
                 loading={isSubmitting}
                 disabled={isSubmitting || isUploading} // Disable if uploading image
               >
-                {isSubmitting ? '저장 중...' : '변경사항 저장하기'}
+                <span className="hidden sm:inline">{isSubmitting ? '저장 중...' : '변경사항 저장하기'}</span>
+                <span className="sm:hidden">{isSubmitting ? '저장 중...' : '저장'}</span>
               </Button>
               <Button
                 type="button"

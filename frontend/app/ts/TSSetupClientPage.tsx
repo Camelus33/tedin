@@ -380,12 +380,20 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                 />
               </div>
             </div>
-            <p id="page-range-hint" className={`text-xs ${cyberTheme.textMuted}`}> 
-              {selectedBook ? 
-                `현재 선택: ${selectedBook.title} (총 ${selectedBook.totalPages} 페이지, 현재 ${selectedBook.currentPage} 페이지)` :
-                '책을 선택해주세요.'
-              }
-            </p>
+            <div id="page-range-hint" className={`text-xs ${cyberTheme.textMuted} break-words`}> 
+              {selectedBook ? (
+                <div className="space-y-1">
+                  <p className="truncate">
+                    현재 선택: <span className="font-medium">{selectedBook.title}</span>
+                  </p>
+                  <p>
+                    총 {selectedBook.totalPages} 페이지, 현재 {selectedBook.currentPage} 페이지
+                  </p>
+                </div>
+              ) : (
+                <p>책을 선택해주세요.</p>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">

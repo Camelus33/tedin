@@ -51,7 +51,7 @@ export default function NewNotePage() {
         });
 
         if (!response.ok) {
-          throw new Error('함께할 책 정보를 불러오는 데 잠시 문제가 생겼어요.');
+          throw new Error('책 정보를 불러올 수 없습니다.');
         }
 
         const data = await response.json();
@@ -117,7 +117,7 @@ export default function NewNotePage() {
     try {
       // Validate
       if (!formData.content.trim()) {
-        throw new Error('어떤 생각을 하셨는지 알려주세요. 작은 조각이라도 소중해요.');
+        throw new Error('메모 내용을 입력해주세요.');
       }
 
       // Submit note
@@ -135,7 +135,7 @@ export default function NewNotePage() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || '생각의 조각을 저장하는 데 잠시 문제가 생겼어요. 다시 시도해 주세요.');
+        throw new Error(data.error || '저장에 실패했습니다. 다시 시도해주세요.');
       }
 
       // Return to book detail page
@@ -149,7 +149,10 @@ export default function NewNotePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-        <p>어떤 책과 함께할지 확인하고 있어요...</p>
+        {/* 모바일용 단축 메시지 */}
+        <p className="block sm:hidden">책 정보 확인 중...</p>
+        {/* PC용 기존 메시지 */}
+        <p className="hidden sm:block">어떤 책과 함께할지 확인하고 있어요...</p>
       </div>
     );
   }
@@ -158,7 +161,10 @@ export default function NewNotePage() {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-red-600 mb-4">잠시 문제가 생겼어요</h1>
+          {/* 모바일용 단축 제목 */}
+          <h1 className="text-lg font-bold text-red-600 mb-4 block sm:hidden">문제 발생</h1>
+          {/* PC용 기존 제목 */}
+          <h1 className="text-xl font-bold text-red-600 mb-4 hidden sm:block">잠시 문제가 생겼어요</h1>
           <p className="mb-6">{error}</p>
           <Button
             href="/books"
@@ -175,7 +181,10 @@ export default function NewNotePage() {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 p-4">
       <div className="container mx-auto max-w-2xl">
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <h1 className="text-2xl font-bold text-center mb-6">1줄메모 남기기</h1>
+          {/* 모바일용 단축 제목 */}
+          <h1 className="text-lg font-bold text-center mb-6 block sm:hidden">메모 남기기</h1>
+          {/* PC용 기존 제목 */}
+          <h1 className="text-2xl font-bold text-center mb-6 hidden sm:block">1줄메모 남기기</h1>
           
           {/* Book Info */}
           {book && (
@@ -194,7 +203,12 @@ export default function NewNotePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Note Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              {/* 모바일용 단축 라벨 */}
+              <label className="block text-sm font-medium text-gray-700 mb-2 sm:hidden">
+                생각 종류
+              </label>
+              {/* PC용 기존 라벨 */}
+              <label className="hidden sm:block text-sm font-medium text-gray-700 mb-2">
                 어떤 종류의 생각인가요?
               </label>
               <div className="flex space-x-3">
@@ -236,16 +250,41 @@ export default function NewNotePage() {
             
             {/* Note Content */}
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+              {/* 모바일용 단축 라벨 */}
+              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2 sm:hidden">
+                메모 내용
+              </label>
+              {/* PC용 기존 라벨 */}
+              <label htmlFor="content" className="hidden sm:block text-sm font-medium text-gray-700 mb-2">
                 1줄메모를 남겨주세요
               </label>
+              
+              {/* 모바일용 textarea (단축 placeholder) */}
               <textarea
                 id="content"
                 name="content"
                 value={formData.content}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block sm:hidden"
+                placeholder={
+                  formData.type === 'quote' 
+                    ? '인상 깊은 문장' 
+                    : formData.type === 'thought' 
+                    ? '떠오른 생각' 
+                    : '새로운 질문'
+                }
+                required
+              />
+              
+              {/* PC용 textarea (기존 placeholder) */}
+              <textarea
+                id="content-desktop"
+                name="content"
+                value={formData.content}
+                onChange={handleChange}
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 hidden sm:block"
                 placeholder={
                   formData.type === 'quote' 
                     ? '마음에 와닿은 문장이 있었나요?' 
@@ -259,19 +298,37 @@ export default function NewNotePage() {
             
             {/* Tags */}
             <div>
-              <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
+              {/* 모바일용 단축 라벨 */}
+              <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2 sm:hidden">
+                태그 (선택)
+              </label>
+              {/* PC용 기존 라벨 */}
+              <label htmlFor="tags" className="hidden sm:block text-sm font-medium text-gray-700 mb-2">
                 어떤 주제와 관련 있나요? (선택)
               </label>
               <div className="flex items-center space-x-2 mb-2">
+                {/* 모바일용 태그 입력 (단축 placeholder) */}
                 <input
                   type="text"
                   id="tagInput"
                   value={tagInput}
                   onChange={handleTagInputChange}
                   onKeyDown={handleTagInputKeyDown}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block sm:hidden"
+                  placeholder="태그 입력"
+                />
+                
+                {/* PC용 태그 입력 (기존 placeholder) */}
+                <input
+                  type="text"
+                  id="tagInput-desktop"
+                  value={tagInput}
+                  onChange={handleTagInputChange}
+                  onKeyDown={handleTagInputKeyDown}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 hidden sm:block"
                   placeholder="키워드를 남겨두면 나중에 찾기 쉬워요."
                 />
+                
                 <button
                   type="button"
                   onClick={() => addTag(tagInput.trim())}

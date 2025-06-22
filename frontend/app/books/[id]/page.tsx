@@ -395,19 +395,21 @@ export default function BookDetailPage() {
     router.push(`/books/${bookId}/edit`);
   };
 
-  const linkPlaceholderMap: Partial<Record<PageRelatedLink['type'], string>> = {
-    book: '어떤 책과 연결해볼까요? 링크를 남겨주세요.',
-    paper: '어떤 자료와 연결해볼까요? 링크를 남겨주세요.',
-    youtube: '어떤 영상과 연결해볼까요? 링크를 남겨주세요.',
-    media: '어떤 언론기사와 연결해볼까요? 링크를 남겨주세요.',
-    website: '노트앱 및 AI 답변과 연결해볼까요?',
+  // 모바일용 단축 placeholder 매핑
+  const linkPlaceholderMap: Record<PageRelatedLink['type'], string> = {
+    book: 'URL 입력',
+    paper: 'URL 입력', 
+    youtube: 'URL 입력',
+    media: 'URL 입력',
+    website: 'URL 입력'
   };
-  const reasonPlaceholderMap: Partial<Record<PageRelatedLink['type'], string>> = {
-    book: '이 책과 연결한 나만의 이유를 남겨주세요.',
-    paper: '이 자료와 연결한 나만의 이유를 남겨주세요.',
-    youtube: '이 영상과 연결한 나만의 이유를 남겨주세요.',
-    media: '이 포스팅과 연결한 나만의 이유를 남겨주세요.',
-    website: '이 노트앱, AI답변과 연결한 이유를 남겨주세요.',
+  
+  const reasonPlaceholderMap: Record<PageRelatedLink['type'], string> = {
+    book: '연결 이유',
+    paper: '연결 이유',
+    youtube: '연결 이유', 
+    media: '연결 이유',
+    website: '연결 이유'
   };
 
   /**
@@ -543,7 +545,7 @@ export default function BookDetailPage() {
         {/* App Logo/Name Header */}
         <div className="text-center mb-6">
           <h1 
-            className={`text-2xl font-bold ${cyberTheme.primary} cursor-pointer hover:text-cyan-300 transition-colors inline-block opacity-80`}
+            className={`text-lg sm:text-2xl font-bold ${cyberTheme.primary} cursor-pointer hover:text-cyan-300 transition-colors inline-block opacity-80`}
             onClick={() => router.push('/dashboard')}
           >
             Habitus33
@@ -553,24 +555,26 @@ export default function BookDetailPage() {
         {/* Book Header */}
         <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl overflow-hidden mb-6 relative border ${cyberTheme.borderSecondary}/30`}>
           {/* Action Buttons group at top right */}
-          <div className="absolute top-4 right-4 z-10 flex space-x-2">
+          <div className="absolute top-4 right-4 z-10 flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handleEditBook}
               aria-label="책 정보 수정"
-              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border`}
+              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border text-xs sm:text-sm`}
             >
-              정보 수정
+              <span className="hidden sm:inline">정보 수정</span>
+              <span className="sm:hidden">수정</span>
             </Button>
             <Button
               variant="default"
               size="sm"
               onClick={handleStartReading}
               aria-label="TS 세션 시작"
-              className={`text-white`}
+              className={`text-white text-xs sm:text-sm`}
             >
-              Atomic-Reading
+              <span className="hidden sm:inline">Atomic-Reading</span>
+              <span className="sm:hidden">읽기</span>
             </Button>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
@@ -593,18 +597,18 @@ export default function BookDetailPage() {
             </div>
             {/* Book Info */}
             <div className="md:col-span-3 space-y-3">
-              <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.textLight} mb-1`}>{bookData.title || '제목을 기다리고 있어요'}</h1>
-              <p className={`text-md ${cyberTheme.textLight} mb-4`}>{bookData.author || '저자를 기다리고 있어요'}</p>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+              <h1 className={`text-xl sm:text-2xl md:text-3xl font-bold ${cyberTheme.textLight} mb-1 truncate`} title={bookData.title}>{bookData.title || '제목을 기다리고 있어요'}</h1>
+              <p className={`text-sm sm:text-md ${cyberTheme.textLight} mb-4 truncate`} title={bookData.author}>{bookData.author || '저자를 기다리고 있어요'}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 {[
                   ['분야', localMetadata?.genre || bookData.category || bookData.genre || '분류되지 않음'],
-                  ['독서 목적', readingPurposeLabels[String(localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal)] || '아직 설정되지 않았어요'],
-                  ['전체 여정', (bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages} 페이지` : '페이지 정보가 없어요'],
-                  ['기록 시작일', bookData.createdAt ? formatDate(bookData.createdAt) : '기록 시작일 정보가 없어요'],
+                  ['목적', readingPurposeLabels[String(localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal)] || '아직 설정되지 않았어요'],
+                  ['여정', (bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages} 페이지` : '페이지 정보가 없어요'],
+                  ['시작일', bookData.createdAt ? formatDate(bookData.createdAt) : '기록 시작일 정보가 없어요'],
                 ].map(([label, value]) => (
                   <div key={label} className="flex items-baseline space-x-2">
-                    <span className={`w-20 ${cyberTheme.textMuted}`}>{label}:</span>
-                    <span className={`font-medium ${cyberTheme.textLight}`}>{value}</span>
+                    <span className={`w-12 sm:w-20 ${cyberTheme.textMuted} text-xs sm:text-sm flex-shrink-0`}>{label}:</span>
+                    <span className={`font-medium ${cyberTheme.textLight} text-xs sm:text-sm truncate`} title={value}>{value}</span>
                   </div>
                 ))}
               </div>
@@ -621,7 +625,7 @@ export default function BookDetailPage() {
                   />
                 </div>
                 <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>
-                  {bookData.currentPage || 0} / {bookData.totalPages || '∞'} 페이지, 함께하는 중
+                  {bookData.currentPage || 0} / {bookData.totalPages || '∞'} 페이지
                 </div>
               </div>
             </div>
@@ -629,26 +633,29 @@ export default function BookDetailPage() {
         </div>
         
         {/* 탭 버튼 */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-1 sm:gap-2 mb-4 overflow-x-auto">
           <button
-            className={`px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors ${activeTab === 'memo' ? 'border-cyan-400 text-cyan-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-cyan-200'}`}
+            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'memo' ? 'border-cyan-400 text-cyan-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-cyan-200'}`}
             onClick={() => setActiveTab('memo')}
           >
-            메모 진화
+            <span className="hidden sm:inline">메모 진화</span>
+            <span className="sm:hidden">메모</span>
           </button>
           <button
-            className={`px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors ${activeTab === 'relatedLinks' ? 'border-green-400 text-green-400 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800'} ${!selectedRelatedNote ? 'opacity-50 cursor-not-allowed' : 'hover:text-green-300'}`}
+            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'relatedLinks' ? 'border-green-400 text-green-400 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800'} ${!selectedRelatedNote ? 'opacity-50 cursor-not-allowed' : 'hover:text-green-300'}`}
             onClick={() => selectedRelatedNote && setActiveTab('relatedLinks')}
             disabled={!selectedRelatedNote}
             aria-disabled={!selectedRelatedNote}
           >
-            지식 연결
+            <span className="hidden sm:inline">지식 연결</span>
+            <span className="sm:hidden">연결</span>
           </button>
           <button
-            className={`px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors ${activeTab === 'flashcard' ? 'border-purple-400 text-purple-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-purple-200'}`}
+            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'flashcard' ? 'border-purple-400 text-purple-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-purple-200'}`}
             onClick={() => setActiveTab('flashcard')}
           >
-            플래시카드
+            <span className="hidden sm:inline">플래시카드</span>
+            <span className="sm:hidden">카드</span>
           </button>
         </div>
         {/* 탭별 컨테이너 */}
@@ -657,7 +664,7 @@ export default function BookDetailPage() {
             <div className="flex flex-col md:flex-row gap-12 mb-3">
               {/* 왼쪽: 타이틀/설명 */}
               <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                <h2 className="text-xl md:text-2xl font-bold text-cyan-400 mb-1">Memo Hub</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 mb-1">Memo Hub</h2>
                 <span className="text-xs text-gray-400 font-medium block mb-2">기록에서 자산으로</span>
                 <p className="text-sm text-cyan-300 mb-2 font-semibold">1줄 메모를 확장 연결해, 학습·업무에 활용해 보세요..</p>
                 <ul className="text-xs text-gray-400 leading-relaxed list-disc pl-4 space-y-1">
@@ -832,7 +839,7 @@ export default function BookDetailPage() {
               <div className="flex flex-col md:flex-row gap-12 mb-3">
                 {/* 좌측: 설명 */}
                 <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                  <h2 className="text-xl font-bold text-green-300 mb-1"> Connect </h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-green-300 mb-1"> Connect </h2>
                   <span className="text-xs text-gray-300 block mb-2">1줄메모에 더 많은 외부 지식을 연결하세요</span>
                   <ul className="text-xs text-gray-300 list-disc pl-4 space-y-1">
                     <li>도메인 컨텍스트를 더 확장할 수 있는 외부 지식을 연결하세요.</li>
@@ -907,14 +914,26 @@ export default function BookDetailPage() {
                   {/* 입력 필드/버튼 */}
                   <div className="flex flex-col gap-2 mb-2 w-full">
                     <input
-                      className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
-                      placeholder={linkPlaceholderMap[activeRelatedLinkTab] || '링크주소(URL)를 입력하세요'}
+                      className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden"
+                      placeholder={linkPlaceholderMap[activeRelatedLinkTab]}
                       value={linkUrl}
                       onChange={e => setLinkUrl(e.target.value)}
                     />
                     <input
-                      className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
-                      placeholder={reasonPlaceholderMap[activeRelatedLinkTab] || '배경/이유를 적어두면 더 오래 기억됩니다.'}
+                      className="hidden sm:block w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
+                      placeholder="링크주소(URL)를 입력하세요"
+                      value={linkUrl}
+                      onChange={e => setLinkUrl(e.target.value)}
+                    />
+                    <input
+                      className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden"
+                      placeholder={reasonPlaceholderMap[activeRelatedLinkTab]}
+                      value={linkReason}
+                      onChange={e => setLinkReason(e.target.value)}
+                    />
+                    <input
+                      className="hidden sm:block w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
+                      placeholder="배경/이유를 적어두면 더 오래 기억됩니다."
                       value={linkReason}
                       onChange={e => setLinkReason(e.target.value)}
                     />
@@ -932,15 +951,15 @@ export default function BookDetailPage() {
                   ) : (
                     <ul className="space-y-2 w-full">
                       {filteredLinks.map((link, idx) => (
-                        <li key={idx} className="flex items-center gap-2 bg-gray-800/60 rounded px-3 py-2 border border-gray-700 shadow">
-                          <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline break-all max-w-xs truncate">
+                        <li key={idx} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-gray-800/60 rounded px-3 py-2 border border-gray-700 shadow">
+                          <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline break-all text-sm truncate max-w-full sm:max-w-xs">
                             {link.url}
                           </a>
                           {link.reason && (
-                            <span className="text-xs text-gray-300 bg-gray-900/60 rounded px-2 py-0.5 ml-2 truncate max-w-[120px]" title={link.reason}>{link.reason}</span>
+                            <span className="text-xs text-gray-300 bg-gray-900/60 rounded px-2 py-0.5 truncate max-w-full sm:max-w-[120px]" title={link.reason}>{link.reason}</span>
                           )}
                           <button
-                            className="ml-auto text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 rounded"
+                            className="ml-auto text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 rounded self-start sm:self-auto"
                             onClick={() => handleDeleteRelatedLink(idx)}
                             aria-label="링크 삭제"
                           >
@@ -979,7 +998,7 @@ export default function BookDetailPage() {
             ) : (
               <>
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl md:text-2xl font-bold text-purple-400">Flashcard</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-purple-400">Flashcard</h2>
                 <button
                   className="px-3 py-1 rounded bg-cyan-700 text-white text-xs hover:bg-cyan-800 font-semibold ml-4"
                   onClick={() => setShowNewFlashcardForm((v) => !v)}

@@ -968,7 +968,7 @@ export default function TSWarmupPage() {
                 
                 {(exercise.variationParams as BreathingVariationParams).name === '박스 호흡' ? (
                   // Box Breathing UI
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 border-2 border-gray-600">
+                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 border-2 border-gray-600">
                     {/* Top Side */}
                     <div className={`absolute top-0 left-0 w-full h-2 sm:h-2.5 transition-colors duration-200 ${(breathingPhase === 'inhale') ? cyberTheme.primary : 'bg-gray-600'}`} />
                     {/* Right Side */}
@@ -978,17 +978,17 @@ export default function TSWarmupPage() {
                     {/* Left Side */}
                     <div className={`absolute top-0 left-0 w-2.5 h-full transition-colors duration-200 ${(breathingPhase === 'hold2') ? cyberTheme.primary : 'bg-gray-600'}`} />
                     
-                    <div className="absolute inset-0 flex items-center justify-center text-xs sm:text-base">
-                        {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>들이쉬세요</p>}
-                        {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>멈추세요</p>}
-                        {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>내쉬세요</p>}
-                        {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
+                    <div className="absolute inset-0 flex items-center justify-center text-center px-1 break-words">
+                        {breathingPhase === 'inhale' && <p className={`${cyberTheme.textLight} text-xs sm:text-base`}>들이쉬세요</p>}
+                        {breathingPhase === 'hold1' && <p className={`${cyberTheme.textLight} text-xs sm:text-base`}>멈추세요</p>}
+                        {breathingPhase === 'exhale' && <p className={`${cyberTheme.textLight} text-xs sm:text-base`}>내쉬세요</p>}
+                        {breathingPhase === 'hold2' && <p className={`${cyberTheme.textLight} text-xs sm:text-base`}>멈추세요</p>}
                         {breathingPhase === 'done' && <CheckCircleIcon className={`w-12 h-12 sm:w-16 sm:h-16 ${cyberTheme.primary}`} />}
                     </div>
                   </div>
                 ) : (
                   // Default Circle Breathing UI
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4">
+                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4">
                     {/* 물방울 내부 (물리적 효과를 위한 그라데이션) */}
                     <div 
                       className={`absolute inset-0 rounded-full bg-gradient-to-b from-cyan-300 to-cyan-500 opacity-30 transition-all`}
@@ -1015,11 +1015,11 @@ export default function TSWarmupPage() {
                         }}
                       />
                     </div>
-                     <div className="absolute inset-0 flex items-center justify-center text-center text-xs sm:text-base px-2">
-                          {breathingPhase === 'inhale' && <p className={cyberTheme.textLight}>물방울이 형성되고(들이쉬기)</p>}
-                          {breathingPhase === 'hold1' && <p className={cyberTheme.textLight}>떨어지고(멈추기)</p>}
-                          {breathingPhase === 'exhale' && <p className={cyberTheme.textLight}>퍼져나가는(내쉬기)</p>}
-                          {breathingPhase === 'hold2' && <p className={cyberTheme.textLight}>멈추세요</p>}
+                     <div className="absolute inset-0 flex items-center justify-center text-center text-xs sm:text-base px-1 leading-tight break-words">
+                          {breathingPhase === 'inhale' && <p className={`${cyberTheme.textLight} text-xs sm:text-base`}>물방울이<br className="sm:hidden" /> 형성되고<br />(들이쉬기)</p>}
+                          {breathingPhase === 'hold1' && <p className={`${cyberTheme.textLight} text-xs sm:text-base`}>떨어지고<br />(멈추기)</p>}
+                          {breathingPhase === 'exhale' && <p className={`${cyberTheme.textLight} text-xs sm:text-base`}>퍼져나가는<br />(내쉬기)</p>}
+                          {breathingPhase === 'hold2' && <p className={`${cyberTheme.textLight} text-xs sm:text-base`}>멈추세요</p>}
                           {breathingPhase === 'done' && <CheckCircleIcon className={`w-12 h-12 sm:w-16 sm:h-16 ${cyberTheme.primary}`} />}
                       </div>
                   </div>

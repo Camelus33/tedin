@@ -164,14 +164,14 @@ export default function TSReadingPage() {
       <div className="container mx-auto max-w-2xl flex-1 flex flex-col">
         {/* Reading header - modern design with subtle shadow */}
         <div className={`${cyberTheme.cardBg} rounded-xl shadow-lg p-4 sm:p-6 mb-8 border ${cyberTheme.inputBorder}`}>
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex-grow text-center sm:text-left">
-              <h1 className={`font-bold text-lg sm:text-xl ${cyberTheme.textLight}`}>{sessionData.bookId.title}</h1>
-              <p className={`text-sm ${cyberTheme.textMuted} mt-1`}>({sessionData.startPage} - {sessionData.endPage} 페이지)</p>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 overflow-hidden">
+            <div className="flex-grow text-center sm:text-left min-w-0">
+              <h1 className={`font-bold text-lg sm:text-xl ${cyberTheme.textLight} truncate`}>{sessionData.bookId.title}</h1>
+              <p className={`text-sm ${cyberTheme.textMuted} mt-1 truncate`}>({sessionData.startPage} - {sessionData.endPage} 페이지)</p>
               <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>몰입하는 중...</p>
             </div>
             
-            <div className={`text-center p-3 rounded-lg border ${cyberTheme.inputBorder} bg-gray-900/50 shadow-inner min-w-[120px] sm:min-w-[140px]`}>
+            <div className={`text-center p-3 rounded-lg border ${cyberTheme.inputBorder} bg-gray-900/50 shadow-inner min-w-[100px] sm:min-w-[140px] flex-shrink-0`}>
               <div 
                 className={`text-3xl sm:text-4xl font-mono font-bold transition-colors ${ 
                   progressPercentage < 80 ? cyberTheme.textLight : 'text-red-400 animate-pulse' 

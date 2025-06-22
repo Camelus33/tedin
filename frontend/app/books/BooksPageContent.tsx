@@ -352,7 +352,7 @@ export default function BooksPageContent() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-            <h1 className={`text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>나의 도서관</h1>
+            <h1 className={`text-xl sm:text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>나의 도서관</h1>
             <button onClick={handleAddBook} aria-label="새 책 등록" className={`flex items-center gap-2 px-4 py-2 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-medium transition-colors w-full sm:w-auto mt-3 sm:mt-0`}>
               <AiOutlinePlus className="h-5 w-5" /><span>NEW</span>
             </button>
@@ -362,18 +362,18 @@ export default function BooksPageContent() {
         <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 ${cyberTheme.bgSecondary} rounded-lg`}>
           <div className="relative w-full sm:w-auto flex-grow">
             <AiOutlineSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${cyberTheme.textMuted}`} />
-            <input type="text" placeholder={activeTab === 'summaryNotes' ? "소중한 기록들 속에서 필요한 내용을 찾아보세요." : "성장의 기록들 속에서 원하시는 책을 찾아보세요."} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`} />
+            <input type="text" placeholder={activeTab === 'summaryNotes' ? "필요한 내용을 찾아보세요" : "원하시는 책을 찾아보세요"} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`} />
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
              <div className="relative">
-                 <button ref={sortButtonRef} onClick={() => setShowSortOptions(!showSortOptions)} aria-label="정렬 기준 변경" className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textLight} transition-colors`}>
-                     <AiOutlineFilter className="h-5 w-5" /><span>{sortOptions.find(opt => opt.key === sortBy)?.label || '정렬'}</span>
+                 <button ref={sortButtonRef} onClick={() => setShowSortOptions(!showSortOptions)} aria-label="정렬 기준 변경" className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textLight} transition-colors`}>
+                     <AiOutlineFilter className="h-5 w-5" /><span className="hidden sm:inline">{sortOptions.find(opt => opt.key === sortBy)?.label || '정렬'}</span><span className="sm:hidden">정렬</span>
                  </button>
                  {showSortOptions && (
-                     <div ref={sortDropdownRef} className={`absolute right-0 mt-2 w-48 ${cyberTheme.menuBg} rounded-md shadow-lg z-10 border ${cyberTheme.inputBorder}`}>
+                     <div ref={sortDropdownRef} className={`absolute right-0 mt-2 w-40 sm:w-48 ${cyberTheme.menuBg} rounded-md shadow-lg z-10 border ${cyberTheme.inputBorder}`}>
                          {sortOptions.map((option) => (
-                             <button key={option.key} onClick={() => handleSortChange(option.key)} className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${cyberTheme.textLight} ${cyberTheme.menuItemHover} ${sortBy === option.key ? 'font-bold' : ''}`}>
-                                 <option.icon className="h-4 w-4" />{option.label}
+                             <button key={option.key} onClick={() => handleSortChange(option.key)} className={`w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm flex items-center gap-2 ${cyberTheme.textLight} ${cyberTheme.menuItemHover} ${sortBy === option.key ? 'font-bold' : ''}`}>
+                                 <option.icon className="h-3 w-3 sm:h-4 sm:w-4" />{option.label}
                              </button>
                          ))}
                      </div>
@@ -385,23 +385,23 @@ export default function BooksPageContent() {
         <div className="mb-6 flex border-b border-gray-700">
           <button
             onClick={() => setActiveTab('books')}
-            className={`px-6 py-2.5 rounded-t-lg font-semibold transition-all duration-200 ease-in-out border-b-2
+            className={`px-3 sm:px-6 py-2.5 rounded-t-lg font-semibold transition-all duration-200 ease-in-out border-b-2
               ${activeTab === 'books' 
                 ? `${cyberTheme.tabActiveBg} ${cyberTheme.tabText} border-cyan-300 shadow-md` 
                 : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-cyan-300 border-transparent hover:bg-gray-700/70`}
             `}
           >
-            <FiBook className="inline mr-2 mb-0.5" />등록한 자료
+            <FiBook className="inline mr-1 sm:mr-2 mb-0.5" /><span className="text-sm sm:text-base">등록한 자료</span>
           </button>
           <button
             onClick={() => setActiveTab('summaryNotes')}
-            className={`px-6 py-2.5 rounded-t-lg font-semibold transition-all duration-200 ease-in-out border-b-2
+            className={`px-3 sm:px-6 py-2.5 rounded-t-lg font-semibold transition-all duration-200 ease-in-out border-b-2
               ${activeTab === 'summaryNotes' 
                 ? `bg-purple-600 ${cyberTheme.tabText} border-purple-400 shadow-md` 
                 : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-purple-300 border-transparent hover:bg-gray-700/70`}
             `}
           >
-            <AiOutlineHighlight className="inline mr-2 mb-0.5" />단권화 노트
+            <AiOutlineHighlight className="inline mr-1 sm:mr-2 mb-0.5" /><span className="text-sm sm:text-base">단권화 노트</span>
           </button>
         </div>
 
@@ -424,8 +424,8 @@ export default function BooksPageContent() {
                     <div key={book._id} onClick={() => handleViewBookDetails(book._id)} className={`relative ${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-cyan-500/30 border ${cyberTheme.inputBorder}`}>
                       <button onClick={(e) => toggleMenu(book._id, e)} aria-label="기억 관리 메뉴" className={`toggle-menu-button absolute top-2 right-2 p-1.5 rounded-full ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted} z-10`}><FiMoreVertical className="h-5 w-5" /></button>
                       {showMenu === book._id && (
-                        <div className={`action-menu absolute top-10 right-2 mt-1 w-36 ${cyberTheme.menuBg} rounded-md shadow-lg z-20 border ${cyberTheme.inputBorder}`}>
-                           <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineEdit className="h-4 w-4" /> 수정하기</Link>
+                        <div className={`action-menu absolute top-10 right-2 mt-1 w-32 sm:w-36 ${cyberTheme.menuBg} rounded-md shadow-lg z-20 border ${cyberTheme.inputBorder}`}>
+                           <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineEdit className="h-3 w-3 sm:h-4 sm:w-4" /> 수정하기</Link>
                         </div>
                       )}
                       <div className={`w-full h-32 md:h-40 ${cyberTheme.inputBg} flex items-center justify-center ${cyberTheme.textMuted}`}>
@@ -458,11 +458,11 @@ export default function BooksPageContent() {
                           <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-1.5`}>
                             <div className={`h-1.5 rounded-full ${cyberTheme.progressFg}`} style={{ width: `${progress}%` }}></div>
                           </div>
-                          <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>성장의 흔적: {progress}% ({book.currentPage}/{book.totalPages} 페이지)</p>
+                          <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>성장: {progress}% ({book.currentPage}/{book.totalPages}p)</p>
                         </div>
                         <div className={`flex items-center text-xs ${cyberTheme.textMuted}`}>
-                          <FiClock className="h-3.5 w-3.5 mr-1" />
-                          <span>최근 성장 기록: {formatLastRead(book.lastReadAt)}</span>
+                          <FiClock className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                          <span className="truncate">최근: {formatLastRead(book.lastReadAt)}</span>
                         </div>
                       </div>
                     </div>
@@ -504,12 +504,12 @@ export default function BooksPageContent() {
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className={`text-xl font-semibold ${cyberTheme.secondary} mb-1.5 hover:text-purple-300`}>
+                        <h3 className={`text-lg sm:text-xl font-semibold ${cyberTheme.secondary} mb-1.5 hover:text-purple-300 truncate`} title={note.title}>
                           <Link href={`/summary-notes/${note._id}/edit`}>{note.title}</Link>
                         </h3>
-                        <p className={`text-sm ${cyberTheme.textMuted} mb-1`}>{note.description || '어떤 내용인지 간단한 설명을 추가해보세요.'}</p>
-                        <p className={`text-xs ${cyberTheme.textMuted}`}>연결된 생각 조각: {note.orderedNoteIds.length}개</p>
-                        <p className={`text-xs ${cyberTheme.textMuted}`}>마지막으로 들여다본 날: {new Date(note.updatedAt).toLocaleDateString('ko-KR')}</p>
+                        <p className={`text-sm ${cyberTheme.textMuted} mb-1 line-clamp-2`}>{note.description || '어떤 내용인지 간단한 설명을 추가해보세요.'}</p>
+                        <p className={`text-xs ${cyberTheme.textMuted}`}>연결: {note.orderedNoteIds.length}개</p>
+                        <p className={`text-xs ${cyberTheme.textMuted}`}>수정: {new Date(note.updatedAt).toLocaleDateString('ko-KR')}</p>
                       </div>
                       <div className="flex space-x-2 flex-shrink-0 ml-4">
                         <DropdownMenu>

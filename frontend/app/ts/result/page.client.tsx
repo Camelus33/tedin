@@ -199,9 +199,9 @@ export default function TSResultPage() {
                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Reading Velocity</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-center">
-                  <span className="text-6xl sm:text-8xl font-extralight text-gray-800 leading-none">{sessionResult.ppm.toFixed(1)}</span>
-                  <div className="flex flex-col items-start ml-2 mt-4 sm:mt-6">
+                <div className="flex items-center justify-center overflow-hidden">
+                  <span className="text-4xl sm:text-6xl lg:text-8xl font-extralight text-gray-800 leading-none">{sessionResult.ppm.toFixed(1)}</span>
+                  <div className="flex flex-col items-start ml-2 mt-2 sm:mt-4 lg:mt-6 flex-shrink-0">
                     <span className="text-sm text-gray-500 font-medium">PPM</span>
                     <span className="text-xs text-gray-400">pages per minute</span>
                   </div>
@@ -241,14 +241,14 @@ export default function TSResultPage() {
               </div>
               
               {/* Book Details with Achievement Styling */}
-              <div className="flex-1 border-b border-gray-200 pb-2">
+              <div className="flex-1 border-b border-gray-200 pb-2 min-w-0">
                 <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Conquered</p>
-                <h2 className="text-base sm:text-lg font-semibold text-gray-800">
+                <h2 className="text-base sm:text-lg font-semibold text-gray-800 break-words line-clamp-2">
                   {sessionResult.bookId && typeof sessionResult.bookId === 'object' 
                     ? sessionResult.bookId.title 
                     : '알 수 없는 책'}
                 </h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-gray-600 mt-1 truncate">
                   {sessionResult.bookId && typeof sessionResult.bookId === 'object' 
                     ? sessionResult.bookId.author 
                     : '작가미상'}
