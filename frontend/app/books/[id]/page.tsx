@@ -596,8 +596,8 @@ export default function BookDetailPage() {
               </div>
             </div>
             {/* Book Info */}
-            <div className="md:col-span-3 space-y-3">
-              <h1 className={`text-xl sm:text-2xl md:text-3xl font-bold ${cyberTheme.textLight} mb-1 truncate`} title={bookData.title}>{bookData.title || '제목을 기다리고 있어요'}</h1>
+            <div className="md:col-span-3 space-y-3 min-w-0">
+              <h1 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold ${cyberTheme.textLight} mb-1 truncate`} title={bookData.title}>{bookData.title || '제목을 기다리고 있어요'}</h1>
               <p className={`text-sm sm:text-md ${cyberTheme.textLight} mb-4 truncate`} title={bookData.author}>{bookData.author || '저자를 기다리고 있어요'}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 {[
