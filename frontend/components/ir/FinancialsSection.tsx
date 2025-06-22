@@ -50,10 +50,10 @@ const FinancialsSection = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">
-            Financials & <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">Seed-Round Plan</span>
+            Financials & <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">Seed-Round</span>
           </h2>
           <p className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-16">
-            검증된 초기 시장성과 효율적인 성장 모델을 바탕으로, 5억원의 Seed 투자를 통해 폭발적인 성장을 만들어낼 계획입니다.
+            검증된 초기 시장성과 효율적인 성장 모델을 바탕으로, Seed 투자유치를 통해 폭발적인 성장을 만들어낼 계획입니다.
           </p>
         </motion.div>
 

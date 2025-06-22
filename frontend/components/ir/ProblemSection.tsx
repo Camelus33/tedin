@@ -106,7 +106,7 @@ const ProblemSection = () => {
             AI 글쓰기 신뢰성 위기 : <span className="text-indigo-400">거짓 출처의 범람</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            AI가 생성한 글은, 반드시 출처의 진위를 해야 합니다. 직접 쓴 글보다 더 많은 시간이 소모됩니다. 이는 심각한 생산성 저하를 초래합니다.
+            AI가 생성한 글은, 반드시 출처를 확인해야 합니다. 직접 쓴 글보다 더 많은 시간이 소모됩니다. 이는 심각한 생산성 저하를 초래합니다.
           </motion.p>
         </motion.div>
 
