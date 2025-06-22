@@ -23,7 +23,7 @@ const steps = [
   },
   {
     icon: FiZap,
-    title: "4. Alignment: AI와의 완벽한 공명",
+    title: "4. Alignment: AI 초개인화",
     description: "AI-Link를 수신한 AI는 더 이상 모호한 질문에 의존하지 않습니다. 당신의 고유한 맥락을 완벽하게 이해한 상태에서, 당신만을 위한 가장 정확하고 통찰력 있는 결과를 생성합니다. 당신과 AI는 비로소 하나의 팀이 됩니다."
   }
 ];
@@ -57,10 +57,10 @@ const SolutionSection = () => {
         <div className="relative pt-16">
           <div className="text-left mb-16" style={{ height: '100vh' }}>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">
-              AMFA 엔진: <br/> 컨텍스트를 AI에 이식하다
+              AMFA 지식 캡슐 : <br/> 도메인 컨텍스트를 AI에 이식하다
             </h2>
             <p className="text-lg text-gray-400 max-w-xl">
-              Habitus33의 핵심 기술 AMFA는, 당신의 모든 지적 활동을 추적하여 인과관계를 추론하는 '고맥락 지식 그래프 전송 엔진'입니다. 온톨로지 기반 데이터 파이프라인을 통해 지식을 구조화, 응축, 전송하여 AI가 당신의 도메인 컨텍스트를 이해할 수 있게 합니다.
+              Habitus33의 핵심 기술 AMFA는, 당신의 모든 지적 활동을 추적하여 인과관계를 추론하는 '고맥락 지식 그래프 전송 엔진 '입니다. 온톨로지 기반 데이터 파이프라인을 통해 지식을 구조화, 응축, 전송하여 AI가 당신의 도메인 컨텍스트를 이해할 수 있게 합니다.
             </p>
           </div>
 

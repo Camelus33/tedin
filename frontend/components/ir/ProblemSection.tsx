@@ -103,10 +103,10 @@ const ProblemSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            AI 글쓰기 신뢰성 위기 : <span className="text-indigo-400">거짓 출처의 범람</span>
+            AI 생성 글 신뢰성 위기: <span className="text-indigo-400">어딘가에 도사리는 오류</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            AI가 생성한 글은, 반드시 출처를 확인해야 합니다. 직접 쓴 글보다 더 많은 시간이 소모됩니다. 이는 심각한 생산성 저하를 초래합니다.
+            범람하는 AI 글, 점점 찾기 힘들어지는 오류, 검증 절차강화 필요성 대두
           </motion.p>
         </motion.div>
 
@@ -128,11 +128,11 @@ const ProblemSection = () => {
           className="text-center mt-16"
         >
           <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-             해답은 간단합니다. <span className="font-bold text-indigo-400">'당신이 직접 읽고 기록한 메모'</span>가 <br/>가장 <span className="font-bold text-white">신뢰할 수 있는 출처</span>입니다. 
+             간단한 해결책은 <span className="font-bold text-indigo-400">없을까요?</span> <br/>누구나<span className="font-bold text-white"> 인정하는 </span>방법말입니다. 
           </p>
           <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
-            더이상 거짓 출처로 가득한 AI 보고서로, 자신의 전문성을 의심받지 마세요. <br/>
-            <span className="font-medium text-white">당신만의 도메인 컨텍스트는 언제나 검증 가능합니다.</span>
+            간간히 오류 섞인 AI 보고서로, 자신의 전문성을 의심받지 마세요. <br/>
+            <span className="font-medium text-white">도메인 컨텍스트는 언제나 검증 가능합니다.</span>
           </p>
         </motion.div>
       </div>

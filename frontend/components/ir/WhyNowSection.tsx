@@ -50,12 +50,12 @@ const trends = [
   },
   {
     icon: <TrendIcon2 />,
-    title: "나만의 관점 : originality ",
-    text: "시장은 점점 더 AI로 생성한 콘텐츠를 가려내는 기술을 발전시키고 있습니다. 점점 더 많은 기관에서 작성문건에 대한 더 철저한 출처 확인이 요구합니다. 자신의 지적 활동 전반에 걸쳐 축적된 자신만의 경험과 생각이 더 중요한 시대가 오고 있습니다.",
+    title: "Truth : 즉각 검증 니즈 ",
+    text: "시장은 점점 더 AI로 생성한 콘텐츠를 가려내는 기술을 발전시키고 있습니다. 전문가도 찾기 힘들어지는 AI발 논리오류, 더 엄격한 검증 절차에 대한 요구도 증가하고 있습니다.",
   },
   {
     icon: <TrendIcon3 />,
-    title: "도메인 컨텍스트 자산화",
+    title: "Deal : 도메인 컨텍스트 자산화",
     text: "개인과 조직의 핵심 경쟁력은 이제 '얼마나 많은 지식을 가졌는가'가 아닌, '지식을 어떻게 연결하고 활용하는가'에 달려있습니다. 흩어진 지적 자산을 연결하는 기술은 이 시대의 필수 인프라입니다.",
   },
 ];
@@ -103,7 +103,7 @@ const WhyNowSection = () => {
             왜 시장은 Habitus33를 원하는가?
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            세 가지 거대한 시장의 흐름이 하나의 지점으로 모이며, Habitus33의 등장을 당연시 합니다.
+            세 가지 거대 시장의 흐름이 하나로 모여, Habitus33의 성장은 필연적입니다.
           </p>
         </motion.div>
         
