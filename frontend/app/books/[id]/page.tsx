@@ -555,31 +555,31 @@ export default function BookDetailPage() {
         {/* Book Header */}
         <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl overflow-hidden mb-6 relative border ${cyberTheme.borderSecondary}/30`}>
           {/* Action Buttons group at top right */}
-          <div className="absolute top-4 right-4 z-10 flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
+          <div className="absolute top-2 right-2 z-10 flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-1">
             <Button
               variant="outline"
               size="sm"
               onClick={handleEditBook}
               aria-label="책 정보 수정"
-              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border text-xs sm:text-sm`}
+              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border text-xs px-2 py-1 h-7 min-h-0`}
             >
-              <span className="hidden sm:inline">정보 수정</span>
-              <span className="sm:hidden">수정</span>
+              <span className="hidden sm:inline text-xs">수정</span>
+              <span className="sm:hidden text-xs">수정</span>
             </Button>
             <Button
               variant="default"
               size="sm"
               onClick={handleStartReading}
               aria-label="TS 세션 시작"
-              className={`text-white text-xs sm:text-sm`}
+              className={`text-white text-xs px-2 py-1 h-7 min-h-0`}
             >
-              <span className="hidden sm:inline">Atomic-Reading</span>
-              <span className="sm:hidden">읽기</span>
+              <span className="hidden sm:inline text-xs">읽기</span>
+              <span className="sm:hidden text-xs">읽기</span>
             </Button>
           </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
+          <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-start min-w-0">
             {/* Book Cover and placeholder */}
-            <div className="md:col-span-1 space-y-2 flex justify-center">
+            <div className="md:col-span-1 space-y-2 flex justify-center flex-shrink-0">
               <div className={`w-full max-w-[150px] aspect-[2/3] ${cyberTheme.inputBg} rounded-lg overflow-hidden border ${cyberTheme.inputBorder}`}>
                 {bookData.coverImage ? (
                   <img
@@ -596,8 +596,8 @@ export default function BookDetailPage() {
               </div>
             </div>
             {/* Book Info */}
-            <div className="md:col-span-3 space-y-3 min-w-0">
-              <h1 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold ${cyberTheme.textLight} mb-1 truncate`} title={bookData.title}>{bookData.title || '제목을 기다리고 있어요'}</h1>
+            <div className="md:col-span-3 space-y-3 min-w-0 overflow-hidden">
+              <h1 className={`text-base sm:text-lg md:text-xl lg:text-2xl font-bold ${cyberTheme.textLight} mb-1 break-words line-clamp-2`} title={bookData.title}>{bookData.title || '제목을 기다리고 있어요'}</h1>
               <p className={`text-sm sm:text-md ${cyberTheme.textLight} mb-4 truncate`} title={bookData.author}>{bookData.author || '저자를 기다리고 있어요'}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 {[
