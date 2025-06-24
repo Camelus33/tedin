@@ -377,7 +377,7 @@ export default function BookDetailPage() {
 
   const handleDeleteBook = async () => {
     if (!bookId) return;
-    if (window.confirm('이 책과 함께한 성장의 기록들을 모두 정리하시겠어요? 메모와 세션 기록들도 함께 정리됩니다.')) {
+    if (window.confirm('함께한 성장의 기록들을 모두 정리하시겠어요? 메모와 세션 기록들도 함께 정리됩니다.')) {
       setIsDeleting(true);
       try {
         await api.delete(`/books/${bookId}`);
@@ -515,7 +515,7 @@ export default function BookDetailPage() {
             variant="default"
             className={`w-full text-white`}
           >
-            나의 도서관으로
+            My Lib
           </Button>
         </div>
       </div>
@@ -537,7 +537,7 @@ export default function BookDetailPage() {
               className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border flex items-center`}
             >
               <AiOutlineArrowLeft className="mr-2 h-4 w-4" />
-              나의 도서관
+              My Lib
             </Button>
           </Link>
         </div>

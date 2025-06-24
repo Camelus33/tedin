@@ -511,7 +511,7 @@ export default function DashboardPage() {
               </p>
               <Link href="/ts" className="inline-block">
                 <button className={`${habitus33Theme.progressFg} text-white font-bold text-lg sm:text-xl px-8 sm:px-12 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
-                  Atomic Reading
+                  Atomic Memo
                 </button>
               </Link>
             </div>
@@ -612,7 +612,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="order-1 md:order-none md:absolute md:top-0 md:right-0">
                   <div className={`${habitus33Theme.cardBg} py-2 px-3 rounded-full flex items-center space-x-2 border ${habitus33Theme.borderPrimary} shadow-sm backdrop-blur-sm`}>
-                    <p className={`text-xs font-medium ${habitus33Theme.textLight}`}>Today's Atomic Success</p>
+                    <p className={`text-xs font-medium ${habitus33Theme.textLight}`}>Today's Success</p>
                     <span className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`} title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}>🌱</span>
                     <span className={`text-sm ${routineData?.todayZengoCompleted ? 'text-purple-400' : 'text-gray-600'}`} title={routineData?.todayZengoCompleted ? "오늘 ZenGo 경험 완료" : "오늘의 ZenGo 경험 대기 중"}>🌿</span>
                   </div>
@@ -678,7 +678,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className={`w-7 h-7 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className={`text-sm ${habitus33Theme.primary} mb-1 font-semibold`}>⚡ Atomic Reading</p>
+                <p className={`text-sm ${habitus33Theme.primary} mb-1 font-semibold`}>⚡ Speed</p>
                 <p className={`text-xl font-bold ${habitus33Theme.primary}`}>
                   {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className={`text-xs ${habitus33Theme.textMuted}`}>페이지/분</span>
                 </p>
@@ -725,7 +725,7 @@ export default function DashboardPage() {
                 <Button 
                   variant="outline"
                 >
-                  나의 도서관
+                  My Lib
                 </Button>
               </Link>
             </div>

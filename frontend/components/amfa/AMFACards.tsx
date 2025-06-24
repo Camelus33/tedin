@@ -31,7 +31,7 @@ interface AMFACardsProps {
 const steps: AMFAStep[] = [
   {
     id: 'atomic',
-    title: 'Atomic Reading',
+    title: 'Atomic Memo',
     subtitle: "거장의 첫 번째 신호",
     description: "남들이 모르는, AI를 길들이는 첫 단계",
     detailedDescription: "단 3분의 독서가 AI에게 당신을 각인시키는 첫 신호가 됩니다. 이 작은 습관이 당신을 평범한 사용자에서 'AI 마스터'로 가는 여정의 시작입니다.",

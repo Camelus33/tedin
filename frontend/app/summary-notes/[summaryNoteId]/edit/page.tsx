@@ -198,7 +198,7 @@ export default function EditSummaryNotePage() {
         }
       } catch (err) {
         console.error('Failed to fetch summary note details:', err);
-        setError('단권화 노트를 불러오는 중 잠시 멈춤이 있어요. 조금 후에 다시 시도해 볼래요?');
+        setError('서머리 노트를 불러오는 중 잠시 멈춤이 있어요. 조금 후에 다시 시도해 볼래요?');
       } finally {
         // 모든 데이터가 준비된 후 한 번에 상태를 설정합니다.
         setFetchedNotes(finalNotes);
@@ -241,7 +241,7 @@ export default function EditSummaryNotePage() {
     
     // 메모가 없는 경우 저장을 방지하고 알림 표시
     if (fetchedNotes.length === 0) {
-      showError('메모가 없는 단권화 노트는 저장할 수 없습니다. 메모를 추가해 주세요.');
+      showError('메모가 없는 서머리 노트는 저장할 수 없습니다. 메모를 추가해 주세요.');
       return false;
     }
 
@@ -268,12 +268,12 @@ export default function EditSummaryNotePage() {
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
       setChangedNoteIds(new Set());
-      showSuccess('단권화 노트가 성공적으로 저장되었습니다.');
+      showSuccess('서머리 노트가 성공적으로 저장되었습니다.');
       setSummaryNote(prev => prev ? { ...prev, ...updatedSummaryNoteData, userMarkdownContent } : null);
       return true;
     } catch (err: any) {
       console.error('Failed to save summary note:', err);
-      showError('단권화 노트 저장이 지금은 어려워요. 조금 있다 다시 해볼래요?');
+      showError('서머리 노트 저장이 지금은 어려워요. 조금 있다 다시 해볼래요?');
       return false;
     } finally {
       setLoading(false);
@@ -289,15 +289,15 @@ export default function EditSummaryNotePage() {
   
   const handleDeleteSummaryNote = async () => {
     if (!summaryNoteId) return;
-    if (window.confirm('이 단권화 노트를 정말 삭제하시겠습니까? 연결된 1줄 메모는 삭제되지 않습니다.')) {
+    if (window.confirm('이 서머리 노트를 정말 삭제하시겠습니까? 연결된 1줄 메모는 삭제되지 않습니다.')) {
       setLoading(true);
       try {
         await api.delete(`/summary-notes/${summaryNoteId}`);
-        showSuccess('단권화 노트가 삭제되었습니다.');
+        showSuccess('서머리 노트가 삭제되었습니다.');
         router.push('/books?tab=summary'); // Redirect to My Library, summary tab
       } catch (err) {
         console.error('Failed to delete summary note:', err);
-        showError('단권화 노트 삭제가 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
+        showError('서머리 노트 삭제가 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
         setLoading(false);
       }
     }
@@ -370,7 +370,7 @@ export default function EditSummaryNotePage() {
 
   if (loading) return <div className="flex justify-center items-center h-screen"><Spinner size="lg" /></div>;
   if (error) return <div className="text-red-500 text-center mt-10 p-4 bg-red-900/20 rounded-md">{error}</div>;
-  if (!summaryNote) return <div className="text-center mt-10">찾으시는 노트가 잠시 숨어있네요. 다른 곳에서 만나볼까요?</div>;
+  if (!summaryNote) return <div className="text-center mt-10">찾으시는 노트를 찾고 있습니다. 잠시 후 다시 시도해 볼래요?</div>;
 
   const displayDate = summaryNote?.updatedAt && summaryNote.updatedAt !== summaryNote.createdAt
     ? `Last updated: ${new Date(summaryNote.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`
@@ -405,7 +405,7 @@ export default function EditSummaryNotePage() {
             className={`flex items-center gap-1 text-sm ${cyberTheme.textAccent} hover:${cyberTheme.bgHover} transition-all duration-200`}
           >
             <ArrowLeftIcon className="w-4 h-4" />
-            <span>나의 도서관</span>
+            <span>My Lib</span>
           </Button>
         </div>
         
@@ -612,7 +612,7 @@ export default function EditSummaryNotePage() {
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-4">
             <div className={`bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full border border-cyan-500/50 relative ${cyberTheme.textLight}`}>
               <h3 className="text-lg font-semibold mb-4 text-cyan-400">
-                관련 링크: "{selectedNoteForLinkModal.content.substring(0,30)}..."
+                연결 지식: "{selectedNoteForLinkModal.content.substring(0,30)}..."
               </h3>
               
               {/* Link Type Tabs */}

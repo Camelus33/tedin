@@ -75,16 +75,16 @@ export interface TSSessionDetails {
 // 목적별 4단계 질문/가이드/placeholder 매핑
 const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder: string }>> = {
   exam_prep: [
-    { question: '이 메모의 어떤 부분이 중요했나요?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
-    { question: '이 내용을 처음 봤을 때, 어떤 느낌이었나요?', placeholder: '(예: 용어가 생소함, 공식 유도 과정)' },
-    { question: '이 것은 기존의 어떤 지식과 연결될까요?', placeholder: '(예: 특정 책, 인물, 영상)' },
-    { question: '이 것은 무엇으로 표현할 수 있나요?', placeholder: '(예: 마인드맵, 차트, 표)' },
+    { question: '어떤 부분이 중요하나 느껴졌나요?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
+    { question: '처음 봤을 때, 어떤 느낌이 들었나요?', placeholder: '(예: 용어가 생소함, 공식 유도 과정)' },
+    { question: '기존의 어떤 지식이 연상되나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
+    { question: '표현할 수 방법은 무엇인가요?', placeholder: '(예: 마인드맵, 차트, 표)' },
   ],
   practical_knowledge: [
-    { question: '이 메모, 내 업무/기술에 어떻게 쓸 수 있나요?', placeholder: '(예: 특정 문제 해결, 프로세스 개선)' },
-    { question: '이 지식이 필요했던 과거 상황은 무엇이었나요?', placeholder: '(예: 버그 해결 중, 보고서 작성 시)' },
-    { question: '이 메모는 기존의 어떤 경험/지식과 연상시키나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
-    { question: '이 지식의 핵심 원리를 누구에게 설명해 본다면?', placeholder: '(예: \'이 건 우리가 알고 있는 피라미드와 비슷해요\')' },
+    { question: '어떻게 내 업무와 연결되나요?', placeholder: '(예: 특정 문제 해결, 프로세스 개선)' },
+    { question: '이 것을 몰라 불편했던 경험이 있나요?', placeholder: '(예: 버그 해결 중, 보고서 작성 시)' },
+    { question: '이 메모는 어떤 나의 경험/지식과 연상시키나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
+    { question: '이 것의 핵심을 한 문장으로 설명해 본다면?', placeholder: '(예: \'이 건 우리가 알고 있는 피라미드와 비슷해요\')' },
   ],
   humanities_self_reflection: [
     { question: '이 메모, 어떤 감정/생각을 불러일으켰나요?', placeholder: '(예: 특정 감정, 떠오른 질문)' },

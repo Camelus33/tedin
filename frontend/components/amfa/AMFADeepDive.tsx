@@ -51,7 +51,7 @@ export default function AMFADeepDive() {
   // 각 단계별 상세 정보
   const stepDetails = {
     'atomic': {
-      title: 'Atomic Reading',
+      title: 'Atomic Memo',
       subtitle: 'The Drop Moment',
       icon: BookOpenIcon,
       color: 'text-cyan-400',

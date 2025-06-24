@@ -27,9 +27,9 @@ export default function SolutionSection() {
               </span>
             </h2>
             <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              당신이 끄적인 한 줄이 어떻게 교수님을 놀라게 하고, 상사를 감탄시키는가?
+              당신이 대충 끄적인 한 줄이 어떻게 세상을 감탄시키는가?
               <br className="hidden sm:block" />
-              <strong className="font-semibold text-purple-300">메모의 연금술, AI-Link가 그 마법을 보여드립니다.</strong>
+              <strong className="font-semibold text-purple-300">도메인 컨텍스트 캡슐, AI-Link가 그 마법을 보여드립니다.</strong>
             </p>
           </motion.div>
         </div>
@@ -62,13 +62,13 @@ export default function SolutionSection() {
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
                 <h3 className="text-lg font-semibold text-cyan-400 mb-3">당신의 메모들이</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  서로 연결되고, 다른 지식과 융합되어, 남다른 통찰로 재탄생합니다.
+                  서로 연결되고, 다른 지식과 융합되어, 남다른 통찰로 이끕니다.
                 </p>
               </div>
               <div className="p-6 rounded-xl bg-gray-800/50 border border-gray-700">
                 <h3 className="text-lg font-semibold text-purple-400 mb-3">결과는 놀라움</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  당신도 예상 못한 새로운 관점으로 모든 사람을 감탄시킵니다
+                  당신의 새로운 관점이 모든 사람을 감탄시킵니다
                 </p>
               </div>
             </div>

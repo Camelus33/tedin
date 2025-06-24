@@ -61,7 +61,7 @@ ${steps}
 
 === 학습 패턴 분석 포인트 ===
 
-1. AMFA 프레임워크 적용: Atomic Reading → Memo Evolve → Furnace Knowledge → AI Link
+1. AMFA 프레임워크 적용: Atomic Memo → Memo Evolve → Furnace Knowledge → AI Link
 2. 파도 효과: 3분 읽기에서 시작하여 깊은 학습으로 확산
 3. 시간 흐름: 각 단계별 소요 시간과 학습 깊이의 상관관계
 4. 개인화된 학습: 사용자의 읽기 속도, 메모 스타일, 지식 연결 패턴

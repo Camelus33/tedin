@@ -22,7 +22,7 @@ const features = [
   },
   {
     icon: Network,
-    title: "3. 전문가급 품질",
+    title: "3. 고품질 품질",
     subtitle: "차원이 다른 통찰",
     description: "피상적인 답변이 아닌, 당신의 지식 수준에 맞는 깊이 있고 전문적인 통찰을 받습니다. 마치 해당 분야 최고 전문가와 대화하는 것 같습니다.",
     color: "text-violet-500",
@@ -30,7 +30,7 @@ const features = [
   },
   {
     icon: Archive,
-    title: "4. 남들이 놀라는 결과",
+    title: "4. 남들이 부러워할 결과물",
     subtitle: "확실한 차별화",
     description: "AI-Link로 만든 리포트, 기획서, 아이디어는 확실히 다릅니다. '어떻게 이런 걸 생각했지?'라는 반응을 받으며 주목받게 됩니다.",
     color: "text-fuchsia-500",
@@ -126,10 +126,10 @@ export default function CoreFeaturesFreeSection() {
               </div>
               <div>
                 <p className="text-lg font-semibold text-slate-800 mb-1">
-                  당신만의 AI-Link 캡슐, 지금 바로 경험하세요
+                  당신만의 AI-Link , 지금 바로 만드세요
                 </p>
                 <p className="text-slate-600">
-                  프롬프트 작성 없이도 AI가 당신을 깊이 이해하는 새로운 경험, 지금 시작하세요.
+                  AI가 당신을 깊이 이해하는 새로운 경험, 지금 시작하세요.
                 </p>
               </div>
             </div>

@@ -4,21 +4,21 @@ import Image from 'next/image';
 const testimonials = [
   {
     id: 1,
-    title: "친구들이 '너만 뭔가 특별한 답을 받는다'고 해요",
+    title: "친구들이 '너만 뭔가 다르네'라고 해요",
     name: '대학생',
     image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1061&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     quote: "같은 ChatGPT를 써도 제가 받는 답변이 확실히 달라요. AI-Link 덕분에 AI가 제 맥락을 완전히 이해하거든요. 친구들이 신기해하면서 비결을 물어보는데, 이건 제 비밀 무기예요.",
   },
   {
     id: 2,
-    title: "동료들이 '어떻게 그런 통찰을 얻냐'고 물어봐요",
+    title: "동료들이 '어떻게 그런 관점이 가능한가요'라고 물어봐요",
     name: '직장인',
     image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     quote: "AI-Link로 만든 보고서를 보고 팀장님이 '이 수준의 분석은 컨설팅 회사 수준이다'라고 하셨어요. 같은 데이터를 봐도 제가 뽑아내는 인사이트가 다르다고 동료들이 놀라워해요.",
   },
   {
     id: 3,
-    title: "AI가 제 전문성 수준에 맞춰 대화해줘요",
+    title: "AI가 옆자리 동료처럼 저를 알고 대화해줘요",
     name: '연구자',
     image: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     quote: "이제 AI에게 배경 설명할 필요가 없어요. 제 연구 분야와 지식 수준을 완벽히 파악하고 그에 맞는 깊이 있는 답변을 줍니다. 마치 해당 분야 최고 전문가와 대화하는 것 같아요.",
