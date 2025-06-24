@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
 
 export default function LawSchoolStudentsPage() {
   const slidesRef = useRef<Array<HTMLDivElement | null>>([]);
@@ -287,15 +288,15 @@ export default function LawSchoolStudentsPage() {
             내년에도 같은 고민을 반복하게 됩니다<br />
             <strong className="text-green-400">지금 시작하면 무료</strong>
           </div>
-          <button 
-            onClick={handleButtonClick}
-            className="bg-gradient-to-r from-green-500 to-cyan-500 text-white font-bold py-4 sm:py-5 px-8 sm:px-12 
+          <Link 
+            href="/auth/register"
+            className="inline-block bg-gradient-to-r from-green-500 to-cyan-500 text-white font-bold py-4 sm:py-5 px-8 sm:px-12 
                        rounded-full text-lg sm:text-xl shadow-2xl transition-all duration-300 ease-out
                        hover:transform hover:scale-105 hover:shadow-3xl hover:from-green-400 hover:to-cyan-400
                        focus:outline-none focus:ring-4 focus:ring-green-500/50"
           >
             합격 비밀 체험하기
-          </button>
+          </Link>
         </div>
       </div>
     </div>

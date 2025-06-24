@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 
 export default function HighStressStudentsPage() {
   const slidesRef = useRef<HTMLDivElement[]>([]);
@@ -267,17 +268,15 @@ export default function HighStressStudentsPage() {
             이제 천재처럼 공부하세요.<br />
             지금 가입하면, <strong>평생 무료!</strong>
           </div>
-          <a 
-            href="https://habitus33.vercel.app/" 
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link 
+            href="/auth/register"
             className="inline-block bg-gradient-to-r from-green-500 to-cyan-500 text-white 
                        px-8 sm:px-9 py-4 sm:py-5 rounded-lg sm:rounded-xl text-base sm:text-lg font-semibold transition-all duration-300 ease-out
                        shadow-lg hover:transform hover:-translate-y-1 hover:shadow-2xl 
                        hover:from-green-400 hover:to-cyan-400 tracking-tight"
           >
             바로 공부 시작하기
-          </a>
+          </Link>
         </div>
       </div>
     </div>
