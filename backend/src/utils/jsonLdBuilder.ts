@@ -90,10 +90,10 @@ interface SummaryNoteData {
 
 // Mapping of reading purposes to question sets for memo evolution
 const memoEvolutionQuestionMap: Record<string, string[]> = {
-  exam_prep: ['핵심 개념/공식', '어려웠던 부분', '연관 지식', '시각적 암기법'],
-  practical_knowledge: ['적용 방안', '필요했던 경험', '연관 경험/지식', '핵심 원리 설명'],
-  humanities_self_reflection: ['느낀 감정/생각', '당시 상황', '연상되는 지식', '떠오른 장면'],
-  reading_pleasure: ['흥미로웠던 점', '느꼈던 기분', '연상되는 작품/경험', '생생한 장면'],
+  exam_prep: ['어떤 부분이 중요하다고 느껴졌나요?', '처음 봤을 때, 어떤 느낌이 들었나요?', '기존의 어떤 지식이 연상되나요?', '표현할 수 있는 방법은 무엇인가요?'],
+  practical_knowledge: ['어떻게 내 업무와 연결되나요?', '이것을 몰라 불편했던 경험이 있나요?', '이 메모는 어떤 나의 경험/지식과 연상시키나요?', '이것의 핵심을 한 문장으로 설명해 본다면?'],
+  humanities_self_reflection: ['이 메모, 어떤 감정/생각을 불러일으켰나요?', '메모를 적던 당시 상황은 무엇을 떠올리게 하나요?', '이 메모, 어떤 다른 지식을 연상시키나요?', '이 메모의 내용을 한 폭의 그림이나 장면으로 묘사한다면?'],
+  reading_pleasure: ['이 메모, 어떤 점이 가장 흥미로웠나요?', '이 구절을 읽을 때, 어떤 기분이었나요?', '이 메모의 즐거움, 어떤 다른 작품/경험을 떠올리게 하나요?', '책 속의 어떤 장면이 머릿속에 생생하게 그려졌나요?'],
 };
 
 const getMemoEvolutionQuestion = (fieldKey: string, purpose: string = 'humanities_self_reflection'): string => {
@@ -365,12 +365,7 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
           data: {
             '@type': 'RegisterAction',
             object: {
-              '@type': 'Book',
-              name: book.title,
-              author: book.author,
-              category: book.category,
-              readingPurpose: book.readingPurpose,
-              purchaseLink: book.purchaseLink
+              '@id': `h33r:book:${book._id}`
             },
             startTime: TimeUtils.toISOString(createdAt)
           }
@@ -389,8 +384,7 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
           data: {
             '@type': 'ReadAction',
             object: {
-              '@type': 'Book',
-              name: note.book?.title || '알 수 없는 책'
+              '@id': `h33r:book:${note.book?._id}`
             },
             startTime: TimeUtils.toISOString(sessionTime),
             duration: TimeUtils.formatDurationISO8601(note.sessionDetails.durationSeconds || 0),
@@ -672,15 +666,8 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
 
     if (book) {
       notePart.about = {
-        "@type": "Book",
-        "name": book.title ?? "제목 정보 없음",
+        "@id": `h33r:book:${book._id}`,
       };
-      if (book.author && book.author !== '알 수 없음') {
-        notePart.about.author = {
-          "@type": "Person",
-          "name": book.author,
-        };
-      }
     }
 
     // 메모 진화: 4단계 지식 내재화 프로세스
@@ -804,12 +791,13 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   }) ?? [];
 
   const jsonLd: any = {
-    "@context": "https://schema.org",
+    "@context": ["https://schema.org", "https://habitus33.vercel.app/ai-link-context.jsonld"],
     "@type": "TechArticle",
     "headline": title ?? "제목 없음",
     "description": description ?? "설명 없음",
     "abstract": `하비투스33 Atomic Reading 방법론을 통해 생성된 단권화 노트. ${notes?.length || 0}개의 1줄메모를 4단계 메모진화 과정을 거쳐 체계화한 개인 지식관리 결과물`,
     "author": {
+      "@id": `h33r:user:${user._id}`,
       "@type": "Person",
       "name": user?.name ?? user?.email ?? "알 수 없는 사용자",
       "roleName": "능동적 학습자 (Active Learner)"
@@ -827,11 +815,11 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     "totalTime": totalReadingTimeISO,
     "keywords": allTags.join(', '),
     "isBasedOn": notes.map(note => ({
+      '@id': `h33r:book:${note.book?._id}`,
       '@type': 'Book',
       name: note.book?.title || 'Unknown Title',
       author: {
-        '@type': 'Person',
-        name: note.book?.author || 'Unknown Author',
+        '@id': `h33r:user:${user._id}`
       },
       isbn: note.book?.isbn,
     })).filter((v, i, a) => a.findIndex(t => (t.isbn === v.isbn)) === i),

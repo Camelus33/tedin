@@ -65,6 +65,15 @@
     "strength": "h33o:hasStrength",
     
     "cognitiveProfile": "h33o:hasCognitiveProfile",
+    "roleName": "h33o:roleName",
+    "educationalFramework": "h33o:educationalFramework",
+    "learningResourceType": "h33o:learningResourceType",
+    "actionableModules": "h33o:actionableModules",
+    "knowledgePersonality": "h33o:knowledgePersonality",
+    "cognitiveProvenance": "h33o:cognitiveProvenance",
+    "learningActivity": "h33o:learningActivity",
+    "supplementaryMaterial": "h33o:supplementaryMaterial",
+    "externalResourceInstructions": "h33o:externalResourceInstructions",
     
     "aiInterpretationProtocol": "h33o:hasInterpretationProtocol",
     "persona": "h33o:hasPersona",
