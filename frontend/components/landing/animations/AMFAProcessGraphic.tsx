@@ -662,7 +662,7 @@ export default function AMFAProcessGraphic() {
           <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20">
             <Sparkles className="w-5 h-5 text-cyan-400" />
             <span className="text-sm font-medium text-gray-300">
-              모든 지식은 1줄 메모에서 시작됩니다.
+              모든 지혜는 1줄 메모에서 시작됩니다.
             </span>
           </div>
         </motion.div>

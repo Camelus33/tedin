@@ -57,10 +57,10 @@ const SolutionSection = () => {
         <div className="relative pt-16">
           <div className="text-left mb-16" style={{ height: '100vh' }}>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">
-              AMFA 지식 캡슐 : <br/> 도메인 컨텍스트를 AI에 이식하다
+              AMFA : <br/> 도메인 컨텍스트를 AI에 이식하다
             </h2>
             <p className="text-lg text-gray-400 max-w-xl">
-              Habitus33의 핵심 기술 AMFA는, 당신의 모든 지적 활동을 추적하여 인과관계를 추론하는 '고맥락 지식 그래프 전송 엔진 '입니다. 온톨로지 기반 데이터 파이프라인을 통해 지식을 구조화, 응축, 전송하여 AI가 당신의 도메인 컨텍스트를 이해할 수 있게 합니다.
+              Habitus33의 핵심 기술 AMFA는, 당신의 모든 지적 활동을 추적하여 인과관계를 형상화한 '고맥락 지식 그래프 전송 엔진 '입니다. 온톨로지 기반 데이터 파이프라인을 통해 지식을 구조화, 응축, 전송하여 AI가 당신의 도메인 컨텍스트를 이해할 수 있게 합니다.
             </p>
           </div>
 

@@ -56,6 +56,9 @@ export default function Footer() {
                 <Link href="/ir" className="hover:text-gray-100 hover:underline transition-colors">
                   Investor Relations
                 </Link>
+                <Link href="/marketing/high-stress-students" className="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors font-medium">
+                  Marketing
+                </Link>
                 <Link href="#faq" className="hover:text-gray-100 hover:underline transition-colors">
                    FAQ
                 </Link>
