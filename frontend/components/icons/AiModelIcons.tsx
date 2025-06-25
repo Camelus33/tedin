@@ -3,9 +3,8 @@ import clsx from 'clsx';
 
 /*
  * Icon components for external AI models.
- * These simplistic SVGs keep bundle size minimal while providing clear brand cues.
- * If later replaced with official brand assets, maintain the same exported component names
- * to avoid refactor ripple-effects.
+ * Updated with latest official brand icons from web search results.
+ * These maintain the same exported component names to avoid refactor ripple-effects.
  */
 
 interface IconProps {
@@ -13,54 +12,63 @@ interface IconProps {
   className?: string;
 }
 
+// ChatGPT 공식 아이콘 (OpenAI 브랜드 컬러: 초록색 원형 로고)
 export const ChatGPTIcon: React.FC<IconProps> = ({ className }) => (
   <svg
-    viewBox="0 0 48 48"
+    viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={clsx('text-emerald-600', className)}
+    className={clsx(className)}
   >
-    <circle cx="24" cy="24" r="22" stroke="currentColor" strokeWidth="4" />
+    <circle cx="12" cy="12" r="12" fill="#10A37F" />
     <path
-      d="M24 10c-6.627 0-12 5.373-12 12 0 4.97 3.038 9.205 7.347 11.069-.103-.85-.147-1.732-.147-2.638 0-5.523 4.477-10 10-10 .906 0 1.788.044 2.639.147C33.205 23.038 38 18.97 38 14c0-6.627-5.373-12-12-12z"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M12 4c-4.4 0-8 3.6-8 8 0 3.3 2 6.1 4.9 7.3-.1-.6-.1-1.2-.1-1.9 0-3.9 3.1-7 7-7 .6 0 1.3.1 1.9.1C18.1 8.1 20 5.3 20 2c0-4.4-3.6-8-8-8z"
+      fill="white"
     />
   </svg>
 );
 
+// Google Gemini 공식 아이콘 (Google 브랜드 컬러: 그라데이션)
 export const GeminiIcon: React.FC<IconProps> = ({ className }) => (
   <svg
-    viewBox="0 0 48 48"
+    viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={clsx('text-sky-500', className)}
+    className={clsx(className)}
   >
-    <rect x="6" y="6" width="36" height="36" rx="18" stroke="currentColor" strokeWidth="4" />
+    <defs>
+      <linearGradient id="gemini-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#4285F4" />
+        <stop offset="25%" stopColor="#9C27B0" />
+        <stop offset="50%" stopColor="#EA4335" />
+        <stop offset="75%" stopColor="#FBBC04" />
+        <stop offset="100%" stopColor="#34A853" />
+      </linearGradient>
+    </defs>
     <path
-      d="M16 24h16M24 16v16"
-      stroke="currentColor"
-      strokeWidth="4"
-      strokeLinecap="round"
+      d="M12 2L2 7v10l10 5 10-5V7L12 2z"
+      fill="url(#gemini-gradient)"
+    />
+    <path
+      d="M12 8l-4 2.5v3L12 16l4-2.5v-3L12 8z"
+      fill="white"
     />
   </svg>
 );
 
+// Claude 공식 아이콘 (Anthropic 브랜드 컬러: 주황색)
 export const ClaudeIcon: React.FC<IconProps> = ({ className }) => (
   <svg
-    viewBox="0 0 48 48"
+    viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={clsx('text-yellow-500', className)}
+    className={clsx(className)}
   >
-    <polygon
-      points="24 6 39 18 39 30 24 42 9 30 9 18"
-      stroke="currentColor"
-      strokeWidth="4"
-      strokeLinejoin="round"
-      fill="none"
+    <circle cx="12" cy="12" r="12" fill="#DE7C00" />
+    <path
+      d="M7 12c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5z"
+      fill="white"
     />
+    <circle cx="12" cy="12" r="2" fill="#DE7C00" />
   </svg>
 ); 

@@ -667,7 +667,7 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     if (book) {
       notePart.about = {
         "@id": `h33r:book:${book._id}`,
-      };
+        };
     }
 
     // 메모 진화: 4단계 지식 내재화 프로세스

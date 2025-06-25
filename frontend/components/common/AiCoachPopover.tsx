@@ -98,22 +98,10 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
           e.stopPropagation();
           setOpen((prev) => !prev);
         }}
+        className="h-8 w-8" // 지식카트 아이콘과 동일한 크기로 맞춤
       >
-        {/* 간단한 별 아이콘 대체 */}
-        <svg
-          className="w-4 h-4 text-cyan-400"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.518 4.674a1 1 0 00.95.69h4.908c.969 0 1.371 1.24.588 1.81l-3.974 2.883a1 1 0 00-.363 1.118l1.518 4.674c.3.921-.755 1.688-1.54 1.118l-3.974-2.882a1 1 0 00-1.176 0l-3.974 2.882c-.784.57-1.838-.197-1.54-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.974-2.883c-.783-.57-.38-1.81.588-1.81h4.908a1 1 0 00.95-.69l1.518-4.674z"
-          />
-        </svg>
+        {/* 'AI' 텍스트로 변경 */}
+        <span className="text-xs font-semibold text-cyan-400">AI</span>
       </Button>
 
       {open && (
