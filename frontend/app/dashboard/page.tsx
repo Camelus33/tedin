@@ -530,7 +530,7 @@ export default function DashboardPage() {
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
                   <h2 className={`text-xl font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>비범한 읽기 통찰력을 키우세요.</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>남다른 읽기 통찰력을 키우세요.</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30`}>
@@ -554,7 +554,7 @@ export default function DashboardPage() {
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse" />
                   <h2 className="text-xl font-semibold text-emerald-400">ZenGo Myverse</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>중요한 1줄은 바로 암기하세요.</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>중요한 1줄은 바로 외우세요.</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30">
@@ -586,7 +586,7 @@ export default function DashboardPage() {
               }}
             >
               <h2 className={`text-lg sm:text-xl font-medium ${habitus33Theme.primary}`}>
-                33일간 여정을 환영합니다!
+            
               </h2>
               <button
                 className="p-1 rounded-full block md:hidden"
@@ -607,7 +607,7 @@ export default function DashboardPage() {
                     aria-label="AMFA 가이드"
                     type="button"
                   >
-                    AMFA
+                    Habitus33
                   </button>
                 </div>
                 <div className="order-1 md:order-none md:absolute md:top-0 md:right-0">
@@ -635,7 +635,7 @@ export default function DashboardPage() {
               <div className="mt-8 text-center relative z-10">
                 <p className={`text-lg font-medium ${habitus33Theme.primary}`}>{getMilestoneMessage(routineData?.currentDay)}</p>
                 <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}>
-                  <span className={`font-medium ${habitus33Theme.secondary}`}>{routineData?.consecutiveStreak || 0}일째</span> 함께하는 여정 - <span className={`font-medium ${habitus33Theme.primary}`}> 작은 성공이 쌓이면 큰 변화</span>가 됩니다
+                  <span className={`font-medium ${habitus33Theme.secondary}`}>{routineData?.consecutiveStreak || 0}일째</span> 진행중 - <span className={`font-medium ${habitus33Theme.primary}`}> 자신만의 속도로 </span>나아가세요.
                 </p>
               </div>
             </div>
