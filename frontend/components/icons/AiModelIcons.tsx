@@ -24,7 +24,7 @@ export const ChatGPTIcon: React.FC<IconProps> = ({ className }) => (
   </svg>
 );
 
-// Gemini 아이콘 (Google 브랜드: 빨강+주황 그라데이션 원형)
+// Gemini 아이콘 (Google 브랜드: 인디고 색 원형)
 export const GeminiIcon: React.FC<IconProps> = ({ className }) => (
   <svg
     viewBox="0 0 24 24"
@@ -32,13 +32,7 @@ export const GeminiIcon: React.FC<IconProps> = ({ className }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={clsx(className)}
   >
-    <defs>
-      <linearGradient id="gemini-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#EA4335" />
-        <stop offset="100%" stopColor="#FBBC04" />
-      </linearGradient>
-    </defs>
-    <circle cx="12" cy="12" r="12" fill="url(#gemini-gradient)" />
+    <circle cx="12" cy="12" r="12" fill="#4F46E5" />
   </svg>
 );
 
