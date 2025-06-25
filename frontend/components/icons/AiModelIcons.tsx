@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 /*
  * Icon components for external AI models.
- * Updated with accurate official brand icons based on web research.
+ * Updated with accurate official brand icons based on web search results.
  * These maintain the same exported component names to avoid refactor ripple-effects.
  */
 
@@ -12,7 +12,7 @@ interface IconProps {
   className?: string;
 }
 
-// ChatGPT 공식 아이콘 (OpenAI 브랜드: 초록색 원형 로고)
+// ChatGPT 공식 아이콘 (OpenAI 브랜드: #10A37F 초록색 원형 로고)
 export const ChatGPTIcon: React.FC<IconProps> = ({ className }) => (
   <svg
     viewBox="0 0 24 24"
@@ -22,15 +22,17 @@ export const ChatGPTIcon: React.FC<IconProps> = ({ className }) => (
   >
     <circle cx="12" cy="12" r="12" fill="#10A37F" />
     <path
-      d="M12 6c-3.3 0-6 2.7-6 6 0 2.2 1.2 4.1 3 5.1-.1-.4-.1-.8-.1-1.2 0-2.8 2.2-5 5-5 .4 0 .8 0 1.2.1C16.1 9.2 18 7.3 18 5c0-3.3-2.7-6-6-6z"
+      d="M12 3.5c-1.4 0-2.7.4-3.8 1.1-.3.2-.4.6-.2.9.2.3.6.4.9.2.9-.6 1.9-.9 3-.9 3.1 0 5.6 2.5 5.6 5.6 0 1.1-.3 2.1-.9 3 .2.3.6.4.9.2.7-1.1 1.1-2.4 1.1-3.8C20.5 6.5 16.5 2.5 12 2.5z"
       fill="white"
     />
-    <circle cx="9" cy="9" r="1.5" fill="#10A37F" />
-    <circle cx="15" cy="15" r="1.5" fill="#10A37F" />
+    <path
+      d="M12 20.5c1.4 0 2.7-.4 3.8-1.1.3-.2.4-.6.2-.9-.2-.3-.6-.4-.9-.2-.9.6-1.9.9-3 .9-3.1 0-5.6-2.5-5.6-5.6 0-1.1.3-2.1.9-3-.2-.3-.6-.4-.9-.2-.7 1.1-1.1 2.4-1.1 3.8C3.5 17.5 7.5 21.5 12 21.5z"
+      fill="white"
+    />
   </svg>
 );
 
-// Google Gemini 공식 아이콘 (Google 브랜드: 별 모양 그라데이션)
+// Gemini 공식 아이콘 (Google 브랜드: 다이아몬드 모양 그라데이션)
 export const GeminiIcon: React.FC<IconProps> = ({ className }) => (
   <svg
     viewBox="0 0 24 24"
@@ -48,13 +50,18 @@ export const GeminiIcon: React.FC<IconProps> = ({ className }) => (
       </linearGradient>
     </defs>
     <path
-      d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14 2 9.5h7.5L12 2z"
+      d="M12 2L22 12L12 22L2 12L12 2Z"
       fill="url(#gemini-gradient)"
+    />
+    <path
+      d="M12 6L18 12L12 18L6 12L12 6Z"
+      fill="white"
+      fillOpacity="0.2"
     />
   </svg>
 );
 
-// Claude 공식 아이콘 (Anthropic 브랜드: 주황색 원형 로고)
+// Claude 공식 아이콘 (Anthropic 브랜드: #DE7C00 주황색 원형 로고)
 export const ClaudeIcon: React.FC<IconProps> = ({ className }) => (
   <svg
     viewBox="0 0 24 24"
@@ -64,14 +71,17 @@ export const ClaudeIcon: React.FC<IconProps> = ({ className }) => (
   >
     <circle cx="12" cy="12" r="12" fill="#DE7C00" />
     <path
-      d="M8 8h8c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2z"
+      d="M8 7h8c.6 0 1 .4 1 1v8c0 .6-.4 1-1 1H8c-.6 0-1-.4-1-1V8c0-.6.4-1 1-1z"
       fill="white"
     />
+    <circle cx="10" cy="10" r="1" fill="#DE7C00" />
+    <circle cx="14" cy="10" r="1" fill="#DE7C00" />
     <path
-      d="M10 10v4m2-4v4m2-4v4"
+      d="M10 14c0-.6.4-1 1-1h2c.6 0 1 .4 1 1"
       stroke="#DE7C00"
-      strokeWidth="1"
+      strokeWidth="1.5"
       strokeLinecap="round"
+      fill="none"
     />
   </svg>
 ); 
