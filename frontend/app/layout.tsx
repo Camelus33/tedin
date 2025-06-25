@@ -18,7 +18,7 @@ const notoSerifKr = Noto_Serif_KR({
 // metadata는 page.tsx에서 관리하므로 layout에서는 제거하거나 기본값 유지
 export const metadata = {
   title: 'Habitus33',
-  description: '작은 물방울이 만드는 깊은 학습의 파도를 경험하고, 번아웃과 작별하세요.',
+  description: 'Atomic Memo. Achieve anything!',
 }
 
 export default function RootLayout({
