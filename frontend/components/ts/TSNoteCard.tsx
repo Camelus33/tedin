@@ -4,6 +4,7 @@ import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import api from '@/lib/api'; // Import the central api instance
+import AiCoachPopover from '../common/AiCoachPopover';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -664,6 +665,12 @@ export default function TSNoteCard({
         if (shouldRenderActions) {
           return (
             <div className="flex items-center justify-end space-x-1 sm:space-x-2 mt-auto pt-2 border-t border-gray-700/50">
+              {/* AI 코멘트 Popover */}
+              <AiCoachPopover
+                memoText={note.content}
+                onSelect={() => {}}
+                className="min-h-[44px] min-w-[44px]"
+              />
               {onAddToCart && (
                 <Button
                   variant="outline"
