@@ -61,7 +61,7 @@ const TechnologySection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            강력한 도메인 인사이트, 시장 지배력 확보
+            강력한 지식도메인 인사이트, 시장 선도 기술
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
             Habitus33의 핵심 기술은 경쟁사가 쉽게 모방할 수 없는 지식관리 '암묵지'에 기반해 깊은 해자(Moat)를 구축했습니다.

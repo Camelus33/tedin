@@ -103,10 +103,10 @@ const ProblemSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            AI 생성 글 신뢰성 위기: <span className="text-indigo-400">어딘가에 도사리는 오류</span>
+            AI 생성 신뢰성 위기: <span className="text-indigo-400">어딘가에 도사리는 오류</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            범람하는 AI 글, 점점 찾기 힘들어지는 오류, 검증 절차강화 필요성 대두
+            모두가 쓰는 AI글, 점점 똑똑하게 거짓 생성하는 AI, 검증 절차강화 필요성 대두
           </motion.p>
         </motion.div>
 
@@ -132,7 +132,7 @@ const ProblemSection = () => {
           </p>
           <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
             간간히 오류 섞인 AI 보고서로, 자신의 전문성을 의심받지 마세요. <br/>
-            <span className="font-medium text-white">도메인 컨텍스트는 언제나 검증 가능합니다.</span>
+            <span className="font-medium text-white">도메인 전문성은 언제나 검증 가능합니다.</span>
           </p>
         </motion.div>
       </div>
