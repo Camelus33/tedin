@@ -13,13 +13,15 @@ interface AiCoachPopoverProps {
   onSelect: (model: AiModelKey) => void;
   /** 추가 클래스 */
   className?: string;
+  /** 복사 성공 콜백 */
+  onCopySuccess?: () => void;
 }
 
 /**
  * 작은 팝오버 안에 ChatGPT / Gemini / Claude 세 개 아이콘 버튼을 배치.
  * 외부 라이브러리 없이 단순 absolute 포지셔닝으로 구현해 의존성 최소화.
  */
-const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, className }) => {
+const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, className, onCopySuccess }) => {
   const [open, setOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +41,15 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
     if (navigator.clipboard && navigator.clipboard.writeText) {
       try {
         await navigator.clipboard.writeText(text);
-        toast.success('메모가 복사되었습니다! 새 탭에서 붙여넣기 해주세요.');
+        toast.success('메모가 클립보드에 복사되었습니다! 🎯', {
+          duration: 3000,
+          style: {
+            background: '#1f2937',
+            color: '#10b981',
+            border: '1px solid #10b981',
+          },
+        });
+        onCopySuccess?.();
         return true;
       } catch {
         /* ignore and fallback */
@@ -58,7 +68,15 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
       const success = document.execCommand('copy');
       document.body.removeChild(textarea);
       if (success) {
-        toast.success('메모가 복사되었습니다! 새 탭에서 붙여넣기 해주세요.');
+        toast.success('메모가 클립보드에 복사되었습니다! 🎯', {
+          duration: 3000,
+          style: {
+            background: '#1f2937',
+            color: '#10b981',
+            border: '1px solid #10b981',
+          },
+        });
+        onCopySuccess?.();
         return true;
       }
     } catch {
@@ -98,40 +116,40 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
           e.stopPropagation();
           setOpen((prev) => !prev);
         }}
-        className="h-8 w-8" // 지식카트 아이콘과 동일한 크기로 맞춤
+        className="h-9 w-9" // 지식카트 버튼보다 약간 크게
       >
         {/* 'AI' 텍스트로 변경 */}
-        <span className="text-xs font-semibold text-cyan-400">AI</span>
+        <span className="text-sm font-bold text-cyan-400">AI</span>
       </Button>
 
       {open && (
         <div
           ref={popoverRef}
-          className="absolute right-0 z-50 mt-2 w-36 rounded-md border border-gray-700 bg-gray-800 shadow-lg p-2 flex items-center justify-between"
+          className="absolute right-0 z-50 mt-2 w-40 rounded-md border border-gray-700 bg-gray-800 shadow-lg p-3 flex items-center justify-between"
         >
           <button
             onClick={() => handleSelect('chatgpt')}
             aria-label="ChatGPT"
             title="ChatGPT"
-            className="p-1.5 rounded hover:bg-gray-700/60 transition-colors"
+            className="p-2 rounded hover:bg-gray-700/60 transition-colors"
           >
-            <ChatGPTIcon className="w-6 h-6" />
+            <ChatGPTIcon className="w-7 h-7" />
           </button>
           <button
             onClick={() => handleSelect('gemini')}
             aria-label="Gemini"
             title="Gemini"
-            className="p-1.5 rounded hover:bg-gray-700/60 transition-colors"
+            className="p-2 rounded hover:bg-gray-700/60 transition-colors"
           >
-            <GeminiIcon className="w-6 h-6" />
+            <GeminiIcon className="w-7 h-7" />
           </button>
           <button
             onClick={() => handleSelect('claude')}
             aria-label="Claude"
             title="Claude"
-            className="p-1.5 rounded hover:bg-gray-700/60 transition-colors"
+            className="p-2 rounded hover:bg-gray-700/60 transition-colors"
           >
-            <ClaudeIcon className="w-6 h-6" />
+            <ClaudeIcon className="w-7 h-7" />
           </button>
         </div>
       )}

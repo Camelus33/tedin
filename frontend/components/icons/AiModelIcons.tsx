@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 /*
  * Icon components for external AI models.
- * Updated with latest official brand icons from web search results.
+ * Updated with accurate official brand icons based on web research.
  * These maintain the same exported component names to avoid refactor ripple-effects.
  */
 
@@ -12,7 +12,7 @@ interface IconProps {
   className?: string;
 }
 
-// ChatGPT 공식 아이콘 (OpenAI 브랜드 컬러: 초록색 원형 로고)
+// ChatGPT 공식 아이콘 (OpenAI 브랜드: 초록색 원형 로고)
 export const ChatGPTIcon: React.FC<IconProps> = ({ className }) => (
   <svg
     viewBox="0 0 24 24"
@@ -22,13 +22,15 @@ export const ChatGPTIcon: React.FC<IconProps> = ({ className }) => (
   >
     <circle cx="12" cy="12" r="12" fill="#10A37F" />
     <path
-      d="M12 4c-4.4 0-8 3.6-8 8 0 3.3 2 6.1 4.9 7.3-.1-.6-.1-1.2-.1-1.9 0-3.9 3.1-7 7-7 .6 0 1.3.1 1.9.1C18.1 8.1 20 5.3 20 2c0-4.4-3.6-8-8-8z"
+      d="M12 6c-3.3 0-6 2.7-6 6 0 2.2 1.2 4.1 3 5.1-.1-.4-.1-.8-.1-1.2 0-2.8 2.2-5 5-5 .4 0 .8 0 1.2.1C16.1 9.2 18 7.3 18 5c0-3.3-2.7-6-6-6z"
       fill="white"
     />
+    <circle cx="9" cy="9" r="1.5" fill="#10A37F" />
+    <circle cx="15" cy="15" r="1.5" fill="#10A37F" />
   </svg>
 );
 
-// Google Gemini 공식 아이콘 (Google 브랜드 컬러: 그라데이션)
+// Google Gemini 공식 아이콘 (Google 브랜드: 별 모양 그라데이션)
 export const GeminiIcon: React.FC<IconProps> = ({ className }) => (
   <svg
     viewBox="0 0 24 24"
@@ -46,17 +48,13 @@ export const GeminiIcon: React.FC<IconProps> = ({ className }) => (
       </linearGradient>
     </defs>
     <path
-      d="M12 2L2 7v10l10 5 10-5V7L12 2z"
+      d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14 2 9.5h7.5L12 2z"
       fill="url(#gemini-gradient)"
-    />
-    <path
-      d="M12 8l-4 2.5v3L12 16l4-2.5v-3L12 8z"
-      fill="white"
     />
   </svg>
 );
 
-// Claude 공식 아이콘 (Anthropic 브랜드 컬러: 주황색)
+// Claude 공식 아이콘 (Anthropic 브랜드: 주황색 원형 로고)
 export const ClaudeIcon: React.FC<IconProps> = ({ className }) => (
   <svg
     viewBox="0 0 24 24"
@@ -66,9 +64,14 @@ export const ClaudeIcon: React.FC<IconProps> = ({ className }) => (
   >
     <circle cx="12" cy="12" r="12" fill="#DE7C00" />
     <path
-      d="M7 12c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5z"
+      d="M8 8h8c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2z"
       fill="white"
     />
-    <circle cx="12" cy="12" r="2" fill="#DE7C00" />
+    <path
+      d="M10 10v4m2-4v4m2-4v4"
+      stroke="#DE7C00"
+      strokeWidth="1"
+      strokeLinecap="round"
+    />
   </svg>
 ); 

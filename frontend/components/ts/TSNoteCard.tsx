@@ -669,7 +669,7 @@ export default function TSNoteCard({
               <AiCoachPopover
                 memoText={note.content}
                 onSelect={() => {}}
-                className="min-h-[44px] min-w-[44px]"
+                className=""
               />
               {onAddToCart && (
                 <Button
@@ -677,17 +677,17 @@ export default function TSNoteCard({
                   size="icon"
                   onClick={(e) => { e.stopPropagation(); onAddToCart(note._id, note.bookId); }}
                   title={isAddedToCart ? "제거" : "담기"}
-                  className={`min-h-[44px] min-w-[44px] ${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
+                  className={`h-8 w-8 ${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
                   data-no-toggle
                 >
-                  <ShoppingCartIcon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isAddedToCart ? 'text-green-500' : ''}`} />
+                  <ShoppingCartIcon className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${isAddedToCart ? 'text-green-500' : ''}`} />
                 </Button>
               )}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="px-1.5 sm:px-2 min-h-[44px] min-w-[44px]" data-no-toggle onClick={(e) => e.stopPropagation()}>
-                    <EllipsisVerticalIcon className={`h-4 w-4 sm:h-5 sm:w-5 text-gray-400 hover:${cyberTheme.primaryText}`} />
+                  <Button variant="ghost" size="sm" className="px-1.5 sm:px-2 h-8 w-8" data-no-toggle onClick={(e) => e.stopPropagation()}>
+                    <EllipsisVerticalIcon className={`h-4 w-4 text-gray-400 hover:${cyberTheme.primaryText}`} />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
