@@ -303,10 +303,10 @@ const UserScenarioSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            사용자 시나리오: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">5단계 여정</span>
+            고객 여정 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">5단계</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            일상의 메모부터 AI의 개인화된 답변까지, 지식이 진화하는 전 과정을 경험하세요
+            1줄 메모가 당신만의 지식 DNA로 진화합니다.
           </motion.p>
           <motion.p variants={textVariants} className="mt-4 text-sm text-cyan-400 font-medium">
             💡 각 단계를 클릭하여 상세 정보를 확인하세요

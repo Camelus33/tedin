@@ -127,7 +127,7 @@ const BenefitsSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            기대 효과 : <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">고맥락 검증가능 답변</span>
+            기대 효과 : <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">맥락반영 고품질 답변</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
             AI-Link를 통해 각 고객들이 얻게 되는 구체적이고 실질적인 혜택들입니다

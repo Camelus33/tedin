@@ -99,7 +99,7 @@ const MarketNeedSection = () => {
             고객이 원하는 건, <span className="text-indigo-400">나를 아는 AI Agent</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            각기 다른 고객들 모두 공통으로 원하는 것은 자신의 과거 경험을 이해하는 AI입니다
+            각기 다른 3가지 고객들 모두가 '나의 경험'을 알고 있는 AI를 원합니다.
           </motion.p>
         </motion.div>
 

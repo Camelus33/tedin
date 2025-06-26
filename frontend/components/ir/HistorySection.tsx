@@ -3,7 +3,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { FiCalendar, FiAward, FiTrendingUp, FiUsers, FiStar } from 'react-icons/fi';
+import { FiCalendar, FiAward, FiTrendingUp, FiUsers, FiStar, FiArrowRight } from 'react-icons/fi';
+import Link from 'next/link';
 
 interface HistoryItemProps {
   date: string;
@@ -113,6 +114,11 @@ const HistorySection = () => {
   const textVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
+
+  const ctaVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.9 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, delay: 1.8 } },
   };
 
   const historyItems: (Omit<HistoryItemProps, 'isLast'>)[] = [
@@ -278,6 +284,59 @@ const HistorySection = () => {
               isLast={index === historyItems.length - 1}
             />
           ))}
+        </motion.div>
+
+        {/* CTA Section */}
+        <motion.div
+          variants={ctaVariants}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
+          className="text-center mt-20"
+        >
+          <div className="bg-gradient-to-r from-purple-900/30 to-cyan-900/30 p-8 rounded-3xl border border-purple-400/20 backdrop-blur-sm">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
+              지금 Habitus33과 함께 시작하세요
+            </h3>
+            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
+               
+              새로운 차원의 AI 협업을 시작하세요.
+            </p>
+            
+            <Link href="/auth/register">
+              <motion.button
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 20px 40px rgba(168, 85, 247, 0.4)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full shadow-lg transition-all duration-300 hover:from-purple-600 hover:to-cyan-600"
+              >
+                <span className="relative z-10">무료 시작</span>
+                <FiArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                
+                {/* Animated background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+              </motion.button>
+            </Link>
+            
+            <div className="mt-6 flex items-center justify-center space-x-6 text-sm text-gray-400">
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                무료 가입
+              </div>
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
+                즉시 사용 가능
+              </div>
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
+                언제든 구독/취소 가능
+              </div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
