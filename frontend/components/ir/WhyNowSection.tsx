@@ -45,18 +45,18 @@ const TrendIcon3 = () => (
 const trends = [
   {
     icon: <TrendIcon1 />,
-    title: "AI 2.0 : 프롬프트 프리",
-    text: "시장은 'AI와 대화하는 법'을 배우는 단계를 넘어, 'AI가 나를 이해하는' 시대를 요구합니다. 프롬프트 엔지니어링의 피로감이 누적되면서, 컨텍스트를 스스로 파악하는 솔루션이 시장의 표준이 되고 있습니다.",
+    title: "AI 2.0: 컨텍스트 이해 시대",
+    text: "47%의 기업이 AI 환각 문제를 경험하면서, 시장은 프롬프트 의존성을 벗어나 사용자 맥락을 자동으로 파악하는 솔루션을 요구하고 있습니다. AI-Link 같은 지식 DNA 전송 기술이 차세대 AI 인터페이스의 표준이 되고 있습니다.",
   },
   {
     icon: <TrendIcon2 />,
-    title: "Truth : 즉각 검증 요구 ",
-    text: "시장은 점점 더 AI로 생성한 콘텐츠를 가려내는 기술을 발전시키고 있습니다. 전문가도 찾기 힘들어지는 AI발 논리오류, 더 엄격한 검증 절차에 대한 요구도 증가하고 있습니다.",
+    title: "신뢰성: 개인화된 검증 체계",
+    text: "83%의 전문가가 AI 생성 콘텐츠의 신뢰성 문제를 겪고 있습니다. 개인의 전문 지식과 경험을 바탕으로 한 맞춤형 검증 시스템이 AI 결과물의 품질을 보장하는 핵심 차별화 요소로 부상하고 있습니다.",
   },
   {
     icon: <TrendIcon3 />,
-    title: "Deal : 도메인 전문성 자산화",
-    text: "개인과 조직의 핵심 경쟁력은 이제 '얼마나 많은 지식을 가졌는가'가 아닌, '지식을 어떻게 연결하고 활용하는가'에 달려있습니다. 흩어진 지적 자산을 연결하는 기술은 이 시대의 필수 인프라입니다.",
+    title: "지식 자산화: 개인 브랜딩의 진화",
+    text: "64%의 교육기관이 AI 도입을 망설이는 이유는 개인화 부족입니다. 개인의 지식과 경험을 구조화하여 AI가 활용할 수 있게 만드는 '지식 자산화' 기술이 개인 경쟁력의 새로운 기준이 되고 있습니다.",
   },
 ];
 
@@ -100,10 +100,10 @@ const WhyNowSection = () => {
           }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            왜 시장은 Habitus33를 원하는가?
+            왜 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">지금</span>이 적기인가?
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            세 가지 거대 시장의 흐름이 하나로 모여, Habitus33의 성장은 필연적입니다.
+            세 가지 핵심 시장 트렌드가 AI-Link 기술의 필요성을 증명하고 있습니다.
           </p>
         </motion.div>
         

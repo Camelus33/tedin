@@ -7,12 +7,12 @@ const strategiesData = {
   acquisition: {
     id: 'acquisition',
     icon: <Users className="w-7 h-7" />,
-    phase: "Phase 1: Attract",
-    logic: "타겟 고객(대학생, 직장인, 연구원)에게 '압도적인 첫 경험'을 제공하는 것입니다. 이들이 AI-Link™를 통해 즉시 가치를 느끼고, 성공 사례를 접하며, 자신의 목소리가 제품에 반영되는 것을 보게 함으로써, 단순 사용자가 아닌 충성도 높은 초기 팬덤을 구축합니다.",
+    phase: "Phase 1: 문제 해결 입증",
+    logic: "47%의 AI 환각 문제를 겪는 타겟 고객(학습자, 직장인, 연구자)에게 AI-Link 기술의 즉각적인 가치를 경험하게 합니다. 첫 사용에서부터 기존 AI와의 명확한 차이를 느끼게 하여, 프롬프트 없는 AI 상호작용의 혁신성을 체감하게 만듭니다.",
     tactics: [
-      "초기 프로모션: 대학생/직장인/연구원 대상 선착순 1년 무료 체험 제공",
-      "성공사례 공유: 'AI-Link로 팀플 A+ 받은 후기' 등 성공사례 전송",
-      "즉각적인 반영: 상시 피드백 채널 운영 및 '주간 개선 노트'를 통한 소통",
+      "무료 체험 : '프롬프트 없는 AI 경험' 무료 체험 + 성공 보장 프로그램",
+      "비교 체험 : 기존 AI vs AI-Link 결과 비교 데모를 통한 차별화 입증",
+      "성공 확산 : 대학생 A+ 논문, 직장인 보고서 품질 향상 등 구체적 성과 공유",
     ],
     color: "text-sky-400",
     ringColor: "ring-sky-400/50",
@@ -21,12 +21,12 @@ const strategiesData = {
   monetization: {
     id: 'monetization',
     icon: <TrendingUp className="w-7 h-7" />,
-    phase: "Phase 2: Engage",
-    logic: "사용자가 제품을 '쓰는 것'을 넘어, 자신의 '지식 자산'을 '쌓고 있다'고 느끼게 하는 것입니다. 미래의 수익 창출 기회(지식 마켓)에 대한 기대를 심어줌으로써, 서비스 사용을 장기적인 가치 투자로 전환시킵니다.",
+    phase: "Phase 2: 지식 자산 축적",
+    logic: "사용자가 단순히 도구를 사용하는 것이 아니라, 자신만의 '지식 DNA'를 구축하고 있다는 가치를 인식하게 합니다. 개인화된 AI 어시스턴트를 만들어가는 과정 자체가 투자이며, 시간이 지날수록 더 정확하고 유용해지는 경험을 제공합니다.",
     tactics: [
-      "'도메인 축적' 리포트: KPI(메모, 노트, AI-Link)을 시각화하여 도메인 축적을 독려",
-      "파워 유저 보상: 상위 기여자에게 '지식 마켓' 수수료 영구 인하 혜택 약속",
-      "'지식 마켓' 런칭 : '누가 판매 1위 될 것인가?' 등 기대감을 높이는 사전 이벤트 진행",
+      "지식 DNA 뷰: 사용자의 도메인 지식 축적 과정을 그래프로 시각화",
+      "프리미엄 전환: 고급 AI-Link 기능, 무제한 지식 저장, 우선 지원 등",
+      "커뮤니티 구축: 도메인별 전문가 그룹 형성 및 지식 교환 플랫폼 제공",
     ],
     color: "text-lime-400",
     ringColor: "ring-lime-400/50",
@@ -35,12 +35,12 @@ const strategiesData = {
   expansion: {
     id: 'expansion',
     icon: <Network className="w-7 h-7" />,
-    phase: "Phase 3: Delight",
-    logic: "'지식캡슐 오픈마켓'을 완성하는 것입니다. 높은 수준의 '지식 자산'을 축적한 사용자들이 더 큰 혜택을 받고, 이들이 손쉽게 수익화하는 과정에서 생성된 양질의 콘텐츠가 다시 새로운 사용자를 끌어들이는 강력한 성장 엔진이 됩니다.",
+    phase: "Phase 3: 생태계 확장",
+    logic: "축적된 지식 자산을 바탕으로 B2B 시장 진출과 파트너십을 통한 확장을 추진합니다. 개인 사용자의 성공 사례가 기업 고객 유치의 근거가 되고, 기업 데이터가 다시 개인 사용자 경험을 향상시키는 선순환 구조를 완성합니다.",
     tactics: [
-      "파워 유저 보상: 높은 수준의 도메인 자산을 축적한 사용자에게 더 많은 무료 혜택(크레딧) 제공",
-      "다양한 수익 모델: '구독형 AI-Link', '컨퍼런스 캐최' 등 지식 자산의 수익화 기능 확장",
-      "신규 유저 케어: 방문자가 첫 '지식 자산'을 만들도록 유도하는 프로모션 진행"
+      "B2B 진출: 기업형 보안 솔루션, 팀베이스 도메인 컨텍스트 구축 서비스 제공",
+      "파트너십 확대: 교육기관, 연구소와의 전략적 제휴를 통한 시장 확장",
+      "API 생태계: 써드파티 개발자들이 활용할 수 있는 플랫폼 구축"
     ],
     color: "text-indigo-400",
     ringColor: "ring-indigo-400",
@@ -83,10 +83,10 @@ const GrowthStrategySection = () => {
       <div className="container mx-auto px-4">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            Habitus33 성장 엔진: <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500">지식공유 플라이휠</span>
+            성장 전략: <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500">지식 생태계</span> 구축
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            사용자의 도메인 자산축적이 또 다른 사용자의 성공으로 이어지는 '선순환 구조'를 구축하여, 시간이 지날수록 더욱 강력한 성장 모멘텀을 만들어냅니다.
+            AI-Link 기술을 중심으로 한 지식 생태계를 구축하여, 사용자가 많아질수록 더 강력해지는 네트워크 효과를 창출합니다.
           </p>
         </motion.div>
 

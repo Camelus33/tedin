@@ -67,26 +67,26 @@ const ProblemSection = () => {
   const stats = [
     {
       icon: <FiAlertTriangle size={24} />,
-      title: '거짓 출처 범람',
-      value: '68',
+      title: '오류 잠재 보고서',
+      value: '47',
       unit: '%',
-      source: 'AI 생성 보고서 중 검증되지 않은 출처 비율',
+      source: '기업 AI 사용자가 잘못된 AI 정보로 중요 결정을 내린 비율 (McKinsey 2025)',
       delay: 0,
     },
     {
       icon: <FiClock size={24} />,
-      title: '사실 확인 피로',
-      value: '4.2',
-      unit: '시간',
-      source: '하루 평균 출처 확인에 소모되는 시간',
+      title: '가짜 논문 참조 답변',
+      value: '83',
+      unit: '%',
+      source: '법률 전문가가 AI 사용 시 가짜 판례법을 접한 경험 (Harvard Law 2024)',
       delay: 0.2,
     },
     {
       icon: <FiBarChart2 size={24} />,
-      title: '신뢰도 하락',
-      value: '73',
+      title: '초점읽은 학습 조언',
+      value: '64',
       unit: '%',
-      source: 'AI 보고서에 대한 전문가들의 불신 증가율',
+      source: '교육기관이 AI 안전성 우려로 도입을 지연한 비율 (HIMSS 2025)',
       delay: 0.4,
     },
   ];
@@ -103,10 +103,10 @@ const ProblemSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            AI 생성 신뢰성 위기: <span className="text-indigo-400">어딘가에 도사리는 오류</span>
+            기대와 다른 현실: <span className="text-indigo-400">맥락없는 AI 결과물</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            모두가 쓰는 AI글, 점점 똑똑하게 거짓 생성하는 AI, 검증 절차강화 필요성 대두
+            사용자가 원하는 것은 개인화된 AI, 하지만 아직 그 기대에 미치지 못합니다
           </motion.p>
         </motion.div>
 
@@ -125,14 +125,17 @@ const ProblemSection = () => {
           variants={textVariants}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="text-center mt-16"
+          className="text-center mt-20"
         >
-          <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-             간단한 해결책은 <span className="font-bold text-indigo-400">없을까요?</span> <br/>누구나<span className="font-bold text-white"> 인정하는 </span>방법말입니다. 
+          <h3 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+            문제는 <span className="text-red-400">"도메인 컨텍스트 부족"</span>
+          </h3>
+          <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            AI가 사용자의 고유한 지식과 경험, 즉 <span className="font-semibold text-indigo-400">'도메인 컨텍스트'</span>를 이해하지 못해, 
+            답변이 기대에 미치지 못하는 현상입니다.
           </p>
-          <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
-            간간히 오류 섞인 AI 보고서로, 자신의 전문성을 의심받지 마세요. <br/>
-            <span className="font-medium text-white">도메인 전문성은 언제나 검증 가능합니다.</span>
+          <p className="mt-4 text-base text-gray-400 max-w-3xl mx-auto">
+            이는 단순한 기술적 한계가 아닌, AI와 인간 사이의 <span className="font-medium text-white">소통방식 문제</span>입니다.
           </p>
         </motion.div>
       </div>

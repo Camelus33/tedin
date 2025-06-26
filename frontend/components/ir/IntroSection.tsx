@@ -65,10 +65,10 @@ const IntroSection = () => {
           style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
         >
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-            100% 검증가능한 지식
+            당신의 지식 DNA를
           </span>
           <br />
-          <span className="text-gray-200">이제 걱정마세요</span>
+          <span className="text-gray-200">AI에 주입하세요</span>
         </motion.h1>
 
         <motion.p
@@ -77,7 +77,7 @@ const IntroSection = () => {
           transition={{ duration: 1, delay: 1 }}
           className="mt-6 text-lg md:text-xl text-gray-300 font-medium"
         >
-          생성형 AI 시대, 신뢰가능 콘텐츠
+          AI가 당신처럼 생각하고, 당신의 경험으로 보고합니다
         </motion.p>
       </div>
     </section>

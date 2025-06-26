@@ -6,15 +6,15 @@ import { motion } from 'framer-motion';
 const techData = [
   {
     image: '/images/ir/temporal-knowledge-ontology-engine.png',
-    title: '시맨틱 타임라인을 적용한 지식 온톨로지 엔진',
+    title: '시맨틱 온톨로지 엔진: 지식 DNA 매핑',
     description:
-      "기존 지식 관리가 '무엇을' 아는지에 집중했다면, Habitus33은 '언제' 학습했고 '어떤 순서로' 지식이 연결되었는지 추적하여 지식의 4차원 지도를 완성합니다. 이 '시맨틱 타임라인' 기술은 AI가 사용자의 고유한 생각의 흐름과 지식의 발전 과정을 입체적으로 이해하게 만듭니다. 이는 프롬프트 없이 최적의 지식 캡슐 'AI-Link'를 생성하는 핵심 동력입니다.",
+      "기존 AI가 단순히 '무엇을' 아는지만 처리했다면, 우리의 엔진은 '언제, 어떤 맥락에서, 어떤 순서로' 지식이 형성되었는지까지 추적합니다. 개인의 학습 이력, 사고 패턴, 전문 영역을 시간축으로 구조화한 4차원 지식 지도를 생성하여, AI가 사용자의 고유한 인지 구조를 완벽히 이해하게 만듭니다. 이는 47%의 AI 환각 문제를 근본적으로 해결하는 핵심 기술입니다.",
   },
   {
     image: '/images/ir/4-step-knowledge-distillation-protocol.png',
-    title: 'AI-Link™: 4단계 지식 증류 프로토콜',
+    title: 'AI-Link™ 보안 프로토콜: 지식 DNA 캡슐화',
     description:
-      "5년간의 연구로 완성된 '정제-구조화-응축-전송' 4단계 프로토콜은 사용자의 생각을 정제하여 지식의 본질만 추출합니다. 1)핵심 아이디어 선별, 2)관계망 형성, 3)AI용 캡슐 압축, 4)AI-Link 전송 과정을 통해, 복잡한 아이디어를 AI가 즉시 이해하는 순수한 형태로 증류합니다. 이는 AI와의 상호작용을 극적으로 단순화하는 Habitus33의 핵심 경쟁력입니다.",
+      "메모→연결→단권화→AI-Link 생성의 4단계를 통해 개인의 복잡한 지식 구조를 AI가 즉시 이해할 수 있는 압축된 형태로 변환합니다. 독자적인 지식 증류 알고리즘이 핵심 인사이트만 추출하고, 암호화된 시맨틱 캡슐로 패키징하여 AI에게 전송합니다. 이 과정에서 개인정보는 완전히 보호되며, AI는 마치 사용자의 뇌 구조를 이해한 것처럼 정확한 답변을 생성합니다.",
   },
 ];
 
@@ -61,10 +61,10 @@ const TechnologySection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            강력한 지식도메인 인사이트, 시장 선도 기술
+            핵심 기술: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">AI-Link</span> 엔진
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            Habitus33의 핵심 기술은 경쟁사가 쉽게 모방할 수 없는 지식관리 '암묵지'에 기반해 깊은 해자(Moat)를 구축했습니다.
+            5년간의 연구개발로 완성된 지식 DNA 전송 기술, 경쟁사가 모방할 수 없는 깊은 기술적 해자를 구축했습니다.
           </p>
         </motion.div>
 

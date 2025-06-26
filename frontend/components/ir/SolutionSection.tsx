@@ -8,23 +8,23 @@ import AMFAAnimation from './AMFAAnimation';
 const steps = [
   {
     icon: FiBox,
-    title: "1. Capture & Structure: 지식의 구조화",
-    description: "당신의 모든 지적 활동(학업, 업무, 연구)에서 발생하는 파편화된 정보들을 포착하여, 온톨로지 기반의 '고맥락 지식 그래프'로 자동 구조화합니다. 모든 데이터는 단순한 점이 아닌, 관계를 가진 입자가 됩니다."
+    title: "1. 지식 DNA 정제 (Refine)",
+    description: "당신의 모든 지적 활동에서 발생하는 파편화된 정보들을 포착하고, 핵심 아이디어만을 선별합니다. 노이즈를 제거하고 가치 있는 지식의 본질만을 추출하여, 당신만의 고유한 '지식 DNA'를 정제합니다."
   },
   {
     icon: FiGitMerge,
-    title: "2. Condense: 맥락의 응축",
-    description: "구조화된 거대한 지식 그래프에서 현재의 과제 해결에 필요한 핵심 맥락만을 독점적인 알고리즘으로 추출하고 응축합니다. 이는 당신의 과거와 현재를 관통하는 사고의 흐름, 즉 '인과관계'를 찾아내는 과정입니다."
+    title: "2. 지식 DNA 구조화 (Structure)",
+    description: "정제된 지식들 사이의 관계망을 형성하고, 시맨틱 타임라인을 적용하여 지식의 발전 과정을 추적합니다. 단순한 정보 나열이 아닌, 당신의 사고 흐름과 인과관계를 반영한 입체적인 지식 구조를 완성합니다."
   },
   {
     icon: FiCpu,
-    title: "3. Transmit: 지식 캡슐 전송",
-    description: "응축된 핵심 맥락은 AI가 가장 효과적으로 이해할 수 있는 최적화된 데이터 패키지, 'AI-Link'로 변환되어 전송됩니다. 이는 단순한 정보 전달을 넘어, 당신의 의도와 경험을 AI에게 이식하는 것에 가깝습니다."
+    title: "3. AI-Link 생성 (Generate)",
+    description: "구조화된 지식을 AI가 가장 효과적으로 이해할 수 있는 최적화된 캡슐 형태로 압축합니다. 복잡한 맥락을 AI용 언어로 번역하여, 당신의 지식 DNA가 온전히 보존된 'AI-Link'를 생성합니다."
   },
   {
     icon: FiZap,
-    title: "4. Alignment: AI 초개인화",
-    description: "AI-Link를 수신한 AI는 더 이상 모호한 질문에 의존하지 않습니다. 당신의 고유한 맥락을 완벽하게 이해한 상태에서, 당신만을 위한 가장 정확하고 통찰력 있는 결과를 생성합니다. 당신과 AI는 비로소 하나의 팀이 됩니다."
+    title: "4. 맥락 전송 (Transmit)",
+    description: "생성된 AI-Link를 통해 당신의 지식 DNA를 AI에게 전송합니다. AI는 이제 당신의 경험과 사고방식을 완벽히 이해한 상태에서, 당신만을 위한 개인화된 고품질 결과물을 생성할 수 있게 됩니다."
   }
 ];
 
@@ -56,11 +56,16 @@ const SolutionSection = () => {
         {/* Scrolling Text Side */}
         <div className="relative pt-16">
           <div className="text-left mb-16" style={{ height: '100vh' }}>
-            <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">
-              AMFA : <br/> 도메인 컨텍스트를 AI에 이식하다
+            <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
+              솔루션: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">AI-Link</span>
             </h2>
-            <p className="text-lg text-gray-400 max-w-xl">
-              Habitus33의 핵심 기술 AMFA는, 당신의 모든 지적 활동을 추적하여 인과관계를 형상화한 '고맥락 지식 그래프 전송 엔진 '입니다. 온톨로지 기반 데이터 파이프라인을 통해 지식을 구조화, 응축, 전송하여 AI가 당신 지식으로만 글을 쓰게 합니다.
+            <h3 className="text-2xl sm:text-3xl font-semibold text-indigo-300 mb-6">
+              시맨틱 타임라인 지식 온톨로지 전송 엔진
+            </h3>
+            <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
+              AI-Link는 당신의 지식 DNA를 정제-구조화-전송하는 혁신적인 엔진입니다. 
+              당신의 모든 지적 활동을 추적하여 인과관계를 형상화한 '고맥락 지식 그래프'를 생성하고, 
+              이를 AI가 완벽하게 이해할 수 있는 형태로 전송합니다.
             </p>
           </div>
 
