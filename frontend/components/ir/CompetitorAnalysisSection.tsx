@@ -10,7 +10,7 @@ const competitorGroups = [
     name: '거대 언어 모델 (LLM)',
     examples: 'ChatGPT, Gemini',
     approach: '세상의 모든 것을 아는 ‘척척박사’지만, ‘당신’을 채팅기록과 동일시합니다.',
-    limitation: '당신의 이력을 모르기 때문에, 핵심을 짚지 못하거나 다른 정보를 말합니다.',
+    limitation: '채팅이 끝날 때마다 리셋됩니다. 아니면 채팅 기록을 다 넘겨줘야 합니다.',
   },
   {
     icon: <Database className="w-8 h-8 text-slate-400" />,
