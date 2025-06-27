@@ -3,6 +3,7 @@ import React from 'react';
 import IntroSection from '../../components/ir/IntroSection';
 import MarketNeedSection from '../../components/ir/MarketNeedSection';
 import ProblemSection from '../../components/ir/ProblemSection';
+import CompetitorAnalysisSection from '../../components/ir/CompetitorAnalysisSection';
 import SolutionSection from '../../components/ir/SolutionSection';
 import UserScenarioSection from '../../components/ir/UserScenarioSection';
 import BenefitsSection from '../../components/ir/BenefitsSection';
@@ -23,6 +24,7 @@ const IRPage = () => {
       <IntroSection />
       <MarketNeedSection />
       <ProblemSection />
+      <CompetitorAnalysisSection />
       <SolutionSection />
       <UserScenarioSection />
       <BenefitsSection />

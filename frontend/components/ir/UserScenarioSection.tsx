@@ -15,6 +15,7 @@ interface ScenarioStepProps {
   isLast?: boolean;
   isActive: boolean;
   isCompleted: boolean;
+  isAutomatic?: boolean;
   onClick: () => void;
   onHover: (isHovered: boolean) => void;
 }
@@ -29,6 +30,7 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
   isLast, 
   isActive,
   isCompleted,
+  isAutomatic,
   onClick,
   onHover
 }) => {
@@ -73,8 +75,12 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
         className={`
           relative p-6 rounded-xl cursor-pointer transition-all duration-300
           ${isActive 
-            ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-2 border-cyan-400' 
-            : 'bg-gray-800/50 border border-gray-600 hover:border-cyan-400/50'
+            ? isAutomatic
+              ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-2 border-indigo-400'
+              : 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-2 border-cyan-400' 
+            : isAutomatic
+              ? 'bg-slate-800/50 border border-slate-600 hover:border-indigo-400/50'
+              : 'bg-gray-800/50 border border-gray-600 hover:border-cyan-400/50'
           }
           ${isCompleted ? 'ring-2 ring-green-400/30' : ''}
         `}
@@ -87,10 +93,14 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
               className={`
                 p-4 rounded-full shadow-lg mb-2 transition-all duration-300
                 ${isActive 
-                  ? 'bg-gradient-to-br from-cyan-400 to-blue-500 shadow-cyan-400/30' 
+                  ? isAutomatic
+                    ? 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-500/30'
+                    : 'bg-gradient-to-br from-cyan-400 to-blue-500 shadow-cyan-400/30'
                   : isCompleted
                     ? 'bg-gradient-to-br from-green-400 to-emerald-500'
-                    : 'bg-gradient-to-br from-gray-600 to-gray-700'
+                    : isAutomatic
+                      ? 'bg-gradient-to-br from-slate-600 to-slate-700'
+                      : 'bg-gradient-to-br from-gray-600 to-gray-700'
                 }
               `}
             >
@@ -102,7 +112,9 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
               className={`
                 text-sm font-bold px-3 py-1 rounded-full transition-all duration-300
                 ${isActive 
-                  ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-400/30' 
+                  ? isAutomatic
+                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
+                    : 'bg-cyan-500 text-white shadow-lg shadow-cyan-400/30'
                   : isCompleted
                     ? 'bg-green-500 text-white'
                     : 'bg-indigo-600 text-white'
@@ -119,7 +131,9 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <h3 className={`text-xl font-bold transition-colors duration-300 ${
-                isActive ? 'text-cyan-400' : 'text-white'
+                isActive 
+                  ? isAutomatic ? 'text-indigo-400' : 'text-cyan-400' 
+                  : 'text-white'
               }`}>
                 {title}
               </h3>
@@ -129,7 +143,9 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
               >
                 <FiChevronRight className={`
                   transition-colors duration-300 ${
-                    isActive ? 'text-cyan-400' : 'text-gray-400'
+                    isActive 
+                      ? isAutomatic ? 'text-indigo-400' : 'text-cyan-400' 
+                      : 'text-gray-400'
                   }
                 `} />
               </motion.div>
@@ -162,10 +178,10 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="mt-6 pt-6 border-t border-cyan-400/30"
+              className={`mt-6 pt-6 border-t ${isActive && isAutomatic ? 'border-indigo-400/30' : 'border-cyan-400/30'}`}
             >
-              <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-4 rounded-lg">
-                <p className="text-cyan-100 leading-relaxed">
+              <div className={`${isAutomatic ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10' : 'bg-gradient-to-r from-cyan-500/10 to-blue-500/10'} p-4 rounded-lg`}>
+                <p className={`${isAutomatic ? 'text-indigo-100' : 'text-cyan-100'} leading-relaxed`}>
                   {detailedDescription}
                 </p>
               </div>
@@ -257,6 +273,7 @@ const UserScenarioSection = () => {
       description: '완성된 지식 구조를 바탕으로 AI-Link가 자동 생성됩니다.',
       detailedDescription: '당신의 지식 DNA가 AI가 이해할 수 있는 시맨틱 온톨로지 형태로 변환되어 전송됩니다. 개인의 사고 패턴, 선호도, 전문 영역을 모두 포함한 컨텍스트가 압축되어 AI에게 전달됩니다. 보안이 철저히 보장되는 암호화된 채널을 통해 안전하게 전송됩니다.',
       delay: 0.6,
+      isAutomatic: true,
     },
     {
       icon: <FiAward size={24} />,
@@ -264,6 +281,7 @@ const UserScenarioSection = () => {
       description: 'AI-Link를 받은 AI는 당신의 맥락을 완벽히 이해한 상태에서 개인화된 고품질 답변을 생성합니다.',
       detailedDescription: '더 이상 일반적인 답변이 아닌, 당신만을 위한 결과물을 얻습니다. 당신의 전문성 수준, 관심사, 업무 맥락을 모두 고려한 맞춤형 답변이 제공됩니다. 지속적인 학습을 통해 답변의 품질이 계속 향상됩니다.',
       delay: 0.8,
+      isAutomatic: true,
     },
   ];
 
@@ -306,7 +324,11 @@ const UserScenarioSection = () => {
             고객 여정 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">5단계</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            1줄 메모가 당신만의 지식 DNA로 진화합니다.
+            1줄 메모가 당신만의 지식 DNA로 진화합니다. 
+            <br className="hidden sm:block" />
+            <span className="text-base text-gray-400">
+              (앞 3단계는 <span className="text-cyan-400 font-semibold">사용자 액션</span>, 뒤 2단계는 <span className="text-indigo-400 font-semibold">AI 자동화</span> 단계입니다.)
+            </span>
           </motion.p>
           <motion.p variants={textVariants} className="mt-4 text-sm text-cyan-400 font-medium">
             💡 각 단계를 클릭하여 상세 정보를 확인하세요
@@ -331,6 +353,7 @@ const UserScenarioSection = () => {
               isLast={index === scenarios.length - 1}
               isActive={activeStep === index}
               isCompleted={completedSteps.has(index)}
+              isAutomatic={scenario.isAutomatic}
               onClick={() => handleStepClick(index)}
               onHover={(isHovered) => handleStepHover(index, isHovered)}
             />

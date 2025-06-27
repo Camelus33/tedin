@@ -45,17 +45,17 @@ const TrendIcon3 = () => (
 const trends = [
   {
     icon: <TrendIcon1 />,
-    title: "AI 2.0: 컨텍스트 시대",
+    title: "AI 2.0: 사용자 의도 파악",
     text: "47%의 기업이 AI 환각 문제를 경험하면서, 시장은 프롬프트 의존성을 벗어나 사용자 맥락을 자동으로 파악하는 솔루션을 요구하고 있습니다. AI-Link 같은 지식 DNA 전송 기술이 차세대 AI 인터페이스의 표준이 되고 있습니다.",
   },
   {
     icon: <TrendIcon2 />,
-    title: "Truth: 즉각적인 검증 요구",
+    title: "Truth: 즉각적인 사실 확인",
     text: "83%의 전문가가 AI 생성 콘텐츠의 신뢰성 문제를 겪고 있습니다. 개인의 전문 지식과 경험을 바탕으로 한 맞춤형 검증 시스템이 AI 결과물의 품질을 보장하는 핵심 차별화 요소로 부상하고 있습니다.",
   },
   {
     icon: <TrendIcon3 />,
-    title: "Data Deal: 도메인 지식 거래",
+    title: "Data Deal: 도메인 지식 수요",
     text: "조직의 핵심 경쟁력은 이제 '업무 고유 지식을 어떻게 구조화하고 연결하는가'에 달려있습니다. 도메인 경쟁력 확보기술은 이 시대의 필수 요소입니다.",
   },
 ];
@@ -100,7 +100,7 @@ const WhyNowSection = () => {
           }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            왜 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">지금</span>이 적기인가?
+            왜 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">지금</span>이 투자 적기인가?
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
             세 가지 핵심 시장 트렌드가 AI-Link 기술의 필요성을 증명하고 있습니다.

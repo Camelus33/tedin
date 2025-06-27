@@ -103,7 +103,7 @@ const ProblemSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            기대와 다른 현재 : <span className="text-indigo-400">맥락없는 AI 결과물</span>
+            기대에 못 미치는 현실 : <span className="text-indigo-400">동문서답 & 환각</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
             알아서 대신 해주길 바라지만, 아직 그 기대에 미치지 못합니다.
@@ -131,8 +131,8 @@ const ProblemSection = () => {
             문제는 <span className="text-red-400">"도메인 컨텍스트 부족"</span>
           </h3>
           <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            AI가 사용자의 고유한 지식과 경험, 즉 <span className="font-semibold text-indigo-400">'도메인 컨텍스트'</span>가 없어, 
-            무작위로 생성하는 현상입니다.
+            AI가 사용자의 이력, 즉 <span className="font-semibold text-indigo-400">'도메인 컨텍스트'</span>가 없어, 
+            동문서답하는 현상입니다.
           </p>
           <p className="mt-4 text-base text-gray-400 max-w-3xl mx-auto">
             이는 AI와 인간 사이의 <span className="font-medium text-white">소통의 문제</span>입니다.

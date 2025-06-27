@@ -60,10 +60,10 @@ const TeamSection = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-6 text-white">
-            생성형 AI 솔루션계 <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">혁신 리더</span>
+            생성형 AI <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">혁신 리더</span>
           </h2>
           <p className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-16">
-            기술과 교육에 대한 깊은 열정을 가진 최고의 전문가들이 Habitus33의 성장을 이끌고 있습니다.
+            기술과 학습에 대한 깊은 통찰을 가진 최고의 전문가들이 Habitus33의 성장을 이끌고 있습니다.
           </p>
         </motion.div>
         

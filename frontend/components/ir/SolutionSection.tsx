@@ -60,12 +60,12 @@ const SolutionSection = () => {
               솔루션: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">AI-Link</span>
             </h2>
             <h3 className="text-2xl sm:text-3xl font-semibold text-indigo-300 mb-6">
-              시맨틱 타임라인 지식 온톨로지 전송 엔진
+              시맨틱 타임라인 온톨로지 전송 엔진
             </h3>
             <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
-              AI-Link는 당신의 지식 DNA를 정제-구조화-전송하는 혁신적인 엔진입니다. 
+              AI-Link는 당신의 이력을 정제-구조화-전송하는 엔진입니다. 
               당신의 모든 지적 활동을 추적하여 인과관계를 형상화한 '고맥락 지식 그래프'를 생성하고, 
-              이를 AI가 완벽하게 이해할 수 있는 형태로 전송합니다.
+              이를 AI가 가장 편하게 받아들일 수 있는 형태로 전송합니다.
             </p>
           </div>
 

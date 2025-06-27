@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip, LineChart, Line, ComposedChart } from 'recharts';
 import { DollarSign, Users, Target, TrendingUp, Briefcase, Brain, Cpu, Rocket, Calendar, BarChart3 } from 'lucide-react';
 
 const kpiData = [
@@ -152,25 +152,22 @@ const FinancialsSection = () => {
               <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center md:text-left">성장 시나리오 & 투자 로드맵</h3>
               <div className="h-96">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={projectionData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }} barGap={8}>
+                  <ComposedChart data={projectionData} margin={{ top: 5, right: 20, left: -10, bottom: 25 }}>
                     <defs>
                       <linearGradient id="colorArr" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#2dd4bf" stopOpacity={0.8}/>
                         <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0.3}/>
                       </linearGradient>
-                      <linearGradient id="colorValuation" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#a78bfa" stopOpacity={0.7}/>
-                        <stop offset="95%" stopColor="#818cf8" stopOpacity={0.2}/>
-                      </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" strokeOpacity={0.3} />
-                    <XAxis dataKey="year" tick={{ fill: '#a0aec0' }} axisLine={{ stroke: '#4a5568' }} tickLine={{ stroke: '#4a5568' }} />
-                    <YAxis tick={{ fill: '#a0aec0' }} unit="억" axisLine={{ stroke: '#4a5568' }} tickLine={{ stroke: '#4a5568' }} />
+                    <XAxis dataKey="year" tick={{ fill: '#a0aec0' }} axisLine={{ stroke: '#4a5568' }} tickLine={{ stroke: '#4a5568' }} dy={10} />
+                    <YAxis yAxisId="left" orientation="left" stroke="#818cf8" tick={{ fill: '#a0aec0' }} unit="억" />
+                    <YAxis yAxisId="right" orientation="right" stroke="#67e8f9" tick={{ fill: '#a0aec0' }} unit="명" />
                     <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(148, 163, 184, 0.1)'}} />
-                    <Legend wrapperStyle={{ color: '#e2e8f0', paddingTop: '20px' }} formatter={(value) => <span style={{color: '#a0aec0'}}>{value}</span>} />
-                    <Bar dataKey="arr" name="ARR (억원)" fill="url(#colorArr)" radius={[4, 4, 0, 0]} barSize={20} />
-                    <Bar dataKey="valuation" name="기업가치 (억원)" fill="url(#colorValuation)" radius={[4, 4, 0, 0]} barSize={20} />
-                  </BarChart>
+                    <Legend wrapperStyle={{ color: '#e2e8f0', paddingTop: '40px' }} formatter={(value) => <span style={{color: '#a0aec0'}}>{value}</span>} />
+                    <Bar yAxisId="left" dataKey="arr" name="ARR (억원)" fill="url(#colorArr)" radius={[4, 4, 0, 0]} barSize={30} />
+                    <Line yAxisId="right" type="monotone" dataKey="users" name="사용자 수 (명)" stroke="#67e8f9" strokeWidth={2.5} dot={{ r: 5, strokeWidth: 2, fill: '#083344' }} activeDot={{ r: 7 }} />
+                  </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
@@ -208,41 +205,44 @@ const FinancialsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.8 }}
           >
-            <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full">
-              <h3 className="text-2xl font-bold mb-4 text-center">시드 라운드 3억원</h3>
-              <p className="text-gray-400 text-center mb-6">MVP 완성과 초기 고객 확보에 집중</p>
-              <div className="h-64 w-full">
+            <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full flex flex-col">
+              <h3 className="text-2xl font-bold mb-2 text-center">시드 라운드 자금 사용 계획 (3억원)</h3>
+              <p className="text-gray-400 text-center mb-6">유료 사용자 500명 확보에 집중</p>
+              <div className="flex-grow h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={useOfFundsSeedData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={'85%'}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
-                    >
+                  <BarChart 
+                    layout="vertical" 
+                    data={useOfFundsSeedData} 
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" strokeOpacity={0.2} horizontal={false} />
+                    <XAxis type="number" unit="%" tick={{ fill: '#a0aec0' }} axisLine={{ stroke: '#4a5568' }} tickLine={{ stroke: '#4a5568' }} domain={[0, 50]} />
+                    <YAxis 
+                      type="category" 
+                      dataKey="name"
+                      width={110}
+                      tick={{ fill: '#e2e8f0', fontSize: 14 }} 
+                      axisLine={false} 
+                      tickLine={false}
+                    />
+                    <Tooltip 
+                      cursor={{fill: 'rgba(148, 163, 184, 0.1)'}}
+                      contentStyle={{
+                        background: 'rgba(31, 41, 55, 0.8)',
+                        backdropFilter: 'blur(4px)',
+                        border: '1px solid #4a5568',
+                        borderRadius: '0.5rem',
+                        color: '#e2e8f0'
+                      }}
+                      formatter={(value: number, name: string, props) => [`${value}% - ${props.payload.details}`, "비중"]}
+                    />
+                    <Bar dataKey="value" barSize={25} radius={[0, 8, 8, 0]}>
                       {useOfFundsSeedData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS_SEED[index % COLORS_SEED.length]} />
                       ))}
-                    </Pie>
-                    <RechartsTooltip formatter={(value, name) => [`${value}%`, name]} />
-                  </PieChart>
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
-              </div>
-              <div className="mt-4 space-y-3">
-                {useOfFundsSeedData.map((item, index) => (
-                  <div key={item.name} className="text-gray-300">
-                    <div className="flex items-center mb-1">
-                      <div className="w-3 h-3 rounded-full mr-3" style={{ backgroundColor: COLORS_SEED[index % COLORS_SEED.length] }}></div>
-                      <span className="font-semibold text-sm">{item.name}</span>
-                      <span className="ml-auto font-bold text-teal-300 text-sm">{item.value}%</span>
-                    </div>
-                    <p className="text-xs text-gray-400 ml-6">{item.details}</p>
-                  </div>
-                ))}
               </div>
             </div>
           </motion.div>
@@ -254,41 +254,44 @@ const FinancialsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 1.0 }}
           >
-            <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full">
-              <h3 className="text-2xl font-bold mb-4 text-center">Pre-A 라운드 10억원</h3>
-              <p className="text-gray-400 text-center mb-6">제품 고도화와 시장 확장에 집중</p>
-              <div className="h-64 w-full">
+            <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full flex flex-col">
+              <h3 className="text-2xl font-bold mb-2 text-center">Pre-A 라운드 자금 사용 계획 (10억원)</h3>
+              <p className="text-gray-400 text-center mb-6">제품 고도화 및 시장 점유율 1% 달성</p>
+              <div className="flex-grow h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={useOfFundsPreAData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={'85%'}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
-                    >
+                  <BarChart 
+                    layout="vertical" 
+                    data={useOfFundsPreAData} 
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" strokeOpacity={0.2} horizontal={false} />
+                    <XAxis type="number" unit="%" tick={{ fill: '#a0aec0' }} axisLine={{ stroke: '#4a5568' }} tickLine={{ stroke: '#4a5568' }} domain={[0, 50]} />
+                    <YAxis 
+                      type="category" 
+                      dataKey="name"
+                      width={110}
+                      tick={{ fill: '#e2e8f0', fontSize: 14 }} 
+                      axisLine={false} 
+                      tickLine={false}
+                    />
+                     <Tooltip 
+                      cursor={{fill: 'rgba(148, 163, 184, 0.1)'}}
+                      contentStyle={{
+                        background: 'rgba(31, 41, 55, 0.8)',
+                        backdropFilter: 'blur(4px)',
+                        border: '1px solid #4a5568',
+                        borderRadius: '0.5rem',
+                        color: '#e2e8f0'
+                      }}
+                      formatter={(value: number, name: string, props) => [`${value}% - ${props.payload.details}`, "비중"]}
+                    />
+                    <Bar dataKey="value" barSize={25} radius={[0, 8, 8, 0]}>
                       {useOfFundsPreAData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS_PREA[index % COLORS_PREA.length]} />
                       ))}
-                    </Pie>
-                    <RechartsTooltip formatter={(value, name) => [`${value}%`, name]} />
-                  </PieChart>
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
-              </div>
-              <div className="mt-4 space-y-3">
-                {useOfFundsPreAData.map((item, index) => (
-                  <div key={item.name} className="text-gray-300">
-                    <div className="flex items-center mb-1">
-                      <div className="w-3 h-3 rounded-full mr-3" style={{ backgroundColor: COLORS_PREA[index % COLORS_PREA.length] }}></div>
-                      <span className="font-semibold text-sm">{item.name}</span>
-                      <span className="ml-auto font-bold text-teal-300 text-sm">{item.value}%</span>
-                    </div>
-                    <p className="text-xs text-gray-400 ml-6">{item.details}</p>
-                  </div>
-                ))}
               </div>
             </div>
           </motion.div>

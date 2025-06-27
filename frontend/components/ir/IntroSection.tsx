@@ -65,7 +65,7 @@ const IntroSection = () => {
           style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
         >
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-            당신의 지식 DNA를
+            당신의 이력를
           </span>
           <br />
           <span className="text-gray-200">AI에 주입하세요</span>
@@ -77,7 +77,7 @@ const IntroSection = () => {
           transition={{ duration: 1, delay: 1 }}
           className="mt-6 text-lg md:text-xl text-gray-300 font-medium"
         >
-          AI가 당신처럼 생각하고, 당신의 경험으로 보고합니다
+          AI가 당신의 이력을 바탕으로 답변합니다
         </motion.p>
       </div>
     </section>
