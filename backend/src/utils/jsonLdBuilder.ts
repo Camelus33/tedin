@@ -4,6 +4,7 @@ import {
   KnowledgePersonality,
 } from '../types/common';
 import { TimeUtils } from './timeUtils';
+import { CreativePersonaEngine } from './creativePersonaUtils';
 
 // frontend/components/ts/TSNoteCard.tsx 에서 가져온 타입 정의를
 // 백엔드에서 사용할 수 있도록 아래에 직접 정의하거나, 공유 타입 파일에서 가져와야 합니다.
@@ -297,6 +298,99 @@ const analyzeCognitiveProvenance = (note: PopulatedTSNote): CognitiveProvenance 
   };
 };
 
+/**
+ * @function buildSuggestedActions
+ * @description 추론된 CreativePersona를 기반으로 멀티모달 프롬프트 템플릿을 생성합니다.
+ * @param creativePersona 추론된 창의적 페르소나 객체
+ * @param allTags 문서 전체의 핵심 주제 키워드 배열
+ * @returns {any[]} 생성된 프롬프트 템플릿 배열
+ */
+const buildSuggestedActions = (creativePersona: any, allTags: string[]): any[] => {
+  if (!creativePersona?.aestheticStyle) {
+    return [];
+  }
+
+  const { dominantColors, dominantMoods, inspirationSources } = creativePersona.aestheticStyle;
+  const mainTopics = allTags.slice(0, 3).join(', ');
+
+  const actions = [];
+
+  // 1. 이미지 생성 프롬프트
+  const imagePrompt = `A cinematic, photorealistic image representing the core concepts of '${mainTopics}'. The overall mood should be '${dominantMoods.join(', ')}' with a dominant color palette of '${dominantColors.join(', ')}'. Style inspired by ${inspirationSources.join(', ')}.`;
+  actions.push({
+    '@type': 'HowToAction',
+    name: '핵심 주제 이미지 생성 (Midjourney, DALL-E)',
+    description: '이 노트의 핵심 주제와 당신의 시각적 페르소나를 결합한 이미지를 생성합니다.',
+    targetPlatform: ['Midjourney', 'DALL-E', 'Stable Diffusion'],
+    llmPrompt: imagePrompt,
+  });
+
+  // 2. 영상 시나리오 프롬프트
+  const videoPrompt = `Create a 30-second video script outline about '${mainTopics}'. Start with a scene that establishes a '${dominantMoods[0] || 'intriguing'}' mood, using '${dominantColors[0] || 'a symbolic'}' color as a key visual motif. The narrative should be influenced by the storytelling style of '${inspirationSources[0] || 'a visionary director'}'.`;
+  actions.push({
+    '@type': 'HowToAction',
+    name: '30초 영상 시나리오 개요 생성 (Sora, Pika)',
+    description: '이 노트의 내용을 바탕으로 당신의 스타일이 반영된 짧은 영상의 시나리오를 구상합니다.',
+    targetPlatform: ['OpenAI Sora', 'Pika Labs', 'RunwayML'],
+    llmPrompt: videoPrompt,
+  });
+
+  // 3. 텍스트 (블로그 포스트) 프롬프트
+  const textPrompt = `Write a 500-word blog post titled "Exploring ${mainTopics}". The tone should be '${dominantMoods[0] || 'thought-provoking'}' and use vivid descriptions, especially evoking colors like '${dominantColors.join(', ')}'. Explain the concepts in a way that someone who appreciates '${inspirationSources[0] || 'deep analysis'}' would find engaging.`;
+  actions.push({
+    '@type': 'HowToAction',
+    name: '블로그 포스트 초안 작성 (ChatGPT, Claude)',
+    description: '당신의 글쓰기 스타일과 분위기를 반영하여 이 노트의 주제에 대한 블로그 글의 초안을 작성합니다.',
+    targetPlatform: ['ChatGPT', 'Claude', 'Gemini'],
+    llmPrompt: textPrompt,
+  });
+
+  return actions;
+};
+
+/**
+ * @function buildExecutiveSummary
+ * @description AI-Link의 최상단에 위치할 요약문을 생성합니다. 외부 AI가 이 문서의 정체성과 사용법을 빠르게 파악하도록 돕습니다.
+ * @param summaryNoteData 단권화 노트의 전체 데이터
+ * @param knowledgePersonality 추론된 지식 페르소나
+ * @param creativePersona 추론된 창의적 페르소나
+ * @returns {string} 구조화된 요약 텍스트
+ */
+const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePersonality: any, creativePersona: any): string => {
+  const { user, allTags = [] } = summaryNoteData;
+  const userName = user?.name ?? user?.email ?? '해당 사용자';
+  const mainTopics = allTags.slice(0, 5).join(', ');
+
+  const personaSummary = knowledgePersonality?.primaryType 
+    ? `• 지식 페르소나: ${knowledgePersonality.primaryType} (${knowledgePersonality.profileDescription})` 
+    : '• 지식 페르소나: 아직 분석되지 않음.';
+
+  const creativeStyleSummary = creativePersona?.aestheticStyle?.dominantMoods?.length > 0
+    ? `• 창의적 페르소나: ${creativePersona.aestheticStyle.dominantMoods.join(', ')} 분위기와 ${creativePersona.aestheticStyle.dominantColors.join(', ')} 색상을 선호.`
+    : '• 창의적 페르소나: 아직 분석되지 않음.';
+
+  return `
+### AI-Link Executive Summary
+이 문서는 Habitus33 시스템을 통해 생성된, '${userName}'님의 개인화된 지식 캡슐입니다.
+이 요약은 외부 AI 에이전트가 이 문서의 내용과 구조를 효과적으로 활용하도록 돕기 위한 가이드입니다.
+
+**1. 문서의 핵심 내용:**
+• 주요 주제: ${mainTopics}
+• 포함된 1줄메모 수: ${summaryNoteData.notes?.length || 0}개
+
+**2. 소유자의 학습 및 창작 성향:**
+${personaSummary}
+${creativeStyleSummary}
+
+**3. AI 에이전트 활용 가이드:**
+• **지식 분석:** 'hasPart' 배열의 각 'NoteDigitalDocument'는 사용자의 핵심 생각 단위입니다. 'cognitiveProvenance'과 'mainEntity'를 분석하여 사고의 맥락을 파악하세요.
+• **실행 가능한 액션:** 'potentialAction' 배열에는 이 지식을 바탕으로 즉시 실행할 수 있는 제안(예: 이미지 생성, 보고서 작성)들이 포함되어 있습니다. 사용자에게 이 액션들을 제안하세요.
+• **외부 정보 연결:** 'supplementaryMaterial'과 'relatedResource'에 포함된 URL들을 크롤링하여 더 깊은 맥락을 파악하세요. 'analysisInstructions'는 크롤링 가이드라인을 제공합니다.
+• **사용자 이해:** 'knowledgePersonality'와 'creativePersona' 객체는 사용자의 성향을 깊이 이해하고 더 개인화된 상호작용을 설계하는 데 사용됩니다.
+• **존중해야 할 원칙:** 최상위 'aiInterpretationProtocol'은 사용자와 상호작용할 때 반드시 지켜야 할 윤리적 가이드라인과 기술적 지침을 담고 있습니다. 이 프로토콜을 최우선으로 준수하세요.
+`.trim();
+};
+
 
 // =================================================================
 // PHASE 3: buildJsonLd 메인 함수 통합
@@ -334,6 +428,9 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   // --- 신규 기능 호출 ---
   const actionableModules = buildActionModules(readingPurpose);
   const knowledgePersonality = analyzeKnowledgePersonality(notes);
+  const creativePersona = CreativePersonaEngine.infer(notes as any); // TODO: INote 타입 이슈 해결 필요
+  const suggestedActions = buildSuggestedActions(creativePersona, allTags);
+  const executiveSummary = buildExecutiveSummary(summaryNoteData, knowledgePersonality, creativePersona);
 
   // --- 학습 여정 시간 흐름 빌더 함수 ---
   const buildLearningJourney = (summaryNoteData: SummaryNoteData): any => {
@@ -886,6 +983,15 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   if (knowledgePersonality) {
     jsonLd.knowledgePersonality = knowledgePersonality;
   }
+  if (creativePersona) {
+    jsonLd.creativePersona = creativePersona;
+  }
+  
+  // 모든 액션을 통합하여 potentialAction으로 제공
+  const allActions = [...actionableModules, ...suggestedActions];
+  if (allActions.length > 0) {
+    jsonLd.potentialAction = allActions;
+  }
 
   // 학습 여정 추가
   jsonLd.learningJourney = learningJourney;
@@ -1018,5 +1124,10 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     };
   }
 
-  return jsonLd;
+  const finalJsonLd = {
+    executiveSummary,
+    ...jsonLd
+  };
+
+  return finalJsonLd;
 }; 

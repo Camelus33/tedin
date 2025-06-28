@@ -33,6 +33,10 @@ export interface ISummaryNote extends Document {
    */
   tags?: string[];
   /**
+   * @property {string[]} [visualPromptKeywords] - 단권화 노트에 대한 시각적 프롬프트 키워드 목록입니다.
+   */
+  visualPromptKeywords?: string[];
+  /**
    * @property {Date} createdAt - 단권화 노트 생성 일시입니다. Mongoose의 timestamps 옵션에 의해 자동 관리됩니다.
    */
   createdAt: Date;
@@ -58,6 +62,7 @@ const SummaryNoteSchema: Schema = new Schema({
   bookIds: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
   orderedNoteIds: [{ type: Schema.Types.ObjectId, ref: 'Note' }], // 'Note' 모델 (TSNote 포함) 참조
   tags: [{ type: String, index: true }],
+  visualPromptKeywords: [{ type: String }],
   userMarkdownContent: { type: String, default: '' },
 }, { 
   /**
