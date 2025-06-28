@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 
  ### Habitus33 Engineering Principles & Practices v2.0

@@ -1,29 +1,53 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Gift, ArrowUpCircle, ShoppingBag } from 'lucide-react';
+import { CheckCircle, Users, ShoppingBag, Gift } from 'lucide-react';
 
-const businessModels = [
+const pricingTiers = [
   {
-    icon: <Gift className="w-10 h-10 mb-4 text-indigo-400" />,
+    icon: <Gift className="w-10 h-10 mb-4 text-gray-400" />,
     title: 'Free',
-    description:
-      'Habitus33의 핵심 기능을 평생 무료로 제공하여, 사용자가 아무런 장벽 없이 지식 성장의 즐거움을 경험하게 합니다. 이는 강력한 사용자 기반을 확보하고 커뮤니티를 활성화하는 성장 엔진입니다.',
-    tags: ['사용자 기반 확장', '커뮤니티 형성', '바이럴 루프'],
+    audience: 'For individuals starting out',
+    price: '$0',
+    frequency: '/ forever',
+    description: 'Habitus33의 핵심 기능을 무료로 경험하며 지식 성장의 첫 걸음을 시작하세요.',
+    features: [
+      'Basic AI-Link creation',
+      'Community access',
+      'Standard support',
+    ],
+    cta: 'Start for Free',
+    popular: false,
   },
   {
-    icon: <ArrowUpCircle className="w-10 h-10 mb-4 text-teal-400" />,
-    title: 'Pro & Enterprise',
-    description:
-      '전문가와 팀을 위한 Pro 플랜과 Enterprise 솔루션은 사용량에 기반한 합리적인 과금 모델을 제시합니다. 심층 분석, 강화된 협업 기능, 강력한 보안을 통해 개인과 조직의 지적 생산성을 극대화합니다.',
-    tags: ['전문가용', '팀 협업', 'B2B/B2C', 'SaaS'],
+    icon: <Users className="w-10 h-10 mb-4 text-indigo-400" />,
+    title: 'Pro',
+    audience: 'For power users & professionals',
+    price: '$20',
+    frequency: '/ user / month',
+    description: '고급 기능과 늘어난 사용량으로 도메인 지식을 최대한 활용하세요.',
+    features: [
+      'Unlimited AI-Link creation',
+      'Advanced analytics dashboard',
+      'Priority support',
+    ],
+    cta: 'Get Started with Pro',
+    popular: true,
   },
   {
     icon: <ShoppingBag className="w-10 h-10 mb-4 text-cyan-400" />,
     title: 'AI-Link Market',
-    description:
-      '사용자들의 도메인 인사이트가 담긴 고품질 지식 캡슐(AI-Link)을 사고파는 오픈마켓. 지식 근로자는 자신의 도메인 컨텍스트로 수익을 창출하고, 사용자는 사실기반 도메인 지식을 구매하며, Habitus33은 중개 수수료(30%)를 통해 생태계를 더욱 성장시킵니다.',
-    tags: ['수익 공유', '생태계 확장', '네트워크 효과'],
+    audience: 'For knowledge creators & consumers',
+    price: '25%',
+    frequency: ' platform fee',
+    description: '검증된 고품질 지식 캡슐을 거래하며 당신의 전문성을 수익으로 전환하세요.',
+    features: [
+      'Publish insights as AI-Links',
+      'Access domain-specific knowledge',
+      'Revenue sharing model',
+    ],
+    cta: 'Explore the Market',
+    popular: false,
   },
 ];
 
@@ -59,57 +83,87 @@ const BusinessModelSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            지속 가능 & 실현 가능
+            Sustainable & Scalable Business Model
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            도메인 지식 축적 및 지식캡슐 생태계구축이라는 목표로 유기적으로 연결된 수익 모델
+            사용량에 맞춰 명확한 요금제를 제공하며,  도메인 지식캡슐 오픈마켓을 지원합니다.
           </p>
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {businessModels.map(model => {
-            const isMarketplace = model.title === 'AI-Link Market';
-            return (
-              <motion.div
-                key={model.title}
-                className={`
-                  ${isMarketplace
-                    ? 'bg-gradient-to-br from-indigo-900/50 via-slate-900 to-slate-900 border-cyan-400/50 shadow-cyan-400/20'
-                    : 'bg-gray-900/50 border-gray-700/60 hover:border-cyan-500/50'
-                  }
-                  backdrop-blur-sm border rounded-2xl p-8 flex flex-col shadow-lg hover:shadow-cyan-500/10 transition-all duration-300
-                `}
-                variants={itemVariants}
-              >
-                <div className="flex-grow">
-                  {model.icon}
-                  <h3 className="text-2xl font-bold mb-3 text-gray-100">{model.title}</h3>
-                  <p className="text-gray-400 mb-6 leading-relaxed">
-                    {model.description}
-                  </p>
+          {pricingTiers.map(tier => (
+            <motion.div
+              key={tier.title}
+              className={`
+                relative flex flex-col bg-gray-900/50 border border-gray-700/60 rounded-2xl p-8 shadow-lg hover:border-cyan-500/50 transition-all duration-300 h-full
+                ${tier.popular ? 'border-cyan-400/50 shadow-cyan-400/20' : ''}
+              `}
+              variants={itemVariants}
+            >
+              {tier.popular && (
+                <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
+                  <span className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
+                    Most Popular
+                  </span>
                 </div>
-                <div className="mt-auto pt-4 border-t border-gray-700/50">
-                  <div className="flex flex-wrap gap-2">
-                    {model.tags.map(tag => (
-                      <span
-                        key={tag}
-                        className="text-xs font-medium bg-gray-700 text-gray-300 px-2.5 py-1 rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+              )}
+              <div className="flex-grow flex flex-col">
+                {tier.icon}
+                <h3 className="text-2xl font-bold text-gray-100">{tier.title}</h3>
+                <p className="text-sm text-gray-400 mb-4">{tier.audience}</p>
+                
+                <div className="flex items-baseline mb-6">
+                  <span className="text-4xl font-extrabold text-white">{tier.price}</span>
+                  <span className="text-gray-400 ml-1.5">{tier.frequency}</span>
                 </div>
-              </motion.div>
-            );
-          })}
+
+                <p className="text-gray-300 mb-6 flex-grow">{tier.description}</p>
+                
+                <ul className="space-y-3 mb-8">
+                  {tier.features.map(feature => (
+                    <li key={feature} className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-cyan-400 mr-3 flex-shrink-0 mt-1" />
+                      <span className="text-gray-300">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-auto">
+                  <button
+                    className={`
+                      w-full py-3 px-6 rounded-lg font-semibold text-lg transition-all duration-300
+                      ${tier.popular
+                        ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white hover:shadow-lg hover:shadow-cyan-500/30'
+                        : 'bg-gray-700 hover:bg-gray-600 text-white'
+                      }
+                    `}
+                  >
+                    {tier.cta}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
+        
+        <motion.div
+          className="text-center mt-16"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <p className="text-gray-400">
+            <span className="font-semibold text-white">Looking for more?</span> 
+            Enterprise 플랜은 별도 문의를 통해 맞춤형으로 제공됩니다.
+          </p>
+        </motion.div>
+
       </div>
     </section>
   );

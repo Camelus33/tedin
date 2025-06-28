@@ -3,146 +3,137 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { FiCheckCircle, FiBriefcase, FiBookOpen, FiUsers } from 'react-icons/fi';
+import { FiArrowDown, FiTrendingDown, FiTrendingUp, FiCheckCircle } from 'react-icons/fi';
 
-interface BenefitCardProps {
-  icon: React.ReactNode;
-  userType: string;
-  benefit: string;
-  description: string;
-  features: string[];
-  delay: number;
-}
+const ComparisonValue = ({ value, isPositive = false }: { value: string | number; isPositive?: boolean }) => (
+  <div
+    className={`text-2xl sm:text-3xl font-bold py-2 px-4 rounded-lg ${
+      isPositive ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+    }`}
+  >
+    {value}
+  </div>
+);
 
-const BenefitCard: React.FC<BenefitCardProps> = ({ icon, userType, benefit, description, features, delay }) => {
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  const variants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay } },
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      variants={variants}
-      initial="hidden"
-      animate={inView ? 'visible' : 'hidden'}
-      className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-md rounded-2xl p-8 border border-white/10 shadow-xl text-center hover:border-cyan-400/30 transition-all duration-300"
-    >
-      <div className="flex justify-center text-cyan-400 mb-6">
-        {icon}
-      </div>
-      <h3 className="text-xl font-bold text-white mb-2">{userType}</h3>
-      <div className="text-center mb-6">
-        <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
-          "{benefit}"
-        </p>
-        <p className="text-sm text-gray-300 leading-relaxed">{description}</p>
-      </div>
-      
-      {/* Features List */}
-      <div className="space-y-3">
-        {features.map((feature, index) => (
-          <div key={index} className="flex items-start text-left">
-            <FiCheckCircle className="text-green-400 mr-3 mt-1 flex-shrink-0" size={16} />
-            <span className="text-gray-300 text-sm">{feature}</span>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-};
+const ImprovementChip = ({ value, isPositive = true }: { value: string; isPositive?: boolean }) => (
+  <div
+    className={`flex items-center justify-center font-bold py-2 px-4 rounded-full text-white ${
+      isPositive ? 'bg-green-600' : 'bg-red-600'
+    }`}
+  >
+    {isPositive ? <FiTrendingUp className="mr-2" /> : <FiTrendingDown className="mr-2" />}
+    {value}
+  </div>
+);
 
 const BenefitsSection = () => {
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
-  
+
   const sectionVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.2, delayChildren: 0.2 } },
   };
 
-  const textVariants = {
+  const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
-
-  const benefits = [
+  
+  const comparisonData = [
     {
-      icon: <FiBriefcase size={48} />,
-      userType: '직장인',
-      benefit: 'Well-Made Report',
-      description: '당신의 전문성과 경험이 반영된 완성도 높은 업무 보고서를 생성합니다.',
-      features: [
-        '개인의 업무 히스토리와 전문 지식 반영',
-        '회사 내 맥락과 업계 트렌드 고려',
-        '신뢰할 수 있는 데이터 기반 분석',
-        '상사와 동료가 인정하는 품질'
-      ],
-      delay: 0,
+      metric: 'API 호출 횟수',
+      description: 'AI와 불필요한 대화를 줄여 핵심 결과에 빠르게 도달합니다.',
+      before: '60회',
+      after: '20회',
+      improvement: '▼ 67%',
+      isPositive: false,
     },
     {
-      icon: <FiBookOpen size={48} />,
-      userType: '연구자',
-      benefit: 'Good Research Paper',
-      description: '연구 분야의 깊이 있는 이해를 바탕으로 한 고품질 연구 논문을 작성합니다.',
-      features: [
-        '연구자의 전문 분야와 관심사 반영',
-        '기존 연구와의 연관성 및 차별점 명확화',
-        '논리적 구조와 학술적 엄밀성 확보',
-        '동료 연구자들이 인정하는 수준'
-      ],
-      delay: 0.2,
+      metric: '출력 토큰 사용량',
+      description: '정확한 컨텍스트 제공으로 불필요하고 값비싼 출력을 방지합니다.',
+      before: '66,000 토큰',
+      after: '24,000 토큰',
+      improvement: '▼ 64%',
+      isPositive: false,
     },
     {
-      icon: <FiUsers size={48} />,
-      userType: '학습자',
-      benefit: 'Pin-point Lesson',
-      description: '개인의 학습 수준과 목표에 정확히 맞춘 맞춤형 학습 가이드를 제공합니다.',
-      features: [
-        '개인의 학습 히스토리와 이해도 분석',
-        '취약점과 강점을 고려한 학습 계획',
-        '구체적이고 실행 가능한 학습 방법 제시',
-        '효과적인 성취감과 동기부여 제공'
-      ],
-      delay: 0.4,
+      metric: '예상 월간 비용 (1인)',
+      description: 'AI 운영의 ROI를 극대화하여 지속가능한 스케일을 확보합니다.',
+      before: '$0.29',
+      after: '$0.13',
+      improvement: '▼ 55%',
+      isPositive: false,
     },
   ];
 
   return (
-    <section id="benefits" className="py-20 sm:py-32 bg-gradient-to-b from-gray-900 to-black text-white relative overflow-hidden">
+    <section id="benefits" className="py-20 sm:py-32 bg-black text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-white/[0.03] z-0"></div>
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
+        <motion.div
           ref={ref}
           variants={sectionVariants}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
           className="text-center mb-16"
         >
-          <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            기대 효과 : <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">이력반영 답변유도</span>
+          <motion.h2 variants={itemVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
+            AI 운영 비용, <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">데이터로 증명된 절감 효과</span>
           </motion.h2>
-          <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            AI-Link를 입력하면 각 고객들은 원하는 고품질 결과물을 얻습니다
+          <motion.p variants={itemVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
+            AI-Link는 AI와의 불필요한 상호작용과 값비싼 출력 토큰을 획기적으로 줄여, AI 운영 ROI를 극대화하는 가장 확실한 방법입니다.
           </motion.p>
         </motion.div>
 
-        <motion.div 
-          variants={sectionVariants} 
+        <motion.div
+          variants={sectionVariants}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto"
+          className="max-w-5xl mx-auto"
         >
-          {benefits.map((benefit, index) => (
-            <BenefitCard key={index} {...benefit} />
-          ))}
+          {/* Table Header */}
+          <motion.div variants={itemVariants} className="hidden md:grid grid-cols-4 gap-4 items-center text-center font-semibold text-gray-400 mb-4 px-4">
+            <div>지표</div>
+            <div>Traditional AI</div>
+            <div className="text-cyan-300">With AI-Link</div>
+            <div className="text-green-400">개선 효과</div>
+          </motion.div>
+          
+          {/* Comparison Cards */}
+          <div className="space-y-6">
+            {comparisonData.map((data, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="bg-gray-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 transition-all duration-300 hover:border-cyan-400/50"
+              >
+                <div className="grid md:grid-cols-4 gap-6 items-center text-center">
+                  {/* Metric */}
+                  <div className="text-left md:text-center">
+                    <h3 className="text-lg font-bold text-white">{data.metric}</h3>
+                    <p className="text-sm text-gray-400 mt-1 hidden md:block">{data.description}</p>
+                  </div>
+                  
+                  {/* Before */}
+                  <div className="md:hidden text-left text-sm text-gray-400">Traditional AI</div>
+                  <ComparisonValue value={data.before} isPositive={false} />
+
+                  {/* After */}
+                  <div className="md:hidden text-left text-sm text-cyan-300">With AI-Link</div>
+                  <ComparisonValue value={data.after} isPositive={true} />
+                  
+                  {/* Improvement */}
+                  <div className="md:hidden text-left text-sm text-green-400">개선 효과</div>
+                  <ImprovementChip value={data.improvement} isPositive={false} />
+                  
+                   <p className="text-sm text-gray-400 mt-2 md:hidden col-span-2 text-left">{data.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>

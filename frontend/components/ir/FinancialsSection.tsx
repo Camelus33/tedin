@@ -1,63 +1,57 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip, LineChart, Line, ComposedChart } from 'recharts';
-import { DollarSign, Users, Target, TrendingUp, Briefcase, Brain, Cpu, Rocket, Calendar, BarChart3 } from 'lucide-react';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip, ComposedChart } from 'recharts';
+import { DollarSign, Users, Target, TrendingUp, Briefcase, Brain, Cpu, Rocket, Calendar, BarChart3, Repeat, ShoppingCart, Building } from 'lucide-react';
 
 const kpiData = [
-  { icon: <TrendingUp className="w-8 h-8 text-green-400" />, label: "목표 ARR (Year 1)", value: "1.2억원", note: "베타 100명 → 유료 500명 전환" },
-  { icon: <Users className="w-8 h-8 text-blue-400" />, label: "고객 생애 가치 (LTV)", value: "36만원", note: "평균 사용기간 18개월 × 월 2만원" },
-  { icon: <Target className="w-8 h-8 text-red-400" />, label: "고객 획득 비용 (CAC)", value: "9만원", note: "LTV/CAC 비율 4:1로 건전성 확보" }
+  { icon: <Repeat className="w-8 h-8 text-sky-400" />, label: "Phase 1: 슈퍼-러너 유지율", value: "95%", note: "미래 시장을 지배할 초기 팬덤의 충성도" },
+  { icon: <ShoppingCart className="w-8 h-8 text-lime-400" />, label: "Phase 2: 마켓플레이스 GMV", value: "$1M+", note: "네트워크 효과를 증명하는 거래액" },
+  { icon: <Building className="w-8 h-8 text-indigo-400" />, label: "Phase 3: Enterprise ACV", value: "$100K+", note: "지식 인프라로서의 시장 지배력" }
 ];
 
 const projectionData = [
-  { year: 'Seed (현재)', arr: 0.1, users: 100, revenue: 0.1, valuation: 30, funding: 3 },
-  { year: 'Year 1', arr: 1.2, users: 500, revenue: 1.2, valuation: 30, funding: 0 },
-  { year: 'Pre-A', arr: 3.6, users: 1500, revenue: 3.6, valuation: 100, funding: 10 },
-  { year: 'Year 2', arr: 12, users: 5000, revenue: 12, valuation: 100, funding: 0 },
-];
-
-const fundingScheduleData = [
-  { round: 'Seed', amount: 3, valuation: 30, ownership: 10, purpose: 'MVP 완성, 초기 고객 확보' },
-  { round: 'Pre-A', amount: 10, valuation: 100, ownership: 10, purpose: '제품 고도화, 시장 확장' },
+  { year: 'Year 1', proSubscriptions: 1.2, marketplace: 0, enterprise: 0 },
+  { year: 'Year 2', proSubscriptions: 3.6, marketplace: 0.5, enterprise: 0 },
+  { year: 'Year 3', proSubscriptions: 7, marketplace: 4, enterprise: 2 },
+  { year: 'Year 4', proSubscriptions: 12, marketplace: 15, enterprise: 10 },
+  { year: 'Year 5', proSubscriptions: 20, marketplace: 30, enterprise: 50 },
 ];
 
 const useOfFundsSeedData = [
-    { name: 'AI-Link 엔진 개발', value: 40, icon: <Brain className="w-5 h-5 mr-2" />, details: '시맨틱 온톨로지 엔진, 보안 프로토콜' },
-    { name: '고객 획득 & 검증', value: 35, icon: <Rocket className="w-5 h-5 mr-2" />, details: '베타 테스트, 초기 마케팅, 고객 검증' },
-    { name: '팀 확장', value: 15, icon: <Users className="w-5 h-5 mr-2" />, details: '개발자 2명, 마케터 1명 영입' },
-    { name: '운영자금', value: 10, icon: <Briefcase className="w-5 h-5 mr-2" />, details: '12개월 운영비, 법무/회계' },
+    { name: '제품 개발 (Beachhead)', value: 50, icon: <Brain className="w-5 h-5 mr-2" />, details: '슈퍼-러너를 위한 압도적 기능 완성' },
+    { name: '초기 커뮤니티 확보', value: 30, icon: <Rocket className="w-5 h-5 mr-2" />, details: '핵심 타겟 커뮤니티 마케팅 및 온보딩' },
+    { name: '핵심 팀 구성', value: 20, icon: <Users className="w-5 h-5 mr-2" />, details: '제품 및 성장을 위한 필수 인력' },
 ];
 
 const useOfFundsPreAData = [
-    { name: '제품 고도화', value: 45, icon: <Brain className="w-5 h-5 mr-2" />, details: 'AI 성능 향상, 새로운 기능 개발' },
-    { name: '시장 확장', value: 30, icon: <Rocket className="w-5 h-5 mr-2" />, details: '디지털 마케팅, 파트너십 구축' },
-    { name: '인프라 구축', value: 15, icon: <Cpu className="w-5 h-5 mr-2" />, details: '서버 확장, API 플랫폼 구축' },
-    { name: '운영자금', value: 10, icon: <Briefcase className="w-5 h-5 mr-2" />, details: '18개월 운영비, 예비 자금' },
+    { name: 'AI-Link 마켓플레이스 개발', value: 40, icon: <ShoppingCart className="w-5 h-5 mr-2" />, details: '지식 거래 생태계의 핵심 엔진 구축' },
+    { name: '네트워크 효과 마케팅', value: 35, icon: <TrendingUp className="w-5 h-5 mr-2" />, details: '플라이휠 가속화를 위한 마케팅 캠페인' },
+    { name: 'B2B/Enterprise 준비', value: 15, icon: <Building className="w-5 h-5 mr-2" />, details: '기업 고객을 위한 보안 및 관리 기능 개발' },
+    { name: '운영 및 인프라', value: 10, icon: <Cpu className="w-5 h-5 mr-2" />, details: '안정적 서비스 운영을 위한 서버 확장' },
 ];
 
-const COLORS_SEED = ['#2dd4bf', '#0ea5e9', '#8b5cf6', '#f59e0b'];
+const COLORS_SEED = ['#2dd4bf', '#0ea5e9', '#8b5cf6'];
 const COLORS_PREA = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
 
 const milestonesData = [
-  { period: "Seed 후 6개월", target: "베타 사용자 500명, MVP 완성", kpi: "사용자 만족도 4.2/5" },
-  { period: "Seed 후 12개월", target: "유료 사용자 500명, ARR 1.2억", kpi: "월 성장률 15%" },
-  { period: "Pre-A 후 6개월", target: "유료 사용자 1,500명, ARR 3.6억", kpi: "고객 유지율 85%" },
-  { period: "Pre-A 후 12개월", target: "유료 사용자 5,000명, ARR 12억", kpi: "Series A 준비 완료" },
+  { period: "Seed 후 12개월", target: "Phase 1 달성: 슈퍼-러너 500명 확보", kpi: "리텐션 95%, ARR 1.2억" },
+  { period: "Pre-A 후 12개월", target: "Phase 2 점화: AI-Link 마켓 베타 오픈", kpi: "GMV 100만 달러, ARR 12억" },
+  { period: "Pre-A 후 24개월", target: "Phase 3 진입: 첫 Enterprise 계약 체결", kpi: "Series A 준비 완료" },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
   if (active && payload && payload.length) {
-    const data = payload[0].payload;
+    const total = payload.reduce((acc: number, entry: any) => acc + entry.value, 0);
     return (
       <div className="p-4 bg-gray-900 bg-opacity-90 backdrop-blur-sm border border-gray-700 rounded-lg shadow-lg text-white">
         <p className="label text-lg font-bold text-teal-300 mb-2">{`${label}`}</p>
-        <p className="intro text-indigo-300">{`ARR: ${data.arr.toLocaleString()}억 원`}</p>
-        <p className="intro text-sky-300">{`사용자: ${data.users.toLocaleString()}명`}</p>
-        <p className="intro text-purple-300">{`기업가치: ${data.valuation.toLocaleString()}억 원`}</p>
-        {data.funding > 0 && (
-          <p className="intro text-green-300">{`투자 유치: ${data.funding.toLocaleString()}억 원`}</p>
-        )}
+        {payload.map((entry: any) => (
+          <p key={entry.name} style={{ color: entry.color }}>
+            {`${entry.name}: ${entry.value.toLocaleString()}억 원`}
+          </p>
+        ))}
+         <p className="mt-2 pt-2 border-t border-gray-600 font-bold">{`Total Revenue: ${total.toLocaleString()}억 원`}</p>
       </div>
     );
   }
@@ -75,10 +69,10 @@ const FinancialsSection = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">
-            재무 모델 & <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">투자 계획</span>
+            Financials: <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">The Flywheel's Economic Engine</span>
           </h2>
           <p className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-16">
-            현실적 추정 기반 단계별 성장 모델: 시드 3억원 → Pre-A 10억원으로 총 13억원 조달하여 시장 점유율 확보
+            우리의 재무 모델은 3단계 성장 전략과 맞물려, 각 단계마다 새로운 수익 엔진을 장착하며 기하급수적으로 성장합니다. 이는 단순한 사용자 증가가 아닌, 생태계 가치 폭발의 결과입니다.
           </p>
         </motion.div>
 
@@ -100,47 +94,9 @@ const FinancialsSection = () => {
             </motion.div>
           ))}
         </div>
-
-        {/* Funding Schedule */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="mb-20"
-        >
-          <h3 className="text-3xl font-bold text-center mb-12">단계별 투자 유치 계획</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {fundingScheduleData.map((round, index) => (
-              <div key={round.round} className="bg-gray-800/50 p-8 rounded-2xl border border-gray-700/40">
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-2xl font-bold text-teal-300">{round.round} 라운드</h4>
-                  <Calendar className="w-8 h-8 text-gray-400" />
-                </div>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">투자 금액</span>
-                    <span className="font-bold text-white">{round.amount}억원</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">기업 가치</span>
-                    <span className="font-bold text-white">{round.valuation}억원</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">지분 희석</span>
-                    <span className="font-bold text-green-400">{round.ownership}%</span>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-gray-600">
-                    <p className="text-sm text-gray-300">{round.purpose}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
+        
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-20">
-          {/* Growth Projection Chart */}
+          {/* Revenue Projection Chart */}
           <motion.div 
             className="lg:col-span-3"
             initial={{ opacity: 0, x: -30 }}
@@ -149,25 +105,33 @@ const FinancialsSection = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full">
-              <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center md:text-left">성장 시나리오 & 투자 로드맵</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center md:text-left">수익 모델 진화 (단위: 억원)</h3>
               <div className="h-96">
                 <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={projectionData} margin={{ top: 5, right: 20, left: -10, bottom: 25 }}>
+                  <AreaChart data={projectionData} margin={{ top: 10, right: 30, left: 0, bottom: 25 }}>
                     <defs>
-                      <linearGradient id="colorArr" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#2dd4bf" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0.3}/>
+                      <linearGradient id="colorEnterprise" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                      </linearGradient>
+                      <linearGradient id="colorMarketplace" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#a3e635" stopOpacity={0.7}/>
+                        <stop offset="95%" stopColor="#a3e635" stopOpacity={0.1}/>
+                      </linearGradient>
+                      <linearGradient id="colorPro" x1="0" y1="0" x2="0" y2="1">
+                         <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.6}/>
+                         <stop offset="95%" stopColor="#38bdf8" stopOpacity={0.1}/>
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" strokeOpacity={0.3} />
                     <XAxis dataKey="year" tick={{ fill: '#a0aec0' }} axisLine={{ stroke: '#4a5568' }} tickLine={{ stroke: '#4a5568' }} dy={10} />
-                    <YAxis yAxisId="left" orientation="left" stroke="#818cf8" tick={{ fill: '#a0aec0' }} unit="억" />
-                    <YAxis yAxisId="right" orientation="right" stroke="#67e8f9" tick={{ fill: '#a0aec0' }} unit="명" />
+                    <YAxis tick={{ fill: '#a0aec0' }} unit="억" axisLine={{ stroke: '#4a5568' }} tickLine={{ stroke: '#4a5568' }} />
                     <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(148, 163, 184, 0.1)'}} />
                     <Legend wrapperStyle={{ color: '#e2e8f0', paddingTop: '40px' }} formatter={(value) => <span style={{color: '#a0aec0'}}>{value}</span>} />
-                    <Bar yAxisId="left" dataKey="arr" name="ARR (억원)" fill="url(#colorArr)" radius={[4, 4, 0, 0]} barSize={30} />
-                    <Line yAxisId="right" type="monotone" dataKey="users" name="사용자 수 (명)" stroke="#67e8f9" strokeWidth={2.5} dot={{ r: 5, strokeWidth: 2, fill: '#083344' }} activeDot={{ r: 7 }} />
-                  </ComposedChart>
+                    <Area type="monotone" dataKey="proSubscriptions" name="Pro 구독료" stackId="1" stroke="#38bdf8" fill="url(#colorPro)" />
+                    <Area type="monotone" dataKey="marketplace" name="마켓플레이스 수수료" stackId="1" stroke="#a3e635" fill="url(#colorMarketplace)" />
+                    <Area type="monotone" dataKey="enterprise" name="Enterprise 계약" stackId="1" stroke="#8b5cf6" fill="url(#colorEnterprise)" />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
             </div>
@@ -182,7 +146,7 @@ const FinancialsSection = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full">
-              <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center md:text-left">핵심 마일스톤</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-6 text-center md:text-left">전략적 마일스톤</h3>
               <div className="space-y-6">
                 {milestonesData.map((milestone, index) => (
                   <div key={index} className="border-l-4 border-teal-400 pl-6">
@@ -207,7 +171,7 @@ const FinancialsSection = () => {
           >
             <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full flex flex-col">
               <h3 className="text-2xl font-bold mb-2 text-center">시드 라운드 자금 사용 계획 (3억원)</h3>
-              <p className="text-gray-400 text-center mb-6">유료 사용자 500명 확보에 집중</p>
+              <p className="text-gray-400 text-center mb-6">Phase 1: Beachhead 점령</p>
               <div className="flex-grow h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart 
@@ -256,10 +220,10 @@ const FinancialsSection = () => {
           >
             <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full flex flex-col">
               <h3 className="text-2xl font-bold mb-2 text-center">Pre-A 라운드 자금 사용 계획 (10억원)</h3>
-              <p className="text-gray-400 text-center mb-6">제품 고도화 및 시장 점유율 1% 달성</p>
-              <div className="flex-grow h-80 w-full">
+              <p className="text-gray-400 text-center mb-6">Phase 2: Flywheel 점화</p>
+               <div className="flex-grow h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart 
+                   <BarChart 
                     layout="vertical" 
                     data={useOfFundsPreAData} 
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -274,7 +238,7 @@ const FinancialsSection = () => {
                       axisLine={false} 
                       tickLine={false}
                     />
-                     <Tooltip 
+                    <Tooltip 
                       cursor={{fill: 'rgba(148, 163, 184, 0.1)'}}
                       contentStyle={{
                         background: 'rgba(31, 41, 55, 0.8)',

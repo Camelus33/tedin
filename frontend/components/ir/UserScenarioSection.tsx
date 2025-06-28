@@ -3,7 +3,19 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { FiEdit3, FiLink2, FiBook, FiUploadCloud, FiAward, FiChevronRight, FiZap } from 'react-icons/fi';
+import { FiEdit3, FiLink2, FiBook, FiUploadCloud, FiAward, FiChevronRight, FiZap, FiTrendingDown } from 'react-icons/fi';
+
+const CostImpactChip = ({ text }: { text: string }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.5 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ delay: 0.7, duration: 0.3 }}
+    className="ml-3 px-2.5 py-1 text-xs font-semibold text-green-300 bg-green-500/10 border border-green-500/20 rounded-full flex items-center"
+  >
+    <FiTrendingDown className="mr-1.5 flex-shrink-0" />
+    <span>{text}</span>
+  </motion.div>
+);
 
 interface ScenarioStepProps {
   stepNumber: number;
@@ -11,6 +23,8 @@ interface ScenarioStepProps {
   title: string;
   description: string;
   detailedDescription: string;
+  costImpact?: string;
+  costImpactShort?: string;
   delay: number;
   isLast?: boolean;
   isActive: boolean;
@@ -26,6 +40,8 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
   title, 
   description, 
   detailedDescription,
+  costImpact,
+  costImpactShort,
   delay, 
   isLast, 
   isActive,
@@ -130,13 +146,18 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
           {/* Step Content */}
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <h3 className={`text-xl font-bold transition-colors duration-300 ${
-                isActive 
-                  ? isAutomatic ? 'text-indigo-400' : 'text-cyan-400' 
-                  : 'text-white'
-              }`}>
-                {title}
-              </h3>
+              <div className="flex items-center">
+                <h3 className={`text-xl font-bold transition-colors duration-300 ${
+                  isActive 
+                    ? isAutomatic ? 'text-indigo-400' : 'text-cyan-400' 
+                    : 'text-white'
+                }`}>
+                  {title}
+                </h3>
+                {costImpactShort && (
+                  <CostImpactChip text={costImpactShort} />
+                )}
+              </div>
               <motion.div
                 animate={isActive ? { x: [0, 5, 0] } : { x: 0 }}
                 transition={{ duration: 1.5, repeat: isActive ? Infinity : 0 }}
@@ -185,6 +206,21 @@ const ScenarioStep: React.FC<ScenarioStepProps> = ({
                   {detailedDescription}
                 </p>
               </div>
+
+              {/* 비용 영향 섹션 추가 */}
+              {costImpact && (
+                <div className="mt-4 p-4 rounded-lg bg-green-900/30 border border-green-500/20">
+                  <div className="flex items-start">
+                    <FiTrendingDown className="text-green-400 mr-3 mt-1 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-green-300">비용 영향</h4>
+                      <p className="text-green-200/80 text-sm leading-relaxed mt-1">
+                        {costImpact}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -251,6 +287,8 @@ const UserScenarioSection = () => {
       title: '메모 입력',
       description: '업무, 연구, 학습 중 떠오른 아이디어나 중요한 정보를 간단히 메모로 입력합니다.',
       detailedDescription: '형식에 구애받지 않고 자유롭게 기록할 수 있습니다. 텍스트, 이미지, 링크 등 다양한 형태의 정보를 손쉽게 저장하고, 태그를 통해 분류할 수 있습니다. 모바일과 데스크톱 모든 환경에서 동기화되어 언제든 접근 가능합니다.',
+      costImpact: '비용 영향: 중립. 고품질 컨텍스트의 원재료를 축적하여 향후 비용 절감의 기반을 마련합니다.',
+      costImpactShort: undefined,
       delay: 0,
     },
     {
@@ -258,6 +296,8 @@ const UserScenarioSection = () => {
       title: '생각 연결',
       description: '입력한 메모에 추가적인 생각을 더하고, 기존의 다른 지식이나 경험과 연결점을 찾아 관계를 형성합니다.',
       detailedDescription: 'AI가 자동으로 관련된 메모들을 추천하고, 사용자가 직접 연결고리를 만들 수 있습니다. 지식 간의 맥락이 풍부해지면서 새로운 인사이트가 창발됩니다. 시각적 지식 맵을 통해 연결 관계를 한눈에 파악할 수 있습니다.',
+      costImpact: '비용 영향: API 호출 1~2회 감소. AI가 관계를 추론하는 과정을 생략시켜 불필요한 질의응답을 방지합니다.',
+      costImpactShort: 'API 호출 ▼',
       delay: 0.2,
     },
     {
@@ -265,6 +305,8 @@ const UserScenarioSection = () => {
       title: '단권화 & 인사이트 추가',
       description: '연결된 메모들을 하나의 주제로 모아 정리하고, 새로운 통찰이나 결론을 추가합니다.',
       detailedDescription: '파편화된 지식이 체계적인 지식으로 발전됩니다. 자동 요약 기능과 함께 사용자만의 고유한 관점과 경험을 추가하여 개인화된 지식 베이스를 구축합니다. 다양한 템플릿을 제공하여 효율적인 정리가 가능합니다.',
+      costImpact: '비용 영향: 출력 토큰 약 40% 감소. 명확한 목표를 제시하여, AI의 장황하고 관련 없는 답변 생성을 원천 차단합니다.',
+      costImpactShort: '출력 토큰 ▼',
       delay: 0.4,
     },
     {
@@ -272,6 +314,8 @@ const UserScenarioSection = () => {
       title: 'AI-Link 생성 & 전송',
       description: '완성된 지식 구조를 바탕으로 AI-Link가 자동 생성됩니다.',
       detailedDescription: '당신의 지식 DNA가 AI가 이해할 수 있는 시맨틱 온톨로지 형태로 변환되어 전송됩니다. 개인의 사고 패턴, 선호도, 전문 영역을 모두 포함한 컨텍스트가 압축되어 AI에게 전달됩니다. 보안이 철저히 보장되는 암호화된 채널을 통해 안전하게 전송됩니다.',
+      costImpact: '비용 영향: API 호출 67% 감소. 분산된 상호작용을 단일 트랜잭션으로 압축하여 통신 비용을 최소화합니다.',
+      costImpactShort: 'API 호출 ▼▼',
       delay: 0.6,
       isAutomatic: true,
     },
@@ -280,6 +324,8 @@ const UserScenarioSection = () => {
       title: '고품질 답변 생성',
       description: 'AI-Link를 받은 AI는 당신의 맥락을 완벽히 이해한 상태에서 개인화된 고품질 답변을 생성합니다.',
       detailedDescription: '더 이상 일반적인 답변이 아닌, 당신만을 위한 결과물을 얻습니다. 당신의 전문성 수준, 관심사, 업무 맥락을 모두 고려한 맞춤형 답변이 제공됩니다. 지속적인 학습을 통해 답변의 품질이 계속 향상됩니다.',
+      costImpact: '비용 영향: 총 운영 비용 55% 절감. 최소한의 토큰으로 최대의 가치를 창출하며, AI 운영의 ROI를 극대화합니다.',
+      costImpactShort: '총 비용 ▼▼▼',
       delay: 0.8,
       isAutomatic: true,
     },
@@ -349,6 +395,8 @@ const UserScenarioSection = () => {
               title={scenario.title}
               description={scenario.description}
               detailedDescription={scenario.detailedDescription}
+              costImpact={scenario.costImpact}
+              costImpactShort={scenario.costImpactShort}
               delay={scenario.delay}
               isLast={index === scenarios.length - 1}
               isActive={activeStep === index}

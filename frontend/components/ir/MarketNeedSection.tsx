@@ -3,17 +3,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { FiBriefcase, FiBookOpen, FiUsers } from 'react-icons/fi';
+import { FiTrendingUp, FiHelpCircle, FiBarChart2 } from 'react-icons/fi';
 
-interface NeedCardProps {
+interface FactCardProps {
   icon: React.ReactNode;
-  userType: string;
-  need: string;
+  title: string;
+  value: string;
   description: string;
+  source: string;
   delay: number;
 }
 
-const NeedCard: React.FC<NeedCardProps> = ({ icon, userType, need, description, delay }) => {
+const FactCard: React.FC<FactCardProps> = ({ icon, title, value, description, source, delay }) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -30,16 +31,19 @@ const NeedCard: React.FC<NeedCardProps> = ({ icon, userType, need, description, 
       variants={variants}
       initial="hidden"
       animate={inView ? 'visible' : 'hidden'}
-      className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-lg text-center"
+      className="bg-slate-800/50 backdrop-blur-md rounded-2xl p-8 border border-slate-700 shadow-lg text-left transform transition-all duration-300 hover:-translate-y-2 hover:border-indigo-400/50"
     >
-      <div className="flex justify-center text-indigo-300 mb-6">
-        {icon}
+      <div className="flex items-start justify-between mb-4">
+        <div className="p-3 bg-slate-700/50 rounded-lg">
+          {icon}
+        </div>
+        <p className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+          {value}
+        </p>
       </div>
-      <h3 className="text-2xl font-bold text-white mb-4">{userType}</h3>
-      <div className="text-center">
-        <p className="text-lg font-semibold text-cyan-400 mb-4">필요: {need}</p>
-        <p className="text-sm text-gray-300 leading-relaxed">{description}</p>
-      </div>
+      <h3 className="text-xl font-semibold text-white mb-3">{title}</h3>
+      <p className="text-sm text-slate-300 leading-relaxed mb-4">{description}</p>
+      <p className="text-xs text-slate-500 text-right">Source: {source}</p>
     </motion.div>
   );
 };
@@ -60,33 +64,36 @@ const MarketNeedSection = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
-  const needs = [
+  const facts = [
     {
-      icon: <FiBriefcase size={48} />,
-      userType: '직장인',
-      need: 'AI 비서',
-      description: '업무 보고서 작성, 데이터 분석, 프레젠테이션 자료 준비 등 일상 업무를 효율적으로 처리할 수 있는 개인화된 AI 어시스턴트가 필요합니다.',
+      icon: <FiTrendingUp size={28} className="text-indigo-300" />,
+      title: 'AI 예산의 급증',
+      value: '+36%',
+      description: '기업들의 월 평균 AI 관련 예산은 폭발적으로 증가하고 있지만, 그 지출이 실질적인 성과로 이어지는지는 미지수입니다.',
+      source: 'CloudZero, 2025',
       delay: 0,
     },
     {
-      icon: <FiBookOpen size={48} />,
-      userType: '연구자',
-      need: 'AI 조교',
-      description: '논문 리뷰, 연구 동향 분석, 실험 데이터 해석 등 연구 활동 전반을 지원하며 전문 지식을 바탕으로 통찰을 제공하는 AI가 필요합니다.',
+      icon: <FiHelpCircle size={28} className="text-indigo-300" />,
+      title: '불확실한 ROI',
+      value: '51%',
+      description: 'AI에 막대한 비용을 투자한 기업 중 절반 이상이 그 투자에 대한 수익률(ROI)을 확신하지 못하고 있습니다.',
+      source: 'CloudZero, 2025',
       delay: 0.2,
     },
     {
-      icon: <FiUsers size={48} />,
-      userType: '학습자',
-      need: 'AI 튜터',
-      description: '개인의 학습 수준과 목표에 맞춘 맞춤형 학습 계획 수립, 개념 설명, 문제 해결 가이드를 제공하는 개인화된 AI 튜터가 필요합니다.',
+      icon: <FiBarChart2 size={28} className="text-indigo-300" />,
+      title: '예측 불가능한 추론 비용',
+      value: 'Hidden',
+      description: '반복적으로 발생하는 AI 추론(Inference) 비용은 예측이 어렵고 변동성이 커, 기술의 전사적 도입을 막는 가장 큰 장벽이 되고 있습니다.',
+      source: 'The Register, 2025',
       delay: 0.4,
     },
   ];
 
   return (
-    <section id="market-need" className="py-20 sm:py-32 bg-gray-900 text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid-white/[0.05] z-0"></div>
+    <section id="market-need" className="py-20 sm:py-32 bg-slate-900 text-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-white/[0.03] z-0"></div>
       <div className="container mx-auto px-4 relative z-10">
         <motion.div 
           ref={ref}
@@ -96,10 +103,10 @@ const MarketNeedSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            고객이 원하는 건, <span className="text-indigo-400">나를 아는 AI Agent</span>
+            AI 도입의 역설: <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">혁신 뒤의 비용 문제</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            각기 다른 3가지 고객들 모두가 '나의 이력'을 알고 있는 AI를 원합니다.
+            모든 기업이 AI의 잠재력에 투자하고 있지만, 그 이면에서는 통제 불가능한 비용과 불확실한 ROI라는 심각한 문제에 직면해 있습니다.
           </motion.p>
         </motion.div>
 
@@ -109,8 +116,8 @@ const MarketNeedSection = () => {
           animate={inView ? 'visible' : 'hidden'}
           className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"
         >
-          {needs.map((need, index) => (
-            <NeedCard key={index} {...need} />
+          {facts.map((fact, index) => (
+            <FactCard key={index} {...fact} />
           ))}
         </motion.div>
       </div>

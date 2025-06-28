@@ -1,42 +1,42 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Layers, Database, BrainCircuit } from 'lucide-react';
+import { FileText, Hand, Zap } from 'lucide-react';
 import AppLogo from '@/components/common/AppLogo';
 
 const competitorGroups = [
   {
-    icon: <Layers className="w-8 h-8 text-purple-400" />,
-    name: '거대 언어 모델 (LLM)',
-    examples: 'ChatGPT, Gemini',
-    approach: '세상의 모든 것을 아는 ‘척척박사’지만, ‘당신’을 채팅기록과 동일시합니다.',
-    limitation: '채팅이 끝날 때마다 리셋됩니다. 아니면 채팅 기록을 다 넘겨줘야 합니다.',
-  },
-  {
-    icon: <Database className="w-8 h-8 text-slate-400" />,
-    name: '전통적 노트/생산성 앱',
+    icon: <FileText className="w-8 h-8 text-slate-400" />,
+    name: 'The Siloed Way: 정보의 무덤',
     examples: 'Notion, Evernote',
-    approach: '깔끔하게 정리된 ‘서랍’이지만, 서로 어떻게 연결되는지는 모릅니다.',
-    limitation: '각자 따로 놀기 때문에, AI가 큰 그림을 보고 답변하기 힘듭니다.',
+    approach: '정보를 깔끔하게 저장하지만, 연결되지 않은 채 각자의 서랍 속에서 잠자게 만듭니다.',
+    limitation: '검색하지 않으면 존재조차 잊히는 수동적 데이터로, 지식 자산이 아닌 비용을 발생시킵니다.',
   },
   {
-    icon: <BrainCircuit className="w-8 h-8 text-blue-400" />,
-    name: 'AI 기반 노트/기록 앱',
-    examples: 'Mem.ai, Rewind.ai',
-    approach: '“무엇을” 했는지는 알지만, “왜” 했는지는 모릅니다.',
-    limitation: '단편적인 사실들을 찾아줄 뿐, 당신만의 인사이트을 만들어주지는 못합니다.',
+    icon: <Hand className="w-8 h-8 text-blue-400" />,
+    name: 'The Manual Way: 소수 전문가의 길',
+    examples: 'Obsidian, Roam',
+    approach: '사용자가 직접 모든 지식을 연결하고 구조화해야 하는 높은 수준의 규율을 요구합니다.',
+    limitation: '뛰어난 소수를 제외한 99%의 사용자는 결국 지쳐서 포기하게 만드는 높은 진입 장벽이 존재합니다.',
+  },
+  {
+    icon: <Zap className="w-8 h-8 text-purple-400" />,
+    name: 'The Volatile Way: 똑똑한 단기기억상실',
+    examples: 'ChatGPT, Gemini',
+    approach: '매번의 대화가 독립적이며, 과거의 맥락을 기억하지 못하는 일회성 상호작용에 그칩니다.',
+    limitation: '사용자 메모리를 점점 지원하지만, 소중한 도메인 지식을 무료로 모두 넘겨 줘야 합니다.',
   },
 ];
 
 const positioningData = {
     axisLabels: {
-        x: ['단순 색인', '온톨로지'],
-        y: ['기록 보관', '맥락 이해'],
+        x: ['Manual', 'Automatic'],
+        y: ['Stateless', 'Stateful'],
     },
     competitors: [
         { name: 'Notion, Evernote', x: 20, y: 75, color: 'text-slate-300' },
-        { name: 'ChatGPT, Gemini', x: 35, y: 65, color: 'text-purple-300' },
-        { name: 'Mem.ai, Rewind.ai', x: 25, y: 40, color: 'text-blue-300' },
+        { name: 'Obsidian, Roam', x: 25, y: 25, color: 'text-blue-300' },
+        { name: 'ChatGPT, Gemini', x: 80, y: 75, color: 'text-purple-300' },
     ],
     habitus: {
         x: 80,
@@ -59,31 +59,7 @@ const CompetitorAnalysisSection = () => {
   };
 
   return (
-    <section id="competitor-analysis" className="py-20 md:py-32 bg-slate-950 text-white relative overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-20">
-        {[...Array(50)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-cyan-400/50"
-            initial={{ 
-              x: `${Math.random() * 100}%`,
-              y: `${Math.random() * 100}%`,
-              scale: 0,
-            }}
-            animate={{ scale: [0, Math.random() * 0.5 + 0.1, 0] }}
-            transition={{
-              duration: Math.random() * 10 + 5,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-            }}
-            style={{
-              width: `${Math.random() * 3 + 1}px`,
-              height: `${Math.random() * 3 + 1}px`,
-            }}
-          />
-        ))}
-      </div>
-
+    <section id="competitor-analysis" className="py-20 md:py-32 bg-slate-950 text-white relative">
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -92,10 +68,10 @@ const CompetitorAnalysisSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            경쟁 전략: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">온톨로지 적용</span>
+            Why We Win: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">A New Game, New Rules</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-4xl mx-auto leading-relaxed">
-            다른 서비스들이 원하는 '정보'를 생성할 때, 우리는 당신의 이력을 AI에 주입합니다.
+            기존의 툴들은 '정보 저장'이라는 낡은 경기장에서 경쟁합니다. 우리는 '지식 자산화'라는 새로운 경기장을 창조하며, 이 게임의 규칙은 우리가 만듭니다.
           </p>
         </motion.div>
 
@@ -113,10 +89,10 @@ const CompetitorAnalysisSection = () => {
               <div className="absolute top-1/2 left-4 right-4 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent" />
               <div className="absolute left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent" />
               
-              <p className="absolute bottom-1 left-1/4 -translate-x-1/2 whitespace-nowrap text-xs font-medium text-gray-500">{positioningData.axisLabels.x[0]}</p>
-              <p className="absolute bottom-1 right-1/4 translate-x-1/2 whitespace-nowrap text-xs font-medium text-gray-500">{positioningData.axisLabels.x[1]}</p>
-              <p className="absolute top-1/4 -translate-y-1/2 left-1 text-xs font-medium text-gray-500 transform -rotate-90 whitespace-nowrap">{positioningData.axisLabels.y[1]}</p>
-              <p className="absolute bottom-1/4 translate-y-1/2 left-1 text-xs font-medium text-gray-500 transform -rotate-90 whitespace-nowrap">{positioningData.axisLabels.y[0]}</p>
+              <p className="absolute bottom-1 left-1/4 -translate-x-1/2 whitespace-nowrap text-sm font-medium text-gray-500">{positioningData.axisLabels.x[0]}</p>
+              <p className="absolute bottom-1 right-1/4 translate-x-1/2 whitespace-nowrap text-sm font-medium text-gray-500">{positioningData.axisLabels.x[1]}</p>
+              <p className="absolute top-1/4 -translate-y-1/2 left-1 text-sm font-medium text-gray-500 transform -rotate-90 whitespace-nowrap">{positioningData.axisLabels.y[1]}</p>
+              <p className="absolute bottom-1/4 translate-y-1/2 left-1 text-sm font-medium text-gray-500 transform -rotate-90 whitespace-nowrap">{positioningData.axisLabels.y[0]}</p>
 
               {/* Central Glow */}
               <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-cyan-500/5 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2" />
@@ -148,9 +124,6 @@ const CompetitorAnalysisSection = () => {
                     <AppLogo className="w-10 h-10 text-cyan-400 group-hover:scale-110 transition-transform" />
                     <p className="font-bold text-sm text-cyan-400 mt-1">Habitus33</p>
                   </div>
-                  <p className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-48 text-center text-xs bg-slate-800 text-gray-300 px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-xl">
-                    이력반영
-                  </p>
                 </div>
               </motion.div>
             </div>
@@ -174,15 +147,9 @@ const CompetitorAnalysisSection = () => {
                   <div className="flex-shrink-0 mr-4 mt-1">{group.icon}</div>
                   <div>
                     <h4 className="font-bold text-lg text-white">{group.name} <span className="text-sm font-normal text-gray-400">({group.examples})</span></h4>
-                    <p className="text-sm text-gray-300 mt-2"><span className="font-semibold text-gray-100">핵심 전략:</span> {group.approach}</p>
-                    <p className={`text-sm mt-2 ${
-                      group.name.includes('LLM') ? 'text-purple-400/80' : 
-                      group.name.includes('전통적') ? 'text-slate-400/80' : 'text-blue-400/80'
-                    }`}>
-                      <span className={`font-semibold ${
-                        group.name.includes('LLM') ? 'text-purple-300' : 
-                        group.name.includes('전통적') ? 'text-slate-300' : 'text-blue-300'
-                      }`}>본질적 한계:</span> {group.limitation}
+                    <p className="text-sm text-gray-300 mt-2"><span className="font-semibold text-gray-100">Approach:</span> {group.approach}</p>
+                    <p className="text-sm mt-2 text-red-400/80">
+                      <span className="font-semibold text-red-300">Fundamental Limitation:</span> {group.limitation}
                     </p>
                   </div>
                 </div>

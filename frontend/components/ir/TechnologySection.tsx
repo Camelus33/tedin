@@ -2,20 +2,24 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { FiArrowRight } from 'react-icons/fi';
 
 const techData = [
   {
     image: '/images/ir/temporal-knowledge-ontology-engine.png',
-    title: '시맨틱 온톨로지: 지식 DNA 매핑',
-    description:
-      "기존 AI가 단순히 '무엇을' 아는지만 처리했다면, 저희는 '언제, 어떤 맥락에서, 어떤 순서로' 지식이 형성되었는지까지 추적합니다. 여기에 개인의 학습 이력을 시간축으로 구조화한 4차원 지식 지도를 생성하여, AI가 사용자를 완벽히 이해하게 만듭니다. 이는 47%의 AI 환각 문제를 도메인 컨텍스트를 주입해 해결하는 기술입니다.",
+    title: 'The Data Moat: 시맨틱 타임라인 지식 그래프',
+    description: "사용자의 모든 디지털 발자취를 시간과 맥락에 따라 연결하여, 파편화된 정보를 '고품질 지식 그래프'로 변환합니다. 이 데이터는 시간이 지날수록 강력해지며, 돈으로는 살 수 없는 우리만의 독점적 자산이 됩니다. 경쟁사는 이 깊이를 따라올 수 없습니다.",
   },
   {
     image: '/images/ir/4-step-knowledge-distillation-protocol.png',
-    title: 'AI-Link™ 보안 프로토콜: 지식 DNA 캡슐화',
-    description:
-      "메모→연결→단권화→AI-Link 생성의 4단계를 통해 AI가 즉시 이해할 수 있는 압축된 형태로 변환합니다. JSON-LD 지식 증류 알고리즘이 핵심 인사이트만 추출하고, 암호화된 시맨틱 캡슐로 패키징하여 AI에게 전송합니다. 이 과정에서 개인정보는 완전히 보호되며, AI는 마치 사용자의 사고 패턴을 이해한 것처럼 맞춤형 답변을 생성합니다.",
+    title: 'The Unfair Advantage: 4단계 지식 증류 프로토콜',
+    description: "단순히 정보를 요약하는 것을 넘어, '정제-구조화-생성-전송'의 4단계 프로토콜을 통해 사용자의 암묵지를 AI가 이해할 수 있는 형식지로 변환합니다. 이 독점적인 프로세스는 우리의 기술적 해자(Moat)를 만듭니다.",
   },
+  // {
+  //   image: '/images/ir/creative-persona-engine.png',
+  //   title: 'The Personalization Core: Creative Persona Engine',
+  //   description: "지식 그래프를 바탕으로 사용자의 고유한 '창의적 페르소나'를 모델링합니다. AI는 이 페르소나를 기반으로 사용자의 스타일, 톤, 관점을 완벽하게 모방하여, 단순한 정보가 아닌 '지적 파트너'로서의 결과물을 제공합니다.",
+  // },
 ];
 
 const TechnologySection = () => {
@@ -30,11 +34,10 @@ const TechnologySection = () => {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.9 },
+    hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
       transition: {
         duration: 0.6,
         ease: 'easeOut',
@@ -45,14 +48,8 @@ const TechnologySection = () => {
   return (
     <section 
       id="technology" 
-      className="py-20 md:py-32 bg-gray-900 text-white overflow-hidden"
+      className="py-20 md:py-32 bg-slate-900 text-white overflow-hidden"
     >
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-        style={{backgroundImage: "url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1950&q=80')"}}
-      ></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent" />
-
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -61,37 +58,43 @@ const TechnologySection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            핵심 기술: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">AI-Link</span> 엔진
+            Our Technological <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Moat</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            5년간의 시행착오로 완성된 지식 DNA 전송 기술, 경쟁사가 모방하기 힘든 '암묵지'로 더 깊은 해자를 만들고 있습니다.
+            우리의 해자는 단일 기술이 아닌, 세 가지 핵심 엔진이 유기적으로 결합된 '지능 증강 시스템'입니다. 하나를 모방하더라도, 전체 시스템이 만들어내는 시너지는 결코 따라올 수 없습니다.
           </p>
         </motion.div>
 
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto"
+          className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-4"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
           {techData.map((tech, index) => (
-            <motion.div
-              key={index}
-              className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 text-center flex flex-col items-center shadow-lg hover:border-cyan-400/50 hover:bg-gray-800/60 transition-all duration-300"
-              variants={itemVariants}
-            >
-              <div className="relative w-full h-56 mb-6 rounded-lg overflow-hidden">
-                <Image
-                  src={tech.image}
-                  alt={tech.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-100">{tech.title}</h3>
-              <p className="text-gray-400 leading-relaxed">{tech.description}</p>
-            </motion.div>
+            <React.Fragment key={index}>
+              <motion.div
+                className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 text-center flex flex-col items-center shadow-lg hover:border-cyan-400/50 hover:bg-gray-800/60 transition-all duration-300 w-full md:w-1/3"
+                variants={itemVariants}
+              >
+                <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
+                  <Image
+                    src={tech.image}
+                    alt={tech.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-gray-100">{tech.title}</h3>
+                <p className="text-sm text-gray-400 leading-relaxed flex-grow">{tech.description}</p>
+              </motion.div>
+              {index < techData.length - 1 && (
+                <motion.div variants={itemVariants} className="hidden md:block">
+                  <FiArrowRight className="w-10 h-10 text-cyan-500" />
+                </motion.div>
+              )}
+            </React.Fragment>
           ))}
         </motion.div>
       </div>

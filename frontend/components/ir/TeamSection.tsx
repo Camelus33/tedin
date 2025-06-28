@@ -2,49 +2,52 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Linkedin, Twitter, Star } from 'lucide-react';
+import { Linkedin, BrainCircuit, Users, Sigma } from 'lucide-react';
 
 const teamMembers = [
   {
     name: 'Jinny B. Suh',
-    role: 'CEO & CTO',
-    bio: [
-      "Full-stack developer & AI researcher (2 arXiv papers)",
-      "Dual background in Mathematics & Business Administration",
-      "Architect of Habitus33's core knowledge graph technology",
+    role: 'CEO & Visionary Architect',
+    icon: <BrainCircuit size={20} className="text-indigo-400" />,
+    expertise: [
+      "AI Researcher (2 arXiv pre-prints)",
+      "Mathematics & Business dual background",
+      "Architect of the core Temporal Knowledge Graph",
     ],
+    story: "AI 기술의 깊이와 비즈니스의 현실을 모두 이해하는 Jinny는 기술적 가능성을 시장이 원하는 가치로 변환하는 올라운드 플레이어입니다.",
     imageUrl: 'https://picsum.photos/seed/jinny/400/400',
     social: {
-      linkedin: '#',
-      twitter: '#',
+      linkedin: 'https://www.linkedin.com/in/seobongjin/',
     },
   },
   {
     name: 'Kristine N. Ha',
-    role: 'CMO',
-    bio: [
-      "Education specialist with deep NLP & prompt engineering expertise",
-      "B.A. in English Literature, bridging tech and humanities",
-      "Translates complex AI into intuitive user experiences",
+    role: 'CMO & User Empathy Translator',
+    icon: <Users size={20} className="text-teal-400" />,
+    expertise: [
+      "Education specialist with deep NLP & prompt expertise",
+      "English Literature major, bridging tech and humanities",
+      "Leads user-centric design and intuitive UX",
     ],
+    story: "Kristine은 기술과 사용자 사이의 간극을 메우는 '번역가'입니다. 그녀는 인문학적 통찰을 바탕으로 복잡한 AI 기술을 누구나 쉽게 이해하고 사용할 수 있는 직관적인 경험으로 바꾸어 놓습니다.",
     imageUrl: 'https://picsum.photos/seed/kristine/400/400',
     social: {
-      linkedin: '#',
-      twitter: '#',
+      linkedin: 'https://www.linkedin.com/in/kristine-ha-a7051a142/',
     },
   },
   {
     name: 'Justin J. Ha',
-    role: 'Development Advisor',
-    bio: [
-      "Distinguished statistician & Dean of a Graduate School of Statistics",
+    role: 'Chief Data Scientist & Statistical Authority',
+    icon: <Sigma size={20} className="text-cyan-400" />,
+    expertise: [
+      "Dean, Graduate School of Statistics",
       "Published authority on time-series analysis",
-      "Advises on the AI engine's predictive model accuracy",
+      "Ensures the statistical integrity of our AI engine",
     ],
+    story: "통계학자 Justin은 우리 AI 엔진의 '진실성'을 보증합니다. 그의 깊이 있는 데이터 과학 지식은 Habitus33이 제공하는 모든 인사이트가 통계적으로 유의미하고 신뢰할 수 있도록 만드는 핵심적인 역할을 합니다.",
     imageUrl: 'https://picsum.photos/seed/justin/400/400',
     social: {
       linkedin: '#',
-      twitter: '#',
     },
   },
 ];
@@ -60,10 +63,10 @@ const TeamSection = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-6 text-white">
-            생성형 AI <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">혁신 리더</span>
+            The Right Team for The Right Mission
           </h2>
           <p className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-16">
-            기술과 학습에 대한 깊은 통찰을 가진 최고의 전문가들이 Habitus33의 성장을 이끌고 있습니다.
+            우리는 단순한 전문가 집단이 아닙니다. AI의 미래를 바꾼다는 공동의 미션 아래, 각자의 전문성으로 강력한 시너지를 만드는 '드림팀'입니다.
           </p>
         </motion.div>
         
@@ -87,24 +90,30 @@ const TeamSection = () => {
               </div>
               <div className="flex-grow flex flex-col">
                 <h3 className="text-2xl font-bold text-white">{member.name}</h3>
-                <p className="text-md font-semibold text-teal-400 mb-4">{member.role}</p>
-                <div className="text-gray-400 text-sm mb-6 text-left flex-grow">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  {member.icon}
+                  <p className="text-md font-semibold text-teal-400">{member.role}</p>
+                </div>
+
+                <div className="border-t border-gray-700 my-4"></div>
+
+                <div className="text-gray-300 text-sm mb-6 text-left flex-grow">
+                  <p className="italic text-gray-400 mb-4">{member.story}</p>
                   <ul className="space-y-2">
-                    {member.bio.map((point, i) => (
+                    {member.expertise.map((point, i) => (
                       <li key={i} className="flex items-start">
-                        <Star size={14} className="text-teal-500 mr-3 mt-1 flex-shrink-0" />
+                         <span className="text-teal-500 mr-3 mt-1 font-bold">›</span>
                         <span>{point}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div className="mt-auto flex justify-center space-x-4">
-                  <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-teal-400 transition-colors">
-                    <Linkedin size={24} />
-                  </a>
-                  <a href={member.social.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-teal-400 transition-colors">
-                    <Twitter size={24} />
-                  </a>
+                  {member.social.linkedin !== '#' && (
+                    <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-teal-400 transition-colors">
+                      <Linkedin size={24} />
+                    </a>
+                  )}
                 </div>
               </div>
             </motion.div>

@@ -142,34 +142,34 @@ const MarketSizeSection = () => {
   const markets: MarketCardProps[] = [
     {
       type: 'TAM',
-      title: '전체 시장',
+      title: 'Total Addressable Market',
       value: 2,
       suffix: '조 달러',
       cagr: 18.3,
       description:
-        '전통적인 지식 관리(KM) 시장의 규모입니다. 기업의 모든 지식 자산을 포괄하는 가장 넓은 범위의 시장을 의미합니다.',
+        "모든 기업이 마주하는 '지식 자산의 파편화' 문제의 총 시장 규모입니다. 이는 단순한 소프트웨어 시장이 아닌, 비효율로 인해 발생하는 수조 달러의 기회비용을 포함합니다.",
       source: 'Research and Markets (2030년 전망)',
       delay: 0.2,
     },
     {
       type: 'SAM',
-      title: '유효 시장',
+      title: 'Serviceable Addressable Market',
       value: 1,
       suffix: '조 달러',
       cagr: 42.0,
       description:
-        '지식 관리 시장 내에서 생성형 AI 기술을 도입하여 혁신을 추구하는 기업군입니다. 기술 도입에 적극적인, 우리가 실질적으로 접근 가능한 시장입니다.',
+        "파편화된 지식 문제를 해결하기 위해 AI에 적극적으로 투자할 의향이 있는 기업들이 형성하는 유효 시장입니다. 우리는 이 시장의 성장을 주도할 것입니다.",
       source: 'Bloomberg Intelligence (2032년 전망)',
       delay: 0.4,
     },
     {
       type: 'SOM',
-      title: '수익 시장',
-      value: 52,
+      title: 'Serviceable Obtainable Market',
+      value: 520,
       suffix: '억 달러',
       cagr: 40.2,
       description:
-        'Habitus33의 핵심 기술이 직접적으로 경쟁하고 가치를 창출할 수 있는, 지식 관리(KM)에 특화된 생성형 AI 솔루션 시장입니다.',
+        "Habitus33의 AI-Link 기술이 기존 솔루션과 비교 불가능한 가치를 제공하며, 초기에 독점적으로 장악할 수 있는 시장입니다. 이 시장의 고객들은 '지적 자본의 증대'를 원하는 가장 가치 있는 고객들입니다.",
       source: 'Market.us (2033년 전망)',
       delay: 0.6,
     },
@@ -185,10 +185,10 @@ const MarketSizeSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            생성형 AI 솔루션 & 지식 관리 시장
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">$52B Market</span> We Can Win
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            Habitus33는 두 시장의 교차점에서 출발합니다.
+            우리는 거대 시장의 일부를 점유하는 것이 아닌, 가장 빠르게 성장하는 핵심 시장(SOM)을 정의하고 장악하는 전략을 추구합니다.
           </p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -8,23 +8,23 @@ import AMFAAnimation from './AMFAAnimation';
 const steps = [
   {
     icon: FiBox,
-    title: "1. 지식 DNA 정제 (Refine)",
-    description: "당신의 모든 지적 활동에서 발생하는 파편화된 정보들을 포착하고, 핵심 아이디어만을 선별합니다. 노이즈를 제거하고 가치 있는 지식의 본질만을 추출하여, 당신만의 고유한 '지식 DNA'를 정제합니다."
+    title: "1. Capture & Refine: 가치있는 지식 포착",
+    description: "개인의 모든 디지털 활동에서 핵심 아이디어와 유의미한 데이터만 정확히 포착하고 정제하여 노이즈를 제거합니다."
   },
   {
     icon: FiGitMerge,
-    title: "2. 지식 DNA 구조화 (Structure)",
-    description: "정제된 지식들 사이의 관계망을 형성하고, 시맨틱 타임라인을 적용하여 지식의 발전 과정을 추적합니다. 단순한 정보 나열이 아닌, 당신의 사고 흐름과 인과관계를 반영한 입체적인 지식 구조를 완성합니다."
+    title: "2. Structure & Contextualize: 맥락적 지식망 구축",
+    description: "정제된 지식들을 연결하고 시간과 인과관계에 따라 구조화하여, AI가 사용자의 사고 흐름을 이해할 수 있는 '지식 그래프'를 생성합니다."
   },
   {
     icon: FiCpu,
-    title: "3. AI-Link 생성 (Generate)",
-    description: "구조화된 지식을 AI가 가장 효과적으로 이해할 수 있는 최적화된 캡슐 형태로 압축합니다. 복잡한 맥락을 AI용 언어로 번역하여, 당신의 지식 DNA가 온전히 보존된 'AI-Link'를 생성합니다."
+    title: "3. Generate & Encapsulate: AI-Link 생성",
+    description: "거대한 지식 그래프를 AI가 즉시 이해하고 활용할 수 있도록, 최적화된 고농축 데이터 캡슐인 'AI-Link'로 변환합니다."
   },
   {
     icon: FiZap,
-    title: "4. 맥락 전송 (Transmit)",
-    description: "생성된 AI-Link를 통해 당신의 지식 DNA를 AI에게 전송합니다. AI는 이제 당신의 경험과 사고방식을 완벽히 이해한 상태에서, 당신만을 위한 개인화된 고품질 결과물을 생성할 수 있게 됩니다."
+    title: "4. Transmit & Augment: AI 지능 증강",
+    description: "AI-Link를 통해 AI에게 '기억'과 '맥락'을 주입합니다. AI는 비로소 사용자의 의도를 완벽히 이해하고, 비용 효율적인 초개인화 결과물을 생성합니다."
   }
 ];
 
@@ -57,15 +57,13 @@ const SolutionSection = () => {
         <div className="relative pt-16">
           <div className="text-left mb-16" style={{ height: '100vh' }}>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-              솔루션: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">AI-Link</span>
+              The Solution: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">AI's External Brain</span>
             </h2>
             <h3 className="text-2xl sm:text-3xl font-semibold text-indigo-300 mb-6">
-              시맨틱 타임라인 온톨로지 전송 엔진
+              AI-Link: AI에게 기억력과 지능을 부여하다
             </h3>
             <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
-              AI-Link는 당신의 이력을 정제-구조화-전송하는 엔진입니다. 
-              당신의 모든 지적 활동을 추적하여 인과관계를 형상화한 '고맥락 지식 그래프'를 생성하고, 
-              이를 AI가 가장 편하게 받아들일 수 있는 형태로 전송합니다.
+              AI-Link는 AI의 근본적인 한계인 '컨텍스트 부족' 문제를 해결하는 독보적인 솔루션입니다. 사용자의 고유한 지식과 경험을 AI에게 '기억'시켜, 불필요한 API 호출과 토큰 낭비를 원천적으로 차단합니다. 그 결과, AI 운영 비용을 획기적으로 절감하고 진정한 초개인화 결과물을 얻을 수 있습니다.
             </p>
           </div>
 
