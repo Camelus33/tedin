@@ -15,6 +15,7 @@ import HowItWorksSection from './sections/HowItWorksSection';
 import CoreFeaturesFreeSection from './sections/CoreFeaturesFreeSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import FinalCtaSection from './sections/FinalCtaSection';
+import Header from '@/components/common/Header';
 
 export default function LandingPageClient() {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default function LandingPageClient() {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden"> {/* Ensure no horizontal overflow */}
-      {/* <Header /> is now in the global layout, so we remove it from here */}
+      <Header />
 
       <main> {/* No longer needs top padding as it's handled globally */}
         {/* Render Sections in order */}
