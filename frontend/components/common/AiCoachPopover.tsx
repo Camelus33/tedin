@@ -125,7 +125,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
       {open && (
         <div
           ref={popoverRef}
-          className="absolute right-0 z-50 mt-2 w-48 rounded-md border border-gray-700 bg-gray-800 shadow-lg p-3 flex flex-col items-center"
+          className="absolute right-0 z-50 mt-2 w-52 rounded-md border-2 border-gray-600 bg-gray-800 shadow-lg p-3 flex flex-col items-center"
         >
           <div className="flex items-center justify-around w-full">
             <button
@@ -153,7 +153,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
               <ClaudeIcon className="w-7 h-7" />
             </button>
           </div>
-          <p className="mt-3 text-xs text-gray-400 text-center px-2">
+          <p className="mt-4 text-xs text-gray-400 text-center px-2">
             모델 선택 시 클립보드 자동 복사
           </p>
         </div>
