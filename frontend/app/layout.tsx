@@ -6,6 +6,7 @@ import Head from 'next/head'
 import './dashboard/styles/dashboard.css';
 import Footer from '@/components/common/Footer';
 import CartUIManager from '@/components/cart/CartUIManager';
+import { Toaster } from 'react-hot-toast';
 
 // Noto Serif KR 폰트 설정
 const notoSerifKr = Noto_Serif_KR({
@@ -45,6 +46,8 @@ export default function RootLayout({
             </div>
             <CartUIManager />
           </ReduxProvider>
+          
+          <Toaster position="bottom-center" />
           
           {/* 개발 환경에서만 디버그 패널 표시 */}
           {process.env.NODE_ENV === 'development' && (

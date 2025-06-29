@@ -125,32 +125,37 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
       {open && (
         <div
           ref={popoverRef}
-          className="absolute right-0 z-50 mt-2 w-40 rounded-md border border-gray-700 bg-gray-800 shadow-lg p-3 flex items-center justify-between"
+          className="absolute right-0 z-50 mt-2 w-48 rounded-md border border-gray-700 bg-gray-800 shadow-lg p-3 flex flex-col items-center"
         >
-          <button
-            onClick={() => handleSelect('chatgpt')}
-            aria-label="ChatGPT"
-            title="ChatGPT"
-            className="p-2 rounded hover:bg-gray-700/60 transition-colors"
-          >
-            <ChatGPTIcon className="w-7 h-7" />
-          </button>
-          <button
-            onClick={() => handleSelect('gemini')}
-            aria-label="Gemini"
-            title="Gemini"
-            className="p-2 rounded hover:bg-gray-700/60 transition-colors"
-          >
-            <GeminiIcon className="w-7 h-7" />
-          </button>
-          <button
-            onClick={() => handleSelect('claude')}
-            aria-label="Claude"
-            title="Claude"
-            className="p-2 rounded hover:bg-gray-700/60 transition-colors"
-          >
-            <ClaudeIcon className="w-7 h-7" />
-          </button>
+          <div className="flex items-center justify-around w-full">
+            <button
+              onClick={() => handleSelect('chatgpt')}
+              aria-label="ChatGPT"
+              title="ChatGPT"
+              className="p-2 rounded hover:bg-gray-700/60 transition-colors"
+            >
+              <ChatGPTIcon className="w-7 h-7" />
+            </button>
+            <button
+              onClick={() => handleSelect('gemini')}
+              aria-label="Gemini"
+              title="Gemini"
+              className="p-2 rounded hover:bg-gray-700/60 transition-colors"
+            >
+              <GeminiIcon className="w-7 h-7" />
+            </button>
+            <button
+              onClick={() => handleSelect('claude')}
+              aria-label="Claude"
+              title="Claude"
+              className="p-2 rounded hover:bg-gray-700/60 transition-colors"
+            >
+              <ClaudeIcon className="w-7 h-7" />
+            </button>
+          </div>
+          <p className="mt-3 text-xs text-gray-400 text-center px-2">
+            모델 선택 시 클립보드 자동 복사
+          </p>
         </div>
       )}
     </div>
