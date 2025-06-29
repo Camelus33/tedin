@@ -1,60 +1,113 @@
-# Habitus33 - 당신의 생각을 이해하는 AI 학습 플랫폼
+# Habitus33 - 지능형 워크플로우 설계 플랫폼
 
-> **"Prompt Free, Habitus33"**  
-> 당신의 생각은, 그 자체로 가장 완벽한 프롬프트가 됩니다.
+> **"Design the workflow. Automate the outcome."**  
+> 워크플로우를 설계하고, 결과물을 자동화하세요.
 
-Habitus33은 더 이상 사용자가 AI에게 질문하는 법을 배울 필요 없는 세상을 꿈꿉니다.
-당신의 작은 독서와 메모가 만들어내는 자연스러운 생각의 흐름, 그 '파도'를 AI가 먼저 이해하고, 가장 깊은 곳의 통찰을 건져 올리는 **Prompt-Free 학습 경험**을 제공합니다.
+Habitus33은 당신이 단순한 'AI 사용자'가 아닌, 복잡한 목표를 달성하기 위한 'AI 행동 설계자(AI Action Designer)'가 되도록 돕습니다. 당신의 전문 지식과 명확한 목표는, AI의 작업을 체계적으로 지시하는 강력한 '지능형 실행 계획서(Intelligent Blueprint)'가 됩니다. Habitus33은 당신의 의도를 AI가 실행할 최적의 '워크플로우'로 전환하는 경험을 제공합니다.
 
 ## 🎯 **핵심 가치**
-- **지식 캡슐화**: AI-Link를 통한 맥락 보존 및 전달
-- **개인화된 학습**: 읽기 목적별 차별화된 메모진화 시스템
-- **온톨로지 기반**: 구조화된 지식그래프로 AI 이해도 극대화
-- **시간 정보 보존**: 학습 여정의 모든 시간적 맥락 추적
+- **목표 기반 설계 (Goal-Driven Design)**: 당신의 최종 목표가 AI의 모든 행동을 결정합니다.
+- **모듈식 구성 (Modular Composition)**: 필요한 AI 기능을 블록처럼 조합하여 최적의 워크플로우를 만듭니다.
+- **컨텍스트 기반 실행 (Context-Aware Execution)**: 당신의 지식(Context)을 기반으로 AI가 작동하여 결과물의 품질을 높입니다.
+- **자동화된 결과물 (Automated Deliverable)**: 단편적 정보가 아닌, 당신의 목표가 구현된 '완성된 결과물'을 제공합니다.
 
 ---
 
-## 🧠 **AMFA 엔진: 4단계 지식 내재화 시스템**
+## ⚙️ **AMFA 엔진: 당신의 의도를 '실행 계획서'로 전환하는 시스템**
 
-Habitus33의 핵심인 **AMFA(Atomic Reading, Memo Evolve, Furnace Knowledge, AI-Link) 엔진**은 당신의 생각을 AI가 완벽히 이해할 수 있는 '지식 캡슐'로 변환합니다.
+Habitus33의 핵심인 **AMFA(Atomic Reading, Memo Evolve, Furnace Knowledge, AI-Link) 엔진**은 당신의 생각을 AI가 정밀하게 실행할 수 있는 '지능형 실행 계획서'로 변환합니다.
 
-### **A**tomic Reading (3분 집중독서)
-- 3분간 집중하여 핵심 내용을 읽고 1줄 메모 작성
-- PPM(분당 페이지 수), 읽기 속도, 집중도 등 인지 메트릭 자동 측정
-- 독서 목적별 차별화: `exam_prep`, `practical_knowledge`, `humanities_self_reflection`, `reading_pleasure`
+### **A**tomic Reading (데이터 포인트 수집)
+- 워크플로우의 가장 기초가 되는 최소 단위의 데이터(1줄 메모)를 수집합니다.
+- 모든 자동화와 지능화의 시작점이 되는 원재료입니다.
 
-### **M**emo Evolve (4단계 메모진화)
-각 읽기 목적에 맞는 차별화된 질문으로 메모를 진화시킵니다:
-- **시험 준비**: "어떤 부분이 중요하다고 느껴졌나요?" → "표현할 수 있는 방법은 무엇인가요?"
-- **실무 지식**: "어떻게 내 업무와 연결되나요?" → "이것의 핵심을 한 문장으로 설명해 본다면?"
-- **인문학 성찰**: "어떤 감정/생각을 불러일으켰나요?" → "한 폭의 그림이나 장면으로 묘사한다면?"
+### **M**emo Evolve (인사이트 연결)  
+- 수집된 개별 데이터 포인트들을 질문을 통해 연결하며, 숨겨진 관계를 파악하고 유의미한 인사이트를 도출합니다.
+- 데이터가 정보와 지식으로 발전하는 단계입니다.
 
-### **F**urnace Knowledge (단권화 노트)
-- 다수의 1줄메모를 하나의 통합된 지식 덩어리로 응축
-- 사용자의 개인적 인사이트와 메타인지적 성찰 기록
-- 지식 연결망 구조화 및 태그 시스템
+### **F**urnace Knowledge (컨텍스트 베이스 구축)
+- 연결된 인사이트들을 하나의 주제 아래 응축하여, 워크플로우 실행의 기반이 될 '컨텍스트 베이스(단권화 노트)'를 구축합니다.
+- AI가 '누구의 관점'에서 작업해야 하는지 정의하는 과정입니다.
 
-### **A**I-Link (온톨로지 기반 지식 캡슐)
-- JSON-LD 형식의 구조화된 지식그래프 생성
-- 시간 정보, 인지 성능, 학습 맥락 모두 보존
-- 외부 링크 크롤링 지시사항 포함으로 완전한 맥락 제공
+### **A**I-Link (워크플로우 설계)
+- 구축된 '컨텍스트 베이스'와 사용자의 '최종 목표'를 결합하여, AI 태스크포스가 실행할 최종 '지능형 실행 계획서(AI-Link)'를 설계합니다.
 
-## 🤔 Habitus33은 어떻게 동작하나요?: 5단계 고객 여정
+## 🤔 Habitus33은 어떻게 동작하나요?: 5단계 워크플로우 자동화
 
-### **1단계: 당신만의 '지식의 바다'를 만들다**
-Habitus33 안에서 당신이 읽는 모든 문장, 기록하는 모든 메모는 당신만의 '지식의 바다'에 파문을 일으킵니다. 이 바다는 당신의 고유한 생각과 맥락이 담긴, 세상에 단 하나뿐인 공간이 됩니다.
+### **1단계: 당신만의 '컨텍스트 베이스'를 구축**
+Habitus33 안에서 당신이 기록하는 모든 메모와 데이터는 당신만의 '컨텍스트 베이스'에 체계적으로 축적됩니다. 이곳은 당신의 고유한 전문성과 관점이 담긴, AI 워크플로우의 핵심 두뇌입니다.
 
-### **2단계: 단 한 번의 클릭으로, 바다의 정수를 담아내다**
-AI의 도움이 필요한 순간, 당신은 그저 "내 바다의 지도를 만들어줘"라고 요청(원클릭)하기만 하면 됩니다. 이 신호는 **AMFA 엔진**을 깨우는 열쇠입니다. 엔진은 당신의 바다 전체를 탐사하며 모든 생각의 흐름과 지식의 맥락을 정제하고 구조화하여 그 정수만을 응축합니다.
+### **2단계: '워크플로우' 실행을 요청**
+AI의 자동화가 필요한 순간, 당신은 "이 목표를 위한 워크플로우를 실행해줘"라고 요청하기만 하면 됩니다. 이 신호는 **AMFA 엔진**을 통해 당신의 컨텍스트 베이스와 목표를 분석하여 최적의 실행 계획을 수립합니다.
 
-### **3단계: 생각의 본질을 담은 'AI-Link'를 손에 쥐다**
-잠시 후, 당신의 손에는 **'AI-Link'**라는 눈부신 지식 캡슐이 쥐어집니다. 이것은 당신이 탐험해 온 '지식의 바다' 전체의 항해 지도이자, 당신 생각의 DNA가 담긴 나침반입니다.
+### **3단계: AI를 위한 '지능형 실행 계획서(AI-Link)' 생성**
+잠시 후, 당신의 요청은 AI가 실행할 수 있는 구체적인 명령어가 담긴 **'AI-Link'**라는 정밀한 실행 계획서로 변환됩니다.
 
-### **4단계: 'AI-Link'를 건네, AI를 당신의 바다로 초대하다**
-당신은 이 'AI-Link'를 AI 에이전트에게 건네줍니다. 이것은 AI에게 보내는 '명령'이 아닌, 당신의 바다로의 정중한 '초대장'입니다. AI는 프롬프트 한 마디 없이도 당신의 세계를 유영하기 시작합니다.
+### **4단계: '실행 계획서'를 전달하여, AI 태스크포스를 가동**
+당신은 이 'AI-Link'를 AI 에이전트에게 전달합니다. 이것은 당신이 **'AI 행동 설계자'**로서 AI의 작업을 지시하는 순간입니다. AI 태스크포스는 계획서에 따라 리서치, 분석, 생성 등의 작업을 자동으로 수행하기 시작합니다.
 
-### **5단계: '질문'이 아닌, '사유'의 결과물을 얻다**
-AI는 당신의 바다 가장 깊은 곳에서, 당신의 의도와 완벽하게 공명하는 보석 같은 통찰을 건져 올릴 것입니다. 당신이 얻는 것은 단순한 '답변'이 아닌, 당신의 오랜 사유와 AI의 분석력이 만나 탄생한 '창조적 결과물'입니다.
+### **5단계: '정보'가 아닌, '자동화된 결과물'을 확인**
+AI는 당신이 설계한 계획서를 한치의 오차 없이 실행하고 작업을 마칩니다. 당신이 얻는 것은 단순한 정보 조각이 아닌, 당신의 의도가 완벽하게 구현된 리서치 보고서, 분석 자료, 글과 같은 **'하나의 자동화된 결과물'**입니다.
+
+---
+## 💎 **AI-Link: 모듈형 AI 태스크포스를 위한 지능형 실행 계획서**
+
+Habitus33의 핵심 기술인 `AI-Link`는 단순한 데이터 묶음이 아닙니다.
+사용자의 의도(Intent)에 따라 AI가 특정 '과업(Task)'을 수행하도록 만드는 **정밀한 실행 계획서(Blueprint)**입니다. 이를 통해 AI의 작업을 매우 정밀하게 설계하고 지시할 수 있습니다.
+
+### 🧬 **'실행 계획서'의 핵심 구성 요소**
+- **사용자 컨텍스트 (User Context)**: 사용자의 지식과 데이터, 목표를 구조화한 지식그래프. 이 작업을 '누가', '왜' 하는지 AI에게 알려줍니다.
+- **최종 목표 (Final Goal)**: 사용자가 AI를 통해 달성하고자 하는 구체적인 결과물 (예: '경쟁사 분석 보고서 작성').
+- **작업 시퀀스 (Task Sequence)**: 목표 달성을 위해 각 AI 모듈(리서치, 분석, 생성 등)이 수행해야 할 구체적인 작업 순서와 지시사항.
+
+### 🔗 **'실행 계획서' 생성 및 실행 과정**
+1. **목표 설정 (Goal Setting)**: 사용자는 '딥 리서치', '블로그 글쓰기' 등 달성하고 싶은 최종 목표를 설정합니다.
+2. **자동 설계 (Automated Design)**: AMFA 엔진이 사용자의 '컨텍스트'와 '목표'를 결합하여, 해당 작업에 최적화된 `AI-Link`(실행 계획서)를 생성합니다.
+3. **실행 (Execution)**: 생성된 `AI-Link`가 목표 AI 태스크포스(Claude, Gemini 등)에게 전달됩니다.
+4. **작업 수행 (Task Performance)**: AI 태스크포스는 '실행 계획서'에 명시된 순서와 지시사항에 따라, 설계자의 의도를 100% 이해한 상태로 작업을 시작합니다.
+5. **결과물 생성 (Deliverable Ready)**: 단순 정보가 아닌, 설계자의 의도가 완벽히 반영된 고품질의 결과물이 자동으로 생성됩니다.
+
+### 📊 **실제 '실행 계획서(AI-Link)' 예시 (의사 코드)**
+```json
+{
+  "@context": "https://habitus33.vercel.app/ai-link-context.jsonld",
+  "@type": "Blueprint",
+  "version": "3.0",
+  "goal": {
+    "@type": "FinalGoal",
+    "taskType": "DeepResearch",
+    "description": "Generate a market analysis report on AI's impact on drug discovery."
+  },
+  "taskSequence": [
+    {
+      "@type": "Task",
+      "module": "WebCrawler",
+      "action": "CrawlAndAnalyze",
+      "priority": "high",
+      "parameters": {
+        "sources": ["AcademicJournals", "NewsArticles"],
+        "keywords": ["AI in drug discovery", "generative biology", "alphafold"],
+        "timeRange": "latest_12_months"
+      }
+    },
+    {
+      "@type": "Task",
+      "module": "TextGenerator",
+      "action": "GenerateText",
+      "priority": "medium",
+      "parameters": {
+        "section": "Executive Summary",
+        "tone": "formal, insightful",
+        "length": "approx_500_words"
+      }
+    }
+  ],
+  "userContext": {
+    "@type": "UserContextGraph",
+    "reference": "user_knowledge_graph_id_12345"
+  }
+}
+```
 
 ---
 
@@ -72,7 +125,7 @@ AI는 당신의 바다 가장 깊은 곳에서, 당신의 의도와 완벽하게
 - **데이터베이스**: MongoDB Atlas, Mongoose ODM
 - **인증**: JWT, bcrypt
 - **검증**: express-validator, SHACL
-- **온톨로지**: JSON-LD, OWL, SPARQL
+- **온톨로지**: JSON-LD, OWL, SPARQL, SHACL
 
 ### **배포 & 인프라**
 - **프론트엔드**: Vercel
@@ -212,68 +265,65 @@ Habitus33은 오픈소스 프로젝트로, 다양한 형태의 기여를 환영�
 
 ---
 
-## 💎 **AI-Link: 온톨로지 기반 지식 캡슐**
+## 💎 **AI-Link: AI 오케스트라를 위한 완벽한 악보**
 
 Habitus33의 핵심 기술인 `AI-Link`는 단순한 데이터 묶음이 아닙니다.
-사용자의 학습 활동과 지식 구조를 의미론적으로 표현하기 위해 **웹 온톨로지 언어(OWL) 기반의 자체 온톨로지 모델**을 정의하고 사용합니다.
+사용자의 의도(Intent)에 따라 AI 오케스트라가 특정 '곡(Task)'을 연주하도록 만드는 **완벽한 악보(The Score)**입니다. 웹 온톨로지 언어(OWL) 기반의 자체 모델을 사용하여, AI의 연주를 매우 정밀하게 설계하고 지휘합니다.
 
-### 🧬 **온톨로지 구조**
-```
-h33o: 네임스페이스 (Habitus33 Ontology)
-├── KnowledgePersonality (지식 페르소나)
-├── CognitiveProvenance (인지적 출처)  
-├── LearningJourney (학습 여정)
-└── EducationalAlignment (교육적 정렬)
-```
+### 🧬 **'악보(The Score)'의 핵심 구성 요소**
+- **연주자 정보 (Performer's Context)**: 사용자의 지식과 학습 이력을 구조화한 지식그래프. 이 곡을 '누가' 작곡했는지, 어떤 감성으로 연주해야 하는지 알려줍니다.
+- **곡의 테마 (Composition's Intent)**: 사용자가 AI를 통해 달성하고자 하는 최종 목표(예: '경쟁사 분석 보고서 작성').
+- **파트별 악보 (Instrument-Specific Directives)**: 목표 달성을 위해 각 악기(AI 기능)가 연주해야 할 구체적인 지시사항. 각 지시사항은 '딥 리서치', '이미지 생성' 등 특정 파트에 맞게 최적화되어 있습니다.
 
-### 🔗 **AI-Link 생성 과정**
-1. **데이터 수집**: 1줄메모, 세션 정보, 메모진화 답변
-2. **온톨로지 매핑**: JSON-LD 컨텍스트를 통한 의미 부여
-3. **그래프 연결**: @id 기반 엔티티 간 관계 설정
-4. **AI 지시사항**: 외부 링크 크롤링 및 분석 가이드 포함
+### 🔗 **'악보' 생성 및 연주 과정**
+1. **작곡 의뢰 (Composition Request)**: 사용자는 '딥 리서치', '블로그 글쓰기' 등 연주하고 싶은 곡의 장르와 핵심 테마를 설정합니다.
+2. **자동 작곡 (Automated Composition)**: AMFA 엔진이 사용자의 '연주자 정보'와 '곡의 테마'를 결합하여, 해당 곡에 최적화된 `AI-Link`(악보)를 생성합니다.
+3. **지휘 (Conducting)**: 생성된 `AI-Link`(악보)가 목표 AI 오케스트라(Claude, Gemini 등)에게 전달됩니다.
+4. **연주 (Performance)**: AI 오케스트라는 '악보'에 명시된 파트별 지시사항에 따라, 작곡가의 의도를 100% 이해한 상태로 리서치, 이미지 생성, 글쓰기 등의 연주를 시작합니다.
+5. **작품 완성 (Symphony Finished)**: 단순 정보가 아닌, 작곡가의 의도가 완벽히 반영된 고품질의 작품이 완성됩니다.
 
-### 📊 **실제 AI-Link 예시**
+### 📊 **실제 '악보(AI-Link)' 예시 (의사 코드)**
 ```json
 {
-  "@context": [
-    "https://schema.org",
-    "https://habitus33.vercel.app/ai-link-context.jsonld"
-  ],
-  "@type": "TechArticle",
-  "headline": "미분의 연쇄법칙 학습 노트",
-  "hasPart": [
+  "@context": "https://habitus33.vercel.app/ai-link-context.jsonld",
+  "@type": "Score",
+  "version": "2.1",
+  "theme": {
+    "@type": "CompositionIntent",
+    "genre": "DeepResearch",
+    "title": "A Symphony on AI's Impact on Drug Discovery"
+  },
+  "parts": [
     {
-      "@type": "Question",
-      "name": "어떤 부분이 중요하다고 느껴졌나요?",
-      "educationalAlignment": {
-        "readingPurpose": "exam_prep",
-        "evolutionStage": 1,
-        "cognitiveGoal": "중요성 인식"
-      },
-      "acceptedAnswer": {
-        "text": "미분의 연쇄법칙이 중요하다고 생각함",
-        "learningContext": "중요성 인식 단계에서 학습자가 직접 성찰하고 기록한 내용"
+      "@type": "Part",
+      "instrument": "WebCrawlerViolin",
+      "action": "CrawlAndAnalyze",
+      "dynamics": "pianissimo",
+      "target": "AcademicJournals",
+      "measures": {
+        "keywords": ["AI in drug discovery", "generative biology", "alphafold"],
+        "timeRange": "latest_12_months"
+      }
+    },
+    {
+      "@type": "Part",
+      "instrument": "TextGeneratorCello",
+      "action": "GenerateText",
+      "dynamics": "forte",
+      "target": "ReportSection",
+      "measures": {
+        "sectionTitle": "Executive Summary",
+        "toneAndManner": "formal, insightful",
+        "length": "approx_500_words"
       }
     }
-  ]
+  ],
+  "composerContext": {
+    "@type": "ComposerContextGraph",
+    "reference": "user_knowledge_graph_id_12345"
+  }
 }
 ```
-
-### 📁 **주요 산출물**
-
-- **[온톨로지 개발 가이드](./ONTOLOGY_GUIDELINES.md)**
-  - 설계 원칙, 핵심 클래스/속성, 추론 규칙 정의
-- **[AI-Link 컨텍스트](./frontend/public/ai-link-context.jsonld)**
-  - JSON-LD 컨텍스트 파일로 데이터를 지식그래프로 변환
-- **[온톨로지 스크립트](./scripts/ontology/)**
-  - SHACL 검증 및 SPIN/SPARQL 추론 규칙
-
-### 🎯 **AI 활용 시나리오**
-사용자가 AI에게 AI-Link URL을 제공하면:
-1. **맥락 이해**: 읽기 목적, 학습 패턴, 인지 성능 파악
-2. **개인화 분석**: 지식 페르소나 기반 맞춤형 접근
-3. **시간적 맥락**: 학습 여정의 시간 흐름 고려
-4. **외부 자료 연결**: 관련 링크 크롤링으로 완전한 맥락 구성
 
 ---
 
@@ -293,9 +343,14 @@ h33o: 네임스페이스 (Habitus33 Ontology)
 ---
 
 <div align="center">
+  <img src="./frontend/public/images/mascot/camel.png" alt="Habitus33 Mascot" width="150px" />
+  <br/>
+  <strong>Habitus33</strong>
+  <br/>
 
 **Habitus33** - *Prompt Free, Habitus33*
 
 당신의 생각이 가장 완벽한 프롬프트입니다 🌊
 
+</div>
 </div>

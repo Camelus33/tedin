@@ -1,25 +1,25 @@
 import React from 'react';
 import Link from 'next/link';
-import { FiArrowRight, FiCheckCircle } from 'react-icons/fi'; 
+import { ArrowRight, Zap } from 'lucide-react';
 
 export default function FinalCtaSection() {
   return (
-    <section className="py-20 md:py-28 bg-brand-primary text-white">
+    <section className="py-24 sm:py-32 bg-gray-900 text-white">
       <div className="container mx-auto px-4 text-center max-w-3xl">
-        <FiCheckCircle className="w-12 h-12 mx-auto mb-4 text-white/50" />
-        <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 leading-tight">
-          당신이 주목받기 시작하는 순간
+        <Zap className="w-12 h-12 mx-auto mb-6 text-indigo-400" />
+        <h2 className="text-4xl md:text-5xl font-bold font-serif mb-6 leading-tight">
+          이제, 당신의 AI를 직접 설계하세요
         </h2>
-        <p className="text-lg md:text-xl text-indigo-100 mb-10 max-w-2xl mx-auto">
-          "이 사람, 뭔가 다르네"라는 말을 듣고 싶다면, 지금이 바로 그 시작입니다.
+        <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+          AI의 잠재력을 100% 끌어내는 가장 확실한 방법. 지금 경험하세요.
         </p>
 
         <Link
-          href="/auth/register" 
-          className="inline-flex items-center justify-center px-8 py-3 md:px-10 md:py-4 text-lg md:text-xl font-bold text-brand-primary bg-white rounded-md hover:bg-gray-100 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-primary focus:ring-white group"
+          href="/auth/register"
+          className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500 group shadow-lg hover:shadow-indigo-500/50"
         >
-          주목받기 시작하기 (무료)
-          <FiArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+          나만의 AI 행동 설계 시작하기 (무료)
+          <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
     </section>

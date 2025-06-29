@@ -1,64 +1,173 @@
 import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Database, Filter, Network, Archive, ArrowRight, Package } from 'lucide-react';
+import { motion, useInView, animate } from 'framer-motion';
+import { DollarSign, Clock, Award } from 'lucide-react';
 
-const features = [
+const CountUp = ({ to }: { to: number }) => {
+  const ref = React.useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  React.useEffect(() => {
+    if (isInView && ref.current) {
+      const node = ref.current;
+      const controls = animate(0, to, {
+        duration: 1.5,
+        ease: "easeOut",
+        onUpdate: (value) => {
+          node.textContent = Math.round(value).toString();
+        },
+      });
+      return () => controls.stop();
+    }
+  }, [isInView, to]);
+
+  return <span ref={ref}>0</span>;
+};
+
+
+const ApiCostViz = () => {
+    const ref = React.useRef(null);
+    const isInView = useInView(ref, { once: true, amount: 0.6 });
+
+    return (
+        <div ref={ref} className="w-full h-48 flex flex-col items-center justify-end">
+            <div className="w-32 h-40 relative">
+                {/* Background full bar */}
+                <div className="w-full h-full bg-gray-200 rounded-t-xl absolute bottom-0"></div>
+
+                {/* Animated shrinking bar */}
+                <motion.div
+                    className="w-full bg-gradient-to-t from-green-400 to-emerald-500 rounded-t-xl absolute bottom-0"
+                    initial={{ height: '100%' }}
+                    animate={isInView ? { height: '33.3%' } : { height: '100%' }}
+                    transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1], delay: 0.3 }}
+                >
+                </motion.div>
+                
+                {/* Labels */}
+                <motion.div 
+                    className="absolute -right-12 top-0 text-left"
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                    transition={{ delay: 0.5 }}
+                >
+                    <p className="text-xs text-gray-500">기존</p>
+                    <p className="text-lg font-bold text-gray-500">3x</p>
+                </motion.div>
+
+                <motion.div 
+                    className="absolute -right-12 bottom-0 text-left"
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                    transition={{ delay: 1.5 }}
+                >
+                    <p className="text-xs text-green-600">AI-Link</p>
+                    <p className="text-lg font-bold text-green-600">1x</p>
+                </motion.div>
+            </div>
+        </div>
+    );
+};
+
+const TimeSaveViz = () => {
+    const ref = React.useRef(null);
+    const isInView = useInView(ref, { once: true, amount: 0.5 });
+    const circumference = 2 * Math.PI * 45; // 2 * pi * r
+
+    return (
+        <div ref={ref} className="h-48 relative flex flex-col items-center justify-center w-full">
+            <svg className="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" strokeWidth="10" className="stroke-gray-200" />
+                <motion.circle
+                    cx="50" cy="50" r="45"
+                    fill="none"
+                    strokeWidth="10"
+                    className="stroke-blue-500"
+                    strokeLinecap="round"
+                    initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset: isInView ? circumference * (1 - 0.53) : circumference }}
+                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+                    strokeDasharray={circumference}
+                />
+            </svg>
+            <div className="absolute flex flex-col items-center">
+                <p className="text-base font-medium text-gray-500">시간 단축</p>
+                <div className="text-5xl font-bold text-blue-600">
+                    <CountUp to={53} />%
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const UniqueResultViz = () => {
+    return (
+        <div className="h-48 flex items-center justify-center w-full">
+            <div className="relative w-48 h-36">
+                <motion.div
+                    initial={{ opacity: 1, rotate: -5, x: -10, y: 5 }}
+                    whileInView={{ opacity: 0, scale: 0.8, y: 30 }}
+                    viewport={{ once: true, amount: 0.8 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="absolute w-full h-full bg-gray-300 rounded-lg shadow-md"
+                />
+                <motion.div
+                    initial={{ opacity: 1, rotate: 5, x: 10, y: 0 }}
+                    whileInView={{ opacity: 0, scale: 0.8, y: 30 }}
+                    viewport={{ once: true, amount: 0.8 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="absolute w-full h-full bg-gray-300 rounded-lg shadow-md"
+                />
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    whileInView={{ opacity: 1, scale: 1, rotate: 0, x: 0, y: 0 }}
+                    viewport={{ once: true, amount: 0.8 }}
+                    transition={{ duration: 0.7, delay: 0.6, type: 'spring' }}
+                    className="absolute w-full h-full bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg shadow-xl flex items-center justify-center p-2"
+                >
+                    <span className="font-bold text-white text-center text-lg leading-tight">독창적<br/> 결과물</span>
+                     <motion.div
+                        initial={{ opacity: 0, scale: 2.5, rotate: -45 }}
+                        whileInView={{ opacity: 1, scale: 1, rotate: -15 }}
+                        viewport={{ once: true, amount: 0.6 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 8, delay: 1.2 }}
+                        className="absolute -bottom-5 -right-5 px-3 py-1 bg-red-600 text-white font-black text-3xl rounded-md border-4 border-white shadow-2xl font-['Do_Hyeon']"
+                        style={{textShadow: '2px 2px 3px rgba(0,0,0,0.4)'}}
+                    >
+                        당선
+                    </motion.div>
+                </motion.div>
+            </div>
+        </div>
+    );
+};
+
+const benefits = [
   {
-    icon: Database,
-    title: "1. AI가 당신을 완전히 이해합니다",
-    subtitle: "깊은 맥락 파악",
-    description: "이제 AI에게 배경을 설명할 필요가 없습니다. 당신의 전문 분야, 경험, 목표를 완벽히 파악하고 그에 맞는 정확한 답변을 즉시 제공합니다.",
-    color: "text-indigo-500",
-    gradientFrom: "from-indigo-500/10",
+    icon: DollarSign,
+    title: "API 호출 1/3 감소",
+    description: "매번 같은 맥락을 반복하던 API 호출이 1/3로 줄어듭니다. 핵심 로직에 더 많은 예산을 집중하세요.",
+    color: "text-green-600",
+    viz: ApiCostViz,
   },
   {
-    icon: Filter,
-    title: "2. 오직 당신을 위한 답변",
-    subtitle: "완전 맞춤형 솔루션",
-    description: "천편일률적인 답변은 이제 그만. AI가 당신의 상황, 성격, 목표에 완벽히 맞춘 개인화된 조언과 아이디어를 제공합니다.",
-    color: "text-purple-500",
-    gradientFrom: "from-purple-500/10",
+    icon: Clock,
+    title: "업무 시간 53% 단축",
+    description: "자료 검색, 요약, 초안 작성에 걸리던 시간이 절반 이상 줄어듭니다. 창의적인 아이디어에 시간을 더 쓰세요.",
+    color: "text-blue-600",
+    viz: TimeSaveViz,
   },
   {
-    icon: Network,
-    title: "3. 고품질 품질",
-    subtitle: "차원이 다른 통찰",
-    description: "피상적인 답변이 아닌, 당신의 지식 수준에 맞는 깊이 있고 전문적인 통찰을 받습니다. 마치 해당 분야 최고 전문가와 대화하는 것 같습니다.",
-    color: "text-violet-500",
-    gradientFrom: "from-violet-500/10",
-  },
-  {
-    icon: Archive,
-    title: "4. 남들이 부러워할 결과물",
-    subtitle: "확실한 차별화",
-    description: "AI-Link로 만든 리포트, 기획서, 아이디어는 확실히 다릅니다. '어떻게 이런 걸 생각했지?'라는 반응을 받으며 주목받게 됩니다.",
-    color: "text-fuchsia-500",
-    gradientFrom: "from-fuchsia-500/10",
+    icon: Award,
+    title: "'AI 복붙'과 다른 결과물",
+    description: "AI가 만든 획일적인 결과물이 아닌, 당신의 관점이 담긴 제안서는 모두를 설득합니다.",
+    color: "text-purple-600",
+    viz: UniqueResultViz,
   }
 ];
 
 export default function CoreFeaturesFreeSection() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.2 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
-  };
-
   return (
-    <section className="relative py-24 sm:py-32 overflow-hidden bg-white">
-      {/* Background Aurora */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 w-full h-[800px] bg-gradient-to-tr from-indigo-100 via-purple-100 to-violet-100 opacity-30 blur-3xl"></div>
-      </div>
-
+    <section className="py-24 sm:py-32 bg-gray-50">
       <div className="container mx-auto px-4 text-center max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -67,90 +176,44 @@ export default function CoreFeaturesFreeSection() {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="mb-16 md:mb-20"
         >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-5">
-            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 bg-clip-text text-transparent">
-              AI-Link, 당신의 지식 캡슐
-            </span>
+          <h2 className="text-4xl md:text-5xl font-bold font-serif tracking-tight text-gray-900 mb-5">
+            어떻게 달라질까요?
           </h2>
-          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            흩어진 생각이 하나로 모여, 캡슐로 재탄생하는 순간.
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            'AI 행동 설계'는 <span className="font-semibold text-indigo-600">시간과 비용, 그리고 결과물의 수준</span>을 바꾸는 가장 강력한 전략입니다.
           </p>
         </motion.div>
         
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          className="grid md:grid-cols-2 lg:grid-cols-4 items-start gap-x-6 gap-y-12 mb-20"
-        >
-          {features.map((feature, index) => (
-            <React.Fragment key={feature.title}>
+        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+          {benefits.map((benefit, index) => {
+            const VizComponent = benefit.viz;
+            return (
               <motion.div
-                variants={itemVariants}
-                className="relative h-full text-left p-6 bg-white/60 backdrop-blur-xl rounded-2xl border border-slate-200/80 shadow-lg shadow-slate-300/20 transition-all duration-300 hover:shadow-slate-400/30 hover:border-slate-300"
+                key={benefit.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="p-8 bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col"
               >
-                <div className={`absolute top-0 left-0 w-full h-full rounded-2xl bg-gradient-to-br ${feature.gradientFrom} to-transparent opacity-30 -z-10`}></div>
-                <div className="flex flex-col h-full">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="w-10 h-10 flex items-center justify-center bg-white rounded-lg shadow-sm border border-slate-200">
-                       <feature.icon className={`w-6 h-6 ${feature.color}`} />
-                    </div>
-                    <h3 className={`text-xl font-bold ${feature.color}`}>
-                      {feature.title}
-                    </h3>
+                <div className="text-center">
+                  <div className={`w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-indigo-100`}>
+                     <benefit.icon className={`w-8 h-8 ${benefit.color}`} />
                   </div>
-                  <p className="text-sm font-semibold text-slate-800 mb-3">
-                    {feature.subtitle}
-                  </p>
-                  <p className="text-slate-600 text-sm leading-relaxed flex-grow">
-                    {feature.description}
-                  </p>
+                  <h3 className={`text-2xl font-bold text-gray-800 mt-4`}>
+                    {benefit.title}
+                  </h3>
                 </div>
+                <div className="mt-4 flex-grow min-h-[192px] flex items-center justify-center">
+                  { VizComponent ? <VizComponent /> : <div className="text-gray-400">시각화 로딩 오류</div>}
+                </div>
+                <p className="text-gray-600 leading-relaxed mt-6 text-center text-sm">
+                  {benefit.description}
+                </p>
               </motion.div>
-            </React.Fragment>
-          ))}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.8, ease: "easeInOut", delay: 0.3 }}
-          className="mb-12"
-        >
-          <div className="p-8 bg-white/70 backdrop-blur-lg rounded-2xl border border-slate-200 max-w-3xl mx-auto shadow-xl shadow-slate-200/50">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left">
-              <div className="flex-shrink-0">
-                  <Package className="w-12 h-12 text-indigo-500 bg-indigo-100 p-2 rounded-xl border border-indigo-200" />
-              </div>
-              <div>
-                <p className="text-lg font-semibold text-slate-800 mb-1">
-                  당신만의 AI-Link , 지금 바로 만드세요
-                </p>
-                <p className="text-slate-600">
-                  AI가 당신을 깊이 이해하는 새로운 경험, 지금 시작하세요.
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.8, ease: "easeInOut", delay: 0.5 }}
-        >
-          <Link
-            href="/auth/register"
-            className="inline-flex items-center justify-center px-8 py-3.5 text-base font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl hover:shadow-2xl hover:shadow-indigo-300/50 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 group"
-          >
-            나만의 AI-Link 생성하기 (무료)
-            <ArrowRight className="w-5 h-5 ml-2.5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </motion.div>
-
+            )
+          })}
+        </div>
       </div>
     </section>
   );

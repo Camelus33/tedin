@@ -3,25 +3,29 @@ import Image from 'next/image';
 
 const testimonials = [
   {
-    id: 1,
-    title: "친구들이 '너만 뭔가 다르네'라고 해요",
-    name: '대학생',
-    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1061&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    quote: "같은 ChatGPT를 써도 제가 받는 답변이 확실히 달라요. AI-Link 덕분에 AI가 제 맥락을 완전히 이해하거든요. 친구들이 신기해하면서 비결을 물어보는데, 이건 제 비밀 무기예요.",
+    name: 'J.H. Kim, 마케팅 팀장',
+    title: '월말만 되면 API 비용 때문에 보고서 쓰기가 무서웠어요.',
+    quote: [
+      { text: '프로젝트 개요를 매번 붙여넣다 보니, 월초에 API 예산의 절반을 써버리기 일쑤였죠. 이젠 AI-Link에 단 한번만 설계해두니, ', highlighted: false },
+      { text: 'API 호출이 1/3로 줄었습니다.', highlighted: true },
+      { text: ' 비용 걱정 없이 AI를 마음껏 활용해요.', highlighted: false },
+    ],
   },
   {
-    id: 2,
-    title: "동료들이 '어떻게 그런 관점이 가능한가요'라고 물어봐요",
-    name: '직장인',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    quote: "AI-Link로 만든 보고서를 보고 팀장님이 '이 수준의 분석은 컨설팅 회사 수준이다'라고 하셨어요. 같은 데이터를 봐도 제가 뽑아내는 인사이트가 다르다고 동료들이 놀라워해요.",
+    name: 'S.Y. Park, 사회학과 3학년',
+    title: "제 리포트가 'AI 복붙'처럼 보일까봐 불안했어요.",
+    quote: [
+      { text: "다들 AI를 쓰니 참고자료나 표현이 겹칠 수밖에 없잖아요. AI-Link에 제가 읽은 자료와 1줄메모와 생각을 넣어줬더니, 완전히 다른 관점의 글이 나왔어요. ", highlighted: false },
+      { text: "'표절 걱정 없는 나만의 AI'가 생긴 기분이에요.", highlighted: true },
+    ]
   },
   {
-    id: 3,
-    title: "AI가 옆자리 동료처럼 저를 알고 대화해줘요",
-    name: '연구자',
-    image: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    quote: "이제 AI에게 배경 설명할 필요가 없어요. 제 연구 분야와 지식 수준을 완벽히 파악하고 그에 맞는 깊이 있는 답변을 줍니다. 마치 해당 분야 최고 전문가와 대화하는 것 같아요.",
+    name: 'Dr. Choi, 뇌과학 연구원',
+    title: '프롬프트 입력만 30분… 진짜 연구는 시작도 못 했죠.',
+    quote: [
+      { text: '연구 계획서 하나 쓰려면 제 이전 연구 목록과 복잡한 실험 절차를 전부 설명해야 했어요. 그 반복 작업이 너무 지쳤는데, 이젠 AI-Link 클릭 한 번으로 끝나요. ', highlighted: false },
+      { text: "프롬프팅에 쏟던 에너지를 진짜 '사고'하는 데 쓰고 있습니다.", highlighted: true },
+    ]
   },
 ];
 
@@ -30,32 +34,32 @@ export default function TestimonialsSection() {
     <section className="py-20 md:py-28 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold font-serif text-gray-800 text-center mb-6">
-          남들이 궁금해하는 비밀
+          설계된 AI로 앞서가는 사람들
         </h2>
         <p className="text-lg md:text-xl text-gray-600 text-center mb-16 max-w-3xl mx-auto">
-           같은 AI를 써도 왜 이 사람들만 다른 답변을 받을까요?
+          같은 AI, 다른 결과. 그 비밀은 '행동 설계'에 있습니다.
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-10">
           {testimonials.map((testimonial) => (
-            <div key={testimonial.id} className="bg-white p-8 rounded-xl shadow-lg flex flex-col border border-gray-100 relative">
+            <div key={testimonial.name} className="bg-white p-8 rounded-xl shadow-lg flex flex-col border border-gray-100 relative">
               <div className="absolute top-0 left-0 -translate-x-3 -translate-y-3 text-7xl text-cyan-100 opacity-80 font-serif">
                 "
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-4 z-10">{testimonial.title}</h3>
-              <p className="text-gray-700 mb-8 flex-grow text-base leading-relaxed z-10">
-                {testimonial.quote}
-              </p>
-              <div className="flex items-center mt-auto">
-                <Image 
-                  src={testimonial.image} 
-                  alt={testimonial.name} 
-                  width={48} 
-                  height={48} 
-                  className="rounded-full mr-4 object-cover"
-                  unoptimized
-                />
-                <span className="font-semibold text-gray-800">{testimonial.name}</span>
+              <div className="flex-grow mb-4">
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  {testimonial.quote.map((part, index) => (
+                    <span key={index} className={part.highlighted ? "text-cyan-600 font-semibold" : ""}>
+                      {part.text}
+                    </span>
+                  ))}
+                </p>
+              </div>
+              <div className="mt-auto pt-4 border-t border-gray-200">
+                <div>
+                  <p className="font-bold text-gray-800">{testimonial.name}</p>
+                </div>
               </div>
             </div>
           ))}
@@ -65,10 +69,10 @@ export default function TestimonialsSection() {
         <div className="mt-20 text-center">
           <div className="max-w-4xl mx-auto">
             <blockquote className="text-2xl md:text-3xl font-serif text-gray-700 italic leading-relaxed">
-              "이제 저도 남들이 궁금해하는 사람이 됐어요"
+              "AI의 생각을 빌리지 마세요. 당신의 생각으로 AI를 설계하세요."
             </blockquote>
             <cite className="block mt-6 text-lg text-gray-500 not-italic">
-              — AI-Link 사용자들의 공통된 경험 —
+              — AI 사용자에서, AI 설계자로 —
             </cite>
           </div>
         </div>

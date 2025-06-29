@@ -1,113 +1,86 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { User, Cpu } from 'lucide-react';
+import { motion } from 'framer-motion'
 
-const FadingContextAnimation = () => {
+const FadingBlock = ({
+  y,
+  delay,
+  finalOpacity = 0.2,
+}: {
+  y: number
+  delay: number
+  finalOpacity?: number
+}) => (
+  <motion.div
+    initial={{ opacity: 1, y: 0 }}
+    animate={{ opacity: finalOpacity, y: y }}
+    transition={{
+      duration: 1.5,
+      delay: delay,
+      repeat: Infinity,
+      repeatType: 'reverse',
+      ease: 'easeInOut',
+    }}
+    className="h-2 bg-indigo-200 rounded-full"
+  />
+)
+
+const ContextLine = ({
+  text,
+  delay,
+  isFading,
+}: {
+  text: string
+  delay: number
+  isFading: boolean
+}) => (
+  <motion.div
+    initial={{ opacity: 1 }}
+    animate={{ opacity: isFading ? 0 : 1 }}
+    transition={{
+      duration: 1.5,
+      delay: delay + 2, // Start fading after the blocks have moved
+      repeat: Infinity,
+      repeatType: 'reverse',
+      ease: 'easeInOut',
+    }}
+    className="flex items-center space-x-2"
+  >
+    <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+    <span className="text-sm text-gray-500">{text}</span>
+  </motion.div>
+)
+
+export default function FadingContextAnimation() {
   return (
-    <div className="relative flex justify-center items-center p-8 mt-8 overflow-hidden rounded-2xl bg-slate-50 border border-slate-100">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-violet-50"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-radial from-indigo-100/80 to-transparent blur-3xl opacity-50"></div>
-      </div>
-      <style jsx>{`
-        .context-packet-wrapper {
-          position: absolute;
-          top: 50%;
-          left: 10px; /* Give some initial padding */
-          transform: translateY(-50%);
-          /* Add a delay and refined timing */
-          animation: fadeAndMove 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-          animation-delay: 0.2s;
-        }
-
-        .context-packet {
-          display: inline-block;
-          /* Refined Gradient */
-          background: linear-gradient(120deg, #5e5efd, #ad5bff);
-          color: white;
-          font-size: 12px;
-          font-weight: 500;
-          font-family: 'Inter', sans-serif;
-          border-radius: 9999px;
-          padding: 6px 14px;
-          /* Softer, more layered shadow */
-          box-shadow: 0 5px 15px rgba(94, 94, 253, 0.25), 0 2px 4px rgba(0,0,0,0.05);
-          white-space: nowrap;
-          /* Add pulsing glow */
-          animation: pulse 2.5s infinite;
-        }
-
-        @keyframes fadeAndMove {
-          0% {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-          }
-          20% {
-            opacity: 1;
-          }
-          90% {
-            opacity: 0;
-            transform: translateX(160px) scale(0.5);
-          }
-          100% {
-             opacity: 0;
-             transform: translateX(160px) scale(0.5);
-          }
-        }
-
-        @keyframes pulse {
-          0%, 100% {
-            box-shadow: 0 5px 15px rgba(94, 94, 253, 0.25), 0 2px 4px rgba(0,0,0,0.05);
-          }
-          50% {
-            box-shadow: 0 8px 25px rgba(94, 94, 253, 0.4), 0 2px 4px rgba(0,0,0,0.05);
-          }
-        }
-
-        .icon-container {
-          width: 64px;
-          height: 64px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          /* Polished Style */
-          background-color: white;
-          border: 1px solid #e2e8f0; /* slate-200 */
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .path-line {
-            width: 180px;
-            height: 2px;
-            /* Simple, elegant line */
-            background-color: #e2e8f0; /* slate-200 */
-        }
-      `}</style>
-      <div className="flex items-center gap-4 z-10">
-        {/* User Icon */}
-        <div className="icon-container">
-          <User size={30} className="text-indigo-500" />
-        </div>
-
-        {/* Animation Path */}
-        <div className="relative w-48 h-12">
-            <div className="absolute top-1/2 left-0 transform -translate-y-1/2 path-line"></div>
-            <div className="context-packet-wrapper">
-                <div className="context-packet">
-                Context
-                </div>
-            </div>
-        </div>
-
-        {/* AI Icon */}
-        <div className="icon-container">
-          <Cpu size={30} className="text-violet-500" />
+    <div className="max-w-md mx-auto p-6 bg-white rounded-xl">
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12 bg-gray-800 rounded-full flex-shrink-0" />
+        <div className="w-full space-y-3">
+          <div className="h-2 bg-gray-800 rounded-full w-3/4" />
+          <div className="h-2 bg-gray-800 rounded-full w-1/2" />
         </div>
       </div>
+
+      <div className="mt-6 space-y-4">
+        <div className="flex items-start space-x-4">
+          <div className="w-10 h-10 bg-indigo-500 rounded-full flex-shrink-0" />
+          <div className="w-full space-y-3 pt-1">
+            <FadingBlock y={8} delay={0} />
+            <FadingBlock y={4} delay={0.2} finalOpacity={0.3} />
+            <FadingBlock y={0} delay={0.4} finalOpacity={0.5} />
+          </div>
+        </div>
+
+        <div className="pl-14 pt-2 space-y-2">
+          <ContextLine text="기억 소실..." delay={0} isFading={true} />
+          <ContextLine text="맥락 증발..." delay={0.2} isFading={true} />
+          <ContextLine text="반복 요청..." delay={0.4} isFading={true} />
+        </div>
+      </div>
+       <p className="text-center text-xs text-gray-400 mt-4">
+        AI는 금붕어와 같습니다. 돌아서면 잊어버립니다.
+      </p>
     </div>
-  );
-};
-
-export default FadingContextAnimation; 
+  )
+} 

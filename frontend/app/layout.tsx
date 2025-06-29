@@ -6,6 +6,7 @@ import Head from 'next/head'
 import './dashboard/styles/dashboard.css';
 import Footer from '@/components/common/Footer';
 import CartUIManager from '@/components/cart/CartUIManager';
+import Header from '@/components/common/Header';
 
 // Noto Serif KR 폰트 설정
 const notoSerifKr = Noto_Serif_KR({
@@ -40,7 +41,8 @@ export default function RootLayout({
       <body className="min-h-screen bg-brand-secondary text-gray-800 flex flex-col pretendard">
         <Providers>
           <ReduxProvider>
-            <div className="flex-grow">
+            <Header />
+            <div className="flex-grow pt-16">
               {children}
             </div>
             <CartUIManager />

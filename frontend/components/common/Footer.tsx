@@ -14,9 +14,9 @@ export default function Footer() {
           <div className="space-y-4 lg:col-span-1">
             <Link href="/dashboard" className="flex items-center space-x-3 group">
               <AppLogo className="w-12 h-12 text-white flex-shrink-0 group-hover:opacity-90 transition-opacity" />
-              <div>
-                <span className="block text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">habitus33</span>
-                <span className="block text-sm font-normal text-cyan-400 mt-1">Read Short. Deep Dive</span>
+              <div className="flex items-end space-x-1.5">
+                <span className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors leading-none">habitus33</span>
+                <span className="text-xs font-normal text-cyan-400 pb-0.5">Atomic Memo</span>
               </div>
             </Link>
           </div>

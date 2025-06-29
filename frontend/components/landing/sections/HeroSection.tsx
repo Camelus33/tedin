@@ -45,21 +45,19 @@ export default function HeroSection() {
           <div className="flex items-center justify-center gap-12">
             {/* Text Content */}
             <div className="max-w-xl text-left">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif text-brand-primary tracking-tight leading-tight">
-                "와아! 이건 좀 다르네!"<br />
-                <span className="text-lg font-normal text-gray-600">듣고 싶지 않나요?</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
+                AI에게 설명하지 말고,<br />
+                <span className="text-indigo-600">행동을 설계하세요.</span>
               </h1>
-              <p className="mt-6 text-lg sm:text-xl text-gray-700">
-                모두가 주목하는 리포트, 상사가 감탄하는 보고서.<br />
-                <span className="font-semibold text-brand-primary">당신만의 남다른 결과물을 창출하세요.</span>
+              <p className="mt-6 text-lg sm:text-xl text-gray-600">
+                반복적인 프롬프트는 이제 그만. 당신의 지식과 맥락으로 <span className="font-semibold text-indigo-600">'AI 행동 설계도'</span>를 만들고, AI를 <span className="font-semibold text-indigo-600">'마음껏 조종하세요'</span>.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                 <Link
                   href="/auth/register"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-brand-primary hover:opacity-90 transition duration-150 ease-in-out w-full sm:w-auto"
+                  className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150 ease-in-out w-full sm:w-auto"
                 >
-                  <SparklesIconOutline className="w-5 h-5 mr-2 -ml-1" aria-hidden="true" />
-                  나만의 AI-Link 만들기
+                  나만의 AI 조수 설계하기
                 </Link>
               </div>
             </div>
