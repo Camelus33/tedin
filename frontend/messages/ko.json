@@ -205,7 +205,10 @@
       "errorNoCollectionForCategory": "'{category}' 카테고리에 해당하는 컬렉션을 찾을 수 없습니다.",
       "errorLoadGameInfo": "게임 정보를 불러오는 데 실패했습니다.",
       "successGameDeleted": "게임이 삭제되었습니다.",
-      "errorDeleteGame": "게임 삭제 중 오류가 발생했습니다."
+      "errorDeleteGame": "게임 삭제 중 오류가 발생했습니다.",
+      "successCreateGame": "게임이 성공적으로 생성되었습니다!",
+      "successUpdateGame": "게임이 성공적으로 업데이트되었습니다!",
+      "successCreateCollection": "'{name}' 컬렉션이 성공적으로 생성되었습니다!"
     },
     "alert": {
       "confirmDeleteGame": "정말 이 게임을 삭제하시겠습니까?"

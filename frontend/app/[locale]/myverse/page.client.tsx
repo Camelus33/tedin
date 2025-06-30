@@ -172,7 +172,7 @@ export default function MyversePage() {
       setAccessibleNextCursor(result.nextCursor);
     } catch (err: any) {
       console.error('접근 가능 게임 불러오기 실패:', err);
-      setAccessibleError(err.message || '전체 게임 목록을 불러오는 중 오류 발생');
+      setAccessibleError(t('toast.errorLoadAllGames'));
     } finally {
       if (!cursor) {
         setIsAccessibleLoading(false);
@@ -194,7 +194,7 @@ export default function MyversePage() {
       setCategoryNextCursor(result.nextCursor);
     } catch (err: any) {
       console.error(`'${category}' 카테고리 게임 불러오기 실패:`, err);
-      setCategoryError(err.message || `'${category}' 게임 로딩 중 오류`);
+      setCategoryError(t('toast.errorLoadCategoryGames', { category }));
     } finally {
       if (!cursor) {
         setIsCategoryLoading(false);
@@ -216,7 +216,7 @@ export default function MyversePage() {
       setSharedNextCursor(result.nextCursor);
     } catch (err: any) {
       console.error('공유 게임 불러오기 실패:', err);
-      setSharedError(err.message || '공유받은 게임을 불러오는 중 오류가 발생했습니다.');
+      setSharedError(t('toast.errorLoadSharedGames'));
     } finally {
       if (!cursor) {
         setIsSharedLoading(false);
@@ -239,12 +239,12 @@ export default function MyversePage() {
     } catch (err: any) {
       console.error('내가 보낸 게임 불러오기 실패:', err);
       // '유효하지 않은 게임 ID입니다.' 오류는 게임 없음 상태로 간주
-      const msg = err.message || '';
+      const msg = (err.message || '').toString();
       if (msg.includes('유효하지 않은 게임 ID')) {
         setSentError('');
         setSentGames([]);
       } else {
-        setSentError(msg || '내가 보낸 게임을 불러오는 중 오류가 발생했습니다.');
+        setSentError(t('toast.errorLoadSentGames'));
       }
     } finally {
       if (!cursor) setIsSentLoading(false);
@@ -336,7 +336,7 @@ export default function MyversePage() {
       setSelectedCollectionIdForCreation(targetCollection._id);
       setShowCreateGameModal(true);
     } else {
-      toast.error(t('toast.collectionNotFound', { category: selectedCategory }));
+      toast.error(t('toast.errorNoCollectionForCategory', { category: selectedCategory }));
       console.error('Error: Collection not found for category:', selectedCategory, myCollections);
     }
   };
@@ -360,16 +360,16 @@ export default function MyversePage() {
       setShowEditGameModal(true);
     } else {
       console.error('수정할 게임 데이터를 찾을 수 없습니다:', gameId);
-      toast.error(t('toast.gameInfoLoadFailure'));
+      toast.error(t('toast.errorLoadGameInfo'));
     }
   };
 
   // 게임 삭제 핸들러
   const handleDeleteGame = async (gameId: string) => {
-    if (window.confirm(t('confirm.deleteGame'))) {
+    if (window.confirm(t('alert.confirmDeleteGame'))) {
       try {
         await myverseApi.delete(gameId);
-        toast.success(t('toast.gameDeleted'));
+        toast.success(t('toast.successGameDeleted'));
         // 목록 새로고침
         if (activeTab === 'myCollections') {
           if (selectedCategory === 'all') {
@@ -382,7 +382,7 @@ export default function MyversePage() {
         }
       } catch (error: any) {
         console.error('게임 삭제 실패:', error);
-        toast.error(error.message || t('toast.gameDeleteFailure'));
+        toast.error(t('toast.errorDeleteGame'));
       }
     }
   };
@@ -411,7 +411,7 @@ export default function MyversePage() {
                 Habitus33
               </h1>
               <p className={`text-xs font-medium tracking-wider ${cyberTheme.textMuted}`}>
-                Read Short. Deep Dive
+                {t('headerSlogan')}
               </p>
             </div>
           </Link>
@@ -420,10 +420,10 @@ export default function MyversePage() {
             <div className="flex items-center">
               <div className="mr-3 text-right">
                 <p className={`font-semibold ${cyberTheme.textLight}`}>
-                  {user?.nickname || t('myverse.defaultUsername')}
+                  {user?.nickname || t('defaultUsername')}
                 </p>
                 <p className={`text-xs ${cyberTheme.textMuted}`}>
-                  {user?.email ? user.email.split('@')[0] : '나만의 암기노트'}
+                  {user?.email ? user.email.split('@')[0] : t('defaultUserDesc')}
                 </p>
               </div>
               <div className="relative">
@@ -434,7 +434,7 @@ export default function MyversePage() {
                   {user?.profileImage ? (
                     <Image 
                       src={user.profileImage} 
-                      alt={user?.nickname || t('myverse.defaultUsername')}
+                      alt={user?.nickname || t('defaultUsername')}
                       className="w-full h-full object-cover"
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -454,7 +454,7 @@ export default function MyversePage() {
                         className={`block px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} transition-colors`}
                         onClick={() => setProfileMenuOpen(false)}
                       >
-                        프로필 설정
+                        {t('profileSettings')}
                       </Link>
                       <button 
                         onClick={() => {
@@ -463,7 +463,7 @@ export default function MyversePage() {
                         }}
                         className={`block w-full text-left px-4 py-2 text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} transition-colors`}
                       >
-                        로그아웃
+                        {t('logout')}
                       </button>
                     </div>
                   </>
@@ -481,9 +481,9 @@ export default function MyversePage() {
         animate="visible"
       >
         <h1 className={`text-heading-sm mb-6 ${cyberTheme.textLight}`}>
-          ZenGo Myverse 
+          {t('pageTitle')} 
           <span className={`text-base font-medium ml-1 ${cyberTheme.textMuted}`}>
-            - 게임으로 외우고, 즐겁게 공유하세요.
+            {t('pageSubtitle')}
           </span>
         </h1>
 
@@ -493,19 +493,19 @@ export default function MyversePage() {
               onClick={() => setActiveTab('myCollections')}
               className={`whitespace-nowrap pb-3 pt-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ${activeTab === 'myCollections' ? `border-cyan-500 ${cyberTheme.primary}` : `border-transparent ${cyberTheme.textMuted} hover:${cyberTheme.textLight} hover:border-gray-500`}`}
             >
-              {t('allGames')}
+              {t('tabs.allGames')}
             </button>
             <button
               onClick={() => setActiveTab('sharedGames')}
               className={`whitespace-nowrap pb-3 pt-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ${activeTab === 'sharedGames' ? `border-cyan-500 ${cyberTheme.primary}` : `border-transparent ${cyberTheme.textMuted} hover:${cyberTheme.textLight} hover:border-gray-500`}`}
             >
-              {t('sharedGames')}
+              {t('tabs.sharedGames')}
             </button>
             <button
               onClick={() => setActiveTab('sentGames')}
               className={`whitespace-nowrap pb-3 pt-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ${activeTab === 'sentGames' ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'}`}
             >
-              {t('sentGames')}
+              {t('tabs.sentGames')}
             </button>
             <button
               onClick={() => setActiveTab('exploreGames')}
@@ -856,7 +856,7 @@ export default function MyversePage() {
                   } else {
                     fetchCategoryGames(selectedCategory);
                   }
-                  toast.success(t('toast.successGameCreated'));
+                  toast.success(t('toast.successCreateGame'));
                 }}
               />
             </motion.div>
@@ -884,7 +884,7 @@ export default function MyversePage() {
                 onSuccess={(newCollection: { _id: string, name: string }) => {
                   setShowCreateCollectionModal(false);
                   fetchData();
-                  toast.success(t('toast.successCollectionCreated', { name: newCollection.name }));
+                  toast.success(t('toast.successCreateCollection', { name: newCollection.name }));
                 }}
               />
             </motion.div>
@@ -926,6 +926,7 @@ export default function MyversePage() {
                   } else if (activeTab === 'sharedGames') {
                     setSharedGames(prev => prev.map(g => g._id === updatedGame._id ? updatedGame : g));
                   }
+                  toast.success(t('toast.successUpdateGame'));
                 }}
               />
             </motion.div>

@@ -198,7 +198,10 @@
       "errorNoCollectionForCategory": "Could not find a collection for the '{category}' category.",
       "errorLoadGameInfo": "Failed to load game information.",
       "successGameDeleted": "Game has been deleted.",
-      "errorDeleteGame": "An error occurred while deleting the game."
+      "errorDeleteGame": "An error occurred while deleting the game.",
+      "successCreateGame": "Game created successfully!",
+      "successUpdateGame": "Game updated successfully!",
+      "successCreateCollection": "Collection '{name}' created successfully!"
     },
     "alert": {
       "confirmDeleteGame": "Are you sure you want to delete this game?"

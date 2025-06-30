@@ -27,12 +27,4 @@ export const metadata: Metadata = {
 // 루트 경로 접근 시 기본 로케일(ko)로 리다이렉트
 export default function RootPage() {
   redirect('/ko');
-}
-
-// This is now a Server Component
-export default function LandingPage() {
-  // Server-side logic can go here if needed in the future
-
-  // Render the Client Component that handles interactivity and layout
-  return <LandingPageClient />;
 } 
