@@ -1,0 +1,34 @@
+{
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search"
+  },
+  "brand": {
+    "title": "A New Habit of Thought, Habitus33",
+    "slogan": "Prompt Free, Habitus33",
+    "description": "AI-powered Knowledge Evolution Platform"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "forgot_password": "Forgot your password?",
+    "login_success": "Successfully logged in",
+    "logout_success": "Successfully logged out"
+  }
+} 

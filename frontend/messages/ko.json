@@ -1,0 +1,34 @@
+{
+  "navigation": {
+    "home": "홈",
+    "dashboard": "대시보드",
+    "profile": "프로필",
+    "settings": "설정",
+    "logout": "로그아웃"
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "save": "저장",
+    "cancel": "취소",
+    "confirm": "확인",
+    "delete": "삭제",
+    "edit": "편집",
+    "create": "생성",
+    "search": "검색"
+  },
+  "brand": {
+    "title": "새로운 생각의 습관, Habitus33",
+    "slogan": "Prompt Free, Habitus33",
+    "description": "AI와 함께하는 지식 진화 플랫폼"
+  },
+  "auth": {
+    "login": "로그인",
+    "register": "회원가입",
+    "email": "이메일",
+    "password": "비밀번호",
+    "forgot_password": "비밀번호를 잊으셨나요?",
+    "login_success": "로그인되었습니다",
+    "logout_success": "로그아웃되었습니다"
+  }
+} 
