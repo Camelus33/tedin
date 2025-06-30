@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Footer from '@/components/common/Footer';
 import { UserCircleIcon, ScaleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 const UniversityMarketingPageKO = () => {
@@ -164,8 +163,6 @@ const UniversityMarketingPageKO = () => {
           </div>
         </div>
       </section>
-      
-      <Footer />
     </div>
   );
 };
