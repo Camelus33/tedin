@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/navigation';
 import AppLogo from '@/components/common/AppLogo';
 import { apiClient } from '@/lib/apiClient';
 
 export default function LoginPage() {
   const router = useRouter();
+  const t = useTranslations('auth.page.login');
+  const tValidation = useTranslations('auth.validation');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -40,12 +43,12 @@ export default function LoginPage() {
         <div className="text-center">
           <AppLogo className="mx-auto w-20 h-20" />
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-            로그인
+            {t('title')}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            또는{" "}
+            {t('subtitle')}{" "}
             <Link href="/auth/register" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
-              새 계정 만들기
+              {t('create_account_link')}
             </Link>
           </p>
         </div>
@@ -54,7 +57,7 @@ export default function LoginPage() {
           <div className="space-y-4 rounded-md">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                이메일
+                {t('email_label')}
               </label>
               <input
                 id="email"
@@ -63,7 +66,7 @@ export default function LoginPage() {
                 autoComplete="email"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                placeholder="이메일 주소"
+                placeholder={t('email_placeholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -71,10 +74,10 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  비밀번호
+                  {t('password_label')}
                 </label>
                 <Link href="/auth/reset-password" className="text-xs font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
-                  비밀번호를 잊으셨나요?
+                  {t('forgot_password_link')}
                 </Link>
               </div>
               <input
@@ -84,7 +87,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                placeholder="비밀번호"
+                placeholder={t('password_placeholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -103,7 +106,7 @@ export default function LoginPage() {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-white bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 font-medium shadow-lg disabled:opacity-70"
             >
-              {isLoading ? "로그인 중..." : "로그인"}
+              {isLoading ? t('login_button_loading') : t('login_button')}
             </button>
           </div>
         </form>
@@ -114,16 +117,16 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white/80 text-gray-500">고객 지원</span>
+              <span className="px-2 bg-white/80 text-gray-500">{t('customer_support')}</span>
             </div>
           </div>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              사용문의: <a href="mailto:camelus.tedin@gmail.com" className="text-indigo-600 hover:text-indigo-500 transition-colors">camelus.tedin@gmail.com</a>
+              {t('contact_email')}: <a href="mailto:camelus.tedin@gmail.com" className="text-indigo-600 hover:text-indigo-500 transition-colors">camelus.tedin@gmail.com</a>
             </p>
             <p className="mt-4 text-xs text-gray-500">
-              Tedin Inc
+              {t('company_name')}
             </p>
           </div>
         </div>

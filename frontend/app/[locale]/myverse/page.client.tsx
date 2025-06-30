@@ -26,11 +26,12 @@ import { toast } from 'react-hot-toast';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import HabitusIcon from '@/components/HabitusIcon';
 import { cyberTheme } from '@/src/styles/theme'; // Import centralized theme
+import { useTranslations } from 'next-intl';
 
 // Dynamically import modal components
 const CountdownModal = dynamicComponent(() => import('@/components/CountdownModal'), { ssr: false });
 const CollectionGameForm = dynamicComponent(() => import('./[collectionId]/CollectionGameForm'), { ssr: false });
-const CollectionForm = dynamicComponent(() => import('../../components/CollectionForm'), { ssr: false });
+const CollectionForm = dynamicComponent(() => import('../../../components/CollectionForm'), { ssr: false });
 
 // 타입 정의
 interface Collection {
@@ -40,6 +41,8 @@ interface Collection {
   title?: string;
   description?: string;
   type?: string; // category 대신 type 사용 (백엔드 모델과 일치 가정)
+  visibility?: 'private' | 'public' | 'group';
+  sharedWith?: string[];
 }
 
 // 게임 데이터 타입 정의 (이전에 있었는지 확인, 없다면 추가)
@@ -59,15 +62,6 @@ interface MyverseGameData {
   sharedWith?: string[];
 }
 
-// 임시 카테고리 정의
-const collectionCategories = [
-  { id: 'all', label: '전체', Icon: TagIcon },
-  { id: '시험', label: '시험', Icon: AcademicCapIcon },
-  { id: '학습', label: '학습', Icon: BookOpenIcon },
-  { id: '업무', label: '업무', Icon: BriefcaseIcon },
-  { id: '일상', label: '일상', Icon: SunIcon },
-];
-
 // *** Add Category Color Mapping ***
 const categoryColorMap: { [key: string]: string } = {
   '시험': 'text-yellow-400',
@@ -80,6 +74,7 @@ const categoryColorMap: { [key: string]: string } = {
 const defaultCategoryColor = cyberTheme.textLight;
 
 export default function MyversePage() {
+  const t = useTranslations('myverse');
   const searchParams = useSearchParams();
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
@@ -125,6 +120,15 @@ export default function MyversePage() {
   const [isSentLoading, setIsSentLoading] = useState(false);
   const [sentError, setSentError] = useState('');
   const [sentNextCursor, setSentNextCursor] = useState<string | null>(null);
+
+  // 임시 카테고리 정의
+  const collectionCategories = [
+    { id: 'all', label: t('categories.all'), Icon: TagIcon },
+    { id: '시험', label: t('categories.exam'), Icon: AcademicCapIcon },
+    { id: '학습', label: t('categories.study'), Icon: BookOpenIcon },
+    { id: '업무', label: t('categories.work'), Icon: BriefcaseIcon },
+    { id: '일상', label: t('categories.daily'), Icon: SunIcon },
+  ];
 
   // Initialize active tab, default to 'myCollections'
   useEffect(() => {
@@ -330,7 +334,7 @@ export default function MyversePage() {
       setSelectedCollectionIdForCreation(targetCollection._id);
       setShowCreateGameModal(true);
     } else {
-      toast.error(`'${selectedCategory}' 카테고리에 해당하는 컬렉션을 찾을 수 없습니다.`);
+      toast.error(t('toast.collectionNotFound', { category: selectedCategory }));
       console.error('Error: Collection not found for category:', selectedCategory, myCollections);
     }
   };
@@ -354,16 +358,16 @@ export default function MyversePage() {
       setShowEditGameModal(true);
     } else {
       console.error('수정할 게임 데이터를 찾을 수 없습니다:', gameId);
-      toast.error('게임 정보를 불러오는 데 실패했습니다.');
+      toast.error(t('toast.gameInfoLoadFailure'));
     }
   };
 
   // 게임 삭제 핸들러
   const handleDeleteGame = async (gameId: string) => {
-    if (window.confirm('정말 이 게임을 삭제하시겠습니까?')) {
+    if (window.confirm(t('confirm.deleteGame'))) {
       try {
         await myverseApi.delete(gameId);
-        toast.success('게임이 삭제되었습니다.');
+        toast.success(t('toast.gameDeleted'));
         // 목록 새로고침
         if (activeTab === 'myCollections') {
           if (selectedCategory === 'all') {
@@ -376,7 +380,7 @@ export default function MyversePage() {
         }
       } catch (error: any) {
         console.error('게임 삭제 실패:', error);
-        toast.error(error.message || '게임 삭제 중 오류가 발생했습니다.');
+        toast.error(error.message || t('toast.gameDeleteFailure'));
       }
     }
   };
@@ -485,26 +489,26 @@ export default function MyversePage() {
               onClick={() => setActiveTab('myCollections')}
               className={`whitespace-nowrap pb-3 pt-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ${activeTab === 'myCollections' ? `border-cyan-500 ${cyberTheme.primary}` : `border-transparent ${cyberTheme.textMuted} hover:${cyberTheme.textLight} hover:border-gray-500`}`}
             >
-              전체 게임 보기
+              {t('allGames')}
             </button>
             <button
               onClick={() => setActiveTab('sharedGames')}
               className={`whitespace-nowrap pb-3 pt-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ${activeTab === 'sharedGames' ? `border-cyan-500 ${cyberTheme.primary}` : `border-transparent ${cyberTheme.textMuted} hover:${cyberTheme.textLight} hover:border-gray-500`}`}
             >
-              공유 받은 게임
+              {t('sharedGames')}
             </button>
             <button
               onClick={() => setActiveTab('sentGames')}
               className={`whitespace-nowrap pb-3 pt-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ${activeTab === 'sentGames' ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'}`}
             >
-              내가 보낸 게임
+              {t('sentGames')}
             </button>
             <button
               onClick={() => setActiveTab('exploreGames')}
               className={`whitespace-nowrap pb-3 pt-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150 ${activeTab === 'exploreGames' ? 'border-accent text-accent' : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'}`}
               disabled
             >
-              나의 스터디 클랜 - 곧 오픈 예정
+              {t('studyClan')}
             </button>
           </nav>
         </div>
@@ -518,7 +522,7 @@ export default function MyversePage() {
           {activeTab === 'myCollections' && (
             <div className="flex flex-col lg:flex-row gap-8">
               <aside className="w-full lg:w-1/4 xl:w-1/5 flex-shrink-0">
-                <h2 className={`text-lg font-semibold mb-4 ${cyberTheme.textLight}`}>콜렉션</h2>
+                <h2 className={`text-lg font-semibold mb-4 ${cyberTheme.textLight}`}>{t('collectionsTitle')}</h2>
                 <nav className="space-y-1">
                   {collectionCategories.map(category => {
                     const collectionForCategory = myCollections.find(col => col.type === category.id);
@@ -544,7 +548,7 @@ export default function MyversePage() {
                             href={`/myverse/${collectionForCategory._id}`}
                             onClick={(e) => e.stopPropagation()}
                             className={`ml-2 p-0.5 rounded opacity-0 group-hover:opacity-70 hover:opacity-100 hover:bg-gray-600/50 transition-opacity duration-150`}
-                            aria-label={`${category.label} 컬렉션 상세 보기`}
+                            aria-label={t('collectionDetailsAria', { collectionName: category.label })}
                           >
                             <ArrowTopRightOnSquareIcon className={`h-4 w-4 ${cyberTheme.textMuted}`} />
                           </Link>
@@ -570,7 +574,7 @@ export default function MyversePage() {
                     className={`mt-4 w-full flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors border border-dashed ${cyberTheme.inputBorder} ${cyberTheme.textMuted} hover:${cyberTheme.buttonSecondaryHoverBg} hover:${cyberTheme.textLight}`}
                     >
                     <PlusIcon className={`mr-3 h-5 w-5 flex-shrink-0 ${cyberTheme.textMuted}`} />
-                    새 콜렉션
+                    {t('newCollection')}
                   </button>
                 </nav>
               </aside>
@@ -578,7 +582,9 @@ export default function MyversePage() {
               <section className="flex-1">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className={`text-lg font-semibold ${cyberTheme.textLight}`}>
-                    {collectionCategories.find(c => c.id === selectedCategory)?.label || '전체'} 게임
+                    {selectedCategory === 'all'
+                      ? t('gamesTitleAll')
+                      : t('gamesTitle', { category: collectionCategories.find(c => c.id === selectedCategory)?.label || selectedCategory })}
                     <span className={`text-base font-normal ml-2 ${cyberTheme.textMuted}`}>
                       {
                         selectedCategory === 'all'
@@ -593,7 +599,7 @@ export default function MyversePage() {
                     className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}
                   >
                     <SquaresPlusIcon className="h-5 w-5 mr-1" />
-                    새 게임
+                    {t('newGame')}
                   </Button>
                 </div>
 
@@ -608,7 +614,7 @@ export default function MyversePage() {
                     <div className="bg-feedback-error/10 text-feedback-error p-4 rounded-lg">{accessibleError}</div>
                   ) : accessibleGames.length === 0 ? (
                     <div className="text-center py-16 border border-dashed border-neutral-300 rounded-lg">
-                      <p className="text-neutral-500">아직 생성하거나 공유받은 게임이 없습니다.</p>
+                      <p className="text-neutral-500">{t('noGamesAccessible')}</p>
                     </div>
                   ) : (
                     <>
@@ -637,7 +643,7 @@ export default function MyversePage() {
                             disabled={isAccessibleLoading}
                             loading={isAccessibleLoading && accessibleGames.length > 0}
                           >
-                            더보기
+                            {t('loadMore')}
                           </Button>
                         </div>
                       )}
@@ -656,7 +662,7 @@ export default function MyversePage() {
                     <div className="bg-feedback-error/10 text-feedback-error p-4 rounded-lg">{categoryError}</div>
                   ) : categoryGames.length === 0 ? (
                     <div className="text-center py-16 border border-dashed border-neutral-300 rounded-lg">
-                      <p className="text-neutral-500">해당 콜렉션에 게임이 없습니다.</p>
+                      <p className="text-neutral-500">{t('noGamesInCategory')}</p>
                     </div>
                   ) : (
                     <>
@@ -685,7 +691,7 @@ export default function MyversePage() {
                             disabled={isCategoryLoading}
                             loading={isCategoryLoading && categoryGames.length > 0}
                           >
-                            더보기
+                            {t('loadMore')}
                           </Button>
                         </div>
                       )}
@@ -698,7 +704,7 @@ export default function MyversePage() {
           {activeTab === 'sharedGames' && (
             <section className="flex-1">
               <h2 className="text-lg font-semibold text-neutral-DEFAULT mb-4">
-                공유받은 게임
+                {t('sharedGamesTitle')}
                 {!isSharedLoading && (
                   <span className="text-base font-normal text-neutral-500 ml-2">
                     ({sharedGames.length})
@@ -715,7 +721,7 @@ export default function MyversePage() {
                 <div className="bg-feedback-error/10 text-feedback-error p-4 rounded-lg">{sharedError}</div>
               ) : sharedGames.length === 0 ? (
                 <div className="text-center py-12 text-neutral-500">
-                  <p>아직 공유받은 게임이 없습니다.</p>
+                  <p>{t('noGamesShared')}</p>
                 </div>
               ) : (
                 <>
@@ -744,7 +750,7 @@ export default function MyversePage() {
                         disabled={isSharedLoading}
                         loading={isSharedLoading && sharedGames.length > 0}
                       >
-                        더보기
+                        {t('loadMore')}
                       </Button>
                     </div>
                   )}
@@ -755,7 +761,7 @@ export default function MyversePage() {
           {activeTab === 'sentGames' && (
             <section className="flex-1">
               <h2 className="text-lg font-semibold text-neutral-DEFAULT mb-4">
-                내가 보낸 게임
+                {t('sentGamesTitle')}
                 {!isSentLoading && (
                   <span className="text-base font-normal text-neutral-500 ml-2">
                     ({sentGames.length})
@@ -772,7 +778,7 @@ export default function MyversePage() {
                 <div className="bg-feedback-error/10 text-feedback-error p-4 rounded-lg">{sentError}</div>
               ) : sentGames.length === 0 ? (
                 <div className="text-center py-12 text-neutral-500">
-                  <p>아직 보낸 게임이 없습니다.</p>
+                  <p>{t('noGamesSent')}</p>
                 </div>
               ) : (
                 <>
@@ -801,7 +807,7 @@ export default function MyversePage() {
                         disabled={isSentLoading}
                         loading={isSentLoading && sentGames.length > 0}
                       >
-                        더보기
+                        {t('loadMore')}
                       </Button>
                     </div>
                   )}
@@ -811,7 +817,7 @@ export default function MyversePage() {
           )}
           {activeTab === 'exploreGames' && (
             <div className="text-center py-16 border border-dashed border-neutral-300 rounded-lg">
-              <p className="text-neutral-500">곧 오픈</p>
+              <p className="text-neutral-500">{t('comingSoon')}</p>
             </div>
           )}
         </motion.div>
@@ -846,7 +852,7 @@ export default function MyversePage() {
                   } else {
                     fetchCategoryGames(selectedCategory);
                   }
-                  toast.success('게임이 성공적으로 생성되었습니다!');
+                  toast.success(t('toast.successGameCreated'));
                 }}
               />
             </motion.div>
@@ -869,12 +875,12 @@ export default function MyversePage() {
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <CollectionForm 
+              <CollectionForm
                 onCancel={() => setShowCreateCollectionModal(false)}
-                onSuccess={(newCollection) => {
+                onSuccess={(newCollection: { _id: string, name: string }) => {
                   setShowCreateCollectionModal(false);
                   fetchData();
-                  toast.success(`컬렉션 '${newCollection.name}' 생성 완료!`);
+                  toast.success(t('toast.successCollectionCreated', { name: newCollection.name }));
                 }}
               />
             </motion.div>

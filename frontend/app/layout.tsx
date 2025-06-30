@@ -1,6 +1,6 @@
 import '@/styles/globals.css'
 import { Noto_Serif_KR } from 'next/font/google'
-import './dashboard/styles/dashboard.css';
+// import './dashboard/styles/dashboard.css';
 
 // Noto Serif KR 폰트 설정
 const notoSerifKr = Noto_Serif_KR({

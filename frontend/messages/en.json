@@ -29,6 +29,346 @@
     "password": "Password",
     "forgot_password": "Forgot your password?",
     "login_success": "Successfully logged in",
-    "logout_success": "Successfully logged out"
+    "logout_success": "Successfully logged out",
+    "create_ai_link": "Create My AI-Link",
+    "page": {
+      "login": {
+        "title": "Login",
+        "subtitle": "or",
+        "create_account_link": "Create new account",
+        "email_label": "Email",
+        "email_placeholder": "Email address",
+        "password_label": "Password",
+        "password_placeholder": "Password",
+        "forgot_password_link": "Forgot your password?",
+        "login_button": "Login",
+        "login_button_loading": "Logging in...",
+        "customer_support": "Customer Support",
+        "contact_email": "Contact us",
+        "company_name": "Tedin Inc"
+      },
+      "register": {
+        "title": "Sign Up",
+        "subtitle": "Already have an account?",
+        "login_link": "Login",
+        "email_label": "Email",
+        "email_placeholder": "e.g. example@gmail.com, example@naver.com",
+        "email_tooltip": "Please enter a valid email format",
+        "nickname_label": "Nickname",
+        "nickname_placeholder": "Nickname",
+        "password_label": "Password",
+        "password_placeholder": "Password",
+        "confirm_password_label": "Confirm Password",
+        "confirm_password_placeholder": "Confirm Password",
+        "register_button": "Sign Up",
+        "register_button_loading": "Signing up..."
+      }
+    },
+    "validation": {
+      "email_invalid": "Please enter a valid email format.",
+      "nickname_min_length": "Nickname must be at least 2 characters long.",
+      "password_min_length": "Password must be at least 8 characters long.",
+      "password_mismatch": "Passwords do not match",
+      "registration_failed": "Registration failed"
+    }
+  },
+  "header": {
+    "login": "Login",
+    "create_account": "Create My AI-Link"
+  },
+  "footer": {
+    "company": {
+      "title": "Company",
+      "name": "Tedin Inc.",
+      "ceo": "Jinny B. Suh",
+      "reg_no": "348-88-02077",
+      "type": "IT Services",
+      "contact": "jinny@tedin.kr"
+    },
+    "certifications": {
+      "title": "Certifications / Awards",
+      "kised": "Selected for KISED Gov. Grant (MSIT)",
+      "kto": "Selected for KTO Contest (MCST)"
+    },
+    "links": {
+      "title": "Links & Legal",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy"
+    },
+    "copyright": "© {year} Tedin Inc. All rights reserved. All content related to this page is protected by intellectual property rights. Unauthorized reproduction, distribution, and use for AI training are prohibited."
+  },
+  "dashboard": {
+    "header": {
+      "title": "Habitus33",
+      "subtitle": "Read Short. Deep Dive",
+      "profile_settings": "Profile Settings",
+      "logout": "Logout"
+    },
+    "hero": {
+      "title": "Small Step, One Line",
+      "subtitle": "\"One-line memo, the first step to wisdom\"",
+      "action_button": "Atomic Memo"
+    },
+    "actions": {
+      "zengo_title": "ZenGo",
+      "zengo_description": "Cultivate extraordinary reading insights.",
+      "zengo_button": "START",
+      "myverse_title": "ZenGo Myverse",
+      "myverse_description": "Memorize important thoughts as they arise.",
+      "myverse_button": "TRY",
+      "myverse_badge": "Pro"
+    },
+    "routine": {
+      "loading": "Loading routine info...",
+      "title": "33-Day Brain Optimization Routine",
+      "action_button": "AMFA Guide",
+      "today_success": "Today's Success",
+      "today_ts_done": "TS experience completed today",
+      "today_ts_pending": "Awaiting today's TS experience",
+      "today_zengo_done": "ZenGo experience completed today",
+      "today_zengo_pending": "Awaiting today's ZenGo experience",
+      "day_progress": "Day {currentDay} / 33",
+      "streak_in_progress": "On a {streak}-day streak - proceed at your own pace.",
+      "no_routine": "No 33-day routine in progress.",
+      "start_routine_button": "Start Routine",
+      "creating_routine": "Creating routine...",
+      "create_routine_failed": "Failed to create routine.",
+      "milestone_start": "🪴 Small beginnings make a beautiful garden",
+      "milestone_7": "🌾 The first seed has taken root",
+      "milestone_14": "☘️ A small sprout is emerging",
+      "milestone_21": "🌱 Like a gardener watering consistently",
+      "milestone_28": "🌿 Can you see your growing progress?",
+      "milestone_33": "🌳 Your own rhythm is now established",
+      "journey_start": "Start your own journey"
+    },
+    "stats": {
+      "speed": "⚡ Speed",
+      "ppm_unit": "pages/min",
+      "ts_session": "TS Sessions",
+      "total_books": "Total Books",
+      "book_unit": ""
+    },
+    "currently_reading": {
+      "title": "Currently Reading",
+      "my_lib_button": "My Lib",
+      "add_new_book": "Try adding a new book",
+      "add_book_button": "Add Book",
+      "page_progress": "{currentPage}/{totalPages} ({progress}%)",
+      "eta": "Approx. {minutes} min to finish",
+      "eta_message_short": "Finishing shortly",
+      "eta_message_minutes": "Approx. {minutes} min to finish",
+      "eta_message_hours": "Approx. {hours}h to finish",
+      "eta_message_days_hours": "Approx. {days}d {hours}h to finish",
+      "eta_prompt": "Check ETA with TS"
+    },
+    "common": {
+      "loading": "Loading data...",
+      "error": "Could not load data"
+    }
+  },
+  "myverse": {
+    "headerSlogan": "Read Short. Deep Dive",
+    "defaultUsername": "User",
+    "defaultUserDesc": "My Personal Memorization Book",
+    "profileSettings": "Profile Settings",
+    "logout": "Logout",
+    "pageTitle": "ZenGo Myverse",
+    "pageSubtitle": "- Memorize with games, share with fun.",
+    "tabs": {
+      "allGames": "All Games",
+      "sharedGames": "Shared Games",
+      "sentGames": "Sent Games"
+    },
+    "categories": {
+      "all": "All",
+      "exam": "Exam",
+      "study": "Study",
+      "work": "Work",
+      "daily": "Daily Life"
+    },
+    "toast": {
+      "errorLoadCollection": "An error occurred while loading collections.",
+      "errorLoadAllGames": "Error while loading the entire game list.",
+      "errorLoadCategoryGames": "Error while loading '{category}' games.",
+      "errorLoadSharedGames": "An error occurred while loading shared games.",
+      "errorLoadSentGames": "An error occurred while loading sent games.",
+      "errorNoCollectionForCategory": "Could not find a collection for the '{category}' category.",
+      "errorLoadGameInfo": "Failed to load game information.",
+      "successGameDeleted": "Game has been deleted.",
+      "errorDeleteGame": "An error occurred while deleting the game."
+    },
+    "alert": {
+      "confirmDeleteGame": "Are you sure you want to delete this game?"
+    },
+    "log": {
+      "warnCreateGameInAll": "Cannot create a game in a specific category from the 'All' view."
+    },
+    "studyClan": "My Study Clan - Coming Soon",
+    "collectionsTitle": "Collections",
+    "collectionDetailsAria": "{collectionName} collection details",
+    "newCollection": "New Collection",
+    "gamesTitle": "{category} Games",
+    "gamesTitleAll": "All Games",
+    "newGame": "New Game",
+    "noGamesAccessible": "No games created or shared yet.",
+    "loadMore": "Load More",
+    "noGamesInCategory": "No games in this collection.",
+    "sharedGamesTitle": "Shared Games",
+    "noGamesShared": "No shared games yet.",
+    "sentGamesTitle": "Sent Games",
+    "noGamesSent": "No sent games yet.",
+    "comingSoon": "Coming Soon"
+  },
+  "collectionDetail": {
+    "backLink": "Back to Myverse",
+    "errorLoading": "Could not load collection info: {error}",
+    "editCollectionAria": "Edit collection",
+    "deleteCollectionAria": "Delete collection",
+    "imageAlt": "Cover Image",
+    "defaultCategory": "Misc",
+    "motivationalMessage": "🔥 Keep up the growth habit, try one more time today!",
+    "fireAria": "fire emoji",
+    "gameListTitle": "Game List",
+    "newGameButton": "New Game",
+
+    "emptyState": {
+      "message": "There are no games in this collection yet!",
+      "sampleButton": "Start with a Sample"
+    },
+    "toast": {
+      "errorLoadGames": "Failed to load games: {error}",
+      "errorLoadMeta": "Failed to load collection info: {error}",
+      "errorGetMeta": "Could not retrieve collection information.",
+      "errorGetGames": "Could not retrieve game list.",
+      "successDeleteCollection": "Collection deleted.",
+      "errorDeleteCollection": "An error occurred while deleting the collection.",
+      "errorGetGameInfo": "Failed to load game information.",
+      "successDeleteGame": "Game deleted.",
+      "errorDeleteGame": "An error occurred while deleting the game.",
+      "successCreateGame": "Game created successfully!",
+      "successUpdateCollection": "Collection updated."
+    },
+    "alert": {
+      "deleteCollection": "Are you sure you want to delete this collection? All games within it will also be deleted.",
+      "deleteGame": "Are you sure you want to delete this game?"
+    },
+    "sampleData": {
+      "exam": {
+        "title": "SAT Must-Know Vocab",
+        "description": "Memorize 5 essential English words for the SAT!",
+        "inputText": "abandon ability able about above"
+      },
+      "study": {
+        "title": "React Core Concepts",
+        "description": "Memorize 6 key concepts of React!",
+        "inputText": "Component State Props Hook Effect Context"
+      },
+      "work": {
+        "title": "Work Checklist",
+        "description": "Remember the 7 tasks you need to do today!",
+        "inputText": "CheckEmail Meeting Docs CodeReview Deploy ReportMinutes LeaveWork"
+      },
+      "daily": {
+        "title": "Daily Routine",
+        "description": "Memorize 5 daily routines you want to practice!",
+        "inputText": "WakeUp Stretch Breakfast Read Walk"
+      },
+      "default": {
+        "title": "Something to Remember",
+        "description": "Enter any words or sentences you want to memorize!",
+        "inputText": "ExampleWord1 ExampleWord2 ExampleWord3"
+      }
+    }
+  },
+  "gameForm": {
+    "titleEdit": "Edit Game",
+    "titleCreate": "New Game",
+    "labelTitle": "Title",
+    "labelDescription": "Reason for creating",
+    "labelGameInput": "Game Input",
+    "labelVisibility": "Visibility Settings",
+    "labelTags": "Tags (optional)",
+    "labelAddUser": "Add users to share with",
+    "placeholderTitle": "2-50 chars, no duplicates/special chars",
+    "placeholderDescription": "10-300 chars, e.g., I made this to compete with a friend.",
+    "placeholderText": "Max 9, space-separated, 1-20 chars each, no duplicates/special chars",
+    "placeholderTags": "Enter multiple tags with spaces (max 20)",
+    "placeholderUserSearch": "Search by nickname",
+    "visibilityPrivate": "Private",
+    "visibilityPublic": "Public",
+    "visibilityGroup": "Share with Friends",
+    "searching": "Searching...",
+    "removeUserAria": "Remove user {nickname}",
+    "buttonCancel": "Cancel",
+    "buttonUpdate": "Update Game",
+    "buttonCreate": "Create Game",
+    "validation": {
+      "titleRequired": "Please enter a title.",
+      "titleLength": "Title must be between 2 and 50 characters.",
+      "descriptionRequired": "Please enter a game description.",
+      "descriptionLength": "Description must be between 10 and 300 characters.",
+      "textRequired": "Please enter words/sentences to memorize.",
+      "textMaxWords": "You can enter up to 9 items.",
+      "textDuplicateWords": "There are duplicate words.",
+      "textWordLength": "Each word must be between 1 and 20 characters.",
+      "textOnlyAlphanumeric": "Please use only Korean, English, and numbers without special characters.",
+      "tagsMax": "You can enter up to 20 tags.",
+      "tagsDuplicate": "There are duplicate tags.",
+      "tagsLength": "Each tag must be between 1 and 20 characters.",
+      "errorUserSearch": "An error occurred while searching for users.",
+      "titleIsRequired": "Game title is required.",
+      "textIsRequired": "Sentence input is required.",
+      "maxWordsExceeded": "The maximum number of input words is 9.",
+      "updateSuccess": "Game information has been updated.",
+      "actionFailed": "Game {action} failed:",
+      "actionError": "An error occurred during game {action}.",
+      "actionEdit": "update",
+      "actionCreate": "creation"
+    }
+  },
+  "gamePlay": {
+    "loadingData": "Loading game data...",
+    "loadingBoard": "Loading board configuration...",
+    "alert": {
+      "nextGameListFail": "Failed to get next game list. (Response error)",
+      "gameNotFound": "Cannot find the current game in the collection list.",
+      "noOtherGames": "There are no other games.",
+      "nextGameLoadError": "An error occurred while loading the next game.",
+      "restartError": "An error occurred while restarting the game."
+    }
+  },
+  "zengo": {
+    "status": {
+      "timeUnit": "s",
+      "remainingStones": "Stones Left:",
+      "elapsedTime": "Time Elapsed:"
+    },
+    "result": {
+      "errorTitle": "An error occurred while submitting the result",
+      "loadingTitle": "Loading result...",
+      "loadingMessage": "Please wait a moment.",
+      "titleExcellent": "Perfect Success!",
+      "titleSuccess": "Success!",
+      "titleFail": "Unfortunately, you failed",
+      "titleDefault": "Game Result",
+      "descriptionExcellent": "You found all the words correctly and in the right order.",
+      "descriptionSuccess": "You found all the words, but not in the right order.",
+      "descriptionFail": "You failed to find all the words within the given chances.",
+      "labelTime": "Total Game Time:",
+      "labelWordsFound": "Words Found:",
+      "labelStonesUsed": "Stones Used:",
+      "labelOrderAccuracy": "Word Order Accuracy:",
+      "labelScore": "Score:",
+      "valueCorrect": "Correct",
+      "valueIncorrect": "Incorrect",
+      "timeUnitMinutes": "m",
+      "timeUnitSeconds": "s",
+      "buttonTryAgain": "Try Again",
+      "buttonGameSettings": "Game Settings",
+      "buttonNextGame": "Next Game",
+      "buttonRetrySameSentence": "Try same sentence, new positions",
+      "buttonRetrySamePosition": "Try again, same positions"
+    }
   }
 } 

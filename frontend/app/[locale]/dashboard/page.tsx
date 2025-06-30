@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useRouter, Link } from '@/navigation';
+import { useTranslations } from 'next-intl';
 import Button from '@/components/common/Button';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, RadialLinearScale } from 'chart.js';
 import { Doughnut, Line as RJSLine, Radar } from 'react-chartjs-2';
@@ -142,6 +142,7 @@ type RoutineData = {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const t = useTranslations('dashboard');
   const user = useSelector((state: RootState) => state.user);
   const [currentBooks, setCurrentBooks] = useState<Book[]>([]);
   const [stats, setStats] = useState<UserDashboardStats | null>(null);
@@ -227,11 +228,11 @@ export default function DashboardPage() {
       setIsLoading(false);
     } catch (e) {
       console.error('Dashboard data loading failed:', e);
-      setError('데이터를 불러올 수 없습니다');
+      setError(t('common.error'));
       setIsLoading(false);
       setRoutineData(null); // Ensure routine data is null on general error
     }
-  }, [router, dispatch]);
+  }, [router, dispatch, t]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -346,7 +347,7 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-        <p>데이터 로딩 중...</p>
+        <p>{t('common.loading')}</p>
       </div>
     );
   }
@@ -378,33 +379,31 @@ export default function DashboardPage() {
     const remainingHours = Math.floor((totalMinutes % (60 * 24)) / 60);
     const remainingMinutes = totalMinutes % 60;
 
-    let result = "약 ";
-    if (days > 0) result += `${days}일 `;
-    if (remainingHours > 0) result += `${remainingHours}시간 `;
-    if (days === 0 && remainingHours < 3 && remainingMinutes > 0) result += `${remainingMinutes}분 `;
-    else if (days === 0 && remainingHours === 0 && remainingMinutes > 0) result += `${remainingMinutes}분 `;
+    let result = "";
+    if (days > 0) result += t('currently_reading.eta_message_days_hours', {days: days, hours: remainingHours});
+    else if (remainingHours > 0) result += t('currently_reading.eta_message_hours', {hours: remainingHours});
+    else if (remainingMinutes > 0) result += t('currently_reading.eta_message_minutes', {minutes: remainingMinutes});
     
-    if (result === "약 ") { // 매우 짧은 시간 처리
-      if (totalMinutes < 1) return "잠시 후 완독 예상";
-      if (totalMinutes < 60) return `약 ${totalMinutes}분 후 완독 예상`;
-      return `약 ${Math.floor(totalMinutes / 60)}시간 후 완독 예상`;
+    if (result === "") { // 매우 짧은 시간 처리
+      if (totalMinutes < 1) return t('currently_reading.eta_message_short');
+      if (totalMinutes < 60) return t('currently_reading.eta_message_minutes', {minutes: totalMinutes});
+      return t('currently_reading.eta_message_hours', {hours: Math.floor(totalMinutes / 60)});
     } 
 
-    return result.trim() + " 후 완독 예상";
+    return result.trim();
   };
 
   // Helper function to get dynamic motivation message based on current day
   const getMilestoneMessage = (currentDay: number | undefined): string => {
     if (currentDay === undefined || currentDay === null) {
-      // Handle case where routine data is not loaded yet or no active routine
-      return "당신만의 여정을 시작해보세요" // More gentle, inviting message
+      return t('routine.journey_start');
     }
-    if (currentDay >= 33) return "🌳 당신만의 리듬이 자리잡았습니다";
-    if (currentDay >= 28) return "🌿 점점 자라나는 당신의 성장이 보이나요?"; 
-    if (currentDay >= 21) return "🌱 꾸준히 물을 주는 정원사처럼";
-    if (currentDay >= 14) return "☘️ 작은 새싹이 움트고 있어요";
-    if (currentDay >= 7) return "🌾 첫 번째 씨앗이 땅에 뿌리내렸어요";
-    return "🪴 작은 시작이 모여 아름다운 정원이 됩니다";
+    if (currentDay >= 33) return t('routine.milestone_33');
+    if (currentDay >= 28) return t('routine.milestone_28'); 
+    if (currentDay >= 21) return t('routine.milestone_21');
+    if (currentDay >= 14) return t('routine.milestone_14');
+    if (currentDay >= 7) return t('routine.milestone_7');
+    return t('routine.milestone_start');
   };
 
   // 총 TS 시간 포맷 함수 (초 -> 시간 분)
@@ -447,10 +446,10 @@ export default function DashboardPage() {
             <AppLogo className="w-11 h-11 group-hover:opacity-90 transition-opacity" />
             <div>
               <h1 className={`font-medium text-xl sm:text-2xl tracking-tight ${habitus33Theme.primary} group-hover:text-cyan-300 transition-colors duration-500`}> 
-                Habitus33
+                {t('header.title')}
               </h1>
               <p className={`text-xs font-medium tracking-wider ${habitus33Theme.textLight}`}> 
-                Read Short. Deep Dive
+                {t('header.subtitle')}
               </p>
             </div>
           </Link>
@@ -482,10 +481,10 @@ export default function DashboardPage() {
                     <div className="fixed inset-0 z-40" onClick={() => setProfileMenuOpen(false)}></div>
                     <div className={`absolute right-0 mt-2 w-48 ${habitus33Theme.menuBg} rounded-md shadow-lg py-1 z-50 transition-all duration-300 transform origin-top-right border ${habitus33Theme.inputBorder}`}> 
                       <Link href="/profile" className={`block px-4 py-2 text-sm ${habitus33Theme.textLight} ${habitus33Theme.menuItemHover} transition-colors`} onClick={() => setProfileMenuOpen(false)}>
-                        프로필 설정
+                        {t('header.profile_settings')}
                       </Link>
                       <button onClick={() => { setProfileMenuOpen(false); handleLogout(); }} className={`block w-full text-left px-4 py-2 text-sm ${habitus33Theme.textLight} ${habitus33Theme.menuItemHover} transition-colors`}>
-                        로그아웃
+                        {t('header.logout')}
                       </button>
                     </div>
                   </>
@@ -504,14 +503,14 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
             <div className="relative z-10">
               <h1 className={`text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-4`}>
-                Small Step, One Line
+                {t('hero.title')}
               </h1>
               <p className={`${habitus33Theme.textMuted} text-base sm:text-lg mb-6`}>
-                "1줄 메모, 지혜를 얻는 첫 걸음"
+                {t('hero.subtitle')}
               </p>
               <Link href="/ts" className="inline-block">
                 <button className={`${habitus33Theme.progressFg} text-white font-bold text-lg sm:text-xl px-8 sm:px-12 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
-                  Atomic Memo
+                  {t('hero.action_button')}
                 </button>
               </Link>
             </div>
@@ -528,13 +527,13 @@ export default function DashboardPage() {
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
-                  <h2 className={`text-xl font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
+                  <h2 className={`text-xl font-semibold ${habitus33Theme.secondary}`}>{t('actions.zengo_title')}</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>남다른 읽기 통찰력을 키우세요.</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>{t('actions.zengo_description')}</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30`}>
-                  START
+                  {t('actions.zengo_button')}
                 </button>
               </div>
             </div>
@@ -547,18 +546,18 @@ export default function DashboardPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               {/* PREMIUM 뱃지 */}
               <div className="absolute top-3 right-3 z-20 pointer-events-none select-none">
-                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-2 py-1 rounded-full text-[10px] shadow-md border border-white/30 tracking-widest uppercase">Pro</span>
+                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-2 py-1 rounded-full text-[10px] shadow-md border border-white/30 tracking-widest uppercase">{t('actions.myverse_badge')}</span>
               </div>
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse" />
-                  <h2 className="text-xl font-semibold text-emerald-400">ZenGo Myverse</h2>
+                  <h2 className="text-xl font-semibold text-emerald-400">{t('actions.myverse_title')}</h2>
                 </div>
-                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>중요한 생각이 떠오르면 바로 외우세요.</p>
+                <p className={`${habitus33Theme.textMuted} text-sm leading-relaxed`}>{t('actions.myverse_description')}</p>
               </div>
               <div className="mt-6 relative z-10">
                 <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30">
-                  TRY
+                  {t('actions.myverse_button')}
                 </button>
               </div>
             </div>
@@ -586,7 +585,7 @@ export default function DashboardPage() {
               }}
             >
               <h2 className={`text-lg sm:text-xl font-medium ${habitus33Theme.primary}`}>
-            
+                {t('routine.title')}
               </h2>
               <button
                 className="p-1 rounded-full block md:hidden"
@@ -603,18 +602,18 @@ export default function DashboardPage() {
                 <div className="order-2 md:order-none">
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
-                    className={`min-w-[200px] px-8 py-3 rounded-2xl ${habitus33Theme.progressFg} text-white font-bold text-lg transition-all duration-500 ease-in-out hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-[1.05] focus:shadow-xl focus:shadow-cyan-500/25 focus:scale-[1.05] active:scale-[1.02] outline-none transform`}
+                    className={`min-w-[200px] px-8 py-3 rounded-2xl ${habitus33Theme.progressFg} text-white font-bold text-lg transition-all duration-500 ease-in-out hover:shadow-xl hover:shadow-cyan-500/25 hover:scale-[1.05] focus:shadow-xl focus:shadow-cyan-500/25 focus:scale-[1.02] outline-none transform`}
                     aria-label="AMFA 가이드"
                     type="button"
                   >
-                    Habitus33
+                    {t('routine.action_button')}
                   </button>
                 </div>
                 <div className="order-1 md:order-none md:absolute md:top-0 md:right-0">
                   <div className={`${habitus33Theme.cardBg} py-2 px-3 rounded-full flex items-center space-x-2 border ${habitus33Theme.borderPrimary} shadow-sm backdrop-blur-sm`}>
-                    <p className={`text-xs font-medium ${habitus33Theme.textLight}`}>Today's Success</p>
-                    <span className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`} title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}>🌱</span>
-                    <span className={`text-sm ${routineData?.todayZengoCompleted ? 'text-purple-400' : 'text-gray-600'}`} title={routineData?.todayZengoCompleted ? "오늘 ZenGo 경험 완료" : "오늘의 ZenGo 경험 대기 중"}>🌿</span>
+                    <p className={`text-xs font-medium ${habitus33Theme.textLight}`}>{t('routine.today_success')}</p>
+                    <span className={`text-sm ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`} title={routineData?.todayTsExecuted ? t('routine.today_ts_done') : t('routine.today_ts_pending')}>🌱</span>
+                    <span className={`text-sm ${routineData?.todayZengoCompleted ? 'text-purple-400' : 'text-gray-600'}`} title={routineData?.todayZengoCompleted ? t('routine.today_zengo_done') : t('routine.today_zengo_pending')}>🌿</span>
                   </div>
                 </div>
               </div>
@@ -628,14 +627,14 @@ export default function DashboardPage() {
                   <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-full" />
                 </div>
                 <div className="absolute top-[-24px] right-0 flex items-center">
-                  <span className={`text-xs font-medium ${habitus33Theme.textLight}`}>Day {routineData.currentDay} / 33</span>
+                  <span className={`text-xs font-medium ${habitus33Theme.textLight}`}>{t('routine.day_progress', { currentDay: routineData.currentDay })}</span>
                 </div>
               </div>
 
               <div className="mt-8 text-center relative z-10">
                 <p className={`text-lg font-medium ${habitus33Theme.primary}`}>{getMilestoneMessage(routineData?.currentDay)}</p>
                 <p className={`text-sm ${habitus33Theme.textMuted} mt-2`}>
-                  <span className={`font-medium ${habitus33Theme.secondary}`}>{routineData?.consecutiveStreak || 0}일째</span> 진행중 - <span className={`font-medium ${habitus33Theme.primary}`}> 자신만의 속도로 </span>나아가세요.
+                  <span className={`font-medium ${habitus33Theme.secondary}`}>{t('routine.streak_in_progress', { streak: routineData?.consecutiveStreak || 0 })}</span>
                 </p>
               </div>
             </div>
@@ -644,7 +643,7 @@ export default function DashboardPage() {
           <div className={`p-8 mb-12 text-center rounded-2xl border ${habitus33Theme.borderPrimary} shadow-xl ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden relative`}>
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
             <div className="relative z-10">
-              <p className={`${habitus33Theme.textMuted} mb-4`}>진행 중인 33일 루틴이 없습니다.</p>
+              <p className={`${habitus33Theme.textMuted} mb-4`}>{t('routine.no_routine')}</p>
               <button
                 className={`mt-2 px-6 py-3 ${habitus33Theme.buttonPrimaryBg} text-white rounded-lg font-bold ${habitus33Theme.buttonPrimaryHoverBg} transition-all duration-300 disabled:opacity-60 hover:shadow-lg hover:shadow-cyan-500/30`}
                 onClick={async () => {
@@ -655,14 +654,14 @@ export default function DashboardPage() {
                     await fetchRoutines();
                   } catch (e) {
                     console.error('루틴 생성 실패:', e);
-                    setError('루틴 생성에 실패했습니다.');
+                    setError(t('routine.create_routine_failed'));
                   } finally {
                     setIsLoading(false);
                   }
                 }}
                 disabled={isLoading}
               >
-                {isLoading ? '루틴 생성 중...' : '루틴 시작'}
+                {isLoading ? t('routine.creating_routine') : t('routine.start_routine_button')}
               </button>
             </div>
           </div>
@@ -678,9 +677,9 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className={`w-7 h-7 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
               </div>
               <div>
-                <p className={`text-sm ${habitus33Theme.primary} mb-1 font-semibold`}>⚡ Speed</p>
+                <p className={`text-sm ${habitus33Theme.primary} mb-1 font-semibold`}>{t('stats.speed')}</p>
                 <p className={`text-xl font-bold ${habitus33Theme.primary}`}>
-                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className={`text-xs ${habitus33Theme.textMuted}`}>페이지/분</span>
+                  {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className={`text-xs ${habitus33Theme.textMuted}`}>{t('stats.ppm_unit')}</span>
                 </p>
               </div>
             </div>
@@ -694,7 +693,7 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
               </div>
               <div>
-                <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>TS 세션</p>
+                <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>{t('stats.ts_session')}</p>
                 <p className={`text-lg font-medium ${habitus33Theme.textLight}`}>{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
               </div>
             </div>
@@ -708,8 +707,8 @@ export default function DashboardPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
               </div>
               <div>
-                <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>등록한 책</p>
-                <p className={`text-lg font-medium ${habitus33Theme.textLight}`}>{stats ? `${stats.totalBooks}권` : '-'}</p>
+                <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>{t('stats.total_books')}</p>
+                <p className={`text-lg font-medium ${habitus33Theme.textLight}`}>{stats ? `${stats.totalBooks}${t('stats.book_unit')}` : '-'}</p>
               </div>
             </div>
           </div>
@@ -720,12 +719,12 @@ export default function DashboardPage() {
           {/* 왼쪽: 현재 읽고 있는 책 목록 (Lg 스크린에서 3/5 너비) */}
           <div className={`lg:col-span-3 mt-12 p-4 sm:p-6 rounded-2xl border ${habitus33Theme.borderPrimary} ${habitus33Theme.cardBg} backdrop-blur-sm shadow-xl`}>
             <div className="flex justify-between items-center mb-6">
-              <h2 className={`text-xl font-bold ${habitus33Theme.primary}`}>Currently Reading</h2>
+              <h2 className={`text-xl font-bold ${habitus33Theme.primary}`}>{t('currently_reading.title')}</h2>
               <Link href="/books">
                 <Button 
                   variant="outline"
                 >
-                  My Lib
+                  {t('currently_reading.my_lib_button')}
                 </Button>
               </Link>
             </div>
@@ -733,12 +732,12 @@ export default function DashboardPage() {
             <div className="relative z-10">
               {currentBooks.length === 0 ? (
                 <div className="text-center py-16">
-                  <p className={`${habitus33Theme.primary} mb-6 text-lg`}>새로운 자료를 등록해 보세요</p>
+                  <p className={`${habitus33Theme.primary} mb-6 text-lg`}>{t('currently_reading.add_new_book')}</p>
                   <Button 
                     href="/books/new" 
                     variant="default"
                   >
-                    자료 등록
+                    {t('currently_reading.add_book_button')}
                   </Button>
                 </div>
               ) : (
@@ -746,7 +745,7 @@ export default function DashboardPage() {
                   {currentBooks.map((book) => {
                     const progress = Math.round((book.currentPage / book.totalPages) * 100);
                     const estimatedTimeString = book.estimatedRemainingMinutes 
-                      ? `완독까지 약 ${book.estimatedRemainingMinutes}분` 
+                      ? t('currently_reading.eta', {minutes: book.estimatedRemainingMinutes})
                       : null;
 
                     return (
@@ -778,7 +777,7 @@ export default function DashboardPage() {
                                 </div>
                               </div>
                               <span className={`ml-4 text-xs sm:text-sm font-medium ${habitus33Theme.primary}`}> 
-                                {book.currentPage}/{book.totalPages} ({progress}%)
+                                {t('currently_reading.page_progress', {currentPage: book.currentPage, totalPages: book.totalPages, progress: progress})}
                               </span>
                             </div>
                             {book.status !== 'completed' && estimatedTimeString && (
@@ -788,7 +787,7 @@ export default function DashboardPage() {
                             )}
                              {book.status !== 'completed' && !book.estimatedRemainingMinutes && book.currentPage < book.totalPages && (
                                <p className={`text-xs sm:text-sm ${habitus33Theme.textMuted} mt-2`}> 
-                                 TS로 예상 완독 시간을 확인해보세요
+                                 {t('currently_reading.eta_prompt')}
                                </p>
                              )}
                           </div>

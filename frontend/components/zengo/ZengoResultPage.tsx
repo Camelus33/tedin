@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { ResultType } from '@/store/slices/zengoSlice';
 import { ZengoSessionResult, IMyVerseSessionResult } from '@/src/types/zengo';
 import styles from './ZengoResultPage.module.css';
@@ -26,6 +27,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
   onRetrySameContent,
   onBackToIntro
 }) => {
+  const t = useTranslations('zengo.result');
   // Redux 상태에서 필요한 데이터 직접 가져오기
   const { 
     placedStones, 
@@ -61,14 +63,14 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
     return (
       <div className={styles.resultContainer}>
         <div className={styles.errorResult}>
-          <h2>결과 제출 중 오류가 발생했습니다</h2>
+          <h2>{t('errorTitle')}</h2>
           <p className={styles.errorMessage}>{error}</p>
           <div className={styles.actionButtons}>
             <button className={styles.retryButton} onClick={onRetrySameContent}>
-              다시 도전하기
+              {t('buttonTryAgain')}
             </button>
             <button className={styles.backButton} onClick={onBackToIntro}>
-              게임 설정
+              {t('buttonGameSettings')}
             </button>
           </div>
         </div>
@@ -82,8 +84,8 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
     return (
       <div className={styles.resultContainer}>
         <div className={styles.loading}>
-          <h2>결과를 로딩 중입니다...</h2>
-          <p>잠시만 기다려주세요.</p>
+          <h2>{t('loadingTitle')}</h2>
+          <p>{t('loadingMessage')}</p>
         </div>
       </div>
     );
@@ -105,24 +107,24 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
   const getResultTitle = () => {
     switch (actualResultType) {
       case 'EXCELLENT':
-        return '완벽한 성공!';
+        return t('titleExcellent');
       case 'SUCCESS':
-        return '성공!';
+        return t('titleSuccess');
       case 'FAIL':
-        return '아쉽게도 실패했습니다';
+        return t('titleFail');
       default:
-        return '게임 결과';
+        return t('titleDefault');
     }
   };
 
   const getResultDescription = () => {
     switch (actualResultType) {
       case 'EXCELLENT':
-        return '모든 단어를 올바른 순서로 정확하게 찾았습니다.';
+        return t('descriptionExcellent');
       case 'SUCCESS':
-        return '모든 단어를 찾았으나, 순서가 맞지 않았습니다.';
+        return t('descriptionSuccess');
       case 'FAIL':
-        return '주어진 기회 내에 모든 단어를 찾지 못했습니다.';
+        return t('descriptionFail');
       default:
         return '';
     }
@@ -132,7 +134,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}분 ${remainingSeconds}초`;
+    return `${minutes}${t('timeUnitMinutes')} ${remainingSeconds}${t('timeUnitSeconds')}`;
   };
 
   // 어순 정확도 표시 컴포넌트
@@ -154,9 +156,9 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
     
     return (
       <div className={styles.statsItem}>
-        <span className={styles.statLabel}>어순 정확도:</span>
+        <span className={styles.statLabel}>{t('labelOrderAccuracy')}</span>
         <span className={`${styles.statValue} ${isOrderCorrect ? styles.correctValue : styles.incorrectValue}`}>
-          {isOrderCorrect ? '정확함' : '부정확함'}
+          {isOrderCorrect ? t('valueCorrect') : t('valueIncorrect')}
         </span>
       </div>
     );
@@ -172,17 +174,17 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
       {result && (
         <div className={styles.resultDetails}>
           <div className={styles.statsItem}>
-            <span className={styles.statLabel}>총 게임 시간:</span>
+            <span className={styles.statLabel}>{t('labelTime')}</span>
             <span className={styles.statValue}>{formatTime(timeTakenMs)}</span>
           </div>
 
           <div className={styles.statsItem}>
-            <span className={styles.statLabel}>찾은 단어:</span>
+            <span className={styles.statLabel}>{t('labelWordsFound')}</span>
             <span className={styles.statValue}>{correctPlacements} / {currentContent?.totalWords || 0}</span>
           </div>
 
           <div className={styles.statsItem}>
-            <span className={styles.statLabel}>사용한 돌:</span>
+            <span className={styles.statLabel}>{t('labelStonesUsed')}</span>
             <span className={styles.statValue}>{usedStonesCount}</span>
           </div>
 
@@ -191,7 +193,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
 
           {result.score !== undefined && (
             <div className={styles.statsItem}>
-              <span className={styles.statLabel}>점수:</span>
+              <span className={styles.statLabel}>{t('labelScore')}</span>
               <span className={styles.statValue}>{result.score}</span>
             </div>
           )}
@@ -202,7 +204,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
         {actualResultType === 'EXCELLENT' && (
           <div className={styles.buttonContainer}>
             <button className={styles.nextButton} onClick={onNextGame}>
-              다음 게임
+              {t('buttonNextGame')}
             </button>
           </div>
         )}
@@ -211,13 +213,13 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
           <>
             <div className={styles.buttonContainer}>
               <button className={styles.nextButton} onClick={onNextGame}>
-                다음 게임
+                {t('buttonNextGame')}
               </button>
             </div>
             
             <div className={styles.buttonContainer}>
               <button className={styles.retryButton} onClick={onRetrySameContent}>
-                같은 문장 다른 위치로 도전
+                {t('buttonRetrySameSentence')}
               </button>
             </div>
           </>
@@ -226,14 +228,14 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
         {actualResultType === 'FAIL' && (
           <div className={styles.buttonContainer}>
             <button className={styles.retryButton} onClick={onRetrySameContent}>
-              같은 위치로 다시 도전하기
+              {t('buttonRetrySamePosition')}
             </button>
           </div>
         )}
 
         <div className={styles.buttonContainer}>
           <button className={styles.backButton} onClick={onBackToIntro}>
-            게임 설정
+            {t('buttonGameSettings')}
           </button>
         </div>
       </div>

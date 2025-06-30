@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import styles from './ZengoStatusDisplay.module.css'; // Create this CSS module
 
 interface ZengoStatusDisplayProps {
@@ -18,6 +19,7 @@ export default function ZengoStatusDisplay({
   gameState,
   wordOrderCorrect
 }: ZengoStatusDisplayProps) {
+  const t = useTranslations('zengo.status');
   const [elapsedTime, setElapsedTime] = useState(0);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function ZengoStatusDisplay({
   const formatTime = (ms: number) => {
     const seconds = Math.floor(ms / 1000);
     const milliseconds = Math.floor((ms % 1000) / 100); // Get tenths of a second
-    return `${seconds}.${milliseconds}초`;
+    return `${seconds}.${milliseconds}${t('timeUnit')}`;
   };
 
   const remainingStones = totalAllowedStones - usedStonesCount;
@@ -53,11 +55,11 @@ export default function ZengoStatusDisplay({
   return (
     <div className={styles.statusDisplayContainer}>
       <div className={styles.statusItem}>
-        <span className={styles.label}>남은 돌:</span>
+        <span className={styles.label}>{t('remainingStones')}</span>
         <span className={styles.value}>{remainingStones} / {totalAllowedStones}</span>
       </div>
       <div className={styles.statusItem}>
-        <span className={styles.label}>경과 시간:</span>
+        <span className={styles.label}>{t('elapsedTime')}</span>
         <span className={styles.value}>{formatTime(elapsedTime)}</span>
       </div>
     </div>

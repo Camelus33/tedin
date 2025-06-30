@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { myverseApi } from '@/lib/api';
 import api from '@/lib/api';
@@ -28,6 +29,7 @@ interface CollectionGameFormProps {
 }
 
 const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, onCancel, onSuccess, initialData }) => {
+  const t = useTranslations('gameForm');
   const router = useRouter();
   const isEditMode = !!initialData;
   const [title, setTitle] = useState(initialData?.title || '');
@@ -83,7 +85,7 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
           setSearchError(null);
         })
         .catch(err => {
-          setSearchError(err.response?.data?.message || err.message || '사용자 검색 중 오류가 발생했습니다.');
+          setSearchError(err.response?.data?.message || err.message || t('validation.errorUserSearch'));
           setSuggestions([]);
         })
         .finally(() => setSearchLoading(false));
@@ -94,36 +96,36 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
   }, [searchTerm, visibility, selectedUsers]);
 
   useEffect(() => {
-    if (!title.trim()) setTitleError('제목을 입력해 주세요.');
-    else if (title.length < 2 || title.length > 50) setTitleError('제목은 2~50자여야 합니다.');
+    if (!title.trim()) setTitleError(t('validation.titleRequired'));
+    else if (title.length < 2 || title.length > 50) setTitleError(t('validation.titleLength'));
     else setTitleError('');
-  }, [title]);
+  }, [title, t]);
 
   useEffect(() => {
-    if (!description.trim()) setDescriptionError('게임 설명을 입력해 주세요.');
-    else if (description.length < 10 || description.length > 300) setDescriptionError('설명은 10~300자여야 합니다.');
+    if (!description.trim()) setDescriptionError(t('validation.descriptionRequired'));
+    else if (description.length < 10 || description.length > 300) setDescriptionError(t('validation.descriptionLength'));
     else setDescriptionError('');
-  }, [description]);
+  }, [description, t]);
 
   useEffect(() => {
     const words = text.trim().split(/\s+/).filter(Boolean);
-    if (words.length === 0) setTextError('암기할 단어/문장을 입력해 주세요.');
-    else if (words.length > 9) setTextError('최대 9개까지 입력할 수 있습니다.');
-    else if (new Set(words).size !== words.length) setTextError('중복된 단어가 있습니다.');
-    else if (words.some(w => w.length < 1 || w.length > 20)) setTextError('각 단어는 1~20자여야 합니다.');
-    else if (words.some(w => !/^[가-힣a-zA-Z0-9]+$/.test(w))) setTextError('특수문자 없이 한글, 영문, 숫자만 입력해 주세요.');
+    if (words.length === 0) setTextError(t('validation.textRequired'));
+    else if (words.length > 9) setTextError(t('validation.textMaxWords'));
+    else if (new Set(words).size !== words.length) setTextError(t('validation.textDuplicateWords'));
+    else if (words.some(w => w.length < 1 || w.length > 20)) setTextError(t('validation.textWordLength'));
+    else if (words.some(w => !/^[가-힣a-zA-Z0-9]+$/.test(w))) setTextError(t('validation.textOnlyAlphanumeric'));
     else setTextError('');
-  }, [text]);
+  }, [text, t]);
 
   useEffect(() => {
     if (!tagsInput.trim()) { setTagsError(''); return; }
     const tags = tagsInput.trim().split(/\s+/).filter(Boolean);
-    if (tags.length > 20) setTagsError('태그는 최대 20개까지 입력할 수 있습니다.');
-    else if (new Set(tags).size !== tags.length) setTagsError('중복된 태그가 있습니다.');
-    else if (tags.some(t => t.length < 1 || t.length > 20)) setTagsError('각 태그는 1~20자여야 합니다.');
-    else if (tags.some(t => !/^[가-힣a-zA-Z0-9]+$/.test(t))) setTagsError('특수문자 없이 한글, 영문, 숫자만 입력해 주세요.');
+    if (tags.length > 20) setTagsError(t('validation.tagsMax'));
+    else if (new Set(tags).size !== tags.length) setTagsError(t('validation.tagsDuplicate'));
+    else if (tags.some(t => t.length < 1 || t.length > 20)) setTagsError(t('validation.tagsLength'));
+    else if (tags.some(t => !/^[가-힣a-zA-Z0-9]+$/.test(t))) setTagsError(t('validation.textOnlyAlphanumeric'));
     else setTagsError('');
-  }, [tagsInput]);
+  }, [tagsInput, t]);
 
   const isFormValid = !titleError && !textError && !tagsError;
 
@@ -139,11 +141,11 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
     const trimmedText = text.trim();
 
     if (!trimmedTitle) {
-      setError('게임 제목은 필수입니다.');
+      setError(t('validation.titleIsRequired'));
       return;
     }
     if (!isEditMode && !trimmedText) {
-      setError('문장 입력은 필수입니다.');
+      setError(t('validation.textIsRequired'));
       return;
     }
 
@@ -156,8 +158,8 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
     } else if (words.length <= 9) {
       boardSize = 7;
     } else {
-      setError('입력 단어는 최대 9개입니다.');
-      toast.error('입력 단어는 최대 9개입니다.');
+      setError(t('validation.maxWordsExceeded'));
+      toast.error(t('validation.maxWordsExceeded'));
       return;
     }
 
@@ -181,7 +183,7 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
         // 1단계: 최종 API 페이로드 로깅
         console.log('[handleSubmit] 수정 모드 - 최종 API 페이로드:', JSON.stringify(updatePayload, null, 2));
         resultGame = await myverseApi.update(initialData._id, updatePayload);
-        toast.success('게임 정보가 수정되었습니다.');
+        toast.success(t('validation.updateSuccess'));
       } else {
         const coords: { x: number; y: number }[] = [];
         for (let x = 0; x < boardSize; x++) {
@@ -208,9 +210,9 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
       }
       onSuccess?.(resultGame);
     } catch (err: any) {
-      const action = isEditMode ? '수정' : '생성';
-      console.error(`게임 ${action} 실패:`, err);
-      const message = err.message || `게임 ${action} 중 오류가 발생했습니다.`;
+      const action = isEditMode ? t('validation.actionEdit') : t('validation.actionCreate');
+      console.error(t('validation.actionFailed', { action }), err);
+      const message = err.message || t('validation.actionError', { action });
       setError(message);
       toast.error(message);
     } finally {
@@ -221,7 +223,7 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
   return (
     <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-accent">{isEditMode ? '게임 수정' : '새 게임'}</h2>
+        <h2 className="text-xl font-bold text-accent">{isEditMode ? t('titleEdit') : t('titleCreate')}</h2>
         {onCancel && (
           <button onClick={onCancel} className="text-neutral-400 hover:text-neutral-700">
             <XMarkIcon className="h-6 w-6" />
@@ -231,13 +233,13 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="gameTitle" className="block text-sm font-semibold text-neutral-800 mb-1">
-            제목
+            {t('labelTitle')}
           </label>
           <input
             id="gameTitle"
             type="text"
             className="block w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm text-sm focus:ring-accent focus:border-accent placeholder:text-neutral-400 transition"
-            placeholder="2~50자, 중복/특수문자 불가"
+            placeholder={t('placeholderTitle')}
             value={title}
             onChange={e => setTitle(e.target.value)}
             required
@@ -247,12 +249,12 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
         <div>
           <label htmlFor="gameDescription" className="block text-sm font-semibold text-neutral-800 mb-1 flex items-center">
             <InformationCircleIcon className="h-5 w-5 text-neutral-800 mr-1" aria-hidden="true" />
-            <span className="sr-only">만든 이유</span>
+            <span className="sr-only">{t('labelDescription')}</span>
           </label>
           <textarea
             id="gameDescription"
             className="block w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm text-sm focus:ring-accent focus:border-accent placeholder:text-neutral-400 transition resize-none min-h-[40px] max-h-[80px]"
-            placeholder="10~300자, 예: 이 게임은 친구와 단어 암기 대결을 위해 만들었습니다."
+            placeholder={t('placeholderDescription')}
             value={description}
             onChange={e => setDescription(e.target.value)}
             maxLength={300}
@@ -262,12 +264,12 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
         <div>
           <label htmlFor="gameText" className="block text-sm font-semibold text-neutral-800 mb-1 flex items-center">
             <PencilSquareIcon className="h-5 w-5 text-neutral-800 mr-1" aria-hidden="true" />
-            <span className="sr-only">게임 입력</span>
+            <span className="sr-only">{t('labelGameInput')}</span>
           </label>
           <textarea
             id="gameText"
             className="block w-full px-3 py-2 bg-violet-50 border border-violet-200 rounded-lg shadow-sm text-lg font-bold focus:ring-accent focus:border-accent placeholder:text-neutral-400 transition resize-none min-h-[48px] max-h-[80px]"
-            placeholder="최대 9개, 띄어쓰기로 구분, 각 1~20자, 중복/특수문자 불가"
+            placeholder={t('placeholderText')}
             value={text}
             onChange={e => setText(e.target.value)}
             required={!isEditMode}
@@ -280,13 +282,13 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
           <div className="flex-1 min-w-0">
             <label className="block text-sm font-semibold text-neutral-800 mb-1 flex items-center">
               <GlobeAltIcon className="h-5 w-5 text-neutral-800 mr-1" aria-hidden="true" />
-              <span className="sr-only">공개 설정</span>
+              <span className="sr-only">{t('labelVisibility')}</span>
             </label>
             <div className="flex gap-1">
               {[
-                { value: 'private', label: '비공개' },
-                { value: 'public', label: '전체 공개' },
-                { value: 'group', label: '지인 공유' }
+                { value: 'private', label: t('visibilityPrivate') },
+                { value: 'public', label: t('visibilityPublic') },
+                { value: 'group', label: t('visibilityGroup') }
               ].map(option => (
                 <button
                   key={option.value}
@@ -306,13 +308,13 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
           <div className="flex-1 min-w-[160px]">
             <label htmlFor="tagsInput" className="block text-sm font-semibold text-neutral-800 mb-1 flex items-center">
               <TagIcon className="h-5 w-5 text-neutral-800 mr-1" aria-hidden="true" />
-              <span className="sr-only">태그(선택)</span>
+              <span className="sr-only">{t('labelTags')}</span>
             </label>
             <input
               id="tagsInput"
               type="text"
               className="block w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm text-sm focus:ring-accent focus:border-accent placeholder:text-neutral-400 transition"
-              placeholder="띄어쓰기로 여러 태그 입력(최대 20개)"
+              placeholder={t('placeholderTags')}
               value={tagsInput}
               onChange={e => setTagsInput(e.target.value)}
               maxLength={200}
@@ -321,19 +323,19 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
         </div>
         {visibility === 'group' && (
           <div className="pt-1">
-            <label htmlFor="userSearch" className="block text-sm font-semibold text-neutral-800 mb-1">공유할 사용자 추가</label>
+            <label htmlFor="userSearch" className="block text-sm font-semibold text-neutral-800 mb-1">{t('labelAddUser')}</label>
             <div className="relative">
               <input
                 id="userSearch"
                 type="text"
                 className="block w-full px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm text-sm focus:ring-accent focus:border-accent placeholder:text-neutral-400 transition pl-8"
-                placeholder="닉네임 검색"
+                placeholder={t('placeholderUserSearch')}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
               <MagnifyingGlassIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400" />
             </div>
-            {searchLoading && <p className="text-xs text-neutral-500">검색 중...</p>}
+            {searchLoading && <p className="text-xs text-neutral-500">{t('searching')}</p>}
             {searchError && <p className="text-xs text-feedback-error">{searchError}</p>}
             {suggestions.length > 0 && (
               <ul className="border border-neutral-200 rounded-lg max-h-24 overflow-auto text-sm bg-white shadow">
@@ -370,7 +372,7 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
                       type="button"
                       onClick={() => setSelectedUsers(prev => prev.filter(s => s._id !== u._id))}
                       className="ml-1 text-neutral-400 hover:text-neutral-600"
-                      aria-label={`사용자 ${u.nickname} 제거`}
+                      aria-label={t('removeUserAria', { nickname: u.nickname })}
                     >
                       <XMarkIcon className="h-3 w-3" />
                     </button>
@@ -383,11 +385,11 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
         <div className="flex justify-end pt-4">
           {onCancel && (
             <Button variant="secondary" type="button" onClick={onCancel} disabled={loading} className="text-sm px-5 py-2 rounded-lg shadow font-semibold">
-              취소
+              {t('buttonCancel')}
             </Button>
           )}
           <Button type="submit" variant="default" disabled={!isFormValid || loading} className="text-sm px-5 py-2 rounded-lg shadow font-semibold ml-2">
-            {isEditMode ? '게임 수정' : '게임 만들기'}
+            {isEditMode ? t('buttonUpdate') : t('buttonCreate')}
           </Button>
         </div>
       </form>

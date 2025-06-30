@@ -5,15 +5,11 @@ import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import path from 'path';
 
 console.log(`[App] Starting application...`);
 console.log(`[App] Current working directory (cwd): ${process.cwd()}`);
 console.log(`[App] __dirname: ${__dirname}`);
-
-// Load environment variables from .env file
-dotenv.config();
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -32,23 +28,14 @@ import flashcardRoutes from './routes/flashcards';
 import notificationRoutes from './routes/notifications';
 import summaryNoteRoutes from './routes/summaryNoteRoutes';
 import publicShareRoutes from './routes/publicShareRoutes';
+import { connectToDatabase } from './database';
 
 // Initialize Express app
 const app: Express = express();
 app.disable('etag');
 const PORT = process.env.PORT || 8000;
 
-// Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/habitus33';
-console.log('MongoDB URI:', MONGODB_URI);
-mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
-  });
+connectToDatabase();
 
 // CORS Configuration
 const allowedOrigins = [

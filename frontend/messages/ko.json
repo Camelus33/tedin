@@ -29,6 +29,346 @@
     "password": "비밀번호",
     "forgot_password": "비밀번호를 잊으셨나요?",
     "login_success": "로그인되었습니다",
-    "logout_success": "로그아웃되었습니다"
+    "logout_success": "로그아웃되었습니다",
+    "create_ai_link": "나의 AI-Link 만들기",
+    "page": {
+      "login": {
+        "title": "로그인",
+        "subtitle": "또는",
+        "create_account_link": "새 계정 만들기",
+        "email_label": "이메일",
+        "email_placeholder": "이메일 주소",
+        "password_label": "비밀번호",
+        "password_placeholder": "비밀번호",
+        "forgot_password_link": "비밀번호를 잊으셨나요?",
+        "login_button": "로그인",
+        "login_button_loading": "로그인 중...",
+        "customer_support": "고객 지원",
+        "contact_email": "사용문의",
+        "company_name": "Tedin Inc"
+      },
+      "register": {
+        "title": "회원가입",
+        "subtitle": "이미 계정이 있으신가요?",
+        "login_link": "로그인",
+        "email_label": "이메일",
+        "email_placeholder": "e.g. example@gmail.com, example@naver.com",
+        "email_tooltip": "올바른 이메일 형식으로 입력해주세요",
+        "nickname_label": "닉네임",
+        "nickname_placeholder": "닉네임",
+        "password_label": "비밀번호",
+        "password_placeholder": "비밀번호",
+        "confirm_password_label": "비밀번호 확인",
+        "confirm_password_placeholder": "비밀번호 확인",
+        "register_button": "회원가입",
+        "register_button_loading": "회원가입 중..."
+      }
+    },
+    "validation": {
+      "email_invalid": "유효한 이메일 형식이 아닙니다.",
+      "nickname_min_length": "닉네임은 2자 이상이어야 합니다.",
+      "password_min_length": "비밀번호는 8자 이상이어야 합니다.",
+      "password_mismatch": "비밀번호가 일치하지 않습니다",
+      "registration_failed": "회원가입에 실패했습니다"
+    }
+  },
+  "header": {
+    "login": "로그인",
+    "create_account": "나의 AI-Link 만들기"
+  },
+  "footer": {
+    "company": {
+      "title": "Company",
+      "name": "Tedin Inc.",
+      "ceo": "Jinny B. Suh",
+      "reg_no": "348-88-02077",
+      "type": "IT Services",
+      "contact": "jinny@tedin.kr"
+    },
+    "certifications": {
+      "title": "Certifications / Awards",
+      "kised": "Selected for KISED Gov. Grant (MSIT)",
+      "kto": "Selected for KTO Contest (MCST)"
+    },
+    "links": {
+      "title": "Links & Legal",
+      "terms": "이용약관",
+      "privacy": "개인정보처리방침",
+      "cookies": "쿠키 정책"
+    },
+    "copyright": "© {year} Tedin Inc. All rights reserved. 이 페이지의 모든 콘텐츠는 지적재산권에 의해 보호됩니다. 무단 복제, 배포 및 AI 학습 사용을 금지합니다."
+  },
+  "dashboard": {
+    "header": {
+      "title": "Habitus33",
+      "subtitle": "Read Short. Deep Dive",
+      "profile_settings": "프로필 설정",
+      "logout": "로그아웃"
+    },
+    "hero": {
+      "title": "Small Step, One Line",
+      "subtitle": "\"1줄 메모, 지혜를 얻는 첫 걸음\"",
+      "action_button": "Atomic Memo"
+    },
+    "actions": {
+      "zengo_title": "ZenGo",
+      "zengo_description": "남다른 읽기 통찰력을 키우세요.",
+      "zengo_button": "START",
+      "myverse_title": "ZenGo Myverse",
+      "myverse_description": "중요한 생각이 떠오르면 바로 외우세요.",
+      "myverse_button": "TRY",
+      "myverse_badge": "Pro"
+    },
+    "routine": {
+      "loading": "루틴 정보 로딩 중...",
+      "title": "33일 뇌 최적화 루틴",
+      "action_button": "AMFA 가이드",
+      "today_success": "Today's Success",
+      "today_ts_done": "오늘 TS 경험 완료",
+      "today_ts_pending": "오늘의 TS 경험 대기 중",
+      "today_zengo_done": "오늘 ZenGo 경험 완료",
+      "today_zengo_pending": "오늘의 ZenGo 경험 대기 중",
+      "day_progress": "Day {currentDay} / 33",
+      "streak_in_progress": "{streak}일째 진행중 - 자신만의 속도로 나아가세요.",
+      "no_routine": "진행 중인 33일 루틴이 없습니다.",
+      "start_routine_button": "루틴 시작",
+      "creating_routine": "루틴 생성 중...",
+      "create_routine_failed": "루틴 생성에 실패했습니다.",
+      "milestone_start": "🪴 작은 시작이 모여 아름다운 정원이 됩니다",
+      "milestone_7": "🌾 첫 번째 씨앗이 땅에 뿌리내렸어요",
+      "milestone_14": "☘️ 작은 새싹이 움트고 있어요",
+      "milestone_21": "🌱 꾸준히 물을 주는 정원사처럼",
+      "milestone_28": "🌿 점점 자라나는 당신의 성장이 보이나요?",
+      "milestone_33": "🌳 당신만의 리듬이 자리잡았습니다",
+      "journey_start": "당신만의 여정을 시작해보세요"
+    },
+    "stats": {
+      "speed": "⚡ Speed",
+      "ppm_unit": "페이지/분",
+      "ts_session": "TS 세션",
+      "total_books": "등록한 책",
+      "book_unit": "권"
+    },
+    "currently_reading": {
+      "title": "Currently Reading",
+      "my_lib_button": "My Lib",
+      "add_new_book": "새로운 자료를 등록해 보세요",
+      "add_book_button": "자료 등록",
+      "page_progress": "{currentPage}/{totalPages} ({progress}%)",
+      "eta": "완독까지 약 {minutes}분",
+      "eta_message_short": "잠시 후 완독 예상",
+      "eta_message_minutes": "약 {minutes}분 후 완독 예상",
+      "eta_message_hours": "약 {hours}시간 후 완독 예상",
+      "eta_message_days_hours": "약 {days}일 {hours}시간 후 완독 예상",
+      "eta_prompt": "TS로 예상 완독 시간을 확인해보세요"
+    },
+    "common": {
+      "loading": "데이터 로딩 중...",
+      "error": "데이터를 불러올 수 없습니다"
+    }
+  },
+  "myverse": {
+    "headerSlogan": "Read Short. Deep Dive",
+    "defaultUsername": "사용자",
+    "defaultUserDesc": "나만의 암기노트",
+    "profileSettings": "프로필 설정",
+    "logout": "로그아웃",
+    "pageTitle": "ZenGo Myverse",
+    "pageSubtitle": "- 게임으로 외우고, 즐겁게 공유하세요.",
+    "tabs": {
+      "allGames": "전체 게임 보기",
+      "sharedGames": "공유 받은 게임",
+      "sentGames": "내가 보낸 게임"
+    },
+    "categories": {
+      "all": "전체",
+      "exam": "시험",
+      "study": "학습",
+      "work": "업무",
+      "daily": "일상"
+    },
+    "toast": {
+      "errorLoadCollection": "컬렉션을 불러오는 중 오류가 발생했습니다.",
+      "errorLoadAllGames": "전체 게임 목록을 불러오는 중 오류가 발생했습니다.",
+      "errorLoadCategoryGames": "'{category}' 게임 로딩 중 오류가 발생했습니다.",
+      "errorLoadSharedGames": "공유받은 게임을 불러오는 중 오류가 발생했습니다.",
+      "errorLoadSentGames": "내가 보낸 게임을 불러오는 중 오류가 발생했습니다.",
+      "errorNoCollectionForCategory": "'{category}' 카테고리에 해당하는 컬렉션을 찾을 수 없습니다.",
+      "errorLoadGameInfo": "게임 정보를 불러오는 데 실패했습니다.",
+      "successGameDeleted": "게임이 삭제되었습니다.",
+      "errorDeleteGame": "게임 삭제 중 오류가 발생했습니다."
+    },
+    "alert": {
+      "confirmDeleteGame": "정말 이 게임을 삭제하시겠습니까?"
+    },
+    "log": {
+      "warnCreateGameInAll": "전체보기 상태에서는 특정 카테고리에 게임을 생성할 수 없습니다."
+    },
+    "studyClan": "나의 스터디 클랜 - 곧 오픈 예정",
+    "collectionsTitle": "콜렉션",
+    "collectionDetailsAria": "{collectionName} 컬렉션 상세 보기",
+    "newCollection": "새 콜렉션",
+    "gamesTitle": "{category} 게임",
+    "gamesTitleAll": "전체 게임",
+    "newGame": "새 게임",
+    "noGamesAccessible": "아직 생성하거나 공유받은 게임이 없습니다.",
+    "loadMore": "더보기",
+    "noGamesInCategory": "해당 콜렉션에 게임이 없습니다.",
+    "sharedGamesTitle": "공유받은 게임",
+    "noGamesShared": "아직 공유받은 게임이 없습니다.",
+    "sentGamesTitle": "내가 보낸 게임",
+    "noGamesSent": "아직 보낸 게임이 없습니다.",
+    "comingSoon": "곧 오픈"
+  },
+  "collectionDetail": {
+    "backLink": "Myverse로 돌아가기",
+    "errorLoading": "컬렉션 정보를 불러오지 못했습니다: {error}",
+    "editCollectionAria": "컬렉션 수정",
+    "deleteCollectionAria": "컬렉션 삭제",
+    "imageAlt": "대표 이미지",
+    "defaultCategory": "기타",
+    "motivationalMessage": "🔥 오늘도 성장하는 습관, 한 번 더 도전해보세요!",
+    "fireAria": "불꽃 이모지",
+    "gameListTitle": "게임 목록",
+    "newGameButton": "새 게임 만들기",
+
+    "emptyState": {
+      "message": "아직 이 컬렉션에 게임이 없습니다!",
+      "sampleButton": "샘플로 시작하기"
+    },
+    "toast": {
+      "errorLoadGames": "게임 로드 실패: {error}",
+      "errorLoadMeta": "컬렉션 정보 로드 실패: {error}",
+      "errorGetMeta": "컬렉션 정보를 가져올 수 없습니다.",
+      "errorGetGames": "게임 목록을 가져올 수 없습니다.",
+      "successDeleteCollection": "컬렉션이 삭제되었습니다.",
+      "errorDeleteCollection": "컬렉션 삭제 중 오류가 발생했습니다.",
+      "errorGetGameInfo": "게임 정보를 불러오는 데 실패했습니다.",
+      "successDeleteGame": "게임이 삭제되었습니다.",
+      "errorDeleteGame": "게임 삭제 중 오류가 발생했습니다.",
+      "successCreateGame": "게임이 성공적으로 생성되었습니다!",
+      "successUpdateCollection": "컬렉션이 수정되었습니다."
+    },
+    "alert": {
+      "deleteCollection": "정말 이 컬렉션을 삭제하시겠습니까? 모든 게임이 함께 삭제됩니다.",
+      "deleteGame": "정말 이 게임을 삭제하시겠습니까?"
+    },
+    "sampleData": {
+      "exam": {
+        "title": "수능 필수 영단어",
+        "description": "수능에 꼭 나오는 영단어 5개를 외워보세요!",
+        "inputText": "abandon ability able about above"
+      },
+      "study": {
+        "title": "React 핵심 개념",
+        "description": "React의 주요 개념 6개를 기억해보세요!",
+        "inputText": "Component State Props Hook Effect Context"
+      },
+      "work": {
+        "title": "업무 체크리스트",
+        "description": "오늘 해야 할 업무 7가지를 기억해보세요!",
+        "inputText": "메일보고 일정회의 문서작성 코드리뷰 배포보고 회의정리 퇴근보고"
+      },
+      "daily": {
+        "title": "일상 루틴",
+        "description": "매일 실천하고 싶은 일상 루틴 5가지를 외워보세요!",
+        "inputText": "기상 스트레칭 아침식사 독서 산책"
+      },
+      "default": {
+        "title": "기억하고 싶은 것",
+        "description": "외우고 싶은 단어나 문장을 입력해보세요!",
+        "inputText": "예시 단어1 예시 단어2 예시 단어3"
+      }
+    }
+  },
+  "gameForm": {
+    "titleEdit": "게임 수정",
+    "titleCreate": "새 게임",
+    "labelTitle": "제목",
+    "labelDescription": "만든 이유",
+    "labelGameInput": "게임 입력",
+    "labelVisibility": "공개 설정",
+    "labelTags": "태그(선택)",
+    "labelAddUser": "공유할 사용자 추가",
+    "placeholderTitle": "2~50자, 중복/특수문자 불가",
+    "placeholderDescription": "10~300자, 예: 이 게임은 친구와 단어 암기 대결을 위해 만들었습니다.",
+    "placeholderText": "최대 9개, 띄어쓰기로 구분, 각 1~20자, 중복/특수문자 불가",
+    "placeholderTags": "띄어쓰기로 여러 태그 입력(최대 20개)",
+    "placeholderUserSearch": "닉네임 검색",
+    "visibilityPrivate": "비공개",
+    "visibilityPublic": "전체 공개",
+    "visibilityGroup": "지인 공유",
+    "searching": "검색 중...",
+    "removeUserAria": "사용자 {nickname} 제거",
+    "buttonCancel": "취소",
+    "buttonUpdate": "게임 수정",
+    "buttonCreate": "게임 만들기",
+    "validation": {
+      "titleRequired": "제목을 입력해 주세요.",
+      "titleLength": "제목은 2~50자여야 합니다.",
+      "descriptionRequired": "게임 설명을 입력해 주세요.",
+      "descriptionLength": "설명은 10~300자여야 합니다.",
+      "textRequired": "암기할 단어/문장을 입력해 주세요.",
+      "textMaxWords": "최대 9개까지 입력할 수 있습니다.",
+      "textDuplicateWords": "중복된 단어가 있습니다.",
+      "textWordLength": "각 단어는 1~20자여야 합니다.",
+      "textOnlyAlphanumeric": "특수문자 없이 한글, 영문, 숫자만 입력해 주세요.",
+      "tagsMax": "태그는 최대 20개까지 입력할 수 있습니다.",
+      "tagsDuplicate": "중복된 태그가 있습니다.",
+      "tagsLength": "각 태그는 1~20자여야 합니다.",
+      "errorUserSearch": "사용자 검색 중 오류가 발생했습니다.",
+      "titleIsRequired": "게임 제목은 필수입니다.",
+      "textIsRequired": "문장 입력은 필수입니다.",
+      "maxWordsExceeded": "입력 단어는 최대 9개입니다.",
+      "updateSuccess": "게임 정보가 수정되었습니다.",
+      "actionFailed": "게임 {action} 실패:",
+      "actionError": "게임 {action} 중 오류가 발생했습니다.",
+      "actionEdit": "수정",
+      "actionCreate": "생성"
+    }
+  },
+  "gamePlay": {
+    "loadingData": "게임 데이터를 불러오는 중...",
+    "loadingBoard": "게임 보드를 설정하는 중...",
+    "alert": {
+      "nextGameListFail": "다음 게임 목록을 가져오는 데 실패했습니다. (응답 오류)",
+      "gameNotFound": "현재 게임을 컬렉션 목록에서 찾을 수 없습니다.",
+      "noOtherGames": "다른 게임이 없습니다.",
+      "nextGameLoadError": "다음 게임을 불러오는 중 오류가 발생했습니다.",
+      "restartError": "게임을 재시작하는 중 오류가 발생했습니다."
+    }
+  },
+  "zengo": {
+    "status": {
+      "timeUnit": "초",
+      "remainingStones": "남은 돌:",
+      "elapsedTime": "경과 시간:"
+    },
+    "result": {
+      "errorTitle": "결과 제출 중 오류가 발생했습니다",
+      "loadingTitle": "결과를 로딩 중입니다...",
+      "loadingMessage": "잠시만 기다려주세요.",
+      "titleExcellent": "완벽한 성공!",
+      "titleSuccess": "성공!",
+      "titleFail": "아쉽게도 실패했습니다",
+      "titleDefault": "게임 결과",
+      "descriptionExcellent": "모든 단어를 올바른 순서로 정확하게 찾았습니다.",
+      "descriptionSuccess": "모든 단어를 찾았으나, 순서가 맞지 않았습니다.",
+      "descriptionFail": "주어진 기회 내에 모든 단어를 찾지 못했습니다.",
+      "labelTime": "총 게임 시간:",
+      "labelWordsFound": "찾은 단어:",
+      "labelStonesUsed": "사용한 돌:",
+      "labelOrderAccuracy": "어순 정확도:",
+      "labelScore": "점수:",
+      "valueCorrect": "정확함",
+      "valueIncorrect": "부정확함",
+      "timeUnitMinutes": "분",
+      "timeUnitSeconds": "초",
+      "buttonTryAgain": "다시 도전하기",
+      "buttonGameSettings": "게임 설정",
+      "buttonNextGame": "다음 게임",
+      "buttonRetrySameSentence": "같은 문장 다른 위치로 도전",
+      "buttonRetrySamePosition": "같은 위치로 다시 도전하기"
+    }
   }
 } 

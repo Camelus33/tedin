@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '@/store/store';
 import { setSettings, setContent, startGame, placeStone, hideWords, evaluateResultThunk, submitResultThunk } from '@/store/slices/zengoSlice';
@@ -16,6 +17,7 @@ import ZengoResultPage from '@/components/zengo/ZengoResultPage';
 type WordMapping = ZengoProverbContent['wordMappings'][0];
 
 export default function Page() {
+  const t = useTranslations('gamePlay');
   const { gameId } = useParams() as { gameId: string };
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
@@ -158,7 +160,7 @@ export default function Page() {
       // 응답 구조 확인 (games 배열이 있는지)
       if (!response || !Array.isArray(response.games)) {
         console.error('handleNextGame: Invalid API response structure. Expected { games: [...] }', response);
-        alert('다음 게임 목록을 가져오는 데 실패했습니다. (응답 오류)');
+        alert(t('alert.nextGameListFail'));
         return;
       }
       
@@ -172,7 +174,7 @@ export default function Page() {
       // Check if the current game was found in the list
       if (idx === -1) {
         console.log('handleNextGame: Current game not found in the collection list!');
-        alert('현재 게임을 컬렉션 목록에서 찾을 수 없습니다.');
+        alert(t('alert.gameNotFound'));
         return; // Stop execution if current game is not found
       }
 
@@ -188,11 +190,11 @@ export default function Page() {
           router.push(`/myverse/games/${nextGameId}`);
       } else {
           console.log('handleNextGame: No other games in this collection (only one game exists).');
-          alert('다른 게임이 없습니다.'); // Keep the same message for the user
+          alert(t('alert.noOtherGames')); // Keep the same message for the user
       }
     } catch (error) {
       console.error('handleNextGame: 다음 게임 로드 오류', error);
-      alert('다음 게임을 불러오는 중 오류가 발생했습니다.');
+      alert(t('alert.nextGameLoadError'));
     }
   };
 
@@ -215,7 +217,7 @@ export default function Page() {
 
     if (!gameData || !currentContent) {
       console.warn("Myverse 재실행 오류: 게임 데이터 또는 현재 콘텐츠 없음");
-      alert('게임을 재시작하는 중 오류가 발생했습니다.');
+      alert(t('alert.restartError'));
       return;
     }
 
@@ -257,7 +259,7 @@ export default function Page() {
         dispatch(startGame());
       } catch (error) {
         console.error('Myverse 재실행 오류 (SUCCESS, shuffle):', error);
-        alert('게임을 재시작하는 중 오류가 발생했습니다.');
+        alert(t('alert.restartError'));
       }
     } else {
       // 기타 경우 (예: EXCELLENT인데 재시도 버튼이 눌린 경우 - 현재 UI상으로는 발생 안 함)
@@ -294,11 +296,11 @@ export default function Page() {
   }, [gameState]); // Removed unused dependencies
 
   if (!currentContent) { 
-    return <div className="flex items-center justify-center min-h-screen">Loading game data...</div>;
+    return <div className="flex items-center justify-center min-h-screen">{t('loadingData')}</div>;
   }
   
   if (!currentContent.boardSize) { // Check specifically for boardSize after currentContent is loaded
-    return <div className="flex items-center justify-center min-h-screen">Loading board configuration...</div>;
+    return <div className="flex items-center justify-center min-h-screen">{t('loadingBoard')}</div>;
   }
 
   // 젠고 기본과 동일한 레이아웃: 바둑판 좌측 상단에 상태 카드, 우측에 보드

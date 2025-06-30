@@ -66,7 +66,7 @@ export default function HeroSection() {
             <div className="w-1/4">
               <video
                 className="rounded-lg shadow-2xl w-full aspect-[2/3] object-cover"
-                src="/drop seal.mp4"
+                src="/drop-seal.mp4"
                 autoPlay
                 loop
                 muted

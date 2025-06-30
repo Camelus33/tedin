@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/navigation';
 import AppLogo from '@/components/common/AppLogo';
 import { apiClient } from '@/lib/apiClient';
 
 export default function RegisterPage() {
+  const t = useTranslations('auth.page.register');
+  const tValidation = useTranslations('auth.validation');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,28 +28,28 @@ export default function RegisterPage() {
     // 이메일 유효성 검사
     const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
     if (!emailRegex.test(email)) {
-      setError('유효한 이메일 형식이 아닙니다.');
+      setError(tValidation('email_invalid'));
       setIsLoading(false);
       return;
     }
 
     // 닉네임 유효성 검사 (최소 2자)
     if (nickname.trim().length < 2) {
-      setError('닉네임은 2자 이상이어야 합니다.');
+      setError(tValidation('nickname_min_length'));
       setIsLoading(false);
       return;
     }
 
     // 비밀번호 유효성 검사 (최소 8자)
     if (password.length < 8) {
-      setError('비밀번호는 8자 이상이어야 합니다.');
+      setError(tValidation('password_min_length'));
       setIsLoading(false);
       return;
     }
 
     // 비밀번호 확인
     if (password !== confirmPassword) {
-      setError('비밀번호가 일치하지 않습니다');
+      setError(tValidation('password_mismatch'));
       setIsLoading(false);
       return;
     }
@@ -61,7 +64,7 @@ export default function RegisterPage() {
       const data = await apiClient.post('/auth/register', postData);
 
       if (!data || data.error) {
-        throw new Error(data.error || data.message || '회원가입에 실패했습니다');
+        throw new Error(data.error || data.message || tValidation('registration_failed'));
       }
 
       // 토큰 저장
@@ -83,12 +86,12 @@ export default function RegisterPage() {
         <div className="text-center">
           <AppLogo className="mx-auto w-20 h-20" />
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-            회원가입
+            {t('title')}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            이미 계정이 있으신가요?{" "}
+            {t('subtitle')}{" "}
             <Link href="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
-              로그인
+              {t('login_link')}
             </Link>
           </p>
         </div>
@@ -97,7 +100,7 @@ export default function RegisterPage() {
           <div className="space-y-4 rounded-md">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                이메일
+                {t('email_label')}
               </label>
               <input
                 id="email"
@@ -106,12 +109,12 @@ export default function RegisterPage() {
                 autoComplete="email"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                placeholder="e.g. example@gmail.com, example@naver.com"
-                title="올바른 이메일 형식으로 입력해주세요"
+                placeholder={t('email_placeholder')}
+                title={t('email_tooltip')}
                 onBlur={() => {
                   const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
                   if (email && !re.test(email)) {
-                    setEmailError('유효한 이메일 형식이 아닙니다.');
+                    setEmailError(tValidation('email_invalid'));
                   } else {
                     setEmailError('');
                   }
@@ -124,7 +127,7 @@ export default function RegisterPage() {
             
             <div>
               <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 mb-1">
-                닉네임
+                {t('nickname_label')}
               </label>
               <input
                 id="nickname"
@@ -133,7 +136,7 @@ export default function RegisterPage() {
                 autoComplete="nickname"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                placeholder="닉네임"
+                placeholder={t('nickname_placeholder')}
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
               />
@@ -141,7 +144,7 @@ export default function RegisterPage() {
             
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                비밀번호
+                {t('password_label')}
               </label>
               <input
                 id="password"
@@ -150,7 +153,7 @@ export default function RegisterPage() {
                 autoComplete="new-password"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                placeholder="비밀번호"
+                placeholder={t('password_placeholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -158,7 +161,7 @@ export default function RegisterPage() {
             
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                비밀번호 확인
+                {t('confirm_password_label')}
               </label>
               <input
                 id="confirmPassword"
@@ -167,7 +170,7 @@ export default function RegisterPage() {
                 autoComplete="new-password"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white/50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                placeholder="비밀번호 확인"
+                placeholder={t('confirm_password_placeholder')}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
@@ -186,7 +189,7 @@ export default function RegisterPage() {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-white bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 font-medium shadow-lg disabled:opacity-70"
             >
-              {isLoading ? "회원가입 중..." : "회원가입"}
+              {isLoading ? t('register_button_loading') : t('register_button')}
             </button>
           </div>
         </form>

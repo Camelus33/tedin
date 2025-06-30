@@ -1,9 +1,11 @@
 import React from 'react';
-import Link from 'next/link';
-import AppLogo from './AppLogo'; // Assuming AppLogo is in the same directory
+import { useTranslations } from 'next-intl';
+import { Link } from '@/navigation';
+import AppLogo from './AppLogo';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const t = useTranslations('footer');
 
   return (
     <footer className="bg-gray-900 border-t border-gray-800 mt-auto text-sm text-gray-400 font-sans">
@@ -23,35 +25,35 @@ export default function Footer() {
 
           {/* Column 2: Company Info */}
           <div className="space-y-3 lg:col-span-1">
-            <h3 className="font-semibold text-gray-100 uppercase tracking-wider text-xs">Company</h3>
+            <h3 className="font-semibold text-gray-100 uppercase tracking-wider text-xs">{t('company.title')}</h3>
             <div className="space-y-1.5">
-              <p><span className="text-gray-400">Name:</span> <span className="text-gray-100 font-medium ml-1">Tedin Inc.</span></p>
-              <p><span className="text-gray-400">CEO:</span> <span className="text-gray-100 font-medium ml-1">Jinny B. Suh</span></p>
-              <p><span className="text-gray-400">Reg. No.:</span> <span className="text-gray-100 font-medium ml-1">348-88-02077</span></p>
-              <p><span className="text-gray-400">Type:</span> <span className="text-gray-100 font-medium ml-1">IT Services</span></p>
-              <p><span className="text-gray-400">Contact:</span> <a href="mailto:jinny@tedin.kr" className="text-indigo-400 hover:text-indigo-300 hover:underline ml-1">jinny@tedin.kr</a></p>
+              <p><span className="text-gray-400">Name:</span> <span className="text-gray-100 font-medium ml-1">{t('company.name')}</span></p>
+              <p><span className="text-gray-400">CEO:</span> <span className="text-gray-100 font-medium ml-1">{t('company.ceo')}</span></p>
+              <p><span className="text-gray-400">Reg. No.:</span> <span className="text-gray-100 font-medium ml-1">{t('company.reg_no')}</span></p>
+              <p><span className="text-gray-400">Type:</span> <span className="text-gray-100 font-medium ml-1">{t('company.type')}</span></p>
+              <p><span className="text-gray-400">Contact:</span> <a href={`mailto:${t('company.contact')}`} className="text-indigo-400 hover:text-indigo-300 hover:underline ml-1">{t('company.contact')}</a></p>
             </div>
           </div>
 
           {/* Column 3: Awards & Certifications (Re-integrated) */}
           <div className="space-y-3 lg:col-span-1">
-             <h3 className="font-semibold text-gray-100 uppercase tracking-wider text-xs">Certifications / Awards</h3>
+             <h3 className="font-semibold text-gray-100 uppercase tracking-wider text-xs">{t('certifications.title')}</h3>
              {/* Using list for semantics, styling can be adjusted further if needed */}
              <ul className="space-y-1.5 text-xs list-disc list-outside pl-5 text-gray-400"> 
-                <li>Selected for KISED Gov. Grant (MSIT)</li>
-                <li>Selected for KTO Contest (MCST)</li>
+                <li>{t('certifications.kised')}</li>
+                <li>{t('certifications.kto')}</li>
              </ul>
           </div>
 
            {/* Column 4: Links & Legal (Right aligned on lg) */}
            <div className="space-y-3 lg:col-span-1 lg:text-right">
-             <h3 className="font-semibold text-gray-100 uppercase tracking-wider text-xs">Legal & Support</h3>
+             <h3 className="font-semibold text-gray-100 uppercase tracking-wider text-xs">{t('links.title')}</h3>
              <div className="flex flex-col space-y-2 lg:items-end">
                 <Link href="/privacy-policy" className="hover:text-gray-100 hover:underline transition-colors">
-                  Privacy Policy
+                  {t('links.privacy')}
                 </Link>
                 <Link href="/terms-of-service" className="hover:text-gray-100 hover:underline transition-colors">
-                  Terms of Service
+                  {t('links.terms')}
                 </Link>
                 <Link href="/ir" className="hover:text-gray-100 hover:underline transition-colors">
                   Investor Relations
@@ -69,9 +71,7 @@ export default function Footer() {
         {/* Bottom Row: Copyright Notice */}
         <div className="mt-10 pt-6 border-t border-gray-700 text-center"> {/* Further reduced margin and padding from mt-12 pt-8 */}
            <p className="text-xs text-gray-400 leading-relaxed"> {/* Brighter copyright text */}
-             &copy; {currentYear} Tedin Inc. All rights reserved.
-             All content related to this page is protected by intellectual property rights.
-             Unauthorized reproduction, distribution, and use for AI training are prohibited.
+             {t('copyright', { year: currentYear })}
            </p>
         </div>
       </div>
