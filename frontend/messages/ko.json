@@ -533,7 +533,7 @@
       "nicknamePlaceholder": "닉네임을 입력하세요",
       "phonePlaceholder": "전화번호 (선택 사항)",
       "recoveryEmailPlaceholder": "복구 이메일 (선택 사항)",
-      "editButton": "프로필 수정",
+      "editButton": "변경사항 저장",
       "saveButton": "변경사항 저장",
       "cancelButton": "취소"
     },
@@ -548,17 +548,22 @@
       "cancelSubscription": "구독 취소",
       "couponPlaceholder": "쿠폰 코드",
       "applyButton": "적용",
-      "faqLink": "결제 관련 자주 묻는 질문"
+      "faqLink": "결제 관련 자주 묻는 질문",
+      "premiumActivation": "프리미엄 활성화",
+      "apply": "적용",
+      "unsubscribe": "구독 해지",
+      "faq": "구독 FAQ / 고객센터"
     },
     "otherSettings": {
       "title": "기타 설정",
       "emailNotification": "이메일 알림",
       "darkMode": "다크 모드",
       "downloadData": "내 데이터 다운로드",
-      "privacyPolicy": "개인정보 처리방침 관리",
+      "privacyPolicy": "개인정보 처리방침",
       "deleteAccount": "계정 탈퇴",
       "logout": "로그아웃",
       "customerSupport": "고객 지원"
-    }
+    },
+    "locale": "ko-KR"
   }
 } 

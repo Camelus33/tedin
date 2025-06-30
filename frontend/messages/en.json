@@ -529,7 +529,14 @@
       "recoveryEmailPlaceholder": "Recovery email (optional)",
       "editButton": "Edit Profile",
       "saveButton": "Save Changes",
-      "cancelButton": "Cancel"
+      "cancelButton": "Cancel",
+      "emailNotification": "Email Notifications",
+      "darkMode": "Dark Mode",
+      "downloadData": "Download My Data",
+      "privacyPolicy": "Privacy Policy",
+      "deleteAccount": "Delete Account",
+      "logout": "Logout",
+      "customerSupport": "Customer Support"
     },
     "subscriptionInfo": {
       "title": "Subscription Information",
@@ -542,7 +549,11 @@
       "cancelSubscription": "Cancel Subscription",
       "couponPlaceholder": "Coupon Code",
       "applyButton": "Apply",
-      "faqLink": "Frequently Asked Questions about Payments"
+      "faqLink": "Frequently Asked Questions about Payments",
+      "premiumActivation": "Premium Active",
+      "apply": "Apply",
+      "unsubscribe": "Cancel Subscription",
+      "faq": "Subscription FAQ / Support"
     },
     "otherSettings": {
       "title": "Other Settings",
@@ -553,6 +564,7 @@
       "deleteAccount": "Delete Account",
       "logout": "Logout",
       "customerSupport": "Customer Support"
-    }
+    },
+    "locale": "en-US"
   }
 } 
