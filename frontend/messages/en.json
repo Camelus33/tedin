@@ -243,15 +243,14 @@
     "toast": {
       "errorLoadGames": "Failed to load games: {error}",
       "errorLoadMeta": "Failed to load collection info: {error}",
-      "errorGetMeta": "Could not retrieve collection information.",
+      "errorGetMeta": "Failed to load collection info: {error}",
       "errorGetGames": "Could not retrieve game list.",
       "successDeleteCollection": "Collection deleted.",
       "errorDeleteCollection": "An error occurred while deleting the collection.",
       "errorGetGameInfo": "Failed to load game information.",
       "successDeleteGame": "Game deleted.",
       "errorDeleteGame": "An error occurred while deleting the game.",
-      "successCreateGame": "Game created successfully!",
-      "successUpdateCollection": "Collection updated."
+      "successCreateGame": "Game created successfully!"
     },
     "alert": {
       "deleteCollection": "Are you sure you want to delete this collection? All games within it will also be deleted.",
@@ -380,5 +379,23 @@
     "profile": "My Profile",
     "settings": "Settings",
     "logout": "Logout"
+  },
+  "CognitiveProfile": {
+    "title": "My Cognitive Journey",
+    "subtitle": "Discover your own unique cognitive rhythm",
+    "metaphor": "\"Observe your natural cognitive flow, like flowing water\"",
+    "buttons": {
+      "week": "1W",
+      "month": "1M",
+      "year": "1Y",
+      "all": "All"
+    },
+    "errors": {
+      "authRequiredToast": "Login is required.",
+      "authRequired": "Authentication is required.",
+      "serverError": "A server error occurred.",
+      "notFound": "Profile data not found.",
+      "unknown": "An error occurred while loading data: {message}"
+    }
   }
 } 

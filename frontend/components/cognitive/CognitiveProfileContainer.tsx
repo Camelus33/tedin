@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import CognitiveProfileChart from './CognitiveProfileChart';
 import { apiClient } from '@/lib/apiClient';
 import { toast } from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 // API response interface
 interface CognitiveProfileResponse {
@@ -43,6 +44,7 @@ interface CognitiveProfileContainerProps {
 // - 유지보수 시 결과 저장, 프로필 집계, 시각화(대시보드/통계) 연계 구조를 반드시 함께 점검하세요.
 
 const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ className = '' }) => {
+  const t = useTranslations('CognitiveProfile');
   const router = useRouter();
   // State for cognitive profile data
   const [profileData, setProfileData] = useState<CognitiveProfileResponse | null>(null);
@@ -59,7 +61,7 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
     const token = localStorage.getItem('token');
     
     if (!token) {
-      toast.error('로그인이 필요합니다.');
+      toast.error(t('errors.authRequiredToast'));
       router.push('/auth/login');
       return;
     }
@@ -101,13 +103,13 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
           return;
         }
         if (err.message && err.message.includes('인증')) {
-          setError('인증이 필요합니다');
+          setError(t('errors.authRequired'));
         } else if (err.message && err.message.includes('서버 오류')) {
-          setError('서버 오류가 발생했습니다');
+          setError(t('errors.serverError'));
         } else if (err.message && err.message.includes('404')) {
-          setError('프로필 데이터를 찾을 수 없습니다.');
+          setError(t('errors.notFound'));
         } else {
-          setError('데이터를 불러오는 중 오류가 발생했습니다: ' + (err.message || '알 수 없는 오류'));
+          setError(t('errors.unknown', { message: err.message || '알 수 없는 오류' }));
         }
       } finally {
         setIsLoading(false);
@@ -139,18 +141,18 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
       <div className="p-6 md:p-8">
         <a href="#" onClick={handleCognitiveProfileClick} className="group inline-block">
           <h2 className="text-2xl font-medium text-indigo-900 mb-2 text-center group-hover:text-indigo-600 transition-colors">
-            나의 인지 여정
+            {t('title')}
             <span className="inline-block ml-1 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-700">→</span>
           </h2>
           <p className="text-sm text-indigo-700 mb-6 text-center group-hover:text-indigo-500 transition-colors">
-            당신만의 고유한 인지 리듬을 발견하세요
+            {t('subtitle')}
           </p>
         </a>
         
         {/* 자연 메타포 추가 */}
         <div className="text-center mb-6 text-indigo-800">
           <p className="text-sm italic">
-            "물이 흐르듯 자연스러운 당신의 인지 흐름을 관찰하세요"
+            {t('metaphor')}
           </p>
         </div>
         
@@ -158,10 +160,10 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
         <div className="flex justify-center mb-6">
           <div className="inline-flex rounded-md shadow-sm">
             {[
-              { key: 'week', label: '1주' },
-              { key: 'month', label: '1개월' },
-              { key: 'year', label: '1년' },
-              { key: 'all', label: '전체' },
+              { key: 'week', label: t('buttons.week') },
+              { key: 'month', label: t('buttons.month') },
+              { key: 'year', label: t('buttons.year') },
+              { key: 'all', label: t('buttons.all') },
             ].map((period, index, arr) => (
               <button
                 key={period.key}
