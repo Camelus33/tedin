@@ -493,8 +493,66 @@
     }
   },
   "FinalCtaSection": {
-    "title": "Now, design your own AI",
-    "subtitle": "The surest way to unlock 100% of your AI's potential. Experience it now.",
-    "ctaButton": "Start Designing My AI Behavior (Free)"
+    "title": "Start your journey to becoming a 'knowledge architect' today.",
+    "description": "Experience firsthand how Habitus33 transforms your learning process.",
+    "buttonText": "Start with a Free Trial"
+  },
+  "ProfilePage": {
+    "metadata": {
+      "title": "My Profile",
+      "description": "Manage your profile, subscription, and settings."
+    },
+    "loading": "Loading your profile...",
+    "errorTitle": "An Error Occurred",
+    "loginButton": "Go to Login",
+    "noProfileTitle": "Profile Not Found",
+    "noProfileMessage": "We couldn't find your profile information. Please try logging in again.",
+    "placeholders": {
+      "nickname": "Guest User",
+      "comingSoon": "Coming Soon"
+    },
+    "errors": {
+      "fetchProfileFailed": "Failed to load profile information.",
+      "imageUploadFailed": "Image upload failed. Please try again.",
+      "updateProfileFailed": "Failed to update profile."
+    },
+    "alerts": {
+      "copySuccess": "Invite code copied successfully!",
+      "copyFailed": "Failed to copy invite code."
+    },
+    "myInfo": {
+      "title": "My Information",
+      "profileImageAlt": "My profile image",
+      "imageChange": "Change Image",
+      "nicknamePlaceholder": "Enter your nickname",
+      "phonePlaceholder": "Phone number (optional)",
+      "recoveryEmailPlaceholder": "Recovery email (optional)",
+      "editButton": "Edit Profile",
+      "saveButton": "Save Changes",
+      "cancelButton": "Cancel"
+    },
+    "subscriptionInfo": {
+      "title": "Subscription Information",
+      "trial": "Free Trial",
+      "premium": "Premium Plan",
+      "remainingTime": "Ends on {time}",
+      "activate": "Active",
+      "upgradeButton": "Upgrade Plan",
+      "paymentHistoryNote": "Payment and usage history inquiry",
+      "cancelSubscription": "Cancel Subscription",
+      "couponPlaceholder": "Coupon Code",
+      "applyButton": "Apply",
+      "faqLink": "Frequently Asked Questions about Payments"
+    },
+    "otherSettings": {
+      "title": "Other Settings",
+      "emailNotification": "Email Notifications",
+      "darkMode": "Dark Mode",
+      "downloadData": "Download My Data",
+      "privacyPolicy": "Privacy Policy Management",
+      "deleteAccount": "Delete Account",
+      "logout": "Logout",
+      "customerSupport": "Customer Support"
+    }
   }
 } 
