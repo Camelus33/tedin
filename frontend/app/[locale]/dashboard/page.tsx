@@ -20,6 +20,7 @@ import { books as booksApi, user as userApi /*, zengo as zengoApi */ } from '@/l
 // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineChart, Line } from 'recharts'; // Commented out
 import api from '@/lib/api';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import Image from 'next/image';
 
 // Cyber Theme Definition (Updated to match brand guidelines)
 const habitus33Theme = {
@@ -232,7 +233,7 @@ export default function DashboardPage() {
       setIsLoading(false);
       setRoutineData(null); // Ensure routine data is null on general error
     }
-  }, [router, dispatch, t]);
+  }, [router, t, user]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -460,7 +461,7 @@ export default function DashboardPage() {
             <div className="flex items-center">
               <div className="mr-3 text-right">
                 <p className={`font-medium ${habitus33Theme.primary}`}> 
-                  {user?.nickname || '사용자'}
+                  {user?.nickname || t('defaultNickname')}
                 </p>
               </div>
               <div className="relative">
@@ -469,7 +470,7 @@ export default function DashboardPage() {
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                 >
                   {user?.profileImage ? (
-                    <img src={user.profileImage} alt={user?.nickname || '사용자'} className="w-full h-full object-cover" />
+                    <Image src={user.profileImage} alt={user?.nickname || t('defaultNickname')} className="w-full h-full object-cover" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center"> 
                       <span className={`${habitus33Theme.primary} font-medium`}>{user?.nickname?.charAt(0) || '?'}</span>
@@ -754,10 +755,12 @@ export default function DashboardPage() {
                           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
                           <div className="w-full sm:w-24 h-auto aspect-[2/3] relative bg-gray-700/50 flex-shrink-0 rounded shadow-sm book-cover z-10 mb-4 sm:mb-0">
                             {book.coverImage ? (
-                              <img
+                              <Image
                                 src={book.coverImage}
                                 alt={book.title}
                                 className="object-cover w-full h-full rounded"
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               />
                             ) : (
                               <div className={`flex items-center justify-center w-full h-full ${habitus33Theme.textMuted}`}>

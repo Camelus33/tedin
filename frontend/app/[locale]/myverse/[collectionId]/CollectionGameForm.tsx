@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { myverseApi } from '@/lib/api';
@@ -49,6 +49,42 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
   const [textError, setTextError] = useState('');
   const [tagsError, setTagsError] = useState('');
 
+  const validateForm = useCallback(() => {
+    // Title validation
+    if (!title.trim()) setTitleError(t('validation.titleRequired'));
+    else if (title.length < 2 || title.length > 50) setTitleError(t('validation.titleLength'));
+    else setTitleError('');
+
+    // Description validation
+    if (!description.trim()) setDescriptionError(t('validation.descriptionRequired'));
+    else if (description.length < 10 || description.length > 300) setDescriptionError(t('validation.descriptionLength'));
+    else setDescriptionError('');
+
+    // Text validation
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) setTextError(t('validation.textRequired'));
+    else if (words.length > 9) setTextError(t('validation.textMaxWords'));
+    else if (new Set(words).size !== words.length) setTextError(t('validation.textDuplicateWords'));
+    else if (words.some(w => w.length < 1 || w.length > 20)) setTextError(t('validation.textWordLength'));
+    else if (words.some(w => !/^[가-힣a-zA-Z0-9]+$/.test(w))) setTextError(t('validation.textOnlyAlphanumeric'));
+    else setTextError('');
+    
+    // Tags validation
+    if (!tagsInput.trim()) { setTagsError(''); }
+    else {
+      const tags = tagsInput.trim().split(/\s+/).filter(Boolean);
+      if (tags.length > 20) setTagsError(t('validation.tagsMax'));
+      else if (new Set(tags).size !== tags.length) setTagsError(t('validation.tagsDuplicate'));
+      else if (tags.some(tag => tag.length < 1 || tag.length > 20)) setTagsError(t('validation.tagsLength'));
+      else if (tags.some(tag => !/^[가-힣a-zA-Z0-9]+$/.test(tag))) setTagsError(t('validation.textOnlyAlphanumeric'));
+      else setTagsError('');
+    }
+  }, [title, description, text, tagsInput, t]);
+
+  useEffect(() => {
+    validateForm();
+  }, [validateForm]);
+
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title || '');
@@ -93,39 +129,7 @@ const CollectionGameForm: React.FC<CollectionGameFormProps> = ({ collectionId, o
       setSuggestions([]);
       setSearchError(null);
     }
-  }, [searchTerm, visibility, selectedUsers]);
-
-  useEffect(() => {
-    if (!title.trim()) setTitleError(t('validation.titleRequired'));
-    else if (title.length < 2 || title.length > 50) setTitleError(t('validation.titleLength'));
-    else setTitleError('');
-  }, [title, t]);
-
-  useEffect(() => {
-    if (!description.trim()) setDescriptionError(t('validation.descriptionRequired'));
-    else if (description.length < 10 || description.length > 300) setDescriptionError(t('validation.descriptionLength'));
-    else setDescriptionError('');
-  }, [description, t]);
-
-  useEffect(() => {
-    const words = text.trim().split(/\s+/).filter(Boolean);
-    if (words.length === 0) setTextError(t('validation.textRequired'));
-    else if (words.length > 9) setTextError(t('validation.textMaxWords'));
-    else if (new Set(words).size !== words.length) setTextError(t('validation.textDuplicateWords'));
-    else if (words.some(w => w.length < 1 || w.length > 20)) setTextError(t('validation.textWordLength'));
-    else if (words.some(w => !/^[가-힣a-zA-Z0-9]+$/.test(w))) setTextError(t('validation.textOnlyAlphanumeric'));
-    else setTextError('');
-  }, [text, t]);
-
-  useEffect(() => {
-    if (!tagsInput.trim()) { setTagsError(''); return; }
-    const tags = tagsInput.trim().split(/\s+/).filter(Boolean);
-    if (tags.length > 20) setTagsError(t('validation.tagsMax'));
-    else if (new Set(tags).size !== tags.length) setTagsError(t('validation.tagsDuplicate'));
-    else if (tags.some(t => t.length < 1 || t.length > 20)) setTagsError(t('validation.tagsLength'));
-    else if (tags.some(t => !/^[가-힣a-zA-Z0-9]+$/.test(t))) setTagsError(t('validation.textOnlyAlphanumeric'));
-    else setTagsError('');
-  }, [tagsInput, t]);
+  }, [searchTerm, visibility, selectedUsers, t]);
 
   const isFormValid = !titleError && !textError && !tagsError;
 

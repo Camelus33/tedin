@@ -165,7 +165,16 @@
     "common": {
       "loading": "데이터 로딩 중...",
       "error": "데이터를 불러올 수 없습니다"
-    }
+    },
+    "greeting": "{nickname}님, 안녕하세요!",
+    "defaultNickname": "사용자"
+  },
+  "MyVerse": {
+    "title": "마이버스",
+    "description": "당신의 지식 우주를 탐험하세요. AI-Link로 캡슐화된 지식들이 당신의 성장을 돕습니다.",
+    "newCollection": "새 콜렉션 만들기",
+    "allCollections": "모든 콜렉션",
+    "startNewGame": "새 게임 시작"
   },
   "myverse": {
     "headerSlogan": "Read Short. Deep Dive",
@@ -218,7 +227,8 @@
     "noGamesShared": "아직 공유받은 게임이 없습니다.",
     "sentGamesTitle": "내가 보낸 게임",
     "noGamesSent": "아직 보낸 게임이 없습니다.",
-    "comingSoon": "곧 오픈"
+    "comingSoon": "곧 오픈",
+    "startNewGame": "새 게임 시작"
   },
   "collectionDetail": {
     "backLink": "Myverse로 돌아가기",
@@ -370,5 +380,11 @@
       "buttonRetrySameSentence": "같은 문장 다른 위치로 도전",
       "buttonRetrySamePosition": "같은 위치로 다시 도전하기"
     }
+  },
+  "userMenu": {
+    "guest": "게스트",
+    "profile": "내 프로필",
+    "settings": "설정",
+    "logout": "로그아웃"
   }
 } 

@@ -27,6 +27,8 @@ import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import HabitusIcon from '@/components/HabitusIcon';
 import { cyberTheme } from '@/src/styles/theme'; // Import centralized theme
 import { useTranslations } from 'next-intl';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import Image from 'next/image';
 
 // Dynamically import modal components
 const CountdownModal = dynamicComponent(() => import('@/components/CountdownModal'), { ssr: false });
@@ -418,7 +420,7 @@ export default function MyversePage() {
             <div className="flex items-center">
               <div className="mr-3 text-right">
                 <p className={`font-semibold ${cyberTheme.textLight}`}>
-                  {user?.nickname || '사용자'}
+                  {user?.nickname || t('myverse.defaultUsername')}
                 </p>
                 <p className={`text-xs ${cyberTheme.textMuted}`}>
                   {user?.email ? user.email.split('@')[0] : '나만의 암기노트'}
@@ -430,10 +432,12 @@ export default function MyversePage() {
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                 >
                   {user?.profileImage ? (
-                    <img 
+                    <Image 
                       src={user.profileImage} 
-                      alt={user?.nickname || '사용자'}
+                      alt={user?.nickname || t('myverse.defaultUsername')}
                       className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   ) : (
                     <span className={`text-white font-bold text-lg`}>

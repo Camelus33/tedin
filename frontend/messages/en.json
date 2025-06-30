@@ -165,7 +165,9 @@
     "common": {
       "loading": "Loading data...",
       "error": "Could not load data"
-    }
+    },
+    "greeting": "Hello, {nickname}!",
+    "defaultNickname": "User"
   },
   "myverse": {
     "headerSlogan": "Read Short. Deep Dive",
@@ -231,7 +233,6 @@
     "fireAria": "fire emoji",
     "gameListTitle": "Game List",
     "newGameButton": "New Game",
-
     "emptyState": {
       "message": "There are no games in this collection yet!",
       "sampleButton": "Start with a Sample"
@@ -370,5 +371,11 @@
       "buttonRetrySameSentence": "Try same sentence, new positions",
       "buttonRetrySamePosition": "Try again, same positions"
     }
+  },
+  "userMenu": {
+    "guest": "Guest",
+    "profile": "My Profile",
+    "settings": "Settings",
+    "logout": "Logout"
   }
 } 
