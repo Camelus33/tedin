@@ -1,35 +1,24 @@
 import '@/styles/globals.css'
 import { Noto_Serif_KR } from 'next/font/google'
-import { Providers as ReduxProvider } from '@/store/provider'
-import { Providers } from './providers'
-import Head from 'next/head'
 import './dashboard/styles/dashboard.css';
-import Footer from '@/components/common/Footer';
-import CartUIManager from '@/components/cart/CartUIManager';
-import { Toaster } from 'react-hot-toast';
 
 // Noto Serif KR 폰트 설정
 const notoSerifKr = Noto_Serif_KR({
   subsets: ['latin'],
-  weight: ['400', '700', '900'], // 필요한 가중치 선택
+  weight: ['400', '700', '900'],
   display: 'swap',
   variable: '--font-noto-serif-kr',
 });
 
-// metadata는 page.tsx에서 관리하므로 layout에서는 제거하거나 기본값 유지
-export const metadata = {
-  title: 'Habitus33',
-  description: 'Atomic Memo. Achieve anything!',
-}
-
+// 루트 레이아웃에서는 메타데이터를 제거 (locale별 레이아웃에서 관리)
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko" className={notoSerifKr.variable} suppressHydrationWarning>
-      <Head>
+    <html suppressHydrationWarning className={notoSerifKr.variable}>
+      <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
           rel="stylesheet"
@@ -37,25 +26,9 @@ export default function RootLayout({
           crossOrigin="anonymous"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
-      </Head>
+      </head>
       <body className="min-h-screen bg-brand-secondary text-gray-800 flex flex-col pretendard">
-        <Providers>
-          <ReduxProvider>
-            <div className="flex-grow">
-              {children}
-            </div>
-            <CartUIManager />
-          </ReduxProvider>
-          
-          <Toaster position="bottom-center" />
-          
-          {/* 개발 환경에서만 디버그 패널 표시 */}
-          {process.env.NODE_ENV === 'development' && (
-            <div id="debug-panel-root" />
-          )}
-          
-          <Footer />
-        </Providers>
+        {children}
       </body>
     </html>
   )

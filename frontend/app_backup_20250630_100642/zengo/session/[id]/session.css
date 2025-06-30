@@ -1,0 +1,190 @@
+.zengo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.zengo-header h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #333;
+}
+
+.session-info {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.timer, .score {
+  background-color: #f5f5f5;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.timer {
+  color: #e74c3c;
+}
+
+.score {
+  color: #2ecc71;
+}
+
+.zengo-training-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .zengo-training-content {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+}
+
+.zengo-board-container {
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .zengo-board-container {
+    margin-bottom: 0;
+    flex: 1;
+  }
+}
+
+.problem-container {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.problem-container h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.problem-text {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.answer-input {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.answer-input input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 4px 0 0 4px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.answer-input input:focus {
+  border-color: #4a90e2;
+}
+
+.answer-input button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.answer-input button:hover {
+  background-color: #3a80d2;
+}
+
+.feedback {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  transition: opacity 0.3s;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.feedback.correct {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.feedback.wrong {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.zengo-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.end-session-button {
+  background-color: #f5f5f5;
+  color: #333;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.end-session-button:hover {
+  background-color: #e0e0e0;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading {
+  color: #4a90e2;
+  font-weight: bold;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.error p {
+  margin-bottom: 1rem;
+}
+
+/* 애니메이션 효과 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.timer {
+  animation: pulse 2s infinite;
+} 
