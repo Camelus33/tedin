@@ -2,32 +2,35 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Database, Link as LinkIcon, Award } from 'lucide-react';
-
-const steps = [
-  {
-    icon: Database,
-    title: "1. 지식 베이스 구축",
-    description: "당신의 메모, 문서, 기록이 모여 관점을 담은 '지식 베이스'가 됩니다. 당신처럼 생각하는 AI 두뇌가 탄생합니다.",
-    color: "text-blue-600",
-    bg: "bg-blue-100",
-  },
-  {
-    icon: LinkIcon,
-    title: "2. AI-Link 생성",
-    description: "작업을 요청하면 목표와 지식 베이스가 결합한 만능 설계도 'AI-Link'가 즉시 생성됩니다.",
-    color: "text-indigo-600",
-    bg: "bg-indigo-100",
-  },
-  {
-    icon: Award,
-    title: "3. 맞춤 결과물 도출",
-    description: "AI-Link 하나로 텍스트, 이미지, 영상 AI를 조종하세요. 차원이 다른 결과물을 얻게 됩니다.",
-    color: "text-purple-600",
-    bg: "bg-purple-100",
-  }
-];
+import { useTranslations } from 'next-intl';
 
 export default function HowItWorksSection() {
+  const t = useTranslations('HowItWorksSection');
+
+  const steps = [
+    {
+      icon: Database,
+      title: t('steps.0.title'),
+      description: t('steps.0.description'),
+      color: "text-blue-600",
+      bg: "bg-blue-100",
+    },
+    {
+      icon: LinkIcon,
+      title: t('steps.1.title'),
+      description: t('steps.1.description'),
+      color: "text-indigo-600",
+      bg: "bg-indigo-100",
+    },
+    {
+      icon: Award,
+      title: t('steps.2.title'),
+      description: t('steps.2.description'),
+      color: "text-purple-600",
+      bg: "bg-purple-100",
+    }
+  ];
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -52,10 +55,10 @@ export default function HowItWorksSection() {
           className="mb-16 md:mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold font-serif tracking-tight text-gray-900 mb-5">
-            AI 행동 설계, 3단계 프로세스
+            {t('title')}
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            당신의 생각과 AI의 능력이 만나, 최고의 결과물을 만드는 과정입니다.
+            {t('subtitle')}
           </p>
         </motion.div>
         
@@ -100,15 +103,15 @@ export default function HowItWorksSection() {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-200">
                <Image
                 src="/images/how-it-works-ai-link.png"
-                alt="AI-Link 사용 예시"
+                alt={t('imageAlt')}
                 width={1200}
                 height={750}
                 className="object-cover w-full h-full"
               />
             </div>
-             <p className="mt-6 text-center text-gray-600 font-medium">
-              하나의 <span className="text-indigo-600 font-semibold">'AI-Link'</span>로, 딥 리서치, 글쓰기, 이미지/영상 생성까지. <br/>모든 AI의 성능을 극대화하세요.
-            </p>
+             <p className="mt-6 text-center text-gray-600 font-medium"
+              dangerouslySetInnerHTML={{ __html: t.raw('imageCaption') }}
+             />
           </motion.div>
         </div>
       </div>

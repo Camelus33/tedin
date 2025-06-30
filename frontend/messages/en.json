@@ -94,8 +94,12 @@
       "title": "Links & Legal",
       "terms": "Terms of Service",
       "privacy": "Privacy Policy",
-      "cookies": "Cookie Policy"
+      "cookies": "Cookie Policy",
+      "ir": "Investor Relations",
+      "marketing": "Marketing",
+      "faq": "FAQ"
     },
+    "atomicMemo": "Atomic Memo",
     "copyright": "© {year} Tedin Inc. All rights reserved. All content related to this page is protected by intellectual property rights. Unauthorized reproduction, distribution, and use for AI training are prohibited."
   },
   "dashboard": {
@@ -397,5 +401,36 @@
       "notFound": "Profile data not found.",
       "unknown": "An error occurred while loading data: {message}"
     }
+  },
+  "HeroSection": {
+    "title": "Stop explaining to AI,<br />start <span class=\"text-indigo-600\">designing its behavior.</span>",
+    "subtitle": "No more repetitive prompts. Create an <span class=\"font-semibold text-indigo-600\">'AI Behavior Blueprint'</span> with your knowledge and context, and <span class=\"font-semibold text-indigo-600\">'take full control'</span> of your AI.",
+    "ctaButton": "Design My AI Assistant"
+  },
+  "ProblemDiagnosisSection": {
+    "title": "Does that AI have <span class=\"text-indigo-600\">'short-term memory loss'</span>?",
+    "question": "Are you explaining the same thing today that you did yesterday?",
+    "quote": "\"I'm a student researching XXX, and the core of this paper is YYY. Based on this...\"",
+    "explanation": "Like this, AI suffers from <span class=\"font-semibold text-indigo-600\">'short-term memory loss,' unable to remember</span> even important conversations with you. Your time and energy are wasted on the same explanations every time."
+  },
+  "HowItWorksSection": {
+    "title": "AI Behavior Design, 3-Step Process",
+    "subtitle": "The process where your thoughts and the AI's capabilities meet to create the best results.",
+    "steps": [
+      {
+        "title": "1. Build Knowledge Base",
+        "description": "Your memos, documents, and records gather to become a 'knowledge base' with your perspective. An AI brain that thinks like you is born."
+      },
+      {
+        "title": "2. Generate AI-Link",
+        "description": "When you request a task, a versatile blueprint 'AI-Link' that combines the goal and your knowledge base is instantly generated."
+      },
+      {
+        "title": "3. Derive Customized Output",
+        "description": "Control text, image, and video AIs with a single AI-Link. You will get results on a different level."
+      }
+    ],
+    "imageAlt": "AI-Link usage example",
+    "imageCaption": "With one <span class=\"text-indigo-600 font-semibold\">'AI-Link'</span>, from deep research, writing, to image/video generation. <br/>Maximize the performance of all your AIs."
   }
 } 

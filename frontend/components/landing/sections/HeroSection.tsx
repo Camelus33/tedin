@@ -7,12 +7,15 @@ import { SparklesIcon as SparklesIconOutline } from '@heroicons/react/24/outline
 // import { ArrowRightIcon } from '@heroicons/react/24/outline'; // For secondary CTA if uncommented
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 // Example of a high-quality image from public/images
 // Replace with an actual relevant image path later
 const heroImageUrl = '/images/hero-background.jpg'; // Placeholder
 
 export default function HeroSection() {
+  const t = useTranslations('HeroSection');
+
   return (
     <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-28 overflow-hidden">
       {/* Background Image / Gradient - Big Tech Style */}
@@ -45,19 +48,18 @@ export default function HeroSection() {
           <div className="flex items-center justify-center gap-12">
             {/* Text Content */}
             <div className="max-w-xl text-left">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
-                AI에게 설명하지 말고,<br />
-                <span className="text-indigo-600">행동을 설계하세요.</span>
-              </h1>
-              <p className="mt-6 text-lg sm:text-xl text-gray-600">
-                반복적인 프롬프트는 이제 그만. 당신의 지식과 맥락으로 <span className="font-semibold text-indigo-600">'AI 행동 설계도'</span>를 만들고, AI를 <span className="font-semibold text-indigo-600">'마음껏 조종하세요'</span>.
-              </p>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight"
+                dangerouslySetInnerHTML={{ __html: t.raw('title') }}
+              />
+              <p className="mt-6 text-lg sm:text-xl text-gray-600"
+                dangerouslySetInnerHTML={{ __html: t.raw('subtitle') }}
+              />
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                 <Link
                   href="/auth/register"
                   className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150 ease-in-out w-full sm:w-auto"
                 >
-                  나만의 AI 조수 설계하기
+                  {t('ctaButton')}
                 </Link>
               </div>
             </div>

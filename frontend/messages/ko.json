@@ -407,5 +407,36 @@
       "notFound": "프로필 데이터를 찾을 수 없습니다.",
       "unknown": "데이터를 불러오는 중 오류가 발생했습니다: {message}"
     }
+  },
+  "HeroSection": {
+    "title": "AI에게 설명하지 말고,<br /><span class=\"text-indigo-600\">행동을 설계하세요.</span>",
+    "subtitle": "반복적인 프롬프트는 이제 그만. 당신의 지식과 맥락으로 <span class=\"font-semibold text-indigo-600\">'AI 행동 설계도'</span>를 만들고, AI를 <span class=\"font-semibold text-indigo-600\">'마음껏 조종하세요'</span>.",
+    "ctaButton": "나만의 AI 조수 설계하기"
+  },
+  "ProblemDiagnosisSection": {
+    "title": "그 AI, 혹시 <span class=\"text-indigo-600\">'단기 기억상실증'</span>에 걸렸나요?",
+    "question": "어제 했던 설명, 오늘 또 하고 있진 않나요?",
+    "quote": "\"나는 OOO을 연구하는 학생이고, 이 논문의 핵심은 OOO이야. 이걸 바탕으로...\"",
+    "explanation": "이처럼 AI는 당신과의 중요한 대화조차 <span class=\"font-semibold text-indigo-600\">기억하지 못하는 '단기 기억상실증'</span>을 겪고 있습니다. 당신의 시간과 에너지가 매번 같은 설명에 낭비됩니다."
+  },
+  "HowItWorksSection": {
+    "title": "AI 행동 설계, 3단계 프로세스",
+    "subtitle": "당신의 생각과 AI의 능력이 만나, 최고의 결과물을 만드는 과정입니다.",
+    "steps": [
+      {
+        "title": "1. 지식 베이스 구축",
+        "description": "당신의 메모, 문서, 기록이 모여 관점을 담은 '지식 베이스'가 됩니다. 당신처럼 생각하는 AI 두뇌가 탄생합니다."
+      },
+      {
+        "title": "2. AI-Link 생성",
+        "description": "작업을 요청하면 목표와 지식 베이스가 결합한 만능 설계도 'AI-Link'가 즉시 생성됩니다."
+      },
+      {
+        "title": "3. 맞춤 결과물 도출",
+        "description": "AI-Link 하나로 텍스트, 이미지, 영상 AI를 조종하세요. 차원이 다른 결과물을 얻게 됩니다."
+      }
+    ],
+    "imageAlt": "AI-Link 사용 예시",
+    "imageCaption": "하나의 <span class=\"text-indigo-600 font-semibold\">'AI-Link'</span>로, 딥 리서치, 글쓰기, 이미지/영상 생성까지. <br/>모든 AI의 성능을 극대화하세요."
   }
 } 
