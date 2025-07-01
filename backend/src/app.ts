@@ -44,6 +44,21 @@ console.log('MongoDB URI:', MONGODB_URI);
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
+    
+    // 시간대 설정 확인 (비동기적으로 실행)
+    import('./scripts/timezoneChecker')
+      .then(({ checkServerTimezone, logTimezoneInfo, validateTimezoneSettings }) => {
+        const timezoneInfo = checkServerTimezone();
+        logTimezoneInfo(timezoneInfo);
+        
+        const validation = validateTimezoneSettings();
+        if (!validation.isValid) {
+          console.warn('⚠️ Timezone configuration warnings detected. Run `npm run validate-timezone` for details.');
+        }
+      })
+      .catch(error => {
+        console.warn('⚠️ Could not load timezone checker:', error.message);
+      });
   })
   .catch((error) => {
     console.error('MongoDB connection error:', error);

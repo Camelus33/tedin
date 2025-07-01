@@ -16,6 +16,20 @@ router.get('/', async (_req, res) => {
     // 메모리 사용량 확인
     const memoryUsage = process.memoryUsage();
     
+    // 시간대 정보 확인
+    const now = new Date();
+    const timezoneInfo = {
+      envTimezone: process.env.TZ || 'Not Set',
+      systemTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      currentTime: now.toISOString(),
+      utcTime: now.toUTCString(),
+      koreaTime: now.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+      timezoneOffset: now.getTimezoneOffset(),
+      isKoreanTime: now.getTimezoneOffset() === -540 && 
+                   (process.env.TZ === 'Asia/Seoul' || 
+                    Intl.DateTimeFormat().resolvedOptions().timeZone === 'Asia/Seoul'),
+    };
+    
     // 응답
     res.status(200).json({
       status: 'ok',
@@ -32,6 +46,7 @@ router.get('/', async (_req, res) => {
         },
         version: process.version,
       },
+      timezone: timezoneInfo,
     });
   } catch (error) {
     console.error('Health check error:', error);

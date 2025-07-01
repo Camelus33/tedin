@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"; // Import Dropdown components
 import { Button } from '@/components/ui/button'; // Import Button for styling consistency
 import { cn } from '@/lib/utils';
+import { formatUserTime } from '@/lib/timeUtils'; // 시간 포맷팅 유틸리티 import
 
 // Define the structure for a single related link
 export interface RelatedLink {
@@ -59,12 +60,17 @@ export interface TSNote {
   isTemporary?: boolean;
   /** @property {string} [originSession] - 노트가 생성된 TS 세션의 ID. */
   originSession?: string;
+  /** @property {string} [createdAt] - 서버에서 기록된 생성 시간 (ISO 문자열). */
+  createdAt?: string;
+  /** @property {string} [clientCreatedAt] - 클라이언트에서 기록된 사용자 현지 시간 (ISO 문자열). */
+  clientCreatedAt?: string;
   // pageNum, sessionId 등 추가 필드가 백엔드 Note 모델에 있을 수 있으나, TSNoteCard에서 직접 사용되지 않으면 생략 가능.
 }
 
 // TS 세션 상세 정보 타입 (백엔드 ISession 모델 기반)
 export interface TSSessionDetails {
-  createdAtISO?: string;    // Session.createdAt (ISO 문자열로 변환된 값)
+  createdAtISO?: string;    // Session.createdAt (ISO 문자열로 변환된 값) - 서버 시간
+  clientCreatedAtISO?: string; // Session.clientCreatedAt (ISO 문자열로 변환된 값) - 클라이언트 시간
   durationSeconds?: number; // Session.durationSec
   startPage?: number;       // Session.startPage
   actualEndPage?: number;   // Session.actualEndPage
@@ -174,10 +180,27 @@ const tabColorMap = [
 ];
 
 // Helper 함수들
-const formatSessionCreatedAt = (isoString?: string): string => {
-  if (!isoString) return '정보 없음';
-  const date = new Date(isoString);
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+/**
+ * @function formatSessionCreatedAt
+ * @description 세션 생성 시간을 사용자 친화적인 형식으로 포맷팅합니다.
+ * 클라이언트 시간(사용자 현지 시간)이 있으면 우선 사용하고, 없으면 서버 시간을 사용합니다.
+ * @param {string} [clientTimeISO] - 클라이언트에서 기록된 시간 (ISO 문자열)
+ * @param {string} [serverTimeISO] - 서버에서 기록된 시간 (ISO 문자열)
+ * @returns {string} 포맷팅된 시간 문자열 또는 '정보 없음'
+ */
+const formatSessionCreatedAt = (clientTimeISO?: string, serverTimeISO?: string): string => {
+  return formatUserTime(clientTimeISO, serverTimeISO);
+};
+
+/**
+ * @function formatNoteCreatedAt
+ * @description 노트 생성 시간을 사용자 친화적인 형식으로 포맷팅합니다.
+ * 클라이언트 시간(사용자 현지 시간)이 있으면 우선 사용하고, 없으면 서버 시간을 사용합니다.
+ * @param {TSNote} note - 시간 정보를 포함한 노트 객체
+ * @returns {string} 포맷팅된 시간 문자열 또는 '정보 없음'
+ */
+const formatNoteCreatedAt = (note: TSNote): string => {
+  return formatUserTime(note.clientCreatedAt, note.createdAt);
 };
 
 const formatSessionDuration = (seconds?: number): string => {
@@ -419,7 +442,9 @@ export default function TSNoteCard({
     }
   }, [activeTabKey, tabKeys]);
 
-  const displaySessionCreatedAt = sessionDetails?.createdAtISO ? formatSessionCreatedAt(sessionDetails.createdAtISO) : '세션 정보 없음';
+  const displaySessionCreatedAt = sessionDetails?.createdAtISO || sessionDetails?.clientCreatedAtISO 
+    ? formatSessionCreatedAt(sessionDetails.clientCreatedAtISO, sessionDetails.createdAtISO) 
+    : '세션 정보 없음';
   const displaySessionDuration = sessionDetails?.durationSeconds !== undefined ? formatSessionDuration(sessionDetails.durationSeconds) : '';
   const displaySessionPageProgress = (sessionDetails?.startPage !== undefined || sessionDetails?.actualEndPage !== undefined || sessionDetails?.targetPage !== undefined) 
                                     ? formatSessionPageProgress(sessionDetails.startPage, sessionDetails.actualEndPage, sessionDetails.targetPage) 

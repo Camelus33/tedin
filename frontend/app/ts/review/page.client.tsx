@@ -7,6 +7,7 @@ import Spinner from '@/components/ui/Spinner';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { ClockIcon, ExclamationTriangleIcon, ArrowUturnLeftIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import api from '@/lib/api';
+import { collectClientTimeInfo, compressTimeInfo, debugClientTimeInfo } from '@/lib/timeUtils';
 
 // Cyber Theme Definition (Consistent with other TS pages)
 const cyberTheme = {
@@ -167,24 +168,30 @@ export default function TSReviewPage() {
       const rawPpm = pagesRead / minutesSpent;
       const ppm = isNaN(rawPpm) ? 1 : Math.min(1000, Math.max(1, rawPpm));
 
-      console.log('세션 완료 요청 데이터:', {
+      // 🆕 Shadow Mode: 클라이언트 시간 정보 수집 (기존 로직에 영향 없음)
+      const clientTimeInfo = collectClientTimeInfo();
+      const compressedTimeInfo = compressTimeInfo(clientTimeInfo);
+      
+      // 개발 환경에서 디버그 정보 출력
+      debugClientTimeInfo();
+
+      const requestPayload = {
         actualEndPage: reviewData.actualEndPage,
         memo: reviewData.memo,
         summary10words: reviewData.summary.split(/\s+/).slice(0, 10).join(' '),
         selfRating: reviewData.selfRating,
         durationSec: actualDurationSec,
         ppm,
-        memoType: reviewData.memoType
-      });
-      await api.put(`/sessions/${sessionId}/complete`, {
-          actualEndPage: reviewData.actualEndPage,
-          memo: reviewData.memo,
-          summary10words: reviewData.summary.split(/\s+/).slice(0, 10).join(' '),
-          selfRating: reviewData.selfRating,
-          durationSec: actualDurationSec,
-          ppm,
-          memoType: reviewData.memoType
-      });
+        memoType: reviewData.memoType,
+        // 🆕 Shadow Mode: 클라이언트 시간 정보 추가 (Optional 필드)
+        _shadowClientTime: compressedTimeInfo,
+        _shadowTimeValid: clientTimeInfo.isValid,
+        _shadowTimeError: clientTimeInfo.error || null
+      };
+
+      console.log('세션 완료 요청 데이터:', requestPayload);
+
+      await api.put(`/sessions/${sessionId}/complete`, requestPayload);
 
       // Navigate to results page
       router.push(`/ts/result?sessionId=${sessionId}`);

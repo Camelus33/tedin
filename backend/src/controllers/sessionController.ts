@@ -4,6 +4,12 @@ import Book from '../models/Book';
 import Note from '../models/Note';
 import { routineService } from '../services/routineService';
 import UserStats from '../models/UserStats';
+import { 
+  processClientTime, 
+  getFinalTimeForNote, 
+  logTimeProcessing,
+  CompressedClientTime 
+} from '../utils/timeProcessor';
 
 // Helper function to calculate and update estimated reading time
 const updateEstimatedTime = async (bookId: string, userId: string) => {
@@ -163,13 +169,35 @@ export const createSession = async (req: Request, res: Response) => {
 export const completeSession = async (req: Request, res: Response) => {
   const { sessionId } = req.params;
   const userId = req.user?.id;
-  const { actualEndPage, durationSec, ppm, memo, summary10words, selfRating, memoType } = req.body;
+  const { 
+    actualEndPage, 
+    durationSec, 
+    ppm, 
+    memo, 
+    summary10words, 
+    selfRating, 
+    memoType,
+    // 🆕 Shadow Mode: 클라이언트 시간 정보 수신 (기존 로직에 영향 없음)
+    _shadowClientTime,
+    _shadowTimeValid,
+    _shadowTimeError
+  } = req.body;
 
   if (!userId) {
     return res.status(401).json({ message: '인증이 필요합니다.' });
   }
 
   try {
+    // 🆕 클라이언트 시간 정보 처리 (실제 사용)
+    const timeProcessResult = processClientTime(
+      _shadowClientTime as CompressedClientTime,
+      _shadowTimeValid,
+      _shadowTimeError
+    );
+    
+    // 개발 환경에서 시간 처리 결과 로깅
+    logTimeProcessing(timeProcessResult, `세션 완료 - ${sessionId}`);
+
     const session = await Session.findOne({ _id: sessionId, userId });
 
     if (!session) {
@@ -233,14 +261,31 @@ export const completeSession = async (req: Request, res: Response) => {
 
     // 4. TS 모드 반추 메모를 Note로 자동 생성
     if (memo && memo.trim()) {
-      await Note.create({
+      // 🆕 클라이언트 시간 기반 Note 생성
+      const finalTimes = getFinalTimeForNote(timeProcessResult);
+      
+      const noteData = {
         userId: userId,
         bookId: session.bookId,
         originSession: session._id,
         type: memoType || 'thought',
         content: memo,
         tags: (summary10words || '').trim().split(/\s+/).filter(Boolean),
-      });
+        createdAt: finalTimes.createdAt, // 서버 시간 (기존 로직 유지)
+        ...(finalTimes.clientCreatedAt && { clientCreatedAt: finalTimes.clientCreatedAt }) // 클라이언트 시간 (유효할 때만 추가)
+      };
+      
+      await Note.create(noteData);
+      
+      // 개발 환경에서 메모 생성 결과 로깅
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Note 생성] 사용된 시간:', {
+          useClientTime: timeProcessResult.useClientTime,
+          serverTime: finalTimes.createdAt.toISOString(),
+          clientTime: finalTimes.clientCreatedAt?.toISOString() || null,
+          memoContent: memo.substring(0, 50) + (memo.length > 50 ? '...' : '')
+        });
+      }
     }
 
     // 5. Update routine status (fire and forget, log errors)

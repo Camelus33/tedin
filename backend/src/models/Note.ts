@@ -7,6 +7,7 @@ export interface INote extends Document {
   content: string;
   tags: string[];
   createdAt: Date;
+  clientCreatedAt?: Date;
   originSession?: mongoose.Types.ObjectId;
   importanceReason?: string;
   momentContext?: string;
@@ -100,9 +101,14 @@ const NoteSchema: Schema = new Schema({
     type: Date,
     default: Date.now,
   },
+  clientCreatedAt: {
+    type: Date,
+    default: null,
+  },
 });
 
-// Add indexes for common queries
+NoteSchema.index({ userId: 1, clientCreatedAt: -1 });
+NoteSchema.index({ userId: 1, bookId: 1, clientCreatedAt: -1 });
 NoteSchema.index({ userId: 1, bookId: 1 });
 NoteSchema.index({ userId: 1, bookId: 1, originSession: 1 });
 NoteSchema.index({ userId: 1, tags: 1 });
