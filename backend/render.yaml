@@ -11,7 +11,7 @@ services:
       - key: PORT
         value: 8000
       - key: TZ
-        value: "Asia/Seoul"
+        value: Asia/Seoul
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
