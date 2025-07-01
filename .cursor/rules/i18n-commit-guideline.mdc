@@ -1,0 +1,21 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Internationalization Commit Guideline
+
+**Scope**: All tasks involving language translation or `i18n`.
+
+1. **Target Branch**  
+   • All i18n changes **must** be committed to `feature/multi-language`.  
+   • Do **not** commit i18n work directly to `main`.
+
+2. **Pre-Commit Approval Workflow**  
+   • Before staging/committing, the AI assistant must:  
+     1. Clearly state the branch it will commit to.  
+     2. Obtain explicit user approval.  
+   • Only after approval may `git add`, `git commit`, and `git push` be executed.
+
+3. **Safety Check**  
+   • If the current branch is not `feature/multi-language`, abort the commit and prompt the user.

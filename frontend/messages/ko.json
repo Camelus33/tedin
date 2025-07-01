@@ -503,6 +503,247 @@
     "description": "Habitus33이 당신의 학습 과정을 어떻게 변화시키는지 직접 경험해보세요.",
     "buttonText": "무료 체험 시작하기"
   },
+  "ts": {
+    "common": {
+      "loading": "로딩 중...",
+      "error": "오류가 발생했습니다",
+      "back": "돌아가기",
+      "next": "다음",
+      "start": "시작",
+      "pause": "일시정지",
+      "resume": "재개",
+      "finish": "완료",
+      "minutes": "분",
+      "seconds": "초",
+      "pages": "페이지",
+      "preparing": "준비 중...",
+      "focusingInProgress": "몰입하는 중...",
+      "timeRemaining": "남은 시간",
+      "progress": "진행률"
+    },
+    "setup": {
+      "pageTitle": "TS 설정",
+      "pageSubtitle": "읽기 세션을 준비하세요",
+      "loadingBooks": "책 목록을 불러오는 중...",
+      "loadingBooksError": "내 서재 정보를 가져오는 중에 작은 문제가 발생했어요. 잠시 후 다시 시도해 주시겠어요?",
+      "bookSelection": {
+        "label": "읽을 책 선택",
+        "noBooks": "등록된 책이 없습니다",
+        "addNewBook": "새 책 추가",
+        "selectBook": "책을 선택하세요",
+        "newBookMode": "새로운 자료를 등록해 보세요"
+      },
+      "pageRange": {
+        "startPageLabel": "시작 페이지",
+        "endPageLabel": "마지막 페이지",
+        "currentPage": "현재 페이지",
+        "totalPages": "총 페이지"
+      },
+      "focusSettings": {
+        "enableWarmup": "워밍업 활성화",
+        "enableWarmupDescription": "집중력 향상을 위한 워밍업 운동을 포함합니다",
+        "focusDuration": "집중 시간",
+        "focusDurationMinutes": "분",
+        "focusDurationDescription": "원하는 읽기 집중 시간을 설정하세요"
+      },
+      "buttons": {
+        "startSession": "세션 시작",
+        "starting": "시작 중...",
+        "backToDashboard": "대시보드로 돌아가기"
+      },
+      "validation": {
+        "selectBookFirst": "먼저 책을 선택해주세요",
+        "invalidPageRange": "올바른 페이지 범위를 입력해주세요",
+        "endPageTooLarge": "마지막 페이지가 책의 총 페이지를 초과합니다"
+      },
+      "errors": {
+        "sessionCreationFailed": "세션 생성에 실패했습니다",
+        "bookNotFound": "선택한 책을 찾을 수 없습니다",
+        "networkError": "네트워크 연결을 확인해주세요"
+      }
+    },
+    "reading": {
+      "pageTitle": "TS 읽기 세션",
+      "preparing": "준비 중입니다. 잠시만 기다려 주시겠어요?",
+      "focusingInProgress": "몰입하는 중...",
+      "timeRemaining": "남은 시간",
+      "progress": "진행률",
+      "sessionInfo": {
+        "book": "읽고 있는 책",
+        "pageRange": "페이지 범위",
+        "duration": "세션 시간"
+      },
+      "buttons": {
+        "pauseResume": "일시정지/재개",
+        "finishEarly": "일찍 완료",
+        "backToSetup": "TS 설정으로 돌아가기"
+      },
+      "breathing": {
+        "title": "깊게 숨을 쉬며",
+        "subtitle": "마음을 편안히 하고 집중을 시작하세요",
+        "instruction": "화면의 안내에 따라 호흡하세요"
+      },
+      "copyright": {
+        "notice": "이 페이지의 모든 콘텐츠는 지적재산권에 의해 보호됩니다.",
+        "warning": "무단 복제, 배포 및 AI 학습 사용을 금지합니다."
+      },
+      "errors": {
+        "sessionNotFound": "세션 정보를 열심히 찾고 있습니다",
+        "invalidSession": "세션 ID가 유효하지 않습니다",
+        "loadingError": "세션 데이터를 불러올 수 없습니다"
+      }
+    },
+    "result": {
+      "pageTitle": "TS 결과",
+      "loadingResults": "결과를 불러오는 중...",
+      "achievement": {
+        "title": "YOUR WAVE",
+        "subtitle": "당신의 읽기 성과",
+        "labels": {
+          "eliteReader": "Elite Reader",
+          "advancedReader": "Advanced Reader", 
+          "dedicatedReader": "Dedicated Reader"
+        }
+      },
+      "performance": {
+        "readingVelocity": "Reading Velocity",
+        "ppmLabel": "PPM",
+        "ppmUnit": "페이지/분",
+        "totalPages": "읽은 페이지",
+        "readingTime": "읽기 시간",
+        "selfRating": "자가 평가"
+      },
+      "messages": {
+        "excellent": "집중력이 대단하시군요!",
+        "good": "평소보다 좋은 성과예요!",
+        "nice": "멋진 파도를 만드셨어요!",
+        "encouraging": "첫 작은 성공을 축하드려요!"
+      },
+      "details": {
+        "sessionSummary": "세션 요약",
+        "bookTitle": "읽은 책",
+        "pageProgress": "페이지 진행",
+        "duration": "소요 시간",
+        "memo": "메모",
+        "summary": "요약"
+      },
+      "buttons": {
+        "share": "공유하기",
+        "newSession": "새 세션 시작",
+        "backToDashboard": "대시보드로 돌아가기",
+        "viewDetails": "상세 보기"
+      },
+      "share": {
+        "success": "공유 링크가 클립보드에 복사되었습니다!",
+        "failure": "링크 복사에 실패했습니다. 수동으로 URL을 복사해주세요."
+      },
+      "errors": {
+        "noResults": "세션 결과를 찾고 있습니다",
+        "invalidData": "세션 결과 데이터가 올바르지 않다고 나오네요",
+        "loadingFailed": "결과를 불러오는 데 실패했습니다"
+      }
+    },
+    "warmup": {
+      "pageTitle": "집중력 워밍업",
+      "introduction": {
+        "title": "마음과 뇌를 준비하세요",
+        "subtitle": "4가지 워밍업 운동으로 최적의 읽기 상태를 만들어보세요",
+        "description": "각 운동은 2-3분 정도 소요되며, 집중력과 인지 능력을 향상시킵니다."
+      },
+      "exercises": {
+        "breathing": {
+          "title": "마음챙김 호흡",
+          "description": "편안한 자세로 화면의 안내에 따라 숨을 조절하여 뇌에 신선한 산소를 듬뿍 넣어주세요.",
+          "tip": "숨을 내쉴 때 마음 속 긴장이 함께 빠져나가는 장면을 떠올려 보세요.",
+          "variations": {
+            "standard": {
+              "name": "기본 호흡",
+              "instruction": "화면의 안내에 따라 들이쉬고(4초), 잠시 멈췄다가(2초), 천천히 내쉬세요(6초)."
+            },
+            "box": {
+              "name": "박스 호흡", 
+              "instruction": "네모를 그리듯 들이쉬고(4초), 멈추고(4초), 내쉬고(4초), 다시 멈춥니다(4초)."
+            },
+            "relaxing": {
+              "name": "이완 호흡 (4-7-8 변형)",
+              "instruction": "깊게 들이쉬고(4초), 충분히 숨을 참았다가(7초), 길게 내뱉으세요(8초)."
+            }
+          },
+          "states": {
+            "inhale": "들이쉬세요",
+            "hold": "참으세요",
+            "exhale": "내쉬세요",
+            "rest": "쉬세요"
+          }
+        },
+        "peripheral": {
+          "title": "고정점 응시와 주변 시야 확장",
+          "description": "중앙의 한 점에 시선을 고정한 채, 주변에 나타나는 시각적 자극을 인지하여 시야 범위를 넓히는 훈련입니다.",
+          "tip": "중심점을 계속 바라보면서 주변에 무엇이 나타나는지 느껴보세요. 모든 것을 다 볼 필요는 없어요.",
+          "instruction": "중앙의 점을 응시하세요. 주변에 나타나는 도형을 인지해 보세요.",
+          "fixationPoint": "고정점",
+          "stimulusAppeared": "자극이 나타났습니다"
+        },
+        "textFlow": {
+          "title": "텍스트 플로우 훈련",
+          "description": "움직이는 텍스트를 따라가며 동적인 읽기 리듬을 연습합니다.",
+          "tip": "텍스트의 속도에 맞춰 자연스럽게 눈을 움직여보세요.",
+          "variations": {
+            "scroll": "가속 스크롤",
+            "highlight": "리듬 하이라이트",
+            "flash": "단어 플래시"
+          }
+        },
+        "visualSpan": {
+          "title": "시각적 스팬 확장",
+          "description": "한 번에 인식할 수 있는 시각적 정보의 범위를 넓히는 훈련입니다.",
+          "tip": "전체를 한 번에 보려고 노력하세요. 개별 요소에 집중하지 마세요.",
+          "variations": {
+            "grid": "격자 문자",
+            "words": "단어 확장"
+          }
+        }
+      },
+      "controls": {
+        "start": "시작",
+        "next": "다음 운동",
+        "skip": "건너뛰기", 
+        "complete": "완료",
+        "showTip": "팁 보기",
+        "hideTip": "팁 숨기기",
+        "quit": "워밍업 종료"
+      },
+      "progress": {
+        "exerciseOf": "{current} / {total}",
+        "completed": "완료됨",
+        "current": "진행 중"
+      },
+      "completion": {
+        "title": "워밍업 완료!",
+        "message": "이제 최적의 읽기 상태가 되었습니다.",
+        "readyMessage": "집중된 읽기를 시작할 준비가 되었습니다."
+      }
+    },
+    "session": {
+      "hub": {
+        "loading": "정보를 불러오는 중...",
+        "redirecting": "적절한 페이지로 이동 중...",
+        "notFound": "세션 정보를 찾을 수 없습니다",
+        "loadingFailed": "세션 정보를 불러오는 데 실패했습니다"
+      },
+      "status": {
+        "pending": "대기 중",
+        "active": "진행 중", 
+        "completed": "완료됨",
+        "review": "검토 중"
+      }
+    },
+    "review": {
+      "pageTitle": "세션 리뷰",
+      "loading": "리뷰 데이터를 불러오는 중...",
+      "placeholder": "리뷰 기능 준비 중입니다"
+    }
+  },
   "ProfilePage": {
     "metadata": {
       "title": "내 프로필",

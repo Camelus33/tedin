@@ -497,6 +497,247 @@
     "description": "Experience firsthand how Habitus33 transforms your learning process.",
     "buttonText": "Start with a Free Trial"
   },
+  "ts": {
+    "common": {
+      "loading": "Loading...",
+      "error": "An error occurred",
+      "back": "Back",
+      "next": "Next",
+      "start": "Start",
+      "pause": "Pause",
+      "resume": "Resume",
+      "finish": "Finish",
+      "minutes": "minutes",
+      "seconds": "seconds",
+      "pages": "pages",
+      "preparing": "Preparing...",
+      "focusingInProgress": "Focusing in progress...",
+      "timeRemaining": "Time remaining",
+      "progress": "Progress"
+    },
+    "setup": {
+      "pageTitle": "TS Setup",
+      "pageSubtitle": "Prepare your reading session",
+      "loadingBooks": "Loading book list...",
+      "loadingBooksError": "We encountered a small issue while fetching your library information. Please try again in a moment.",
+      "bookSelection": {
+        "label": "Select book to read",
+        "noBooks": "No books registered",
+        "addNewBook": "Add new book",
+        "selectBook": "Select a book",
+        "newBookMode": "Try registering new material"
+      },
+      "pageRange": {
+        "startPageLabel": "Start page",
+        "endPageLabel": "End page",
+        "currentPage": "Current page",
+        "totalPages": "Total pages"
+      },
+      "focusSettings": {
+        "enableWarmup": "Enable warmup",
+        "enableWarmupDescription": "Include warmup exercises to improve concentration",
+        "focusDuration": "Focus duration",
+        "focusDurationMinutes": "minutes",
+        "focusDurationDescription": "Set your desired reading focus time"
+      },
+      "buttons": {
+        "startSession": "Start session",
+        "starting": "Starting...",
+        "backToDashboard": "Back to dashboard"
+      },
+      "validation": {
+        "selectBookFirst": "Please select a book first",
+        "invalidPageRange": "Please enter a valid page range",
+        "endPageTooLarge": "End page exceeds the total pages of the book"
+      },
+      "errors": {
+        "sessionCreationFailed": "Failed to create session",
+        "bookNotFound": "Selected book not found",
+        "networkError": "Please check your network connection"
+      }
+    },
+    "reading": {
+      "pageTitle": "TS Reading Session",
+      "preparing": "Preparing. Please wait a moment.",
+      "focusingInProgress": "Focusing in progress...",
+      "timeRemaining": "Time remaining",
+      "progress": "Progress",
+      "sessionInfo": {
+        "book": "Currently reading",
+        "pageRange": "Page range",
+        "duration": "Session duration"
+      },
+      "buttons": {
+        "pauseResume": "Pause/Resume",
+        "finishEarly": "Finish early",
+        "backToSetup": "Back to TS setup"
+      },
+      "breathing": {
+        "title": "Breathe deeply",
+        "subtitle": "Relax your mind and begin to focus",
+        "instruction": "Follow the on-screen guidance for breathing"
+      },
+      "copyright": {
+        "notice": "All content on this page is protected by intellectual property rights.",
+        "warning": "Unauthorized reproduction, distribution, and use for AI training is prohibited."
+      },
+      "errors": {
+        "sessionNotFound": "Diligently searching for session information",
+        "invalidSession": "Session ID is invalid",
+        "loadingError": "Unable to load session data"
+      }
+    },
+    "result": {
+      "pageTitle": "TS Results",
+      "loadingResults": "Loading results...",
+      "achievement": {
+        "title": "YOUR WAVE",
+        "subtitle": "Your reading performance",
+        "labels": {
+          "eliteReader": "Elite Reader",
+          "advancedReader": "Advanced Reader",
+          "dedicatedReader": "Dedicated Reader"
+        }
+      },
+      "performance": {
+        "readingVelocity": "Reading Velocity",
+        "ppmLabel": "PPM",
+        "ppmUnit": "pages/min",
+        "totalPages": "Pages read",
+        "readingTime": "Reading time",
+        "selfRating": "Self-rating"
+      },
+      "messages": {
+        "excellent": "Your concentration is amazing!",
+        "good": "Better performance than usual!",
+        "nice": "You've created a wonderful wave!",
+        "encouraging": "Congratulations on your first small success!"
+      },
+      "details": {
+        "sessionSummary": "Session summary",
+        "bookTitle": "Book read",
+        "pageProgress": "Page progress",
+        "duration": "Duration",
+        "memo": "Memo",
+        "summary": "Summary"
+      },
+      "buttons": {
+        "share": "Share",
+        "newSession": "Start new session",
+        "backToDashboard": "Back to dashboard",
+        "viewDetails": "View details"
+      },
+      "share": {
+        "success": "Share link copied to clipboard!",
+        "failure": "Failed to copy link. Please manually copy the URL."
+      },
+      "errors": {
+        "noResults": "Looking for session results",
+        "invalidData": "Session result data appears to be incorrect",
+        "loadingFailed": "Failed to load results"
+      }
+    },
+    "warmup": {
+      "pageTitle": "Focus Warmup",
+      "introduction": {
+        "title": "Prepare your mind and brain",
+        "subtitle": "Create your optimal reading state with 4 warmup exercises",
+        "description": "Each exercise takes about 2-3 minutes and improves concentration and cognitive abilities."
+      },
+      "exercises": {
+        "breathing": {
+          "title": "Mindful Breathing",
+          "description": "In a comfortable position, control your breathing following the screen guidance to fill your brain with fresh oxygen.",
+          "tip": "Imagine the tension in your mind flowing out as you exhale.",
+          "variations": {
+            "standard": {
+              "name": "Basic Breathing",
+              "instruction": "Follow the screen guidance: inhale (4 sec), pause briefly (2 sec), then exhale slowly (6 sec)."
+            },
+            "box": {
+              "name": "Box Breathing",
+              "instruction": "Like drawing a square: inhale (4 sec), hold (4 sec), exhale (4 sec), hold again (4 sec)."
+            },
+            "relaxing": {
+              "name": "Relaxing Breath (4-7-8 variation)",
+              "instruction": "Inhale deeply (4 sec), hold sufficiently (7 sec), then exhale long (8 sec)."
+            }
+          },
+          "states": {
+            "inhale": "Inhale",
+            "hold": "Hold",
+            "exhale": "Exhale",
+            "rest": "Rest"
+          }
+        },
+        "peripheral": {
+          "title": "Fixed Point Gaze and Peripheral Vision Expansion",
+          "description": "While keeping your gaze fixed on a central point, train to widen your field of vision by recognizing visual stimuli appearing in the periphery.",
+          "tip": "Keep looking at the center point while sensing what appears around. You don't need to see everything.",
+          "instruction": "Fix your gaze on the central point. Try to perceive the shapes appearing around.",
+          "fixationPoint": "Fixation point",
+          "stimulusAppeared": "Stimulus appeared"
+        },
+        "textFlow": {
+          "title": "Text Flow Training",
+          "description": "Practice dynamic reading rhythm by following moving text.",
+          "tip": "Move your eyes naturally to match the speed of the text.",
+          "variations": {
+            "scroll": "Accelerating scroll",
+            "highlight": "Rhythmic highlight",
+            "flash": "Word flash"
+          }
+        },
+        "visualSpan": {
+          "title": "Visual Span Expansion",
+          "description": "Training to widen the range of visual information you can recognize at once.",
+          "tip": "Try to see the whole at once. Don't focus on individual elements.",
+          "variations": {
+            "grid": "Grid letters",
+            "words": "Word expansion"
+          }
+        }
+      },
+      "controls": {
+        "start": "Start",
+        "next": "Next exercise",
+        "skip": "Skip",
+        "complete": "Complete",
+        "showTip": "Show tip",
+        "hideTip": "Hide tip",
+        "quit": "Exit warmup"
+      },
+      "progress": {
+        "exerciseOf": "{current} / {total}",
+        "completed": "Completed",
+        "current": "In progress"
+      },
+      "completion": {
+        "title": "Warmup Complete!",
+        "message": "You are now in optimal reading state.",
+        "readyMessage": "Ready to begin focused reading."
+      }
+    },
+    "session": {
+      "hub": {
+        "loading": "Loading information...",
+        "redirecting": "Redirecting to appropriate page...",
+        "notFound": "Session information not found",
+        "loadingFailed": "Failed to load session information"
+      },
+      "status": {
+        "pending": "Pending",
+        "active": "Active",
+        "completed": "Completed",
+        "review": "Under review"
+      }
+    },
+    "review": {
+      "pageTitle": "Session Review",
+      "loading": "Loading review data...",
+      "placeholder": "Review feature coming soon"
+    }
+  },
   "ProfilePage": {
     "metadata": {
       "title": "My Profile",
