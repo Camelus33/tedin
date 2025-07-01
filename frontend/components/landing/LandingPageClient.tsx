@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -16,6 +15,7 @@ import CoreFeaturesFreeSection from './sections/CoreFeaturesFreeSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import FinalCtaSection from './sections/FinalCtaSection';
 import Header from '@/components/common/Header';
+import { useRouter } from '@/navigation';
 
 export default function LandingPageClient() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function LandingPageClient() {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
-      // Redirect logged-in users
+      // Redirect logged-in users to localized dashboard
       router.push('/dashboard');
     }
   }, [router]);

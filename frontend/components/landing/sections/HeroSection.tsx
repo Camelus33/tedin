@@ -1,13 +1,13 @@
 'use client'; // Hero section might have animations
 
 import React from 'react';
-import Link from 'next/link';
 // Use Heroicons instead of Lucide
 import { SparklesIcon as SparklesIconOutline } from '@heroicons/react/24/outline'; 
 // import { ArrowRightIcon } from '@heroicons/react/24/outline'; // For secondary CTA if uncommented
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/navigation';
 
 // Example of a high-quality image from public/images
 // Replace with an actual relevant image path later

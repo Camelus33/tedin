@@ -1,7 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import { ArrowRight, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/navigation';
 
 export default function FinalCtaSection() {
   const t = useTranslations('FinalCtaSection');
@@ -14,14 +14,14 @@ export default function FinalCtaSection() {
           {t('title')}
         </h2>
         <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-          {t('subtitle')}
+          {t('description')}
         </p>
 
         <Link
           href="/auth/register"
           className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500 group shadow-lg hover:shadow-indigo-500/50"
         >
-          {t('ctaButton')}
+          {t('buttonText')}
           <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
