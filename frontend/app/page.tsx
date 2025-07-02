@@ -9,12 +9,12 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'; // 
 export const metadata: Metadata = {
   // Add metadataBase
   metadataBase: new URL(baseUrl),
-  title: 'Habitus33 | Atomic Memo, Prompt Free!',
+  title: 'Habitus33 | Atomic Habits, Prompt Free!',
   description: 'Atomic Memo. Achieve anything!',
   // Add other relevant metadata: keywords, open graph tags, etc.
   keywords: ['Habitus33','AI-Link', '프롬프트 프리', 'AI Tool', '생산성 향상도구', 'AI 과제검사', '지식그래프', 'AI 생성감별', '온톨로지', '공부법', '독서습관앱', '학습능률', '수험생', '연구자', '대학원생', '직장인', '엔지니어'],
   openGraph: {
-    title: 'Habitus33 | Atomic Memo, Prompt Free!',
+    title: 'Habitus33 | Atomic Habits, Prompt Free!',
     description: 'Atomic Memo. Achieve anything!',
     // images: ['/og-image.png'], // Add OG image path later
     url: '/', // Relative to metadataBase
