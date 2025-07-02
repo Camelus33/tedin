@@ -224,11 +224,11 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             <span>당신의 AI-Link, 이렇게 사용해보세요</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-4 text-left">
-            <p className="text-center pb-2">AI-Link 전체를 복사해서 즐겨찾는 AI에 붙여넣고, 이렇게 요청해보세요:</p>
+            <p className="text-center pb-2">AI-Link 복사, 붙여넣고, 이렇게 요청해보세요:</p>
             <ol className="list-decimal list-inside bg-gray-900/50 p-3 rounded-md space-y-1">
-              <li>Perplexity, Gemini에서 이 내용을 참고하여 '딥 리서치' 해줘</li>
-              <li>Midjourney, Sora에서 이 컨셉을 참고하여 생성해줘</li>
-              <li>NotebookLM에서 나의 지식 여정을 참고하여 답변해줘</li>
+              <li>Perplexity, Gemini에서 이 링크를 참고하여 '딥 리서치' 해줘</li>
+              <li>Midjourney, Sora에서 이 링크에 담긴 컨셉으로 생성해줘</li>
+              <li>NotebookLM에서 이 링크에 담긴 내용을 참고하여 답변해줘</li>
             </ol>
           </DialogDescription>
         </DialogHeader>
@@ -261,9 +261,9 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             ) : (
               <div className="text-center space-y-4">
                 <p className="text-gray-300 px-2">
-                  NotebookLM, Gemini, Perplexity, Midjourney, Sora 등에 이 링크를 입력하여, 
+                  NotebookLM, Gemini, Perplexity, Midjourney, Sora, 
                   <span className="block font-semibold text-cyan-400 mt-1">
-                    딥 리서치, 글쓰기, 이미지/영상 생성 성능UP!
+                    딥 리서치, 글쓰기, 이미지/영상, 음악생성 답변품질 UP!
                   </span>
                 </p>
                 <Button

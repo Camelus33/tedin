@@ -1,0 +1,77 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Implement Korean Translation for Landing Page",
+        "description": "Create and implement translated content for the landing page in Korean, ensuring accuracy and cultural relevance.",
+        "details": "1. Review the existing English landing page content.\n2. Translate all text elements into Korean, paying close attention to nuances and cultural context.\n3. Adapt images and other visual elements as needed to resonate with the Korean audience.\n4. Implement the translated content within the landing page's HTML structure, replacing the English text.\n5. Ensure proper encoding and font support for Korean characters.\n6. Optimize the translated landing page for Korean search engines (SEO).\n7. Conduct a thorough review of the translated content with a native Korean speaker to ensure accuracy and fluency.\n8. Update the landing page metadata with Korean keywords and descriptions.",
+        "testStrategy": "1. Verify that all English text on the landing page has been accurately translated into Korean.\n2. Confirm that the translated content is grammatically correct and reads naturally in Korean.\n3. Check that all images and visual elements are appropriate for the Korean audience.\n4. Ensure that the landing page displays correctly in Korean web browsers and on various devices.\n5. Validate that the landing page is optimized for Korean search engines by checking metadata and keyword usage.\n6. Conduct user testing with native Korean speakers to gather feedback on the translated content and overall user experience.\n7. Verify that all links and calls to action function correctly in the translated version.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Translate HeroSection Content to Korean & Update JSON",
+            "description": "Translate the HeroSection content of the landing page into Korean, focusing on cultural relevance and SEO. Update the corresponding JSON file with the Korean translations.",
+            "dependencies": [],
+            "details": "Translate all text elements within the HeroSection, including headings, subheadings, and call-to-action buttons. Ensure the translation accurately conveys the original meaning while resonating with a Korean audience. Update the JSON file with the new Korean translation keys and values.",
+            "status": "in-progress",
+            "testStrategy": "Verify the Korean translation in the HeroSection matches the JSON file and displays correctly on the landing page. Confirm cultural appropriateness with a native Korean speaker."
+          },
+          {
+            "id": 2,
+            "title": "Translate ProblemDiagnosisSection Content to Korean & Update JSON",
+            "description": "Translate the ProblemDiagnosisSection content of the landing page into Korean, focusing on clarity and relevance to the target audience. Update the corresponding JSON file with the Korean translations.",
+            "dependencies": [],
+            "details": "Translate all text elements within the ProblemDiagnosisSection, including problem statements and supporting text. Ensure the translation accurately reflects the pain points of the Korean audience. Update the JSON file with the new Korean translation keys and values.",
+            "status": "pending",
+            "testStrategy": "Verify the Korean translation in the ProblemDiagnosisSection matches the JSON file and displays correctly on the landing page. Confirm clarity and relevance with a native Korean speaker."
+          },
+          {
+            "id": 3,
+            "title": "Translate HowItWorksSection Content to Korean & Update JSON",
+            "description": "Translate the HowItWorksSection content of the landing page into Korean, ensuring the process is clearly explained and culturally appropriate. Update the corresponding JSON file with the Korean translations.",
+            "dependencies": [],
+            "details": "Translate all text elements within the HowItWorksSection, including step-by-step instructions and explanations. Ensure the translation is easy to understand and resonates with the Korean audience. Update the JSON file with the new Korean translation keys and values.",
+            "status": "pending",
+            "testStrategy": "Verify the Korean translation in the HowItWorksSection matches the JSON file and displays correctly on the landing page. Confirm clarity and cultural appropriateness with a native Korean speaker."
+          },
+          {
+            "id": 4,
+            "title": "Translate CoreFeaturesFreeSection Content to Korean & Update JSON",
+            "description": "Translate the CoreFeaturesFreeSection content of the landing page into Korean, highlighting the benefits and value proposition for the Korean market. Update the corresponding JSON file with the Korean translations.",
+            "dependencies": [],
+            "details": "Translate all text elements within the CoreFeaturesFreeSection, including feature descriptions and value statements. Ensure the translation emphasizes the benefits most appealing to the Korean audience. Update the JSON file with the new Korean translation keys and values.",
+            "status": "pending",
+            "testStrategy": "Verify the Korean translation in the CoreFeaturesFreeSection matches the JSON file and displays correctly on the landing page. Confirm appeal and relevance with a native Korean speaker."
+          },
+          {
+            "id": 5,
+            "title": "Translate TestimonialsSection Content to Korean & Update JSON",
+            "description": "Translate the TestimonialsSection content of the landing page into Korean, ensuring the testimonials resonate with the Korean audience and maintain their authenticity. Update the corresponding JSON file with the Korean translations.",
+            "dependencies": [],
+            "details": "Translate all text elements within the TestimonialsSection, including quotes and author information. Ensure the translation accurately reflects the original sentiment and is culturally appropriate for the Korean audience. Update the JSON file with the new Korean translation keys and values.",
+            "status": "pending",
+            "testStrategy": "Verify the Korean translation in the TestimonialsSection matches the JSON file and displays correctly on the landing page. Confirm authenticity and relevance with a native Korean speaker."
+          },
+          {
+            "id": 6,
+            "title": "Translate FinalCtaSection Content to Korean & Update JSON",
+            "description": "Translate the FinalCtaSection content of the landing page into Korean, creating a compelling call to action that motivates the Korean audience to take the desired action. Update the corresponding JSON file with the Korean translations.",
+            "dependencies": [],
+            "details": "Translate all text elements within the FinalCtaSection, including the main call to action and supporting text. Ensure the translation is persuasive and encourages the Korean audience to convert. Update the JSON file with the new Korean translation keys and values.",
+            "status": "pending",
+            "testStrategy": "Verify the Korean translation in the FinalCtaSection matches the JSON file and displays correctly on the landing page. Confirm persuasiveness and effectiveness with a native Korean speaker."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-01T13:51:54.897Z",
+      "updated": "2025-07-01T13:53:05.655Z",
+      "description": "Tag created on 7/1/2025"
+    }
+  }
+}
