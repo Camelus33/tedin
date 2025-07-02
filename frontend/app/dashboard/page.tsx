@@ -343,6 +343,46 @@ export default function DashboardPage() {
     window.location.href = '/auth/login';
   };
 
+  // 스마트 Atomic Memo 버튼 핸들러
+  const handleAtomicMemo = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/auth/login');
+        return;
+      }
+
+      // 사용자의 노트북 개수 확인
+      const response = await fetch('/api/books?bookType=NOTEBOOK', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('노트북 정보를 가져오는데 실패했습니다.');
+      }
+
+      const notebooks = await response.json();
+      
+      if (notebooks.length === 0) {
+        // 노트북이 없으면 노트북 생성 페이지로
+        router.push('/books/new?type=notebook');
+      } else if (notebooks.length === 1) {
+        // 노트북이 1개면 바로 메모 작성 페이지로 (해당 노트북 선택됨)
+        router.push(`/memo/new?notebook=${notebooks[0]._id}`);
+      } else {
+        // 노트북이 여러 개면 메모 작성 페이지 (노트북 선택 드롭다운)
+        router.push('/memo/new');
+      }
+    } catch (error) {
+      console.error('Atomic Memo 버튼 처리 중 오류:', error);
+      // 오류 발생 시 기본적으로 노트북 생성 페이지로
+      router.push('/books/new?type=notebook');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-blue-50 flex items-center justify-center">
@@ -509,11 +549,21 @@ export default function DashboardPage() {
               <p className={`${habitus33Theme.textMuted} text-base sm:text-lg mb-6`}>
                 "1줄 메모, 지혜를 얻는 첫 걸음"
               </p>
-              <Link href="/ts" className="inline-block">
-                <button className={`${habitus33Theme.progressFg} text-white font-bold text-lg sm:text-xl px-8 sm:px-12 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
-                  Atomic Memo
+              
+              {/* 두 개의 버튼 */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link href="/books" className="inline-block">
+                  <button className={`bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold text-lg sm:text-xl px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}>
+                    📖 Atomic Reading
+                  </button>
+                </Link>
+                <button 
+                  onClick={handleAtomicMemo}
+                  className={`${habitus33Theme.progressFg} text-white font-bold text-lg sm:text-xl px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl`}
+                >
+                  ✍️ Atomic Memo
                 </button>
-              </Link>
+              </div>
             </div>
           </div>
         </div>

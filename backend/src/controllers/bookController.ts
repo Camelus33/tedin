@@ -57,7 +57,15 @@ export const getUserBooks = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    const books = await Book.find({ userId })
+    // Optional bookType filter from query params
+    const { bookType } = req.query;
+    const filter: any = { userId };
+    
+    if (bookType && ['BOOK', 'NOTEBOOK'].includes(bookType as string)) {
+      filter.bookType = bookType;
+    }
+
+    const books = await Book.find(filter)
       .sort({ createdAt: -1 })
       .select('-__v');
 
@@ -101,15 +109,18 @@ export const addBook = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    const { title, author, totalPages, currentPage, isbn, category, readingPurpose, coverImage, purchaseLink } = req.body;
+    const { title, author, totalPages, currentPage, isbn, category, readingPurpose, coverImage, purchaseLink, bookType } = req.body;
     const coverImageFile = req.file as Express.Multer.File;
+
+    // Validate bookType
+    const validBookTypes = ['BOOK', 'NOTEBOOK'];
+    const finalBookType = bookType && validBookTypes.includes(bookType) ? bookType : 'BOOK';
 
     const newBookData: any = {
       userId,
       title,
       author,
-      totalPages: parseInt(totalPages, 10),
-      currentPage: currentPage ? parseInt(currentPage, 10) : 0,
+      bookType: finalBookType,
       isbn,
       category,
       status: 'not_started',
@@ -117,6 +128,16 @@ export const addBook = async (req: Request, res: Response) => {
       readingPurpose,
       purchaseLink: purchaseLink || '',
     };
+
+    // For BOOK type, totalPages is required and currentPage is relevant
+    if (finalBookType === 'BOOK') {
+      newBookData.totalPages = parseInt(totalPages, 10);
+      newBookData.currentPage = currentPage ? parseInt(currentPage, 10) : 0;
+    } else {
+      // For NOTEBOOK type, set default values that won't interfere with logic
+      newBookData.totalPages = 1;
+      newBookData.currentPage = 0;
+    }
 
     if (coverImageFile && coverImageFile.filename) {
       const backendUrl = process.env.BACKEND_URL || 'https://habitus33-api.onrender.com';

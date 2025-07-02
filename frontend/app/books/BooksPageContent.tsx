@@ -54,6 +54,7 @@ interface Book {
   _id: string;
   title: string;
   author: string;
+  bookType?: 'BOOK' | 'NOTEBOOK';
   genre?: string;
   category?: string;
   totalPages: number;
@@ -301,7 +302,7 @@ export default function BooksPageContent() {
   }, [showMenu, showSortOptions]);
 
   const handleViewBookDetails = (bookId: string) => router.push(`/books/${bookId}`);
-  const handleAddBook = () => router.push("/books/new");
+  const handleAddBook = () => router.push("/books/new/select");
 
   const handleDeleteSummaryNoteFromList = async (summaryNoteId: string) => {
     if (!window.confirm("이 단권화 노트를 정리하시겠어요? 소중한 1줄 메모들은 그대로 남아있으니 안심하세요.")) return;
@@ -452,17 +453,35 @@ export default function BooksPageContent() {
                         )}
                       </div>
                       <div className="p-4">
-                        <h2 className={`font-bold text-base md:text-lg mb-1 truncate ${cyberTheme.textLight}`} title={book.title}>{book.title}</h2>
-                        <p className={`text-xs md:text-sm ${cyberTheme.textMuted} mb-3 truncate`} title={book.author}>{book.author}</p>
-                        <div className="mb-2">
-                          <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-1.5`}>
-                            <div className={`h-1.5 rounded-full ${cyberTheme.progressFg}`} style={{ width: `${progress}%` }}></div>
-                          </div>
-                          <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>성장: {progress}% ({book.currentPage}/{book.totalPages}p)</p>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h2 className={`font-bold text-base md:text-lg truncate ${cyberTheme.textLight}`} title={book.title}>{book.title}</h2>
+                          {book.bookType === 'NOTEBOOK' && (
+                            <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-0.5 rounded-full border border-purple-500/30 flex-shrink-0">
+                              노트북
+                            </span>
+                          )}
                         </div>
+                        <p className={`text-xs md:text-sm ${cyberTheme.textMuted} mb-3 truncate`} title={book.author}>{book.author}</p>
+                        
+                        {/* 책인 경우만 진행률 표시 */}
+                        {book.bookType !== 'NOTEBOOK' && (
+                          <div className="mb-2">
+                            <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-1.5`}>
+                              <div className={`h-1.5 rounded-full ${cyberTheme.progressFg}`} style={{ width: `${progress}%` }}></div>
+                            </div>
+                            <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>성장: {progress}% ({book.currentPage}/{book.totalPages}p)</p>
+                          </div>
+                        )}
+                        
                         <div className={`flex items-center text-xs ${cyberTheme.textMuted}`}>
                           <FiClock className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                          <span className="truncate">최근: {formatLastRead(book.lastReadAt)}</span>
+                          <span className="truncate">
+                            {book.bookType === 'NOTEBOOK' ? '생성: ' : '최근: '}
+                            {book.bookType === 'NOTEBOOK' 
+                              ? new Date(book.createdAt).toLocaleDateString('ko-KR')
+                              : formatLastRead(book.lastReadAt)
+                            }
+                          </span>
                         </div>
                       </div>
                     </div>

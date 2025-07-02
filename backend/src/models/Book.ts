@@ -4,6 +4,7 @@ export interface IBook extends Document {
   userId: mongoose.Types.ObjectId;
   title: string;
   author: string;
+  bookType: 'BOOK' | 'NOTEBOOK';
   totalPages: number;
   currentPage: number;
   isbn: string;
@@ -36,9 +37,16 @@ const BookSchema: Schema = new Schema(
       required: true,
       trim: true,
     },
+    bookType: {
+      type: String,
+      enum: ['BOOK', 'NOTEBOOK'],
+      default: 'BOOK',
+    },
     totalPages: {
       type: Number,
-      required: true,
+      required: function() {
+        return this.bookType === 'BOOK';
+      },
       min: 1,
     },
     currentPage: {
@@ -93,6 +101,7 @@ const BookSchema: Schema = new Schema(
 
 // Adding index for faster queries
 BookSchema.index({ userId: 1, status: 1 });
+BookSchema.index({ userId: 1, bookType: 1 }); // Index for filtering by book type
 BookSchema.index({ title: 'text', author: 'text' }); // Text index for search
 
 export default mongoose.model<IBook>('Book', BookSchema); 

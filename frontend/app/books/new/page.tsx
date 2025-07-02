@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, ChangeEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { FiArrowLeft, FiUpload, FiX } from "react-icons/fi";
@@ -57,7 +57,11 @@ const readingPurposes = [
 
 export default function NewBookPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // URL 파라미터에서 타입 확인
+  const [bookType, setBookType] = useState<'book' | 'notebook'>('book');
   
   // 폼 상태
   const [formData, setFormData] = useState({
@@ -72,6 +76,24 @@ export default function NewBookPage() {
     coverImage: "",
     purchaseLink: ""
   });
+  
+  // URL 파라미터 확인
+  useEffect(() => {
+    const typeParam = searchParams.get('type');
+    if (typeParam === 'notebook') {
+      setBookType('notebook');
+      // 노트북의 경우 기본값 설정
+      setFormData(prev => ({
+        ...prev,
+        author: "나", // 노트북은 작성자가 본인
+        totalPages: "1", // 기본값
+        genre: "notebook",
+        category: "노트북"
+      }));
+    } else {
+      setBookType('book');
+    }
+  }, [searchParams]);
   
   // 이미지 프리뷰
   const [coverImage, setCoverImage] = useState<string | null>(null);
@@ -141,8 +163,13 @@ export default function NewBookPage() {
     console.log("[DEBUG] purchaseLink to be submitted:", `'${formData.purchaseLink}'`);
 
     // 필수 필드 검증
-    if (!formData.title || !formData.author || !formData.totalPages) {
-      setError("제목, 저자, 페이지 수를 입력해주세요.");
+    if (!formData.title || !formData.author) {
+      setError("제목과 저자를 입력해주세요.");
+      return;
+    }
+    
+    if (bookType === 'book' && !formData.totalPages) {
+      setError("책의 경우 총 페이지 수를 입력해주세요.");
       return;
     }
     
@@ -160,21 +187,34 @@ export default function NewBookPage() {
       const apiFormData = new FormData();
       apiFormData.append('title', formData.title.trim());
       apiFormData.append('author', formData.author.trim());
-      apiFormData.append('totalPages', formData.totalPages); // 백엔드에서 parseInt 필요
-      apiFormData.append('currentPage', formData.currentPage || '0');
+      apiFormData.append('bookType', bookType.toUpperCase()); // BOOK 또는 NOTEBOOK
+      
+      if (bookType === 'book') {
+        apiFormData.append('totalPages', formData.totalPages); // 백엔드에서 parseInt 필요
+        apiFormData.append('currentPage', formData.currentPage || '0');
+      } else {
+        // 노트북의 경우 기본값
+        apiFormData.append('totalPages', '1');
+        apiFormData.append('currentPage', '0');
+      }
+      
       apiFormData.append('category', formData.genre || ''); // genre 필드를 category로 매핑. 빈 문자열로 전송
       
       if (formData.readingPurpose) {
         apiFormData.append('readingPurpose', formData.readingPurpose);
       }
 
-      // 이미지 파일이 있으면 FormData에 추가
-      if (coverImageFile) {
+      // 이미지 파일이 있으면 FormData에 추가 - 책 모드에서만
+      if (bookType === 'book' && coverImageFile) {
         apiFormData.append('coverImage', coverImageFile); // 'coverImage'는 백엔드에서 받을 필드명
       }
 
       apiFormData.append('isbn', formData.isbn);
-      apiFormData.append('purchaseLink', formData.purchaseLink);
+      
+      // 구매링크는 책 모드에서만 추가
+      if (bookType === 'book') {
+        apiFormData.append('purchaseLink', formData.purchaseLink);
+      }
 
       console.log("전송할 FormData:", apiFormData); // FormData 내용을 직접 로깅하기는 어려움
       console.log("전송 토큰:", token.substring(0, 10) + "...");
@@ -255,7 +295,14 @@ export default function NewBookPage() {
         
         {/* 메인 카드 */}
         <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-cyan-500/10 border border-cyan-500/40 p-4">
-          <h1 className="text-xl font-bold text-cyan-300 mb-3 font-orbitron tracking-wide">NEW</h1>
+          <h1 className="text-xl font-bold text-cyan-300 mb-3 font-orbitron tracking-wide">
+            {bookType === 'notebook' ? 'NEW NOTEBOOK' : 'NEW BOOK'}
+          </h1>
+          {bookType === 'notebook' && (
+            <p className="text-purple-400 text-sm mb-3">
+              자유로운 메모와 생각을 담을 개인 노트북을 만들어보세요
+            </p>
+          )}
           
           {error && (
             <div className="bg-red-900/30 border-l-4 border-red-500 p-2 rounded-md mb-3">
@@ -299,7 +346,7 @@ export default function NewBookPage() {
                 {/* 저자 */}
                 <div>
                   <label htmlFor="author" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
-                    글쓴이 <span className="text-red-400">*</span>
+                    {bookType === 'notebook' ? '작성자' : '글쓴이'} <span className="text-red-400">*</span>
                   </label>
                   {/* 모바일용 입력 필드 */}
                   <input
@@ -309,8 +356,11 @@ export default function NewBookPage() {
                     value={formData.author}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all block sm:hidden"
-                    placeholder="저자명"
+                    disabled={bookType === 'notebook'}
+                    className={`w-full px-3 py-2 border border-cyan-500/40 rounded-lg ${
+                      bookType === 'notebook' ? 'bg-gray-600/40 cursor-not-allowed' : 'bg-gray-700/60'
+                    } focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all block sm:hidden`}
+                    placeholder={bookType === 'notebook' ? '나' : '저자명'}
                   />
                   {/* PC용 입력 필드 */}
                   <input
@@ -320,8 +370,11 @@ export default function NewBookPage() {
                     value={formData.author}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all hidden sm:block"
-                    placeholder="누구의 지혜와 함께할 예정인가요?"
+                    disabled={bookType === 'notebook'}
+                    className={`w-full px-3 py-2 border border-cyan-500/40 rounded-lg ${
+                      bookType === 'notebook' ? 'bg-gray-600/40 cursor-not-allowed' : 'bg-gray-700/60'
+                    } focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all hidden sm:block`}
+                    placeholder={bookType === 'notebook' ? '나' : '누구의 지혜와 함께할 예정인가요?'}
                   />
                 </div>
                 
@@ -347,34 +400,36 @@ export default function NewBookPage() {
                   </select>
                 </div>
                 
-                {/* 총 페이지 수 */}
-                <div>
-                  <label htmlFor="totalPages" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
-                    총 페이지 수 <span className="text-red-400">*</span>
-                  </label>
-                  {/* 모바일용 입력 필드 */}
-                  <input
-                    type="text"
-                    id="totalPages"
-                    name="totalPages"
-                    value={formData.totalPages}
-                    onChange={handleNumberInput}
-                    required
-                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all block sm:hidden"
-                    placeholder="총 페이지"
-                  />
-                  {/* PC용 입력 필드 */}
-                  <input
-                    type="text"
-                    id="totalPages-desktop"
-                    name="totalPages"
-                    value={formData.totalPages}
-                    onChange={handleNumberInput}
-                    required
-                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all hidden sm:block"
-                    placeholder="총 몇 페이지의 성장 여정인가요?"
-                  />
-                </div>
+                {/* 총 페이지 수 - 책 모드에서만 표시 */}
+                {bookType === 'book' && (
+                  <div>
+                    <label htmlFor="totalPages" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                      총 페이지 수 <span className="text-red-400">*</span>
+                    </label>
+                    {/* 모바일용 입력 필드 */}
+                    <input
+                      type="text"
+                      id="totalPages"
+                      name="totalPages"
+                      value={formData.totalPages}
+                      onChange={handleNumberInput}
+                      required
+                      className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all block sm:hidden"
+                      placeholder="총 페이지"
+                    />
+                    {/* PC용 입력 필드 */}
+                    <input
+                      type="text"
+                      id="totalPages-desktop"
+                      name="totalPages"
+                      value={formData.totalPages}
+                      onChange={handleNumberInput}
+                      required
+                      className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all hidden sm:block"
+                      placeholder="총 몇 페이지의 성장 여정인가요?"
+                    />
+                  </div>
+                )}
                 
                 {/* 읽는 목적 */}
                 <div>
@@ -422,117 +477,127 @@ export default function NewBookPage() {
                   </div>
                 </div>
                 
-                {/* 현재 읽은 페이지 */}
-                <div>
-                  <label htmlFor="currentPage" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
-                    이미 읽은 페이지
-                  </label>
-                  {/* 모바일용 입력 필드 */}
-                  <input
-                    type="text"
-                    id="currentPage"
-                    name="currentPage"
-                    value={formData.currentPage}
-                    onChange={handleNumberInput}
-                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all block sm:hidden"
-                    placeholder="현재 페이지"
-                  />
-                  {/* PC용 입력 필드 */}
-                  <input
-                    type="text"
-                    id="currentPage-desktop"
-                    name="currentPage"
-                    value={formData.currentPage}
-                    onChange={handleNumberInput}
-                    className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all hidden sm:block"
-                    placeholder="어디까지 성장했는지 기록해둘까요?"
-                  />
-                </div>
+                {/* 현재 읽은 페이지 - 책 모드에서만 표시 */}
+                {bookType === 'book' && (
+                  <div>
+                    <label htmlFor="currentPage" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                      이미 읽은 페이지
+                    </label>
+                    {/* 모바일용 입력 필드 */}
+                    <input
+                      type="text"
+                      id="currentPage"
+                      name="currentPage"
+                      value={formData.currentPage}
+                      onChange={handleNumberInput}
+                      className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all block sm:hidden"
+                      placeholder="현재 페이지"
+                    />
+                    {/* PC용 입력 필드 */}
+                    <input
+                      type="text"
+                      id="currentPage-desktop"
+                      name="currentPage"
+                      value={formData.currentPage}
+                      onChange={handleNumberInput}
+                      className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400 text-sm font-mono text-gray-100 placeholder-gray-400 transition-all hidden sm:block"
+                      placeholder="어디까지 성장했는지 기록해둘까요?"
+                    />
+                  </div>
+                )}
               </div>
               
               {/* 오른쪽 컬럼: 이미지 업로드 */}
               <div className="flex flex-col items-center justify-start space-y-2">
-                <div className="w-full text-center">
-                  <label className="block text-xs font-semibold text-cyan-300 mb-2 font-barlow">
-                    표지
-                  </label>
-                  
-                  {coverImage ? (
-                    <div className="relative w-32 h-44 mx-auto border-2 border-cyan-500/40 rounded-md bg-gray-900/60 shadow-cyan-500/10">
-                      <Image
-                        src={coverImage}
-                        alt="Book cover preview"
-                        fill
-                        className="object-cover rounded-md shadow-md"
-                      />
-                      <button
-                        type="button"
-                        onClick={clearCoverImage}
-                        className="absolute -top-2 -right-2 bg-red-700 text-white rounded-full p-1 shadow-md hover:bg-red-500 transition-colors border border-red-400"
+                {/* 표지 업로드 - 책 모드에서만 표시 */}
+                {bookType === 'book' && (
+                  <div className="w-full text-center">
+                    <label className="block text-xs font-semibold text-cyan-300 mb-2 font-barlow">
+                      표지
+                    </label>
+                    
+                    {coverImage ? (
+                      <div className="relative w-32 h-44 mx-auto border-2 border-cyan-500/40 rounded-md bg-gray-900/60 shadow-cyan-500/10">
+                        <Image
+                          src={coverImage}
+                          alt="Book cover preview"
+                          fill
+                          className="object-cover rounded-md shadow-md"
+                        />
+                        <button
+                          type="button"
+                          onClick={clearCoverImage}
+                          className="absolute -top-2 -right-2 bg-red-700 text-white rounded-full p-1 shadow-md hover:bg-red-500 transition-colors border border-red-400"
+                        >
+                          <FiX size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-32 h-44 mx-auto border-2 border-dashed border-cyan-500/40 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-cyan-400 bg-gray-900/60 transition-colors"
                       >
-                        <FiX size={14} />
-                      </button>
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-32 h-44 mx-auto border-2 border-dashed border-cyan-500/40 rounded-md flex flex-col items-center justify-center cursor-pointer hover:border-cyan-400 bg-gray-900/60 transition-colors"
-                    >
-                      <FiUpload size={24} className="text-cyan-400 mb-1" />
-                      <p className="text-xs text-cyan-300">클릭하여 표지 등록</p>
-                      <p className="text-[10px] text-cyan-500 mt-0.5">JPG, PNG, WebP</p>
-                    </div>
-                  )}
-                  
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    accept="image/*"
-                  />
-                  
-                  {isUploading && (
-                    <p className="text-xs text-cyan-400 mt-1">업로드 중...</p>
-                  )}
-                </div>
+                        <FiUpload size={24} className="text-cyan-400 mb-1" />
+                        <p className="text-xs text-cyan-300">클릭하여 표지 등록</p>
+                        <p className="text-[10px] text-cyan-500 mt-0.5">JPG, PNG, WebP</p>
+                      </div>
+                    )}
+                    
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      accept="image/*"
+                    />
+                    
+                    {isUploading && (
+                      <p className="text-xs text-cyan-400 mt-1">업로드 중...</p>
+                    )}
+                  </div>
+                )}
                 
-                <div className="bg-cyan-900/30 rounded-md p-2 w-full text-[11px] text-cyan-300 border border-cyan-500/20">
-                  <p>💡 표지 등록은 선택이에요.</p>
-                </div>
+                {/* 표지 안내 메시지 - 책 모드에서만 표시 */}
+                {bookType === 'book' && (
+                  <div className="bg-cyan-900/30 rounded-md p-2 w-full text-[11px] text-cyan-300 border border-cyan-500/20">
+                    <p>💡 표지 등록은 선택이에요.</p>
+                  </div>
+                )}
 
-                {/* 인터넷 서점 링크 */}
-                <div>
-                  {/* 모바일용 단축 라벨 */}
-                  <label htmlFor="purchaseLink" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow sm:hidden">
-                    구매 링크 (선택)
-                  </label>
-                  {/* PC용 기존 라벨 */}
-                  <label htmlFor="purchaseLink-desktop" className="hidden sm:block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
-                    인터넷 서점 구매 링크 (선택)
-                  </label>
-                  
-                  {/* 모바일용 입력 필드 */}
-                  <input
-                    type="url"
-                    id="purchaseLink"
-                    name="purchaseLink"
-                    value={formData.purchaseLink}
-                    onChange={handleInputChange}
-                    placeholder="구매 링크"
-                    className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400 block sm:hidden"
-                  />
-                  {/* PC용 입력 필드 */}
-                  <input
-                    type="url"
-                    id="purchaseLink-desktop"
-                    name="purchaseLink"
-                    value={formData.purchaseLink}
-                    onChange={handleInputChange}
-                    placeholder="이 책을 다시 찾아볼 수 있는 곳이 있나요?"
-                    className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400 hidden sm:block"
-                  />
-                </div>
+                {/* 인터넷 서점 링크 - 책 모드에서만 표시 */}
+                {bookType === 'book' && (
+                  <div>
+                    {/* 모바일용 단축 라벨 */}
+                    <label htmlFor="purchaseLink" className="block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow sm:hidden">
+                      구매 링크 (선택)
+                    </label>
+                    {/* PC용 기존 라벨 */}
+                    <label htmlFor="purchaseLink-desktop" className="hidden sm:block text-xs font-semibold text-cyan-300 mb-0.5 font-barlow">
+                      인터넷 서점 구매 링크 (선택)
+                    </label>
+                    
+                    {/* 모바일용 입력 필드 */}
+                    <input
+                      type="url"
+                      id="purchaseLink"
+                      name="purchaseLink"
+                      value={formData.purchaseLink}
+                      onChange={handleInputChange}
+                      placeholder="구매 링크"
+                      className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400 block sm:hidden"
+                    />
+                    {/* PC용 입력 필드 */}
+                    <input
+                      type="url"
+                      id="purchaseLink-desktop"
+                      name="purchaseLink"
+                      value={formData.purchaseLink}
+                      onChange={handleInputChange}
+                      placeholder="이 책을 다시 찾아볼 수 있는 곳이 있나요?"
+                      className="w-full px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500 text-xs placeholder-gray-500 caret-cyan-400 hidden sm:block"
+                    />
+                  </div>
+                )}
               </div>
             </div>
             
@@ -550,7 +615,12 @@ export default function NewBookPage() {
                 disabled={isSubmitting}
                 className="px-4 py-2 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-400 hover:from-cyan-400 hover:to-purple-400 text-white font-bold rounded-lg shadow-cyan-500/20 hover:shadow-cyan-400/30 text-xs transition-all disabled:opacity-70 font-orbitron tracking-wide"
               >
-                {isSubmitting ? "등록 중..." : "책 등록하기"}
+                {isSubmitting 
+                  ? "등록 중..." 
+                  : bookType === 'notebook' 
+                    ? "노트북 만들기" 
+                    : "책 등록하기"
+                }
               </button>
             </div>
           </form>

@@ -85,6 +85,7 @@ type Book = {
   _id: string;
   title: string;
   author: string;
+  bookType?: 'BOOK' | 'NOTEBOOK';
   coverImage?: string;
   totalPages: number;
   currentPage: number;
@@ -570,11 +571,15 @@ export default function BookDetailPage() {
               variant="default"
               size="sm"
               onClick={handleStartReading}
-              aria-label="TS 세션 시작"
+              aria-label={bookData.bookType === 'NOTEBOOK' ? '메모 작성' : 'TS 세션 시작'}
               className={`text-white text-xs px-2 py-1 h-7 min-h-0`}
             >
-              <span className="hidden sm:inline text-xs">읽기</span>
-              <span className="sm:hidden text-xs">읽기</span>
+              <span className="hidden sm:inline text-xs">
+                {bookData.bookType === 'NOTEBOOK' ? '메모 작성' : '읽기'}
+              </span>
+              <span className="sm:hidden text-xs">
+                {bookData.bookType === 'NOTEBOOK' ? '메모' : '읽기'}
+              </span>
             </Button>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-start min-w-0">
@@ -597,7 +602,14 @@ export default function BookDetailPage() {
             </div>
             {/* Book Info */}
             <div className="md:col-span-3 space-y-3 min-w-0 overflow-hidden">
-              <h1 className={`text-base sm:text-lg md:text-xl lg:text-2xl font-bold ${cyberTheme.textLight} mb-1 break-words line-clamp-2`} title={bookData.title}>{bookData.title || '제목을 기다리고 있어요'}</h1>
+              <div className="flex items-center gap-3 mb-1">
+                <h1 className={`text-base sm:text-lg md:text-xl lg:text-2xl font-bold ${cyberTheme.textLight} break-words line-clamp-2`} title={bookData.title}>{bookData.title || '제목을 기다리고 있어요'}</h1>
+                {bookData.bookType === 'NOTEBOOK' && (
+                  <span className="bg-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full border border-purple-500/30 flex-shrink-0">
+                    노트북
+                  </span>
+                )}
+              </div>
               <p className={`text-sm sm:text-md ${cyberTheme.textLight} mb-4 truncate`} title={bookData.author}>{bookData.author || '저자를 기다리고 있어요'}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 {[
@@ -612,22 +624,24 @@ export default function BookDetailPage() {
                   </div>
                 ))}
               </div>
-              {/* Progress Bar */}
-              <div className="pt-2" role="group" aria-label={`성장 진행률 ${getProgressPercentage()}%`}>
-                <div className="flex justify-between items-center mb-1 text-sm">
-                  <span className={cyberTheme.textMuted}>진행률</span>
-                  <span className={cyberTheme.textLight}>{getProgressPercentage()}%</span>
+              {/* Progress Bar - 책인 경우만 표시 */}
+              {bookData.bookType !== 'NOTEBOOK' && (
+                <div className="pt-2" role="group" aria-label={`성장 진행률 ${getProgressPercentage()}%`}>
+                  <div className="flex justify-between items-center mb-1 text-sm">
+                    <span className={cyberTheme.textMuted}>진행률</span>
+                    <span className={cyberTheme.textLight}>{getProgressPercentage()}%</span>
+                  </div>
+                  <div className={`w-full ${cyberTheme.progressBarBg} h-2 rounded-full overflow-hidden`}>
+                    <div
+                      className={`${cyberTheme.progressFg} h-2 rounded-full transition-all duration-300`}
+                      style={{ width: `${getProgressPercentage()}%` }}
+                    />
+                  </div>
+                  <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>
+                    {bookData.currentPage || 0} / {bookData.totalPages || '∞'} 페이지
+                  </div>
                 </div>
-                <div className={`w-full ${cyberTheme.progressBarBg} h-2 rounded-full overflow-hidden`}>
-                  <div
-                    className={`${cyberTheme.progressFg} h-2 rounded-full transition-all duration-300`}
-                    style={{ width: `${getProgressPercentage()}%` }}
-                  />
-                </div>
-                <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>
-                  {bookData.currentPage || 0} / {bookData.totalPages || '∞'} 페이지
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
