@@ -373,7 +373,12 @@ export default function BookDetailPage() {
   };
 
   const handleStartReading = () => {
-    router.push(`/ts?lastReadBookId=${bookId}`);
+    // 노트북인 경우 메모 작성 페이지로, 일반 책인 경우 TS 세션으로 라우팅
+    if (bookData.bookType === 'NOTEBOOK') {
+      router.push(`/memo/new?notebook=${bookId}`);
+    } else {
+      router.push(`/ts?lastReadBookId=${bookId}`);
+    }
   };
 
   const handleDeleteBook = async () => {
