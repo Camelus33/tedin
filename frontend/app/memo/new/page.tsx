@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FiArrowLeft, FiPlus, FiBookOpen } from "react-icons/fi";
@@ -15,7 +15,7 @@ interface Notebook {
 
 type MemoType = 'thought' | 'quote' | 'question';
 
-export default function NewMemoPage() {
+function NewMemoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -308,5 +308,18 @@ export default function NewMemoPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Suspense로 감싸진 기본 export 컴포넌트
+export default function NewMemoPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-cyan-400">로딩 중...</div>
+      </div>
+    }>
+      <NewMemoContent />
+    </Suspense>
   );
 } 

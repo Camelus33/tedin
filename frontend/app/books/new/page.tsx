@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, ChangeEvent, useEffect } from "react";
+import { useState, useRef, ChangeEvent, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,7 +55,8 @@ const readingPurposes = [
   }
 ];
 
-export default function NewBookPage() {
+// Suspense로 감싸진 컴포넌트
+function NewBookContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -627,5 +628,18 @@ export default function NewBookPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Suspense로 감싸진 기본 export 컴포넌트
+export default function NewBookPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+        <div className="text-cyan-400">로딩 중...</div>
+      </div>
+    }>
+      <NewBookContent />
+    </Suspense>
   );
 } 
