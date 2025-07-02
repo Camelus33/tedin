@@ -2,76 +2,275 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Implement Korean Translation for Landing Page",
-        "description": "Create and implement translated content for the landing page in Korean, ensuring accuracy and cultural relevance.",
-        "details": "1. Review the existing English landing page content.\n2. Translate all text elements into Korean, paying close attention to nuances and cultural context.\n3. Adapt images and other visual elements as needed to resonate with the Korean audience.\n4. Implement the translated content within the landing page's HTML structure, replacing the English text.\n5. Ensure proper encoding and font support for Korean characters.\n6. Optimize the translated landing page for Korean search engines (SEO).\n7. Conduct a thorough review of the translated content with a native Korean speaker to ensure accuracy and fluency.\n8. Update the landing page metadata with Korean keywords and descriptions.",
-        "testStrategy": "1. Verify that all English text on the landing page has been accurately translated into Korean.\n2. Confirm that the translated content is grammatically correct and reads naturally in Korean.\n3. Check that all images and visual elements are appropriate for the Korean audience.\n4. Ensure that the landing page displays correctly in Korean web browsers and on various devices.\n5. Validate that the landing page is optimized for Korean search engines by checking metadata and keyword usage.\n6. Conduct user testing with native Korean speakers to gather feedback on the translated content and overall user experience.\n7. Verify that all links and calls to action function correctly in the translated version.",
-        "status": "pending",
+        "id": 2,
+        "title": "Implement User Quota Data Model",
+        "description": "Set up the data model for user quotas, including fields for userId, month, booksRegistered, aiLinksUsed, and resetDate. Implement the PlanLimits interface to define the limits for FREE and PRO plans.",
+        "details": "1.  Define the `UserQuota` and `PlanLimits` interfaces in TypeScript, adhering to the provided data model.\n2.  Choose a database to store user quota data (e.g., PostgreSQL with Prisma or MongoDB with Mongoose). Consider scalability for 100k users.\n3.  Implement database schema based on the `UserQuota` interface.\n4.  Create a repository or data access layer to interact with the database.\nExample:\n```typescript\ninterface UserQuota {\n  userId: string;\n  month: string; // \\\"2024-01\\\"\n  booksRegistered: number; // 총 등록 책 수\n  aiLinksUsed: number; // 월 AI-Link 사용량\n  resetDate: Date;\n}\n\ninterface PlanLimits {\n  free: { maxBooks: 10; monthlyAiLinks: 15; };\n  pro: { maxBooks: -1; monthlyAiLinks: -1; };\n}\n```",
+        "testStrategy": "1.  Unit tests to validate data model structure.\n2.  Integration tests to verify database interactions.\n3.  Ensure data types and constraints are correctly enforced in the database.",
+        "priority": "high",
         "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement Usage Check Middleware",
+        "description": "Implement middleware to check user quotas for book registrations and AI-Link generation. This middleware should enforce the limits defined in the PlanLimits interface.",
+        "details": "1.  Create middleware functions for checking book registration and AI-Link usage limits.\n2.  Retrieve user quota from the database using the user ID.\n3.  Compare current usage against plan limits.\n4.  Return an error or proceed to the next middleware based on the quota status.\nExample:\n```typescript\nasync function checkBookRegistrationQuota(userId: string): Promise<boolean> {\n  const userQuota = await getUserQuota(userId);\n  const planLimits = getPlanLimits(userId);\n  return userQuota.booksRegistered < planLimits.maxBooks;\n}\n```",
+        "testStrategy": "1.  Unit tests to verify quota checking logic.\n2.  Integration tests to ensure middleware correctly interacts with the database and plan limits.\n3.  Simulate different user scenarios (FREE vs. PRO) to validate quota enforcement.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Monthly Quota Reset Scheduler",
+        "description": "Implement a scheduler to reset monthly usage quotas for all users on the 1st of each month. Use a reliable scheduling library like `node-cron` or `agenda`.",
+        "details": "1.  Choose a scheduling library (`node-cron` version 3.0 or later is recommended for its simplicity).\n2.  Create a scheduled job that runs daily at midnight.\n3.  In the job, iterate through all users and reset their `booksRegistered` and `aiLinksUsed` counts to 0 for the new month.\n4.  Update the `resetDate` field in the database.\nExample:\n```javascript\nconst cron = require('node-cron');\n\ncron.schedule('0 0 1 * *', async () => {\n  // Reset user quotas for all users\n  await resetAllUserQuotas();\n});\n```",
+        "testStrategy": "1.  Manual testing to verify quota reset on the 1st of the month.\n2.  Automated tests to ensure the scheduler runs correctly and resets quotas accurately.\n3.  Monitor scheduler logs for any errors or failures.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Book Registration Limit",
+        "description": "Implement logic to restrict book registrations for FREE plan users to a maximum of 10 books. Display an upgrade prompt when the limit is reached.",
+        "details": "1.  In the book registration endpoint, use the usage check middleware to verify the user's quota.\n2.  If the user is on the FREE plan and has reached the book limit, return an error.\n3.  Display an upgrade prompt with a clear call to action to upgrade to the PRO plan.\nExample:\n```typescript\nif (!await checkBookRegistrationQuota(userId)) {\n  return res.status(403).json({ message: 'Book registration limit reached. Upgrade to PRO for unlimited books.' });\n}\n```",
+        "testStrategy": "1.  Manual testing to verify book registration limits for FREE plan users.\n2.  Ensure the upgrade prompt is displayed correctly when the limit is reached.\n3.  Test the book registration process for PRO plan users to ensure no limits are enforced.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement AI-Link Generation Limit",
+        "description": "Implement logic to limit AI-Link generation for FREE plan users to 15 times per month. Display an upgrade prompt when the limit is reached.",
+        "details": "1.  In the AI-Link generation endpoint, use the usage check middleware to verify the user's quota.\n2.  If the user is on the FREE plan and has reached the AI-Link limit, return an error.\n3.  Display an upgrade prompt with a clear call to action to upgrade to the PRO plan.\nExample:\n```typescript\nif (!await checkAiLinkQuota(userId)) {\n  return res.status(403).json({ message: 'AI-Link generation limit reached. Upgrade to PRO for unlimited AI-Links.' });\n}\n```",
+        "testStrategy": "1.  Manual testing to verify AI-Link generation limits for FREE plan users.\n2.  Ensure the upgrade prompt is displayed correctly when the limit is reached.\n3.  Test the AI-Link generation process for PRO plan users to ensure no limits are enforced.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Integrate Stripe Payment System",
+        "description": "Modify the upgrade page to present a 2-tier plan structure (FREE and PRO). Integrate with Stripe to handle actual payments and subscriptions.",
+        "details": "1.  Update the upgrade page UI to reflect the 2-tier plan structure.\n2.  Integrate with the Stripe Checkout API to handle payments.\n3.  Implement logic to create subscriptions in Stripe when a user upgrades to the PRO plan.\n4.  Use Stripe webhooks to handle payment success and failure events.\nExample:\n```javascript\nstripe.checkout.sessions.create({\n  // ...\n  success_url: 'https://example.com/success',\n  cancel_url: 'https://example.com/cancel',\n});\n```",
+        "testStrategy": "1.  End-to-end testing of the upgrade flow.\n2.  Verify successful payment and subscription creation in Stripe.\n3.  Test payment failure scenarios and ensure proper error handling.\n4.  Confirm that the user's plan is updated correctly after a successful payment.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Payment Redirection and Plan Updates",
+        "description": "Implement appropriate redirects after successful or failed payments. Update the user's plan in the database based on the payment status.",
+        "details": "1.  Implement redirect logic in the Stripe webhook handler.\n2.  On successful payment, redirect the user to a success page.\n3.  On payment failure, redirect the user to a failure page with an error message.\n4.  Update the user's plan in the database based on the payment status.\nExample:\n```javascript\n// Stripe webhook handler\nif (event.type === 'checkout.session.completed') {\n  // Update user's plan in the database\n}\n```",
+        "testStrategy": "1.  End-to-end testing of the payment flow.\n2.  Verify correct redirects after successful and failed payments.\n3.  Ensure the user's plan is updated correctly in the database based on the payment status.",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Develop Usage Dashboard UI",
+        "description": "Develop a user dashboard to visually display current usage, remaining limits, and progress bars for book registrations and AI-Link generation.",
+        "details": "1.  Create a UI component for the user dashboard.\n2.  Fetch user quota data from the database.\n3.  Display current usage, remaining limits, and progress bars for book registrations and AI-Link generation.\n4.  Use a progress bar library like `react-progressbar` or `progressbar.js` for visual representation.\nExample:\n```jsx\n<ProgressBar completed={userQuota.booksRegistered / planLimits.maxBooks * 100} />\n```",
+        "testStrategy": "1.  Manual testing to verify the accuracy of usage data displayed on the dashboard.\n2.  Ensure progress bars are displayed correctly and update dynamically.\n3.  Test the dashboard on different screen sizes to ensure responsiveness.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement Smart Notification System",
+        "description": "Implement a smart notification system to alert users when they reach 70%, 90%, and 100% of their usage limits. Suggest an upgrade at 90% and provide a restriction notice at 100%.",
+        "details": "1.  Create a notification component.\n2.  Fetch user quota data from the database.\n3.  Display notifications when the user reaches 70%, 90%, and 100% of their usage limits.\n4.  Use a notification library like `react-toastify` or `notistack` for displaying notifications.\nExample:\n```javascript\nif (usage >= 0.7 && usage < 0.9) {\n  toast.warn('You have reached 70% of your limit.');\n}\n```",
+        "testStrategy": "1.  Manual testing to verify notifications are displayed correctly at different usage levels.\n2.  Ensure the upgrade suggestion is displayed at 90% and the restriction notice at 100%.\n3.  Test the notification system on different devices and browsers.",
         "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Improve Usage-Based UX",
+        "description": "Enhance the user experience by providing gradual guidance as users approach their usage limits. Visualize usage history and analyze monthly usage patterns.",
+        "details": "1.  Implement gradual guidance by displaying subtle hints as users approach their limits.\n2.  Visualize usage history using a chart library like `Chart.js` or `Recharts`.\n3.  Analyze monthly usage patterns to provide personalized recommendations.\nExample:\n```jsx\n<LineChart data={usageHistory} />\n```",
+        "testStrategy": "1.  Manual testing to verify gradual guidance is displayed correctly.\n2.  Ensure usage history is visualized accurately.\n3.  Test the usage pattern analysis to ensure personalized recommendations are relevant.",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Payment Management Features",
+        "description": "Implement features for users to check their subscription status, cancel/resume subscriptions, and view their payment history.",
+        "details": "1.  Integrate with the Stripe Customer Portal to allow users to manage their subscriptions.\n2.  Implement a subscription status page to display the user's current plan and subscription status.\n3.  Allow users to cancel or resume their subscriptions through the Stripe Customer Portal.\n4.  Display payment history using data from Stripe.\nExample:\n```javascript\n// Redirect user to Stripe Customer Portal\nstripe.redirectToCheckout({\n  // ...\n  url: 'https://example.com/customer-portal',\n});\n```",
+        "testStrategy": "1.  End-to-end testing of subscription management features.\n2.  Verify users can successfully cancel and resume their subscriptions.\n3.  Ensure payment history is displayed accurately.\n4.  Test the integration with the Stripe Customer Portal.",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Interactive Onboarding Guide",
+        "description": "Implement the interactive onboarding guide using Next.js 14, TypeScript, Tailwind CSS, Framer Motion, and Lottie. This guide should introduce new users to AMFA concepts through a 4-step journey.",
+        "details": "1.  Create a new page or component for the interactive onboarding guide.\n2.  Use Framer Motion for animations and Lottie for the water droplet animation (habitus-mascot.json).\n3.  Implement the 4-step journey: Water Droplet -> Wave -> Whirlpool -> Crystal.\n4.  Use React useState/useRef for state management.\n5.  Ensure the guide is responsive and accessible.\nExample:\n```jsx\n<motion.div animate={{ opacity: 1 }} transition={{ duration: 1 }}>\n  {/* Content */}\n</motion.div>\n```",
+        "testStrategy": "1.  Manual testing to verify the interactive onboarding guide flows correctly.\n2.  Ensure animations are smooth and responsive.\n3.  Test the guide on different devices and browsers.\n4.  Verify the guide is accessible.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Translate HeroSection Content to Korean & Update JSON",
-            "description": "Translate the HeroSection content of the landing page into Korean, focusing on cultural relevance and SEO. Update the corresponding JSON file with the Korean translations.",
+            "title": "Set up Next.js 14 project and install dependencies",
+            "description": "Initialize a new Next.js 14 project with TypeScript and install necessary dependencies: Tailwind CSS, Framer Motion, and Lottie-react.",
             "dependencies": [],
-            "details": "Translate all text elements within the HeroSection, including headings, subheadings, and call-to-action buttons. Ensure the translation accurately conveys the original meaning while resonating with a Korean audience. Update the JSON file with the new Korean translation keys and values.",
-            "status": "in-progress",
-            "testStrategy": "Verify the Korean translation in the HeroSection matches the JSON file and displays correctly on the landing page. Confirm cultural appropriateness with a native Korean speaker."
+            "details": "Use `create-next-app` to set up the project. Install Tailwind CSS using the official documentation. Install Framer Motion and Lottie-react using npm or yarn.",
+            "status": "done",
+            "testStrategy": "Verify that the project compiles successfully and that all dependencies are correctly installed by running `npm run dev` or `yarn dev`."
           },
           {
             "id": 2,
-            "title": "Translate ProblemDiagnosisSection Content to Korean & Update JSON",
-            "description": "Translate the ProblemDiagnosisSection content of the landing page into Korean, focusing on clarity and relevance to the target audience. Update the corresponding JSON file with the Korean translations.",
-            "dependencies": [],
-            "details": "Translate all text elements within the ProblemDiagnosisSection, including problem statements and supporting text. Ensure the translation accurately reflects the pain points of the Korean audience. Update the JSON file with the new Korean translation keys and values.",
-            "status": "pending",
-            "testStrategy": "Verify the Korean translation in the ProblemDiagnosisSection matches the JSON file and displays correctly on the landing page. Confirm clarity and relevance with a native Korean speaker."
+            "title": "Create Onboarding Page/Component Structure",
+            "description": "Create a new page or component within the Next.js project to house the interactive onboarding guide. Define the basic layout and structure.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create a new file, e.g., `app/onboarding/page.tsx` or `components/Onboarding.tsx`. Define the basic HTML structure and CSS classes using Tailwind CSS for the overall layout.\n<info added on 2025-07-02T01:40:42.448Z>\n기존 AMFADeepDive 컴포넌트 구조 분석 완료:\n\n**현재 구조:**\n- WaveAnimation 컴포넌트에 DIVE 버튼이 있음 (onStartJourney 콜백 실행)\n- AMFADeepDive는 3개 섹션으로 구성: 인트로(WaveAnimation), 카드섹션(AMFACards), 디테일섹션\n- 기존 카드 선택 방식은 정적인 4개 카드를 한번에 보여주는 구조\n\n**구현 계획:**\n1. DIVE 버튼 클릭 시 기존 카드 섹션 대신 새로운 인터랙티브 4단계 여정 시작\n2. 파도 메타포 활용: 물방울→파도→소용돌이→결정체 = 아토믹메모→메모진화→단권화노트→AI-Link\n3. 각 단계별 순차적 애니메이션과 최소 텍스트로 직관적 이해 제공\n\n**다음 단계:** 새로운 InteractiveOnboardingGuide 컴포넌트 생성 및 AMFADeepDive 수정\n</info added on 2025-07-02T01:40:42.448Z>",
+            "status": "done",
+            "testStrategy": "Ensure the basic layout is rendered correctly in the browser and that Tailwind CSS styles are applied as expected."
           },
           {
             "id": 3,
-            "title": "Translate HowItWorksSection Content to Korean & Update JSON",
-            "description": "Translate the HowItWorksSection content of the landing page into Korean, ensuring the process is clearly explained and culturally appropriate. Update the corresponding JSON file with the Korean translations.",
-            "dependencies": [],
-            "details": "Translate all text elements within the HowItWorksSection, including step-by-step instructions and explanations. Ensure the translation is easy to understand and resonates with the Korean audience. Update the JSON file with the new Korean translation keys and values.",
-            "status": "pending",
-            "testStrategy": "Verify the Korean translation in the HowItWorksSection matches the JSON file and displays correctly on the landing page. Confirm clarity and cultural appropriateness with a native Korean speaker."
+            "title": "Implement Water Droplet Animation with Lottie",
+            "description": "Integrate the Lottie animation (habitus-mascot.json) for the initial water droplet stage. Configure the animation to play correctly.",
+            "dependencies": [
+              2
+            ],
+            "details": "Import the Lottie-react component and the `habitus-mascot.json` file. Configure the Lottie animation to loop or play once as needed. Style the container for the Lottie animation.\n<info added on 2025-07-02T01:43:58.481Z>\nAMFADeepDive 컴포넌트 수정 완료:\n\n**구현된 기능:**\n1. InteractiveOnboardingGuide 컴포넌트 import 추가\n2. showOnboarding 상태 추가로 온보딩 가이드 표시 제어\n3. handleStartJourney 함수 수정: DIVE 버튼 클릭 시 온보딩 가이드 활성화\n4. handleOnboardingComplete 핸들러 추가: 온보딩 완료 시 기존 카드 섹션으로 복귀\n5. 조건부 렌더링 구현: showOnboarding이 true일 때 온보딩 가이드 표시\n\n**동작 흐름:**\n파도 인트로 → DIVE 버튼 클릭 → 인터랙티브 온보딩 가이드 → 완료 후 기존 카드 섹션 표시\n\n**다음 단계:** 애니메이션 효과 구현 및 테스트\n</info added on 2025-07-02T01:43:58.481Z>",
+            "status": "done",
+            "testStrategy": "Verify that the Lottie animation is displayed correctly and plays as expected in the browser."
           },
           {
             "id": 4,
-            "title": "Translate CoreFeaturesFreeSection Content to Korean & Update JSON",
-            "description": "Translate the CoreFeaturesFreeSection content of the landing page into Korean, highlighting the benefits and value proposition for the Korean market. Update the corresponding JSON file with the Korean translations.",
-            "dependencies": [],
-            "details": "Translate all text elements within the CoreFeaturesFreeSection, including feature descriptions and value statements. Ensure the translation emphasizes the benefits most appealing to the Korean audience. Update the JSON file with the new Korean translation keys and values.",
-            "status": "pending",
-            "testStrategy": "Verify the Korean translation in the CoreFeaturesFreeSection matches the JSON file and displays correctly on the landing page. Confirm appeal and relevance with a native Korean speaker."
+            "title": "Implement Step-by-Step Logic with useState/useRef",
+            "description": "Use React's `useState` hook to manage the current step in the onboarding journey (Water Droplet -> Wave -> Whirlpool -> Crystal). Use `useRef` if necessary for managing DOM elements.",
+            "dependencies": [
+              2
+            ],
+            "details": "Initialize a `useState` variable to track the current step. Create functions to advance to the next step. Use `useRef` if needed to access or manipulate DOM elements related to the animation or content.",
+            "status": "done",
+            "testStrategy": "Test the step-by-step navigation by manually triggering the next step function and verifying that the state updates correctly."
           },
           {
             "id": 5,
-            "title": "Translate TestimonialsSection Content to Korean & Update JSON",
-            "description": "Translate the TestimonialsSection content of the landing page into Korean, ensuring the testimonials resonate with the Korean audience and maintain their authenticity. Update the corresponding JSON file with the Korean translations.",
-            "dependencies": [],
-            "details": "Translate all text elements within the TestimonialsSection, including quotes and author information. Ensure the translation accurately reflects the original sentiment and is culturally appropriate for the Korean audience. Update the JSON file with the new Korean translation keys and values.",
-            "status": "pending",
-            "testStrategy": "Verify the Korean translation in the TestimonialsSection matches the JSON file and displays correctly on the landing page. Confirm authenticity and relevance with a native Korean speaker."
+            "title": "Implement Wave, Whirlpool, and Crystal Stages",
+            "description": "Create the visual representation and animations for the Wave, Whirlpool, and Crystal stages using Framer Motion and Tailwind CSS. Connect these stages to the step-by-step logic.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Use Framer Motion to create animations for the transitions between the water droplet, wave, whirlpool, and crystal stages. Use Tailwind CSS for styling. Conditionally render the content for each stage based on the current step.",
+            "status": "done",
+            "testStrategy": "Verify that the animations for each stage are smooth and visually appealing. Ensure that the correct content is displayed for each step."
           },
           {
             "id": 6,
-            "title": "Translate FinalCtaSection Content to Korean & Update JSON",
-            "description": "Translate the FinalCtaSection content of the landing page into Korean, creating a compelling call to action that motivates the Korean audience to take the desired action. Update the corresponding JSON file with the Korean translations.",
-            "dependencies": [],
-            "details": "Translate all text elements within the FinalCtaSection, including the main call to action and supporting text. Ensure the translation is persuasive and encourages the Korean audience to convert. Update the JSON file with the new Korean translation keys and values.",
-            "status": "pending",
-            "testStrategy": "Verify the Korean translation in the FinalCtaSection matches the JSON file and displays correctly on the landing page. Confirm persuasiveness and effectiveness with a native Korean speaker."
+            "title": "Connect AMFA Concepts to Each Stage",
+            "description": "Integrate the AMFA concepts (Atomic Memory, Memory Evolution, Single-Source Notebook, AI-Link) into each stage of the onboarding guide. Provide clear and concise explanations.",
+            "dependencies": [
+              5
+            ],
+            "details": "Add text or interactive elements to each stage that explain the corresponding AMFA concept. Ensure the explanations are easy to understand and relevant to the visual metaphor.",
+            "status": "done",
+            "testStrategy": "Review the content for each stage to ensure that the AMFA concepts are accurately and clearly explained. Get feedback from users to ensure the explanations are understandable."
+          },
+          {
+            "id": 7,
+            "title": "Ensure Responsiveness and Accessibility",
+            "description": "Make the onboarding guide responsive across different screen sizes using Tailwind CSS's responsive utilities. Ensure the guide is accessible to users with disabilities by using appropriate ARIA attributes and semantic HTML.",
+            "dependencies": [
+              5
+            ],
+            "details": "Use Tailwind CSS's responsive prefixes (e.g., `sm:`, `md:`, `lg:`) to adjust the layout and styling for different screen sizes. Add ARIA attributes to interactive elements to improve accessibility. Use semantic HTML elements where appropriate.",
+            "status": "done",
+            "testStrategy": "Test the onboarding guide on different devices and screen sizes to ensure it is responsive. Use accessibility testing tools to identify and fix any accessibility issues."
+          },
+          {
+            "id": 8,
+            "title": "Integrate with Existing DIVE Button and Test",
+            "description": "Connect the onboarding guide to the existing DIVE button. Thoroughly test the entire onboarding flow to ensure it works as expected.",
+            "dependencies": [
+              6,
+              7
+            ],
+            "details": "Update the DIVE button's functionality to trigger the onboarding guide. Test the entire flow from clicking the DIVE button to completing the onboarding guide. Verify that all animations, content, and navigation work correctly.",
+            "status": "done",
+            "testStrategy": "Perform end-to-end testing of the onboarding flow, including clicking the DIVE button, navigating through each step, and verifying that all content and animations are displayed correctly. Get feedback from users to identify any usability issues."
           }
         ]
+      },
+      {
+        "id": 14,
+        "title": "Implement Before/After Comparison Slider",
+        "description": "Implement the Before/After comparison slider to visually compare the differences between general AI and AI-Link responses. Include a business scenario example.",
+        "details": "1.  Create a component for the Before/After comparison slider.\n2.  Use a slider library like `rc-slider` or implement a custom slider.\n3.  Include a business scenario example to demonstrate the benefits of AI-Link.\n4.  Ensure the slider is interactive and responsive.\nExample:\n```jsx\n<Slider defaultValue={50} />\n```",
+        "testStrategy": "1.  Manual testing to verify the Before/After comparison slider is interactive and responsive.\n2.  Ensure the business scenario example is clear and demonstrates the benefits of AI-Link.\n3.  Test the slider on different devices and browsers.",
+        "priority": "medium",
+        "dependencies": [
+          13
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Final CTA Button",
+        "description": "Implement the final CTA button that redirects users to the /books page to start creating their first atomic memo and AI-Link.",
+        "details": "1.  Create a button component with the text \"첫 아토믹 메모 기록하고, 나만의 AI 만들기 시작하기\".\n2.  Link the button to the /books page.\n3.  Ensure the button is visually appealing and encourages users to click.\nExample:\n```jsx\n<Link href=\"/books\">\n  <button>첫 아토믹 메모 기록하고, 나만의 AI 만들기 시작하기</button>\n</Link>\n```",
+        "testStrategy": "1.  Manual testing to verify the CTA button redirects users to the /books page.\n2.  Ensure the button is visually appealing and encourages users to click.\n3.  Test the button on different devices and browsers.",
+        "priority": "high",
+        "dependencies": [
+          13
+        ],
+        "status": "done",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-07-01T13:51:54.897Z",
-      "updated": "2025-07-01T13:53:05.655Z",
-      "description": "Tag created on 7/1/2025"
+      "updated": "2025-07-02T02:37:23.317Z",
+      "description": "Tasks for master context"
     }
   }
 }

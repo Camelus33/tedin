@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import WaveAnimation from './WaveAnimation';
 import { AMFACards } from './AMFACards';
+import InteractiveOnboardingGuide from './InteractiveOnboardingGuide';
 import { 
   BookOpenIcon, 
   LightBulbIcon, 
@@ -16,6 +17,7 @@ import {
 export default function AMFADeepDive() {
   const router = useRouter();
   const [selectedStep, setSelectedStep] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   
   // 각 섹션에 대한 ref
   const introSectionRef = useRef<HTMLDivElement>(null);
@@ -30,15 +32,21 @@ export default function AMFADeepDive() {
     });
   };
 
-  // AMFA 여정 시작하기 버튼 클릭
+  // AMFA 여정 시작하기 버튼 클릭 (DIVE 버튼)
   const handleStartJourney = () => {
-    scrollToSection(cardsSectionRef);
+    setShowOnboarding(true);
   };
 
   // 카드 선택 핸들러
   const handleStepSelect = (stepId: string) => {
     setSelectedStep(stepId);
     setTimeout(() => scrollToSection(detailSectionRef), 100);
+  };
+
+  // 온보딩 가이드 완료 핸들러
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    scrollToSection(cardsSectionRef);
   };
 
   // 각 단계별 시작하기 버튼 클릭 핸들러
@@ -131,6 +139,15 @@ export default function AMFADeepDive() {
       ]
     }
   };
+
+  // 온보딩 가이드가 활성화된 경우
+  if (showOnboarding) {
+    return (
+      <InteractiveOnboardingGuide 
+        onComplete={handleOnboardingComplete}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200">
