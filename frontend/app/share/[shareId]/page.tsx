@@ -4,6 +4,7 @@ import { AlertTriangle, BookOpen, Calendar, Link as LinkIcon, MessageSquare, Mic
 import AIAccessibleData from '@/components/share/AIAccessibleData';
 import SharePageClient from './SharePageClient';
 import ExpandableText from '@/components/common/ExpandableText';
+import ClientTimeDisplay, { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 // interface SharePageProps {
 //   params: { shareId: string };
@@ -28,17 +29,6 @@ async function getShareData(shareId: string) {
 }
 
 // Helper functions for formatting session details (from TSNoteCard)
-const formatSessionCreatedAt = (date?: Date | string): string => {
-  if (!date) return '정보 없음';
-  return new Date(date).toLocaleString('ko-KR', {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  });
-};
 
 const formatSessionDuration = (seconds?: number): string => {
   if (seconds === undefined || seconds < 0) return '정보 없음';
@@ -84,10 +74,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
   const { htmlData, jsonLdData } = data;
   const { title, description, userMarkdownContent, notes, user, createdAt } = htmlData;
 
-  // Helper to format date nicely
-  const formatDate = (isoString?: string) => isoString ? new Date(isoString).toLocaleDateString('ko-KR', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  }) : '날짜 정보 없음';
+
 
   return (
     <>
@@ -124,7 +111,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
             <h1 className="text-3xl sm:text-4xl font-bold text-indigo-800 break-words">{title ?? '제목 없음'}</h1>
             {description && <p className="mt-4 text-lg text-gray-700">{description}</p>}
              <div className="mt-4 text-sm text-gray-500">
-                <span>{`공유일: ${formatDate(createdAt)}`}</span>
+                <span>공유일: <ClientDateDisplay createdAt={createdAt} /></span>
             </div>
           </header>
 
@@ -199,7 +186,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
                     <section className="bg-gray-50 p-4 rounded-lg">
                       <h3 className="font-semibold text-gray-800 flex items-center"><Paperclip className="h-4 w-4 mr-2 text-gray-500" />메타 정보</h3>
                       <ul className="mt-2 text-sm text-gray-700 space-y-1">
-                        {note.sessionDetails?.createdAt && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>기록 시점:</strong> {formatSessionCreatedAt(note.sessionDetails.createdAt)}</li>}
+                        {note.sessionDetails?.createdAt && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>기록 시점:</strong> <ClientTimeDisplay createdAt={note.sessionDetails.createdAt} clientCreatedAt={note.clientCreatedAt} /></li>}
                         {note.sessionDetails?.durationSeconds !== undefined && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>읽은 시간:</strong> {formatSessionDuration(note.sessionDetails.durationSeconds)}</li>}
                         {note.sessionDetails?.ppm !== undefined && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>읽기 속도:</strong> {formatPPM(note.sessionDetails.ppm)}</li>}
                         {note.book?.title && <li><BookOpen className="inline h-4 w-4 mr-1"/><strong>출처:</strong> {note.book.title} {note.book.author && `(${note.book.author})`}</li>}
