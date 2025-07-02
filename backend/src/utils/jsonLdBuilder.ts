@@ -5,6 +5,7 @@ import {
 } from '../types/common';
 import { TimeUtils } from './timeUtils';
 import { CreativePersonaEngine } from './creativePersonaUtils';
+import { getBeliefNetwork } from '../services/BeliefNetworkService';
 
 // frontend/components/ts/TSNoteCard.tsx 에서 가져온 타입 정의를
 // 백엔드에서 사용할 수 있도록 아래에 직접 정의하거나, 공유 타입 파일에서 가져와야 합니다.
@@ -374,14 +375,327 @@ const buildSuggestedActions = (creativePersona: any, allTags: string[]): any[] =
 };
 
 /**
+ * @function buildEpistemicFramework
+ * @description 사용자의 신념 네트워크를 분석하여 인식론적 프레임워크를 구축합니다.
+ * 사용자가 어떻게 생각하고 논증하는지의 패턴을 분석합니다.
+ */
+const buildEpistemicFramework = async (beliefNetwork: any, notes: PopulatedTSNote[]): Promise<any> => {
+  if (!beliefNetwork || !beliefNetwork.nodes || beliefNetwork.nodes.length === 0) {
+    return {
+      '@type': 'EpistemicFramework',
+      status: 'insufficient_data',
+      description: '아직 충분한 사고 패턴 데이터가 수집되지 않았습니다.',
+      totalNodes: 0,
+      totalEdges: 0,
+      thinkingPatterns: [],
+      argumentationStyle: 'unknown',
+      beliefStrength: 'unknown'
+    };
+  }
+
+  // 1. 사고 패턴 분석
+  const thinkingPatterns = analyzeThinkingPatterns(beliefNetwork);
+  
+  // 2. 논증 스타일 분석
+  const argumentationStyle = analyzeArgumentationStyle(beliefNetwork);
+  
+  // 3. 신념 강도 분석
+  const beliefStrength = analyzeBeliefStrength(beliefNetwork);
+  
+  // 4. 수사적 관계 패턴 분석
+  const rhetoricalPatterns = analyzeRhetoricalPatterns(beliefNetwork);
+
+  return {
+    '@type': 'EpistemicFramework',
+    status: 'analyzed',
+    description: `${beliefNetwork.nodes.length}개의 신념 노드와 ${beliefNetwork.edges.length}개의 관계를 바탕으로 분석된 사고 패턴`,
+    totalNodes: beliefNetwork.nodes.length,
+    totalEdges: beliefNetwork.edges.length,
+    lastUpdated: beliefNetwork.lastUpdated,
+    thinkingPatterns,
+    argumentationStyle,
+    beliefStrength,
+    rhetoricalPatterns,
+    
+    // AI가 활용할 수 있는 구체적 지침
+    aiGuidance: {
+      dominantReasoningStyle: thinkingPatterns.dominantStyle,
+      preferredArgumentStructure: argumentationStyle.preferredStructure,
+      confidenceLevel: beliefStrength.averageConfidence,
+      communicationStyle: rhetoricalPatterns.dominantPattern,
+      cognitiveApproach: determineOverallCognitiveApproach(thinkingPatterns, argumentationStyle, beliefStrength)
+    }
+  };
+};
+
+/**
+ * 사고 패턴을 분석합니다
+ */
+const analyzeThinkingPatterns = (beliefNetwork: any): any => {
+  const nodes = beliefNetwork.nodes || [];
+  const edges = beliefNetwork.edges || [];
+
+  // 노드의 확률 분포 분석
+  const probabilities = nodes.map((node: any) => node.probability || 0.5);
+  const avgProbability = probabilities.reduce((sum: number, p: number) => sum + p, 0) / probabilities.length;
+  
+  // 확신도 기반 분류
+  const highConfidenceNodes = nodes.filter((node: any) => (node.probability || 0.5) > 0.7);
+  const lowConfidenceNodes = nodes.filter((node: any) => (node.probability || 0.5) < 0.3);
+  
+  // 연결성 분석
+  const nodeConnectivity = analyzeNodeConnectivity(nodes, edges);
+  
+  let dominantStyle = 'balanced';
+  if (highConfidenceNodes.length > nodes.length * 0.6) {
+    dominantStyle = 'confident_assertive';
+  } else if (lowConfidenceNodes.length > nodes.length * 0.4) {
+    dominantStyle = 'cautious_exploratory';
+  } else if (nodeConnectivity.averageConnections > 2.5) {
+    dominantStyle = 'interconnected_systematic';
+  }
+
+  return {
+    dominantStyle,
+    averageConfidence: avgProbability,
+    confidenceDistribution: {
+      high: highConfidenceNodes.length,
+      medium: nodes.length - highConfidenceNodes.length - lowConfidenceNodes.length,
+      low: lowConfidenceNodes.length
+    },
+    connectivity: nodeConnectivity,
+    cognitiveFlexibility: calculateCognitiveFlexibility(nodes, edges)
+  };
+};
+
+/**
+ * 논증 스타일을 분석합니다
+ */
+const analyzeArgumentationStyle = (beliefNetwork: any): any => {
+  const edges = beliefNetwork.edges || [];
+  
+  if (edges.length === 0) {
+    return {
+      preferredStructure: 'unknown',
+      relationshipTypes: {},
+      argumentComplexity: 'simple'
+    };
+  }
+
+  // 관계 타입별 분석
+  const relationTypes = edges.reduce((acc: any, edge: any) => {
+    const relationType = edge.relationSource?.relationType || 'unknown';
+    acc[relationType] = (acc[relationType] || 0) + 1;
+    return acc;
+  }, {});
+
+  // 가장 빈번한 관계 타입
+  const dominantRelationType = Object.keys(relationTypes).reduce((a, b) => 
+    relationTypes[a] > relationTypes[b] ? a : b
+  );
+
+  // 논증 구조 복잡도
+  const avgConditionalProbability = edges.reduce((sum: number, edge: any) => 
+    sum + (edge.conditionalProbability || 0.5), 0) / edges.length;
+
+  let preferredStructure = 'linear';
+  if (relationTypes.elaborates > (edges.length * 0.4)) {
+    preferredStructure = 'elaborative';
+  } else if (relationTypes.attacks > (edges.length * 0.3)) {
+    preferredStructure = 'dialectical';
+  } else if (relationTypes.supports > (edges.length * 0.5)) {
+    preferredStructure = 'supportive';
+  }
+
+  return {
+    preferredStructure,
+    dominantRelationType,
+    relationshipTypes: relationTypes,
+    argumentComplexity: avgConditionalProbability > 0.7 ? 'complex' : avgConditionalProbability > 0.4 ? 'moderate' : 'simple',
+    averageRelationStrength: avgConditionalProbability
+  };
+};
+
+/**
+ * 신념 강도를 분석합니다
+ */
+const analyzeBeliefStrength = (beliefNetwork: any): any => {
+  const nodes = beliefNetwork.nodes || [];
+  
+  if (nodes.length === 0) {
+    return {
+      averageConfidence: 0.5,
+      strengthDistribution: 'unknown',
+      convictionLevel: 'moderate'
+    };
+  }
+
+  const probabilities = nodes.map((node: any) => node.probability || 0.5);
+  const averageConfidence = probabilities.reduce((sum, p) => sum + p, 0) / probabilities.length;
+  
+  // 신념 강도 분포
+  const strongBeliefs = probabilities.filter(p => p > 0.8).length;
+  const weakBeliefs = probabilities.filter(p => p < 0.2).length;
+  const moderateBeliefs = probabilities.length - strongBeliefs - weakBeliefs;
+
+  let strengthDistribution = 'balanced';
+  if (strongBeliefs > probabilities.length * 0.4) {
+    strengthDistribution = 'strong_convictions';
+  } else if (weakBeliefs > probabilities.length * 0.4) {
+    strengthDistribution = 'open_minded';
+  }
+
+  let convictionLevel = 'moderate';
+  if (averageConfidence > 0.7) {
+    convictionLevel = 'high';
+  } else if (averageConfidence < 0.4) {
+    convictionLevel = 'low';
+  }
+
+  return {
+    averageConfidence,
+    strengthDistribution,
+    convictionLevel,
+    beliefDistribution: {
+      strong: strongBeliefs,
+      moderate: moderateBeliefs,
+      weak: weakBeliefs
+    }
+  };
+};
+
+/**
+ * 수사적 패턴을 분석합니다
+ */
+const analyzeRhetoricalPatterns = (beliefNetwork: any): any => {
+  const edges = beliefNetwork.edges || [];
+  
+  if (edges.length === 0) {
+    return {
+      dominantPattern: 'unknown',
+      communicationStyle: 'neutral',
+      rhetoricalComplexity: 'simple'
+    };
+  }
+
+  // 수사적 관계 패턴 분석
+  const rhetoricalTypes = edges.reduce((acc: any, edge: any) => {
+    const relationType = edge.relationSource?.relationType || 'unknown';
+    acc[relationType] = (acc[relationType] || 0) + 1;
+    return acc;
+  }, {});
+
+  const totalRelations = edges.length;
+  const dominantPattern = Object.keys(rhetoricalTypes).reduce((a, b) => 
+    rhetoricalTypes[a] > rhetoricalTypes[b] ? a : b
+  );
+
+  // 의사소통 스타일 결정
+  let communicationStyle = 'neutral';
+  if (rhetoricalTypes.supports > totalRelations * 0.6) {
+    communicationStyle = 'collaborative';
+  } else if (rhetoricalTypes.attacks > totalRelations * 0.3) {
+    communicationStyle = 'critical';
+  } else if (rhetoricalTypes.elaborates > totalRelations * 0.4) {
+    communicationStyle = 'explanatory';
+  }
+
+  return {
+    dominantPattern,
+    communicationStyle,
+    rhetoricalComplexity: Object.keys(rhetoricalTypes).length > 3 ? 'complex' : 'simple',
+    patternDistribution: rhetoricalTypes
+  };
+};
+
+/**
+ * 노드 연결성을 분석합니다
+ */
+const analyzeNodeConnectivity = (nodes: any[], edges: any[]): any => {
+  const nodeConnectionCounts = new Map();
+  
+  // 각 노드의 연결 수 계산
+  nodes.forEach(node => {
+    nodeConnectionCounts.set(node.id, 0);
+  });
+  
+  edges.forEach(edge => {
+    const sourceCount = nodeConnectionCounts.get(edge.sourceNodeId) || 0;
+    const targetCount = nodeConnectionCounts.get(edge.targetNodeId) || 0;
+    nodeConnectionCounts.set(edge.sourceNodeId, sourceCount + 1);
+    nodeConnectionCounts.set(edge.targetNodeId, targetCount + 1);
+  });
+
+  const connectionCounts = Array.from(nodeConnectionCounts.values());
+  const averageConnections = connectionCounts.reduce((sum, count) => sum + count, 0) / connectionCounts.length;
+  
+  return {
+    averageConnections,
+    maxConnections: Math.max(...connectionCounts),
+    minConnections: Math.min(...connectionCounts),
+    isolatedNodes: connectionCounts.filter(count => count === 0).length
+  };
+};
+
+/**
+ * 인지적 유연성을 계산합니다
+ */
+const calculateCognitiveFlexibility = (nodes: any[], edges: any[]): number => {
+  if (nodes.length === 0) return 0;
+  
+  // 다양한 확률 수준의 존재
+  const probabilityVariance = calculateVariance(nodes.map(node => node.probability || 0.5));
+  
+  // 다양한 관계 타입의 존재
+  const relationTypes = new Set(edges.map(edge => edge.relationSource?.relationType || 'unknown'));
+  
+  // 0-1 스케일로 정규화
+  const probabilityFlexibility = Math.min(probabilityVariance * 4, 1); // 분산이 0.25일 때 1.0
+  const relationFlexibility = Math.min(relationTypes.size / 5, 1); // 5가지 이상 관계 타입일 때 1.0
+  
+  return (probabilityFlexibility + relationFlexibility) / 2;
+};
+
+/**
+ * 분산을 계산합니다
+ */
+const calculateVariance = (numbers: number[]): number => {
+  const mean = numbers.reduce((sum, num) => sum + num, 0) / numbers.length;
+  const squaredDiffs = numbers.map(num => Math.pow(num - mean, 2));
+  return squaredDiffs.reduce((sum, diff) => sum + diff, 0) / numbers.length;
+};
+
+/**
+ * 전체적인 인지적 접근 방식을 결정합니다
+ */
+const determineOverallCognitiveApproach = (thinkingPatterns: any, argumentationStyle: any, beliefStrength: any): string => {
+  const confidence = beliefStrength.averageConfidence;
+  const flexibility = thinkingPatterns.cognitiveFlexibility;
+  const complexity = argumentationStyle.argumentComplexity;
+  
+  if (confidence > 0.7 && complexity === 'complex') {
+    return 'analytical_confident';
+  } else if (flexibility > 0.6 && complexity === 'complex') {
+    return 'exploratory_nuanced';
+  } else if (confidence > 0.6 && argumentationStyle.preferredStructure === 'supportive') {
+    return 'constructive_systematic';
+  } else if (flexibility > 0.5 && argumentationStyle.preferredStructure === 'dialectical') {
+    return 'critical_reflective';
+  } else {
+    return 'balanced_pragmatic';
+  }
+};
+
+/**
  * @function buildExecutiveSummary
  * @description AI-Link의 최상단에 위치할 요약문을 생성합니다. 외부 AI가 이 문서의 정체성과 사용법을 빠르게 파악하도록 돕습니다.
  * @param summaryNoteData 단권화 노트의 전체 데이터
  * @param knowledgePersonality 추론된 지식 페르소나
  * @param creativePersona 추론된 창의적 페르소나
+ * @param epistemicFramework 인식론적 프레임워크 (PBAM 분석 결과)
  * @returns {string} 구조화된 요약 텍스트
  */
-const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePersonality: any, creativePersona: any): string => {
+const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePersonality: any, creativePersona: any, epistemicFramework: any): string => {
   const { user, allTags = [] } = summaryNoteData;
   const userName = user?.name ?? user?.email ?? '해당 사용자';
   const mainTopics = allTags.slice(0, 5).join(', ');
@@ -393,6 +707,11 @@ const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePerson
   const creativeStyleSummary = creativePersona?.aestheticStyle?.dominantMoods?.length > 0
     ? `• 창의적 페르소나: ${creativePersona.aestheticStyle.dominantMoods.join(', ')} 분위기와 ${creativePersona.aestheticStyle.dominantColors.join(', ')} 색상을 선호.`
     : '• 창의적 페르소나: 아직 분석되지 않음.';
+
+  // PBAM 기반 사고 패턴 요약 추가
+  const thinkingPatternSummary = epistemicFramework?.status === 'analyzed'
+    ? `• 사고 패턴: ${getThinkingPatternDescription(epistemicFramework.aiGuidance)} (신념 노드 ${epistemicFramework.totalNodes}개, 관계 ${epistemicFramework.totalEdges}개 분석)`
+    : '• 사고 패턴: 아직 충분한 데이터가 수집되지 않음.';
 
   return `
 ### AI-Link Executive Summary
@@ -406,14 +725,52 @@ const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePerson
 **2. 소유자의 학습 및 창작 성향:**
 ${personaSummary}
 ${creativeStyleSummary}
+${thinkingPatternSummary}
 
 **3. AI 에이전트 활용 가이드:**
 • **지식 분석:** 'hasPart' 배열의 각 'NoteDigitalDocument'는 사용자의 핵심 생각 단위입니다. 'cognitiveProvenance'과 'mainEntity'를 분석하여 사고의 맥락을 파악하세요.
+• **사고 패턴 이해:** 'epistemicFramework'는 사용자가 어떻게 생각하고 논증하는지의 패턴을 담고 있습니다. 이를 바탕으로 사용자의 인지 스타일에 맞는 상호작용을 설계하세요.
 • **실행 가능한 액션:** 'potentialAction' 배열에는 이 지식을 바탕으로 즉시 실행할 수 있는 제안(예: 이미지 생성, 보고서 작성)들이 포함되어 있습니다. 사용자에게 이 액션들을 제안하세요.
 • **외부 정보 연결:** 'supplementaryMaterial'과 'relatedResource'에 포함된 URL들을 크롤링하여 더 깊은 맥락을 파악하세요. 'analysisInstructions'는 크롤링 가이드라인을 제공합니다.
 • **사용자 이해:** 'knowledgePersonality'와 'creativePersona' 객체는 사용자의 성향을 깊이 이해하고 더 개인화된 상호작용을 설계하는 데 사용됩니다.
 • **존중해야 할 원칙:** 최상위 'aiInterpretationProtocol'은 사용자와 상호작용할 때 반드시 지켜야 할 윤리적 가이드라인과 기술적 지침을 담고 있습니다. 이 프로토콜을 최우선으로 준수하세요.
 `.trim();
+};
+
+/**
+ * 사고 패턴을 자연어로 설명합니다
+ */
+const getThinkingPatternDescription = (aiGuidance: any): string => {
+  const { cognitiveApproach, dominantReasoningStyle, communicationStyle, confidenceLevel } = aiGuidance;
+  
+  const approaches: { [key: string]: string } = {
+    'analytical_confident': '분석적이고 확신에 찬',
+    'exploratory_nuanced': '탐구적이고 섬세한',
+    'constructive_systematic': '건설적이고 체계적인',
+    'critical_reflective': '비판적이고 성찰적인',
+    'balanced_pragmatic': '균형잡히고 실용적인'
+  };
+  
+  const styles: { [key: string]: string } = {
+    'confident_assertive': '확신하는',
+    'cautious_exploratory': '신중하게 탐구하는',
+    'interconnected_systematic': '연결적 사고의',
+    'balanced': '균형잡힌'
+  };
+  
+  const communications: { [key: string]: string } = {
+    'collaborative': '협력적 소통',
+    'critical': '비판적 분석',
+    'explanatory': '설명 중심',
+    'neutral': '중립적 접근'
+  };
+  
+  const approachDesc = approaches[cognitiveApproach] || '독특한';
+  const styleDesc = styles[dominantReasoningStyle] || '개별적인';
+  const commDesc = communications[communicationStyle] || '개인적인';
+  const confidenceDesc = confidenceLevel > 0.7 ? '높은 확신도' : confidenceLevel < 0.4 ? '신중한 접근' : '적절한 신중함';
+  
+  return `${approachDesc} 사고 방식, ${styleDesc} 추론 스타일, ${commDesc}을 선호하며 ${confidenceDesc}를 보임`;
 };
 
 
@@ -427,7 +784,7 @@ ${creativeStyleSummary}
  * @param {SummaryNoteData} summaryNoteData - The complete data of the summary note.
  * @returns {object} A JSON-LD object following schema.org standards.
  */
-export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
+export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<object> => {
   const {
     _id,
     title,
@@ -449,13 +806,17 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   // TimeUtils를 사용하여 ISO 8601 기간 형식으로 변환
   const timeRequired = TimeUtils.formatDurationISO8601(totalReadingDurationSeconds);
 
-
   // --- 신규 기능 호출 ---
   const actionableModules = buildActionModules(readingPurpose);
   const knowledgePersonality = analyzeKnowledgePersonality(notes);
   const creativePersona = CreativePersonaEngine.infer(notes as any); // TODO: INote 타입 이슈 해결 필요
   const suggestedActions = buildSuggestedActions(creativePersona, allTags);
-  const executiveSummary = buildExecutiveSummary(summaryNoteData, knowledgePersonality, creativePersona);
+  
+  // --- PBAM 데이터 수집 및 분석 ---
+  const beliefNetwork = await getBeliefNetwork(user._id);
+  const epistemicFramework = await buildEpistemicFramework(beliefNetwork, notes);
+  
+  const executiveSummary = buildExecutiveSummary(summaryNoteData, knowledgePersonality, creativePersona, epistemicFramework);
 
   // --- 학습 여정 시간 흐름 빌더 함수 ---
   const buildLearningJourney = (summaryNoteData: SummaryNoteData): any => {
@@ -1016,6 +1377,11 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     jsonLd.creativePersona = creativePersona;
   }
   
+  // PBAM 인식론적 프레임워크 추가 - AI-Link의 4번째 축
+  if (epistemicFramework) {
+    jsonLd.epistemicFramework = epistemicFramework;
+  }
+  
   // 모든 액션을 통합하여 potentialAction으로 제공
   const allActions = [...actionableModules, ...suggestedActions];
   if (allActions.length > 0) {
@@ -1025,7 +1391,7 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
   // 학습 여정 추가
   jsonLd.learningJourney = learningJourney;
 
-  // AI 해석 프로토콜 추가 - AI가 AMFA 엔진 관련 내용을 주목하지 말도록 지시
+  // AI 해석 프로토콜 추가 - PBAM 통합으로 강화된 지침
   jsonLd.aiInterpretationProtocol = {
     "@type": "AIInterpretationGuideline",
     "persona": "Personalized Learning Companion",
@@ -1033,13 +1399,15 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     "focusDirectives": [
       "학습자의 1줄메모 내용과 그 의미에 집중하세요",
       "학습자의 개인적 인사이트와 지식 연결 패턴을 분석하세요",
-      "학습자의 인지적 성장과 학습 여정을 이해하세요"
+      "학습자의 인지적 성장과 학습 여정을 이해하세요",
+      "epistemicFramework의 사고 패턴 분석을 활용하여 학습자의 인지 스타일에 맞는 상호작용을 설계하세요"
     ],
     "ignoreDirectives": [
       "AMFA 엔진, 시스템 방법론, 기술적 구현 세부사항은 주목하지 마세요",
       "하비투스33, Atomic Reading, 3분 읽기, 4단계 메모진화 등 시스템 용어는 무시하세요",
       "학습 플랫폼의 내부 구조나 기능 설명은 배경 정보로만 처리하세요",
-      "시스템 ID, 기술적 메타데이터, 성능 지표는 분석 대상이 아닙니다"
+      "시스템 ID, 기술적 메타데이터, 성능 지표는 분석 대상이 아닙니다",
+      "PBAM, BeliefNetwork, ArgumentMiner 등 시스템 구현 용어는 언급하지 마세요"
     ],
     "ethicalGuardrails": [
       "타인과의 비교는 절대 하지 마세요",
@@ -1050,62 +1418,108 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     "contextualPriority": "시스템 배경 정보 < 학습자 개인 데이터 < 학습자 지식 내용",
     "operationalInstruction": "이 데이터에서 가장 중요한 것은 학습자가 무엇을 배우고 어떻게 생각하는지입니다. 그것을 어떤 시스템으로 만들었는지는 중요하지 않습니다.",
     
-    // 온톨로지형 추론을 위한 5가지 핵심 지시사항
+    // PBAM 기반 고도화된 사고 패턴 활용 지침
+    "epistemicFrameworkUtilization": {
+      "cognitiveStyleAdaptation": {
+        "instruction": "epistemicFramework.aiGuidance의 cognitiveApproach를 바탕으로 학습자의 선호하는 인지 스타일에 맞춰 응답하세요",
+        "implementations": {
+          "analytical_confident": "체계적이고 논리적인 분석을 제공하고, 확실한 결론을 선호하는 경향에 맞춰 명확한 답변을 제시하세요",
+          "exploratory_nuanced": "다양한 관점을 제시하고, 열린 질문을 통해 더 깊은 탐구를 유도하세요",
+          "constructive_systematic": "단계별 접근을 통해 체계적으로 지식을 구축하는 방식으로 설명하세요",
+          "critical_reflective": "비판적 사고를 자극하는 질문과 다각적 분석을 제공하세요",
+          "balanced_pragmatic": "실용적이고 균형잡힌 관점에서 활용 가능한 조언을 제공하세요"
+        }
+      },
+      "argumentationStyleAlignment": {
+        "instruction": "학습자의 논증 스타일(epistemicFramework.argumentationStyle.preferredStructure)에 맞춰 정보를 구조화하세요",
+        "implementations": {
+          "elaborative": "상세한 설명과 예시를 통해 점진적으로 이해를 확장시키세요",
+          "dialectical": "대립되는 관점을 제시하고 비교 분석을 통해 더 깊은 이해를 돕세요",
+          "supportive": "기존 지식을 지지하고 강화하는 방향으로 새로운 정보를 연결하세요",
+          "linear": "논리적 순서에 따라 단계별로 정보를 제시하세요"
+        }
+      },
+      "confidenceLevelConsideration": {
+        "instruction": "학습자의 신념 강도(epistemicFramework.beliefStrength.convictionLevel)를 고려하여 적절한 수준의 확신을 가지고 응답하세요",
+        "implementations": {
+          "high": "학습자의 확신에 부응하는 명확하고 단정적인 답변을 제공하되, 새로운 관점도 제시하세요",
+          "moderate": "균형잡힌 관점을 유지하면서 학습자의 판단을 존중하는 방식으로 정보를 제공하세요",
+          "low": "학습자의 신중함을 인정하고, 다양한 가능성을 열어두는 방식으로 안내하세요"
+        }
+      },
+      "communicationStyleMatching": {
+        "instruction": "학습자의 의사소통 스타일(epistemicFramework.rhetoricalPatterns.communicationStyle)에 맞춰 톤과 접근법을 조정하세요",
+        "implementations": {
+          "collaborative": "함께 탐구하는 동반자의 톤으로, 학습자의 의견을 적극적으로 수용하고 발전시키세요",
+          "critical": "분석적이고 객관적인 톤으로, 논리적 근거와 함께 정보를 제시하세요",
+          "explanatory": "교육적이고 친근한 톤으로, 이해하기 쉽게 설명하는 데 중점을 두세요",
+          "neutral": "균형잡히고 중립적인 톤으로, 사실 중심의 정보를 제공하세요"
+        }
+      }
+    },
+    
+    // 온톨로지형 추론을 위한 5가지 핵심 지시사항 (PBAM과 통합)
     "ontologicalReasoningDirectives": {
       "1_knowledgeGraphAnalysis": {
         "title": "지식 그래프 기반 맥락 추론",
-        "instruction": "학습자의 1줄메모들 간의 관계를 온톨로지 관점에서 분석하세요. 단순한 키워드 매칭이 아닌, 개념 간의 상위-하위 관계, 인과관계, 보완관계를 파악하여 학습자의 지식 구조를 이해하세요.",
+        "instruction": "학습자의 1줄메모들 간의 관계를 온톨로지 관점에서 분석하세요. epistemicFramework의 신념 네트워크 패턴을 참고하여 개념 간의 상위-하위 관계, 인과관계, 보완관계를 파악하세요.",
         "implementation": [
           "메모 간 개념적 연결고리를 찾아 지식 네트워크를 구성하세요",
           "학습자의 사고 흐름에서 반복되는 패턴이나 중심 개념을 식별하세요",
-          "외부 링크와 메모의 관계에서 학습자의 관심 영역과 탐구 방향을 파악하세요"
+          "외부 링크와 메모의 관계에서 학습자의 관심 영역과 탐구 방향을 파악하세요",
+          "epistemicFramework의 thinkingPatterns를 참고하여 학습자의 지식 연결 선호도를 이해하세요"
         ]
       },
       "2_contextualPersonalization": {
         "title": "맥락 기반 개인화 추론",
-        "instruction": "학습자의 개인적 맥락(읽기 목적, 관심사, 학습 패턴)을 기반으로 개인화된 추론을 수행하세요. 같은 내용이라도 학습자의 상황에 따라 다른 의미와 가치를 가질 수 있음을 인식하세요.",
+        "instruction": "학습자의 개인적 맥락과 epistemicFramework의 인지 스타일을 기반으로 개인화된 추론을 수행하세요. 같은 내용이라도 학습자의 사고 패턴에 따라 다른 의미와 가치를 가질 수 있음을 인식하세요.",
         "implementation": [
           "학습자의 읽기 목적(시험준비, 실무지식, 인문학적 성찰)에 맞는 관점으로 해석하세요",
           "학습자가 중요하게 여기는 가치나 관심사를 메모에서 추출하여 반영하세요",
-          "학습자의 직업, 전공, 생활 맥락을 고려한 실용적 연결점을 제안하세요"
+          "학습자의 직업, 전공, 생활 맥락을 고려한 실용적 연결점을 제안하세요",
+          "epistemicFramework의 cognitiveApproach에 따라 정보 처리 방식을 조정하세요"
         ]
       },
       "3_temporalEvolutionTracking": {
         "title": "시간적 변화 패턴 인식",
-        "instruction": "학습자의 지식과 사고가 시간에 따라 어떻게 진화하고 있는지 추적하세요. 초기 아이디어가 어떻게 발전하고 심화되는지, 새로운 관점이 어떻게 기존 지식과 통합되는지 파악하세요.",
+        "instruction": "학습자의 지식과 사고가 시간에 따라 어떻게 진화하고 있는지 추적하세요. epistemicFramework의 신념 강도 변화와 함께 사고 발전 과정을 분석하세요.",
         "implementation": [
           "메모 생성 시점을 고려하여 학습자의 사고 발전 과정을 분석하세요",
           "초기 메모와 후기 메모 간의 관점 변화나 이해 심화를 인식하세요",
-          "학습자의 지식 성장 궤적을 바탕으로 다음 학습 방향을 예측하세요"
+          "학습자의 지식 성장 궤적을 바탕으로 다음 학습 방향을 예측하세요",
+          "epistemicFramework의 beliefStrength 패턴을 통해 학습자의 확신도 변화를 파악하세요"
         ]
       },
       "4_insightSynthesis": {
         "title": "지식 연결망 기반 통찰 도출",
-        "instruction": "개별 메모들을 연결하여 학습자가 명시적으로 표현하지 않은 잠재적 통찰을 도출하세요. 서로 다른 영역의 지식을 연결하여 새로운 관점을 제시하세요.",
+        "instruction": "개별 메모들을 연결하여 학습자가 명시적으로 표현하지 않은 잠재적 통찰을 도출하세요. epistemicFramework의 논증 패턴을 활용하여 새로운 관점을 제시하세요.",
         "implementation": [
           "서로 다른 책이나 주제의 메모들 간의 숨겨진 연결점을 찾아 제시하세요",
           "학습자의 메모에서 드러나는 암묵적 관심사나 가치관을 언어화하세요",
-          "분산된 지식 조각들을 통합하여 학습자만의 독특한 관점을 구성하세요"
+          "분산된 지식 조각들을 통합하여 학습자만의 독특한 관점을 구성하세요",
+          "epistemicFramework의 argumentationStyle에 맞는 방식으로 통찰을 구조화하세요"
         ]
       },
       "5_metacognitiveReflection": {
         "title": "메타인지적 성찰 유도",
-        "instruction": "학습자가 자신의 학습 과정과 사고 방식을 더 깊이 이해할 수 있도록 메타인지적 질문과 성찰을 유도하세요. 학습자의 지식 습득 패턴과 선호하는 사고 방식을 인식하게 도와주세요.",
+        "instruction": "학습자가 자신의 학습 과정과 사고 방식을 더 깊이 이해할 수 있도록 메타인지적 질문과 성찰을 유도하세요. epistemicFramework의 사고 패턴 분석을 활용하여 학습자의 인지적 특성을 인식하게 도와주세요.",
         "implementation": [
           "학습자의 메모 작성 패턴에서 선호하는 사고 방식(시각적, 논리적, 실용적 등)을 파악하세요",
           "학습자의 강점과 관심 영역을 바탕으로 효과적인 학습 전략을 제안하세요",
-          "학습자가 자신의 지식과 경험을 새로운 관점에서 재해석할 수 있도록 도와주세요"
+          "학습자가 자신의 지식과 경험을 새로운 관점에서 재해석할 수 있도록 도와주세요",
+          "epistemicFramework의 thinkingPatterns와 rhetoricalPatterns를 바탕으로 학습자의 인지적 선호도를 설명하세요"
         ]
       }
     },
     
-    // 고품질 답변을 위한 실행 가이드라인
+    // 고품질 답변을 위한 실행 가이드라인 (PBAM 강화)
     "qualityAssuranceProtocol": {
-      "depthRequirement": "표면적 분석이 아닌, 학습자의 지식 맥락 깊숙이 들어가서 의미 있는 통찰을 제공하세요",
-      "personalizationLevel": "일반적 답변이 아닌, 오직 이 학습자에게만 적용되는 개인화된 답변을 만드세요",
-      "connectionFocus": "학습자의 기존 지식과 새로운 정보 간의 연결고리를 명확히 제시하세요",
-      "actionableGuidance": "학습자가 실제로 활용할 수 있는 구체적이고 실천 가능한 가이드를 포함하세요",
-      "respectfulTone": "학습자의 지적 여정을 존중하고 격려하는 톤으로 소통하세요"
+      "depthRequirement": "표면적 분석이 아닌, 학습자의 지식 맥락과 epistemicFramework의 사고 패턴 깊숙이 들어가서 의미 있는 통찰을 제공하세요",
+      "personalizationLevel": "일반적 답변이 아닌, 학습자의 고유한 인지 스타일과 사고 패턴에 최적화된 개인화된 답변을 만드세요",
+      "connectionFocus": "학습자의 기존 지식과 새로운 정보 간의 연결고리를 epistemicFramework의 논증 구조에 맞춰 명확히 제시하세요",
+      "actionableGuidance": "학습자의 인지 스타일에 맞는 구체적이고 실천 가능한 가이드를 포함하세요",
+      "respectfulTone": "학습자의 지적 여정과 고유한 사고 방식을 존중하고 격려하는 톤으로 소통하세요",
+      "cognitiveAlignment": "epistemicFramework의 모든 차원(사고 패턴, 논증 스타일, 신념 강도, 의사소통 스타일)을 종합적으로 고려하여 응답하세요"
     }
   };
 

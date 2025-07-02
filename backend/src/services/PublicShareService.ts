@@ -214,7 +214,7 @@ class PublicShareService {
       allTags,
     };
 
-    const jsonLdData = buildJsonLd(dataForBuilder as any);
+    const jsonLdData = await buildJsonLd(dataForBuilder as any);
     const htmlData = dataForBuilder;
     
     return {

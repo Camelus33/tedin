@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Note from '../models/Note';
 import Book from '../models/Book';
 import mongoose from 'mongoose';
+import { updateFromNote, getBeliefNetwork } from '../services/BeliefNetworkService';
 
 // 사용자의 모든 노트 조회
 export const getUserNotes = async (req: Request, res: Response) => {
@@ -242,5 +243,68 @@ export const getNotesByIds = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('배치 노트 조회 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+/**
+ * @function analyzePBAM
+ * @description 특정 노트에 대해 PBAM(확률적 신념 및 논증 모델) 분석을 수행합니다.
+ * ArgumentMiner와 RSTAnalyzer를 사용하여 사용자의 신념 네트워크를 구축합니다.
+ */
+export const analyzePBAM = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const { noteId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    if (!noteId) {
+      return res.status(400).json({ message: '노트 ID가 필요합니다.' });
+    }
+
+    // 노트 존재 여부 확인
+    const note = await Note.findOne({ _id: noteId, userId });
+    if (!note) {
+      return res.status(404).json({ message: '해당 노트를 찾을 수 없습니다.' });
+    }
+
+    // PBAM 분석 수행
+    console.log(`[noteController] Starting PBAM analysis for note ${noteId}`);
+    const analysisResult = await updateFromNote(userId, noteId, note.content);
+
+    if (!analysisResult.success) {
+      return res.status(500).json({ 
+        message: 'PBAM 분석 중 오류가 발생했습니다.',
+        error: 'Analysis failed'
+      });
+    }
+
+    // 업데이트된 신념 네트워크 조회
+    const beliefNetwork = await getBeliefNetwork(userId);
+
+    res.status(200).json({
+      message: 'PBAM 분석이 완료되었습니다.',
+      analysis: {
+        noteId,
+        nodesCreated: analysisResult.nodesCreated,
+        edgesCreated: analysisResult.edgesCreated,
+        argumentUnits: analysisResult.argumentUnits,
+        rhetoricalRelations: analysisResult.rhetoricalRelations
+      },
+      beliefNetwork: {
+        totalNodes: beliefNetwork?.nodes.length || 0,
+        totalEdges: beliefNetwork?.edges.length || 0,
+        lastUpdated: beliefNetwork?.lastUpdated
+      }
+    });
+
+  } catch (error) {
+    console.error('[noteController] PBAM 분석 중 오류 발생:', error);
+    res.status(500).json({ 
+      message: '서버 오류가 발생했습니다.',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }; 

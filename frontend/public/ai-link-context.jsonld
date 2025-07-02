@@ -104,6 +104,35 @@
     "personalizationLevel": "h33o:hasPersonalizationLevel",
     "connectionFocus": "h33o:hasConnectionFocus",
     "actionableGuidance": "h33o:hasActionableGuidance",
-    "respectfulTone": "h33o:hasRespectfulTone"
+    "respectfulTone": "h33o:hasRespectfulTone",
+    
+    "PBAM": "h33o:PBAM",
+    "beliefNetwork": "h33o:hasBeliefNetwork",
+    "ArgumentUnit": "h33o:ArgumentUnit",
+    "argumentUnits": {
+      "@id": "h33o:hasArgumentUnit",
+      "@container": "@set"
+    },
+    "RhetoricalRelation": "h33o:RhetoricalRelation",
+    "rhetoricalRelations": {
+      "@id": "h33o:hasRhetoricalRelation",
+      "@container": "@set"
+    },
+    "BeliefNode": "h33o:BeliefNode",
+    "beliefNodes": {
+      "@id": "h33o:hasBeliefNode",
+      "@container": "@set"
+    },
+    "BeliefEdge": "h33o:BeliefEdge",
+    "beliefEdges": {
+      "@id": "h33o:hasBeliefEdge",
+      "@container": "@set"
+    },
+    "relationType": "h33o:hasRelationType",
+    "probability": "h33o:hasProbability",
+    "conditionalProbability": "h33o:hasConditionalProbability",
+    "confidence": "h33o:hasConfidence",
+    "sourceArgumentUnit": "h33o:hasSourceArgumentUnit",
+    "relationSource": "h33o:hasRelationSource"
   }
 } 

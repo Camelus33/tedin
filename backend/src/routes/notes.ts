@@ -7,7 +7,8 @@ import {
   deleteNote, 
   getNotesByBook, 
   getNotesByTag,
-  getNotesByIds
+  getNotesByIds,
+  analyzePBAM
 } from '../controllers/noteController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
@@ -55,6 +56,13 @@ const updateNoteValidation = [
     .withMessage('태그는 배열 형태여야 합니다'),
 ];
 
+// Validation for PBAM analysis
+const pbamaAnalysisValidation = [
+  body('noteId')
+    .notEmpty()
+    .withMessage('노트 ID가 필요합니다'),
+];
+
 // Get all notes for the current user
 router.get('/', getUserNotes);
 
@@ -88,5 +96,13 @@ router.delete('/:noteId', deleteNote);
 
 // Batch get notes by IDs
 router.post('/batch', getNotesByIds);
+
+// PBAM analysis endpoint
+router.post(
+  '/analyze-pbam',
+  pbamaAnalysisValidation,
+  validateRequest,
+  analyzePBAM
+);
 
 export default router; 
