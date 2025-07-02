@@ -3,6 +3,7 @@
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import ClientTimeDisplay, { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 // page.tsx에 정의된 타입들과 유사하게 정의합니다.
 // 실제 애플리케이션에서는 이 타입들을 공유 위치에서 관리하는 것이 좋습니다.
@@ -62,7 +63,9 @@ const RecentGamesCard: React.FC<RecentGamesCardProps> = ({ recentGamesData, metr
             <li key={game.gameId} className="p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow bg-white">
               <div className="flex justify-between items-center mb-1">
                 <h4 className="font-semibold text-indigo-700 text-sm sm:text-base">{game.gameName}</h4>
-                <span className="text-xs text-gray-500">{new Date(game.playedAt).toLocaleDateString()}</span>
+                <span className="text-xs text-gray-500">
+                  <ClientDateDisplay createdAt={game.playedAt} />
+                </span>
               </div>
               <p className="text-xs sm:text-sm text-gray-600 mb-1.5">점수: {game.score}점 ({game.level})</p>
               <div className="text-xs flex flex-wrap gap-1">

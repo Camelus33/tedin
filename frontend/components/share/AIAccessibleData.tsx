@@ -1,4 +1,5 @@
 import React from 'react';
+import ClientTimeDisplay from './ClientTimeDisplay';
 
 interface LearningJourneyData {
   totalTime: string;
@@ -36,7 +37,7 @@ const AIAccessibleData: React.FC<Props> = ({ learningJourney, title }) => {
       return `
 단계 ${step.position}: ${step.name}
 - 설명: ${step.description}
-- 시작 시간: ${new Date(step.startTime).toLocaleString('ko-KR')}
+- 시작 시간: ${step.startTime} (UTC)
 - 소요 시간: ${duration ? `${duration}분` : '진행중'}
 - 액션 타입: ${step.action?.type || '정보 없음'}
 ${step.action?.result ? `- 결과: ${typeof step.action.result === 'object' ? JSON.stringify(step.action.result, null, 2) : step.action.result}` : ''}
@@ -53,7 +54,7 @@ ${step.action?.result ? `- 결과: ${typeof step.action.result === 'object' ? JS
 제목: ${title}
 총 소요 시간: ${learningJourney.totalTime}
 총 학습 단계: ${learningJourney.totalSteps || learningJourney.step.length}단계
-학습 기간: ${startDate ? new Date(startDate).toLocaleString('ko-KR') : '정보 없음'} ~ ${endDate ? new Date(endDate).toLocaleString('ko-KR') : '정보 없음'}
+학습 기간: ${startDate || '정보 없음'} ~ ${endDate || '정보 없음'} (UTC)
 
 === 단계별 상세 정보 ===
 
@@ -69,6 +70,8 @@ ${steps}
 
 이 데이터는 HABITUS33의 "read short, deep dive" 철학을 구현한 실제 학습 사례입니다.
 AI 에이전트는 이 정보를 바탕으로 학습자의 패턴을 분석하고 개선점을 제안할 수 있습니다.
+
+주의: 시간 정보는 UTC 기준으로 표시되며, 실제 사용자 화면에서는 현지 시간대로 변환되어 표시됩니다.
     `.trim();
   };
 

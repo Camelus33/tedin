@@ -5,6 +5,7 @@ import { FiBell } from 'react-icons/fi';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { apiClient } from '@/lib/apiClient';
+import ClientTimeDisplay from '@/components/share/ClientTimeDisplay';
 
 interface NotificationType {
   _id: string;
@@ -94,7 +95,7 @@ export default function NotificationBell() {
                   {n.message}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {new Date(n.createdAt).toLocaleString()}
+                  <ClientTimeDisplay createdAt={n.createdAt} />
                 </p>
               </div>
             ))}

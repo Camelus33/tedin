@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Calendar, Clock, BookOpen, PenTool, Lightbulb, Share2, TrendingUp } from 'lucide-react';
+import ClientTimeDisplay from './ClientTimeDisplay';
 
 interface LearningStep {
   position: number;
@@ -94,15 +95,14 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
     return '시간 정보 없음';
   };
 
-  // 시간 포맷팅
-  const formatTime = (isoString: string) => {
-    return new Date(isoString).toLocaleString('ko-KR', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  // 시간 포맷팅 - 클라이언트 사이드에서만 렌더링
+  const TimeDisplay = ({ isoString, className = "" }: { isoString: string; className?: string }) => (
+    <ClientTimeDisplay 
+      createdAt={isoString}
+      className={className}
+      fallbackText="시간 정보 없음"
+    />
+  );
 
   // 지속 시간 계산
   const calculateDuration = (start: string, end?: string) => {
@@ -220,7 +220,7 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
                           <div className="flex items-center gap-4 text-xs text-gray-500">
                             <div className="flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
-                              {formatTime(step.startTime)}
+                              <TimeDisplay isoString={step.startTime} />
                             </div>
                             {duration && (
                               <div className="flex items-center gap-1">
