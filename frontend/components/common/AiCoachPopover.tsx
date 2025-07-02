@@ -3,8 +3,9 @@ import { ChatGPTIcon, GeminiIcon, ClaudeIcon } from '../icons/AiModelIcons';
 import Button from './Button';
 import clsx from 'clsx';
 import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
-export type AiModelKey = 'chatgpt' | 'gemini' | 'claude';
+export type AiModelKey = 'chatgpt' | 'gemini' | 'claude' | 'perplexity';
 
 interface AiCoachPopoverProps {
   /** 클립보드에 복사할 메모 원문 */
@@ -97,6 +98,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
       chatgpt: 'https://chat.openai.com',
       gemini: 'https://gemini.google.com',
       claude: 'https://claude.ai',
+      perplexity: 'https://perplexity.ai',
     };
 
     // 새 탭 열기 (사용자 팝업 차단 최소화를 위해 클릭 이벤트 컨텍스트 내에서 실행)
@@ -134,7 +136,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
               title="ChatGPT"
               className="p-2 rounded hover:bg-gray-700/60 transition-colors"
             >
-              <ChatGPTIcon className="w-7 h-7" />
+              <ChatGPTIcon className="w-6 h-6" />
             </button>
             <button
               onClick={() => handleSelect('gemini')}
@@ -142,7 +144,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
               title="Gemini"
               className="p-2 rounded hover:bg-gray-700/60 transition-colors"
             >
-              <GeminiIcon className="w-7 h-7" />
+              <GeminiIcon className="w-6 h-6" />
             </button>
             <button
               onClick={() => handleSelect('claude')}
@@ -150,7 +152,20 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
               title="Claude"
               className="p-2 rounded hover:bg-gray-700/60 transition-colors"
             >
-              <ClaudeIcon className="w-7 h-7" />
+              <ClaudeIcon className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => handleSelect('perplexity')}
+              aria-label="Perplexity"
+              title="Perplexity"
+              className="p-2 rounded hover:bg-gray-700/60 transition-colors"
+            >
+              <Image
+                src="/images/perplexity-color.svg"
+                alt="Perplexity AI"
+                width={24}
+                height={24}
+              />
             </button>
           </div>
           <p className="mt-4 text-xs text-gray-400 text-center px-2">
