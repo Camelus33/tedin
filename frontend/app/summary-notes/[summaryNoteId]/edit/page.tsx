@@ -24,6 +24,7 @@ import {
 import { AiLinkModal } from '@/components/summary-notes/AiLinkModal';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
+
 // 마크다운 에디터 및 리사이저블 패널 추가
 import MDEditor from '@uiw/react-md-editor';
 import "@uiw/react-md-editor/markdown-editor.css";
