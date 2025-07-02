@@ -15,7 +15,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 // Cyber Theme Definition
 const cyberTheme = {
@@ -478,7 +479,7 @@ export default function BooksPageContent() {
                           <span className="truncate">
                             {book.bookType === 'NOTEBOOK' ? '생성: ' : '최근: '}
                             {book.bookType === 'NOTEBOOK' 
-                              ? new Date(book.createdAt).toLocaleDateString('ko-KR')
+                              ? <ClientDateDisplay createdAt={book.createdAt} />
                               : formatLastRead(book.lastReadAt)
                             }
                           </span>
@@ -528,7 +529,7 @@ export default function BooksPageContent() {
                         </h3>
                         <p className={`text-sm ${cyberTheme.textMuted} mb-1 line-clamp-2`}>{note.description || '어떤 내용인지 간단한 설명을 추가해보세요.'}</p>
                         <p className={`text-xs ${cyberTheme.textMuted}`}>연결: {note.orderedNoteIds.length}개</p>
-                        <p className={`text-xs ${cyberTheme.textMuted}`}>수정: {new Date(note.updatedAt).toLocaleDateString('ko-KR')}</p>
+                        <p className={`text-xs ${cyberTheme.textMuted}`}>수정: <ClientDateDisplay createdAt={note.updatedAt} /></p>
                       </div>
                       <div className="flex space-x-2 flex-shrink-0 ml-4">
                         <DropdownMenu>

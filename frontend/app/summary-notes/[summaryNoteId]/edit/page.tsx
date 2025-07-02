@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AiLinkModal } from '@/components/summary-notes/AiLinkModal';
+import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 // 마크다운 에디터 및 리사이저블 패널 추가
 import MDEditor from '@uiw/react-md-editor';
@@ -373,9 +374,9 @@ export default function EditSummaryNotePage() {
   if (!summaryNote) return <div className="text-center mt-10">찾으시는 노트를 찾고 있습니다. 잠시 후 다시 시도해 볼래요?</div>;
 
   const displayDate = summaryNote?.updatedAt && summaryNote.updatedAt !== summaryNote.createdAt
-    ? `Last updated: ${new Date(summaryNote.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`
+    ? <>Last updated: <ClientDateDisplay createdAt={summaryNote.updatedAt} /></>
     : summaryNote?.createdAt
-    ? `Created: ${new Date(summaryNote.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`
+    ? <>Created: <ClientDateDisplay createdAt={summaryNote.createdAt} /></>
     : null;
 
   return (

@@ -17,6 +17,7 @@ import { AiFillYoutube } from 'react-icons/ai';
 import api from '@/lib/api'; // Added import for central api instance
 import { useCartStore } from '@/store/cartStore'; // Uncommented
 import { showSuccess, showError } from '@/lib/toast';
+import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 // API base URL - this should match what's used elsewhere in the app (REMOVING THIS)
 // const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'; // Commented out
@@ -355,13 +356,7 @@ export default function BookDetailPage() {
     }
   }, [bookId]); // bookId가 변경될 때마다 실행 (클라이언트에서만)
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+  // formatDate 함수는 더 이상 필요하지 않음 - ClientDateDisplay로 대체
 
   const getProgressPercentage = () => {
     if (!book) return 0;
@@ -621,7 +616,7 @@ export default function BookDetailPage() {
                   ['분야', localMetadata?.genre || bookData.category || bookData.genre || '분류되지 않음'],
                   ['목적', readingPurposeLabels[String(localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal)] || '아직 설정되지 않았어요'],
                   ['여정', (bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages} 페이지` : '페이지 정보가 없어요'],
-                  ['시작일', bookData.createdAt ? formatDate(bookData.createdAt) : '기록 시작일 정보가 없어요'],
+                  ['시작일', bookData.createdAt ? <ClientDateDisplay createdAt={bookData.createdAt} /> : '기록 시작일 정보가 없어요'],
                 ].map(([label, value]) => (
                   <div key={label} className="flex items-baseline space-x-2">
                     <span className={`w-12 sm:w-20 ${cyberTheme.textMuted} text-xs sm:text-sm flex-shrink-0`}>{label}:</span>
