@@ -34,7 +34,8 @@ export interface TSNote {
   isTemporary?: boolean;
   originSession?: string;
   noteType?: 'quote' | 'thought' | 'question'; // 1줄메모 유형
-  noteCreatedAt?: Date | string; // 메모 생성 시점
+  noteCreatedAt?: Date | string; // 메모 생성 시점 (서버 시간)
+  clientCreatedAt?: Date | string; // 메모 생성 시점 (클라이언트 시간)
   memoEvolutionTimestamp?: Date | string; // 메모 진화 시점
 }
 
@@ -106,6 +107,30 @@ const getMemoEvolutionQuestion = (fieldKey: string, purpose: string = 'humanitie
     mentalImage: 3,
   };
   return questions[keyMap[fieldKey]] || fieldKey;
+};
+
+/**
+ * @function getPreferredNoteCreatedAt
+ * @description 노트의 생성 시간을 가져올 때 클라이언트 시간을 우선적으로 사용합니다.
+ * 이는 UI에서 표시되는 시간과 AI-Link 데이터의 시간이 일치하도록 보장합니다.
+ */
+const getPreferredNoteCreatedAt = (note: PopulatedTSNote): Date | null => {
+  // 1순위: clientCreatedAt (사용자 현지 시간)
+  if (note.clientCreatedAt) {
+    return TimeUtils.ensureDate(note.clientCreatedAt);
+  }
+  
+  // 2순위: noteCreatedAt (서버 시간)
+  if (note.noteCreatedAt) {
+    return TimeUtils.ensureDate(note.noteCreatedAt);
+  }
+  
+  // 3순위: 세션 시간 (fallback)
+  if (note.sessionDetails?.createdAtISO) {
+    return TimeUtils.ensureDate(note.sessionDetails.createdAtISO);
+  }
+  
+  return null;
 };
 
 
@@ -503,8 +528,8 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
       }
 
       // 3. 1줄 메모 작성 시점 (세션과 다를 수 있음)
-      if (note.noteCreatedAt) {
-        const noteTime = TimeUtils.ensureDate(note.noteCreatedAt);
+      const noteTime = getPreferredNoteCreatedAt(note);
+      if (noteTime) {
         learningEvents.push({
           timestamp: noteTime,
           type: 'memo_creation',
@@ -735,7 +760,10 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
     }
 
     // 세션 정보: Atomic Reading의 핵심 데이터
-    if (sessionDetails?.createdAtISO) {
+    const preferredNoteTime = getPreferredNoteCreatedAt(note);
+    if (preferredNoteTime) {
+      notePart.dateCreated = TimeUtils.toISOString(preferredNoteTime);
+    } else if (sessionDetails?.createdAtISO) {
       notePart.dateCreated = new Date(sessionDetails.createdAtISO).toISOString();
       
       // 세션 성과 데이터를 구조화된 형태로 포함
@@ -796,7 +824,8 @@ export const buildJsonLd = (summaryNoteData: SummaryNoteData): object => {
               "@type": "Person",
               "name": user?.name ?? user?.email ?? "학습자",
             },
-            "dateCreated": sessionDetails?.createdAtISO ? new Date(sessionDetails.createdAtISO).toISOString() : undefined,
+            "dateCreated": preferredNoteTime ? TimeUtils.toISOString(preferredNoteTime) : 
+                          (sessionDetails?.createdAtISO ? new Date(sessionDetails.createdAtISO).toISOString() : undefined),
             "learningContext": `${purpose} 단계에서 학습자가 직접 성찰하고 기록한 내용`
           }
         });
