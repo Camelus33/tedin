@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/common/Button';
 import api from '@/lib/api';
+import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 type SessionResult = {
   _id: string;
@@ -271,10 +272,7 @@ export default function TSResultPage() {
               <div className="text-center border border-gray-200 rounded-lg py-3 px-2 bg-gray-50">
                 <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Achieved</p>
                 <p className="text-lg sm:text-xl font-semibold text-gray-800">
-                  {sessionResult?.createdAt && new Date(sessionResult.createdAt).toLocaleDateString('ko-KR', {
-                    month: 'numeric',
-                    day: 'numeric',
-                  })}
+                  <ClientDateDisplay createdAt={sessionResult?.createdAt} fallbackText="--/--" />
                 </p>
                 <p className="text-xs text-gray-500">mm/dd</p>
               </div>
@@ -300,11 +298,7 @@ export default function TSResultPage() {
             {/* Certificate Footer */}
             <div className="flex justify-between items-end pt-4">
               <div className="text-xs text-gray-500">
-                {sessionResult?.createdAt && new Date(sessionResult.createdAt).toLocaleDateString('ko-KR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                <ClientDateDisplay createdAt={sessionResult?.createdAt} />
               </div>
               <div className="text-right">
                 <div className="w-24 h-0 border-b border-gray-400 mb-1"></div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import ClientTimeDisplay from '@/components/share/ClientTimeDisplay';
 
 interface NotificationType {
   _id: string;
@@ -95,7 +96,7 @@ export default function NotificationsPage() {
               <div className="flex justify-between items-center">
                 <div>
                   <p>{n.message}</p>
-                  <p className="text-xs text-gray-500">{new Date(n.createdAt).toLocaleString()}</p>
+                  <p className="text-xs text-gray-500"><ClientTimeDisplay createdAt={n.createdAt} /></p>
                 </div>
                 {!n.isRead && (
                   <button onClick={() => markAsRead(n._id)} className="px-2 py-1 bg-green-500 text-white rounded">

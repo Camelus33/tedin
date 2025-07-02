@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { UserIcon, EnvelopeIcon, PhoneIcon, CreditCardIcon, ArrowUpCircleIcon, ReceiptRefundIcon, TagIcon, QuestionMarkCircleIcon, XCircleIcon, BellIcon, MoonIcon, DocumentArrowDownIcon, ShieldCheckIcon, ArrowRightOnRectangleIcon, LifebuoyIcon } from '@heroicons/react/24/outline';
+import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 type UserProfile = {
   _id: string;
@@ -184,13 +185,7 @@ export default function ProfilePage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+  // formatDate 함수는 더 이상 필요하지 않음 - ClientDateDisplay로 대체
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -340,7 +335,7 @@ export default function ProfilePage() {
                   {profile.trialEndsAt ? '무료 체험 중' : '프리미엄 회원'}
                 </span>
                 <span className="ml-2 text-xs text-gray-500">(
-                  남은 기간: {profile.trialEndsAt ? formatDate(profile.trialEndsAt) : '프리미엄 활성화'}
+                  남은 기간: {profile.trialEndsAt ? <ClientDateDisplay createdAt={profile.trialEndsAt} /> : '프리미엄 활성화'}
                 )</span>
               </div>
             </div>
