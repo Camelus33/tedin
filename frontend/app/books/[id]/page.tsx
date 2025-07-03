@@ -528,10 +528,10 @@ export default function BookDetailPage() {
   const bookData = book as unknown as BookWithId;
   
   return (
-    <div className={`min-h-screen ${cyberTheme.gradient} p-4 md:p-6 ${cyberTheme.textLight}`}>
-      <div className="container mx-auto max-w-4xl">
+    <div className={`min-h-screen ${cyberTheme.gradient} p-0 lg:p-4 xl:p-6 ${cyberTheme.textLight}`}>
+      <div className="container mx-auto max-w-4xl px-2 lg:px-0">
         {/* "내 서재" 버튼 추가 */}
-        <div className="mb-4">
+        <div className="mb-2 sm:mb-4">
           <Link href="/books" passHref>
             <Button 
               variant="outline" 
@@ -545,7 +545,7 @@ export default function BookDetailPage() {
         </div>
         
         {/* App Logo/Name Header */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-3 sm:mb-6">
           <h1 
             className={`text-lg sm:text-2xl font-bold ${cyberTheme.primary} cursor-pointer hover:text-cyan-300 transition-colors inline-block opacity-80`}
             onClick={() => router.push('/dashboard')}
@@ -752,7 +752,7 @@ export default function BookDetailPage() {
                   const isNoteInCart = cartItems.some(item => item.noteId === note._id);
 
                   return (
-                    <div key={note._id} className={`${cyberTheme.cardBg} p-1 sm:p-3 rounded-md border ${cyberTheme.inputBorder}`}>
+                    <div key={note._id} className={`${cyberTheme.cardBg} p-0.5 sm:p-3 rounded-md border ${cyberTheme.inputBorder}`}>
                       <TSNoteCard
                         note={note as TSNote}
                         readingPurpose={bookData.readingPurpose || 'humanities_self_reflection'}
@@ -784,7 +784,7 @@ export default function BookDetailPage() {
         )}
         {activeTab === 'relatedLinks' && (
           selectedRelatedNote ? (
-            <section className="bg-gray-800/60 rounded-lg shadow-lg border-0 p-2 sm:p-3 md:p-4 mt-6">
+            <section className="bg-gray-800/60 rounded-lg shadow-lg border-0 p-2 sm:p-3 md:p-4 mt-2 sm:mt-6">
               {/* Minimized Connect Header */}
               <div className="mb-2 sm:mb-4 text-center">
                 <h2 className="text-lg sm:text-xl font-bold text-green-300 mb-1 flex items-center justify-center gap-2">
@@ -885,7 +885,7 @@ export default function BookDetailPage() {
               </div>
             </section>
           ) : (
-            <section className="bg-white rounded-xl shadow-lg p-3 sm:p-6 mt-6">
+            <section className="bg-white rounded-xl shadow-lg p-3 sm:p-6 mt-2 sm:mt-6">
               <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
                 지식연결
               </h2>
@@ -894,7 +894,7 @@ export default function BookDetailPage() {
           )
         )}
         {activeTab === 'flashcard' && (
-          <section className="mt-0 bg-gray-900/80 p-4 md:p-6 rounded-lg border border-cyan-500/30">
+          <section className="mt-0 bg-gray-900/80 p-2 sm:p-4 md:p-6 rounded-lg border border-cyan-500/30">
             {flashcardFormNote ? (
               <div className="mb-4">
               <FlashcardForm
