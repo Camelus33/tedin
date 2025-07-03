@@ -606,11 +606,16 @@ export default function DashboardPage() {
                   <h2 className={`text-base md:text-lg font-bold ${habitus33Theme.primary}`}>My Library</h2>
                 </div>
                 
-                {/* 컨텐츠 영역 - 스크롤 가능 */}
-                <div className="relative z-10 flex-1 overflow-auto scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500">
-                  <div className="h-full transform scale-95 md:scale-90 origin-top-left">
-                    <BooksPageContent />
-                  </div>
+                {/* 스크롤 가능한 컨텐츠 영역 */}
+                <div 
+                  className="flex-1 overflow-auto p-2 md:p-3"
+                  style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#4b5563 #1f2937',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                >
+                  <BooksPageContent />
                 </div>
               </div>
             </div>
