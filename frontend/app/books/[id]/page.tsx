@@ -530,40 +530,40 @@ export default function BookDetailPage() {
   return (
     <div className={`min-h-screen ${cyberTheme.gradient} p-0 lg:p-4 xl:p-6 ${cyberTheme.textLight}`}>
       <div className="container mx-auto max-w-4xl px-2 lg:px-0">
-        {/* "내 서재" 버튼 추가 */}
-        <div className="mb-2 sm:mb-4">
+        {/* "내 서재" 버튼 추가 - 히어로아이콘으로 대체하여 축소 */}
+        <div className="mb-1 sm:mb-4">
           <Link href="/books" passHref>
             <Button 
               variant="outline" 
               size="sm"
-              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border flex items-center`}
+              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border flex items-center w-8 h-8 sm:w-auto sm:h-auto p-1 sm:p-2`}
             >
-              <AiOutlineArrowLeft className="mr-2 h-4 w-4" />
-              My Lib
+              <AiOutlineArrowLeft className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">My Lib</span>
             </Button>
           </Link>
         </div>
         
-        {/* App Logo/Name Header */}
-        <div className="text-center mb-3 sm:mb-6">
+        {/* App Logo/Name Header - 모바일에서 크기 축소 및 위치 조정 */}
+        <div className="text-center mb-1 sm:mb-6">
           <h1 
-            className={`text-lg sm:text-2xl font-bold ${cyberTheme.primary} cursor-pointer hover:text-cyan-300 transition-colors inline-block opacity-80`}
+            className={`text-sm sm:text-2xl font-bold ${cyberTheme.primary} cursor-pointer hover:text-cyan-300 transition-colors inline-block opacity-80`}
             onClick={() => router.push('/dashboard')}
           >
             Habitus33
           </h1>
         </div>
         
-        {/* Book Header - Mobile Optimized */}
-        <div className={`${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden mb-2 sm:mb-4 relative border ${cyberTheme.borderSecondary}/30 transition-all duration-300 ${isBookDetailExpanded ? 'shadow-2xl' : ''}`}>
-          {/* Primary Action Button - Always visible */}
-          <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
+        {/* Book Header - 모바일에서 패딩과 간격 대폭 축소 */}
+        <div className={`${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden mb-1 sm:mb-4 relative border ${cyberTheme.borderSecondary}/30 transition-all duration-300 ${isBookDetailExpanded ? 'shadow-2xl' : ''}`}>
+          {/* Primary Action Button - 모바일에서 크기와 위치 최적화 */}
+          <div className="absolute top-0.5 right-0.5 sm:top-2 sm:right-2 z-10">
             <Button
               variant="default"
               size="sm"
               onClick={handleStartReading}
               aria-label={bookData.bookType === 'NOTEBOOK' ? '메모 작성' : 'TS 세션 시작'}
-              className={`text-white text-xs px-2 sm:px-3 py-1 h-6 sm:h-7 min-h-0`}
+              className={`text-white text-xs px-1.5 sm:px-3 py-0.5 sm:py-1 h-5 sm:h-7 min-h-0`}
             >
               <span className="text-xs">
                 {bookData.bookType === 'NOTEBOOK' ? '메모' : '읽기'}
@@ -571,11 +571,11 @@ export default function BookDetailPage() {
             </Button>
           </div>
           
-          <div className="p-2 sm:p-3">
-            <div className="flex items-center gap-2 sm:gap-4">
-              {/* Mobile Optimized Book Cover */}
+          <div className="p-1 sm:p-3">
+            <div className="flex items-center gap-1.5 sm:gap-4">
+              {/* Mobile Optimized Book Cover - 크기 축소 */}
               <div className="flex-shrink-0">
-                <div className={`${isBookDetailExpanded ? 'w-16 sm:w-20 h-20 sm:h-28' : 'w-8 sm:w-12 h-10 sm:h-16'} ${cyberTheme.inputBg} rounded overflow-hidden border ${cyberTheme.inputBorder} transition-all duration-300`}>
+                <div className={`${isBookDetailExpanded ? 'w-12 sm:w-20 h-15 sm:h-28' : 'w-6 sm:w-12 h-8 sm:h-16'} ${cyberTheme.inputBg} rounded overflow-hidden border ${cyberTheme.inputBorder} transition-all duration-300`}>
                   {bookData.coverImage ? (
                     <img
                       src={bookData.coverImage}
@@ -584,35 +584,35 @@ export default function BookDetailPage() {
                     />
                   ) : (
                     <div className={`flex items-center justify-center w-full h-full text-gray-500`}>
-                      <FiBook className={`${isBookDetailExpanded ? 'h-6 w-6' : 'h-4 w-4'} transition-all duration-300`} />
+                      <FiBook className={`${isBookDetailExpanded ? 'h-4 w-4' : 'h-3 w-3'} transition-all duration-300`} />
                     </div>
                   )}
                 </div>
               </div>
               
-              {/* Mobile Optimized Book Info */}
-              <div className="flex-1 min-w-0 pr-12 sm:pr-16">
-                <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
-                  <h1 className={`${isBookDetailExpanded ? 'text-base sm:text-lg md:text-xl' : 'text-sm sm:text-base md:text-lg'} font-bold ${cyberTheme.textLight} truncate transition-all duration-300`} title={bookData.title}>
+              {/* Mobile Optimized Book Info - 패딩과 간격 축소 */}
+              <div className="flex-1 min-w-0 pr-8 sm:pr-16">
+                <div className="flex items-center gap-1 sm:gap-2 mb-0">
+                  <h1 className={`${isBookDetailExpanded ? 'text-sm sm:text-lg md:text-xl' : 'text-xs sm:text-base md:text-lg'} font-bold ${cyberTheme.textLight} truncate transition-all duration-300`} title={bookData.title}>
                     {bookData.title || '제목을 기다리고 있어요'}
                   </h1>
                   {bookData.bookType === 'NOTEBOOK' && (
-                    <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-0.5 rounded-full border border-purple-500/30 flex-shrink-0">
+                    <span className="bg-purple-500/20 text-purple-400 text-xs px-1 py-0.5 rounded-full border border-purple-500/30 flex-shrink-0">
                       노트북
                     </span>
                   )}
                 </div>
                 
-                <p className={`text-xs sm:text-sm ${cyberTheme.textMuted} mb-1 sm:mb-2 truncate`} title={bookData.author}>
+                <p className={`text-xs sm:text-sm ${cyberTheme.textMuted} mb-0.5 sm:mb-2 truncate`} title={bookData.author}>
                   {bookData.author || '저자를 기다리고 있어요'}
                 </p>
                 
-                {/* Progress Bar - 책인 경우만 표시 */}
+                {/* Progress Bar - 책인 경우만 표시, 모바일에서 간격 축소 */}
                 {bookData.bookType !== 'NOTEBOOK' && (
-                  <div className="flex items-center gap-3">
-                    <div className={`flex-1 ${cyberTheme.progressBarBg} h-1.5 rounded-full overflow-hidden`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`flex-1 ${cyberTheme.progressBarBg} h-1 rounded-full overflow-hidden`}>
                       <div
-                        className={`${cyberTheme.progressFg} h-1.5 rounded-full transition-all duration-300`}
+                        className={`${cyberTheme.progressFg} h-1 rounded-full transition-all duration-300`}
                         style={{ width: `${getProgressPercentage()}%` }}
                       />
                     </div>
@@ -718,13 +718,13 @@ export default function BookDetailPage() {
         {/* 탭별 컨테이너 */}
         {activeTab === 'memo' && (
           <section className={`mt-0 ${cyberTheme.bgSecondary} p-2 sm:p-3 md:p-4 rounded-lg border ${cyberTheme.borderPrimary}/30`}>
-            {/* Mobile Optimized Memo Hub Header */}
-            <div className="mb-2 sm:mb-4 text-center">
-              <h2 className="text-lg sm:text-xl font-bold text-cyan-400 mb-0.5 sm:mb-1 flex items-center justify-center gap-1 sm:gap-2">
+            {/* Mobile Optimized Memo Hub Header - 모바일에서 높이 최소화 */}
+            <div className="mb-1 sm:mb-4 text-center">
+              <h2 className="text-base sm:text-xl font-bold text-cyan-400 mb-0 sm:mb-1 flex items-center justify-center gap-1 sm:gap-2">
                 <AiOutlineEdit className="h-4 sm:h-5 w-4 sm:w-5" />
                 Memo Hub
               </h2>
-              <p className="text-xs sm:text-sm text-gray-400">💡 생각의 조각을 지식의 자산으로 진화시키세요</p>
+              <p className="text-xs sm:text-sm text-gray-400">💡 메모에 생각을 계속 더하세요</p>
             </div>
 
             {/* Notes List */}
