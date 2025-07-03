@@ -24,7 +24,9 @@ interface AiCoachPopoverProps {
  */
 const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, className, onCopySuccess }) => {
   const [open, setOpen] = useState(false);
+  const [showAbove, setShowAbove] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
 
   // 바깥 클릭 시 닫기
   useEffect(() => {
@@ -35,6 +37,21 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
+
+  // 팝오버 위치 계산 (화면 경계 감지)
+  useEffect(() => {
+    if (open && buttonRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const popoverHeight = 120; // 팝오버 예상 높이
+      
+      // 버튼 아래쪽 공간이 부족하면 위로 표시
+      const spaceBelow = viewportHeight - buttonRect.bottom;
+      const shouldShowAbove = spaceBelow < popoverHeight && buttonRect.top > popoverHeight;
+      
+      setShowAbove(shouldShowAbove);
+    }
   }, [open]);
 
   const copyToClipboard = async (text: string) => {
@@ -110,24 +127,30 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
 
   return (
     <div className={clsx('relative inline-block', className)}>
-      <Button
-        variant="outline"
-        size={"icon" as any}
-        aria-label="AI 코멘트 열기"
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen((prev) => !prev);
-        }}
-        className="h-11 w-11 lg:h-9 lg:w-9 min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto" // 모바일에서 더 크게
-      >
-        {/* 'AI' 텍스트로 변경 */}
-        <span className="text-sm lg:text-sm font-bold text-cyan-400">AI</span>
-      </Button>
+      <div ref={buttonRef}>
+        <Button
+          variant="outline"
+          size={"icon" as any}
+          aria-label="AI 코멘트 열기"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen((prev) => !prev);
+          }}
+          className="h-9 w-9 sm:h-8 sm:w-8" // 다른 버튼들과 동일한 크기
+        >
+          {/* 'AI' 텍스트로 변경 */}
+          <span className="text-sm lg:text-sm font-bold text-cyan-400">AI</span>
+        </Button>
+      </div>
 
       {open && (
         <div
           ref={popoverRef}
-          className="absolute right-0 lg:right-0 left-0 lg:left-auto z-50 mt-2 w-auto lg:w-52 max-w-[90vw] lg:max-w-none rounded-md border-2 border-gray-600 bg-gray-800 shadow-lg p-2 lg:p-3 flex flex-col items-center"
+          className={`absolute z-50 w-auto lg:w-52 max-w-[90vw] lg:max-w-none rounded-md border-2 border-gray-600 bg-gray-800 shadow-lg p-2 lg:p-3 flex flex-col items-center ${
+            showAbove 
+              ? 'bottom-full mb-2 left-1/2 transform -translate-x-1/2 lg:right-0 lg:left-auto lg:transform-none lg:translate-x-0' 
+              : 'top-full mt-2 left-1/2 transform -translate-x-1/2 lg:right-0 lg:left-auto lg:transform-none lg:translate-x-0'
+          }`}
         >
           <div className="flex items-center justify-around w-full gap-1 lg:gap-0">
             <button
