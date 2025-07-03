@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { flashcardApi, Flashcard } from '@/lib/api';
 import { TSNote } from '@/components/ts/TSNoteCard';
-import { QuestionMarkCircleIcon, CheckCircleIcon, XCircleIcon, PlusCircleIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
+import { QuestionMarkCircleIcon, CheckCircleIcon, XCircleIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -120,56 +120,57 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ note, bookId, pageStart, 
   };
 
   const formTitle = isEditing ? '플래시카드 수정' : '새 플래시카드 생성';
-  const submitButtonText = isEditing ? '변경사항 저장' : '플래시카드 생성';
-  const submitButtonIcon = isEditing ? <PencilSquareIcon className="h-5 w-5 mr-2" /> : <PlusCircleIcon className="h-5 w-5 mr-2" />;
 
   return (
-    <form onSubmit={handleSubmit} className={`p-6 rounded-lg shadow-xl ${cyberTheme.formBg} border border-gray-700/50`}>
-      <h3 className={`text-xl font-semibold ${cyberTheme.primary} mb-6 text-center`}>{formTitle}</h3>
+    <form onSubmit={handleSubmit} className={`p-2 sm:p-6 rounded-lg shadow-xl ${cyberTheme.formBg} border border-gray-700/50`}>
+      <h3 className={`text-lg sm:text-xl font-semibold ${cyberTheme.primary} mb-2 sm:mb-6 text-center`}>{formTitle}</h3>
       
-      <div className="space-y-6 mb-6">
+      <div className="space-y-3 sm:space-y-6 mb-3 sm:mb-6">
         <div>
-          <label htmlFor="flashcard-question" className={`block text-sm font-medium ${cyberTheme.labelColor} mb-1.5`}>질문 (앞면)</label>
+          <label htmlFor="flashcard-question" className={`block text-sm font-medium ${cyberTheme.labelColor} mb-1 sm:mb-1.5`}>질문 (앞면)</label>
           <Textarea
             id="flashcard-question"
             value={question}
             onChange={e => setQuestion(e.target.value)}
-            className={`w-full p-3 rounded-md ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} placeholder-gray-500 focus:border-purple-500 focus:ring-purple-500/50 min-h-[80px]`}
+            className={`w-full p-2 sm:p-3 rounded-md ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} placeholder-gray-500 focus:border-purple-500 focus:ring-purple-500/50 min-h-[60px] sm:min-h-[80px]`}
             placeholder="예: 이 개념의 핵심은 무엇인가요?"
             required
           />
         </div>
         <div>
-          <label htmlFor="flashcard-answer" className={`block text-sm font-medium ${cyberTheme.labelColor} mb-1.5`}>정답 (뒷면)</label>
+          <label htmlFor="flashcard-answer" className={`block text-sm font-medium ${cyberTheme.labelColor} mb-1 sm:mb-1.5`}>정답 (뒷면)</label>
           <Textarea
             id="flashcard-answer"
             value={answer}
             onChange={e => setAnswer(e.target.value)}
-            className={`w-full p-3 rounded-md ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} placeholder-gray-500 focus:border-purple-500 focus:ring-purple-500/50 min-h-[80px]`}
+            className={`w-full p-2 sm:p-3 rounded-md ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} placeholder-gray-500 focus:border-purple-500 focus:ring-purple-500/50 min-h-[60px] sm:min-h-[80px]`}
             placeholder="예: 기억법, 공식, 요약 등"
             required
           />
         </div>
       </div>
 
-      {error && <p className={`text-sm ${cyberTheme.errorText} mb-4 text-center`}>{error}</p>}
+      {error && <p className={`text-sm ${cyberTheme.errorText} mb-2 sm:mb-4 text-center`}>{error}</p>}
 
-      <div className="flex gap-3 justify-end mt-8">
+      <div className="flex gap-2 sm:gap-3 justify-end mt-3 sm:mt-8">
         <Button 
           type="button" 
           onClick={onCancel} 
           variant="outline"
-          className={`px-5 py-2 rounded-md border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-150`}
+          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors duration-150 flex items-center justify-center p-0`}
+          title="취소"
+          aria-label="취소"
         >
-          <XCircleIcon className="h-5 w-5 mr-2" /> 취소
+          <XCircleIcon className="h-5 w-5 sm:h-6 sm:w-6" />
         </Button>
         <Button 
           type="submit" 
           disabled={loading}
-          className={`px-5 py-2 rounded-md ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-semibold transition-colors duration-150 disabled:opacity-60 flex items-center`}
+          className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-semibold transition-colors duration-150 disabled:opacity-60 flex items-center justify-center p-0`}
+          title={isEditing ? "변경사항 저장" : "플래시카드 생성"}
+          aria-label={isEditing ? "변경사항 저장" : "플래시카드 생성"}
         >
-          {loading ? <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></span> : submitButtonIcon}
-          {submitButtonText}
+          {loading ? <span className="animate-spin h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full"></span> : (isEditing ? <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6" /> : <PlusCircleIcon className="h-5 w-5 sm:h-6 sm:w-6" />)}
         </Button>
       </div>
     </form>
