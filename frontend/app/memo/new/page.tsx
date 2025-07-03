@@ -165,17 +165,17 @@ function NewMemoContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center px-1 sm:px-4">
         <div className="text-cyan-400 text-lg">노트북을 불러오는 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 py-6 px-2 sm:px-4 text-gray-200 font-sans">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 py-3 sm:py-6 px-1 sm:px-4 text-gray-200 font-sans">
+      <div className="max-w-2xl mx-auto px-1 sm:px-0">
         {/* 헤더 */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-3 sm:mb-6">
           <Link 
             href="/dashboard" 
             className="flex items-center text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
@@ -186,21 +186,21 @@ function NewMemoContent() {
         </div>
 
         {/* 메인 카드 */}
-        <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-cyan-500/10 border border-cyan-500/40 p-6">
-          <h1 className="text-2xl font-bold text-cyan-300 mb-6 font-orbitron tracking-wide">
+        <div className="bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-cyan-500/10 border border-cyan-500/40 p-3 sm:p-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-cyan-300 mb-3 sm:mb-6 font-orbitron tracking-wide">
             ✍️ Atomic Memo
           </h1>
           
           {error && (
-            <div className="bg-red-900/30 border border-red-500/50 text-red-300 p-3 rounded-lg mb-4 text-sm">
+            <div className="bg-red-900/30 border border-red-500/50 text-red-300 p-2 sm:p-3 rounded-lg mb-2 sm:mb-4 text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-6">
             {/* 1. 노트북 선택 */}
             <div>
-              <label className="block text-sm font-semibold text-cyan-300 mb-3">
+              <label className="block text-sm font-semibold text-cyan-300 mb-2 sm:mb-3">
                 📔 노트북 선택
               </label>
               <div className="flex gap-3">
@@ -230,7 +230,7 @@ function NewMemoContent() {
 
             {/* 2. 메모 타입 선택 */}
             <div>
-              <label className="block text-sm font-semibold text-cyan-300 mb-3">
+              <label className="block text-sm font-semibold text-cyan-300 mb-2 sm:mb-3">
                 💭 메모 타입
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -253,7 +253,7 @@ function NewMemoContent() {
 
             {/* 3. 1줄 메모 입력 */}
             <div>
-              <label className="block text-sm font-semibold text-cyan-300 mb-3">
+              <label className="block text-sm font-semibold text-cyan-300 mb-2 sm:mb-3">
                 ✍️ 1줄 메모
               </label>
               <textarea
@@ -271,7 +271,7 @@ function NewMemoContent() {
 
             {/* 4. 태그 입력 */}
             <div>
-              <label className="block text-sm font-semibold text-cyan-300 mb-3">
+              <label className="block text-sm font-semibold text-cyan-300 mb-2 sm:mb-3">
                 🏷️ 태그 (선택사항)
               </label>
               <input
@@ -287,7 +287,7 @@ function NewMemoContent() {
             </div>
 
             {/* 제출 버튼 */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-3 pt-2 sm:pt-4">
               <button
                 type="button"
                 onClick={() => router.back()}
@@ -315,7 +315,7 @@ function NewMemoContent() {
 export default function NewMemoPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center px-1 sm:px-4">
         <div className="text-cyan-400">로딩 중...</div>
       </div>
     }>
