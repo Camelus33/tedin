@@ -2,275 +2,331 @@
   "master": {
     "tasks": [
       {
-        "id": 2,
+        "id": 16,
         "title": "Implement User Quota Data Model",
-        "description": "Set up the data model for user quotas, including fields for userId, month, booksRegistered, aiLinksUsed, and resetDate. Implement the PlanLimits interface to define the limits for FREE and PRO plans.",
-        "details": "1.  Define the `UserQuota` and `PlanLimits` interfaces in TypeScript, adhering to the provided data model.\n2.  Choose a database to store user quota data (e.g., PostgreSQL with Prisma or MongoDB with Mongoose). Consider scalability for 100k users.\n3.  Implement database schema based on the `UserQuota` interface.\n4.  Create a repository or data access layer to interact with the database.\nExample:\n```typescript\ninterface UserQuota {\n  userId: string;\n  month: string; // \\\"2024-01\\\"\n  booksRegistered: number; // 총 등록 책 수\n  aiLinksUsed: number; // 월 AI-Link 사용량\n  resetDate: Date;\n}\n\ninterface PlanLimits {\n  free: { maxBooks: 10; monthlyAiLinks: 15; };\n  pro: { maxBooks: -1; monthlyAiLinks: -1; };\n}\n```",
-        "testStrategy": "1.  Unit tests to validate data model structure.\n2.  Integration tests to verify database interactions.\n3.  Ensure data types and constraints are correctly enforced in the database.",
+        "description": "Set up the data model for tracking user quotas, including userId, month, booksRegistered, aiLinksUsed, and resetDate. Define plan limits for FREE and PRO plans.",
+        "details": "Implement the UserQuota interface in TypeScript. Use a database (e.g., PostgreSQL with Sequelize or MongoDB with Mongoose) to store user quota data. Ensure the database schema matches the provided TypeScript interface. Example using Sequelize:\n\n```typescript\n// Example using Sequelize\nconst UserQuotaModel = sequelize.define('UserQuota', {\n  userId: { type: DataTypes.STRING, allowNull: false },\n  month: { type: DataTypes.STRING, allowNull: false },\n  booksRegistered: { type: DataTypes.INTEGER, defaultValue: 0 },\n  aiLinksUsed: { type: DataTypes.INTEGER, defaultValue: 0 },\n  resetDate: { type: DataTypes.DATE, allowNull: false }\n});\n\n// Example using Mongoose\nconst userQuotaSchema = new mongoose.Schema({\n  userId: { type: String, required: true },\n  month: { type: String, required: true },\n  booksRegistered: { type: Number, default: 0 },\n  aiLinksUsed: { type: Number, default: 0 },\n  resetDate: { type: Date, required: true }\n});\n\nconst UserQuotaModel = mongoose.model('UserQuota', userQuotaSchema);\n```\n",
+        "testStrategy": "Verify that the database schema matches the TypeScript interface and that data can be correctly stored and retrieved.",
         "priority": "high",
         "dependencies": [],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 3,
+        "id": 17,
         "title": "Implement Usage Check Middleware",
-        "description": "Implement middleware to check user quotas for book registrations and AI-Link generation. This middleware should enforce the limits defined in the PlanLimits interface.",
-        "details": "1.  Create middleware functions for checking book registration and AI-Link usage limits.\n2.  Retrieve user quota from the database using the user ID.\n3.  Compare current usage against plan limits.\n4.  Return an error or proceed to the next middleware based on the quota status.\nExample:\n```typescript\nasync function checkBookRegistrationQuota(userId: string): Promise<boolean> {\n  const userQuota = await getUserQuota(userId);\n  const planLimits = getPlanLimits(userId);\n  return userQuota.booksRegistered < planLimits.maxBooks;\n}\n```",
-        "testStrategy": "1.  Unit tests to verify quota checking logic.\n2.  Integration tests to ensure middleware correctly interacts with the database and plan limits.\n3.  Simulate different user scenarios (FREE vs. PRO) to validate quota enforcement.",
+        "description": "Create middleware to check user usage against plan limits before allowing actions like book registration or AI-Link generation.",
+        "details": "Implement middleware functions in Next.js API routes to check user quotas. Retrieve the user's plan and current usage from the database. Compare usage against plan limits (FREE: 10 books, 15 AI-Links; PRO: unlimited). Return an error if the limit is exceeded. Example:\n\n```typescript\n// Middleware example\nasync function checkBookRegistrationLimit(req: NextApiRequest, res: NextApiResponse, userId: string) {\n  const userQuota = await UserQuotaModel.findOne({ userId, month: getCurrentMonth() });\n  if (userQuota && userQuota.booksRegistered >= 10 && user.plan === 'FREE') {\n    return res.status(403).json({ error: 'Book registration limit reached. Upgrade to PRO for unlimited access.' });\n  }\n  return;\n}\n```\n",
+        "testStrategy": "Test the middleware with different user plans and usage levels to ensure limits are correctly enforced.",
         "priority": "high",
         "dependencies": [
-          2
+          16
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 4,
-        "title": "Implement Monthly Quota Reset Scheduler",
-        "description": "Implement a scheduler to reset monthly usage quotas for all users on the 1st of each month. Use a reliable scheduling library like `node-cron` or `agenda`.",
-        "details": "1.  Choose a scheduling library (`node-cron` version 3.0 or later is recommended for its simplicity).\n2.  Create a scheduled job that runs daily at midnight.\n3.  In the job, iterate through all users and reset their `booksRegistered` and `aiLinksUsed` counts to 0 for the new month.\n4.  Update the `resetDate` field in the database.\nExample:\n```javascript\nconst cron = require('node-cron');\n\ncron.schedule('0 0 1 * *', async () => {\n  // Reset user quotas for all users\n  await resetAllUserQuotas();\n});\n```",
-        "testStrategy": "1.  Manual testing to verify quota reset on the 1st of the month.\n2.  Automated tests to ensure the scheduler runs correctly and resets quotas accurately.\n3.  Monitor scheduler logs for any errors or failures.",
+        "id": 18,
+        "title": "Implement Monthly Usage Reset Scheduler",
+        "description": "Implement a scheduled job to reset monthly usage counts for all users on the 1st of each month.",
+        "details": "Use a scheduling library like `node-cron` or `agenda` to create a job that runs daily at midnight. The job should iterate through all users and reset their `booksRegistered` and `aiLinksUsed` counts in the database. Ensure the resetDate is updated. Example using node-cron:\n\n```typescript\n// Example using node-cron\nimport cron from 'node-cron';\n\ncron.schedule('0 0 1 * *', async () => {\n  // This runs at midnight on the 1st of every month\n  await UserQuotaModel.updateMany({}, { booksRegistered: 0, aiLinksUsed: 0, resetDate: new Date() });\n  console.log('Monthly usage reset completed.');\n});\n```\n",
+        "testStrategy": "Manually trigger the scheduled job in a test environment and verify that usage counts are reset correctly.",
         "priority": "high",
         "dependencies": [
-          2
+          16
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 5,
+        "id": 19,
         "title": "Implement Book Registration Limit",
-        "description": "Implement logic to restrict book registrations for FREE plan users to a maximum of 10 books. Display an upgrade prompt when the limit is reached.",
-        "details": "1.  In the book registration endpoint, use the usage check middleware to verify the user's quota.\n2.  If the user is on the FREE plan and has reached the book limit, return an error.\n3.  Display an upgrade prompt with a clear call to action to upgrade to the PRO plan.\nExample:\n```typescript\nif (!await checkBookRegistrationQuota(userId)) {\n  return res.status(403).json({ message: 'Book registration limit reached. Upgrade to PRO for unlimited books.' });\n}\n```",
-        "testStrategy": "1.  Manual testing to verify book registration limits for FREE plan users.\n2.  Ensure the upgrade prompt is displayed correctly when the limit is reached.\n3.  Test the book registration process for PRO plan users to ensure no limits are enforced.",
+        "description": "Implement logic to prevent users on the FREE plan from registering more than 10 books.",
+        "details": "Integrate the usage check middleware into the book registration API. If a FREE plan user has already registered 10 books, return an error and display an upgrade prompt. Example:\n\n```typescript\n// Example in book registration API\nawait checkBookRegistrationLimit(req, res, userId);\n\n// If middleware passes, proceed with book registration\nconst newBook = await BookModel.create({ ... });\nawait UserQuotaModel.updateOne({ userId, month: getCurrentMonth() }, { $inc: { booksRegistered: 1 } });\n```\n",
+        "testStrategy": "Test book registration with FREE plan users, ensuring the limit is enforced and the upgrade prompt is displayed.",
         "priority": "high",
         "dependencies": [
-          3
+          17
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 6,
+        "id": 20,
         "title": "Implement AI-Link Generation Limit",
-        "description": "Implement logic to limit AI-Link generation for FREE plan users to 15 times per month. Display an upgrade prompt when the limit is reached.",
-        "details": "1.  In the AI-Link generation endpoint, use the usage check middleware to verify the user's quota.\n2.  If the user is on the FREE plan and has reached the AI-Link limit, return an error.\n3.  Display an upgrade prompt with a clear call to action to upgrade to the PRO plan.\nExample:\n```typescript\nif (!await checkAiLinkQuota(userId)) {\n  return res.status(403).json({ message: 'AI-Link generation limit reached. Upgrade to PRO for unlimited AI-Links.' });\n}\n```",
-        "testStrategy": "1.  Manual testing to verify AI-Link generation limits for FREE plan users.\n2.  Ensure the upgrade prompt is displayed correctly when the limit is reached.\n3.  Test the AI-Link generation process for PRO plan users to ensure no limits are enforced.",
+        "description": "Implement logic to prevent users on the FREE plan from generating more than 15 AI-Links per month.",
+        "details": "Integrate the usage check middleware into the AI-Link generation API. If a FREE plan user has already generated 15 AI-Links, return an error and display an upgrade prompt. Example:\n\n```typescript\n// Example in AI-Link generation API\nawait checkAiLinkLimit(req, res, userId);\n\n// If middleware passes, proceed with AI-Link generation\nconst newAiLink = await AiLinkModel.create({ ... });\nawait UserQuotaModel.updateOne({ userId, month: getCurrentMonth() }, { $inc: { aiLinksUsed: 1 } });\n```",
+        "testStrategy": "Test AI-Link generation with FREE plan users, ensuring the limit is enforced and the upgrade prompt is displayed.",
         "priority": "high",
         "dependencies": [
-          3
+          17
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 7,
-        "title": "Integrate Stripe Payment System",
-        "description": "Modify the upgrade page to present a 2-tier plan structure (FREE and PRO). Integrate with Stripe to handle actual payments and subscriptions.",
-        "details": "1.  Update the upgrade page UI to reflect the 2-tier plan structure.\n2.  Integrate with the Stripe Checkout API to handle payments.\n3.  Implement logic to create subscriptions in Stripe when a user upgrades to the PRO plan.\n4.  Use Stripe webhooks to handle payment success and failure events.\nExample:\n```javascript\nstripe.checkout.sessions.create({\n  // ...\n  success_url: 'https://example.com/success',\n  cancel_url: 'https://example.com/cancel',\n});\n```",
-        "testStrategy": "1.  End-to-end testing of the upgrade flow.\n2.  Verify successful payment and subscription creation in Stripe.\n3.  Test payment failure scenarios and ensure proper error handling.\n4.  Confirm that the user's plan is updated correctly after a successful payment.",
+        "id": 21,
+        "title": "Implement Usage Dashboard UI",
+        "description": "Create a user interface to display current usage, remaining usage, and an upgrade prompt when limits are reached.",
+        "details": "Develop a React component to display user quota information. Use progress bars or other visual aids to represent usage. Include a clear call-to-action to upgrade to the PRO plan when limits are reached. Fetch user quota data from the backend. Example:\n\n```jsx\n// Example React component\nfunction UsageDashboard() {\n  const [quota, setQuota] = useState(null);\n\n  useEffect(() => {\n    // Fetch user quota data from API\n    fetch('/api/user/quota')\n      .then(res => res.json())\n      .then(data => setQuota(data));\n  }, []);\n\n  return (\n    <div>\n      <ProgressBar value={quota?.booksRegistered} max={10} label=\"Books Registered\" />\n      <ProgressBar value={quota?.aiLinksUsed} max={15} label=\"AI-Links Used\" />\n      {quota?.booksRegistered >= 10 || quota?.aiLinksUsed >= 15 && (\n        <UpgradeButton />\n      )}\n    </div>\n  );\n}\n```",
+        "testStrategy": "Test the usage dashboard with different user plans and usage levels to ensure the information is displayed correctly and the upgrade prompt appears when limits are reached.",
+        "priority": "high",
+        "dependencies": [
+          19,
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Integrate Stripe Payment Flow",
+        "description": "Modify the upgrade page to support a 2-tier (FREE/PRO) plan structure and integrate with Stripe for actual payment processing.",
+        "details": "Update the upgrade page UI to reflect the 2-tier plan structure. Integrate with the Stripe API to create checkout sessions and handle payment processing. Use the `stripe` npm package. Ensure that the correct plan is assigned to the user upon successful payment. Example:\n\n```typescript\n// Example Stripe checkout\nconst stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' });\n\nconst session = await stripe.checkout.sessions.create({\n  payment_method_types: ['card'],\n  line_items: [{\n    price: process.env.STRIPE_PRO_PLAN_PRICE_ID,\n    quantity: 1,\n  }],\n  mode: 'subscription',\n  success_url: `${process.env.NEXT_PUBLIC_URL}/success`,\n  cancel_url: `${process.env.NEXT_PUBLIC_URL}/cancel`,\n});\n```",
+        "testStrategy": "Test the upgrade flow with different payment methods and ensure that the correct plan is assigned to the user upon successful payment. Verify the success and cancel redirects.",
         "priority": "high",
         "dependencies": [],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 8,
-        "title": "Implement Payment Redirection and Plan Updates",
-        "description": "Implement appropriate redirects after successful or failed payments. Update the user's plan in the database based on the payment status.",
-        "details": "1.  Implement redirect logic in the Stripe webhook handler.\n2.  On successful payment, redirect the user to a success page.\n3.  On payment failure, redirect the user to a failure page with an error message.\n4.  Update the user's plan in the database based on the payment status.\nExample:\n```javascript\n// Stripe webhook handler\nif (event.type === 'checkout.session.completed') {\n  // Update user's plan in the database\n}\n```",
-        "testStrategy": "1.  End-to-end testing of the payment flow.\n2.  Verify correct redirects after successful and failed payments.\n3.  Ensure the user's plan is updated correctly in the database based on the payment status.",
+        "id": 23,
+        "title": "Implement Payment Redirection",
+        "description": "Implement appropriate redirects after successful or failed payments to guide the user.",
+        "details": "Configure Stripe webhooks to listen for `checkout.session.completed` and `checkout.session.failed` events. Upon successful payment, redirect the user to a success page. Upon failed payment, redirect the user to a cancel page with an error message. Example:\n\n```typescript\n// Example webhook handler\nstripe.webhooks.constructEvent(payload, sig, process.env.STRIPE_WEBHOOK_SECRET);\n\nif (event.type === 'checkout.session.completed') {\n  // Update user's plan in the database\n  await updateUserPlan(userId, 'PRO');\n  // Redirect to success page\n  res.redirect('/success');\n}\n```",
+        "testStrategy": "Simulate successful and failed payments and verify that the user is redirected to the correct pages.",
         "priority": "high",
         "dependencies": [
-          7
+          22
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 9,
-        "title": "Develop Usage Dashboard UI",
-        "description": "Develop a user dashboard to visually display current usage, remaining limits, and progress bars for book registrations and AI-Link generation.",
-        "details": "1.  Create a UI component for the user dashboard.\n2.  Fetch user quota data from the database.\n3.  Display current usage, remaining limits, and progress bars for book registrations and AI-Link generation.\n4.  Use a progress bar library like `react-progressbar` or `progressbar.js` for visual representation.\nExample:\n```jsx\n<ProgressBar completed={userQuota.booksRegistered / planLimits.maxBooks * 100} />\n```",
-        "testStrategy": "1.  Manual testing to verify the accuracy of usage data displayed on the dashboard.\n2.  Ensure progress bars are displayed correctly and update dynamically.\n3.  Test the dashboard on different screen sizes to ensure responsiveness.",
-        "priority": "high",
-        "dependencies": [
-          2
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 10,
+        "id": 24,
         "title": "Implement Smart Notification System",
-        "description": "Implement a smart notification system to alert users when they reach 70%, 90%, and 100% of their usage limits. Suggest an upgrade at 90% and provide a restriction notice at 100%.",
-        "details": "1.  Create a notification component.\n2.  Fetch user quota data from the database.\n3.  Display notifications when the user reaches 70%, 90%, and 100% of their usage limits.\n4.  Use a notification library like `react-toastify` or `notistack` for displaying notifications.\nExample:\n```javascript\nif (usage >= 0.7 && usage < 0.9) {\n  toast.warn('You have reached 70% of your limit.');\n}\n```",
-        "testStrategy": "1.  Manual testing to verify notifications are displayed correctly at different usage levels.\n2.  Ensure the upgrade suggestion is displayed at 90% and the restriction notice at 100%.\n3.  Test the notification system on different devices and browsers.",
+        "description": "Implement a smart notification system to alert users when they reach 70% and 90% of their usage limits, suggesting an upgrade.",
+        "details": "Create a notification system that triggers when users reach 70% and 90% of their usage limits. Use libraries like `react-toastify` for displaying non-intrusive notifications. Include a clear call-to-action to upgrade to the PRO plan. Example:\n\n```typescript\n// Example notification\nimport { toast } from 'react-toastify';\n\nif (quota.booksRegistered / 10 >= 0.7) {\n  toast.warn('You are approaching your book registration limit. Upgrade to PRO for unlimited access!', { onClick: () => router.push('/upgrade') });\n}\n```",
+        "testStrategy": "Test the notification system by simulating different usage levels and verifying that the notifications are displayed correctly.",
         "priority": "medium",
         "dependencies": [
-          9
+          21
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 11,
+        "id": 25,
         "title": "Improve Usage-Based UX",
-        "description": "Enhance the user experience by providing gradual guidance as users approach their usage limits. Visualize usage history and analyze monthly usage patterns.",
-        "details": "1.  Implement gradual guidance by displaying subtle hints as users approach their limits.\n2.  Visualize usage history using a chart library like `Chart.js` or `Recharts`.\n3.  Analyze monthly usage patterns to provide personalized recommendations.\nExample:\n```jsx\n<LineChart data={usageHistory} />\n```",
-        "testStrategy": "1.  Manual testing to verify gradual guidance is displayed correctly.\n2.  Ensure usage history is visualized accurately.\n3.  Test the usage pattern analysis to ensure personalized recommendations are relevant.",
+        "description": "Enhance the user experience by providing gradual guidance as users approach their usage limits and visualizing usage history.",
+        "details": "Implement visual cues to indicate approaching limits, such as changing the color of the progress bar. Provide a usage history chart to visualize monthly usage patterns. Use libraries like `chart.js` for creating charts. Example:\n\n```jsx\n// Example chart\nimport { Line } from 'react-chartjs-2';\n\nconst data = {\n  labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],\n  datasets: [{\n    label: 'AI-Links Used',\n    data: [2, 5, 8, 12],\n    fill: false,\n    borderColor: 'rgb(75, 192, 192)',\n    tension: 0.1\n  }]\n};\n```",
+        "testStrategy": "Test the usage history visualization with different usage patterns to ensure the information is displayed correctly.",
         "priority": "medium",
         "dependencies": [
-          9
+          21
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 12,
+        "id": 26,
         "title": "Implement Payment Management Features",
-        "description": "Implement features for users to check their subscription status, cancel/resume subscriptions, and view their payment history.",
-        "details": "1.  Integrate with the Stripe Customer Portal to allow users to manage their subscriptions.\n2.  Implement a subscription status page to display the user's current plan and subscription status.\n3.  Allow users to cancel or resume their subscriptions through the Stripe Customer Portal.\n4.  Display payment history using data from Stripe.\nExample:\n```javascript\n// Redirect user to Stripe Customer Portal\nstripe.redirectToCheckout({\n  // ...\n  url: 'https://example.com/customer-portal',\n});\n```",
-        "testStrategy": "1.  End-to-end testing of subscription management features.\n2.  Verify users can successfully cancel and resume their subscriptions.\n3.  Ensure payment history is displayed accurately.\n4.  Test the integration with the Stripe Customer Portal.",
+        "description": "Implement functionality for users to check their subscription status, cancel/resume subscriptions, and view payment history.",
+        "details": "Integrate with the Stripe API to allow users to manage their subscriptions. Provide a UI for users to view their subscription status, cancel their subscription, and view their payment history. Use the `stripe` npm package. Example:\n\n```typescript\n// Example retrieve subscription\nconst subscription = await stripe.subscriptions.retrieve(subscriptionId);\n\n// Example cancel subscription\nconst deletedSubscription = await stripe.subscriptions.cancel(subscriptionId);\n```",
+        "testStrategy": "Test the subscription management functionality with different user accounts and subscription statuses to ensure the information is displayed correctly and actions are performed as expected.",
         "priority": "medium",
         "dependencies": [
-          7
+          22
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 13,
-        "title": "Implement Interactive Onboarding Guide",
-        "description": "Implement the interactive onboarding guide using Next.js 14, TypeScript, Tailwind CSS, Framer Motion, and Lottie. This guide should introduce new users to AMFA concepts through a 4-step journey.",
-        "details": "1.  Create a new page or component for the interactive onboarding guide.\n2.  Use Framer Motion for animations and Lottie for the water droplet animation (habitus-mascot.json).\n3.  Implement the 4-step journey: Water Droplet -> Wave -> Whirlpool -> Crystal.\n4.  Use React useState/useRef for state management.\n5.  Ensure the guide is responsive and accessible.\nExample:\n```jsx\n<motion.div animate={{ opacity: 1 }} transition={{ duration: 1 }}>\n  {/* Content */}\n</motion.div>\n```",
-        "testStrategy": "1.  Manual testing to verify the interactive onboarding guide flows correctly.\n2.  Ensure animations are smooth and responsive.\n3.  Test the guide on different devices and browsers.\n4.  Verify the guide is accessible.",
+        "id": 27,
+        "title": "Implement Interactive Onboarding Experience",
+        "description": "Implement the interactive onboarding experience using Next.js, Framer Motion, and Lottie animations to guide new users through AMFA concepts.",
+        "details": "Utilize Next.js for the frontend, Framer Motion for animations, and Lottie for complex animations (reusing habitus-mascot.json). Create a sequence of interactive steps that introduce Atomic Memos, Memo Evolution, Furnace Knowledge, and AI-Links. Use React useState/useRef for state management. Ensure the experience is mobile-responsive and maintains 60fps. Example:\n\n```jsx\n// Example Framer Motion animation\n<motion.div animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>\n  Content\n</motion.div>\n```",
+        "testStrategy": "Verify that the interactive onboarding experience flows smoothly, animations are performant, and the AMFA concepts are clearly conveyed. Test on various devices and screen sizes.",
         "priority": "high",
         "dependencies": [],
-        "status": "done",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Set up Next.js 14 project and install dependencies",
-            "description": "Initialize a new Next.js 14 project with TypeScript and install necessary dependencies: Tailwind CSS, Framer Motion, and Lottie-react.",
-            "dependencies": [],
-            "details": "Use `create-next-app` to set up the project. Install Tailwind CSS using the official documentation. Install Framer Motion and Lottie-react using npm or yarn.",
-            "status": "done",
-            "testStrategy": "Verify that the project compiles successfully and that all dependencies are correctly installed by running `npm run dev` or `yarn dev`."
-          },
-          {
-            "id": 2,
-            "title": "Create Onboarding Page/Component Structure",
-            "description": "Create a new page or component within the Next.js project to house the interactive onboarding guide. Define the basic layout and structure.",
-            "dependencies": [
-              1
-            ],
-            "details": "Create a new file, e.g., `app/onboarding/page.tsx` or `components/Onboarding.tsx`. Define the basic HTML structure and CSS classes using Tailwind CSS for the overall layout.\n<info added on 2025-07-02T01:40:42.448Z>\n기존 AMFADeepDive 컴포넌트 구조 분석 완료:\n\n**현재 구조:**\n- WaveAnimation 컴포넌트에 DIVE 버튼이 있음 (onStartJourney 콜백 실행)\n- AMFADeepDive는 3개 섹션으로 구성: 인트로(WaveAnimation), 카드섹션(AMFACards), 디테일섹션\n- 기존 카드 선택 방식은 정적인 4개 카드를 한번에 보여주는 구조\n\n**구현 계획:**\n1. DIVE 버튼 클릭 시 기존 카드 섹션 대신 새로운 인터랙티브 4단계 여정 시작\n2. 파도 메타포 활용: 물방울→파도→소용돌이→결정체 = 아토믹메모→메모진화→단권화노트→AI-Link\n3. 각 단계별 순차적 애니메이션과 최소 텍스트로 직관적 이해 제공\n\n**다음 단계:** 새로운 InteractiveOnboardingGuide 컴포넌트 생성 및 AMFADeepDive 수정\n</info added on 2025-07-02T01:40:42.448Z>",
-            "status": "done",
-            "testStrategy": "Ensure the basic layout is rendered correctly in the browser and that Tailwind CSS styles are applied as expected."
-          },
-          {
-            "id": 3,
-            "title": "Implement Water Droplet Animation with Lottie",
-            "description": "Integrate the Lottie animation (habitus-mascot.json) for the initial water droplet stage. Configure the animation to play correctly.",
-            "dependencies": [
-              2
-            ],
-            "details": "Import the Lottie-react component and the `habitus-mascot.json` file. Configure the Lottie animation to loop or play once as needed. Style the container for the Lottie animation.\n<info added on 2025-07-02T01:43:58.481Z>\nAMFADeepDive 컴포넌트 수정 완료:\n\n**구현된 기능:**\n1. InteractiveOnboardingGuide 컴포넌트 import 추가\n2. showOnboarding 상태 추가로 온보딩 가이드 표시 제어\n3. handleStartJourney 함수 수정: DIVE 버튼 클릭 시 온보딩 가이드 활성화\n4. handleOnboardingComplete 핸들러 추가: 온보딩 완료 시 기존 카드 섹션으로 복귀\n5. 조건부 렌더링 구현: showOnboarding이 true일 때 온보딩 가이드 표시\n\n**동작 흐름:**\n파도 인트로 → DIVE 버튼 클릭 → 인터랙티브 온보딩 가이드 → 완료 후 기존 카드 섹션 표시\n\n**다음 단계:** 애니메이션 효과 구현 및 테스트\n</info added on 2025-07-02T01:43:58.481Z>",
-            "status": "done",
-            "testStrategy": "Verify that the Lottie animation is displayed correctly and plays as expected in the browser."
-          },
-          {
-            "id": 4,
-            "title": "Implement Step-by-Step Logic with useState/useRef",
-            "description": "Use React's `useState` hook to manage the current step in the onboarding journey (Water Droplet -> Wave -> Whirlpool -> Crystal). Use `useRef` if necessary for managing DOM elements.",
-            "dependencies": [
-              2
-            ],
-            "details": "Initialize a `useState` variable to track the current step. Create functions to advance to the next step. Use `useRef` if needed to access or manipulate DOM elements related to the animation or content.",
-            "status": "done",
-            "testStrategy": "Test the step-by-step navigation by manually triggering the next step function and verifying that the state updates correctly."
-          },
-          {
-            "id": 5,
-            "title": "Implement Wave, Whirlpool, and Crystal Stages",
-            "description": "Create the visual representation and animations for the Wave, Whirlpool, and Crystal stages using Framer Motion and Tailwind CSS. Connect these stages to the step-by-step logic.",
-            "dependencies": [
-              3,
-              4
-            ],
-            "details": "Use Framer Motion to create animations for the transitions between the water droplet, wave, whirlpool, and crystal stages. Use Tailwind CSS for styling. Conditionally render the content for each stage based on the current step.",
-            "status": "done",
-            "testStrategy": "Verify that the animations for each stage are smooth and visually appealing. Ensure that the correct content is displayed for each step."
-          },
-          {
-            "id": 6,
-            "title": "Connect AMFA Concepts to Each Stage",
-            "description": "Integrate the AMFA concepts (Atomic Memory, Memory Evolution, Single-Source Notebook, AI-Link) into each stage of the onboarding guide. Provide clear and concise explanations.",
-            "dependencies": [
-              5
-            ],
-            "details": "Add text or interactive elements to each stage that explain the corresponding AMFA concept. Ensure the explanations are easy to understand and relevant to the visual metaphor.",
-            "status": "done",
-            "testStrategy": "Review the content for each stage to ensure that the AMFA concepts are accurately and clearly explained. Get feedback from users to ensure the explanations are understandable."
-          },
-          {
-            "id": 7,
-            "title": "Ensure Responsiveness and Accessibility",
-            "description": "Make the onboarding guide responsive across different screen sizes using Tailwind CSS's responsive utilities. Ensure the guide is accessible to users with disabilities by using appropriate ARIA attributes and semantic HTML.",
-            "dependencies": [
-              5
-            ],
-            "details": "Use Tailwind CSS's responsive prefixes (e.g., `sm:`, `md:`, `lg:`) to adjust the layout and styling for different screen sizes. Add ARIA attributes to interactive elements to improve accessibility. Use semantic HTML elements where appropriate.",
-            "status": "done",
-            "testStrategy": "Test the onboarding guide on different devices and screen sizes to ensure it is responsive. Use accessibility testing tools to identify and fix any accessibility issues."
-          },
-          {
-            "id": 8,
-            "title": "Integrate with Existing DIVE Button and Test",
-            "description": "Connect the onboarding guide to the existing DIVE button. Thoroughly test the entire onboarding flow to ensure it works as expected.",
-            "dependencies": [
-              6,
-              7
-            ],
-            "details": "Update the DIVE button's functionality to trigger the onboarding guide. Test the entire flow from clicking the DIVE button to completing the onboarding guide. Verify that all animations, content, and navigation work correctly.",
-            "status": "done",
-            "testStrategy": "Perform end-to-end testing of the onboarding flow, including clicking the DIVE button, navigating through each step, and verifying that all content and animations are displayed correctly. Get feedback from users to identify any usability issues."
-          }
-        ]
-      },
-      {
-        "id": 14,
-        "title": "Implement Before/After Comparison Slider",
-        "description": "Implement the Before/After comparison slider to visually compare the differences between general AI and AI-Link responses. Include a business scenario example.",
-        "details": "1.  Create a component for the Before/After comparison slider.\n2.  Use a slider library like `rc-slider` or implement a custom slider.\n3.  Include a business scenario example to demonstrate the benefits of AI-Link.\n4.  Ensure the slider is interactive and responsive.\nExample:\n```jsx\n<Slider defaultValue={50} />\n```",
-        "testStrategy": "1.  Manual testing to verify the Before/After comparison slider is interactive and responsive.\n2.  Ensure the business scenario example is clear and demonstrates the benefits of AI-Link.\n3.  Test the slider on different devices and browsers.",
-        "priority": "medium",
-        "dependencies": [
-          13
-        ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 15,
-        "title": "Implement Final CTA Button",
-        "description": "Implement the final CTA button that redirects users to the /books page to start creating their first atomic memo and AI-Link.",
-        "details": "1.  Create a button component with the text \"첫 아토믹 메모 기록하고, 나만의 AI 만들기 시작하기\".\n2.  Link the button to the /books page.\n3.  Ensure the button is visually appealing and encourages users to click.\nExample:\n```jsx\n<Link href=\"/books\">\n  <button>첫 아토믹 메모 기록하고, 나만의 AI 만들기 시작하기</button>\n</Link>\n```",
-        "testStrategy": "1.  Manual testing to verify the CTA button redirects users to the /books page.\n2.  Ensure the button is visually appealing and encourages users to click.\n3.  Test the button on different devices and browsers.",
+        "id": 28,
+        "title": "Implement Before/After Comparison Slider",
+        "description": "Implement the Before/After comparison slider to visually demonstrate the difference between general AI and AI-Link responses.",
+        "details": "Create an interactive slider component that allows users to compare responses from general AI and AI-Link. Include concrete business scenarios as examples. Ensure the slider is easy to use and provides a clear visual comparison. Example:\n\n```jsx\n// Example slider component\n<Slider beforeText=\"General AI Response\" afterText=\"AI-Link Response\" />\n```",
+        "testStrategy": "Test the slider with different scenarios and ensure that the comparison is clear and accurate.",
+        "priority": "medium",
+        "dependencies": [
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Implement Final CTA",
+        "description": "Implement the final call-to-action button that directs users to create their first Atomic Memo and start building their AI.",
+        "details": "Add a prominent button at the end of the onboarding experience that directs users to the /books page. Ensure the button is visually appealing and clearly communicates the next step. Example:\n\n```jsx\n// Example CTA button\n<Button onClick={() => router.push('/books')}>Create Your First Atomic Memo</Button>\n```",
+        "testStrategy": "Verify that the CTA button is functional and directs users to the correct page.",
         "priority": "high",
         "dependencies": [
-          13
+          27
         ],
-        "status": "done",
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Implement Personalized Welcome Experience",
+        "description": "Implement personalized welcome experiences based on user segments (learner, researcher, professional) to highlight the value of the AI assistant.",
+        "details": "Implement logic to identify user segments during onboarding. Provide tailored value propositions for each segment (AI tutor, research assistant, work assistant). Use React components to display personalized content. Example:\n\n```jsx\n// Example personalized welcome message\nif (userSegment === 'learner') {\n  return <p>Welcome! Get your personal AI tutor.</p>;\n}\n```",
+        "testStrategy": "Test the personalized welcome experience with different user segments to ensure the correct value propositions are displayed.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
         "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-07-01T13:51:54.897Z",
-      "updated": "2025-07-02T02:37:23.317Z",
+      "updated": "2025-07-03T01:13:39.381Z",
       "description": "Tasks for master context"
+    }
+  },
+  "onboarding-improvement": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Onboarding Page Analysis and Improvement Identification",
+        "description": "Analyze the current onboarding page user experience and identify areas for improvement, focusing on conveying the \"Prompt Free\" philosophy and AMFA process.",
+        "details": "1. Conduct a thorough analysis of the existing onboarding page, paying close attention to user flow, content clarity, and overall engagement.\n2. Perform web research to identify onboarding best practices and gather examples of effective onboarding experiences.\n3. Compare the current onboarding page against the identified best practices, noting areas where the current page falls short.\n4. Specifically analyze how well the current onboarding page conveys the \"Prompt Free\" philosophy and the AMFA process. Identify potential improvements to better communicate these concepts.\n5. Document all identified areas for improvement, providing specific recommendations for changes to the onboarding page's content, design, and functionality.\n6. Prioritize the identified improvements based on their potential impact on user understanding and engagement.",
+        "testStrategy": "1. Review the documented areas for improvement to ensure they are comprehensive and address the identified shortcomings.\n2. Verify that the recommendations for changes are specific, actionable, and aligned with the \"Prompt Free\" philosophy and AMFA process.\n3. Conduct user testing with a representative sample of users to assess the effectiveness of the current onboarding page and gather feedback on the proposed improvements.\n4. Analyze user feedback to validate the identified areas for improvement and refine the recommendations for changes.\n5. Ensure that the final recommendations are well-supported by both the initial analysis and the user testing results.",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Define User Segment Personas and Design Value Propositions",
+        "description": "Define personas and value propositions for learner/examinee, researcher, and professional segments, tailoring AI assistant roles (tutor/research assistant/work assistant) and highlighting ontology-based personalization benefits.",
+        "details": "1. Define detailed personas for each segment (learner/examinee, researcher, professional), including their needs, goals, pain points, and typical scenarios.\n2. Design specific value propositions for each persona, outlining how an AI assistant (tutor, research assistant, work assistant) can address their needs and goals.\n3. Detail the benefits of ontology-based personalization for each segment, explaining how it enhances the AI assistant's effectiveness and relevance.\n4. Document the defined personas, value propositions, and personalization benefits in a clear and concise format.\n<info added on 2025-07-03T01:20:35.276Z>\n### 1. Learner/Examinee Persona\n\n#### 1.1. AI Utilization Patterns\n\n*   **Tutoring and Homework Help:** Learners often use AI tools like ChatGPT, Wolfram Alpha, and Khan Academy's AI tutor for homework assistance, understanding complex topics, and getting step-by-step explanations. They might ask AI to explain concepts in simpler terms, provide examples, or generate practice questions.\n*   **Exam Preparation:** AI can be used to create practice tests, identify knowledge gaps, and provide personalized study plans. Learners might use AI to simulate exam conditions and get feedback on their performance.\n*   **Language Learning:** AI-powered language learning apps like Duolingo and Babbel provide interactive lessons, personalized feedback, and opportunities for practicing speaking and writing.\n*   **Content Summarization:** Learners might use AI tools to summarize lengthy articles, textbooks, or research papers, helping them quickly grasp the main ideas and key concepts.\n*   **Note-Taking and Organization:** AI can assist with note-taking during lectures or while reading, automatically summarizing key points and organizing them into a structured format.\n\n#### 1.2. Needs and Pain Points\n\n*   **Personalized Learning:** Learners need AI tools that can adapt to their individual learning styles, pace, and knowledge gaps. They want personalized recommendations for learning resources and activities.\n*   **Accurate and Reliable Information:** Learners need to trust that the information provided by AI tools is accurate, up-to-date, and reliable. They need to be able to verify the sources of information and identify potential biases.\n*   **Engaging and Motivating Learning Experiences:** Learners need AI tools that can keep them engaged and motivated, making learning fun and interactive. They want tools that provide immediate feedback and rewards for their progress.\n*   **Affordable and Accessible Tools:** Learners often have limited budgets and need access to affordable or free AI tools. They also need tools that are accessible on a variety of devices, including smartphones, tablets, and laptops.\n*   **Ethical Considerations:** Learners need to be aware of the ethical implications of using AI in education, such as plagiarism, bias, and privacy concerns. They need guidance on how to use AI tools responsibly and ethically.\n\n#### 1.3. Example Persona: \"Sarah, the High School Student\"\n\n*   **Demographics:** 16 years old, high school student\n*   **Goals:** Get good grades, prepare for college entrance exams, learn new skills\n*   **Needs:** Personalized tutoring, help with homework, practice tests, study guides\n*   **Pain Points:** Struggles with complex topics, gets easily distracted, lacks motivation\n*   **AI Utilization:** Uses ChatGPT for homework help, Khan Academy for math practice, Duolingo for language learning\n*   **Value Proposition:** An AI tutor that provides personalized explanations, practice questions, and feedback, helping Sarah improve her grades and prepare for college. Ontology-based personalization ensures that the tutor adapts to her learning style and knowledge gaps, providing a more effective and engaging learning experience.\n\n### 2. Researcher Persona\n\n#### 2.1. AI Utilization Patterns\n\n*   **Literature Review:** Researchers use AI tools to quickly search and analyze vast amounts of scientific literature, identify relevant papers, and extract key information.\n*   **Data Analysis:** AI can be used to analyze large datasets, identify patterns and trends, and generate insights that would be difficult or impossible to find manually.\n*   **Hypothesis Generation:** AI can assist researchers in generating new hypotheses by analyzing existing data and identifying potential relationships between variables.\n*   **Experiment Design:** AI can be used to optimize experiment designs, ensuring that they are efficient, effective, and statistically sound.\n*   **Scientific Writing:** AI can assist researchers in writing scientific papers, generating summaries, and checking for grammatical errors and plagiarism.\n\n#### 2.2. Needs and Pain Points\n\n*   **Access to High-Quality Data:** Researchers need access to high-quality, curated datasets that are relevant to their research interests.\n*   **Powerful Computing Resources:** Researchers often need access to powerful computing resources, such as GPUs and cloud computing platforms, to run complex AI models.\n*   **Collaboration Tools:** Researchers need tools that facilitate collaboration with other researchers, allowing them to share data, code, and insights.\n*   **Reproducibility and Transparency:** Researchers need to ensure that their AI models are reproducible and transparent, allowing other researchers to verify their findings.\n*   **Ethical Considerations:** Researchers need to be aware of the ethical implications of using AI in research, such as bias, privacy, and security concerns.\n\n#### 2.3. Example Persona: \"Dr. Lee, the Cancer Researcher\"\n\n*   **Demographics:** 45 years old, cancer researcher at a university\n*   **Goals:** Discover new cancer treatments, publish research papers, secure funding\n*   **Needs:** Access to large datasets of cancer patient data, tools for analyzing genomic data, assistance with writing grant proposals\n*   **Pain Points:** Spends too much time searching for relevant literature, struggles to analyze complex datasets, faces challenges in securing funding\n*   **AI Utilization:** Uses AI tools to analyze genomic data, identify potential drug targets, and write research papers\n*   **Value Proposition:** An AI research assistant that provides access to curated datasets, powerful data analysis tools, and assistance with writing grant proposals, helping Dr. Lee accelerate her research and discover new cancer treatments. Ontology-based personalization ensures that the assistant understands her specific research interests and provides relevant information and insights.\n\n### 3. Professional Persona\n\n#### 3.1. AI Utilization Patterns\n\n*   **Task Automation:** Professionals use AI tools to automate repetitive tasks, such as data entry, scheduling, and email management.\n*   **Decision Support:** AI can be used to provide decision support, helping professionals make better decisions by analyzing data and providing insights.\n*   **Customer Service:** AI-powered chatbots and virtual assistants are used to provide customer service, answering questions, resolving issues, and providing personalized recommendations.\n*   **Content Creation:** AI can assist professionals in creating content, such as blog posts, social media updates, and marketing materials.\n*   **Data Analysis and Reporting:** AI can be used to analyze data and generate reports, helping professionals track key performance indicators and identify areas for improvement.\n\n#### 3.2. Needs and Pain Points\n\n*   **Easy-to-Use Tools:** Professionals need AI tools that are easy to use and require minimal training.\n*   **Integration with Existing Systems:** Professionals need AI tools that can seamlessly integrate with their existing systems and workflows.\n*   **Customization and Flexibility:** Professionals need AI tools that can be customized to meet their specific needs and requirements.\n*   **Security and Privacy:** Professionals need to ensure that their data is secure and private when using AI tools.\n*   **Return on Investment:** Professionals need to see a clear return on investment from using AI tools, such as increased productivity, reduced costs, or improved customer satisfaction.\n\n#### 3.3. Example Persona: \"Mark, the Marketing Manager\"\n\n*   **Demographics:** 35 years old, marketing manager at a tech company\n*   **Goals:** Increase brand awareness, generate leads, improve customer engagement\n*   **Needs:** Tools for automating social media marketing, analyzing customer data, and personalizing marketing campaigns\n*   **Pain Points:** Spends too much time on repetitive tasks, struggles to analyze customer data, faces challenges in personalizing marketing campaigns\n*   **AI Utilization:** Uses AI tools to automate social media posting, analyze website traffic, and personalize email marketing campaigns\n*   **Value Proposition:** An AI work assistant that automates marketing tasks, analyzes customer data, and personalizes marketing campaigns, helping Mark increase brand awareness, generate leads, and improve customer engagement. Ontology-based personalization ensures that the assistant understands his company's brand and target audience, providing relevant insights and recommendations.\n\n### 4. Applying Research to Project Tasks\n\nThis research directly informs **Task 2: Define User Segment Personas and Design Value Propositions.** The detailed personas, needs, and AI utilization patterns identified in this research can be used to design specific value propositions for each persona, outlining how the AI assistant (tutor, research assistant, work assistant) can address their needs and goals. The research also highlights the importance of ontology-based personalization, which can be used to enhance the AI assistant's effectiveness and relevance for each segment.\n\nFurthermore, the insights gained from this research can be applied to other project tasks, such as:\n\n*   **Task 1: Onboarding Page Analysis and Improvement Identification:** The onboarding page can be tailored to address the specific needs and pain points of each user segment, as identified in this research.\n*   **Task 3: Design Interactive Demo of AMFA Process:** The interactive demo can be designed to showcase the benefits of the AMFA process for each user segment, highlighting how it can help them achieve their goals.\n*   **Task 5: Implement Onboarding Page Frontend with React/Next.js:** The frontend can be designed to provide a personalized experience for each user segment, based on their needs and preferences.\n*   **Task 6: Implement Onboarding Backend Logic:** The backend logic can be designed to support ontology-based personalization, allowing the AI assistant to adapt to the individual needs of each user.\n\nBy understanding the AI utilization patterns and needs of learners, researchers, and professionals, we can design an AI-based learning tool that is both effective and engaging, helping users achieve their learning and professional goals.\n</info added on 2025-07-03T01:20:35.276Z>",
+        "testStrategy": "1. Review the defined personas to ensure they are comprehensive, realistic, and representative of the target segments.\n2. Verify that the value propositions are compelling, specific, and aligned with the needs and goals of each persona.\n3. Confirm that the benefits of ontology-based personalization are clearly articulated and demonstrate a tangible advantage for each segment.\n4. Conduct user interviews or surveys to validate the personas and value propositions with members of the target segments.",
+        "status": "done",
+        "dependencies": [
+          1
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Design Interactive Demo of AMFA Process",
+        "description": "Design an interactive demo of the AMFA process (Atomic Reading + Atomic Memo → Memo Evolution → Focused Note → AI-Link) allowing users to experience the entire process.",
+        "details": "1.  Develop an interactive demo showcasing the AMFA process, from Atomic Reading and Atomic Memo creation to Memo Evolution, Focused Note generation, and AI-Link integration.\n2.  Incorporate visual animations to illustrate the value and transformations at each stage of the AMFA process.\n3.  Include hands-on exercises and interactive elements to engage users and facilitate learning.\n4.  Design the demo to be user-friendly and intuitive, guiding users through each step of the AMFA process seamlessly.\n5.  Ensure the demo effectively communicates the benefits of the \"Prompt Free\" philosophy and the overall AMFA workflow.\n6.  Consider using a web-based platform or interactive presentation software for the demo.\n7.  Implement analytics to track user engagement and identify areas for improvement in the demo design.\n<info added on 2025-07-03T01:23:58.164Z>\nResearch on interactive process demo design best practices highlights the importance of active learning, scaffolding, and constructivism in pedagogical approaches. Key interaction design principles include clarity, simplicity, visual hierarchy, feedback, affordance, progress indicators, and responsiveness. Gamification techniques such as points, badges, challenges, and storytelling can increase engagement. Examples of successful interactive demos include Typeform, Intercom, Grammarly, and Amplitude.\n\nRecommendations for Task 3: Structure the demo around active learning and scaffolding, starting with simple tasks and gradually introducing complex concepts. Design animations with a clear visual hierarchy. Ensure exercises are engaging, informative, and easy to follow, and consider incorporating gamification. Design the demo to be user-friendly, intuitive, and responsive.\n\nImplications for other tasks:\n\n*   Task 1: Analyze how the current onboarding page introduces the AMFA process and improve interactivity.\n*   Task 2: Tailor the demo to user segment needs and clearly demonstrate value propositions.\n*   Task 5: Ensure seamless integration of the demo into the onboarding flow with responsive design.\n*   Task 6: Support the demo with backend logic for data, progress tracking, and AI-Link trials.\n*   Task 7: Track user engagement with the demo, including completion rates and feedback.\n*   Task 8: Ensure the demo is functional, performant, and usable across different browsers and devices.\n*   Task 9: Monitor the demo's impact on onboarding metrics like dropout and completion rates.\n\nPotential pitfalls to avoid: Overwhelming users, lack of a clear value proposition, technical issues, ignoring user feedback, and accessibility issues. Ensure the demo showcases the value and benefits of the AMFA process for each user segment.\n</info added on 2025-07-03T01:23:58.164Z>",
+        "testStrategy": "1.  Verify that the interactive demo accurately represents the AMFA process and its various stages.\n2.  Ensure that the visual animations effectively communicate the value and transformations at each step.\n3.  Confirm that the hands-on exercises are engaging, informative, and easy to follow.\n4.  Conduct user testing with representative users to gather feedback on the demo's usability and effectiveness.\n5.  Analyze user engagement data to identify areas for improvement in the demo design and content.\n6.  Verify that the demo is compatible with different browsers and devices.\n7.  Ensure that the demo adheres to accessibility guidelines and is usable by people with disabilities.",
+        "status": "done",
+        "dependencies": [
+          2
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Design Personalized Onboarding Flow UI/UX",
+        "description": "Design the UI/UX for a personalized onboarding flow, from user segment selection to the first AI-Link creation, incorporating UI/UX for each step, progress indicators, personalization elements, and engagement strategies to minimize user churn. The design is now complete, focusing on a 7-step, 10-minute experience tailored to different user personas.",
+        "status": "done",
+        "dependencies": [
+          1,
+          2,
+          3
+        ],
+        "priority": "high",
+        "details": "1. Design the user interface (UI) and user experience (UX) for the entire onboarding flow, starting from the user segment selection screen and ending with the successful creation of the first AI-Link.\n2. Develop UI mockups and prototypes for each step of the onboarding process, including user segment selection, feature highlights, initial setup, and AI-Link creation.\n3. Incorporate progress indicators to visually represent the user's advancement through the onboarding flow.\n4. Implement personalization elements based on the selected user segment (learner/examinee, researcher, professional), tailoring the onboarding experience to their specific needs and goals.\n5. Integrate engagement strategies, such as tooltips, interactive tutorials, and contextual help, to keep users engaged and minimize churn.\n6. Design the onboarding flow to be intuitive and user-friendly, ensuring a seamless and enjoyable experience for all user segments.\n7. Ensure the design aligns with the 'Prompt Free' philosophy and effectively introduces the AMFA process.\n<info added on 2025-07-03T01:29:24.120Z>\nIncorporate the following UI/UX design trends for the personalized onboarding flow:\n\n1.  **User Segmentation:**\n    *   Implement explicit, implicit, and hybrid segmentation strategies to tailor the onboarding experience for learner/examinee, researcher, and professional user segments.\n    *   Design an intuitive user segment selection screen as the initial step of the onboarding flow.\n    *   Ensure backend logic supports storing and retrieving user segment information for personalized experiences.\n    *   Consider edge cases like misclassification and user uncertainty, providing options to change segments or receive guidance.\n2.  **Progressive Onboarding:**\n    *   Reveal features and information gradually, using feature discovery, contextual help, checklists, and just-in-time information.\n    *   Integrate the AMFA process demo progressively, revealing each step (Atomic Reading, Atomic Memo, Memo Evolution, Focused Note, AI-Link) gradually.\n    *   Incorporate progress indicators and contextual help within the UI/UX design.\n    *   Track user behavior to identify drop-off points and areas for improvement.\n    *   Address potential user frustration by providing options to skip ahead or access comprehensive guides.\n3.  **Interactive Elements:**\n    *   Enhance user engagement with interactive tutorials, quizzes, and gamified elements.\n    *   Design the AMFA process demo to be highly interactive, allowing users to experience each step firsthand.\n    *   Incorporate interactive elements such as tutorials, quizzes, and gamified elements within the UI/UX design.\n    *   Use micro-interactions like subtle animations and visual cues to provide feedback and guide users.\n    *   Avoid over-gamification and ensure interactive elements are accessible and performant.\n</info added on 2025-07-03T01:29:24.120Z>\n\nThe personalized onboarding flow UI/UX design is now complete. Key aspects include:\n\n*   **7-Step, 10-Minute Experience Flow:**\n    *   Phase 1: Personalization Start (2 minutes) - Persona selection + tailored value proposition.\n    *   Phase 2: AMFA Experience (6 minutes) - Interactive demo + Before/After comparison.\n    *   Phase 3: Personalization Completion (2 minutes) - Personalization settings + next steps guidance.\n*   **Persona-Specific Customization:**\n    *   Learner: \"Your Personal AI Tutor\" - TOEFL passage → personalized learning advice.\n    *   Researcher: \"Your Research Co-Pilot\" - AI paper → research direction suggestions.\n    *   Professional: \"Your Intelligent Work Partner\" - Market report → business strategy.\n*   **Comprehensive Technical Specifications:**\n    *   TypeScript interfaces and component structure.\n    *   State management architecture (OnboardingState).\n    *   Performance optimization strategies (code splitting, animation optimization).\n    *   Accessibility considerations (WCAG 2.1 AA compliance).\n*   **Data-Driven Success Metrics:**\n    *   Completion rate target of 85%+\n    *   Step-by-step drop-off rate analysis.\n    *   Persona-specific performance tracking.\n    *   Detailed event tracking system.\n\nThe design addresses previous issues by providing a customized journey for each of the 3 personas, accelerating the value experience by focusing on the AMFA process, visualizing the value of AI-Links through Before/After comparisons, and maximizing personalization from persona selection to next-step guidance.\n\nDetailed component designs are available for use in Task 5 (frontend implementation). Data structures and API specifications needed for Task 6 (backend logic) have been defined. Analytics events and KPIs for Task 7 (performance measurement) have been designed.",
+        "testStrategy": "1. Review the UI/UX design to ensure it is intuitive, user-friendly, and visually appealing.\n2. Verify that the progress indicators accurately reflect the user's progress through the onboarding flow.\n3. Confirm that the personalization elements are correctly implemented and tailored to each user segment.\n4. Test the engagement strategies to ensure they are effective in keeping users engaged and minimizing churn.\n5. Conduct user testing with representatives from each user segment to gather feedback and identify areas for improvement.\n6. Ensure that the onboarding flow effectively conveys the 'Prompt Free' philosophy and introduces the AMFA process.\n7. Validate that the flow smoothly guides the user to create their first AI-Link.\n8. Verify that the 7-step onboarding flow aligns with the defined persona-specific experiences.\n9. Ensure that the data-driven success metrics are accurately tracked and reported.\n10. Confirm that the technical specifications (TypeScript interfaces, state management, performance optimizations, accessibility) are correctly implemented in the subsequent tasks.",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Onboarding Page Frontend with React/Next.js",
+        "description": "Implement the onboarding page frontend using React/Next.js, incorporating user segment selection, AMFA process demo, personalization settings, and AI-Link generation, with a responsive design and animations.",
+        "details": "1. Set up a new React/Next.js project or integrate the onboarding page into the existing project structure.\n2. Implement the UI components for user segment selection, allowing users to identify themselves as learner/examinee, researcher, or professional.\n3. Integrate the interactive AMFA process demo (from Task 3) into the onboarding flow, ensuring seamless navigation and engagement.\n4. Develop UI elements for personalization settings, enabling users to customize their experience and preferences.\n5. Implement the AI-Link generation feature, guiding users through the process of creating their first AI-Link.\n6. Ensure the onboarding page is fully responsive and adapts to different screen sizes and devices.\n7. Incorporate animations and visual effects to enhance the user experience and guide users through the onboarding process.\n8. Implement data tracking and analytics to monitor user behavior and identify areas for improvement.\n9. Write unit tests and integration tests to ensure the functionality and stability of the onboarding page.\n<info added on 2025-07-03T01:33:43.834Z>\nImplement a personalized onboarding flow in React/Next.js, focusing on multi-step onboarding, state management, and performance optimization.\n\n1.  **Multi-Step Onboarding Design:**\n    *   Implement clear step-by-step guidance with progress indicators and contextual help.\n    *   Personalize the experience based on user segments (learner/examinee, researcher, professional) with dynamic content and adaptive flows.\n    *   Refer to the provided React/Next.js example for a basic multi-step component structure.\n\n2.  **State Management:**\n    *   Choose an appropriate state management solution (useState, Context API, Redux/Zustand) based on the complexity of the onboarding flow.\n    *   Utilize Context API for managing user segment and onboarding data across multiple steps, as demonstrated in the provided example.\n\n3.  **Performance Optimization:**\n    *   Employ code splitting with dynamic imports to reduce initial load time.\n    *   Optimize images using compression and appropriate formats (WebP) with Next.js's `<Image>` component.\n    *   Implement memoization with `React.memo`, `useMemo`, or `useCallback` to prevent unnecessary re-renders.\n    *   Use lazy loading with `React.lazy` and `Suspense` for non-critical resources.\n\n4.  **Conveying \"Prompt Free\" Philosophy and AMFA Process:**\n    *   Use visual aids like animations and diagrams to illustrate the AMFA process.\n    *   Incorporate interactive demos and hands-on exercises for users to experience the AMFA process.\n    *   Provide clear and concise explanations of the \"Prompt Free\" philosophy and the AMFA process with contextual examples.\n\n5.  **Testing and QA:**\n    *   Conduct functional testing to verify all features, including user segment selection, AMFA process demo, personalization settings, and AI-Link generation.\n    *   Perform cross-browser testing to ensure compatibility.\n    *   Evaluate loading speed and responsiveness under different network conditions.\n    *   Gather user feedback and implement A/B tests to optimize the onboarding flow.\n\n6.  **Monitoring and Analysis:**\n    *   Track key performance indicators (KPIs) such as dropout rates, completion rates, and user engagement metrics.\n    *   Collect user feedback through surveys and interviews.\n    *   Create a real-time dashboard to visualize key onboarding metrics and A/B testing results.\n</info added on 2025-07-03T01:33:43.834Z>\n<info added on 2025-07-03T01:37:52.179Z>\nOnboarding page frontend implementation complete (first phase).\n\n## Completed Deliverables\n- **New Onboarding Page**: Fully reimplemented at `frontend/app/onboarding/page.tsx`\n- **7-Step Personalized Flow**: Complete implementation of the designed UI/UX\n- **React/Next.js Best Practices Research**: Applied the latest implementation methodologies\n\n## Key Implementation Achievements\n1. **Complete 7-Step Onboarding Flow Implementation**:\n   - Step 1: Welcome & Persona Selection (3-card selection interface)\n   - Step 2: Persona-Specific Value Proposition (Before/After comparison)\n   - Step 3: AMFA Process Introduction (using existing AMFACards)\n   - Step 4: Interactive Demo (4-step simulation)\n   - Step 5: Before/After AI Comparison (real response examples)\n   - Step 6: Personalization Settings (language, notification frequency)\n   - Step 7: Completion and Next Steps Guidance\n\n2. **Complete Persona-Based Customization**:\n   - **Learner**: TOEFL passage-based demo\n   - **Researcher**: AI paper analysis-based demo\n   - **Professional**: Market report-based demo\n\n3. **Advanced UI/UX Implementation**:\n   - Framer Motion animations (page transitions, component appearance)\n   - Responsive design (desktop/tablet/mobile)\n   - Dark theme gradient design\n   - Progress display and navigation\n\n4. **Technical Completeness**:\n   - TypeScript full type safety\n   - State management (OnboardingState interface)\n   - Existing component utilization (ArticleToCapsuleAnimation, AMFACards)\n   - Error handling and user experience optimization\n\n## Existing Component Utilization\n- **AMFACards**: Explains the AMFA process in Step 3\n- **ArticleToCapsuleAnimation**: Can be used in the Step 4 demo in the future\n- **useAuth**: User authentication status management integration\n\n## Resolved Technical Issues\n- Modified useAuth hook import method (default export)\n- Resolved the missing isOnboarded property issue (marked as TODO)\n\n## Next Steps Connections\n- Task 6 (backend implementation) requires an onboarding state saving API\n- Task 7 (performance measurement) will analyze dropout rates for each step\n- Task 8 (testing) will verify the flow for each persona\n\nNow, users can experience the AMFA process through a fully personalized 7-step onboarding experience and set up their own AI partner.\n</info added on 2025-07-03T01:37:52.179Z>",
+        "testStrategy": "1. Verify that all UI components are correctly rendered and functional across different browsers and devices.\n2. Ensure that the user segment selection process is intuitive and accurately captures user information.\n3. Confirm that the AMFA process demo is seamlessly integrated and provides a clear understanding of the process.\n4. Verify that personalization settings are correctly applied and reflected in the user experience.\n5. Ensure that the AI-Link generation process is smooth and successful.\n6. Test the responsiveness of the onboarding page on various screen sizes and devices.\n7. Validate that animations and visual effects enhance the user experience without hindering performance.\n8. Verify that data tracking and analytics are correctly implemented and capturing user behavior.\n9. Review the code for adherence to coding standards and best practices.",
+        "status": "done",
+        "dependencies": [
+          4,
+          3
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Onboarding Backend Logic",
+        "description": "Implement the backend logic for the onboarding process, including user segment classification, personalization settings storage, onboarding progress tracking, and backend API for AI-Link generation trials, ensuring compatibility with the existing system.",
+        "details": "1. Implement API endpoints for user segment selection and storage, categorizing users as learner/examinee, researcher, or professional.\n2. Develop backend logic to store and manage user personalization settings, utilizing a database or configuration management system.\n3. Implement a mechanism to track user progress through the onboarding flow, recording completed steps and current status.\n4. Create a backend API to facilitate AI-Link generation trials during the onboarding process, integrating with the existing AI-Link generation service.\n5. Ensure compatibility with the existing system by adhering to established API standards and data formats.\n6. Implement robust error handling and logging mechanisms to monitor and troubleshoot the onboarding process.\n7. Secure the API endpoints using appropriate authentication and authorization mechanisms.",
+        "testStrategy": "1. Verify that the user segment classification API correctly categorizes users based on their selections.\n2. Ensure that user personalization settings are stored and retrieved accurately.\n3. Confirm that the onboarding progress tracking mechanism accurately reflects the user's advancement through the flow.\n4. Validate that the AI-Link generation trial API functions correctly and integrates seamlessly with the existing AI-Link generation service.\n5. Test the API endpoints for compatibility with the existing system, ensuring data integrity and functionality.\n6. Verify that error handling and logging mechanisms are functioning correctly, providing informative messages for troubleshooting.\n7. Conduct security testing to ensure that the API endpoints are protected against unauthorized access and data breaches.",
+        "status": "pending",
+        "dependencies": [
+          2,
+          4,
+          5
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Onboarding Performance Measurement and Analysis System",
+        "description": "Implement a system to measure and analyze onboarding performance, tracking metrics such as dropout rates, completion rates, and user behavior patterns at each stage. This includes A/B testing capabilities and a real-time dashboard for continuous monitoring and improvement.",
+        "details": "1. Implement data collection mechanisms to track user interactions and progress through each step of the onboarding process, including user segment, time spent on each step, actions taken, and drop-off points.\n2. Develop backend logic to calculate and store key onboarding metrics such as dropout rates, completion rates, and average time to completion for each user segment.\n3. Create an A/B testing framework to compare different onboarding variations and measure their impact on key metrics. This includes the ability to define test groups, track performance, and analyze results.\n4. Design and implement a real-time dashboard to visualize onboarding performance metrics, A/B test results, and user behavior patterns. The dashboard should provide actionable insights for optimizing the onboarding process.\n5. Integrate with existing analytics tools to provide a comprehensive view of user behavior and onboarding performance.\n6. Implement data privacy and security measures to protect user data and ensure compliance with relevant regulations.",
+        "testStrategy": "1. Verify that the data collection mechanisms accurately track user interactions and progress through each step of the onboarding process.\n2. Ensure that the calculated onboarding metrics (dropout rates, completion rates, etc.) are accurate and consistent.\n3. Confirm that the A/B testing framework correctly assigns users to test groups, tracks performance, and analyzes results.\n4. Validate that the real-time dashboard displays accurate and up-to-date onboarding performance metrics and A/B test results.\n5. Verify that the integration with existing analytics tools provides a comprehensive view of user behavior and onboarding performance.\n6. Ensure that data privacy and security measures are in place to protect user data and comply with relevant regulations.",
+        "status": "pending",
+        "dependencies": [
+          4,
+          6
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Onboarding Testing and QA",
+        "description": "Conduct comprehensive testing and QA for the new onboarding page, covering functionality, performance, and usability across various devices and browsers. Address any identified bugs or issues.",
+        "details": "1. Develop a comprehensive test plan covering functional, performance, and usability aspects of the new onboarding page.\n2. Perform functional testing to ensure all features of the onboarding page work as expected, including user segment selection, AMFA process demo, personalization settings, and AI-Link generation.\n3. Conduct performance testing to evaluate the loading speed and responsiveness of the onboarding page under different network conditions.\n4. Perform usability testing to assess the ease of use and intuitiveness of the onboarding flow, gathering feedback from representative users.\n5. Test the onboarding page on a variety of devices (desktops, tablets, smartphones) and browsers (Chrome, Firefox, Safari, Edge) to ensure compatibility.\n6. Document all test results, including any identified bugs or issues, in a bug tracking system.\n7. Work with the development team to address and resolve any identified bugs or issues.\n8. Retest the onboarding page after bug fixes to ensure that the issues have been resolved and no new issues have been introduced.",
+        "testStrategy": "1. Verify that all test cases in the test plan are executed and documented.\n2. Ensure that all identified bugs or issues are properly documented and tracked in the bug tracking system.\n3. Confirm that all bugs or issues are resolved and retested to ensure that the fixes are effective.\n4. Validate that the onboarding page functions correctly and provides a positive user experience across all supported devices and browsers.\n5. Measure and report on key performance metrics, such as loading speed and response time, to ensure that the onboarding page meets performance requirements.\n6. Conduct a final review of the onboarding page to ensure that it meets all quality standards and is ready for release.",
+        "status": "pending",
+        "dependencies": [
+          5,
+          6,
+          7
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Onboarding Launch and Performance Monitoring",
+        "description": "Deploy the new onboarding page to production and monitor its initial performance. Collect user feedback, track key performance indicators, and implement immediate improvements as needed to ensure goal achievement through continuous optimization.",
+        "details": "1. Deploy the new onboarding page to the production environment, ensuring seamless integration with the existing system.\n2. Implement real-time monitoring of key performance indicators (KPIs) such as dropout rates, completion rates, and user engagement metrics.\n3. Set up mechanisms for collecting user feedback through surveys, in-app feedback forms, and user interviews.\n4. Analyze user feedback and performance data to identify areas for improvement and optimization.\n5. Implement A/B tests to evaluate the impact of different onboarding variations on user engagement and conversion rates.\n6. Continuously iterate on the onboarding process based on data-driven insights and user feedback, implementing improvements and optimizations as needed.",
+        "testStrategy": "1. Verify that the onboarding page is successfully deployed to the production environment and accessible to all users.\n2. Ensure that real-time monitoring of KPIs is functioning correctly and providing accurate data.\n3. Confirm that user feedback mechanisms are in place and effectively capturing user input.\n4. Validate that A/B tests are properly configured and providing statistically significant results.\n5. Verify that all implemented improvements and optimizations are thoroughly tested and validated before being rolled out to all users.\n6. Monitor the impact of implemented changes on key performance indicators and user satisfaction metrics.",
+        "status": "pending",
+        "dependencies": [
+          8,
+          7
+        ],
+        "priority": "high",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-03T01:14:29.650Z",
+      "updated": "2025-07-03T01:38:02.928Z",
+      "description": "온보딩 페이지 개선 프로젝트를 위한 태그"
     }
   }
 }
