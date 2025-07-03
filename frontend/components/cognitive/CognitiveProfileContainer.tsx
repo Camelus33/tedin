@@ -138,21 +138,12 @@ const CognitiveProfileContainer: React.FC<CognitiveProfileContainerProps> = ({ c
     <div className={`bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-indigo-100 shadow-sm overflow-hidden ${className}`}>
       <div className="p-6 md:p-8">
         <a href="#" onClick={handleCognitiveProfileClick} className="group inline-block">
-          <h2 className="text-2xl font-medium text-indigo-900 mb-2 text-center group-hover:text-indigo-600 transition-colors">
+          <h2 className="text-2xl font-medium text-indigo-900 mb-6 text-center group-hover:text-indigo-600 transition-colors">
             나의 인지 여정
             <span className="inline-block ml-1 text-indigo-500 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-700">→</span>
           </h2>
-          <p className="text-sm text-indigo-700 mb-6 text-center group-hover:text-indigo-500 transition-colors">
-            당신만의 고유한 인지 리듬을 발견하세요
-          </p>
         </a>
-        
-        {/* 자연 메타포 추가 */}
-        <div className="text-center mb-6 text-indigo-800">
-          <p className="text-sm italic">
-            "물이 흐르듯 자연스러운 당신의 인지 흐름을 관찰하세요"
-          </p>
-        </div>
+
         
         {/* Time period selector */}
         <div className="flex justify-center mb-6">

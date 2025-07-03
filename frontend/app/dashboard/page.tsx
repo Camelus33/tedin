@@ -482,7 +482,7 @@ export default function DashboardPage() {
   return (
     <div className={`min-h-screen ${habitus33Theme.gradient}`}> {/* Applied cyber theme gradient */}
       {/* 고정 헤더 - 사이버 테마 적용 */}
-      <header className={`sticky top-0 z-10 glass-header py-4 px-4 animate-fadeIn ${habitus33Theme.bgSecondary} border-b ${habitus33Theme.borderPrimary}`}>
+      <header className={`sticky top-0 z-10 glass-header py-1 px-4 animate-fadeIn ${habitus33Theme.bgSecondary} border-b ${habitus33Theme.borderPrimary}`}>
         <div className="container mx-auto max-w-6xl flex justify-between items-center">
           <Link href="/dashboard" className="flex items-center space-x-3 group">
             <AppLogo className="w-11 h-11 group-hover:opacity-90 transition-opacity" />
@@ -491,7 +491,7 @@ export default function DashboardPage() {
                 Habitus33
               </h1>
               <p className={`text-xs font-medium tracking-wider ${habitus33Theme.textLight}`}> 
-                Read Short. Deep Dive
+                Prompt Free, AI - Link
               </p>
             </div>
           </Link>
@@ -539,47 +539,39 @@ export default function DashboardPage() {
 
       {/* Above the Fold Container - 정확히 100vh로 고정 */}
       <div className="h-screen max-h-screen overflow-hidden flex flex-col">
-        <div className="container mx-auto max-w-7xl flex-1 py-4 px-4 flex flex-col min-h-0">
+        <div className="container mx-auto max-w-7xl flex-1 pt-0 pb-1 px-4 flex flex-col min-h-0">
           {/* Above the Fold Grid Layout */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 min-h-0">
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-1 md:gap-1.5 min-h-0">
             
             {/* Hero Section - 높이 제한 */}
             <div className="lg:col-span-3 flex flex-col justify-center animate-slideUp relative max-h-[40vh] lg:max-h-[35vh]">
-              {/* Habitus33 버튼 - 모바일에서 상대 위치 */}
-              <div className="flex justify-start mb-2 md:absolute md:top-0 md:left-0 md:mb-0 md:z-20">
-                <button
-                  onClick={() => router.push('/brain-hack-routine')}
-                  className={`px-3 py-2 md:px-4 md:py-2 rounded-lg ${habitus33Theme.progressFg} text-white font-medium text-sm transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105 focus:shadow-lg focus:shadow-cyan-500/25 focus:scale-105 active:scale-95 outline-none transform`}
-                  aria-label="Habitus33 브레인 핵 루틴"
-                  type="button"
-                >
-                  Habitus33
-                </button>
-              </div>
-              
-              <div className={`${habitus33Theme.cardBg} rounded-2xl p-4 sm:p-6 md:p-8 border ${habitus33Theme.borderPrimary} backdrop-blur-sm relative overflow-hidden`}>
+              <div className={`${habitus33Theme.cardBg} rounded-2xl p-3 sm:p-4 md:p-6 border ${habitus33Theme.borderPrimary} backdrop-blur-sm relative overflow-hidden`}>
+                {/* Habitus33 버튼 - 녹색 그라디에이션 원형, 섹션 내부 배치 */}
+                <div className="absolute top-3 left-3 md:top-4 md:left-4 z-20">
+                  <button
+                    onClick={() => router.push('/brain-hack-routine')}
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 text-white font-bold text-xs md:text-sm transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-110 focus:shadow-lg focus:shadow-emerald-500/30 focus:scale-110 active:scale-95 outline-none transform backdrop-blur-sm border border-emerald-400/40 flex items-center justify-center"
+                    aria-label="Habitus33 브레인 핵 루틴"
+                    type="button"
+                  >
+                    H33
+                  </button>
+                </div>
                 {/* 배경 그라데이션 효과 */}
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
                 <div className="relative z-10 text-center">
-                  <h1 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2 md:mb-3`}>
-                    Small Step, One Line
-                  </h1>
-                  <p className={`${habitus33Theme.textMuted} text-xs sm:text-sm md:text-base mb-3 md:mb-4`}>
-                    "1줄 메모, AI - Link의 시작"
-                  </p>
-                  
-                  {/* 두 개의 버튼 - 모바일에서 세로 배치 */}
-                  <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-center items-center">
+                  {/* 두 개의 버튼만 - 모바일에서 세로 배치 */}
+                  <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
                     <Link href="/ts" className="inline-block w-full sm:w-auto">
-                      <button className={`w-full sm:w-auto bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold text-xs sm:text-sm md:text-base lg:text-lg px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2 md:py-3 lg:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105`}>
-                        📖 Atomic Reading
+                      <button className={`w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-xs sm:text-sm md:text-base lg:text-lg px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2 md:py-3 lg:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105`}>
+                        Reading
                       </button>
                     </Link>
                     <button 
                       onClick={handleAtomicMemo}
-                      className={`w-full sm:w-auto ${habitus33Theme.progressFg} text-white font-bold text-xs sm:text-sm md:text-base lg:text-lg px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2 md:py-3 lg:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105`}
+                      className={`w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-xs sm:text-sm md:text-base lg:text-lg px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2 md:py-3 lg:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105`}
                     >
-                      ✍️ Atomic Memo
+                      Memo
                     </button>
                   </div>
                 </div>
@@ -608,7 +600,7 @@ export default function DashboardPage() {
                 
                 {/* 스크롤 가능한 컨텐츠 영역 */}
                 <div 
-                  className="flex-1 overflow-auto p-2 md:p-3"
+                  className="flex-1 overflow-auto p-1 md:p-2"
                   style={{
                     scrollbarWidth: 'thin',
                     scrollbarColor: '#4b5563 #1f2937',
@@ -627,7 +619,7 @@ export default function DashboardPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-cyan-500/5 pointer-events-none" />
                 
                 {/* 헤더 */}
-                <div className="relative z-10 p-3 md:p-4 border-b border-gray-700/50 flex-shrink-0">
+                <div className="relative z-10 p-2 md:p-3 border-b border-gray-700/50 flex-shrink-0">
                   <h2 className={`text-base md:text-lg font-bold ${habitus33Theme.primary}`}>Cognitive Profile</h2>
                 </div>
                 
@@ -636,7 +628,7 @@ export default function DashboardPage() {
                   scrollbarWidth: 'thin',
                   scrollbarColor: '#4b5563 #1f2937'
                 }}>
-                  <div className="p-3 md:p-4 h-auto" style={{
+                  <div className="p-2 md:p-3 h-auto" style={{
                     WebkitOverflowScrolling: 'touch'
                   }}>
                     <div style={{ overflow: 'visible' }}>
@@ -652,10 +644,10 @@ export default function DashboardPage() {
 
       {/* Scrollable Content - 완전히 다음 뷰포트에 배치 */}
       <div className="min-h-screen bg-gray-900">
-        <div className="container mx-auto max-w-6xl py-8 md:py-12 px-4">
+        <div className="container mx-auto max-w-6xl py-4 md:py-6 px-4">
 
           {/* 주요 액션 버튼 영역 - 축소 */}
-          <div className="mb-6 md:mb-8 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 animate-slideUp">
+          <div className="mb-3 md:mb-4 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 animate-slideUp">
             {/* ZenGo Card - 축소된 사이버 테마 */}
             <Link href="/zengo" className="block group">
               <div className={`h-full p-3 md:p-4 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderSecondary} transition-all duration-300 hover:border-purple-400/60 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 backdrop-blur-sm relative overflow-hidden flex flex-col justify-between`}> 
@@ -709,7 +701,7 @@ export default function DashboardPage() {
           
           {/* 33일 루틴 트래커 - 축소된 사이버 테마 */}
           {routineData ? (
-            <div className={`relative p-3 sm:p-4 mb-6 rounded-lg border ${habitus33Theme.borderPrimary} shadow-lg ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-500`}>
+            <div className={`relative p-3 sm:p-4 mb-3 md:mb-4 rounded-lg border ${habitus33Theme.borderPrimary} shadow-lg ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-500`}>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
               
               {/* 클릭 가능한 헤더 */}
@@ -767,7 +759,7 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className={`p-4 mb-6 text-center rounded-lg border ${habitus33Theme.borderPrimary} shadow-lg ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden relative`}>
+            <div className={`p-4 mb-3 md:mb-4 text-center rounded-lg border ${habitus33Theme.borderPrimary} shadow-lg ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden relative`}>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
               <div className="relative z-10">
                 <p className={`${habitus33Theme.textMuted} mb-3 text-sm`}>진행 중인 33일 루틴이 없습니다.</p>
@@ -795,7 +787,7 @@ export default function DashboardPage() {
           )}
           
           {/* 통계 요약 카드 - 축소된 사이버 테마 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-4">
             {/* Atomic Reading - 축소된 강조 스타일 */}
             <div className={`relative p-4 rounded-lg shadow-lg border-2 ${habitus33Theme.borderPrimary} ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-300 hover:scale-105`}>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

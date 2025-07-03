@@ -359,7 +359,7 @@ export default function BooksPageContent() {
               <AiOutlinePlus className="h-5 w-5" /><span>NEW</span>
             </button>
           </div>
-          <p className={`text-sm ${cyberTheme.textMuted}`}>이곳은 당신이 등록한 자료, 1줄메모를 진화시키고, 단권화 노트로 융합하는 공간입니다. 보고서, 책, 논문, 학습자료 및 각종 문서 를 관리하세요.</p>
+          <p className={`text-sm ${cyberTheme.textMuted}`}>이 곳에서 당신의 모든 메모와 지식을 연결해서 당신만의 단권화 노트를 작성하고, AI - Link를 만드세요.</p>
         </div>
         <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 ${cyberTheme.bgSecondary} rounded-lg`}>
           <div className="relative w-full sm:w-auto flex-grow">
