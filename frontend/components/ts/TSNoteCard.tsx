@@ -572,9 +572,9 @@ export default function TSNoteCard({
   return (
     <div
       className={cn(
-        "relative p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
+        "relative p-2 sm:p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
         (isOpen && enableOverlayEvolutionMode) || (isInlineEditing && isPageEditing && !enableOverlayEvolutionMode) ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
-        minimalDisplay ? "p-3 min-h-0" : "",
+        minimalDisplay ? "p-2 sm:p-3 min-h-0" : "",
         className
       )}
       onClick={handleCardClick}
@@ -671,7 +671,7 @@ export default function TSNoteCard({
             {note.tags.map((tag, index) => (
               <span
                 key={index}
-                className={`px-1.5 py-0.5 sm:px-2 sm:py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center max-w-[120px]`}
+                className={`px-1.5 py-0.5 sm:px-2 sm:py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center max-w-[100px] sm:max-w-[120px]`}
                 onClick={(e) => e.stopPropagation()}
                 data-no-toggle
                 title={tag}
@@ -689,7 +689,7 @@ export default function TSNoteCard({
         const shouldRenderActions = showActions && !minimalDisplay;
         if (shouldRenderActions) {
           return (
-            <div className="flex items-center justify-end space-x-1 sm:space-x-2 mt-auto pt-2 border-t border-gray-700/50">
+            <div className="flex items-center justify-end space-x-2 sm:space-x-2 mt-auto pt-2 border-t border-gray-700/50">
               {/* AI 코멘트 Popover */}
               <AiCoachPopover
                 memoText={note.content}
@@ -702,7 +702,7 @@ export default function TSNoteCard({
                   size="icon"
                   onClick={(e) => { e.stopPropagation(); onAddToCart(note._id, note.bookId); }}
                   title={isAddedToCart ? "제거" : "담기"}
-                  className={`h-8 w-8 ${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
+                  className={`h-9 w-9 sm:h-8 sm:w-8 ${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
                   data-no-toggle
                 >
                   <ShoppingCartIcon className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${isAddedToCart ? 'text-green-500' : ''}`} />
@@ -711,7 +711,7 @@ export default function TSNoteCard({
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="px-1.5 sm:px-2 h-8 w-8" data-no-toggle onClick={(e) => e.stopPropagation()}>
+                  <Button variant="ghost" size="sm" className="px-1.5 sm:px-2 h-9 w-9 sm:h-8 sm:w-8" data-no-toggle onClick={(e) => e.stopPropagation()}>
                     <EllipsisVerticalIcon className={`h-4 w-4 text-gray-400 hover:${cyberTheme.primaryText}`} />
                   </Button>
                 </DropdownMenuTrigger>

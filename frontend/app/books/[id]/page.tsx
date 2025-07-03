@@ -188,6 +188,7 @@ export default function BookDetailPage() {
   const [activeTab, setActiveTab] = useState<'memo' | 'flashcard' | 'relatedLinks'>('memo'); // 현재 활성화된 탭 (메모진화, 지식연결, 플래시카드)
   const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false); // 새 플래시카드 수동 생성 폼 표시 여부
   const [selectedRelatedNote, setSelectedRelatedNote] = useState<PageNote | null>(null); // 지식연결 탭에서 선택된 노트
+  const [isBookDetailExpanded, setIsBookDetailExpanded] = useState<boolean>(false); // 책 상세 정보 확장 상태
   
   // localStorage에서 읽어온 책의 추가 메타데이터를 저장하는 상태입니다.
   // 이 상태는 클라이언트 사이드에서만 업데이트됩니다.
@@ -553,95 +554,137 @@ export default function BookDetailPage() {
           </h1>
         </div>
         
-        {/* Book Header */}
-        <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl overflow-hidden mb-6 relative border ${cyberTheme.borderSecondary}/30`}>
-          {/* Action Buttons group at top right */}
-          <div className="absolute top-2 right-2 z-10 flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleEditBook}
-              aria-label="책 정보 수정"
-              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border text-xs px-2 py-1 h-7 min-h-0`}
-            >
-              <span className="hidden sm:inline text-xs">수정</span>
-              <span className="sm:hidden text-xs">수정</span>
-            </Button>
+        {/* Book Header - Compact with Expandable Details */}
+        <div className={`${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden mb-4 relative border ${cyberTheme.borderSecondary}/30 transition-all duration-300 ${isBookDetailExpanded ? 'shadow-2xl' : ''}`}>
+          {/* Primary Action Button - Always visible */}
+          <div className="absolute top-2 right-2 z-10">
             <Button
               variant="default"
               size="sm"
               onClick={handleStartReading}
               aria-label={bookData.bookType === 'NOTEBOOK' ? '메모 작성' : 'TS 세션 시작'}
-              className={`text-white text-xs px-2 py-1 h-7 min-h-0`}
+              className={`text-white text-xs px-3 py-1 h-7 min-h-0`}
             >
-              <span className="hidden sm:inline text-xs">
-                {bookData.bookType === 'NOTEBOOK' ? '메모 작성' : '읽기'}
-              </span>
-              <span className="sm:hidden text-xs">
+              <span className="text-xs">
                 {bookData.bookType === 'NOTEBOOK' ? '메모' : '읽기'}
               </span>
             </Button>
           </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-start min-w-0">
-            {/* Book Cover and placeholder */}
-            <div className="md:col-span-1 space-y-2 flex justify-center flex-shrink-0">
-              <div className={`w-full max-w-[150px] aspect-[2/3] ${cyberTheme.inputBg} rounded-lg overflow-hidden border ${cyberTheme.inputBorder}`}>
-                {bookData.coverImage ? (
-                  <img
-                    src={bookData.coverImage}
-                    alt={bookData.title || '기억 표지'}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className={`flex flex-col items-center justify-center w-full h-full text-gray-500`}>
-                    <FiBook className="h-10 w-10 mb-2" />
-                    <span className="text-xs">표지 없음</span>
+          
+          <div className="p-3">
+            <div className="flex items-center gap-4">
+              {/* Compact Book Cover */}
+              <div className="flex-shrink-0">
+                <div className={`${isBookDetailExpanded ? 'w-20 h-28' : 'w-12 h-16'} ${cyberTheme.inputBg} rounded overflow-hidden border ${cyberTheme.inputBorder} transition-all duration-300`}>
+                  {bookData.coverImage ? (
+                    <img
+                      src={bookData.coverImage}
+                      alt={bookData.title || '기억 표지'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className={`flex items-center justify-center w-full h-full text-gray-500`}>
+                      <FiBook className={`${isBookDetailExpanded ? 'h-6 w-6' : 'h-4 w-4'} transition-all duration-300`} />
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Compact Book Info */}
+              <div className="flex-1 min-w-0 pr-16">
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className={`${isBookDetailExpanded ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'} font-bold ${cyberTheme.textLight} truncate transition-all duration-300`} title={bookData.title}>
+                    {bookData.title || '제목을 기다리고 있어요'}
+                  </h1>
+                  {bookData.bookType === 'NOTEBOOK' && (
+                    <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-0.5 rounded-full border border-purple-500/30 flex-shrink-0">
+                      노트북
+                    </span>
+                  )}
+                </div>
+                
+                <p className={`text-sm ${cyberTheme.textMuted} mb-2 truncate`} title={bookData.author}>
+                  {bookData.author || '저자를 기다리고 있어요'}
+                </p>
+                
+                {/* Progress Bar - 책인 경우만 표시 */}
+                {bookData.bookType !== 'NOTEBOOK' && (
+                  <div className="flex items-center gap-3">
+                    <div className={`flex-1 ${cyberTheme.progressBarBg} h-1.5 rounded-full overflow-hidden`}>
+                      <div
+                        className={`${cyberTheme.progressFg} h-1.5 rounded-full transition-all duration-300`}
+                        style={{ width: `${getProgressPercentage()}%` }}
+                      />
+                    </div>
+                    <span className={`text-xs ${cyberTheme.textLight} flex-shrink-0`}>
+                      {getProgressPercentage()}%
+                    </span>
                   </div>
                 )}
               </div>
             </div>
-            {/* Book Info */}
-            <div className="md:col-span-3 space-y-3 min-w-0 overflow-hidden">
-              <div className="flex items-center gap-3 mb-1">
-                <h1 className={`text-base sm:text-lg md:text-xl lg:text-2xl font-bold ${cyberTheme.textLight} break-words line-clamp-2`} title={bookData.title}>{bookData.title || '제목을 기다리고 있어요'}</h1>
-                {bookData.bookType === 'NOTEBOOK' && (
-                  <span className="bg-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full border border-purple-500/30 flex-shrink-0">
-                    노트북
-                  </span>
+            
+            {/* Expandable Detailed Information */}
+            {isBookDetailExpanded && (
+              <div className="mt-4 pt-4 border-t border-gray-600 animate-in slide-in-from-top duration-300">
+                {/* Edit Button - Only visible when expanded */}
+                <div className="flex justify-end mb-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEditBook}
+                    aria-label="책 정보 수정"
+                    className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border text-xs px-3 py-1 h-7 min-h-0`}
+                  >
+                    <AiOutlineEdit className="h-3 w-3 mr-1" />
+                    <span className="text-xs">수정</span>
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                  {[
+                    ['분야', localMetadata?.genre || bookData.category || bookData.genre || '분류되지 않음'],
+                    ['목적', readingPurposeLabels[String(localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal)] || '아직 설정되지 않았어요'],
+                    ['여정', (bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages} 페이지` : '페이지 정보가 없어요'],
+                    ['시작일', bookData.createdAt ? <ClientDateDisplay createdAt={bookData.createdAt} /> : '기록 시작일 정보가 없어요'],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex items-baseline space-x-2">
+                      <span className={`w-12 sm:w-20 ${cyberTheme.textMuted} text-xs sm:text-sm flex-shrink-0`}>{label}:</span>
+                      <span className={`font-medium ${cyberTheme.textLight} text-xs sm:text-sm truncate`} title={value}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Detailed Progress Info for Books */}
+                {bookData.bookType !== 'NOTEBOOK' && (
+                  <div className="mt-3 pt-2 border-t border-gray-700">
+                    <div className="flex justify-between items-center mb-1 text-sm">
+                      <span className={cyberTheme.textMuted}>상세 진행률</span>
+                      <span className={cyberTheme.textLight}>{getProgressPercentage()}%</span>
+                    </div>
+                    <div className={`w-full ${cyberTheme.progressBarBg} h-2 rounded-full overflow-hidden`}>
+                      <div
+                        className={`${cyberTheme.progressFg} h-2 rounded-full transition-all duration-300`}
+                        style={{ width: `${getProgressPercentage()}%` }}
+                      />
+                    </div>
+                    <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>
+                      {bookData.currentPage || 0} / {bookData.totalPages || '∞'} 페이지
+                    </div>
+                  </div>
                 )}
               </div>
-              <p className={`text-sm sm:text-md ${cyberTheme.textLight} mb-4 truncate`} title={bookData.author}>{bookData.author || '저자를 기다리고 있어요'}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                {[
-                  ['분야', localMetadata?.genre || bookData.category || bookData.genre || '분류되지 않음'],
-                  ['목적', readingPurposeLabels[String(localMetadata?.readingPurpose || bookData.readingPurpose || bookData.readingGoal)] || '아직 설정되지 않았어요'],
-                  ['여정', (bookData.totalPages && bookData.totalPages > 0) ? `${bookData.totalPages} 페이지` : '페이지 정보가 없어요'],
-                  ['시작일', bookData.createdAt ? <ClientDateDisplay createdAt={bookData.createdAt} /> : '기록 시작일 정보가 없어요'],
-                ].map(([label, value]) => (
-                  <div key={label} className="flex items-baseline space-x-2">
-                    <span className={`w-12 sm:w-20 ${cyberTheme.textMuted} text-xs sm:text-sm flex-shrink-0`}>{label}:</span>
-                    <span className={`font-medium ${cyberTheme.textLight} text-xs sm:text-sm truncate`} title={value}>{value}</span>
-                  </div>
-                ))}
-              </div>
-              {/* Progress Bar - 책인 경우만 표시 */}
-              {bookData.bookType !== 'NOTEBOOK' && (
-                <div className="pt-2" role="group" aria-label={`성장 진행률 ${getProgressPercentage()}%`}>
-                  <div className="flex justify-between items-center mb-1 text-sm">
-                    <span className={cyberTheme.textMuted}>진행률</span>
-                    <span className={cyberTheme.textLight}>{getProgressPercentage()}%</span>
-                  </div>
-                  <div className={`w-full ${cyberTheme.progressBarBg} h-2 rounded-full overflow-hidden`}>
-                    <div
-                      className={`${cyberTheme.progressFg} h-2 rounded-full transition-all duration-300`}
-                      style={{ width: `${getProgressPercentage()}%` }}
-                    />
-                  </div>
-                  <div className={`text-xs mt-1 ${cyberTheme.textMuted}`}>
-                    {bookData.currentPage || 0} / {bookData.totalPages || '∞'} 페이지
-                  </div>
-                </div>
-              )}
+            )}
+            
+            {/* Toggle Button */}
+            <div className="mt-3 flex justify-center">
+              <button
+                onClick={() => setIsBookDetailExpanded(!isBookDetailExpanded)}
+                className={`flex items-center gap-2 px-3 py-1 rounded-md text-xs ${cyberTheme.textMuted} hover:${cyberTheme.textLight} transition-colors`}
+              >
+                <span>{isBookDetailExpanded ? '간단히 보기' : '자세히 보기'}</span>
+                <AiOutlineArrowRight className={`h-3 w-3 transition-transform duration-300 ${isBookDetailExpanded ? 'rotate-90' : ''}`} />
+              </button>
             </div>
           </div>
         </div>
@@ -674,121 +717,14 @@ export default function BookDetailPage() {
         </div>
         {/* 탭별 컨테이너 */}
         {activeTab === 'memo' && (
-          <section className={`mt-0 ${cyberTheme.bgSecondary} p-4 md:p-6 rounded-lg border ${cyberTheme.borderPrimary}/30`}>
-            <div className="flex flex-col md:flex-row gap-12 mb-3">
-              {/* 왼쪽: 타이틀/설명 */}
-              <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400 mb-1">Memo Hub</h2>
-                <span className="text-xs text-gray-400 font-medium block mb-2">기록에서 자산으로</span>
-                <p className="text-sm text-cyan-300 mb-2 font-semibold">1줄 메모를 확장 연결해, 학습·업무에 활용해 보세요..</p>
-                <ul className="text-xs text-gray-400 leading-relaxed list-disc pl-4 space-y-1">
-                  <li>나의 도메인 지식을 더 넓혀 보세요.</li>
-                  <li>왜 중요하게 느껴졌는지, 이 것은 어떤 도메인 지식과 연결되는지 고민해 보세요.</li>
-                  <li>틈틈이 생각을 더해, 나만의 도메인 컨텍스트를 완성하세요.</li>
-                </ul>
-              </div>
-              {/* 오른쪽: 단계별 카드 grid */}
-              <div className="flex-1 md:flex-[0.8] flex items-center justify-center min-h-[180px] min-w-0">
-                {(() => {
-                  // 네온/사이버틱 6단계 그라디언트 팔레트
-                  const gradientColors = [
-                    {
-                      bg: 'bg-[#00eaff]/30', // 1 네온 블루
-                      badge: 'text-[#00eaff] border-[#00eaff]',
-                    },
-                    {
-                      bg: 'bg-[#00ffd0]/30', // 2 네온 민트
-                      badge: 'text-[#00ffd0] border-[#00ffd0]',
-                    },
-                    {
-                      bg: 'bg-[#00ff85]/30', // 3 네온 그린
-                      badge: 'text-[#00ff85] border-[#00ff85]',
-                    },
-                    {
-                      bg: 'bg-[#aaff00]/30', // 4 네온 라임
-                      badge: 'text-[#aaff00] border-[#aaff00]',
-                    },
-                    {
-                      bg: 'bg-[#ffd600]/30', // 5 네온 옐로우
-                      badge: 'text-[#ffd600] border-[#ffd600]',
-                    },
-                    {
-                      bg: 'bg-[#ff00c8]/30', // 6 네온 핑크
-                      badge: 'text-[#ff00c8] border-[#ff00c8]',
-                    },
-                  ];
-                  const stageIcons = [
-                    AiOutlineEye, // 관찰
-                    AiOutlineEdit, // 기록
-                    AiOutlineQuestionCircle, // 성찰
-                    AiOutlineArrowRight, // 조정
-                    AiOutlineInfoCircle, // 적용
-                    FiBook, // 창발 (예시)
-                  ];
-                  const stages = [
-                    {
-                      title: '관찰',
-                      desc: '새로움에 주의를 기울입니다.',
-                    },
-                    {
-                      title: '기록',
-                      desc: '중요함을 메모로 정리합니다.',
-                    },
-                    {
-                      title: '성찰',
-                      desc: '질문 후, 의미를 부여합니다.',
-                    },
-                    {
-                      title: '조정',
-                      desc: '연결 - 재구성 -새로운 시각',
-                    },
-                    {
-                      title: '적용',
-                      desc: '자신의 삶에 작게 활용',
-                    },
-                    {
-                      title: '창발',
-                      desc: 'Aha! ',
-                      extra: <span className="text-gray-400">("이거 였구나!")</span>,
-                    },
-                  ];
-                  // 시계방향 배치 인덱스: 1 2 / 6 3 / 5 4
-                  const clockwiseOrder = [0, 1, 5, 2, 4, 3];
-                  // 2열 3행으로 배치
-                  const grid = [
-                    [clockwiseOrder[0], clockwiseOrder[1]], // 1 2
-                    [clockwiseOrder[2], clockwiseOrder[3]], // 6 3
-                    [clockwiseOrder[4], clockwiseOrder[5]], // 5 4
-                  ];
-                  return (
-                    <div className="grid grid-rows-3 grid-cols-2 gap-4">
-                      {grid.flat().map((stageIdx, pos) => {
-                        const stage = stages[stageIdx];
-                        const color = gradientColors[stageIdx];
-                        const Icon = stageIcons[stageIdx];
-                        return (
-                          <div key={stage.title} className={`relative group rounded-lg ${color.bg} p-1.5 shadow text-[11px] flex items-center gap-2 w-auto min-w-0 justify-start`}>
-                            {/* Step Number Badge */}
-                            <span
-                              className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] border-2 ${color.badge} bg-gray-900/70 mr-0.5`}
-                              aria-label={`단계 ${stageIdx + 1}`}
-                            >
-                              {stageIdx + 1}
-                            </span>
-                            {/* Icon + Title */}
-                            <Icon className="w-4 h-4 mr-0.5" aria-label={stage.title} />
-                            <span className={`font-bold ${color.badge} text-[11px]`}>{stage.title}</span>
-                            {/* Tooltip on hover */}
-                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity shadow-lg min-w-max text-center" role="tooltip">
-                              {stage.desc} {stage.extra || null}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-              </div>
+          <section className={`mt-0 ${cyberTheme.bgSecondary} p-3 md:p-4 rounded-lg border ${cyberTheme.borderPrimary}/30`}>
+            {/* Minimized Memo Hub Header */}
+            <div className="mb-4 text-center">
+              <h2 className="text-xl font-bold text-cyan-400 mb-1 flex items-center justify-center gap-2">
+                <AiOutlineEdit className="h-5 w-5" />
+                Memo Hub
+              </h2>
+              <p className="text-sm text-gray-400">💡 생각의 조각을 지식의 자산으로 진화시키세요</p>
             </div>
 
             {/* Notes List */}
@@ -816,7 +752,7 @@ export default function BookDetailPage() {
                   const isNoteInCart = cartItems.some(item => item.noteId === note._id);
 
                   return (
-                    <div key={note._id} className={`${cyberTheme.cardBg} p-3 rounded-md border ${cyberTheme.inputBorder}`}>
+                    <div key={note._id} className={`${cyberTheme.cardBg} p-1 sm:p-3 rounded-md border ${cyberTheme.inputBorder}`}>
                       <TSNoteCard
                         note={note as TSNote}
                         readingPurpose={bookData.readingPurpose || 'humanities_self_reflection'}
@@ -848,55 +784,17 @@ export default function BookDetailPage() {
         )}
         {activeTab === 'relatedLinks' && (
           selectedRelatedNote ? (
-            <section className="bg-gray-800/60 rounded-2xl shadow-2xl border-0 p-8 mt-6">
-              {/* 상단: 설명 + 도해식 flow */}
-              <div className="flex flex-col md:flex-row gap-12 mb-3">
-                {/* 좌측: 설명 */}
-                <div className="flex-1 md:flex-[1.2] max-w-md pl-2 py-4 min-w-0">
-                  <h2 className="text-lg sm:text-xl font-bold text-green-300 mb-1"> Connect </h2>
-                  <span className="text-xs text-gray-300 block mb-2">1줄메모에 더 많은 외부 지식을 연결하세요</span>
-                  <ul className="text-xs text-gray-300 list-disc pl-4 space-y-1">
-                    <li>도메인 컨텍스트를 더 확장할 수 있는 외부 지식을 연결하세요.</li>
-                    <li>책, AI 딥리서치 답변, 영상, SNS 포스팅 등을 연결해 더 풍성하게 만드세요.</li>
-                    <li>'왜 연결했는지' 이유를 상세하게 남길수록, 나중에 매우 유용한 도메킨 컨텍스트가 됩니다.</li>
-                  </ul>
-                </div>
-                {/* 우측: 도해식 flow */}
-                <div className="flex-1 md:flex-[0.8] flex flex-col items-center justify-center min-h-[180px] min-w-0">
-                  <div className="flex flex-row items-center gap-4 bg-gray-900/80 rounded-lg shadow border border-cyan-500/30 p-6 w-full max-w-xl">
-                    {/* 1줄 메모 아이콘 */}
-                    <div className="relative group flex flex-col items-center">
-                      <span className="bg-indigo-700 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
-                        <svg xmlns='http://www.w3.org/2000/svg' className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01' /></svg>
-                      </span>
-                      <span className="text-xs text-indigo-200 mt-1">1줄 메모</span>
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">메모에서 출발</div>
-                    </div>
-                    {/* 화살표 */}
-                    <span className="text-2xl text-cyan-400">→</span>
-                    {/* 링크 아이콘 */}
-                    <div className="relative group flex flex-col items-center">
-                      <span className="bg-green-600 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
-                        <svg xmlns='http://www.w3.org/2000/svg' className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.828 14.828a4 4 0 010-5.656m1.415-1.415a6 6 0 010 8.486m-1.415-1.415a4 4 0 010-5.656' /></svg>
-                      </span>
-                      <span className="text-xs text-green-200 mt-1">지식 연결</span>
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">다른 지식과 연결</div>
-                    </div>
-                    {/* 화살표 */}
-                    <span className="text-2xl text-cyan-400">→</span>
-                    {/* 지식 확장 아이콘 */}
-                    <div className="relative group flex flex-col items-center">
-                      <span className="bg-purple-700 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
-                        <svg xmlns='http://www.w3.org/2000/svg' className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' /></svg>
-                      </span>
-                      <span className="text-xs text-purple-200 mt-1">도메인 확장</span>
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">지식이 넓어짐</div>
-                    </div>
-                  </div>
-                </div>
+            <section className="bg-gray-800/60 rounded-lg shadow-lg border-0 p-3 md:p-4 mt-6">
+              {/* Minimized Connect Header */}
+              <div className="mb-4 text-center">
+                <h2 className="text-xl font-bold text-green-300 mb-1 flex items-center justify-center gap-2">
+                  <ShareIcon className="h-5 w-5" />
+                  Connect
+                </h2>
+                <p className="text-sm text-gray-400">🔗 외부 지식과 연결해 도메인 컨텍스트를 확장하세요</p>
               </div>
-              {/* 하단: 1줄 메모 카드 + 지식연결 UI */}
-              <div className="space-y-4 border-t border-gray-700 pt-4 w-full max-w-3xl mx-auto">
+              {/* 메인 작업 영역 */}
+              <div className="space-y-4 w-full max-w-3xl mx-auto">
                 {/* 1줄 메모 카드 */}
                 <div className="bg-gray-900/80 rounded-lg shadow border border-cyan-500/30 p-6 w-full">
                   <div className="border border-green-300 bg-green-900/30 rounded-md px-4 py-4 text-gray-100 font-bold text-lg leading-relaxed shadow-sm">
