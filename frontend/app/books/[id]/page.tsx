@@ -554,16 +554,16 @@ export default function BookDetailPage() {
           </h1>
         </div>
         
-        {/* Book Header - Compact with Expandable Details */}
-        <div className={`${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden mb-4 relative border ${cyberTheme.borderSecondary}/30 transition-all duration-300 ${isBookDetailExpanded ? 'shadow-2xl' : ''}`}>
+        {/* Book Header - Mobile Optimized */}
+        <div className={`${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden mb-2 sm:mb-4 relative border ${cyberTheme.borderSecondary}/30 transition-all duration-300 ${isBookDetailExpanded ? 'shadow-2xl' : ''}`}>
           {/* Primary Action Button - Always visible */}
-          <div className="absolute top-2 right-2 z-10">
+          <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
             <Button
               variant="default"
               size="sm"
               onClick={handleStartReading}
               aria-label={bookData.bookType === 'NOTEBOOK' ? '메모 작성' : 'TS 세션 시작'}
-              className={`text-white text-xs px-3 py-1 h-7 min-h-0`}
+              className={`text-white text-xs px-2 sm:px-3 py-1 h-6 sm:h-7 min-h-0`}
             >
               <span className="text-xs">
                 {bookData.bookType === 'NOTEBOOK' ? '메모' : '읽기'}
@@ -571,11 +571,11 @@ export default function BookDetailPage() {
             </Button>
           </div>
           
-          <div className="p-3">
-            <div className="flex items-center gap-4">
-              {/* Compact Book Cover */}
+          <div className="p-2 sm:p-3">
+            <div className="flex items-center gap-2 sm:gap-4">
+              {/* Mobile Optimized Book Cover */}
               <div className="flex-shrink-0">
-                <div className={`${isBookDetailExpanded ? 'w-20 h-28' : 'w-12 h-16'} ${cyberTheme.inputBg} rounded overflow-hidden border ${cyberTheme.inputBorder} transition-all duration-300`}>
+                <div className={`${isBookDetailExpanded ? 'w-16 sm:w-20 h-20 sm:h-28' : 'w-8 sm:w-12 h-10 sm:h-16'} ${cyberTheme.inputBg} rounded overflow-hidden border ${cyberTheme.inputBorder} transition-all duration-300`}>
                   {bookData.coverImage ? (
                     <img
                       src={bookData.coverImage}
@@ -590,10 +590,10 @@ export default function BookDetailPage() {
                 </div>
               </div>
               
-              {/* Compact Book Info */}
-              <div className="flex-1 min-w-0 pr-16">
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className={`${isBookDetailExpanded ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'} font-bold ${cyberTheme.textLight} truncate transition-all duration-300`} title={bookData.title}>
+              {/* Mobile Optimized Book Info */}
+              <div className="flex-1 min-w-0 pr-12 sm:pr-16">
+                <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1">
+                  <h1 className={`${isBookDetailExpanded ? 'text-base sm:text-lg md:text-xl' : 'text-sm sm:text-base md:text-lg'} font-bold ${cyberTheme.textLight} truncate transition-all duration-300`} title={bookData.title}>
                     {bookData.title || '제목을 기다리고 있어요'}
                   </h1>
                   {bookData.bookType === 'NOTEBOOK' && (
@@ -603,7 +603,7 @@ export default function BookDetailPage() {
                   )}
                 </div>
                 
-                <p className={`text-sm ${cyberTheme.textMuted} mb-2 truncate`} title={bookData.author}>
+                <p className={`text-xs sm:text-sm ${cyberTheme.textMuted} mb-1 sm:mb-2 truncate`} title={bookData.author}>
                   {bookData.author || '저자를 기다리고 있어요'}
                 </p>
                 
@@ -676,8 +676,8 @@ export default function BookDetailPage() {
               </div>
             )}
             
-            {/* Toggle Button */}
-            <div className="mt-3 flex justify-center">
+            {/* Toggle Button - Hidden on Mobile */}
+            <div className="mt-2 sm:mt-3 hidden sm:flex justify-center">
               <button
                 onClick={() => setIsBookDetailExpanded(!isBookDetailExpanded)}
                 className={`flex items-center gap-2 px-3 py-1 rounded-md text-xs ${cyberTheme.textMuted} hover:${cyberTheme.textLight} transition-colors`}
@@ -690,7 +690,7 @@ export default function BookDetailPage() {
         </div>
         
         {/* 탭 버튼 */}
-        <div className="flex gap-1 sm:gap-2 mb-4 overflow-x-auto">
+        <div className="flex gap-1 sm:gap-2 mb-2 sm:mb-4 overflow-x-auto">
           <button
             className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'memo' ? 'border-cyan-400 text-cyan-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-cyan-200'}`}
             onClick={() => setActiveTab('memo')}
@@ -717,21 +717,21 @@ export default function BookDetailPage() {
         </div>
         {/* 탭별 컨테이너 */}
         {activeTab === 'memo' && (
-          <section className={`mt-0 ${cyberTheme.bgSecondary} p-3 md:p-4 rounded-lg border ${cyberTheme.borderPrimary}/30`}>
-            {/* Minimized Memo Hub Header */}
-            <div className="mb-4 text-center">
-              <h2 className="text-xl font-bold text-cyan-400 mb-1 flex items-center justify-center gap-2">
-                <AiOutlineEdit className="h-5 w-5" />
+          <section className={`mt-0 ${cyberTheme.bgSecondary} p-2 sm:p-3 md:p-4 rounded-lg border ${cyberTheme.borderPrimary}/30`}>
+            {/* Mobile Optimized Memo Hub Header */}
+            <div className="mb-2 sm:mb-4 text-center">
+              <h2 className="text-lg sm:text-xl font-bold text-cyan-400 mb-0.5 sm:mb-1 flex items-center justify-center gap-1 sm:gap-2">
+                <AiOutlineEdit className="h-4 sm:h-5 w-4 sm:w-5" />
                 Memo Hub
               </h2>
-              <p className="text-sm text-gray-400">💡 생각의 조각을 지식의 자산으로 진화시키세요</p>
+              <p className="text-xs sm:text-sm text-gray-400">💡 생각의 조각을 지식의 자산으로 진화시키세요</p>
             </div>
 
             {/* Notes List */}
             {tsNotes.length === 0 ? (
               <p className={`${cyberTheme.textMuted} text-center py-4`}>아직 남겨진 생각의 조각이 없네요. TS 모드로 첫 메모를 남겨볼까요?</p>
             ) : (
-              <div className={`space-y-4 border-t ${cyberTheme.inputBorder} pt-4 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-600 scrollbar-track-gray-800`}>
+              <div className={`space-y-2 sm:space-y-4 border-t ${cyberTheme.inputBorder} pt-2 sm:pt-4 max-h-[500px] sm:max-h-[600px] md:max-h-[700px] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-600 scrollbar-track-gray-800`}>
                 {tsNotes.map((note) => {
                   // 해당 노트의 originSession ID로 tsSessions 목록에서 일치하는 세션 찾기
                   const noteSession = tsSessions.find(session => session._id === note.originSession);
@@ -784,37 +784,37 @@ export default function BookDetailPage() {
         )}
         {activeTab === 'relatedLinks' && (
           selectedRelatedNote ? (
-            <section className="bg-gray-800/60 rounded-lg shadow-lg border-0 p-3 md:p-4 mt-6">
+            <section className="bg-gray-800/60 rounded-lg shadow-lg border-0 p-2 sm:p-3 md:p-4 mt-6">
               {/* Minimized Connect Header */}
-              <div className="mb-4 text-center">
-                <h2 className="text-xl font-bold text-green-300 mb-1 flex items-center justify-center gap-2">
-                  <ShareIcon className="h-5 w-5" />
+              <div className="mb-2 sm:mb-4 text-center">
+                <h2 className="text-lg sm:text-xl font-bold text-green-300 mb-1 flex items-center justify-center gap-2">
+                  <ShareIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                   Connect
                 </h2>
-                <p className="text-sm text-gray-400">🔗 외부 지식과 연결해 도메인 컨텍스트를 확장하세요</p>
+                <p className="text-xs sm:text-sm text-gray-400">🔗 외부 지식과 연결해 도메인 컨텍스트를 확장하세요</p>
               </div>
               {/* 메인 작업 영역 */}
-              <div className="space-y-4 w-full max-w-3xl mx-auto">
+              <div className="space-y-2 sm:space-y-4 w-full max-w-3xl mx-auto">
                 {/* 1줄 메모 카드 */}
-                <div className="bg-gray-900/80 rounded-lg shadow border border-cyan-500/30 p-6 w-full">
-                  <div className="border border-green-300 bg-green-900/30 rounded-md px-4 py-4 text-gray-100 font-bold text-lg leading-relaxed shadow-sm">
+                <div className="bg-gray-900/80 rounded-lg shadow border border-cyan-500/30 p-3 sm:p-6 w-full">
+                  <div className="border border-green-300 bg-green-900/30 rounded-md px-2 py-2 sm:px-4 sm:py-4 text-gray-100 font-bold text-sm sm:text-lg leading-relaxed shadow-sm">
                     {selectedRelatedNote.content}
                   </div>
                 </div>
                 {/* 지식연결 탭/입력/리스트 카드 */}
-                <div className="bg-gray-900/80 rounded-lg shadow border border-cyan-500/30 p-6 w-full flex flex-col gap-4">
-                  <div className="flex gap-2 mb-2">
+                <div className="bg-gray-900/80 rounded-lg shadow border border-cyan-500/30 p-3 sm:p-6 w-full flex flex-col gap-2 sm:gap-4">
+                  <div className="flex gap-1 sm:gap-2 mb-1 sm:mb-2">
                     {relatedLinkTabs.map(tab => {
                       const Icon = tab.icon;
                       return (
                         <button
                           key={tab.key}
-                          className={`px-2 py-1 rounded-md focus:outline-none transition-colors flex items-center justify-center font-semibold text-xs shadow-sm ${activeRelatedLinkTab === tab.key ? 'bg-green-200/20 text-green-300 border-b-2 border-green-400' : 'bg-gray-800/60 text-gray-400 hover:bg-green-900/30'}`}
+                          className={`px-1 py-1 sm:px-2 sm:py-1 rounded-md focus:outline-none transition-colors flex items-center justify-center font-semibold text-xs shadow-sm ${activeRelatedLinkTab === tab.key ? 'bg-green-200/20 text-green-300 border-b-2 border-green-400' : 'bg-gray-800/60 text-gray-400 hover:bg-green-900/30'}`}
                           onClick={() => setActiveRelatedLinkTab(tab.key)}
                           type="button"
                         >
                           <div className="relative group flex items-center justify-center">
-                            <Icon className="w-6 h-6" />
+                            <Icon className="w-4 h-4 sm:w-6 sm:h-6" />
                             <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
                               {tab.tooltip}
                             </div>
@@ -823,10 +823,10 @@ export default function BookDetailPage() {
                       );
                     })}
                   </div>
-                  {/* 입력 필드/버튼 */}
-                  <div className="flex flex-col gap-2 mb-2 w-full">
+                  {/* 입력 필드/버튼 - 모바일에서만 Break-out 레이아웃으로 최대 가로 폭 확보 */}
+                  <div className="flex flex-col gap-1 sm:gap-2 mb-1 sm:mb-2 w-full -mx-3 sm:mx-0 px-2 sm:px-0">
                     <input
-                      className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden"
+                      className="w-full p-3 sm:p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden text-sm"
                       placeholder={linkPlaceholderMap[activeRelatedLinkTab]}
                       value={linkUrl}
                       onChange={e => setLinkUrl(e.target.value)}
@@ -838,7 +838,7 @@ export default function BookDetailPage() {
                       onChange={e => setLinkUrl(e.target.value)}
                     />
                     <input
-                      className="w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden"
+                      className="w-full p-3 sm:p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden text-sm"
                       placeholder={reasonPlaceholderMap[activeRelatedLinkTab]}
                       value={linkReason}
                       onChange={e => setLinkReason(e.target.value)}
@@ -850,7 +850,7 @@ export default function BookDetailPage() {
                       onChange={e => setLinkReason(e.target.value)}
                     />
                     <button
-                      className="self-end px-4 py-1 rounded-lg bg-indigo-700 text-white font-bold shadow-md hover:bg-indigo-800 transition disabled:opacity-50 flex items-center justify-center mt-1"
+                      className="self-end px-4 py-2 sm:px-4 sm:py-1 rounded-lg bg-indigo-700 text-white font-bold shadow-md hover:bg-indigo-800 transition disabled:opacity-50 flex items-center justify-center mt-1 text-sm"
                       onClick={handleAddRelatedLink}
                       disabled={!linkUrl.trim()}
                     >
@@ -859,19 +859,19 @@ export default function BookDetailPage() {
                   </div>
                   {/* 링크 리스트 */}
                   {filteredLinks.length === 0 ? (
-                    <div className="text-gray-400 text-sm">(추가된 링크가 없군요.)</div>
+                    <div className="text-gray-400 text-xs sm:text-sm">(추가된 링크가 없군요.)</div>
                   ) : (
-                    <ul className="space-y-2 w-full">
+                    <ul className="space-y-1 sm:space-y-2 w-full">
                       {filteredLinks.map((link, idx) => (
-                        <li key={idx} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-gray-800/60 rounded px-3 py-2 border border-gray-700 shadow">
-                          <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline break-all text-sm truncate max-w-full sm:max-w-xs">
+                        <li key={idx} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 bg-gray-800/60 rounded px-2 py-1 sm:px-3 sm:py-2 border border-gray-700 shadow">
+                          <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline break-all text-xs sm:text-sm truncate max-w-full sm:max-w-xs">
                             {link.url}
                           </a>
                           {link.reason && (
-                            <span className="text-xs text-gray-300 bg-gray-900/60 rounded px-2 py-0.5 truncate max-w-full sm:max-w-[120px]" title={link.reason}>{link.reason}</span>
+                            <span className="text-xs text-gray-300 bg-gray-900/60 rounded px-1 py-0.5 sm:px-2 sm:py-0.5 truncate max-w-full sm:max-w-[120px]" title={link.reason}>{link.reason}</span>
                           )}
                           <button
-                            className="ml-auto text-red-400 hover:text-red-600 text-xs font-bold px-2 py-1 rounded self-start sm:self-auto"
+                            className="ml-auto text-red-400 hover:text-red-600 text-xs font-bold px-1 py-0.5 sm:px-2 sm:py-1 rounded self-start sm:self-auto"
                             onClick={() => handleDeleteRelatedLink(idx)}
                             aria-label="링크 삭제"
                           >
@@ -885,11 +885,11 @@ export default function BookDetailPage() {
               </div>
             </section>
           ) : (
-            <section className="bg-white rounded-xl shadow-lg p-6 mt-6">
-              <h2 className="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+            <section className="bg-white rounded-xl shadow-lg p-3 sm:p-6 mt-6">
+              <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
                 지식연결
               </h2>
-              <div className="text-gray-400 text-base">1줄 메모에서 <b>지식연결</b> 버튼을 눌러 관리할 메모를 선택해 보시겠어요?</div>
+              <div className="text-gray-400 text-sm sm:text-base">1줄 메모에서 <b>지식연결</b> 버튼을 눌러 관리할 메모를 선택해 보시겠어요?</div>
             </section>
           )
         )}
