@@ -118,57 +118,58 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
           e.stopPropagation();
           setOpen((prev) => !prev);
         }}
-        className="h-9 w-9" // 지식카트 버튼보다 약간 크게
+        className="h-11 w-11 lg:h-9 lg:w-9 min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto" // 모바일에서 더 크게
       >
         {/* 'AI' 텍스트로 변경 */}
-        <span className="text-sm font-bold text-cyan-400">AI</span>
+        <span className="text-sm lg:text-sm font-bold text-cyan-400">AI</span>
       </Button>
 
       {open && (
         <div
           ref={popoverRef}
-          className="absolute right-0 z-50 mt-2 w-52 rounded-md border-2 border-gray-600 bg-gray-800 shadow-lg p-3 flex flex-col items-center"
+          className="absolute right-0 lg:right-0 left-0 lg:left-auto z-50 mt-2 w-auto lg:w-52 max-w-[90vw] lg:max-w-none rounded-md border-2 border-gray-600 bg-gray-800 shadow-lg p-2 lg:p-3 flex flex-col items-center"
         >
-          <div className="flex items-center justify-around w-full">
+          <div className="flex items-center justify-around w-full gap-1 lg:gap-0">
             <button
               onClick={() => handleSelect('chatgpt')}
               aria-label="ChatGPT"
               title="ChatGPT"
-              className="p-2 rounded hover:bg-gray-700/60 transition-colors"
+              className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
             >
-              <ChatGPTIcon className="w-6 h-6" />
+              <ChatGPTIcon className="w-5 h-5 lg:w-6 lg:h-6" />
             </button>
             <button
               onClick={() => handleSelect('gemini')}
               aria-label="Gemini"
               title="Gemini"
-              className="p-2 rounded hover:bg-gray-700/60 transition-colors"
+              className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
             >
-              <GeminiIcon className="w-6 h-6" />
+              <GeminiIcon className="w-5 h-5 lg:w-6 lg:h-6" />
             </button>
             <button
               onClick={() => handleSelect('claude')}
               aria-label="Claude"
               title="Claude"
-              className="p-2 rounded hover:bg-gray-700/60 transition-colors"
+              className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
             >
-              <ClaudeIcon className="w-6 h-6" />
+              <ClaudeIcon className="w-5 h-5 lg:w-6 lg:h-6" />
             </button>
             <button
               onClick={() => handleSelect('perplexity')}
               aria-label="Perplexity"
               title="Perplexity"
-              className="p-2 rounded hover:bg-gray-700/60 transition-colors"
+              className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
             >
               <Image
                 src="/images/perplexity-color.svg"
                 alt="Perplexity AI"
-                width={24}
-                height={24}
+                width={20}
+                height={20}
+                className="lg:w-6 lg:h-6"
               />
             </button>
           </div>
-          <p className="mt-4 text-xs text-gray-400 text-center px-2">
+          <p className="mt-2 lg:mt-4 text-xs text-gray-400 text-center px-1 lg:px-2">
             모델 선택 시 클립보드 자동 복사
           </p>
         </div>

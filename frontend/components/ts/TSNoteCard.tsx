@@ -745,68 +745,67 @@ export default function TSNoteCard({
       })()}
 
       {isOpen && !minimalDisplay && (
-        <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-3 sm:p-4 rounded-lg z-20 flex flex-col animate-fadeIn">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-base sm:text-lg font-semibold text-cyan-400 truncate mr-2">메모 진화: {tabList.find(t => t.key === activeTabKey)?.label}</h3>
-            <Button variant="ghost" size="icon" onClick={toggleEvolutionOverlay} className="text-gray-400 hover:text-white flex-shrink-0">
-              <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5"/>
+        <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-1 lg:p-4 rounded-lg z-20 flex flex-col animate-fadeIn">
+          {/* 헤더 - 최소화 */}
+          <div className="flex justify-between items-center mb-1 lg:mb-2 px-2 lg:px-0 flex-shrink-0">
+            <h3 className="text-sm lg:text-lg font-semibold text-cyan-400 truncate mr-2">메모 진화: {tabList.find(t => t.key === activeTabKey)?.label}</h3>
+            <Button variant="ghost" size="icon" onClick={toggleEvolutionOverlay} className="text-gray-400 hover:text-white flex-shrink-0 w-8 h-8 lg:w-auto lg:h-auto p-1">
+              <XMarkIcon className="h-4 w-4 lg:h-5 lg:w-5"/>
             </Button>
           </div>
           
-          <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar">
-            <p className="text-xs sm:text-sm text-gray-300 mb-1">{prompts[tabKeys.indexOf(activeTabKey)]?.question}</p>
+          {/* 메인 작업 영역 - 최대화 */}
+          <div className="flex-1 flex flex-col px-2 lg:px-0 overflow-hidden">
+            <p className="text-xs lg:text-sm text-gray-300 mb-1 lg:mb-1 flex-shrink-0">{prompts[tabKeys.indexOf(activeTabKey)]?.question}</p>
             <textarea
               ref={evolutionTextareaRef}
               value={fields[activeTabKey]}
               onChange={(e) => handleFieldChange(activeTabKey, e.target.value)}
               placeholder={prompts[tabKeys.indexOf(activeTabKey)]?.placeholder}
-              className="w-full min-h-[60px] sm:min-h-[80px] flex-grow p-2 text-xs sm:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none custom-scrollbar"
+              className="w-full flex-1 p-3 lg:p-2 text-sm lg:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none custom-scrollbar"
+              style={{ minHeight: 'calc(100% - 20px)' }}
             />
           </div>
 
-          <div className="mt-2 sm:mt-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0">
-            <div className="flex space-x-1.5 justify-center sm:justify-start">
-              {tabList.map((tab, index) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTabKey(tab.key as MemoEvolutionFieldKey)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${activeTabKey === tab.key ? 'bg-cyan-500 scale-125' : 'bg-gray-600 hover:bg-gray-500'}`}
-                  title={tab.label}
-                />
-              ))}
+          {/* 컨트롤 영역 - 최소화 */}
+          <div className="flex-shrink-0 mt-2 lg:mt-3 px-2 lg:px-0">
+            {/* 탭 인디케이터 */}
+            <div className="flex justify-center mb-2 lg:mb-2">
+              <div className="flex space-x-1.5">
+                {tabList.map((tab, index) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTabKey(tab.key as MemoEvolutionFieldKey)}
+                    className={`w-2 h-2 lg:w-2.5 lg:h-2.5 rounded-full transition-all duration-200 ${activeTabKey === tab.key ? 'bg-cyan-500 scale-125' : 'bg-gray-600 hover:bg-gray-500'}`}
+                    title={tab.label}
+                  />
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 sm:items-center">
+            
+            {/* 버튼 그룹 - 컴팩트 */}
+            <div className="flex justify-between items-center gap-2">
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={handlePrevStep} 
                 disabled={isSavingEvolution || tabKeys.indexOf(activeTabKey) === 0}
-                className="text-gray-300 border-gray-600 hover:bg-gray-700 px-2 sm:px-3 text-xs sm:text-sm"
+                className="text-gray-300 border-gray-600 hover:bg-gray-700 px-3 py-1.5 text-xs lg:text-sm h-8 lg:h-auto"
                 title="이전 단계"
               >
-                <ChevronLeftIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                <ChevronLeftIcon className="h-3 w-3 lg:h-4 lg:w-4 mr-1" />
                 이전
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleNextStep} 
-                disabled={isSavingEvolution || tabKeys.indexOf(activeTabKey) === tabKeys.length - 1}
-                className="text-gray-300 border-gray-600 hover:bg-gray-700 px-2 sm:px-3 text-xs sm:text-sm"
-                title="다음 단계"
-              >
-                다음
-                <ChevronRightIcon className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
-              </Button>
+              
               <Button 
                 size="sm" 
                 onClick={handleSaveEvolution} 
-                className="bg-cyan-600 hover:bg-cyan-700 text-white min-w-[60px] sm:min-w-[70px] px-2 sm:px-3 text-xs sm:text-sm"
+                className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-1.5 text-xs lg:text-sm h-8 lg:h-auto"
                 disabled={isSavingEvolution}
               >
                 {isSavingEvolution ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-1 h-3 w-3 lg:h-4 lg:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -815,6 +814,18 @@ export default function TSNoteCard({
                 ) : (
                   "완료"
                 )}
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleNextStep} 
+                disabled={isSavingEvolution || tabKeys.indexOf(activeTabKey) === tabKeys.length - 1}
+                className="text-gray-300 border-gray-600 hover:bg-gray-700 px-3 py-1.5 text-xs lg:text-sm h-8 lg:h-auto"
+                title="다음 단계"
+              >
+                다음
+                <ChevronRightIcon className="h-3 w-3 lg:h-4 lg:w-4 ml-1" />
               </Button>
             </div>
           </div>
