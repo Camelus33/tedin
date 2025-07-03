@@ -232,9 +232,9 @@ export default function TSReviewPage() {
   }
 
   return (
-    <div className={`min-h-screen ${cyberTheme.gradient} p-4 sm:p-6 md:p-10 ${cyberTheme.textLight}`}>
-      <div className={`max-w-2xl mx-auto ${cyberTheme.bgSecondary} ${cyberTheme.cardBg} rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 border ${cyberTheme.inputBorder}`}>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+    <div className={`min-h-screen ${cyberTheme.gradient} p-2 sm:p-6 md:p-10 ${cyberTheme.textLight}`}>
+      <div className={`max-w-2xl mx-auto ${cyberTheme.bgSecondary} ${cyberTheme.cardBg} rounded-xl shadow-2xl p-3 sm:p-6 md:p-8 border ${cyberTheme.inputBorder}`}>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-8 gap-4">
           <h1 className={`text-lg sm:text-xl md:text-2xl font-bold ${cyberTheme.textLight}`}>다시 떠올려 보세요</h1>
           <div className={`flex items-center gap-2 p-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} shadow-inner`}>
             <ClockIcon className={`h-5 w-5 ${cyberTheme.secondary}`} />
@@ -247,7 +247,7 @@ export default function TSReviewPage() {
           </div>
         </div>
 
-        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSubmitReview(); }}>
+        <form className="space-y-4 sm:space-y-6" onSubmit={(e) => { e.preventDefault(); handleSubmitReview(); }}>
           <div>
             <label htmlFor="actualEndPage" className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>마지막 읽은 페이지 번호</label>
             <input
@@ -276,7 +276,7 @@ export default function TSReviewPage() {
                   key={type.id}
                   type="button"
                   onClick={() => setReviewData(prev => ({ ...prev, memoType: type.id }))}
-                  className={`flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all border
+                  className={`flex-1 py-1.5 sm:py-2 px-2 sm:px-3 rounded-md text-xs font-medium transition-all border
                     ${reviewData.memoType === type.id
                       ? `${cyberTheme.borderPrimary} ${cyberTheme.buttonPrimaryBg} text-white shadow-md` 
                       : `${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryBg} ${cyberTheme.textLight} hover:border-cyan-400 hover:bg-gray-700`}
@@ -333,7 +333,7 @@ export default function TSReviewPage() {
             </div>
           </div>
 
-          <div className="pt-6 border-t ${cyberTheme.inputBorder}">
+          <div className="pt-4 sm:pt-6 border-t ${cyberTheme.inputBorder}">
             <Button
               type="submit"
               disabled={isLoading || isSubmitting}

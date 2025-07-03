@@ -147,10 +147,10 @@ export default function TSResultPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white p-2 sm:p-6">
       <div className="container mx-auto max-w-md">
         {/* Achievement Card */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6 border border-gray-200 relative">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-4 sm:mb-6 border border-gray-200 relative">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-5 pointer-events-none">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -169,7 +169,7 @@ export default function TSResultPage() {
           <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-gray-300"></div>
           
           {/* Main content container */}
-          <div className="relative z-10 p-6 sm:p-8 pt-12">
+          <div className="relative z-10 p-4 sm:p-8 pt-10 sm:pt-12">
             {/* App Logo in top center */}
             <div className="absolute top-2 right-0 left-0 flex justify-center">
               <div className="px-4 py-1.5 bg-gradient-to-r from-gray-800 to-gray-700 rounded-full shadow-md">
@@ -178,12 +178,12 @@ export default function TSResultPage() {
             </div>
             
             {/* Achievement Title */}
-            <div className="text-center mb-2 mt-4">
+            <div className="text-center mb-2 mt-3 sm:mt-4">
               <h1 className="text-xl sm:text-2xl tracking-wider font-bold text-gray-800 uppercase">YOUR WAVE</h1>
             </div>
             
             {/* Achievement Label based on performance */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-4 sm:mb-6">
               <div className="inline-block px-3 py-1 bg-gradient-to-r from-amber-100 to-amber-50 rounded-full border border-amber-200">
                 <span className="text-xs sm:text-sm font-semibold text-amber-800 uppercase tracking-wider">
                   {sessionResult.ppm > 2 ? 'Elite Reader' : sessionResult.ppm > 1.5 ? 'Advanced Reader' : 'Dedicated Reader'}
@@ -192,9 +192,9 @@ export default function TSResultPage() {
             </div>
             
             {/* PPM Display - Featured Section */}
-            <div className="relative mb-8">
+            <div className="relative mb-6 sm:mb-8">
               <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl -z-10"></div>
-              <div className="text-center py-7 px-4 border border-gray-200 rounded-xl">
+              <div className="text-center py-4 sm:py-7 px-4 border border-gray-200 rounded-xl">
                 <div className="absolute -top-4 left-0 right-0 flex justify-center">
                   <div className="px-4 py-1 bg-white rounded-full border border-gray-200 shadow-sm">
                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Reading Velocity</span>
@@ -223,7 +223,7 @@ export default function TSResultPage() {
             </div>
             
             {/* Book Info Section with Stylized Layout */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-4 mb-6 sm:mb-8">
               {/* Book Cover with Enhanced Styling */}
               <div className="w-16 h-24 bg-gray-100 rounded-md flex-shrink-0 border border-gray-200 overflow-hidden shadow-sm transform -rotate-3">
                 {sessionResult.bookId && typeof sessionResult.bookId === 'object' && sessionResult.bookId.coverImage ? (
@@ -258,7 +258,7 @@ export default function TSResultPage() {
             </div>
             
             {/* Reading Stats in Trophy Style */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
               <div className="text-center border border-gray-200 rounded-lg py-3 px-2 bg-gray-50">
                 <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Coverage</p>
                 <p className="text-lg sm:text-xl font-semibold text-gray-800">{sessionResult.actualEndPage - sessionResult.startPage}</p>
@@ -279,7 +279,7 @@ export default function TSResultPage() {
             </div>
             
             {/* Achievement Statement with Icon */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-6 sm:mb-8">
               <div className="inline-flex items-center justify-center">
                 <svg className="w-5 h-5 text-amber-500 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clipRule="evenodd" />
@@ -311,7 +311,7 @@ export default function TSResultPage() {
             </div>
             
             {/* Share Button - Instagram Style with Badge Icon */}
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <button 
                 onClick={handleShare}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-medium py-3 sm:py-3.5 px-4 rounded-xl shadow-md transition-colors"
@@ -326,7 +326,7 @@ export default function TSResultPage() {
         </div>
         
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-8">
+        <div className="grid grid-cols-2 gap-3 mb-6 sm:mb-8">
           <Button 
             href="/dashboard" 
             variant="outline" 
