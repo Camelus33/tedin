@@ -731,7 +731,7 @@ export default function BookDetailPage() {
             {tsNotes.length === 0 ? (
               <p className={`${cyberTheme.textMuted} text-center py-4`}>아직 남겨진 생각의 조각이 없네요. TS 모드로 첫 메모를 남겨볼까요?</p>
             ) : (
-              <div className={`space-y-4 border-t ${cyberTheme.inputBorder} pt-4`}>
+              <div className={`space-y-4 border-t ${cyberTheme.inputBorder} pt-4 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-600 scrollbar-track-gray-800`}>
                 {tsNotes.map((note) => {
                   // 해당 노트의 originSession ID로 tsSessions 목록에서 일치하는 세션 찾기
                   const noteSession = tsSessions.find(session => session._id === note.originSession);
