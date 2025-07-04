@@ -200,7 +200,7 @@ function NewMemoContent() {
         {/* 메인 카드 */}
         <div className="bg-gray-800/80 backdrop-blur-md rounded-lg shadow-cyan-500/10 border border-cyan-500/40 p-2">
           <h1 className="text-lg font-bold text-cyan-300 mb-2 font-orbitron tracking-wide">
-            ✍️ Atomic Memo
+            Atomic Memo
           </h1>
           
           {error && (

@@ -359,7 +359,7 @@ export default function BooksPageContent() {
               <AiOutlinePlus className="h-5 w-5" /><span>NEW</span>
             </button>
           </div>
-          <p className={`text-sm ${cyberTheme.textMuted}`}>이 곳에서 당신의 모든 메모와 지식을 연결해서 당신만의 단권화 노트를 작성하고, AI - Link를 만드세요.</p>
+          <p className={`text-sm ${cyberTheme.textMuted}`}>자료, 메모, 노트북, 단권화 노트, AI - Link 관리</p>
         </div>
         <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 ${cyberTheme.bgSecondary} rounded-lg`}>
           <div className="relative w-full sm:w-auto flex-grow">
@@ -393,7 +393,7 @@ export default function BooksPageContent() {
                 : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-cyan-300 border-transparent hover:bg-gray-700/70`}
             `}
           >
-            <FiBook className="inline mr-1 sm:mr-2 mb-0.5" /><span className="text-sm sm:text-base">등록한 자료</span>
+            <FiBook className="inline mr-1 sm:mr-2 mb-0.5" /><span className="text-sm sm:text-base">등록 자료</span>
           </button>
           <button
             onClick={() => setActiveTab('summaryNotes')}
@@ -410,7 +410,7 @@ export default function BooksPageContent() {
         {activeTab === 'books' && (
           <>
             {filteredBooks.length === 0 && !isLoading ? (
-              <div className={`text-center py-10 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-lg`}>아직 이곳에 기록된 성장의 흔적이 없네요. 첫걸음을 함께 시작해볼까요?</div>
+              <div className={`text-center py-10 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-lg`}>새 자료를 등록하고 시작해볼까요?</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {filteredBooks.map((book) => {
@@ -427,7 +427,7 @@ export default function BooksPageContent() {
                       <button onClick={(e) => toggleMenu(book._id, e)} aria-label="기억 관리 메뉴" className={`toggle-menu-button absolute top-2 right-2 p-1.5 rounded-full ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted} z-10`}><FiMoreVertical className="h-5 w-5" /></button>
                       {showMenu === book._id && (
                         <div className={`action-menu absolute top-10 right-2 mt-1 w-32 sm:w-36 ${cyberTheme.menuBg} rounded-md shadow-lg z-20 border ${cyberTheme.inputBorder}`}>
-                           <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineEdit className="h-3 w-3 sm:h-4 sm:w-4" /> 수정하기</Link>
+                           <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineEdit className="h-3 w-3 sm:h-4 sm:w-4" /> 수정</Link>
                         </div>
                       )}
                       <div className={`w-full h-32 md:h-40 ${cyberTheme.inputBg} flex items-center justify-center ${cyberTheme.textMuted}`}>
@@ -511,7 +511,7 @@ export default function BooksPageContent() {
                 <AiOutlineFileText className="mx-auto text-4xl mb-3" />
                 <p className="mb-4">아직 정리된 생각이 없네요. 첫 노트를 만들어볼까요?</p>
                 <Button onClick={() => router.push('/summary-notes/create')} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white`}>
-                  <AiOutlinePlus className="mr-2" /> 새 단권화 노트 만들기
+                  <AiOutlinePlus className="mr-2" /> 새 단권화 노트
                 </Button>
               </div>
             )}
@@ -543,13 +543,13 @@ export default function BooksPageContent() {
                               onClick={() => router.push(`/summary-notes/${note._id}/edit`)} 
                               className={`${cyberTheme.menuItemHover} ${cyberTheme.primary} cursor-pointer flex items-center`}
                             >
-                              <PencilIcon className="h-4 w-4 mr-2" /> 수정하기
+                              <PencilIcon className="h-4 w-4 mr-2" /> 수정
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               onClick={() => handleDeleteSummaryNoteFromList(note._id)} 
                               className={`${cyberTheme.menuItemHover} text-red-400 hover:!text-red-400 cursor-pointer flex items-center`}
                             >
-                              <TrashIcon className="h-4 w-4 mr-2" /> 삭제하기
+                              <TrashIcon className="h-4 w-4 mr-2" /> 삭제
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
