@@ -482,39 +482,39 @@ export default function DashboardPage() {
   return (
     <div className={`min-h-screen ${habitus33Theme.gradient}`}> {/* Applied cyber theme gradient */}
       {/* 고정 헤더 - 사이버 테마 적용 */}
-      <header className={`sticky top-0 z-10 glass-header py-1 px-4 animate-fadeIn ${habitus33Theme.bgSecondary} border-b ${habitus33Theme.borderPrimary}`}>
+      <header className={`sticky top-0 z-10 glass-header py-0.5 sm:py-1 px-2 sm:px-4 animate-fadeIn ${habitus33Theme.bgSecondary} border-b ${habitus33Theme.borderPrimary}`}>
         <div className="container mx-auto max-w-6xl flex justify-between items-center">
-          <Link href="/dashboard" className="flex items-center space-x-3 group">
-            <AppLogo className="w-11 h-11 group-hover:opacity-90 transition-opacity" />
+          <Link href="/dashboard" className="flex items-center space-x-2 sm:space-x-3 group">
+            <AppLogo className="w-7 h-7 sm:w-11 sm:h-11 group-hover:opacity-90 transition-opacity" />
             <div>
-              <h1 className={`font-medium text-xl sm:text-2xl tracking-tight ${habitus33Theme.primary} group-hover:text-cyan-300 transition-colors duration-500`}> 
+              <h1 className={`font-medium text-lg sm:text-xl md:text-2xl tracking-tight ${habitus33Theme.primary} group-hover:text-cyan-300 transition-colors duration-500`}> 
                 Habitus33
               </h1>
-              <p className={`text-xs font-medium tracking-wider ${habitus33Theme.textLight}`}> 
+              <p className={`text-[9px] sm:text-xs font-medium tracking-wider ${habitus33Theme.textLight} hidden sm:block`}> 
                 Prompt Free, AI - Link
               </p>
             </div>
           </Link>
           
           {/* 알림 및 사용자 프로필 */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <NotificationBell />
             <div className="flex items-center">
-              <div className="mr-3 text-right">
+              <div className="mr-2 sm:mr-3 text-right hidden sm:block">
                 <p className={`font-medium ${habitus33Theme.primary}`}> 
                   {user?.nickname || '사용자'}
                 </p>
               </div>
               <div className="relative">
                 <div 
-                  className={`w-11 h-11 rounded-full flex items-center justify-center cursor-pointer shadow-sm overflow-hidden border ${habitus33Theme.borderPrimary} transition-all duration-500 hover:border-cyan-400/40 hover:shadow-lg hover:shadow-cyan-400/20`}
+                  className={`w-8 h-8 sm:w-11 sm:h-11 rounded-full flex items-center justify-center cursor-pointer shadow-sm overflow-hidden border ${habitus33Theme.borderPrimary} transition-all duration-500 hover:border-cyan-400/40 hover:shadow-lg hover:shadow-cyan-400/20`}
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                 >
                   {user?.profileImage ? (
                     <img src={user.profileImage} alt={user?.nickname || '사용자'} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center"> 
-                      <span className={`${habitus33Theme.primary} font-medium`}>{user?.nickname?.charAt(0) || '?'}</span>
+                      <span className={`${habitus33Theme.primary} font-medium text-xs sm:text-base`}>{user?.nickname?.charAt(0) || '?'}</span>
                     </div>
                   )}
                 </div>
@@ -539,18 +539,18 @@ export default function DashboardPage() {
 
       {/* Above the Fold Container - 정확히 100vh로 고정 */}
       <div className="h-screen max-h-screen overflow-hidden flex flex-col">
-        <div className="container mx-auto max-w-7xl flex-1 pt-0 pb-1 px-4 flex flex-col min-h-0">
+        <div className="container mx-auto max-w-7xl flex-1 pt-0 pb-1 px-2 sm:px-4 flex flex-col min-h-0">
           {/* Above the Fold Grid Layout */}
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-1 md:gap-1.5 min-h-0">
             
             {/* Hero Section - 높이 제한 */}
-            <div className="lg:col-span-3 flex flex-col justify-center animate-slideUp relative max-h-[40vh] lg:max-h-[35vh]">
-              <div className={`${habitus33Theme.cardBg} rounded-2xl p-3 sm:p-4 md:p-6 border ${habitus33Theme.borderPrimary} backdrop-blur-sm relative overflow-hidden`}>
+            <div className="lg:col-span-3 flex flex-col justify-center animate-slideUp relative max-h-[35vh] sm:max-h-[40vh] lg:max-h-[35vh]">
+              <div className={`${habitus33Theme.cardBg} rounded-2xl p-2 sm:p-3 md:p-6 border ${habitus33Theme.borderPrimary} backdrop-blur-sm relative overflow-hidden`}>
                 {/* Habitus33 버튼 - 녹색 그라디에이션 원형, 섹션 내부 배치 */}
-                <div className="absolute top-3 left-3 md:top-4 md:left-4 z-20">
+                <div className="absolute top-2 left-2 sm:top-3 sm:left-3 md:top-4 md:left-4 z-20">
                   <button
                     onClick={() => router.push('/brain-hack-routine')}
-                    className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 text-white font-bold text-xs md:text-sm transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-110 focus:shadow-lg focus:shadow-emerald-500/30 focus:scale-110 active:scale-95 outline-none transform backdrop-blur-sm border border-emerald-400/40 flex items-center justify-center"
+                    className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 text-white font-bold text-[9px] sm:text-xs md:text-sm transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-110 focus:shadow-lg focus:shadow-emerald-500/30 focus:scale-110 active:scale-95 outline-none transform backdrop-blur-sm border border-emerald-400/40 flex items-center justify-center"
                     aria-label="Habitus33 브레인 핵 루틴"
                     type="button"
                   >
@@ -561,15 +561,15 @@ export default function DashboardPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
                 <div className="relative z-10 text-center">
                   {/* 두 개의 버튼만 - 모바일에서 세로 배치 */}
-                  <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-6 justify-center items-center">
                     <Link href="/ts" className="inline-block w-full sm:w-auto">
-                      <button className={`w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-xs sm:text-sm md:text-base lg:text-lg px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2 md:py-3 lg:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105`}>
+                      <button className={`w-full sm:w-auto bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 text-white font-bold text-[11px] sm:text-xs md:text-base lg:text-lg px-2 sm:px-3 md:px-6 lg:px-8 py-1.5 sm:py-2 md:py-3 lg:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105`}>
                         Reading
                       </button>
                     </Link>
                     <button 
                       onClick={handleAtomicMemo}
-                      className={`w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-xs sm:text-sm md:text-base lg:text-lg px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2 md:py-3 lg:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105`}
+                      className={`w-full sm:w-auto bg-gradient-to-r from-indigo-600 via-blue-500 to-purple-600 text-white font-bold text-[11px] sm:text-xs md:text-base lg:text-lg px-2 sm:px-3 md:px-6 lg:px-8 py-1.5 sm:py-2 md:py-3 lg:py-4 rounded-xl shadow-lg hover:shadow-xl hover:shadow-indigo-500/25 transition-all duration-300 transform hover:scale-105`}
                     >
                       Memo
                     </button>
@@ -580,12 +580,12 @@ export default function DashboardPage() {
 
             {/* My Library Section - 2/3 width, 높이 제한 */}
             <div className="lg:col-span-2 flex flex-col min-h-0 order-2 lg:order-none">
-              <div className={`${habitus33Theme.cardBg} rounded-xl border ${habitus33Theme.borderPrimary} backdrop-blur-sm flex-1 flex flex-col min-h-0 max-h-[55vh] lg:max-h-[60vh] relative overflow-hidden`}>
+              <div className={`${habitus33Theme.cardBg} rounded-xl border ${habitus33Theme.borderPrimary} backdrop-blur-sm flex-1 flex flex-col min-h-0 max-h-[60vh] lg:max-h-[60vh] relative overflow-hidden`}>
                 {/* 확대 아이콘 - 우측 상단 */}
-                <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
+                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 md:top-4 md:right-4 z-20">
                   <Link href="/books">
-                    <button className={`p-2 rounded-lg ${habitus33Theme.buttonSecondaryBg} ${habitus33Theme.buttonSecondaryHoverBg} text-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20`}>
-                      <FiExternalLink className="w-4 h-4" />
+                    <button className={`p-1.5 sm:p-2 rounded-lg ${habitus33Theme.buttonSecondaryBg} ${habitus33Theme.buttonSecondaryHoverBg} text-cyan-400 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/20`}>
+                      <FiExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </Link>
                 </div>
@@ -594,13 +594,13 @@ export default function DashboardPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
                 
                 {/* 헤더 */}
-                <div className="relative z-10 p-3 md:p-4 border-b border-gray-700/50 flex-shrink-0">
-                  <h2 className={`text-base md:text-lg font-bold ${habitus33Theme.primary}`}>My Library</h2>
+                <div className="relative z-10 p-2 sm:p-3 md:p-4 border-b border-gray-700/50 flex-shrink-0">
+                  <h2 className={`text-sm sm:text-base md:text-lg font-bold ${habitus33Theme.primary}`}>My Library</h2>
                 </div>
                 
                 {/* 스크롤 가능한 컨텐츠 영역 */}
                 <div 
-                  className="flex-1 overflow-auto p-1 md:p-2"
+                  className="flex-1 overflow-auto p-0.5 sm:p-1 md:p-2"
                   style={{
                     scrollbarWidth: 'thin',
                     scrollbarColor: '#4b5563 #1f2937',
@@ -614,13 +614,13 @@ export default function DashboardPage() {
 
             {/* Cognitive Profile Section - 1/3 width, 높이 제한 */}
             <div className="lg:col-span-1 flex flex-col min-h-0 order-3 lg:order-none">
-              <div className={`${habitus33Theme.cardBg} rounded-xl border ${habitus33Theme.borderPrimary} backdrop-blur-sm flex-1 flex flex-col min-h-0 max-h-[55vh] lg:max-h-[60vh] relative overflow-hidden`}>
+              <div className={`${habitus33Theme.cardBg} rounded-xl border ${habitus33Theme.borderPrimary} backdrop-blur-sm flex-1 flex flex-col min-h-0 max-h-[60vh] lg:max-h-[60vh] relative overflow-hidden`}>
                 {/* 배경 그라데이션 효과 */}
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-cyan-500/5 pointer-events-none" />
                 
                 {/* 헤더 */}
-                <div className="relative z-10 p-2 md:p-3 border-b border-gray-700/50 flex-shrink-0">
-                  <h2 className={`text-base md:text-lg font-bold ${habitus33Theme.primary}`}>Cognitive Profile</h2>
+                <div className="relative z-10 p-2 sm:p-2 md:p-3 border-b border-gray-700/50 flex-shrink-0">
+                  <h2 className={`text-sm sm:text-base md:text-lg font-bold ${habitus33Theme.primary}`}>Cognitive Profile</h2>
                 </div>
                 
                 {/* 컨텐츠 영역 - 스크롤 가능 */}
@@ -628,7 +628,7 @@ export default function DashboardPage() {
                   scrollbarWidth: 'thin',
                   scrollbarColor: '#4b5563 #1f2937'
                 }}>
-                  <div className="p-2 md:p-3 h-auto" style={{
+                  <div className="p-1 sm:p-2 md:p-3 h-auto" style={{
                     WebkitOverflowScrolling: 'touch'
                   }}>
                     <div style={{ overflow: 'visible' }}>
@@ -644,24 +644,24 @@ export default function DashboardPage() {
 
       {/* Scrollable Content - 완전히 다음 뷰포트에 배치 */}
       <div className="min-h-screen bg-gray-900">
-        <div className="container mx-auto max-w-6xl py-4 md:py-6 px-4">
+        <div className="container mx-auto max-w-6xl py-2 sm:py-4 md:py-6 px-2 sm:px-4">
 
           {/* 주요 액션 버튼 영역 - 축소 */}
-          <div className="mb-3 md:mb-4 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 animate-slideUp">
+          <div className="mb-1.5 sm:mb-3 md:mb-4 grid grid-cols-1 md:grid-cols-2 gap-1.5 sm:gap-2 md:gap-3 animate-slideUp">
             {/* ZenGo Card - 축소된 사이버 테마 */}
             <Link href="/zengo" className="block group">
-              <div className={`h-full p-3 md:p-4 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderSecondary} transition-all duration-300 hover:border-purple-400/60 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 backdrop-blur-sm relative overflow-hidden flex flex-col justify-between`}> 
+              <div className={`h-full p-2 sm:p-3 md:p-4 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderSecondary} transition-all duration-300 hover:border-purple-400/60 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 backdrop-blur-sm relative overflow-hidden flex flex-col justify-between`}> 
                 {/* 호버 시 글로우 효과 */}
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
-                    <h2 className={`text-base md:text-lg font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 animate-pulse" />
+                    <h2 className={`text-sm sm:text-base md:text-lg font-semibold ${habitus33Theme.secondary}`}>ZenGo</h2>
                   </div>
-                  <p className={`${habitus33Theme.textMuted} text-xs md:text-sm leading-relaxed`}>남다른 읽기 통찰력을 키우세요.</p>
+                  <p className={`${habitus33Theme.textMuted} text-[10px] sm:text-xs md:text-sm leading-relaxed`}>남다른 읽기 통찰력을 키우세요.</p>
                 </div>
-                <div className="mt-3 md:mt-4 relative z-10">
-                  <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-3 rounded-md transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30 text-sm`}>
+                <div className="mt-2 sm:mt-3 md:mt-4 relative z-10">
+                  <button className={`w-full bg-purple-500 hover:bg-purple-600 text-white font-medium py-1.5 sm:py-2 px-3 rounded-md transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30 text-xs sm:text-sm`}>
                     START
                   </button>
                 </div>
@@ -670,22 +670,22 @@ export default function DashboardPage() {
             
             {/* ZenGo Myverse Card - 축소된 사이버 테마 */}
             <Link href="/myverse" className="block group">
-              <div className={`relative h-full p-3 md:p-4 rounded-lg ${habitus33Theme.cardBg} border border-emerald-400/20 transition-all duration-300 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-500/20 hover:scale-105 backdrop-blur-sm overflow-hidden flex flex-col justify-between`}>
+              <div className={`relative h-full p-2 sm:p-3 md:p-4 rounded-lg ${habitus33Theme.cardBg} border border-emerald-400/20 transition-all duration-300 hover:border-emerald-400/60 hover:shadow-lg hover:shadow-emerald-500/20 hover:scale-105 backdrop-blur-sm overflow-hidden flex flex-col justify-between`}>
                 {/* 호버 시 글로우 효과 */}
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 {/* PREMIUM 뱃지 */}
-                <div className="absolute top-2 right-2 z-20 pointer-events-none select-none">
-                  <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-1.5 py-0.5 rounded-full text-[8px] shadow-md border border-white/30 tracking-widest uppercase">Pro</span>
+                <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 z-20 pointer-events-none select-none">
+                  <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white font-bold px-1 py-0.5 sm:px-1.5 sm:py-0.5 rounded-full text-[7px] sm:text-[8px] shadow-md border border-white/30 tracking-widest uppercase">Pro</span>
                 </div>
                 <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse" />
-                    <h2 className="text-base md:text-lg font-semibold text-emerald-400">ZenGo Myverse</h2>
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse" />
+                    <h2 className="text-sm sm:text-base md:text-lg font-semibold text-emerald-400">ZenGo Myverse</h2>
                   </div>
-                  <p className={`${habitus33Theme.textMuted} text-xs md:text-sm leading-relaxed`}>중요한 생각이 떠오르면 바로 외우세요.</p>
+                  <p className={`${habitus33Theme.textMuted} text-[10px] sm:text-xs md:text-sm leading-relaxed`}>중요한 생각이 떠오르면 바로 외우세요.</p>
                 </div>
-                <div className="mt-3 md:mt-4 relative z-10">
-                  <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-2 px-3 rounded-md transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30 text-sm">
+                <div className="mt-2 sm:mt-3 md:mt-4 relative z-10">
+                  <button className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-1.5 sm:py-2 px-3 rounded-md transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/30 text-xs sm:text-sm">
                     TRY
                   </button>
                 </div>
@@ -694,14 +694,14 @@ export default function DashboardPage() {
           </div>
           
           {error && (
-            <div className={`bg-red-900/20 ${habitus33Theme.errorText} p-4 rounded-lg mb-6 border ${habitus33Theme.errorBorder}`}>
+            <div className={`bg-red-900/20 ${habitus33Theme.errorText} p-2 sm:p-3 md:p-4 rounded-lg mb-1.5 sm:mb-3 md:mb-4 border ${habitus33Theme.errorBorder}`}>
               {error}
             </div>
           )}
           
           {/* 33일 루틴 트래커 - 축소된 사이버 테마 */}
           {routineData ? (
-            <div className={`relative p-3 sm:p-4 mb-3 md:mb-4 rounded-lg border ${habitus33Theme.borderPrimary} shadow-lg ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-500`}>
+            <div className={`relative p-2 sm:p-3 md:p-4 mb-1.5 sm:mb-3 md:mb-4 rounded-lg border ${habitus33Theme.borderPrimary} shadow-lg ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-500`}>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 pointer-events-none" />
               
               {/* 클릭 가능한 헤더 */}
@@ -713,7 +713,7 @@ export default function DashboardPage() {
                   }
                 }}
               >
-                <h2 className={`text-base sm:text-lg font-medium ${habitus33Theme.primary}`}>
+                <h2 className={`text-sm sm:text-base md:text-lg font-medium ${habitus33Theme.primary}`}>
                   33일 루틴
                 </h2>
                 <button
@@ -721,23 +721,23 @@ export default function DashboardPage() {
                   aria-expanded={isRoutineTrackerExpanded}
                   aria-label="루틴 상세 정보 토글"
                 >
-                  <ChevronDownIcon className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isRoutineTrackerExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDownIcon className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-400 transition-transform duration-300 ${isRoutineTrackerExpanded ? 'rotate-180' : ''}`} />
                 </button>
               </div>
 
               {/* 접히는 콘텐츠 */}
-              <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isRoutineTrackerExpanded ? 'max-h-[300px] pt-3' : 'max-h-0'} md:max-h-full md:block md:pt-3`}>
-                <div className="flex flex-col md:relative md:flex-row md:justify-center items-center gap-3 mb-4 z-10">
+              <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isRoutineTrackerExpanded ? 'max-h-[300px] pt-2 sm:pt-3' : 'max-h-0'} md:max-h-full md:block md:pt-3`}>
+                <div className="flex flex-col md:relative md:flex-row md:justify-center items-center gap-2 sm:gap-3 mb-3 sm:mb-4 z-10">
                   <div className="order-1 md:order-none md:absolute md:top-0 md:right-0">
-                    <div className={`${habitus33Theme.cardBg} py-1 px-2 rounded-full flex items-center space-x-2 border ${habitus33Theme.borderPrimary} shadow-sm backdrop-blur-sm`}>
-                      <p className={`text-xs font-medium ${habitus33Theme.textLight}`}>Today</p>
-                      <span className={`text-xs ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`} title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}>🌱</span>
-                      <span className={`text-xs ${routineData?.todayZengoCompleted ? 'text-purple-400' : 'text-gray-600'}`} title={routineData?.todayZengoCompleted ? "오늘 ZenGo 경험 완료" : "오늘의 ZenGo 경험 대기 중"}>🌿</span>
+                    <div className={`${habitus33Theme.cardBg} py-0.5 sm:py-1 px-1.5 sm:px-2 rounded-full flex items-center space-x-1 sm:space-x-2 border ${habitus33Theme.borderPrimary} shadow-sm backdrop-blur-sm`}>
+                      <p className={`text-[10px] sm:text-xs font-medium ${habitus33Theme.textLight}`}>Today</p>
+                      <span className={`text-[10px] sm:text-xs ${routineData?.todayTsExecuted ? 'text-cyan-400' : 'text-gray-600'}`} title={routineData?.todayTsExecuted ? "오늘 TS 경험 완료" : "오늘의 TS 경험 대기 중"}>🌱</span>
+                      <span className={`text-[10px] sm:text-xs ${routineData?.todayZengoCompleted ? 'text-purple-400' : 'text-gray-600'}`} title={routineData?.todayZengoCompleted ? "오늘 ZenGo 경험 완료" : "오늘의 ZenGo 경험 대기 중"}>🌿</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mb-4 relative h-2 z-10">
+                <div className="mb-3 sm:mb-4 relative h-1.5 sm:h-2 z-10">
                   <div className={`absolute top-0 left-0 w-full h-full ${habitus33Theme.progressBarBg} rounded-full overflow-hidden`}></div>
                   <div
                     className={`absolute top-0 left-0 h-full ${habitus33Theme.progressFg} rounded-full transition-all duration-1000 ease-in-out shadow-lg`}
@@ -745,8 +745,8 @@ export default function DashboardPage() {
                   >
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-full" />
                   </div>
-                  <div className="absolute top-[-20px] right-0 flex items-center">
-                    <span className={`text-xs font-medium ${habitus33Theme.textLight}`}>Day {routineData.currentDay} / 33</span>
+                  <div className="absolute top-[-16px] sm:top-[-20px] right-0 flex items-center">
+                    <span className={`text-[10px] sm:text-xs font-medium ${habitus33Theme.textLight}`}>Day {routineData.currentDay} / 33</span>
                   </div>
                 </div>
 
@@ -787,47 +787,47 @@ export default function DashboardPage() {
           )}
           
           {/* 통계 요약 카드 - 축소된 사이버 테마 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2 md:gap-3 mb-1.5 sm:mb-3 md:mb-4">
             {/* Atomic Reading - 축소된 강조 스타일 */}
-            <div className={`relative p-4 rounded-lg shadow-lg border-2 ${habitus33Theme.borderPrimary} ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-300 hover:scale-105`}>
+            <div className={`relative p-2 sm:p-3 md:p-4 rounded-lg shadow-lg border-2 ${habitus33Theme.borderPrimary} ${habitus33Theme.cardBg} backdrop-blur-sm overflow-hidden group hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-300 hover:scale-105`}>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative flex items-center space-x-3">
-                <div className="bg-cyan-500/20 rounded-full p-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
+              <div className="relative flex items-center space-x-2 sm:space-x-3">
+                <div className="bg-cyan-500/20 rounded-full p-1.5 sm:p-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className={`w-4 h-4 sm:w-5 sm:h-5 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M12 6a1 1 0 0 1 1 1v4.586l2.293 2.293a1 1 0 0 1-1.414 1.414l-2.5-2.5A1 1 0 0 1 11 12V7a1 1 0 0 1 1-1Z"/><path fillRule="evenodd" d="M12 2.25c-5.376 0-9.75 4.374-9.75 9.75s4.374 9.75 9.75 9.75 9.75-4.374 9.75-9.75S17.376 2.25 12 2.25ZM4.75 12a7.25 7.25 0 1 1 14.5 0 7.25 7.25 0 0 1-14.5 0Z" clipRule="evenodd"/></svg>
                 </div>
                 <div>
-                  <p className={`text-xs ${habitus33Theme.primary} mb-1 font-semibold`}>⚡ Speed</p>
-                  <p className={`text-lg font-bold ${habitus33Theme.primary}`}>
-                    {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className={`text-xs ${habitus33Theme.textMuted}`}>ppm</span>
+                  <p className={`text-[9px] sm:text-xs ${habitus33Theme.primary} mb-0.5 sm:mb-1 font-semibold`}>⚡ Speed</p>
+                  <p className={`text-sm sm:text-base md:text-lg font-bold ${habitus33Theme.primary}`}>
+                    {stats?.recentPpm != null ? `${stats.recentPpm.toFixed(0)}` : '-'} <span className={`text-[9px] sm:text-xs ${habitus33Theme.textMuted}`}>ppm</span>
                   </p>
                 </div>
               </div>
             </div>
 
             {/* TS - 축소된 사이버 테마 */}
-            <div className={`relative p-3 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderPrimary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 hover:scale-105`}>
+            <div className={`relative p-2 sm:p-3 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderPrimary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 hover:scale-105`}>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative flex items-center space-x-2">
-                <div className="bg-cyan-500/20 rounded-full p-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" className={`w-4 h-4 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
+              <div className="relative flex items-center space-x-1.5 sm:space-x-2">
+                <div className="bg-cyan-500/20 rounded-full p-1 sm:p-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className={`w-3 h-3 sm:w-4 sm:h-4 ${habitus33Theme.primary}`} fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 2.25a.75.75 0 0 1 .75.75v5.19l3.72.53a1.125 1.125 0 0 1 .62 1.93l-8.1 8.1h3.56a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.35.44l-7.5-9.75a.75.75 0 0 1 .53-1.19l5.25-.75V3a.75.75 0 0 1 .75-.75h2.5Z"/></svg>
                 </div>
                 <div>
-                  <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>TS 세션</p>
-                  <p className={`text-base font-medium ${habitus33Theme.textLight}`}>{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
+                  <p className={`text-[9px] sm:text-xs ${habitus33Theme.textMuted} mb-0.5 sm:mb-1`}>TS 세션</p>
+                  <p className={`text-xs sm:text-sm md:text-base font-medium ${habitus33Theme.textLight}`}>{stats?.todayTsCount != null && stats?.totalTsCount != null ? `${stats.todayTsCount}/${stats.totalTsCount}` : '-'}</p>
                 </div>
               </div>
             </div>
 
             {/* 총 등록 도서 - 축소된 사이버 테마 */}
-            <div className={`relative p-3 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderPrimary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 hover:scale-105`}>
+            <div className={`relative p-2 sm:p-3 rounded-lg ${habitus33Theme.cardBg} border ${habitus33Theme.borderPrimary} backdrop-blur-sm overflow-hidden group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 hover:scale-105`}>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative flex items-center space-x-2">
-                <div className="bg-emerald-500/20 rounded-full p-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
+              <div className="relative flex items-center space-x-1.5 sm:space-x-2">
+                <div className="bg-emerald-500/20 rounded-full p-1 sm:p-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294A3.75 3.75 0 0 1 16.121 4.5H19.5a2.25 2.25 0 0 1 2.25 2.25v11.25a2.25 2.25 0 0 1-2.25 2.25h-3.379a3.75 3.75 0 0 0-1.77.448l-2.351 1.294a2.25 2.25 0 0 1-2.14 0l-2.351-1.294A3.75 3.75 0 0 0 4.5 20.25H4.5A2.25 2.25 0 0 1 2.25 18V6.75Zm2.25-.75a.75.75 0 0 0-.75.75v11.25c0 .414.336.75.75.75h3.379c.621 0 1.23.154 1.77.448l2.351 1.294c.333.183.737.183 1.07 0l2.351-1.294a3.75 3.75 0 0 1 1.77-.448H19.5a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 0-.75-.75h-3.379a2.25 2.25 0 0 0-1.07.276l-2.351 1.294a3.75 3.75 0 0 1-3.5 0L5.57 6.276A2.25 2.25 0 0 0 4.5 6Z"/></svg>
                 </div>
                 <div>
-                  <p className={`text-xs ${habitus33Theme.textMuted} mb-1`}>등록한 책</p>
-                  <p className={`text-base font-medium ${habitus33Theme.textLight}`}>{stats ? `${stats.totalBooks}권` : '-'}</p>
+                  <p className={`text-[9px] sm:text-xs ${habitus33Theme.textMuted} mb-0.5 sm:mb-1`}>등록한 책</p>
+                  <p className={`text-xs sm:text-sm md:text-base font-medium ${habitus33Theme.textLight}`}>{stats ? `${stats.totalBooks}권` : '-'}</p>
                 </div>
               </div>
             </div>
