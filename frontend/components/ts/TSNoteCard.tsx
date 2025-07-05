@@ -343,7 +343,12 @@ export default function TSNoteCard({
   const [editingThreadId, setEditingThreadId] = useState<string | null>(null);
   const [editingThreadContent, setEditingThreadContent] = useState('');
   const [isSubmittingThread, setIsSubmittingThread] = useState(false); // 중복 요청 방지용 상태
+  
+  // React Strict Mode 대응을 위한 ref들
   const submissionRef = useRef<Set<string>>(new Set()); // 컴포넌트별 요청 추적
+  const abortControllerRef = useRef<AbortController | null>(null); // API 호출 중단용
+  const isFirstRenderRef = useRef(true); // 첫 번째 렌더링 체크
+  const isMountedRef = useRef(true); // 컴포넌트 마운트 상태 추적
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -369,7 +374,48 @@ export default function TSNoteCard({
   
   const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
 
+  // 컴포넌트 언마운트 시 cleanup
   useEffect(() => {
+    isMountedRef.current = true;
+    
+    return () => {
+      isMountedRef.current = false;
+      // 진행 중인 API 호출 중단
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // 전역 요청 추적에서 제거
+      submissionRef.current.forEach(requestKey => {
+        if ((window as any).__pendingThreadRequests) {
+          (window as any).__pendingThreadRequests.delete(requestKey);
+        }
+      });
+      submissionRef.current.clear();
+    };
+  }, []);
+
+  // React Strict Mode에서 중복 실행을 방지하는 useEffect
+  useEffect(() => {
+    // 첫 번째 렌더링에서는 실행하지 않음 (Strict Mode 대응)
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      console.log('TSNoteCard 첫 번째 렌더링, 상태 초기화만 수행');
+      return;
+    }
+
+    // 컴포넌트가 언마운트된 상태에서는 실행하지 않음
+    if (!isMountedRef.current) {
+      console.log('TSNoteCard 언마운트 상태, useEffect 건너뜀');
+      return;
+    }
+
+    console.log('TSNoteCard initialNote 변경 감지:', {
+      noteId: initialNote._id,
+      hasInlineThreads: !!initialNote.inlineThreads?.length,
+      isPageEditing,
+      enableOverlayEvolutionMode
+    });
+
     setNote(initialNote);
     setFields({
       importanceReason: initialNote.importanceReason || '',
@@ -377,9 +423,9 @@ export default function TSNoteCard({
       relatedKnowledge: initialNote.relatedKnowledge || '',
       mentalImage: initialNote.mentalImage || '',
     });
+    
     // 페이지 전체 편집 모드가 비활성화되거나, 오버레이 모드가 활성화되면
     // 개별 카드의 인라인 편집 상태도 초기화 (비활성화)합니다.
-    // 또한, initialNote가 변경될 때도 isInlineEditing을 false로 초기화할 수 있습니다. (선택적)
     if (!isPageEditing || enableOverlayEvolutionMode) {
       setIsInlineEditing(false);
     }
@@ -748,6 +794,12 @@ export default function TSNoteCard({
   };
 
   const handleAddThread = async () => {
+    // 컴포넌트가 언마운트된 상태에서는 실행하지 않음
+    if (!isMountedRef.current) {
+      console.log('컴포넌트 언마운트 상태, 인라인메모 쓰레드 추가 취소');
+      return;
+    }
+
     // 중복 요청 방지: 이미 제출 중이거나 내용이 비어있으면 리턴
     if (isSubmittingThread || !newThreadContent.trim()) {
       console.log('인라인메모 쓰레드 추가 차단:', { isSubmittingThread, hasContent: !!newThreadContent.trim() });
@@ -768,6 +820,15 @@ export default function TSNoteCard({
       console.log('전역 중복 요청 차단:', { noteId: note._id, content, requestKey });
       return;
     }
+    
+    // 이전 요청이 진행 중이면 중단
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // 새로운 AbortController 생성
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
     
     // 컴포넌트별 요청 추적 시작
     submissionRef.current.add(requestKey);
@@ -795,19 +856,38 @@ export default function TSNoteCard({
     };
 
     // 로컬 note 상태에 즉시 추가
-    setNote(prevNote => ({
-      ...prevNote,
-      inlineThreads: [...(prevNote.inlineThreads || []), tempThread]
-    }));
+    if (isMountedRef.current) {
+      setNote(prevNote => ({
+        ...prevNote,
+        inlineThreads: [...(prevNote.inlineThreads || []), tempThread]
+      }));
 
-    // 쓰레드가 추가되면 자동으로 쓰레드 목록을 펼쳐서 보여주기
-    setShowInlineThreads(true);
-    setNewThreadContent('');
-    setIsAddingThread(false);
+      // 쓰레드가 추가되면 자동으로 쓰레드 목록을 펼쳐서 보여주기
+      setShowInlineThreads(true);
+      setNewThreadContent('');
+      setIsAddingThread(false);
+    }
 
     // 백엔드 API 호출
     try {
-      const newThread = await inlineThreadApi.create(note._id, content);
+      // AbortController 신호를 체크하면서 API 호출
+      const newThreadPromise = inlineThreadApi.create(note._id, content);
+      
+      // Promise와 AbortController를 결합
+      const newThread = await Promise.race([
+        newThreadPromise,
+        new Promise<never>((_, reject) => {
+          signal.addEventListener('abort', () => {
+            reject(new Error('Request aborted'));
+          });
+        })
+      ]);
+      
+      // 요청이 중단되었거나 컴포넌트가 언마운트되었으면 처리하지 않음
+      if (signal.aborted || !isMountedRef.current) {
+        console.log('인라인메모 쓰레드 추가 요청이 중단됨');
+        return;
+      }
       
       // 서버 응답 검증: _id가 있는지 확인
       if (!newThread || !newThread._id) {
@@ -818,35 +898,52 @@ export default function TSNoteCard({
       console.log('인라인메모 쓰레드 생성 성공:', { tempId: tempThread._id, newId: newThread._id });
       
       // 실제 서버 응답으로 임시 쓰레드를 대체
-      setNote(prevNote => ({
-        ...prevNote,
-        inlineThreads: prevNote.inlineThreads?.map(thread => 
-          thread._id === tempThread._id ? newThread : thread
-        ) || []
-      }));
-      
-      // 부모 컴포넌트에 알림 (있다면)
-      if (onAddInlineThread) {
-        onAddInlineThread(note._id, content);
+      if (isMountedRef.current) {
+        setNote(prevNote => ({
+          ...prevNote,
+          inlineThreads: prevNote.inlineThreads?.map(thread => 
+            thread._id === tempThread._id ? newThread : thread
+          ) || []
+        }));
+        
+        // 부모 컴포넌트에 알림 (있다면)
+        if (onAddInlineThread) {
+          onAddInlineThread(note._id, content);
+        }
       }
     } catch (error) {
-      console.error('인라인메모 쓰레드 생성 실패:', error);
-      // 실패 시 롤백
-      setNote(prevNote => ({
-        ...prevNote,
-        inlineThreads: prevNote.inlineThreads?.filter(thread => thread._id !== tempThread._id) || []
-      }));
-    } finally {
-      // 요청 추적 해제
-      const requestKey = `${note._id}-${content}`;
-      submissionRef.current.delete(requestKey);
-      if ((window as any).__pendingThreadRequests) {
-        (window as any).__pendingThreadRequests.delete(requestKey);
+      // AbortError는 정상적인 중단이므로 로그만 출력
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('인라인메모 쓰레드 추가 요청이 중단됨:', error.message);
+        return;
       }
       
-      // 제출 상태 해제 (성공/실패 관계없이)
-      setIsSubmittingThread(false);
-      console.log('인라인메모 쓰레드 추가 완료:', { requestKey });
+      console.error('인라인메모 쓰레드 생성 실패:', error);
+      
+      // 실패 시 롤백 (컴포넌트가 마운트된 상태에서만)
+      if (isMountedRef.current) {
+        setNote(prevNote => ({
+          ...prevNote,
+          inlineThreads: prevNote.inlineThreads?.filter(thread => thread._id !== tempThread._id) || []
+        }));
+      }
+    } finally {
+      // 요청 추적 해제 (컴포넌트가 마운트된 상태에서만)
+      if (isMountedRef.current) {
+        submissionRef.current.delete(requestKey);
+        if ((window as any).__pendingThreadRequests) {
+          (window as any).__pendingThreadRequests.delete(requestKey);
+        }
+        
+        // 제출 상태 해제 (성공/실패 관계없이)
+        setIsSubmittingThread(false);
+        console.log('인라인메모 쓰레드 추가 완료:', { requestKey });
+      }
+      
+      // AbortController 정리
+      if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
+        abortControllerRef.current = null;
+      }
     }
   };
 
