@@ -342,6 +342,7 @@ export default function TSNoteCard({
   const [newThreadContent, setNewThreadContent] = useState('');
   const [editingThreadId, setEditingThreadId] = useState<string | null>(null);
   const [editingThreadContent, setEditingThreadContent] = useState('');
+  const [isSubmittingThread, setIsSubmittingThread] = useState(false); // 중복 요청 방지용 상태
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -554,7 +555,7 @@ export default function TSNoteCard({
           >
             <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
           </svg>
-          생각추가 {hasThreads && `(${threads.length})`}
+          생각 진화 {hasThreads && `(${threads.length})`}
         </button>
 
         {/* 쓰레드 목록 */}
@@ -643,9 +644,14 @@ export default function TSNoteCard({
                 <div className="flex space-x-2 mt-2">
                   <button
                     onClick={handleAddThread}
-                    className="px-2 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700 transition-colors"
+                    disabled={isSubmittingThread}
+                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                      isSubmittingThread 
+                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                        : 'bg-cyan-600 text-white hover:bg-cyan-700'
+                    }`}
                   >
-                    추가
+                    {isSubmittingThread ? '추가 중...' : '추가'}
                   </button>
                   <button
                     onClick={() => {
@@ -662,15 +668,22 @@ export default function TSNoteCard({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsAddingThread(true);
+                  if (!isSubmittingThread) {
+                    setIsAddingThread(true);
+                  }
                 }}
-                className="flex items-center text-xs text-gray-400 hover:text-cyan-400 transition-colors duration-200 ml-4"
+                disabled={isSubmittingThread}
+                className={`flex items-center text-xs transition-colors duration-200 ml-4 ${
+                  isSubmittingThread 
+                    ? 'text-gray-500 cursor-not-allowed' 
+                    : 'text-gray-400 hover:text-cyan-400'
+                }`}
                 data-no-toggle
               >
                 <svg className="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
-                생각 추가
+                {isSubmittingThread ? '처리 중...' : '생각 추가'}
               </button>
             )}
           </div>
@@ -734,9 +747,18 @@ export default function TSNoteCard({
   };
 
   const handleAddThread = async () => {
-    if (!newThreadContent.trim()) return;
+    // 중복 요청 방지: 이미 제출 중이거나 내용이 비어있으면 리턴
+    if (isSubmittingThread || !newThreadContent.trim()) {
+      console.log('인라인메모 쓰레드 추가 차단:', { isSubmittingThread, hasContent: !!newThreadContent.trim() });
+      return;
+    }
     
     const content = newThreadContent.trim();
+    
+    // 제출 상태로 변경 (중복 요청 방지)
+    setIsSubmittingThread(true);
+    
+    console.log('인라인메모 쓰레드 추가 시작:', { noteId: note._id, content });
     
     // 즉시 로컬 상태 업데이트 (낙관적 업데이트)
     const tempThread: InlineThread = {
@@ -791,6 +813,10 @@ export default function TSNoteCard({
         ...prevNote,
         inlineThreads: prevNote.inlineThreads?.filter(thread => thread._id !== tempThread._id) || []
       }));
+    } finally {
+      // 제출 상태 해제 (성공/실패 관계없이)
+      setIsSubmittingThread(false);
+      console.log('인라인메모 쓰레드 추가 완료');
     }
   };
 
