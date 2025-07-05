@@ -406,6 +406,8 @@ export default function TSNoteCard({
 
   // initialNote prop 변경 감지 useEffect (React Strict Mode 완전 대응)
   useEffect(() => {
+    let isCleandUp = false; // 핵심: cleanup 플래그 (웹 검색 결과 패턴)
+
     // 마운트되지 않은 상태에서는 실행하지 않음
     if (!isMounted) {
       console.log('TSNoteCard 아직 마운트되지 않음, initialNote 변경 처리 건너뜀');
@@ -434,8 +436,8 @@ export default function TSNoteCard({
       isFirstRender: isFirstRenderRef.current
     });
 
-    // 안전한 상태 업데이트 (마운트 상태 재확인)
-    if (isMountedRef.current) {
+    // 안전한 상태 업데이트 (cleanup 플래그와 마운트 상태 재확인)
+    if (!isCleandUp && isMountedRef.current) {
       setNote(initialNote);
       setFields({
         importanceReason: initialNote.importanceReason || '',
@@ -447,9 +449,17 @@ export default function TSNoteCard({
       // 페이지 전체 편집 모드가 비활성화되거나, 오버레이 모드가 활성화되면
       // 개별 카드의 인라인 편집 상태도 초기화 (비활성화)합니다.
       if (!isPageEditing || enableOverlayEvolutionMode) {
-        setIsInlineEditing(false);
+        if (!isCleandUp && isMountedRef.current) {
+          setIsInlineEditing(false);
+        }
       }
     }
+
+    // cleanup 함수: isCleandUp 플래그 설정
+    return () => {
+      console.log('TSNoteCard initialNote useEffect cleanup 실행');
+      isCleandUp = true;
+    };
   }, [initialNote, isPageEditing, enableOverlayEvolutionMode, isMounted]);
 
   useEffect(() => {
@@ -815,6 +825,8 @@ export default function TSNoteCard({
   };
 
   const handleAddThread = async () => {
+    let isCleandUp = false; // 핵심: cleanup 플래그 (웹 검색 결과 패턴)
+
     // 컴포넌트가 언마운트된 상태에서는 실행하지 않음
     if (!isMountedRef.current) {
       console.log('컴포넌트 언마운트 상태, 인라인메모 쓰레드 추가 취소');
@@ -851,6 +863,14 @@ export default function TSNoteCard({
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
     
+    // cleanup 함수 등록
+    const cleanup = () => {
+      isCleandUp = true;
+      console.log('handleAddThread cleanup 실행');
+    };
+    
+    signal.addEventListener('abort', cleanup);
+    
     // 컴포넌트별 요청 추적 시작
     submissionRef.current.add(requestKey);
     
@@ -861,7 +881,9 @@ export default function TSNoteCard({
     (window as any).__pendingThreadRequests.add(requestKey);
     
     // 제출 상태로 변경 (중복 요청 방지)
-    setIsSubmittingThread(true);
+    if (!isCleandUp && isMountedRef.current) {
+      setIsSubmittingThread(true);
+    }
     
     console.log('인라인메모 쓰레드 추가 시작:', { noteId: note._id, content, requestKey });
     
@@ -876,8 +898,8 @@ export default function TSNoteCard({
       isTemporary: true
     };
 
-    // 로컬 note 상태에 즉시 추가
-    if (isMountedRef.current) {
+    // 로컬 note 상태에 즉시 추가 (cleanup 플래그 확인)
+    if (!isCleandUp && isMountedRef.current) {
       setNote(prevNote => ({
         ...prevNote,
         inlineThreads: [...(prevNote.inlineThreads || []), tempThread]
@@ -904,9 +926,9 @@ export default function TSNoteCard({
         })
       ]);
       
-      // 요청이 중단되었거나 컴포넌트가 언마운트되었으면 처리하지 않음
-      if (signal.aborted || !isMountedRef.current) {
-        console.log('인라인메모 쓰레드 추가 요청이 중단됨');
+      // cleanup 플래그 확인: 요청이 중단되었거나 컴포넌트가 언마운트되었으면 처리하지 않음
+      if (isCleandUp || signal.aborted || !isMountedRef.current) {
+        console.log('인라인메모 쓰레드 추가 요청이 중단됨 (cleanup 플래그 또는 abort)');
         return;
       }
       
@@ -918,8 +940,8 @@ export default function TSNoteCard({
       
       console.log('인라인메모 쓰레드 생성 성공:', { tempId: tempThread._id, newId: newThread._id });
       
-      // 실제 서버 응답으로 임시 쓰레드를 대체
-      if (isMountedRef.current) {
+      // 실제 서버 응답으로 임시 쓰레드를 대체 (cleanup 플래그 재확인)
+      if (!isCleandUp && isMountedRef.current) {
         setNote(prevNote => ({
           ...prevNote,
           inlineThreads: prevNote.inlineThreads?.map(thread => 
@@ -941,16 +963,16 @@ export default function TSNoteCard({
       
       console.error('인라인메모 쓰레드 생성 실패:', error);
       
-      // 실패 시 롤백 (컴포넌트가 마운트된 상태에서만)
-      if (isMountedRef.current) {
+      // 실패 시 롤백 (cleanup 플래그와 컴포넌트 마운트 상태 확인)
+      if (!isCleandUp && isMountedRef.current) {
         setNote(prevNote => ({
           ...prevNote,
           inlineThreads: prevNote.inlineThreads?.filter(thread => thread._id !== tempThread._id) || []
         }));
       }
     } finally {
-      // 요청 추적 해제 (컴포넌트가 마운트된 상태에서만)
-      if (isMountedRef.current) {
+      // 요청 추적 해제 (cleanup 플래그와 컴포넌트 마운트 상태 확인)
+      if (!isCleandUp && isMountedRef.current) {
         submissionRef.current.delete(requestKey);
         if ((window as any).__pendingThreadRequests) {
           (window as any).__pendingThreadRequests.delete(requestKey);
@@ -965,6 +987,9 @@ export default function TSNoteCard({
       if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) {
         abortControllerRef.current = null;
       }
+      
+      // cleanup 함수 호출
+      cleanup();
     }
   };
 

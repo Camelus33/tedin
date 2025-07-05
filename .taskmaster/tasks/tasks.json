@@ -1063,14 +1063,14 @@
         "id": 6,
         "title": "Test Refresh Scenario",
         "description": "Test the implemented solution by refreshing the page and verifying that the API call is only executed once.",
-        "details": "1. Refresh the page multiple times.\n2. Monitor the network requests in the browser's developer tools.\n3. Verify that the API call is only executed once per refresh.",
+        "details": "1. Refresh the page multiple times.\n2. Monitor the network requests in the browser's developer tools.\n3. Verify that the API call is only executed once per refresh.\n<info added on 2025-07-05T03:37:38.560Z>\n**Web Search Analysis Complete:**\n\n**Key Findings:**\n1. **Intentional Behavior of React 18 Strict Mode**: Double execution of useEffect in development mode is an intentional feature.\n2. **Importance of cleanup function**: The `isCleandUp` flag pattern is a key solution.\n3. **React 19 Suspense Changes**: Performance improvements by removing pre-rendering of sibling components.\n4. **Correct Solution Patterns**:\n   - Cleanup flag using useRef\n   - Check cleanup status before every setState call\n   - Use in combination with AbortController\n\n**Current Problem:**\n- Duplicate execution still occurs in TSNoteCard\n- Existing solutions are ineffective\n- Incomplete React Strict Mode support\n\n**Next Steps:**\n1. Accurate analysis of the current TSNoteCard code\n2. Apply the `isCleandUp` pattern from web search results\n3. Completely reconfigure the useEffect internal logic\n</info added on 2025-07-05T03:37:38.560Z>",
         "testStrategy": "Manually refresh the page multiple times and observe the network requests. Confirm that the API is called only once per refresh.",
         "priority": "high",
         "dependencies": [
           4,
           5
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -1102,7 +1102,7 @@
     ],
     "metadata": {
       "created": "2025-07-05T03:03:45.780Z",
-      "updated": "2025-07-05T03:22:46.797Z",
+      "updated": "2025-07-05T03:36:33.488Z",
       "description": "Tasks for root-cause-analysis context"
     }
   }
