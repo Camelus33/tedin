@@ -171,6 +171,11 @@ export const getNotesByBook = async (req: Request, res: Response) => {
     const filter: any = { userId, bookId };
     if (originOnly) filter.originSession = { $exists: true };
     const notes = await Note.find(filter)
+      .populate({
+        path: 'inlineThreads',
+        select: '-__v',
+        options: { sort: { createdAt: 1 } } // 생성일 오름차순 정렬
+      })
       .sort({ createdAt: -1 })
       .select('-__v');
 
@@ -240,7 +245,13 @@ export const getNotesByIds = async (req: Request, res: Response) => {
     const notes = await Note.find({
       _id: { $in: noteIds.map(id => new mongoose.Types.ObjectId(id)) }, // 문자열 ID를 ObjectId로 변환
       userId: new mongoose.Types.ObjectId(userId), // userId도 ObjectId로 변환하여 비교
-    }).select('-__v'); // __v 필드는 제외하고 반환
+    })
+    .populate({
+      path: 'inlineThreads',
+      select: '-__v',
+      options: { sort: { createdAt: 1 } } // 생성일 오름차순 정렬
+    })
+    .select('-__v'); // __v 필드는 제외하고 반환
 
     // 조회된 노트들을 요청된 noteIds 순서대로 정렬합니다.
     // filter(Boolean)은 존재하지 않는 ID에 대한 find 결과를 제거합니다.
