@@ -949,10 +949,12 @@ export default function TSNoteCard({
           ) || []
         }));
         
-        // 부모 컴포넌트에 알림 (있다면)
-        if (onAddInlineThread) {
-          onAddInlineThread(note._id, content);
-        }
+        // 🚫 중복 API 호출 방지: onAddInlineThread 콜백 호출 제거
+        // TSNoteCard에서 이미 완전한 API 호출과 상태 관리를 처리하므로
+        // 부모 컴포넌트에 추가 알림이 불필요함
+        // if (onAddInlineThread) {
+        //   onAddInlineThread(note._id, content);
+        // }
       }
     } catch (error) {
       // AbortError는 정상적인 중단이므로 로그만 출력
@@ -1049,10 +1051,12 @@ export default function TSNoteCard({
         ) || []
       }));
       
-      // 부모 컴포넌트에 알림 (있다면)
-      if (onUpdateInlineThread) {
-        onUpdateInlineThread(editingThreadId, content);
-      }
+      // 🚫 중복 API 호출 방지: onUpdateInlineThread 콜백 호출 제거
+      // TSNoteCard에서 이미 완전한 API 호출과 상태 관리를 처리하므로
+      // 부모 컴포넌트에 추가 알림이 불필요함
+      // if (onUpdateInlineThread) {
+      //   onUpdateInlineThread(editingThreadId, content);
+      // }
     } catch (error) {
       console.error('인라인메모 쓰레드 수정 실패:', error);
       // 실패 시 원래 내용으로 복원
@@ -1097,10 +1101,12 @@ export default function TSNoteCard({
     try {
       await inlineThreadApi.delete(note._id, threadId);
       
-      // 부모 컴포넌트에 알림 (있다면)
-      if (onDeleteInlineThread) {
-        onDeleteInlineThread(threadId);
-      }
+      // 🚫 중복 API 호출 방지: onDeleteInlineThread 콜백 호출 제거
+      // TSNoteCard에서 이미 완전한 API 호출과 상태 관리를 처리하므로
+      // 부모 컴포넌트에 추가 알림이 불필요함
+      // if (onDeleteInlineThread) {
+      //   onDeleteInlineThread(threadId);
+      // }
     } catch (error) {
       console.error('인라인메모 쓰레드 삭제 실패:', error);
       // 실패 시 복원
