@@ -630,15 +630,7 @@ export default function BookDetailPage() {
           </Link>
         </div>
         
-        {/* App Logo/Name Header - 모바일에서 크기 축소 및 위치 조정 */}
-        <div className="text-center mb-1 sm:mb-6 max-sm:bg-gray-900/30 max-sm:backdrop-blur-sm max-sm:rounded-lg max-sm:py-1 max-sm:px-2 max-sm:border max-sm:border-gray-600/20">
-          <h1 
-            className={`text-sm sm:text-2xl font-bold ${cyberTheme.primary} cursor-pointer hover:text-cyan-300 transition-colors inline-block opacity-80 max-sm:opacity-90`}
-            onClick={() => router.push('/dashboard')}
-          >
-            Habitus33
-          </h1>
-        </div>
+
         
         {/* Book Header - 모바일에서 패딩과 간격 대폭 축소 */}
         <div className={`${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden mb-1 sm:mb-4 relative border ${cyberTheme.borderSecondary}/30 transition-all duration-300 ${isBookDetailExpanded ? 'shadow-2xl' : ''} max-sm:bg-gray-800/95 max-sm:border-cyan-400/30 max-sm:shadow-cyan-500/20 max-sm:shadow-xl max-sm:backdrop-blur-sm`}>
