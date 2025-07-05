@@ -3,146 +3,155 @@
     "tasks": [
       {
         "id": 1,
-        "title": "Dashboard Revamp: Requirements Analysis and Design",
-        "description": "Analyze dashboard revamp requirements, including user needs for the hero section, 'My Library' (2/3), and cognitive profile (1/3), and design a viewport-based layout.",
-        "details": "1. Analyze the existing dashboard/page.tsx code to understand the current structure and identify potential conflicts.\n2. Design a new layout structure based on user requirements and viewport considerations (Above the Fold 100vh).\n3. Develop a component separation strategy to improve code reusability and maintainability.\n4. Create a responsive design plan to ensure the dashboard adapts to various screen sizes.\n5. Investigate performance optimization strategies to enhance the dashboard's loading speed and responsiveness.\n6. Document potential error scenarios, such as dependency conflicts, and outline mitigation strategies, including phased refactoring.\n7. Plan for component reusability to minimize code duplication and improve maintainability.\n<info added on 2025-07-03T05:53:11.565Z>\n2025-07-03 대시보드 코드 분석 완료\n\n## 📋 **분석 결과**\n- 현재 dashboard/page.tsx: 862줄 (모듈화 필요)\n- BooksPageContent.tsx: 567줄 (재사용 컴포넌트 분리 가능)\n- 기존 컴포넌트 구조 양호: cognitive/, common/, ui/ 폴더 정리됨\n\n## 🎯 **설계 방향 확정**\n1. **Above the Fold (100vh)**: 히어로 + 도서관(2/3) + 인지프로필(1/3)\n2. **컴포넌트 분리**: library/, dashboard/ 폴더로 모듈화\n3. **CSS Grid 레이아웃**: 2fr 1fr 분할, 반응형 대응\n4. **성능 최적화**: React.memo, 상태 관리 개선\n\n## ⚠️ **핵심 리스크**\n- iOS Safari 100vh 이슈 → 100dvh + min-height fallback\n- 상태 관리 충돌 → Context API 또는 Zustand 도입 검토\n\n**다음 단계**: 태스크 2 (컴포넌트 분리) 진행 준비 완료\n</info added on 2025-07-03T05:53:11.565Z>",
-        "testStrategy": "1. Verify the new layout structure aligns with the design specifications and user requirements.\n2. Test the responsive design across different viewport sizes to ensure proper adaptation.\n3. Measure the dashboard's loading time and responsiveness before and after implementing performance optimizations.\n4. Conduct code reviews to ensure adherence to coding standards and best practices.\n5. Perform user acceptance testing to gather feedback and identify any usability issues.",
-        "status": "done",
-        "dependencies": [],
+        "title": "Initialize Project and Configure Dependencies",
+        "description": "Set up the project repository with Node.js, Express, and TypeScript, including necessary configurations and dependencies.",
+        "details": "1. Initialize a new Node.js project: `npm init -y`\n2. Install Express: `npm install express`\n3. Install TypeScript and its dependencies: `npm install typescript @types/node @types/express --save-dev`\n4. Configure TypeScript: `tsc --init` (modify `tsconfig.json` for desired settings, e.g., `target`: \"es6\", `module`: \"commonjs\", `outDir`: \"./dist\", `esModuleInterop`: true, `strict`: true)\n5. Install Mongoose: `npm install mongoose`\n6. Create basic project structure (e.g., `src/`, `dist/` folders)\n7. Set up a basic Express server in `src/index.ts`.\n8. Add linting and formatting tools like ESLint and Prettier with configurations.\n\nExample `src/index.ts`:\n```typescript\nimport express, { Request, Response } from 'express';\nimport mongoose from 'mongoose';\n\nconst app = express();\nconst port = process.env.PORT || 3000;\n\napp.use(express.json());\n\nmongoose.connect('mongodb://localhost:27017/tsnotecard')\n  .then(() => console.log('Connected to MongoDB'))\n  .catch(err => console.error('MongoDB connection error:', err));\n\napp.get('/', (req: Request, res: Response) => {\n  res.send('Inline Memo Threads Backend');\n});\n\napp.listen(port, () => {\n  console.log(`Server is running on port ${port}`);\n});\n```\n\nUse the latest versions of the libraries. For example:\n- express: ~4.18.2\n- mongoose: ^7.0.0\n- typescript: ^5.0.0",
+        "testStrategy": "Verify the server starts without errors and connects to the MongoDB database. Check the project structure and configuration files.",
         "priority": "high",
+        "dependencies": [],
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 2,
-        "title": "Extract Reusable Library Components",
-        "description": "This task is cancelled. Based on user feedback, the decision has been made to avoid complex component extraction and directly utilize the existing BooksPageContent.tsx and CognitiveProfileContainer.tsx in subsequent tasks. Proceed directly to Task 3 (Layout Structure Improvement).",
-        "status": "cancelled",
+        "title": "Define InlineThread Schema and Update Note Model",
+        "description": "Define the Mongoose schema for InlineThread and update the Note model to include the inlineThreads field.",
+        "details": "1. Create `src/models/InlineThread.ts` with the InlineThread schema:\n```typescript\nimport mongoose, { Schema, Document } from 'mongoose';\n\nexport interface InlineThread extends Document {\n  content: string;\n  authorId: string;\n  authorName: string;\n  createdAt: Date;\n  clientCreatedAt?: Date;\n  parentNoteId: string;\n  depth?: number;\n  isTemporary?: boolean;\n}\n\nconst InlineThreadSchema: Schema = new Schema({\n  content: { type: String, required: true, maxlength: 1000 },\n  authorId: { type: String, required: true },\n  authorName: { type: String, required: true },\n  createdAt: { type: Date, default: Date.now },\n  clientCreatedAt: { type: Date },\n  parentNoteId: { type: String, required: true },\n  depth: { type: Number },\n  isTemporary: { type: Boolean }\n});\n\nexport default mongoose.model<InlineThread>('InlineThread', InlineThreadSchema);\n```\n2. Update `src/models/Note.ts` to include `inlineThreads`:\n```typescript\nimport mongoose, { Schema, Document } from 'mongoose';\nimport { InlineThread } from './InlineThread';\n\nexport interface Note extends Document {\n  // Existing fields...\n  inlineThreads: InlineThread[];\n}\n\nconst NoteSchema: Schema = new Schema({\n  // Existing fields...\n  inlineThreads: [{ type: Schema.Types.ObjectId, ref: 'InlineThread' }]\n});\n\nexport default mongoose.model<Note>('Note', NoteSchema);\n```\n\nEnsure that the `maxlength` validator is used for the `content` field as per the security requirements.",
+        "testStrategy": "Verify that the schemas are correctly defined in Mongoose and that the Note model is updated with the inlineThreads field. Check data types and required fields.",
+        "priority": "high",
         "dependencies": [
           1
         ],
-        "priority": "high",
-        "details": "This task is no longer required due to a change in strategy. The original plan to create a mini-library view by scaling down existing components has been abandoned in favor of directly using BooksPageContent.tsx and CognitiveProfileContainer.tsx in the layout improvements planned for Task 3.",
-        "testStrategy": "No testing is required as this task has been cancelled.",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define InlineThread Schema",
+            "description": "Create the Mongoose schema for the InlineThread model, including fields for content, author, and timestamps.",
+            "dependencies": [],
+            "details": "Define the structure and data types for the InlineThread schema using Mongoose.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Update Note Model with inlineThreads Field",
+            "description": "Modify the Note model to include an array of references to InlineThread documents.",
+            "dependencies": [
+              1
+            ],
+            "details": "Add the 'inlineThreads' field to the Note schema as an array of ObjectIds referencing the InlineThread model.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Verify Schema Definitions",
+            "description": "Ensure that the InlineThread schema and the updated Note model schema are correctly defined and validated.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Validate the schema definitions for both InlineThread and Note models to ensure data integrity and consistency.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 3,
-        "title": "Implement Viewport-Based Dashboard Layout",
-        "description": "Implement the new dashboard layout structure based on viewport dimensions, incorporating the hero section and the split 'My Library' and cognitive profile sections. This implementation reuses existing components and focuses on layout improvements.",
-        "status": "done",
-        "dependencies": [
-          1
-        ],
+        "title": "Implement Create InlineThread API",
+        "description": "Implement the API endpoint for creating a new inline thread under a specific note.",
+        "details": "1. Create a new route in `src/routes/notes.ts` (or similar) for `POST /api/notes/:noteId/inline-threads`.\n2. Use `express.Router()` to define the route.\n3. Extract `noteId` from `req.params`.\n4. Extract `content` from `req.body`.\n5. Get `authorId` and `authorName` from the JWT token (assuming JWT middleware is already in place).\n6. Create a new `InlineThread` instance using the Mongoose model.\n7. Save the new thread to the database.\n8. Update the corresponding Note document by pushing the new thread's ID to the `inlineThreads` array.\n9. Return the created `InlineThread` object in the response.\n\nExample:\n```typescript\nimport express, { Request, Response } from 'express';\nimport Note from '../models/Note';\nimport InlineThread from '../models/InlineThread';\nimport { verifyToken } from '../middleware/auth'; // Assuming JWT middleware\n\nconst router = express.Router();\n\nrouter.post('/:noteId/inline-threads', verifyToken, async (req: Request, res: Response) => {\n  try {\n    const { noteId } = req.params;\n    const { content } = req.body;\n    const authorId = req.user.id; // Assuming user info is in req.user\n    const authorName = req.user.name; // Assuming user info is in req.user\n\n    const newThread = new InlineThread({\n      content,\n      authorId,\n      authorName,\n      parentNoteId: noteId\n    });\n\n    await newThread.save();\n\n    const note = await Note.findById(noteId);\n    if (!note) {\n      return res.status(404).json({ message: 'Note not found' });\n    }\n\n    note.inlineThreads.push(newThread._id);\n    await note.save();\n\n    res.status(201).json(newThread);\n  } catch (error) {\n    console.error(error);\n    res.status(500).json({ message: 'Server error' });\n  }\n});\n\nexport default router;\n```\n\nApply JWT authentication middleware (`verifyToken`) to protect the endpoint.",
+        "testStrategy": "Send a POST request to `/api/notes/:noteId/inline-threads` with a valid JWT token and a JSON body containing the content. Verify that a new InlineThread object is created in the database and returned in the response. Also, verify that the corresponding Note document is updated with the new thread's ID.",
         "priority": "high",
-        "details": "1. Modify `dashboard/page.tsx` to implement the new layout structure.\n2. Reuse the existing `BooksPageContent.tsx` component for the 'My Library' section.\n3. Reuse the existing `CognitiveProfileContainer.tsx` component for the cognitive profile section.\n4. Use CSS Grid to create a 2/3 + 1/3 split layout for 'My Library' and the cognitive profile sections within the 'Above the Fold' area.\n5. Implement viewport-based height calculation (100vh - header height) using `clamp()` and `min-height` in CSS to ensure proper sizing.\n6. Add the Habitus33 button to the top-left corner of the hero section.\n7. Implement responsive breakpoints to adjust the layout for desktop, tablet, and mobile devices. On mobile, switch to a vertical stack layout.\n8. Integrate the cognitive profile component into its designated section.\n<info added on 2025-07-03T06:05:33.152Z>\nProgress Update:\n\nAnalysis of the existing dashboard structure is complete:\n\nExisting Structure:\n1. Header\n2. AMFA Hero section (Atomic Reading/Memo buttons)\n3. Zengo/Zengo Myvers cards (2-grid)\n4. 33-day Routine Tracker\n5. 3 Statistics cards (speed, TS sessions, registered books)\n6. Currently reading book list (lg:col-span-3) + Cognitive Profile (lg:col-span-2)\n\nImprovement Plan:\n- Above the Fold (100vh): Change to Hero + Library (2/3) + Cognitive Profile (1/3)\n- Implement mini-library by utilizing the existing BooksPageContent.tsx component.\n- Utilize CognitiveProfileContainer.tsx as is.\n- Move and shrink the remaining sections into the scrollable area.\n\nKey Modifications:\n1. Set container height to 100vh (100dvh for iOS Safari + min-height fallback)\n2. Divide the Hero + Library/Cognitive Profile area with CSS Grid\n3. Move the Habitus33 button to the top-left corner of the Hero section\n4. Add a zoom icon to navigate to the library page\n\nStarting layout implementation now.\n</info added on 2025-07-03T06:05:33.152Z>",
-        "testStrategy": "1. Verify the dashboard layout matches the design specifications across different viewport sizes (desktop, tablet, mobile).\n2. Ensure the hero section occupies the correct amount of screen space (100vh).\n3. Confirm the 2/3 + 1/3 split layout is correctly implemented for 'My Library' and the cognitive profile sections on desktop and tablet.\n4. Verify the layout switches to a vertical stack on mobile devices.\n5. Test the placement and functionality of the Habitus33 button in the hero section.\n6. Ensure the 'My Library' section displays the correct data using the `BooksPageContent.tsx` component.\n7. Check the cognitive profile section renders correctly with appropriate data using the `CognitiveProfileContainer.tsx` component.\n8. Test the responsiveness of all elements within the dashboard layout.",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 4,
-        "title": "Implement Mini Library View",
-        "description": "Implement a mini version of the library page with a reduced UI/UX, tabbed content, and a link to the full page.",
-        "details": "1. Create a new component `LibraryMiniContainer.tsx`.\n2. Replicate the tab structure from `BooksPageContent` (Registered Materials/Summarized Notes).\n3. Use the mini versions of `BookCard` and `SummaryNoteCard` components, adjusting styles for the smaller size.\n4. Add an expand icon (external link) in the top right corner to navigate to the full library page.\n5. Implement scrollable containers for displaying data, considering virtual scrolling for performance.\n6. Handle loading and error states appropriately.\n7. Implement state management for tab switching, potentially using memoization to preserve state.",
-        "testStrategy": "1. Verify that `LibraryMiniContainer` renders correctly with the expected UI/UX.\n2. Ensure the tabbed content (Registered Materials/Summarized Notes) functions as expected.\n3. Confirm that the mini versions of `BookCard` and `SummaryNoteCard` are styled correctly and display data accurately.\n4. Test the expand icon to ensure it navigates to the full library page.\n5. Verify that scrolling works smoothly and virtual scrolling is implemented if necessary.\n6. Check that loading and error states are handled gracefully.\n7. Test state persistence during tab switching.",
-        "status": "cancelled",
+        "title": "Implement Update InlineThread API",
+        "description": "Implement the API endpoint for updating an existing inline thread.",
+        "details": "1. Create a route in `src/routes/notes.ts` for `PUT /api/notes/:noteId/inline-threads/:threadId`.\n2. Extract `noteId` and `threadId` from `req.params`.\n3. Extract `content` from `req.body`.\n4. Find the `InlineThread` by `threadId`.\n5. Verify that the user has permission to update the thread (e.g., by checking if the `authorId` matches the user ID from the JWT token).\n6. Update the `content` field of the thread.\n7. Save the updated thread to the database.\n8. Return the updated `InlineThread` object in the response.\n\nExample:\n```typescript\nrouter.put('/:noteId/inline-threads/:threadId', verifyToken, async (req: Request, res: Response) => {\n  try {\n    const { noteId, threadId } = req.params;\n    const { content } = req.body;\n    const userId = req.user.id; // Assuming user info is in req.user\n\n    const thread = await InlineThread.findById(threadId);\n    if (!thread) {\n      return res.status(404).json({ message: 'Thread not found' });\n    }\n\n    if (thread.authorId !== userId) {\n      return res.status(403).json({ message: 'Unauthorized' });\n    }\n\n    thread.content = content;\n    await thread.save();\n\n    res.json(thread);\n  } catch (error) {\n    console.error(error);\n    res.status(500).json({ message: 'Server error' });\n  }\n});\n```\n\nApply JWT authentication middleware (`verifyToken`) to protect the endpoint.",
+        "testStrategy": "Send a PUT request to `/api/notes/:noteId/inline-threads/:threadId` with a valid JWT token and a JSON body containing the updated content. Verify that the InlineThread object is updated in the database and returned in the response. Also, verify that unauthorized users cannot update the thread.",
+        "priority": "high",
         "dependencies": [
           2,
           3
         ],
-        "priority": "high",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 5,
-        "title": "Cognitive Profile Area Isolation and Enhancement",
-        "description": "Isolate and enhance the cognitive profile area by making it an independent 1/3 section, improving chart visualization, highlighting user learning patterns, and applying a purple theme.",
-        "details": "1. Create a `CognitiveProfileContainer.tsx` component to encapsulate the cognitive profile functionality.\n2. Optimize the cognitive ability radar chart for better readability and visual appeal.\n3. Reorganize key metrics into a card-based layout for improved information presentation.\n4. Apply a purple gradient theme to visually distinguish the cognitive profile section.\n5. Implement responsive chart sizing to ensure optimal display across different screen sizes.\n6. Implement loading and error state UI to provide feedback to the user during data retrieval and error scenarios.\n7. Use Chart.js or Recharts library for chart rendering, ensuring a stable version and implementing error boundaries.\n8. Provide default values and skeleton UI in case of cognitive profile data loading failure.",
-        "testStrategy": "1. Verify that the `CognitiveProfileContainer` renders correctly as an independent 1/3 section of the dashboard.\n2. Ensure the cognitive ability radar chart is visually appealing and accurately represents the data.\n3. Confirm that key metrics are displayed correctly in the card-based layout.\n4. Verify the purple gradient theme is applied consistently throughout the cognitive profile section.\n5. Test the responsive chart sizing across different screen sizes to ensure optimal display.\n6. Ensure loading and error state UI are displayed correctly during data retrieval and error scenarios.\n7. Test chart rendering across different browsers and devices to ensure compatibility.\n8. Verify that default values and skeleton UI are displayed correctly when cognitive profile data fails to load.",
-        "status": "cancelled",
+        "title": "Implement Delete InlineThread API",
+        "description": "Implement the API endpoint for deleting an existing inline thread.",
+        "details": "1. Create a route in `src/routes/notes.ts` for `DELETE /api/notes/:noteId/inline-threads/:threadId`.\n2. Extract `noteId` and `threadId` from `req.params`.\n3. Find the `InlineThread` by `threadId`.\n4. Verify that the user has permission to delete the thread.\n5. Remove the thread from the database.\n6. Remove the thread's ID from the `inlineThreads` array in the corresponding Note document.\n7. Return a success message in the response.\n\nExample:\n```typescript\nrouter.delete('/:noteId/inline-threads/:threadId', verifyToken, async (req: Request, res: Response) => {\n  try {\n    const { noteId, threadId } = req.params;\n    const userId = req.user.id; // Assuming user info is in req.user\n\n    const thread = await InlineThread.findById(threadId);\n    if (!thread) {\n      return res.status(404).json({ message: 'Thread not found' });\n    }\n\n    if (thread.authorId !== userId) {\n      return res.status(403).json({ message: 'Unauthorized' });\n    }\n\n    await InlineThread.findByIdAndDelete(threadId);\n\n    const note = await Note.findById(noteId);\n    if (note) {\n      note.inlineThreads = note.inlineThreads.filter(id => id.toString() !== threadId);\n      await note.save();\n    }\n\n    res.json({ message: 'Thread deleted successfully' });\n  } catch (error) {\n    console.error(error);\n    res.status(500).json({ message: 'Server error' });\n  }\n});\n```\n\nApply JWT authentication middleware (`verifyToken`) to protect the endpoint.",
+        "testStrategy": "Send a DELETE request to `/api/notes/:noteId/inline-threads/:threadId` with a valid JWT token. Verify that the InlineThread object is deleted from the database and that the thread's ID is removed from the corresponding Note document. Also, verify that unauthorized users cannot delete the thread.",
+        "priority": "high",
         "dependencies": [
+          2,
           3
         ],
-        "priority": "medium",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 6,
-        "title": "Relocate and Compact Additional Features to Below the Fold Area",
-        "description": "Relocate and compact additional features (Zengo, Zengo My Bus, 33-Day Routine, Statistics Cards) to the Below the Fold area, re-arranging them into a compact 3-column grid layout with smaller entry buttons and a greyed-out visual emphasis.",
-        "details": "1. Create smaller versions of the Zengo and 33-Day Routine components, either as new components or by using props to adjust the size of the existing ones.\n2. Implement a 3-column CSS Grid layout for the additional features section.\n3. Modify the appearance of each card to use a smaller entry button style.\n4. Apply a grey color theme to reduce the visual prominence of these features.\n5. Implement hover effects and click actions for each card to maintain usability.\n6. Configure responsive breakpoints to adjust the grid layout to 1 column on mobile and 2 columns on tablet devices.\n7. Ensure clear icons and labels are used to maintain accessibility and ease of feature identification.",
-        "testStrategy": "1. Verify that the Zengo, Zengo My Bus, 33-Day Routine, and Statistics Cards are relocated to the Below the Fold area.\n2. Confirm that the features are arranged in a 3-column grid layout on desktop, 2-column on tablet, and 1-column on mobile devices.\n3. Ensure that the smaller entry button style is applied to each feature card.\n4. Verify that the grey color theme is applied correctly, reducing the visual prominence of these features.\n5. Test the hover effects and click actions for each card to ensure they function as expected.\n6. Check that all features are accessible and easily identifiable through clear icons and labels.",
-        "status": "cancelled",
-        "dependencies": [
-          3
-        ],
+        "title": "Implement Input Validation and Sanitization",
+        "description": "Implement input validation and sanitization for the API endpoints, including content length validation and protection against XSS attacks.",
+        "details": "1. Use a library like `express-validator` to validate the request body.\n2. Implement validation middleware for each endpoint.\n3. Validate the `content` field to ensure it is not empty and does not exceed the maximum length of 1000 characters.\n4. Sanitize the input to prevent XSS attacks using a library like `DOMPurify` or `xss`.\n\nExample using `express-validator`:\n```typescript\nimport { body, validationResult } from 'express-validator';\n\nconst validateThread = [\n  body('content').trim().isLength({ min: 1, max: 1000 }).withMessage('Content must be between 1 and 1000 characters'),\n  (req: Request, res: Response, next: NextFunction) => {\n    const errors = validationResult(req);\n    if (!errors.isEmpty()) {\n      return res.status(400).json({ errors: errors.array() });\n    }\n    next();\n  }\n];\n\nrouter.post('/:noteId/inline-threads', verifyToken, validateThread, async (req: Request, res: Response) => { ... });\n```\n\nExample using `xss` for sanitization:\n```typescript\nimport xss from 'xss';\n\nconst content = xss(req.body.content);\n```",
+        "testStrategy": "Send requests with invalid data (e.g., empty content, content exceeding 1000 characters, malicious content) to the API endpoints. Verify that the server returns appropriate error messages and that the data is properly sanitized.",
         "priority": "medium",
+        "dependencies": [
+          3,
+          4,
+          5
+        ],
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 7,
-        "title": "Implement Responsive Design and Mobile Optimization",
-        "description": "Implement responsive design and mobile optimization to ensure optimal layout and user experience across desktop, tablet, and mobile devices.",
-        "details": "1. Apply Tailwind CSS responsive classes to adapt the layout for different screen sizes.\n2. Optimize for mobile breakpoint (sm: 640px and below), converting the 2/3 + 1/3 layout to a vertical stack.\n3. Ensure touch-friendly interfaces by applying appropriate button sizes (minimum 44px touch area).\n4. Implement mobile-specific navigation patterns to minimize scrolling and improve accessibility.\n5. Optimize performance by implementing image lazy loading and component code splitting.\n6. Address potential mobile viewport height calculation errors by using CSS 100dvh and considering iOS Safari compatibility.\n7. Prevent touch gesture conflicts by clearly separating scroll and button areas.\n8. Implement a mobile-first approach, ensuring core functionality is accessible and performant on mobile devices.\n9. Apply specific CSS rules to handle layout changes, font sizes, and spacing for mobile devices.\n10. Implement a mobile-specific navigation bar or tab bar for easy access to key features.",
-        "testStrategy": "1. Verify that the layout adapts correctly across desktop, tablet, and mobile devices.\n2. Ensure the 2/3 + 1/3 layout converts to a vertical stack on mobile devices.\n3. Confirm that all buttons and interactive elements have a minimum touch area of 44px.\n4. Test the mobile-specific navigation pattern for usability and accessibility.\n5. Measure page load times and responsiveness on mobile devices, ensuring performance optimizations are effective.\n6. Test on various iOS and Android devices to ensure compatibility and consistent rendering.\n7. Verify that the mobile viewport height is calculated correctly, avoiding layout issues on iOS Safari.\n8. Ensure that touch gestures do not conflict and that scrolling is smooth and intuitive.\n9. Use browser developer tools to simulate different device resolutions and network conditions.\n10. Conduct user testing on mobile devices to gather feedback on usability and performance.",
-        "status": "done",
+        "title": "Implement Performance Optimizations",
+        "description": "Implement performance optimizations, including indexing and database connection pooling.",
+        "details": "1. Create indexes on `userId` and `noteId` in the `InlineThread` model:\n```typescript\nInlineThreadSchema.index({ userId: 1, noteId: 1 });\n```\n2. Ensure that Mongoose is using connection pooling by default.  Mongoose handles connection pooling automatically. Verify the Mongoose connection options to ensure pooling is enabled.\n3. Monitor the API response times and database performance using tools like `mongoose-profiler` or built-in MongoDB profiling tools.\n4. Consider using caching mechanisms (e.g., Redis) for frequently accessed data.",
+        "testStrategy": "Perform load testing on the API endpoints to measure response times and throughput. Monitor database performance and identify any bottlenecks. Verify that the indexes are being used effectively.",
+        "priority": "medium",
         "dependencies": [
+          2,
           3,
           4,
-          5,
-          6
+          5
         ],
-        "priority": "high",
+        "status": "pending",
         "subtasks": []
       },
       {
         "id": 8,
-        "title": "Optimize Performance and Enhance User Experience",
-        "description": "Optimize application performance and enhance user experience by improving page load times, component rendering, and asset delivery, while ensuring smooth animations and transitions.",
-        "details": "1. Implement React.memo and memoization hooks (useCallback, useMemo) to prevent unnecessary re-renders of components.\n2. Optimize images by using WebP format and appropriate sizing, leveraging the Next.js Image component with priority settings.\n3. Implement code splitting and lazy loading for components to reduce the initial bundle size.\n4. Optimize CSS animations using CSS transforms and the `will-change` property to improve performance.\n5. Analyze the bundle size using tools like `webpack-bundle-analyzer` and optimize it by removing unused code and dependencies.\n6. Measure web vitals metrics (e.g., First Contentful Paint, Largest Contentful Paint, Cumulative Layout Shift) using tools like Lighthouse and the Chrome DevTools and implement improvements based on the results.\n7. Implement a loading state for images and other slow-loading components to improve the user experience.\n8. Refactor components to reduce complexity and improve rendering performance.\n9. Implement caching strategies to reduce server load and improve response times.",
-        "testStrategy": "1. Measure page load times and First Contentful Paint before and after optimization to quantify improvements.\n2. Verify that components are not re-rendering unnecessarily by using the React Profiler.\n3. Ensure that images are loading quickly and efficiently using the Next.js Image component.\n4. Test animations and transitions on different devices and browsers to ensure smoothness.\n5. Verify that the bundle size has been reduced after optimization.\n6. Measure web vitals metrics before and after optimization to ensure improvements.\n7. Test the application on different network conditions to ensure it performs well even on slow connections.\n8. Use the Chrome DevTools to identify and fix any performance bottlenecks.",
-        "status": "deferred",
+        "title": "Implement Unit and Integration Tests",
+        "description": "Write unit tests for each API endpoint and integration tests for the overall flow.",
+        "details": "1. Use a testing framework like Jest or Mocha with Chai and Supertest.\n2. Write unit tests for each route handler to verify that it correctly handles different scenarios (e.g., successful creation, update, deletion, error handling).\n3. Write integration tests to verify the interaction between different parts of the system (e.g., API endpoints, database).\n4. Write tests for authentication and authorization to ensure that only authorized users can access the API endpoints.\n5. Use mocking to isolate units of code and test them in isolation.\n\nExample using Jest and Supertest:\n```typescript\nimport request from 'supertest';\nimport app from '../src/index'; // Your Express app\nimport mongoose from 'mongoose';\n\ndescribe('InlineThread API', () => {\n  beforeAll(async () => {\n    // Connect to a test database\n    await mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/testdb');\n  });\n\n  afterAll(async () => {\n    // Disconnect from the test database\n    await mongoose.connection.close();\n  });\n\n  it('should create a new inline thread', async () => {\n    const res = await request(app)\n      .post('/api/notes/:noteId/inline-threads')\n      .send({ content: 'Test thread' });\n    expect(res.statusCode).toEqual(201);\n    expect(res.body.content).toEqual('Test thread');\n  });\n});\n```",
+        "testStrategy": "Run all unit tests and integration tests to verify that the API endpoints are working correctly and that the system is behaving as expected. Ensure that code coverage is adequate.",
+        "priority": "low",
         "dependencies": [
           3,
+          4,
           5,
+          6,
           7
         ],
-        "priority": "medium",
-        "subtasks": []
-      },
-      {
-        "id": 9,
-        "title": "Dashboard Revamp Testing and Quality Assurance",
-        "description": "Conduct thorough testing and quality assurance of the revamped dashboard, ensuring compatibility, functionality, accessibility, and performance across various browsers and devices.",
-        "details": "1. **Cross-Browser Compatibility Testing:** Perform compatibility testing on major browsers (Chrome, Safari, Firefox) to identify and resolve rendering differences.\n2. **Functional Testing:** Execute functional tests to validate that all dashboard features operate as expected, including interactions between components and data display.\n3. **User Scenario Validation:** Verify key user scenarios to ensure a seamless and intuitive user experience.\n4. **Accessibility Testing:** Conduct accessibility testing using tools like axe-core to ensure compliance with WCAG 2.1 AA standards. Perform screen reader testing to validate usability for users with disabilities.\n5. **Performance Testing:** Perform performance testing using Lighthouse to measure key metrics such as First Contentful Paint, Largest Contentful Paint, and Cumulative Layout Shift. Conduct load testing to assess the dashboard's performance under high traffic conditions.\n6. **Unit and E2E Testing:** Implement Jest and React Testing Library for unit tests and Playwright or Cypress for end-to-end (E2E) tests to ensure code quality and reliability.\n7. **Device Testing:** Test the dashboard on a variety of devices (desktops, tablets, smartphones) to ensure responsiveness and optimal display.\n8. **User Feedback Collection:** Gather user feedback on the revamped dashboard to identify areas for improvement and address any usability issues.",
-        "testStrategy": "1. **Browser Compatibility:** Verify that the dashboard renders correctly and functions as expected on Chrome, Safari, and Firefox. Document and address any rendering differences.\n2. **Functional Validation:** Confirm that all dashboard features (e.g., data display, button clicks, form submissions) operate correctly and produce the expected results.\n3. **Accessibility Compliance:** Use axe-core to identify and fix accessibility issues, ensuring compliance with WCAG 2.1 AA standards. Verify that the dashboard is usable with screen readers.\n4. **Performance Metrics:** Measure page load times and Core Web Vitals (e.g., First Contentful Paint, Largest Contentful Paint) using Lighthouse. Ensure that performance meets or exceeds established goals.\n5. **Responsive Design:** Verify that the dashboard layout adapts correctly across different screen sizes and devices (desktop, tablet, mobile).\n6. **User Feedback Integration:** Collect and analyze user feedback to identify areas for improvement. Implement necessary changes to address usability issues and enhance the user experience.\n7. **Automated Testing:** Run Jest unit tests and Playwright/Cypress E2E tests to ensure code quality and prevent regressions.",
-        "status": "deferred",
-        "dependencies": [
-          7,
-          8
-        ],
-        "priority": "high",
-        "subtasks": []
-      },
-      {
-        "id": 10,
-        "title": "Dashboard Revamp Deployment and Performance Monitoring",
-        "description": "Deploy the revamped dashboard to staging and production environments, set up real-time monitoring, and establish a user feedback collection system.",
-        "details": "1. Deploy the application to Vercel staging environment for final validation.\n2. Deploy the application to Vercel production environment.\n3. Configure Google Analytics to track user behavior and gather insights.\n4. Set up error monitoring using Sentry to capture and address runtime issues.\n5. Build a performance monitoring dashboard to track key metrics.\n6. Prepare for A/B testing and implement a gradual rollout strategy.\n7. Establish a user feedback channel to collect and analyze user input.\n8. Implement canary deployment for production to minimize impact of potential issues.\n9. Set up automated alerts for performance degradation and errors.",
-        "testStrategy": "1. Verify successful deployment to both staging and production environments.\n2. Confirm that Google Analytics is correctly tracking user behavior.\n3. Ensure that Sentry is capturing and reporting errors effectively.\n4. Validate the functionality of the performance monitoring dashboard.\n5. Test the A/B testing setup and rollout process.\n6. Confirm the user feedback channel is functioning correctly and feedback is being collected.\n7. Monitor performance metrics (page load times, error rates) in production after deployment.\n8. Verify that alerts are triggered when performance thresholds are exceeded.",
-        "status": "deferred",
-        "dependencies": [
-          7,
-          8,
-          9
-        ],
-        "priority": "high",
+        "status": "pending",
         "subtasks": []
       }
     ],
     "metadata": {
-      "created": "2025-07-03T05:45:40.169Z",
-      "updated": "2025-07-03T06:24:17.391Z",
-      "description": "대시보드 UI/UX 개편 및 나의 도서관 미니 버전 구현"
+      "created": "2025-07-05T00:19:10.786Z",
+      "updated": "2025-07-05T00:19:52.158Z",
+      "description": "Tasks for inline-threads-backend context"
     }
   }
 }

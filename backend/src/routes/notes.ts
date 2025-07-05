@@ -8,7 +8,10 @@ import {
   getNotesByBook, 
   getNotesByTag,
   getNotesByIds,
-  analyzePBAM
+  analyzePBAM,
+  addInlineThread,
+  updateInlineThread,
+  deleteInlineThread
 } from '../controllers/noteController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
@@ -104,5 +107,37 @@ router.post(
   validateRequest,
   analyzePBAM
 );
+
+// 인라인메모 쓰레드 관련 엔드포인트
+// 인라인메모 쓰레드 추가
+router.post(
+  '/:noteId/inline-threads',
+  [
+    body('content')
+      .notEmpty()
+      .withMessage('내용을 입력해주세요')
+      .isLength({ max: 1000 })
+      .withMessage('내용은 최대 1000자까지 가능합니다'),
+  ],
+  validateRequest,
+  addInlineThread
+);
+
+// 인라인메모 쓰레드 수정
+router.put(
+  '/:noteId/inline-threads/:threadId',
+  [
+    body('content')
+      .notEmpty()
+      .withMessage('내용을 입력해주세요')
+      .isLength({ max: 1000 })
+      .withMessage('내용은 최대 1000자까지 가능합니다'),
+  ],
+  validateRequest,
+  updateInlineThread
+);
+
+// 인라인메모 쓰레드 삭제
+router.delete('/:noteId/inline-threads/:threadId', deleteInlineThread);
 
 export default router; 

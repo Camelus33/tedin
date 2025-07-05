@@ -1,0 +1,88 @@
+# 인라인메모 쓰레드 백엔드 구현 PRD
+
+## 1. 프로젝트 개요
+**목표**: 기존 TSNoteCard 컴포넌트에 구현된 인라인메모 쓰레드 기능을 지원하는 백엔드 API 및 데이터 스키마 구현
+
+**배경**: 
+- 프론트엔드에서 1줄 메모 아래 인라인메모 쓰레드 기능이 구현되어 있음
+- 현재 백엔드 API가 없어서 데이터 지속성 없음
+- Note 모델에 inlineThreads 필드 부재
+
+## 2. 기술 스택
+- **Backend**: Node.js, Express, TypeScript
+- **Database**: MongoDB, Mongoose
+- **API**: RESTful API
+- **Authentication**: 기존 JWT 인증 시스템 활용
+
+## 3. 데이터 스키마 설계
+
+### 3.1 InlineThread 스키마
+```typescript
+interface InlineThread {
+  _id: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  createdAt: Date;
+  clientCreatedAt?: Date;
+  parentNoteId: string;
+  depth?: number;
+  isTemporary?: boolean;
+}
+```
+
+### 3.2 Note 모델 확장
+기존 Note 모델에 inlineThreads 필드 추가:
+```typescript
+inlineThreads: InlineThread[]
+```
+
+## 4. API 엔드포인트 설계
+
+### 4.1 인라인메모 쓰레드 추가
+- **POST** `/api/notes/:noteId/inline-threads`
+- **Body**: `{ content: string }`
+- **Response**: 생성된 InlineThread 객체
+
+### 4.2 인라인메모 쓰레드 수정
+- **PUT** `/api/notes/:noteId/inline-threads/:threadId`
+- **Body**: `{ content: string }`
+- **Response**: 수정된 InlineThread 객체
+
+### 4.3 인라인메모 쓰레드 삭제
+- **DELETE** `/api/notes/:noteId/inline-threads/:threadId`
+- **Response**: 삭제 성공 메시지
+
+## 5. 보안 요구사항
+- JWT 인증 미들웨어 적용
+- 사용자 소유 노트에 대한 권한 검증
+- 입력 데이터 검증 및 새니타이제이션
+- 최대 길이 제한 (content: 1000자)
+
+## 6. 성능 요구사항
+- 인덱스 최적화 (userId, noteId 복합 인덱스)
+- 응답 시간 < 200ms
+- 데이터베이스 연결 풀링 활용
+
+## 7. 오류 처리 전략
+- 표준 HTTP 상태 코드 사용
+- 구조화된 오류 메시지 반환
+- 로깅 및 모니터링 구현
+
+## 8. 구현 우선순위
+1. **High**: Note 모델 스키마 확장
+2. **High**: 인라인메모 쓰레드 CRUD API 구현
+3. **Medium**: 입력 검증 및 오류 처리
+4. **Medium**: 성능 최적화 및 인덱스 설정
+5. **Low**: API 문서화 및 테스트 코드
+
+## 9. 호환성 고려사항
+- 기존 Note 데이터와의 호환성 유지
+- 점진적 마이그레이션 지원
+- 기존 API 엔드포인트 영향 최소화
+
+## 10. 테스트 전략
+- 단위 테스트: 각 API 엔드포인트별 테스트
+- 통합 테스트: 전체 플로우 테스트
+- 권한 테스트: 보안 관련 테스트
+- 성능 테스트: 응답 시간 및 처리량 테스트 

@@ -3,7 +3,7 @@ import { AiOutlineQuestionCircle, AiOutlineInfoCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import api from '@/lib/api'; // Import the central api instance
+import api, { inlineThreadApi } from '@/lib/api'; // Import the central api instance
 import AiCoachPopover from '../common/AiCoachPopover';
 import {
   DropdownMenu,
@@ -736,12 +736,54 @@ export default function TSNoteCard({
   const handleAddThread = async () => {
     if (!newThreadContent.trim()) return;
     
-    if (onAddInlineThread) {
-      await onAddInlineThread(note._id, newThreadContent.trim());
-    }
+    const content = newThreadContent.trim();
     
+    // 즉시 로컬 상태 업데이트 (낙관적 업데이트)
+    const tempThread: InlineThread = {
+      _id: `temp-${Date.now()}`, // 임시 ID
+      content,
+      authorName: '나',
+      createdAt: new Date().toISOString(),
+      clientCreatedAt: new Date().toISOString(),
+      parentNoteId: note._id,
+      isTemporary: true
+    };
+
+    // 로컬 note 상태에 즉시 추가
+    setNote(prevNote => ({
+      ...prevNote,
+      inlineThreads: [...(prevNote.inlineThreads || []), tempThread]
+    }));
+
+    // 쓰레드가 추가되면 자동으로 쓰레드 목록을 펼쳐서 보여주기
+    setShowInlineThreads(true);
     setNewThreadContent('');
     setIsAddingThread(false);
+
+    // 백엔드 API 호출
+    try {
+      const newThread = await inlineThreadApi.create(note._id, content);
+      
+      // 실제 서버 응답으로 임시 쓰레드를 대체
+      setNote(prevNote => ({
+        ...prevNote,
+        inlineThreads: prevNote.inlineThreads?.map(thread => 
+          thread._id === tempThread._id ? newThread : thread
+        ) || []
+      }));
+      
+      // 부모 컴포넌트에 알림 (있다면)
+      if (onAddInlineThread) {
+        onAddInlineThread(note._id, content);
+      }
+    } catch (error) {
+      console.error('인라인메모 쓰레드 생성 실패:', error);
+      // 실패 시 롤백
+      setNote(prevNote => ({
+        ...prevNote,
+        inlineThreads: prevNote.inlineThreads?.filter(thread => thread._id !== tempThread._id) || []
+      }));
+    }
   };
 
   const handleEditThread = (threadId: string, currentContent: string) => {
@@ -752,12 +794,50 @@ export default function TSNoteCard({
   const handleSaveEditThread = async () => {
     if (!editingThreadId || !editingThreadContent.trim()) return;
     
-    if (onUpdateInlineThread) {
-      await onUpdateInlineThread(editingThreadId, editingThreadContent.trim());
-    }
+    const content = editingThreadContent.trim();
+    const originalThread = note.inlineThreads?.find(thread => thread._id === editingThreadId);
+    
+    // 즉시 로컬 상태 업데이트
+    setNote(prevNote => ({
+      ...prevNote,
+      inlineThreads: prevNote.inlineThreads?.map(thread => 
+        thread._id === editingThreadId 
+          ? { ...thread, content }
+          : thread
+      ) || []
+    }));
     
     setEditingThreadId(null);
     setEditingThreadContent('');
+
+    // 백엔드 API 호출
+    try {
+      const updatedThread = await inlineThreadApi.update(note._id, editingThreadId, content);
+      
+      // 실제 서버 응답으로 업데이트
+      setNote(prevNote => ({
+        ...prevNote,
+        inlineThreads: prevNote.inlineThreads?.map(thread => 
+          thread._id === editingThreadId ? updatedThread : thread
+        ) || []
+      }));
+      
+      // 부모 컴포넌트에 알림 (있다면)
+      if (onUpdateInlineThread) {
+        onUpdateInlineThread(editingThreadId, content);
+      }
+    } catch (error) {
+      console.error('인라인메모 쓰레드 수정 실패:', error);
+      // 실패 시 원래 내용으로 복원
+      if (originalThread) {
+        setNote(prevNote => ({
+          ...prevNote,
+          inlineThreads: prevNote.inlineThreads?.map(thread => 
+            thread._id === editingThreadId ? originalThread : thread
+          ) || []
+        }));
+      }
+    }
   };
 
   const handleCancelEditThread = () => {
@@ -766,8 +846,32 @@ export default function TSNoteCard({
   };
 
   const handleDeleteThread = async (threadId: string) => {
-    if (onDeleteInlineThread) {
-      await onDeleteInlineThread(threadId);
+    // 삭제 전 백업 (복원용)
+    const threadToDelete = note.inlineThreads?.find(thread => thread._id === threadId);
+    
+    // 즉시 로컬 상태에서 제거
+    setNote(prevNote => ({
+      ...prevNote,
+      inlineThreads: prevNote.inlineThreads?.filter(thread => thread._id !== threadId) || []
+    }));
+
+    // 백엔드 API 호출
+    try {
+      await inlineThreadApi.delete(note._id, threadId);
+      
+      // 부모 컴포넌트에 알림 (있다면)
+      if (onDeleteInlineThread) {
+        onDeleteInlineThread(threadId);
+      }
+    } catch (error) {
+      console.error('인라인메모 쓰레드 삭제 실패:', error);
+      // 실패 시 복원
+      if (threadToDelete) {
+        setNote(prevNote => ({
+          ...prevNote,
+          inlineThreads: [...(prevNote.inlineThreads || []), threadToDelete]
+        }));
+      }
     }
   };
 

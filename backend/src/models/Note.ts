@@ -18,6 +18,7 @@ export interface INote extends Document {
     url: string;
     reason?: string;
   }>;
+  inlineThreads?: mongoose.Types.ObjectId[];
 }
 
 const NoteSchema: Schema = new Schema({
@@ -95,6 +96,10 @@ const NoteSchema: Schema = new Schema({
         },
       },
     ],
+    default: [],
+  },
+  inlineThreads: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'InlineThread' }],
     default: [],
   },
   createdAt: {

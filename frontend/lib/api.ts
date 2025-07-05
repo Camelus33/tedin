@@ -616,4 +616,37 @@ export const flashcardApi = {
   },
 };
 
+// 인라인메모 쓰레드 관련 타입 정의
+export interface InlineThread {
+  _id: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  createdAt: string;
+  clientCreatedAt?: string;
+  parentNoteId: string;
+  depth?: number;
+  isTemporary?: boolean;
+}
+
+// 인라인메모 쓰레드 API
+export const inlineThreadApi = {
+  // 인라인메모 쓰레드 추가
+  create: async (noteId: string, content: string): Promise<InlineThread> => {
+    const response = await api.post(`/notes/${noteId}/inline-threads`, { content });
+    return response.data;
+  },
+
+  // 인라인메모 쓰레드 수정
+  update: async (noteId: string, threadId: string, content: string): Promise<InlineThread> => {
+    const response = await api.put(`/notes/${noteId}/inline-threads/${threadId}`, { content });
+    return response.data;
+  },
+
+  // 인라인메모 쓰레드 삭제
+  delete: async (noteId: string, threadId: string): Promise<void> => {
+    await api.delete(`/notes/${noteId}/inline-threads/${threadId}`);
+  },
+};
+
 export default api; 

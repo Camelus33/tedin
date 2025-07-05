@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Note from '../models/Note';
 import Book from '../models/Book';
+import InlineThread from '../models/InlineThread';
 import mongoose from 'mongoose';
 import { updateFromNote, getBeliefNetwork } from '../services/BeliefNetworkService';
 
@@ -35,6 +36,11 @@ export const getNoteById = async (req: Request, res: Response) => {
     }
 
     const note = await Note.findOne({ _id: noteId, userId })
+      .populate({
+        path: 'inlineThreads',
+        select: '-__v',
+        options: { sort: { createdAt: 1 } } // 생성일 오름차순 정렬
+      })
       .select('-__v');
 
     if (!note) {
@@ -306,5 +312,170 @@ export const analyzePBAM = async (req: Request, res: Response) => {
       message: '서버 오류가 발생했습니다.',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
+  }
+};
+
+// 인라인메모 쓰레드 추가
+export const addInlineThread = async (req: Request, res: Response) => {
+  try {
+    const { noteId } = req.params;
+    const { content } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    if (!content || !content.trim()) {
+      return res.status(400).json({ message: '내용을 입력해주세요.' });
+    }
+
+    if (content.length > 1000) {
+      return res.status(400).json({ message: '내용은 최대 1000자까지 가능합니다.' });
+    }
+
+    // 노트 존재 여부와 소유권 검증
+    const note = await Note.findOne({ _id: noteId, userId });
+    if (!note) {
+      return res.status(404).json({ message: '해당 노트를 찾을 수 없습니다.' });
+    }
+
+    // 사용자 정보 가져오기 (기존 User 모델이 있다면 활용)
+    const user = req.user;
+    const authorName = user?.name || user?.username || '사용자';
+
+    // 새 인라인메모 쓰레드 생성
+    const newThread = new InlineThread({
+      content: content.trim(),
+      authorId: userId,
+      authorName,
+      parentNoteId: noteId,
+      depth: 0,
+      isTemporary: false,
+    });
+
+    const savedThread = await newThread.save();
+
+    // Note에 인라인메모 쓰레드 참조 추가 (원자적 업데이트)
+    await Note.findByIdAndUpdate(
+      noteId,
+      { $addToSet: { inlineThreads: savedThread._id } },
+      { new: true }
+    );
+
+    res.status(201).json(savedThread);
+  } catch (error) {
+    console.error('인라인메모 쓰레드 생성 중 오류 발생:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+// 인라인메모 쓰레드 수정
+export const updateInlineThread = async (req: Request, res: Response) => {
+  try {
+    const { noteId, threadId } = req.params;
+    const { content } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    if (!content || !content.trim()) {
+      return res.status(400).json({ message: '내용을 입력해주세요.' });
+    }
+
+    if (content.length > 1000) {
+      return res.status(400).json({ message: '내용은 최대 1000자까지 가능합니다.' });
+    }
+
+    // 노트 소유권 검증
+    const note = await Note.findOne({ _id: noteId, userId });
+    if (!note) {
+      return res.status(404).json({ message: '해당 노트를 찾을 수 없습니다.' });
+    }
+
+    // 인라인메모 쓰레드 존재 여부와 소유권 검증
+    const thread = await InlineThread.findOne({ 
+      _id: threadId, 
+      parentNoteId: noteId, 
+      authorId: userId 
+    });
+
+    if (!thread) {
+      return res.status(404).json({ message: '해당 인라인메모 쓰레드를 찾을 수 없습니다.' });
+    }
+
+    // 인라인메모 쓰레드 업데이트
+    const updatedThread = await InlineThread.findByIdAndUpdate(
+      threadId,
+      { 
+        content: content.trim(),
+        // updatedAt 필드가 있다면 추가 가능
+      },
+      { new: true }
+    );
+
+    res.status(200).json(updatedThread);
+  } catch (error) {
+    console.error('인라인메모 쓰레드 수정 중 오류 발생:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+// 인라인메모 쓰레드 삭제
+export const deleteInlineThread = async (req: Request, res: Response) => {
+  try {
+    const { noteId, threadId } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    // 노트 소유권 검증
+    const note = await Note.findOne({ _id: noteId, userId });
+    if (!note) {
+      return res.status(404).json({ message: '해당 노트를 찾을 수 없습니다.' });
+    }
+
+    // 인라인메모 쓰레드 존재 여부와 소유권 검증
+    const thread = await InlineThread.findOne({ 
+      _id: threadId, 
+      parentNoteId: noteId, 
+      authorId: userId 
+    });
+
+    if (!thread) {
+      return res.status(404).json({ message: '해당 인라인메모 쓰레드를 찾을 수 없습니다.' });
+    }
+
+    // 트랜잭션을 사용한 원자적 삭제
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Note에서 인라인메모 쓰레드 참조 제거
+      await Note.findByIdAndUpdate(
+        noteId,
+        { $pull: { inlineThreads: threadId } },
+        { session }
+      );
+
+      // 인라인메모 쓰레드 삭제
+      await InlineThread.findByIdAndDelete(threadId, { session });
+
+      await session.commitTransaction();
+      
+      res.status(200).json({ message: '인라인메모 쓰레드가 삭제되었습니다.' });
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  } catch (error) {
+    console.error('인라인메모 쓰레드 삭제 중 오류 발생:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 }; 
