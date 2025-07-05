@@ -622,7 +622,7 @@ export default function BookDetailPage() {
             <Button 
               variant="outline" 
               size="sm"
-              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border flex items-center w-8 h-8 sm:w-auto sm:h-auto p-1 sm:p-2`}
+              className={`${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg} border flex items-center w-8 h-8 sm:w-auto sm:h-auto p-1 sm:p-2 max-sm:bg-gray-800/70 max-sm:border-cyan-400/30 max-sm:backdrop-blur-sm max-sm:shadow-sm max-sm:shadow-cyan-500/20`}
             >
               <AiOutlineArrowLeft className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">My Lib</span>
@@ -631,9 +631,9 @@ export default function BookDetailPage() {
         </div>
         
         {/* App Logo/Name Header - 모바일에서 크기 축소 및 위치 조정 */}
-        <div className="text-center mb-1 sm:mb-6">
+        <div className="text-center mb-1 sm:mb-6 max-sm:bg-gray-900/30 max-sm:backdrop-blur-sm max-sm:rounded-lg max-sm:py-1 max-sm:px-2 max-sm:border max-sm:border-gray-600/20">
           <h1 
-            className={`text-sm sm:text-2xl font-bold ${cyberTheme.primary} cursor-pointer hover:text-cyan-300 transition-colors inline-block opacity-80`}
+            className={`text-sm sm:text-2xl font-bold ${cyberTheme.primary} cursor-pointer hover:text-cyan-300 transition-colors inline-block opacity-80 max-sm:opacity-90`}
             onClick={() => router.push('/dashboard')}
           >
             Habitus33
@@ -641,7 +641,7 @@ export default function BookDetailPage() {
         </div>
         
         {/* Book Header - 모바일에서 패딩과 간격 대폭 축소 */}
-        <div className={`${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden mb-1 sm:mb-4 relative border ${cyberTheme.borderSecondary}/30 transition-all duration-300 ${isBookDetailExpanded ? 'shadow-2xl' : ''}`}>
+        <div className={`${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden mb-1 sm:mb-4 relative border ${cyberTheme.borderSecondary}/30 transition-all duration-300 ${isBookDetailExpanded ? 'shadow-2xl' : ''} max-sm:bg-gray-800/95 max-sm:border-cyan-400/30 max-sm:shadow-cyan-500/20 max-sm:shadow-xl max-sm:backdrop-blur-sm`}>
           {/* Primary Action Button - 모바일에서 크기와 위치 최적화 */}
           <div className="absolute top-0.5 right-0.5 sm:top-2 sm:right-2 z-10">
             <Button
@@ -649,7 +649,7 @@ export default function BookDetailPage() {
               size="sm"
               onClick={handleStartReading}
               aria-label={bookData.bookType === 'NOTEBOOK' ? '메모 작성' : 'TS 세션 시작'}
-              className={`text-white text-xs px-1.5 sm:px-3 py-0.5 sm:py-1 h-5 sm:h-7 min-h-0`}
+              className={`text-white text-xs px-1.5 sm:px-3 py-0.5 sm:py-1 h-5 sm:h-7 min-h-0 max-sm:bg-cyan-500/80 max-sm:border max-sm:border-cyan-400/50 max-sm:shadow-cyan-500/30 max-sm:shadow-md max-sm:backdrop-blur-sm`}
             >
               <span className="text-xs">
                 {bookData.bookType === 'NOTEBOOK' ? '메모' : '읽기'}
@@ -661,7 +661,7 @@ export default function BookDetailPage() {
             <div className="flex items-center gap-1.5 sm:gap-4">
               {/* Mobile Optimized Book Cover - 크기 축소 */}
               <div className="flex-shrink-0">
-                <div className={`${isBookDetailExpanded ? 'w-12 sm:w-20 h-15 sm:h-28' : 'w-6 sm:w-12 h-8 sm:h-16'} ${cyberTheme.inputBg} rounded overflow-hidden border ${cyberTheme.inputBorder} transition-all duration-300`}>
+                <div className={`${isBookDetailExpanded ? 'w-12 sm:w-20 h-15 sm:h-28' : 'w-6 sm:w-12 h-8 sm:h-16'} ${cyberTheme.inputBg} rounded overflow-hidden border ${cyberTheme.inputBorder} transition-all duration-300 max-sm:border-cyan-400/30 max-sm:shadow-cyan-500/20 max-sm:shadow-sm max-sm:backdrop-blur-sm`}>
                   {bookData.coverImage ? (
                     <img
                       src={bookData.coverImage}
@@ -683,7 +683,7 @@ export default function BookDetailPage() {
                     {bookData.title || '제목을 기다리고 있어요'}
                   </h1>
                   {bookData.bookType === 'NOTEBOOK' && (
-                    <span className="bg-purple-500/20 text-purple-400 text-xs px-1 py-0.5 rounded-full border border-purple-500/30 flex-shrink-0">
+                    <span className="bg-purple-500/20 text-purple-400 text-xs px-1 py-0.5 rounded-full border border-purple-500/30 flex-shrink-0 max-sm:bg-purple-500/30 max-sm:border-purple-400/50 max-sm:shadow-purple-500/20 max-sm:shadow-sm max-sm:backdrop-blur-sm">
                       노트북
                     </span>
                   )}
@@ -776,16 +776,16 @@ export default function BookDetailPage() {
         </div>
         
         {/* 탭 버튼 */}
-        <div className="flex gap-1 sm:gap-2 mb-2 sm:mb-4 overflow-x-auto">
+        <div className="flex gap-1 sm:gap-2 mb-2 sm:mb-4 overflow-x-auto max-sm:bg-gray-900/50 max-sm:backdrop-blur-sm max-sm:rounded-lg max-sm:p-1 max-sm:border max-sm:border-gray-600/30">
           <button
-            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'memo' ? 'border-cyan-400 text-cyan-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-cyan-200'}`}
+            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'memo' ? 'border-cyan-400 text-cyan-300 bg-gray-900 max-sm:bg-cyan-500/20 max-sm:border-cyan-400 max-sm:shadow-cyan-500/30 max-sm:shadow-lg max-sm:rounded-lg' : 'border-transparent text-gray-400 bg-gray-800 hover:text-cyan-200 max-sm:bg-gray-700/60 max-sm:rounded-lg max-sm:border max-sm:border-gray-500/30'}`}
             onClick={() => setActiveTab('memo')}
           >
             <span className="hidden sm:inline">메모 진화</span>
             <span className="sm:hidden">메모</span>
           </button>
           <button
-            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'relatedLinks' ? 'border-green-400 text-green-400 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800'} ${!selectedRelatedNote ? 'opacity-50 cursor-not-allowed' : 'hover:text-green-300'}`}
+            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'relatedLinks' ? 'border-green-400 text-green-400 bg-gray-900 max-sm:bg-green-500/20 max-sm:border-green-400 max-sm:shadow-green-500/30 max-sm:shadow-lg max-sm:rounded-lg' : 'border-transparent text-gray-400 bg-gray-800 max-sm:bg-gray-700/60 max-sm:rounded-lg max-sm:border max-sm:border-gray-500/30'} ${!selectedRelatedNote ? 'opacity-50 cursor-not-allowed' : 'hover:text-green-300'}`}
             onClick={() => selectedRelatedNote && setActiveTab('relatedLinks')}
             disabled={!selectedRelatedNote}
             aria-disabled={!selectedRelatedNote}
@@ -794,7 +794,7 @@ export default function BookDetailPage() {
             <span className="sm:hidden">연결</span>
           </button>
           <button
-            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'flashcard' ? 'border-purple-400 text-purple-300 bg-gray-900' : 'border-transparent text-gray-400 bg-gray-800 hover:text-purple-200'}`}
+            className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'flashcard' ? 'border-purple-400 text-purple-300 bg-gray-900 max-sm:bg-purple-500/20 max-sm:border-purple-400 max-sm:shadow-purple-500/30 max-sm:shadow-lg max-sm:rounded-lg' : 'border-transparent text-gray-400 bg-gray-800 hover:text-purple-200 max-sm:bg-gray-700/60 max-sm:rounded-lg max-sm:border max-sm:border-gray-500/30'}`}
             onClick={() => setActiveTab('flashcard')}
           >
             <span className="hidden sm:inline">플래시카드</span>
@@ -803,7 +803,7 @@ export default function BookDetailPage() {
         </div>
         {/* 탭별 컨테이너 */}
         {activeTab === 'memo' && (
-          <section className={`mt-0 ${cyberTheme.bgSecondary} p-2 sm:p-3 md:p-4 rounded-lg border ${cyberTheme.borderPrimary}/30`}>
+          <section className={`mt-0 ${cyberTheme.bgSecondary} p-2 sm:p-3 md:p-4 rounded-lg border ${cyberTheme.borderPrimary}/30 max-sm:bg-gray-800/90 max-sm:border-cyan-400/40 max-sm:shadow-cyan-500/25 max-sm:shadow-2xl max-sm:backdrop-blur-md max-sm:ring-1 max-sm:ring-cyan-400/20`}>
             {/* Mobile Optimized Memo Hub Header - 모바일에서 높이 최소화 */}
             <div className="mb-1 sm:mb-4 text-center">
               <h2 className="text-base sm:text-xl font-bold text-cyan-400 mb-0 sm:mb-1 flex items-center justify-center gap-1 sm:gap-2">
