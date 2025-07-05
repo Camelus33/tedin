@@ -374,16 +374,26 @@ export default function TSNoteCard({
   
   const prompts = memoEvolutionPrompts[readingPurpose as keyof typeof memoEvolutionPrompts] || memoEvolutionPrompts['humanities_self_reflection'];
 
-  // 컴포넌트 언마운트 시 cleanup
+  // 컴포넌트 마운트 상태 관리 (useIsMounted 패턴)
+  const [isMounted, setIsMounted] = useState(false);
+  
+  // 마운트 상태 추적 useEffect (React Strict Mode 대응)
   useEffect(() => {
+    console.log('TSNoteCard 마운트 상태 설정');
+    setIsMounted(true);
     isMountedRef.current = true;
     
     return () => {
+      console.log('TSNoteCard 언마운트 cleanup');
+      setIsMounted(false);
       isMountedRef.current = false;
+      
       // 진행 중인 API 호출 중단
       if (abortControllerRef.current) {
+        console.log('진행 중인 API 호출 중단');
         abortControllerRef.current.abort();
       }
+      
       // 전역 요청 추적에서 제거
       submissionRef.current.forEach(requestKey => {
         if ((window as any).__pendingThreadRequests) {
@@ -394,42 +404,53 @@ export default function TSNoteCard({
     };
   }, []);
 
-  // React Strict Mode에서 중복 실행을 방지하는 useEffect
+  // initialNote prop 변경 감지 useEffect (React Strict Mode 완전 대응)
   useEffect(() => {
-    // 첫 번째 렌더링에서는 실행하지 않음 (Strict Mode 대응)
+    // 마운트되지 않은 상태에서는 실행하지 않음
+    if (!isMounted) {
+      console.log('TSNoteCard 아직 마운트되지 않음, initialNote 변경 처리 건너뜀');
+      return;
+    }
+
+    // 첫 번째 렌더링에서는 실행하지 않음 (React Strict Mode 대응)
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false;
-      console.log('TSNoteCard 첫 번째 렌더링, 상태 초기화만 수행');
+      console.log('TSNoteCard 첫 번째 렌더링, initialNote 변경 처리 건너뜀');
       return;
     }
 
     // 컴포넌트가 언마운트된 상태에서는 실행하지 않음
     if (!isMountedRef.current) {
-      console.log('TSNoteCard 언마운트 상태, useEffect 건너뜀');
+      console.log('TSNoteCard 언마운트 상태, initialNote 변경 처리 건너뜀');
       return;
     }
 
-    console.log('TSNoteCard initialNote 변경 감지:', {
+    console.log('TSNoteCard initialNote 변경 처리:', {
       noteId: initialNote._id,
       hasInlineThreads: !!initialNote.inlineThreads?.length,
       isPageEditing,
-      enableOverlayEvolutionMode
+      enableOverlayEvolutionMode,
+      isMounted,
+      isFirstRender: isFirstRenderRef.current
     });
 
-    setNote(initialNote);
-    setFields({
-      importanceReason: initialNote.importanceReason || '',
-      momentContext: initialNote.momentContext || '',
-      relatedKnowledge: initialNote.relatedKnowledge || '',
-      mentalImage: initialNote.mentalImage || '',
-    });
-    
-    // 페이지 전체 편집 모드가 비활성화되거나, 오버레이 모드가 활성화되면
-    // 개별 카드의 인라인 편집 상태도 초기화 (비활성화)합니다.
-    if (!isPageEditing || enableOverlayEvolutionMode) {
-      setIsInlineEditing(false);
+    // 안전한 상태 업데이트 (마운트 상태 재확인)
+    if (isMountedRef.current) {
+      setNote(initialNote);
+      setFields({
+        importanceReason: initialNote.importanceReason || '',
+        momentContext: initialNote.momentContext || '',
+        relatedKnowledge: initialNote.relatedKnowledge || '',
+        mentalImage: initialNote.mentalImage || '',
+      });
+      
+      // 페이지 전체 편집 모드가 비활성화되거나, 오버레이 모드가 활성화되면
+      // 개별 카드의 인라인 편집 상태도 초기화 (비활성화)합니다.
+      if (!isPageEditing || enableOverlayEvolutionMode) {
+        setIsInlineEditing(false);
+      }
     }
-  }, [initialNote, isPageEditing, enableOverlayEvolutionMode]);
+  }, [initialNote, isPageEditing, enableOverlayEvolutionMode, isMounted]);
 
   useEffect(() => {
     const newCurrentStep = tabKeys.indexOf(activeTabKey) + 1;

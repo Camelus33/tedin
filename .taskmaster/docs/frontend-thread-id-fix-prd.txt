@@ -1,0 +1,25 @@
+# 프론트엔드 인라인 스레드 ID undefined 문제 해결 PRD
+
+## 문제 개요
+프론트엔드에서 인라인 스레드 삭제 시 threadId가 undefined로 전달되어 백엔드에서 ObjectId 변환 오류가 발생하는 문제
+
+## 로그 분석 결과
+- DELETE 요청 URL: `/api/notes/6868738ff9898d4c7d6c8802/inline-threads/undefined`
+- 오류: `CastError: Cast to ObjectId failed for value "undefined"`
+- 원인: 프론트엔드에서 스레드 ID가 undefined로 전달됨
+
+## 추정 원인
+1. 낙관적 업데이트 시 임시 ID 사용 후 실제 ID로 동기화되지 않음
+2. 서버 응답 데이터가 프론트엔드 상태에 제대로 반영되지 않음
+3. _id 필드 매핑 문제 또는 데이터 구조 불일치
+
+## 해결 방안
+1. TSNoteCard.tsx의 인라인 스레드 데이터 핸들링 로직 분석
+2. 서버 응답 데이터 구조와 프론트엔드 상태 동기화 확인
+3. 낙관적 업데이트 후 실제 ID로 교체하는 로직 구현
+4. ID 검증 및 오류 처리 강화
+
+## 성공 기준
+- 인라인 스레드 삭제 시 올바른 ID가 전달됨
+- 새로고침 후에도 스레드 정보가 정상 표시됨
+- CastError 완전 해결 

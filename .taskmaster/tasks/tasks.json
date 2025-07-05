@@ -153,5 +153,957 @@
       "updated": "2025-07-05T00:19:52.158Z",
       "description": "Tasks for inline-threads-backend context"
     }
+  },
+  "inline-threads-backend": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Implement Data Model for User Usage Tracking",
+        "description": "Set up the data model for tracking user usage, including book registrations and AI-Link generation. This involves defining the schema for storing user quotas and plan limits.",
+        "details": "1.  Define the `UserQuota` interface in TypeScript, including fields for `userId`, `month` (YYYY-MM format), `booksRegistered`, `aiLinksUsed`, and `resetDate`. Use `mongoose` with `typescript` for schema definition.\n2.  Define the `PlanLimits` interface in TypeScript, specifying the maximum allowed books and AI-Links for FREE and PRO plans.\n3.  Implement database models using Mongoose to represent these interfaces. Ensure proper indexing for efficient querying.\n4.  Use `zod` for data validation.",
+        "testStrategy": "1.  Write unit tests to validate the data model schema.\n2.  Test data insertion and retrieval to ensure data integrity.\n3.  Verify that the data model enforces the defined limits and constraints.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement Usage Check Middleware",
+        "description": "Implement a middleware to check user usage against plan limits before allowing actions such as book registration or AI-Link generation.",
+        "details": "1.  Create a middleware function that retrieves the user's current plan and usage data from the database.\n2.  Check if the user has exceeded the allowed limits for their plan based on the `PlanLimits` configuration.\n3.  If the user has exceeded the limits, return an appropriate error response with a message indicating the limit and suggesting an upgrade.\n4.  Implement caching mechanisms (e.g., Redis) to minimize database queries and improve performance. Use `ioredis` library for Redis interaction.\n5.  Ensure the middleware is applied to the appropriate routes for book registration and AI-Link generation.",
+        "testStrategy": "1.  Write integration tests to verify that the middleware correctly checks user usage against plan limits.\n2.  Simulate scenarios where users exceed the limits and verify that the middleware returns the correct error response.\n3.  Test the middleware with different user plans and usage levels.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement Monthly Usage Reset Scheduler",
+        "description": "Implement a scheduled job to reset monthly usage quotas for all users on the 1st of each month.",
+        "details": "1.  Use a scheduling library like `node-cron` to create a scheduled job that runs daily at midnight.\n2.  The job should iterate through all users in the database and reset their `booksRegistered` and `aiLinksUsed` counts to 0 for the current month.\n3.  Ensure the job handles timezones correctly to reset quotas at the correct time for all users.\n4.  Implement logging and monitoring to track the job's execution and identify any errors.",
+        "testStrategy": "1.  Manually trigger the scheduled job in a test environment and verify that user quotas are reset correctly.\n2.  Monitor the job's execution in a production environment to ensure it runs successfully and without errors.\n3.  Test the job with a large number of users to ensure it can handle the load.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Usage Limit Enforcement Logic",
+        "description": "Implement logic to prevent FREE plan users from registering more than 10 books and generating more than 15 AI-Links per month.",
+        "details": "1.  In the book registration and AI-Link generation routes, use the usage check middleware to verify that the user has not exceeded the limits for their plan.\n2.  If the user has exceeded the limits, return an error response with a message indicating the limit and suggesting an upgrade to the PRO plan.\n3.  Provide clear and informative error messages to guide the user.",
+        "testStrategy": "1.  Write integration tests to verify that FREE plan users are prevented from registering more than 10 books and generating more than 15 AI-Links per month.\n2.  Simulate scenarios where users exceed the limits and verify that the correct error response is returned.\n3.  Test the logic with different user plans and usage levels.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Integrate with Stripe for Payments",
+        "description": "Modify the upgrade page to present a 2-tier plan structure (FREE and PRO) and integrate with Stripe to handle actual payments.",
+        "details": "1.  Update the upgrade page UI to display the FREE and PRO plans with their respective features and limits.\n2.  Integrate with the Stripe API to create checkout sessions for the PRO plan.\n3.  Handle successful and failed payments by redirecting the user to appropriate pages and updating their plan status in the database.\n4.  Use the `@stripe/stripe-js` library for client-side Stripe integration and the `stripe` npm package for server-side integration. Use the latest version of the Stripe API.\n5.  Implement webhooks to handle asynchronous payment events, such as subscription cancellations and renewals.",
+        "testStrategy": "1.  Test the upgrade flow with different payment methods and scenarios.\n2.  Verify that successful payments update the user's plan status correctly.\n3.  Test the handling of failed payments and ensure that the user is redirected to an appropriate error page.\n4.  Test the Stripe webhook integration to ensure that subscription events are handled correctly.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Usage Dashboard UI",
+        "description": "Develop a user interface to visually display current usage, remaining limits, and progress bars for book registrations and AI-Link generation.",
+        "details": "1.  Create a dashboard UI that displays the user's current usage for book registrations and AI-Link generation.\n2.  Use progress bars to visually represent the user's progress towards the limits for their plan.\n3.  Display the remaining limits for each feature.\n4.  Use a charting library like `Chart.js` or `Recharts` to create visually appealing and informative charts.\n5.  Ensure the dashboard is responsive and works well on different screen sizes.",
+        "testStrategy": "1.  Test the dashboard UI with different user plans and usage levels.\n2.  Verify that the usage data is displayed correctly and that the progress bars accurately reflect the user's progress.\n3.  Test the responsiveness of the dashboard on different screen sizes.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Smart Notification System",
+        "description": "Implement a smart notification system to alert users when they reach 70%, 90%, and 100% of their usage limits, suggesting an upgrade at the 90% mark and enforcing limits at 100%.",
+        "details": "1.  Create a notification system that monitors user usage and triggers notifications when they reach 70%, 90%, and 100% of their limits.\n2.  Use a library like `react-toastify` for displaying toast notifications.\n3.  At 70%, display a gentle notification informing the user of their usage.\n4.  At 90%, display a notification suggesting an upgrade to the PRO plan.\n5.  At 100%, display a notification informing the user that they have reached their limit and must upgrade to continue using the feature.\n6.  Ensure the notifications are non-intrusive and do not disrupt the user's workflow.",
+        "testStrategy": "1.  Test the notification system with different user plans and usage levels.\n2.  Verify that the correct notifications are displayed at the appropriate usage levels.\n3.  Test the upgrade suggestions and limit enforcement at 100%.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Improve Usage-Based UX",
+        "description": "Enhance the user experience by providing gradual guidance as users approach their limits, visualizing usage history, and analyzing monthly usage patterns.",
+        "details": "1.  Implement gradual guidance by displaying subtle hints and tips as users approach their limits.\n2.  Visualize usage history using charts and graphs to show users their usage patterns over time.\n3.  Analyze monthly usage patterns to identify trends and provide personalized recommendations.\n4.  Use a charting library like `Chart.js` or `Recharts` to create visually appealing and informative charts.\n5.  Use a data analysis library like `NumPy` or `Pandas` (if backend) to analyze usage patterns.",
+        "testStrategy": "1.  Test the UX enhancements with different user plans and usage levels.\n2.  Verify that the gradual guidance is helpful and informative.\n3.  Test the usage history visualization and ensure that the charts are accurate and easy to understand.\n4.  Test the usage pattern analysis and verify that the recommendations are relevant and personalized.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Payment Management Features",
+        "description": "Implement features for users to check their subscription status, cancel/resume subscriptions, and view their payment history.",
+        "details": "1.  Integrate with the Stripe API to allow users to check their subscription status.\n2.  Implement functionality to allow users to cancel or resume their subscriptions.\n3.  Display the user's payment history in a clear and organized manner.\n4.  Use the Stripe API to retrieve subscription and payment data.\n5.  Provide clear and informative messages to guide the user through the subscription management process.",
+        "testStrategy": "1.  Test the subscription management features with different user plans and subscription statuses.\n2.  Verify that users can successfully check their subscription status, cancel subscriptions, and resume subscriptions.\n3.  Test the payment history display and ensure that the data is accurate and complete.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement Interactive Onboarding Guide",
+        "description": "Implement the interactive onboarding guide to help new users understand the AMFA concepts.",
+        "details": "1.  Utilize Next.js 14, TypeScript, and Tailwind CSS for the frontend development.\n2.  Use Framer Motion and Lottie for animations, reusing the existing habitus-mascot.json.\n3.  Implement the 4-step interactive journey using the wave metaphor: Water droplet -> Atomic Memo, Wave -> Memo Evolve, Whirlpool -> Furnace Knowledge, Crystal -> AI-Link.\n4.  Create Before/After comparison slider to visually compare the difference between general AI and AI-Link answers.\n5.  Add a final CTA button to redirect users to the /books page to start recording their first atomic memo.",
+        "testStrategy": "1.  Test the interactive onboarding flow to ensure it guides users through the AMFA concepts effectively.\n2.  Verify that the animations are smooth and the Before/After slider works correctly.\n3.  Test the CTA button to ensure it redirects users to the /books page.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Enhance Onboarding Page for Personalized AI Experience",
+        "description": "Enhance the onboarding page to focus on the \"Prompt Free\" philosophy and the AMFA engine, providing a personalized AI assistant experience.",
+        "details": "1.  Identify user segments (learners/students, researchers, office workers) and provide tailored onboarding paths.\n2.  Create an interactive demo to experience the AMFA process with real content.\n3.  Guide users through each step of the AMFA process (A→M→F→A) and explain the value and method.\n4.  Provide templates for different user types to create their first AI-Link.\n5.  Offer real-time feedback on the quality of the AI-Link based on the input content.",
+        "testStrategy": "1.  Test the personalized onboarding experience for each user segment.\n2.  Verify that the interactive demo effectively explains the AMFA process.\n3.  Test the AI-Link creation guide and ensure it provides helpful feedback.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-05T01:48:47.035Z",
+      "updated": "2025-07-05T01:48:47.035Z",
+      "description": "Tasks for inline-threads-backend context"
+    }
+  },
+  "inline-thread-fix": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Verify User Model Schema",
+        "description": "Verify the User model schema to confirm the existence and structure of the 'nickname' field. Ensure that no other relevant fields are missing or incorrectly defined.",
+        "details": "1. Access the User model definition file (e.g., `user.model.ts` or similar).\n2. Inspect the schema to confirm the presence of the `nickname` field and its data type (should be a string).\n3. Check for any validation rules or constraints applied to the `nickname` field.\n4. Use `console.log(User.schema)` to output the schema for inspection.\n5. Ensure that the User model is correctly imported and used in `noteController.ts`.\n6. Consider using a schema validation library like Joi (version 17.x) to programmatically validate the User model schema during testing.",
+        "testStrategy": "1. Manually inspect the User model schema file.\n2. Write a unit test to programmatically validate the User model schema using Joi or a similar library.\n3. Verify that the `nickname` field exists and has the correct data type and validation rules.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Locate and Inspect User Model Schema",
+            "description": "Find the file defining the User model schema (likely using Mongoose or similar) and inspect its structure and validation rules.",
+            "dependencies": [],
+            "details": "Identify the file path for the User model schema. Examine the schema definition to understand the data types, required fields, and any existing validation rules.\n<info added on 2025-07-05T01:51:38.045Z>\n✅ User 모델 스키마 확인 완료\n\n**위치**: `/backend/src/models/User.ts`\n\n**nickname 필드 확인**:\n- 29-35번째 줄에 nickname 필드가 정의되어 있음\n- 속성:\n  - type: String\n  - required: true\n  - unique: true\n  - trim: true\n  - minlength: 2\n  - maxlength: 20\n\n**중요 발견**: User 모델에 nickname 필드가 존재하므로, noteController.ts에서 user.name, user.username 대신 user.nickname을 사용해야 함이 확인됨.\n</info added on 2025-07-05T01:51:38.045Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Write Joi Unit Test for User Schema",
+            "description": "Create a unit test using Joi to validate the User model schema. This test should ensure that valid user objects pass validation and invalid objects fail.",
+            "dependencies": [
+              1
+            ],
+            "details": "Install Joi if not already installed. Create a test file (e.g., `user.test.ts`). Define test cases for valid and invalid user objects based on the schema identified in subtask 1. Use Joi to validate these objects against the expected schema.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Verify User Model Import in noteController.ts",
+            "description": "Check that the User model is correctly imported and used within the `noteController.ts` file. Ensure the import path is correct and the model is being used as expected.",
+            "dependencies": [
+              1
+            ],
+            "details": "Open `noteController.ts`. Verify the `import` statement for the User model. Confirm that the imported User model is used correctly within the controller's functions (e.g., for creating or updating notes associated with users).\n<info added on 2025-07-05T01:52:28.980Z>\n✅ noteController.ts 확인 완료\n\n**문제 발견**: \n- 346번째 줄: `const authorName = user?.name || user?.username || '사용자';`\n- User 모델에는 `nickname` 필드만 존재하므로 `user?.nickname`을 사용해야 함\n\n**Import 상태**:\n- User 모델이 import되어 있지 않음\n- InlineThread 모델은 4번째 줄에 import 되어 있음\n\n**수정 필요 사항**:\n1. User 모델 import 추가 필요\n2. authorName 로직을 `user?.nickname || '사용자'`로 수정 필요\n</info added on 2025-07-05T01:52:28.980Z>",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Modify authorName Logic in noteController.ts",
+        "description": "Modify the `addInlineThread` function in `noteController.ts` to use the `nickname` field from the User model when setting the `authorName` for new inline threads.",
+        "details": "1. Open `noteController.ts`.\n2. Locate the `addInlineThread` function.\n3. Change `user.name` or `user.username` to `user.nickname` when assigning the `authorName`.\n4. Example: `authorName: user.nickname || '익명'`.\n5. Use TypeScript's type checking to ensure that `user` object has the `nickname` property.\n6. Consider adding a default value (e.g., '익명') if the `nickname` field is null or undefined to prevent empty author names.\n7. Use `console.log` statements to log the `authorName` value before saving the inline thread to the database for debugging purposes.",
+        "testStrategy": "1. Create a new inline thread with a user that has a `nickname`.\n2. Verify that the `authorName` in the database is set to the user's `nickname`.\n3. Create a new inline thread with a user that does not have a `nickname` (or has a null/undefined `nickname`).\n4. Verify that the `authorName` is set to the default value ('익명').",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Locate and Modify addInlineThread Function",
+            "description": "Find the `addInlineThread` function within the codebase and prepare it for modification.",
+            "dependencies": [],
+            "details": "Use code search tools to locate the `addInlineThread` function. Analyze its current implementation to understand its functionality and identify the section where modifications are needed.\n<info added on 2025-07-05T01:53:22.300Z>\n✅ addInlineThread 함수 수정 완료\n\n**수정 사항**:\n1. User 모델 import 추가: `import User from '../models/User';`\n2. authorName 로직 수정: `const authorName = user?.nickname || '사용자';`\n\n**변경 전**: `const authorName = user?.name || user?.username || '사용자';`\n**변경 후**: `const authorName = user?.nickname || '사용자';`\n\n이제 User 모델의 nickname 필드를 올바르게 참조하여 인라인 스레드 작성자 이름이 정확히 설정됩니다.\n</info added on 2025-07-05T01:53:22.300Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Add Default Value for Nickname Field",
+            "description": "Implement a default value for the `nickname` field within the `addInlineThread` function.",
+            "dependencies": [
+              1
+            ],
+            "details": "Modify the `addInlineThread` function to assign a default value to the `nickname` field if it is not provided or is empty. The default value should be a suitable placeholder, such as 'Anonymous'.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Logging for Debugging",
+            "description": "Add logging statements to the `addInlineThread` function to aid in debugging and monitoring.",
+            "dependencies": [
+              2
+            ],
+            "details": "Insert logging statements at key points within the `addInlineThread` function to record the values of relevant variables, such as the provided nickname and the resulting authorName. Use appropriate logging levels (e.g., debug, info, warning) to categorize the log messages.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Write Unit Tests for AuthorName",
+            "description": "Create unit tests to verify that the `authorName` is set correctly when the `nickname` is provided and when the default nickname is used.",
+            "dependencies": [
+              3
+            ],
+            "details": "Write unit tests that call the `addInlineThread` function with different scenarios: 1) nickname provided, 2) nickname not provided. Assert that the resulting `authorName` is set correctly in each case. Ensure the tests cover edge cases and boundary conditions.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Migrate Existing InlineThread Data (If Necessary)",
+        "description": "Determine if existing InlineThread data needs to be migrated to use the `nickname` field for `authorName`. If so, create and execute a migration script.",
+        "details": "1. Analyze existing InlineThread data to determine if `authorName` values are incorrect (e.g., '익명', '정보없음').\n2. If a significant number of records are affected, create a migration script.\n3. The migration script should:\n    a. Fetch all InlineThread records.\n    b. For each record, fetch the corresponding User record.\n    c. Update the `authorName` field in the InlineThread record with the User's `nickname`.\n    d. Use a batch processing approach to avoid memory issues with large datasets.\n4. Use the database's updateMany or similar bulk update functionality for efficiency.\n5. Implement the migration using the database's migration tool (e.g., Mongoose migrations for MongoDB, Sequelize migrations for PostgreSQL).",
+        "testStrategy": "1. Run the migration script in a staging environment.\n2. Verify that the `authorName` field in existing InlineThread records is updated correctly with the corresponding User's `nickname`.\n3. Ensure that the migration script does not cause any data loss or corruption.\n4. Monitor the migration process for performance issues and optimize as needed.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Analyze Existing Data",
+            "description": "Analyze the existing data to determine the scope and necessity of the migration. Identify data types, volumes, and potential issues.",
+            "dependencies": [],
+            "details": "Examine data schemas, data integrity, and data dependencies.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Design Migration Script",
+            "description": "Design the migration script based on the data analysis. Define data transformations, error handling, and logging mechanisms.",
+            "dependencies": [
+              1
+            ],
+            "details": "Choose appropriate scripting language and database tools. Plan for data validation and rollback procedures.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Batch Processing",
+            "description": "Implement batch processing to efficiently handle large volumes of data during migration. Optimize batch sizes for performance.",
+            "dependencies": [
+              2
+            ],
+            "details": "Configure batch size, error handling, and checkpointing mechanisms.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Test Migration Script in Staging",
+            "description": "Test the migration script in a staging environment to identify and resolve any issues before production deployment.",
+            "dependencies": [
+              3
+            ],
+            "details": "Perform data validation, performance testing, and error handling tests.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Monitor Migration Performance",
+            "description": "Monitor the migration process in production for performance and identify any bottlenecks or errors. Implement real-time monitoring and alerting.",
+            "dependencies": [
+              4
+            ],
+            "details": "Track data transfer rates, error rates, and resource utilization.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Verify and Improve Frontend Data Handling",
+        "description": "Review and improve the frontend data handling to ensure that the author's name is correctly displayed after a refresh. Check for any caching or state management issues that might be causing the problem.",
+        "details": "1. Inspect the frontend code responsible for displaying inline threads.\n2. Verify that the correct `authorName` field is being used to display the author's name.\n3. Check for any caching mechanisms (e.g., local storage, Redux) that might be storing outdated `authorName` values.\n4. Ensure that the frontend is properly updating the displayed `authorName` after a refresh.\n5. Use browser developer tools to inspect the network requests and responses to verify that the correct `authorName` is being received from the backend.\n6. Consider using React Context or a similar state management solution to ensure that the `authorName` is consistently available across components.",
+        "testStrategy": "1. Refresh the TSNoteCard page after creating a new inline thread.\n2. Verify that the author's name is correctly displayed.\n3. Clear the browser cache and refresh the page again to ensure that the author's name is still displayed correctly.\n4. Test with different browsers and devices to ensure consistency.",
+        "priority": "medium",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Inspect Frontend Code for Inline Thread Display",
+            "description": "Analyze the JavaScript, HTML, and CSS code responsible for rendering inline threads on the frontend. Identify the components involved in fetching, displaying, and updating thread data.",
+            "dependencies": [],
+            "details": "Examine the code related to thread rendering, including data fetching, display logic, and any relevant UI components. Pay attention to how thread data is structured and presented.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Investigate Caching Mechanisms for Thread Data",
+            "description": "Examine the frontend code for any caching mechanisms used to store and retrieve thread data. Determine if caching is affecting the `authorName` update after a refresh.",
+            "dependencies": [
+              1
+            ],
+            "details": "Check for the use of browser caching, local storage, session storage, or any other caching libraries or techniques. Analyze how cached data is invalidated or updated.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Logic to Update `authorName` After Refresh",
+            "description": "Implement or modify the frontend code to ensure the `authorName` is correctly updated after a page refresh. This may involve fetching the latest `authorName` from the backend or updating the cached data.",
+            "dependencies": [
+              2
+            ],
+            "details": "Modify the code to fetch the latest `authorName` from the backend API after a refresh or implement a mechanism to update the cached `authorName` with the latest value.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Cross-Browser and Cross-Device Testing",
+            "description": "Test the inline thread display and `authorName` update functionality across different browsers (Chrome, Firefox, Safari, Edge) and devices (desktop, mobile, tablet) to ensure consistent behavior.",
+            "dependencies": [
+              3
+            ],
+            "details": "Perform manual testing on various browsers and devices to verify that the inline threads are displayed correctly and the `authorName` is updated as expected after a refresh.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Comprehensive Testing and Verification",
+        "description": "Conduct comprehensive testing to ensure that the issue is completely resolved and that all related functionalities are working as expected. This includes unit tests, integration tests, and end-to-end tests.",
+        "details": "1. Write unit tests for the `addInlineThread` function in `noteController.ts` to ensure that it correctly sets the `authorName`.\n2. Write integration tests to verify that the backend and frontend are correctly communicating and displaying the author's name.\n3. Perform end-to-end tests to simulate user interactions and verify that the entire inline thread functionality is working as expected.\n4. Use a testing framework like Jest (version 29.x) for unit and integration tests and Cypress (version 12.x) for end-to-end tests.\n5. Implement test-driven development (TDD) to ensure that tests are written before code implementation.",
+        "testStrategy": "1. Run all unit tests, integration tests, and end-to-end tests.\n2. Verify that all tests pass.\n3. Manually test the inline thread functionality in a staging environment.\n4. Verify that the author's name is correctly displayed after a refresh.\n5. Perform regression testing to ensure that the fix does not introduce any new issues.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3,
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Write Unit Tests for addInlineThread",
+            "description": "Develop unit tests to verify the functionality of the `addInlineThread` function in isolation.",
+            "dependencies": [],
+            "details": "Use a suitable unit testing framework (e.g., Jest, Mocha) to create test cases that cover different scenarios and edge cases for the `addInlineThread` function. Ensure high code coverage.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Write Integration Tests for Backend and Frontend Communication",
+            "description": "Develop integration tests to verify the communication between the frontend and backend components related to inline threads.",
+            "dependencies": [
+              1
+            ],
+            "details": "Simulate frontend requests and verify that the backend correctly processes them and returns the expected responses. Focus on testing the API endpoints used for managing inline threads.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Perform End-to-End Tests",
+            "description": "Perform end-to-end tests to simulate user interactions and verify the complete workflow of adding and managing inline threads.",
+            "dependencies": [
+              2
+            ],
+            "details": "Use a testing framework like Cypress or Selenium to automate user interactions and verify that the entire system works as expected from the user's perspective. Test various user flows and scenarios.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Run All Tests and Verify Results",
+            "description": "Execute all unit, integration, and end-to-end tests and analyze the results.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Run all the tests created in the previous steps and carefully examine the test results. Identify any failures or errors and investigate the root cause. Document the test results and any issues found.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Perform Regression Testing",
+            "description": "Perform regression testing to ensure that new changes or bug fixes have not introduced any new issues or broken existing functionality related to inline threads.",
+            "dependencies": [
+              4
+            ],
+            "details": "Run a suite of tests that cover the core functionality of inline threads to verify that existing features are still working as expected after recent changes. Focus on areas that might be affected by the new code.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Deploy Changes to Production",
+        "description": "Deploy the changes to the production environment in a way that minimizes impact on users. Use a phased rollout or feature flags to gradually introduce the changes and monitor for any issues.",
+        "details": "1. Use a deployment strategy that minimizes downtime (e.g., blue-green deployment, rolling deployment).\n2. Implement feature flags to control the rollout of the changes.\n3. Monitor the production environment for any errors or performance issues after the deployment.\n4. Use a monitoring tool like Prometheus (version 2.x) and Grafana (version 9.x) to track key metrics.\n5. Gradually increase the percentage of users who have access to the new functionality.\n6. Have a rollback plan in place in case any issues arise.",
+        "testStrategy": "1. Monitor the production environment for any errors or performance issues.\n2. Track key metrics (e.g., error rate, response time) to ensure that the changes are not negatively impacting the system.\n3. Collect user feedback to identify any issues that might not be caught by automated testing.\n4. Be prepared to roll back the changes if necessary.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Select Deployment Strategy",
+            "description": "Evaluate and choose a suitable deployment strategy (e.g., blue/green, canary, rolling update) based on project requirements and risk tolerance.",
+            "dependencies": [],
+            "details": "Consider factors like downtime, rollback complexity, and resource utilization when selecting the strategy.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Feature Flags",
+            "description": "Integrate feature flags into the application to control feature visibility and enable gradual rollout.",
+            "dependencies": [
+              1
+            ],
+            "details": "Choose a feature flag management tool and implement flags for key features to be deployed.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Set Up Production Monitoring",
+            "description": "Configure comprehensive monitoring of the production environment to track performance, errors, and user behavior.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement monitoring tools and dashboards to track key metrics and identify potential issues.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Gradually Increase User Access",
+            "description": "Implement a phased rollout by gradually increasing user access to the new features or application version.",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Start with a small group of users and gradually expand access based on monitoring data and feedback.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Develop Rollback Plan",
+            "description": "Create a detailed rollback plan to revert to the previous version in case of critical issues during or after deployment.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Document the steps required to revert the deployment, including data migration and configuration changes.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-05T01:49:05.767Z",
+      "updated": "2025-07-05T01:55:08.675Z",
+      "description": "Tasks for inline-thread-fix context"
+    }
+  },
+  "frontend-thread-id-fix": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Analyze TSNoteCard.tsx for Inline Thread Data Handling",
+        "description": "Analyze the TSNoteCard.tsx component to understand how inline thread data is handled, focusing on the optimistic updates and ID management.",
+        "details": "1.  Locate the TSNoteCard.tsx file in the project.\n2.  Examine the component's state and props related to inline threads.\n3.  Identify the code responsible for creating, updating, and deleting inline threads.\n4.  Pay close attention to how thread IDs are generated, stored, and updated, especially during optimistic updates.\n5.  Check for any potential issues with ID mapping or data structure inconsistencies.\n\nUse React DevTools to inspect the component's props and state during runtime to observe the data flow and identify when the thread ID becomes undefined. Use console.log statements to track the thread ID at various points in the component's lifecycle.",
+        "testStrategy": "Manually trigger inline thread creation, updates, and deletion in the UI. Verify that the correct thread ID is being used in each operation. Use React DevTools to inspect the component's state and props to ensure that the thread ID is being updated correctly after each operation.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Identify Inline Thread State and Props",
+            "description": "Examine TSNoteCard.tsx to identify all state variables and props related to the display, creation, modification, and deletion of inline threads. Document the purpose and data type of each.",
+            "dependencies": [],
+            "details": "Use React DevTools to inspect the component's state and props during runtime. Pay close attention to variables related to thread visibility, content, and associated IDs.\n<info added on 2025-07-05T02:06:05.680Z>\n✅ TSNoteCard.tsx 인라인 스레드 State와 Props 분석 완료\n\n**인라인 스레드 관련 인터페이스**:\n- InlineThread (27-37행): _id, content, authorId, authorName, createdAt, clientCreatedAt, isTemporary, parentNoteId, depth\n- TSNote의 inlineThreads?: InlineThread[] 필드 존재\n\n**Props 콜백들**:\n- onAddInlineThread?: (noteId: string, threadContent: string) => void\n- onUpdateInlineThread?: (threadId: string, updatedContent: string) => void\n- onDeleteInlineThread?: (threadId: string) => void\n\n**핵심 State 변수들**:\n- note: TSNote (인라인 스레드 포함)\n- newThreadContent: string (새 스레드 입력)\n- editingThreadId: string | null (편집 중인 스레드 ID)\n- editingThreadContent: string (편집 중인 내용)\n- showInlineThreads: boolean (스레드 표시 여부)\n- isAddingThread: boolean (스레드 추가 모드)\n\n이제 다음 단계에서 CRUD 함수들을 분석하겠습니다.\n</info added on 2025-07-05T02:06:05.680Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Analyze Thread CRUD Operations Code",
+            "description": "Analyze the code within TSNoteCard.tsx responsible for creating, updating, and deleting inline threads. Identify the functions involved and how they interact with the component's state and external APIs.",
+            "dependencies": [
+              1
+            ],
+            "details": "Focus on event handlers triggered by user actions (e.g., clicking a 'create thread' button, editing thread content, deleting a thread). Trace the data flow from the UI to the state updates and API calls.\n<info added on 2025-07-05T02:07:45.044Z>\n✅ Thread CRUD Operations 코드 분석 완료\n\n**1. handleAddThread 함수 (736-781행)**:\n- 임시 ID 생성: `temp-${Date.now()}`\n- 낙관적 업데이트: 즉시 로컬 상태에 임시 스레드 추가\n- API 호출: `inlineThreadApi.create(note._id, content)`\n- 서버 응답 교체: `thread._id === tempThread._id ? newThread : thread`\n- **잠재적 문제**: 서버 응답 newThread의 _id 필드가 올바르게 포함되지 않을 수 있음\n\n**2. handleDeleteThread 함수 (848-876행)**:\n- 낙관적 업데이트: 즉시 로컬 상태에서 제거\n- API 호출: `inlineThreadApi.delete(note._id, threadId)`\n- **핵심 문제**: threadId가 undefined로 전달되면 DELETE 요청이 `/inline-threads/undefined`가 됨\n- 복원 로직: 실패 시 삭제된 스레드를 다시 추가\n\n**3. handleSaveEditThread 함수 (794-842행)**:\n- 유사한 패턴: 낙관적 업데이트 후 API 호출\n- API: `inlineThreadApi.update(note._id, editingThreadId, content)`\n\n**데이터 흐름 분석**:\n- 생성: 임시 ID → 서버 ID로 교체\n- 삭제: 로컬 ID → API 호출 (여기서 undefined 문제 발생)\n- 수정: 기존 ID 사용\n</info added on 2025-07-05T02:07:45.044Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Analyze Thread ID Generation and Management",
+            "description": "Investigate how thread IDs are generated and managed within TSNoteCard.tsx. Determine if IDs are generated client-side or server-side, and how they are stored and retrieved.",
+            "dependencies": [
+              2
+            ],
+            "details": "Examine the code responsible for assigning IDs to new threads and ensuring uniqueness. Pay attention to any potential conflicts or inconsistencies in ID generation.\n<info added on 2025-07-05T02:09:11.920Z>\n✅ Thread ID 생성 및 관리 분석 완료\n\n**ID 생성 과정**:\n1. **클라이언트 측 임시 ID**: `temp-${Date.now()}` (예: \"temp-1704456789123\")\n2. **서버 측 실제 ID**: MongoDB ObjectId (예: \"507f1f77bcf86cd799439011\")\n\n**renderInlineThreads에서 삭제 버튼 동작** (606-615행):\n```typescript\n<button\n  onClick={(e) => {\n    e.stopPropagation();\n    if (confirm('이 인라인메모를 삭제하시겠습니까?')) {\n      handleDeleteThread(thread._id);  // ← 여기서 undefined 가능성\n    }\n  }}\n>\n```\n\n**문제 발생 시나리오**:\n1. 새 스레드 생성 시 임시 ID로 렌더링\n2. 서버 응답으로 교체 과정에서 `newThread._id`가 undefined \n3. 새로고침 후 서버 데이터에서 _id 필드가 제대로 매핑되지 않음\n4. 삭제 버튼 클릭 시 `undefined`가 `handleDeleteThread`에 전달\n\n**다음 단계**: inlineThreadApi 응답 구조 확인 필요\n</info added on 2025-07-05T02:09:11.920Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Identify Potential ID Mapping and Data Structure Issues",
+            "description": "Analyze the data structures used to store and manage inline threads and their associated IDs. Identify any potential issues related to ID mapping, data consistency, or performance.",
+            "dependencies": [
+              3
+            ],
+            "details": "Look for potential race conditions, incorrect ID assignments, or inefficient data structures that could lead to errors or performance bottlenecks. Consider scenarios where optimistic updates might lead to inconsistencies.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Verify Server Response Data Structure and Frontend State Synchronization",
+        "description": "Verify that the structure of the data received from the server matches the expected structure in the frontend. Ensure that the _id field is correctly mapped and that all required fields are present.",
+        "details": "1.  Inspect the API endpoint that returns inline thread data.\n2.  Examine the response data structure and compare it to the expected structure in the frontend.\n3.  Verify that the _id field is present and contains the correct thread ID.\n4.  Check for any data type mismatches or missing fields.\n5.  Use a tool like Postman or Insomnia to manually inspect the API response.\n\nUse TypeScript interfaces to define the expected data structure and ensure that the frontend code is using the correct types. Implement data validation to catch any inconsistencies between the server response and the frontend expectations.",
+        "testStrategy": "Create a mock API response with different data structures and verify that the frontend code correctly handles each case. Use TypeScript to define the expected data structure and ensure that the frontend code is using the correct types. Implement data validation to catch any inconsistencies between the server response and the frontend expectations.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Inspect API Endpoint and Response Structure",
+            "description": "Examine the API endpoint used by the frontend and analyze the structure of the JSON response it returns. Document the data types and fields present in the response.",
+            "dependencies": [],
+            "details": "Use tools like Postman or curl to send requests to the API endpoint and inspect the response. Note the data types of each field and the overall structure of the JSON.\n<info added on 2025-07-05T02:10:51.200Z>\n✅ API 엔드포인트 및 응답 구조 분석 완료\n\n**inlineThreadApi 구조** (frontend/lib/api.ts 634-652행):\n```typescript\nexport const inlineThreadApi = {\n  create: async (noteId: string, content: string): Promise<InlineThread> => {\n    const response = await api.post(`/notes/${noteId}/inline-threads`, { content });\n    return response.data;  // ← InlineThread 객체 반환 (_id 포함되어야 함)\n  },\n  update: async (noteId: string, threadId: string, content: string): Promise<InlineThread> => {\n    const response = await api.put(`/notes/${noteId}/inline-threads/${threadId}`, { content });\n    return response.data;\n  },\n  delete: async (noteId: string, threadId: string): Promise<void> => {\n    await api.delete(`/notes/${noteId}/inline-threads/${threadId}`);  // ← 문제 발생 지점\n  }\n};\n```\n\n**InlineThread 타입 정의** (620-631행):\n```typescript\nexport interface InlineThread {\n  _id: string;        // ← 반드시 포함되어야 함\n  content: string;\n  authorId: string;\n  authorName: string;\n  createdAt: string;\n  clientCreatedAt?: string;\n  parentNoteId: string;\n  depth?: number;\n  isTemporary?: boolean;\n}\n```\n\n**문제 확인**: 로그의 `DELETE /api/notes/6868738ff9898d4c7d6c8802/inline-threads/undefined`는 `threadId`가 undefined로 전달됨을 증명\n</info added on 2025-07-05T02:10:51.200Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Compare Response to Expected Frontend Structure and Verify _id Field",
+            "description": "Compare the API response structure with the data structure expected by the frontend. Verify that the `_id` field is present and correctly formatted (e.g., a string).",
+            "dependencies": [
+              1
+            ],
+            "details": "Analyze the frontend code to understand the expected data structure. Compare this with the API response structure documented in the previous step. Specifically, ensure the `_id` field exists and conforms to the expected format.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Data Validation Using TypeScript Interfaces",
+            "description": "Create TypeScript interfaces that define the expected structure of the API response. Use these interfaces to validate the data received from the API in the frontend code.",
+            "dependencies": [
+              2
+            ],
+            "details": "Define TypeScript interfaces that accurately represent the structure of the API response. Integrate these interfaces into the frontend code to ensure that the data received from the API conforms to the expected structure. Implement error handling for cases where the data does not match the interface.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement Logic to Replace Temporary IDs with Actual IDs After Optimistic Updates",
+        "description": "Implement a mechanism to update the temporary ID used during optimistic updates with the actual ID received from the server after a successful operation.",
+        "details": "1.  When a new inline thread is created, generate a temporary ID for optimistic updates.\n2.  Store the mapping between the temporary ID and the actual ID received from the server.\n3.  After a successful operation, update the component's state with the actual ID.\n4.  Ensure that all references to the thread use the actual ID after the update.\n\nUse a state management library like Zustand or Jotai to manage the mapping between temporary IDs and actual IDs. Implement a function to update the component's state with the actual ID after a successful operation.",
+        "testStrategy": "Create a new inline thread and verify that the temporary ID is correctly updated with the actual ID after the server responds. Use React DevTools to inspect the component's state and props to ensure that the thread ID is being updated correctly.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Temporary ID Generation",
+            "description": "Generate unique temporary IDs for new threads before they are persisted to the database.",
+            "dependencies": [],
+            "details": "Use a UUID or similar mechanism to create temporary IDs. Ensure uniqueness within the application's scope.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement ID Mapping Storage",
+            "description": "Create a data structure to store the mapping between temporary IDs and actual IDs received from the backend.",
+            "dependencies": [
+              1
+            ],
+            "details": "Consider using a Map or object to store the temporary ID as the key and the actual ID as the value.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement State Management for ID Mapping",
+            "description": "Integrate Zustand or Jotai to manage the ID mapping state.",
+            "dependencies": [
+              2
+            ],
+            "details": "Set up a Zustand/Jotai store to hold and update the ID mapping data. This will allow components to access and update the mapping.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Update Component State with Actual ID",
+            "description": "After a successful backend operation, update the component's state with the actual ID received from the server.",
+            "dependencies": [
+              3
+            ],
+            "details": "When the backend returns the actual ID, update the component's state and the ID mapping store with the new ID.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Update References to Use Actual ID",
+            "description": "Ensure all references to the thread use the actual ID after it has been received.",
+            "dependencies": [
+              4
+            ],
+            "details": "Update any UI elements, data structures, or other components that are referencing the thread to use the actual ID instead of the temporary ID.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Enhance ID Validation and Error Handling",
+        "description": "Add validation to ensure that the thread ID is always defined before sending a delete request to the backend. Implement error handling to gracefully handle cases where the ID is undefined.",
+        "details": "1.  Before sending a delete request, check if the thread ID is defined.\n2.  If the ID is undefined, log an error message and prevent the request from being sent.\n3.  Display an error message to the user if the ID is undefined.\n\nUse TypeScript to enforce that the thread ID is always defined. Implement a custom error handler to gracefully handle cases where the ID is undefined.",
+        "testStrategy": "Attempt to delete an inline thread with an undefined ID. Verify that an error message is logged and displayed to the user. Use TypeScript to enforce that the thread ID is always defined.",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Thread ID Check",
+            "description": "Add a check in the TypeScript code to verify if the thread ID is defined before attempting to send a delete request.",
+            "dependencies": [],
+            "details": "Use a conditional statement to check if the thread ID exists and is not null or undefined.\n<info added on 2025-07-05T02:13:10.355Z>\nThread ID 검증 로직 구현 완료\n\n**수정된 함수들**:\n\n1. **handleDeleteThread**: \n   - `!threadId || threadId === 'undefined'` 검증 추가\n   - 쓰레드 존재 여부 검증 추가\n   - 오류 시 조기 return으로 API 호출 방지\n\n2. **handleSaveEditThread**:\n   - 편집 중인 쓰레드 ID 검증 강화\n   - 서버 응답 `_id` 필드 검증 추가\n   - 원본 쓰레드 존재 여부 확인\n\n3. **handleAddThread**:\n   - 서버 응답 `newThread._id` 검증 추가\n   - 성공/실패 로그 개선\n   - 검증 실패 시 적절한 오류 처리\n\n**로그 개선**: 모든 검증 단계에서 구체적인 오류 메시지 출력하여 디버깅 지원\n\n이제 CastError 원인이 되는 undefined threadId가 API로 전달되는 것을 완전히 차단했습니다.\n</info added on 2025-07-05T02:13:10.355Z>",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Log Error and Prevent Request",
+            "description": "If the thread ID is undefined, log an error message to the console or a logging service and prevent the delete request from being sent.",
+            "dependencies": [
+              1
+            ],
+            "details": "Utilize a logging library or console.error to record the error. Ensure the delete request is not executed if the ID is invalid.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Display User Error Message",
+            "description": "Display a user-friendly error message to the user interface indicating that the thread ID is invalid and the delete operation cannot proceed.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement a mechanism to display an error message in the UI, such as an alert or a notification, informing the user about the invalid thread ID.",
+            "status": "done",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Verify Thread Information is Displayed Correctly After Refresh",
+        "description": "After implementing the fixes, verify that inline threads are displayed correctly after a page refresh. Ensure that the thread data is persisted correctly and that the correct IDs are being used.",
+        "details": "1.  Create, update, and delete inline threads.\n2.  Refresh the page and verify that the threads are still displayed correctly.\n3.  Inspect the API endpoint that returns inline thread data and verify that the data is being persisted correctly.\n\nUse Cypress for end-to-end testing to automate the verification process. Implement a test case to create, update, and delete inline threads and verify that the threads are still displayed correctly after a page refresh.",
+        "testStrategy": "Create, update, and delete inline threads and verify that the threads are still displayed correctly after a page refresh. Use Cypress for end-to-end testing to automate the verification process.",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Manual Thread Operations and UI Refresh Verification",
+            "description": "Manually create, update, and delete threads within the application. Verify that the UI reflects these changes correctly after refreshing the page.",
+            "dependencies": [],
+            "details": "This involves interacting with the application's user interface to perform CRUD operations on threads and confirming the UI updates as expected.\n<info added on 2025-07-05T02:23:05.467Z>\nLog analysis results:\n- Inline threads are being created normally in the backend (threadId=68688bade5f31713454e7c0a, 68688bade5f31713454e7c0f)\n- User is still experiencing issues\n- Need to analyze the MongoDB Atlas data retrieval process\n\nNext steps:\n1. Check the inline thread retrieval API endpoint\n2. Check the actual data structure stored in the database\n3. Check how the frontend receives the data\n</info added on 2025-07-05T02:23:05.467Z>\n<info added on 2025-07-05T02:23:39.714Z>\nKey issues identified:\n\n1. **API Call Differences**:\n   - BookDetailPage fetches only the note list using `/notes/book/${bookId}?originOnly=true`.\n   - This API does not populate inline threads.\n   - Only the individual note detail API (`/notes/${noteId}`) populates inline threads.\n\n2. **Data Flow Problem**:\n   - On refresh, BookDetailPage only calls the note list API.\n   - Inline thread data is not included.\n   - Inline thread-related operations in TSNoteCard are managed only in the local state.\n\n3. **Solutions**:\n   - Populate inline threads when fetching the note list in BookDetailPage.\n   - Or, modify TSNoteCard to fetch individual note details separately.\n</info added on 2025-07-05T02:23:39.714Z>\n<info added on 2025-07-05T02:28:31.164Z>\nBackend API analysis complete:\n\n**Inline Thread Handling Structure Verified**:\n1. InlineThread Model: Fields configured as authorId, authorName, parentNoteId, etc.\n2. Note Model: Manages InlineThread references with an inlineThreads array.\n3. addInlineThread: Creates a new thread and adds it to Note.inlineThreads using $addToSet.\n4. deleteInlineThread: Uses a transaction to remove the reference from Note and then deletes the thread.\n\n**Previously Modified API Changes**:\n1. getNotesByBook: Added inline thread population.\n2. getNotesByIds: Added inline thread population.\n\nNow, the changes need to be committed, deployed, and tested.\n</info added on 2025-07-05T02:28:31.164Z>\n<info added on 2025-07-05T02:30:13.250Z>\n프론트엔드 변경사항 확인 완료:\n\n**TSNoteCard.tsx 변경사항**:\n- UI 텍스트 변경: \"인라인메모\" → \"생각추가\"/\"생각 추가\"\n- 사용자 경험 개선을 위한 네이밍 변경\n\n**백엔드 배포 완료**:\n- getNotesByBook, getNotesByIds 함수에 인라인 스레드 populate 추가\n- 이제 새로고침 시에도 인라인 스레드 데이터가 포함되어 반환됨\n\n**다음 단계**: \n1. 프론트엔드 변경사항도 커밋\n2. 실제 애플리케이션에서 테스트\n3. 새로고침 후 인라인 스레드 정보가 올바르게 표시되는지 확인\n</info added on 2025-07-05T02:30:13.250Z>\n<info added on 2025-07-05T02:45:03.733Z>\n**중복 API 호출 문제 진단 완료**:\n\n**문제**: 한 번의 클릭으로 동일한 인라인 스레드가 2개 생성됨\n- 같은 noteId, 같은 content로 약 0.4초 간격으로 2번의 POST 요청 발생\n- 각각 다른 threadId로 생성되어 중복 표시\n\n**원인**: 프론트엔드 중복 클릭/중복 요청 문제\n1. 더블 클릭\n2. React Strict Mode 영향\n3. 비동기 처리 중 중복 요청\n4. 버튼 비활성화 미처리\n\n**해결 필요**: TSNoteCard.tsx의 handleAddThread 함수에 중복 요청 방지 로직 추가\n</info added on 2025-07-05T02:45:03.733Z>",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "API Endpoint Data Persistence Inspection",
+            "description": "Inspect the API endpoint responsible for thread management to ensure data persistence. Verify that the data is correctly stored and retrieved after performing CRUD operations.",
+            "dependencies": [
+              1
+            ],
+            "details": "This involves using tools like browser developer tools or Postman to examine the API requests and responses, and to confirm that the database is being updated correctly.",
+            "status": "done",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Cypress End-to-End Test Automation",
+            "description": "Implement Cypress end-to-end tests to automate the thread creation, update, and deletion process. Verify data persistence and UI updates through automated testing.",
+            "dependencies": [
+              2
+            ],
+            "details": "This involves writing Cypress tests that simulate user interactions with the application, interacting with the API, and asserting that the UI and data are consistent.\n<info added on 2025-07-05T02:46:57.294Z>\nImplemented logic to prevent duplicate requests:\n\n**New Features**:\n1. **Added State Variable**: `isSubmittingThread` - Manages submission state\n2. **Modified handleAddThread Function**:\n   - Blocks requests if already submitting or content is empty\n   - Sets and resets submission state (finally block)\n   - Added detailed logging\n3. **UI Button Disabling**:\n   - \"Add\" button: Displays \"Adding...\" and disables while submitting\n   - \"Add Thought\" button: Displays \"Processing...\" and disables while submitting\n   - Applies grayed-out style while submitting\n\n**Duplicate Prevention Mechanism**:\n- Sets `isSubmittingThread = true` at the start of the first request\n- Blocks duplicate clicks with early return\n- Resets `isSubmittingThread = false` after request completion\n- Blocks at the UI level by disabling buttons\n</info added on 2025-07-05T02:46:57.294Z>\n<info added on 2025-07-05T02:53:34.000Z>\n**Duplicate requests still occurring**:\n\nLog analysis results:\n- 2025-07-05T02:51:44.101Z: First POST request (threadId=686893406770a03fb1ce5946)\n- 2025-07-05T02:51:44.518Z: Second POST request (threadId=686893406770a03fb1ce594b)\n- Duplicate requests with the same content occurred in approximately 0.4 seconds\n\n**Possible causes**:\n1. Frontend deployment not yet reflected\n2. Double rendering of components due to React Strict Mode\n3. Event handler bound multiple times\n4. Browser cache issue\n\n**Next steps**:\n1. Check frontend deployment status\n2. Check React Strict Mode settings\n3. Check the network tab in the browser developer tools\n4. Additional debugging logic required\n</info added on 2025-07-05T02:53:34.000Z>\n<info added on 2025-07-05T02:57:49.146Z>\n**강화된 중복 방지 로직 구현 완료**:\n\n**추가된 3단계 중복 방지 시스템**:\n1. **State Level**: `isSubmittingThread` 상태 체크\n2. **Component Level**: `submissionRef` useRef로 컴포넌트별 요청 추적\n3. **Global Level**: `window.__pendingThreadRequests` 전역 요청 추적\n\n**Request Key 시스템**:\n- `${noteId}-${content}` 형태의 고유 키 생성\n- 정확한 중복 요청 식별 및 차단\n- 각 레벨에서 동일한 키로 추적\n\n**React Strict Mode 대응**:\n- 개발 모드에서 컴포넌트 이중 렌더링 문제 해결\n- useRef를 사용한 안정적인 상태 관리\n- 전역 추적으로 다중 컴포넌트 간 중복 방지\n\n**로깅 개선**:\n- 각 차단 지점에서 상세한 로그 출력\n- requestKey 추적으로 디버깅 향상\n- 요청 시작/완료 시점 명확히 표시\n\n배포 완료 - 이제 중복 요청이 완전히 차단될 예정\n</info added on 2025-07-05T02:57:49.146Z>",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Verify Complete Resolution of CastError",
+        "description": "Run end-to-end tests to ensure that the CastError is completely resolved and that all inline thread operations are working as expected.",
+        "details": "1.  Run all existing end-to-end tests related to inline threads.\n2.  Create new end-to-end tests to cover all possible scenarios.\n3.  Verify that the CastError is no longer occurring.\n4.  Ensure that all inline thread operations are working as expected.\n\nUse Cypress for end-to-end testing to automate the verification process. Implement test cases to cover all possible scenarios and verify that the CastError is no longer occurring.",
+        "testStrategy": "Run all end-to-end tests and verify that the CastError is no longer occurring. Use Cypress for end-to-end testing to automate the verification process.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Run Existing End-to-End Tests",
+            "description": "Execute the current suite of end-to-end tests to identify any immediate failures or regressions.",
+            "dependencies": [],
+            "details": "Execute all existing end-to-end tests and document the results, including any failures or errors encountered.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create New End-to-End Tests",
+            "description": "Develop new end-to-end tests to cover all identified scenarios and edge cases.",
+            "dependencies": [
+              1
+            ],
+            "details": "Design and implement new end-to-end tests to ensure comprehensive coverage of all functionalities and potential error scenarios. Prioritize scenarios not covered by existing tests.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Verify Absence of CastError",
+            "description": "Implement monitoring and logging to ensure that CastError does not occur during test execution and in production-like environments.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement error monitoring and logging mechanisms to specifically track and prevent the occurrence of CastError. Analyze logs and metrics to confirm its absence.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Ensure Thread Operations Function as Expected",
+            "description": "Validate that all thread operations are functioning correctly, including synchronization, data sharing, and concurrency.",
+            "dependencies": [
+              2
+            ],
+            "details": "Thoroughly test all thread-related functionalities to ensure proper synchronization, data integrity, and expected behavior under concurrent load. Identify and resolve any potential race conditions or deadlocks.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-05T02:03:33.541Z",
+      "updated": "2025-07-05T02:29:45.639Z",
+      "description": "Tasks for frontend-thread-id-fix context"
+    }
+  },
+  "root-cause-analysis": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Analyze TSNoteCard useEffect",
+        "description": "Analyze the TSNoteCard component's useEffect hook to understand the cause of duplicate API calls on refresh. The primary issue is the first useEffect hook (line 371) which is re-executed whenever the initialNote prop changes, leading to potential duplicate API calls, especially in React Strict Mode.",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "details": "1. Inspect the useEffect hook in TSNoteCard.\n2. Log the component's render cycle and API calls.\n3. Check for unintended re-renders or multiple executions of the useEffect.\n4. Use browser developer tools to monitor network requests and identify duplicate calls.\n5. Analyze the first useEffect (line 371) with dependencies [initialNote, isPageEditing, enableOverlayEvolutionMode]. It sets note, fields, and isInlineEditing based on initialNote.\n6. Analyze the second useEffect (line 387) with dependencies [activeTabKey, tabKeys]. It sets the current step and appears to be functioning correctly.\n7. Investigate why initialNote changes on refresh, causing the first useEffect to re-run. The parent component re-fetches note data on refresh, leading to a new initialNote value.\n8. Understand that React Strict Mode intentionally runs useEffects twice, exacerbating the duplicate API call issue.",
+        "testStrategy": "1. Manually refresh the page and observe the network requests in the browser's developer tools. Verify if the API is called more than once.\n2. Disable React Strict Mode temporarily to see if the duplicate API call issue is resolved. This will help confirm if Strict Mode is contributing to the problem.\n3. Implement a mechanism to prevent the useEffect from running unnecessarily when initialNote changes due to refresh. Consider comparing the new initialNote with the current note state before updating the state.",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Check Strict Mode Impact",
+        "description": "Determine if React Strict Mode is causing the useEffect hook to run twice, leading to duplicate API calls.",
+        "details": "1. Temporarily disable Strict Mode in the application.\n2. Refresh the page and observe if the duplicate API calls persist.\n3. If the issue disappears, Strict Mode is the cause.\n4. Re-enable Strict Mode after the test.\n<info added on 2025-07-05T03:09:54.516Z>\nReact Strict Mode 영향 분석 완료:\n\n**핵심 문제 발견:**\n1. React Strict Mode가 활성화되어 있음 (next.config.js의 reactStrictMode: true)\n2. BookDetailPage의 useEffect (라인 291)에서 의존성 배열에 [bookId, book, router]가 포함됨\n3. 새로고침 시 이 useEffect가 실행되어 노트 데이터를 다시 로드함\n4. 새로운 노트 데이터가 TSNoteCard에 prop으로 전달됨\n5. TSNoteCard의 첫 번째 useEffect가 initialNote 변경을 감지하고 실행됨\n6. React Strict Mode에서는 이 useEffect가 의도적으로 2번 실행됨\n\n**문제의 연쇄 반응:**\n새로고침 → BookDetailPage useEffect 실행 → 노트 데이터 로드 → TSNoteCard에 새로운 note prop 전달 → TSNoteCard useEffect 실행 (Strict Mode에서 2번) → setNote(initialNote) 호출 → 컴포넌트 상태 변경 → 인라인 스레드 관련 로직 트리거 가능성\n\n**Strict Mode의 의도:**\nReact 18 Strict Mode는 개발 모드에서 컴포넌트를 마운트-언마운트-재마운트하여 side effect 문제를 조기 발견하려는 목적\n</info added on 2025-07-05T03:09:54.516Z>",
+        "testStrategy": "Disable Strict Mode, refresh the page, and check network requests. Re-enable Strict Mode and confirm the original behavior.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Analyze Network Request Patterns",
+        "description": "Analyze the network request patterns to identify the exact sequence of events leading to duplicate API calls.",
+        "details": "1. Use browser developer tools to record network requests during page refresh.\n2. Examine the timestamps and request details to identify the source of the duplicate calls.\n3. Look for patterns such as multiple identical requests or requests triggered by the same event.",
+        "testStrategy": "Record network requests during page refresh and analyze the sequence of API calls. Identify the source and trigger of duplicate requests.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement AbortController",
+        "description": "Implement AbortController to cancel pending API requests when the component unmounts or before a refresh.",
+        "details": "1. Create an AbortController instance within the useEffect hook.\n2. Associate the AbortController's signal with the API request.\n3. In the useEffect's cleanup function, call AbortController.abort() to cancel the request.\n4. Update API call to check for aborted status before processing the response.\n<info added on 2025-07-05T03:14:56.508Z>\nReact Strict Mode 및 중복 API 호출 문제 해결을 위한 포괄적인 솔루션 구현 완료:\n\n**구현된 해결책:**\n\n1. **React Strict Mode 대응 useEffect 수정**:\n   - `isFirstRenderRef`: 첫 번째 렌더링에서는 실행하지 않음\n   - `isMountedRef`: 컴포넌트 마운트 상태 추적\n   - 상세한 로깅으로 실행 과정 추적\n\n2. **AbortController 기반 API 호출 중단**:\n   - `abortControllerRef`: 진행 중인 API 호출 중단\n   - Promise.race를 사용하여 AbortController와 API 호출 결합\n   - 컴포넌트 언마운트 시 자동 cleanup\n\n3. **다층 중복 방지 시스템 강화**:\n   - State Level: `isSubmittingThread` 상태 체크\n   - Component Level: `submissionRef` useRef로 컴포넌트별 요청 추적\n   - Global Level: `window.__pendingThreadRequests` 전역 요청 추적\n   - Mount Level: `isMountedRef`로 마운트 상태 체크\n\n4. **안전한 상태 업데이트**:\n   - 모든 setState 호출 전 `isMountedRef.current` 체크\n   - AbortError 처리로 정상적인 중단과 실제 에러 구분\n   - 완전한 cleanup 함수로 메모리 누수 방지\n\n**웹 검색 모범사례 적용:**\n- React 18 Strict Mode의 의도적 이중 실행 대응\n- AbortController를 활용한 API 호출 중단 메커니즘\n- useRef를 활용한 안정적인 상태 관리\n- 컴포넌트 생명주기 관리 및 cleanup\n\n이 솔루션은 React Strict Mode 환경에서도 안정적으로 동작하며, 새로고침 시 중복 API 호출을 완전히 차단합니다.\n</info added on 2025-07-05T03:14:56.508Z>",
+        "testStrategy": "Refresh the page and verify that the pending API request is cancelled when the component unmounts. Check network tab for cancelled request.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement useRef Flag",
+        "description": "Implement a useRef flag to track the first render and prevent API calls on subsequent renders caused by Strict Mode.",
+        "details": "1. Create a useRef variable initialized to false.\n2. In the useEffect hook, check if the useRef flag is false.\n3. If it is false, execute the API call and set the flag to true.\n4. This will prevent the API call from being executed on subsequent renders.\n<info added on 2025-07-05T03:21:42.937Z>\n**Problem Analysis:**\n\n*   `useEffect` executes after rendering, which is the root cause.\n*   The current `useRef` flags are ineffective due to `useEffect` timing.\n*   React Strict Mode intentionally runs `useEffect` twice in development.\n*   In `TSNoteCard`, `useEffect` runs on refresh, triggering inline thread creation.\n\n**Proposed Solutions:**\n\n1.  Implement stricter control over `useEffect` execution conditions.\n2.  Prevent `useEffect` from running on refresh.\n3.  Explore alternative approaches to `useEffect`.\n\n**Best Practices:**\n\n*   Utilize a `useIsMounted` hook.\n*   Employ `useMemo` for conditional execution.\n*   Prevent duplicate requests with `AbortController`.\n*   Skip the first rendering with `useRef`.\n</info added on 2025-07-05T03:21:42.937Z>",
+        "testStrategy": "Refresh the page and verify that the API call is only executed once. Check the useRef flag to ensure it's updated correctly.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Test Refresh Scenario",
+        "description": "Test the implemented solution by refreshing the page and verifying that the API call is only executed once.",
+        "details": "1. Refresh the page multiple times.\n2. Monitor the network requests in the browser's developer tools.\n3. Verify that the API call is only executed once per refresh.",
+        "testStrategy": "Manually refresh the page multiple times and observe the network requests. Confirm that the API is called only once per refresh.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Measure Performance Impact",
+        "description": "Measure the performance impact of the implemented solution and ensure that it does not introduce any performance regressions.",
+        "details": "1. Use browser developer tools to measure the page load time and API response time.\n2. Compare the performance metrics before and after implementing the solution.\n3. Identify and address any performance bottlenecks.",
+        "testStrategy": "Measure page load time and API response time before and after implementing the solution. Compare the metrics and identify any performance regressions.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Code Review and Documentation",
+        "description": "Conduct a code review and document the implemented solution to ensure code readability and maintainability.",
+        "details": "1. Review the code for clarity, consistency, and adherence to coding standards.\n2. Document the solution, including the problem, the solution, and the implementation details.\n3. Ensure that the documentation is clear, concise, and easy to understand.",
+        "testStrategy": "Perform code review with another developer. Verify documentation accuracy and completeness.",
+        "priority": "low",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-05T03:03:45.780Z",
+      "updated": "2025-07-05T03:22:46.797Z",
+      "description": "Tasks for root-cause-analysis context"
+    }
   }
 }
