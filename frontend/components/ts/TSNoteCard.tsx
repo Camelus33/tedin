@@ -554,7 +554,7 @@ export default function TSNoteCard({
           >
             <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
           </svg>
-          인라인메모 {hasThreads && `(${threads.length})`}
+          생각추가 {hasThreads && `(${threads.length})`}
         </button>
 
         {/* 쓰레드 목록 */}
@@ -670,7 +670,7 @@ export default function TSNoteCard({
                 <svg className="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                 </svg>
-                인라인메모 추가
+                생각 추가
               </button>
             )}
           </div>
