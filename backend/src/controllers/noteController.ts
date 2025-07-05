@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Note from '../models/Note';
 import Book from '../models/Book';
 import InlineThread from '../models/InlineThread';
+import User from '../models/User';
 import mongoose from 'mongoose';
 import { updateFromNote, getBeliefNetwork } from '../services/BeliefNetworkService';
 
@@ -344,9 +345,9 @@ export const addInlineThread = async (req: Request, res: Response) => {
       return res.status(404).json({ message: '해당 노트를 찾을 수 없습니다.' });
     }
 
-    // 사용자 정보 가져오기 (기존 User 모델이 있다면 활용)
+    // 사용자 정보 가져오기 (User 모델의 nickname 필드 활용)
     const user = req.user;
-    const authorName = user?.name || user?.username || '사용자';
+    const authorName = user?.nickname || '사용자';
 
     // 새 인라인메모 쓰레드 생성
     console.log(`[addInlineThread] 새 인라인메모 쓰레드 생성 시도: noteId=${noteId}, content=${content.substring(0, 50)}...`);
