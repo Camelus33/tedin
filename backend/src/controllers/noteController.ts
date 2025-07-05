@@ -323,20 +323,24 @@ export const addInlineThread = async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
+      console.warn('인라인메모 쓰레드 추가 실패: 사용자 인증 필요');
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
     if (!content || !content.trim()) {
+      console.warn(`인라인메모 쓰레드 추가 실패: 내용 누락 (noteId: ${noteId})`);
       return res.status(400).json({ message: '내용을 입력해주세요.' });
     }
 
     if (content.length > 1000) {
+      console.warn(`인라인메모 쓰레드 추가 실패: 내용 길이 초과 (noteId: ${noteId}, length: ${content.length})`);
       return res.status(400).json({ message: '내용은 최대 1000자까지 가능합니다.' });
     }
 
     // 노트 존재 여부와 소유권 검증
     const note = await Note.findOne({ _id: noteId, userId });
     if (!note) {
+      console.warn(`인라인메모 쓰레드 추가 실패: 노트를 찾을 수 없거나 소유권 없음 (noteId: ${noteId}, userId: ${userId})`);
       return res.status(404).json({ message: '해당 노트를 찾을 수 없습니다.' });
     }
 
@@ -345,6 +349,7 @@ export const addInlineThread = async (req: Request, res: Response) => {
     const authorName = user?.name || user?.username || '사용자';
 
     // 새 인라인메모 쓰레드 생성
+    console.log(`[addInlineThread] 새 인라인메모 쓰레드 생성 시도: noteId=${noteId}, content=${content.substring(0, 50)}...`);
     const newThread = new InlineThread({
       content: content.trim(),
       authorId: userId,
@@ -355,13 +360,22 @@ export const addInlineThread = async (req: Request, res: Response) => {
     });
 
     const savedThread = await newThread.save();
+    console.log(`[addInlineThread] 인라인메모 쓰레드 저장 성공: threadId=${savedThread._id}`);
 
     // Note에 인라인메모 쓰레드 참조 추가 (원자적 업데이트)
-    await Note.findByIdAndUpdate(
+    const updatedNote = await Note.findByIdAndUpdate(
       noteId,
       { $addToSet: { inlineThreads: savedThread._id } },
       { new: true }
     );
+
+    if (updatedNote) {
+      console.log(`[addInlineThread] 노트에 인라인메모 쓰레드 참조 추가 성공: noteId=${noteId}, threadId=${savedThread._id}`);
+      // console.log(`[addInlineThread] 업데이트된 노트: ${JSON.stringify(updatedNote.inlineThreads)}`); // 필요시 상세 로그
+    } else {
+      console.warn(`[addInlineThread] 노트 업데이트 실패: Note.findByIdAndUpdate가 null을 반환함 (noteId: ${noteId})`);
+      return res.status(500).json({ message: '노트에 인라인메모 쓰레드 참조 추가 실패했습니다.' });
+    }
 
     res.status(201).json(savedThread);
   } catch (error) {

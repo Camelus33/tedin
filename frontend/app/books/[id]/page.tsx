@@ -497,6 +497,92 @@ export default function BookDetailPage() {
     showSuccess(`'${noteToAdd.content.substring(0,20)}...' 메모 조각을 소중히 담았어요.`);
   };
 
+  /**
+   * @function handleAddInlineThread
+   * @description TSNoteCard에서 인라인메모 쓰레드 추가 시 호출되는 콜백 함수입니다.
+   * 백엔드에 새 쓰레드를 추가하고, `tsNotes` 상태를 업데이트합니다.
+   * @param {string} noteId - 쓰레드를 추가할 노트의 ID.
+   * @param {string} threadContent - 추가할 쓰레드의 내용.
+   */
+  const handleAddInlineThread = async (noteId: string, threadContent: string) => {
+    try {
+      const response = await api.post(`/notes/${noteId}/inline-threads`, { content: threadContent });
+      const newThread = response.data; // Assuming backend returns the created thread
+
+      setTsNotes(prevNotes =>
+        prevNotes.map(note =>
+          note._id === noteId
+            ? { ...note, inlineThreads: [...(note.inlineThreads || []), newThread] }
+            : note
+        )
+      );
+      showSuccess("인라인메모가 성공적으로 추가되었습니다.");
+    } catch (error) {
+      console.error("Failed to add inline thread:", error);
+      showError("인라인메모 추가 중 문제가 발생했어요.");
+    }
+  };
+
+  /**
+   * @function handleUpdateInlineThread
+   * @description TSNoteCard에서 인라인메모 쓰레드 수정 시 호출되는 콜백 함수입니다.
+   * 백엔드에서 쓰레드를 수정하고, `tsNotes` 상태를 업데이트합니다.
+   * @param {string} noteId - 쓰레드가 속한 노트의 ID.
+   * @param {string} threadId - 수정할 쓰레드의 ID.
+   * @param {string} updatedContent - 수정된 쓰레드의 내용.
+   */
+  const handleUpdateInlineThread = async (noteId: string, threadId: string, updatedContent: string) => {
+    try {
+      const response = await api.put(`/notes/${noteId}/inline-threads/${threadId}`, { content: updatedContent });
+      const updatedThread = response.data; // Assuming backend returns the updated thread
+
+      setTsNotes(prevNotes =>
+        prevNotes.map(note =>
+          note._id === noteId
+            ? {
+                ...note,
+                inlineThreads: note.inlineThreads?.map(thread =>
+                  thread._id === threadId ? updatedThread : thread
+                ) || []
+              }
+            : note
+        )
+      );
+      showSuccess("인라인메모가 성공적으로 수정되었습니다.");
+    } catch (error) {
+      console.error("Failed to update inline thread:", error);
+      showError("인라인메모 수정 중 문제가 발생했어요.");
+    }
+  };
+
+  /**
+   * @function handleDeleteInlineThread
+   * @description TSNoteCard에서 인라인메모 쓰레드 삭제 시 호출되는 콜백 함수입니다.
+   * 백엔드에서 쓰레드를 삭제하고, `tsNotes` 상태를 업데이트합니다.
+   * @param {string} noteId - 쓰레드가 속한 노트의 ID.
+   * @param {string} threadId - 삭제할 쓰레드의 ID.
+   */
+  const handleDeleteInlineThread = async (noteId: string, threadId: string) => {
+    try {
+      await api.delete(`/notes/${noteId}/inline-threads/${threadId}`);
+
+      setTsNotes(prevNotes =>
+        prevNotes.map(note =>
+          note._id === noteId
+            ? {
+                ...note,
+                inlineThreads: note.inlineThreads?.filter(thread => thread._id !== threadId) || []
+              }
+            : note
+        )
+      );
+      showSuccess("인라인메모가 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error("Failed to delete inline thread:", error);
+      showError("인라인메모 삭제 중 문제가 발생했어요.");
+    }
+  };
+
   if (isLoading || sessionsLoading) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${cyberTheme.gradient}`}>
@@ -774,6 +860,9 @@ export default function BookDetailPage() {
                         isAddedToCart={isNoteInCart}
                         isPageEditing={false}
                         enableOverlayEvolutionMode={true}
+                        onAddInlineThread={(noteId, threadContent) => handleAddInlineThread(noteId, threadContent)}
+                        onUpdateInlineThread={(threadId, updatedContent) => handleUpdateInlineThread(note._id, threadId, updatedContent)}
+                        onDeleteInlineThread={(threadId) => handleDeleteInlineThread(note._id, threadId)}
                       />
                     </div>
                   );
@@ -802,86 +891,63 @@ export default function BookDetailPage() {
                   </div>
                 </div>
                 {/* 지식연결 탭/입력/리스트 카드 */}
-                <div className="bg-gray-900/80 rounded-lg shadow border border-cyan-500/30 p-3 sm:p-6 w-full flex flex-col gap-2 sm:gap-4">
-                  <div className="flex gap-1 sm:gap-2 mb-1 sm:mb-2">
-                    {relatedLinkTabs.map(tab => {
-                      const Icon = tab.icon;
-                      return (
-                        <button
-                          key={tab.key}
-                          className={`px-1 py-1 sm:px-2 sm:py-1 rounded-md focus:outline-none transition-colors flex items-center justify-center font-semibold text-xs shadow-sm ${activeRelatedLinkTab === tab.key ? 'bg-green-200/20 text-green-300 border-b-2 border-green-400' : 'bg-gray-800/60 text-gray-400 hover:bg-green-900/30'}`}
-                          onClick={() => setActiveRelatedLinkTab(tab.key)}
-                          type="button"
-                        >
-                          <div className="relative group flex items-center justify-center">
-                            <Icon className="w-4 h-4 sm:w-6 sm:h-6" />
-                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10 transition-opacity">
-                              {tab.tooltip}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {/* 입력 필드/버튼 - 모바일에서만 Break-out 레이아웃으로 최대 가로 폭 확보 */}
-                  <div className="flex flex-col gap-1 sm:gap-2 mb-1 sm:mb-2 w-full -mx-3 sm:mx-0 px-2 sm:px-0">
-                    <input
-                      className="w-full p-3 sm:p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden text-sm"
-                      placeholder={linkPlaceholderMap[activeRelatedLinkTab]}
-                      value={linkUrl}
-                      onChange={e => setLinkUrl(e.target.value)}
-                    />
-                    <input
-                      className="hidden sm:block w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
-                      placeholder="링크주소(URL)를 입력하세요"
-                      value={linkUrl}
-                      onChange={e => setLinkUrl(e.target.value)}
-                    />
-                    <input
-                      className="w-full p-3 sm:p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden text-sm"
-                      placeholder={reasonPlaceholderMap[activeRelatedLinkTab]}
-                      value={linkReason}
-                      onChange={e => setLinkReason(e.target.value)}
-                    />
-                    <input
-                      className="hidden sm:block w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
-                      placeholder="배경/이유를 적어두면 더 오래 기억됩니다."
-                      value={linkReason}
-                      onChange={e => setLinkReason(e.target.value)}
-                    />
-                    <button
-                      className="self-end px-4 py-2 sm:px-4 sm:py-1 rounded-lg bg-indigo-700 text-white font-bold shadow-md hover:bg-indigo-800 transition disabled:opacity-50 flex items-center justify-center mt-1 text-sm"
-                      onClick={handleAddRelatedLink}
-                      disabled={!linkUrl.trim()}
-                    >
-                      추가
-                    </button>
-                  </div>
-                  {/* 링크 리스트 */}
-                  {filteredLinks.length === 0 ? (
-                    <div className="text-gray-400 text-xs sm:text-sm">(추가된 링크가 없군요.)</div>
-                  ) : (
-                    <ul className="space-y-1 sm:space-y-2 w-full">
-                      {filteredLinks.map((link, idx) => (
-                        <li key={idx} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 bg-gray-800/60 rounded px-2 py-1 sm:px-3 sm:py-2 border border-gray-700 shadow">
-                          <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline break-all text-xs sm:text-sm truncate max-w-full sm:max-w-xs">
-                            {link.url}
-                          </a>
-                          {link.reason && (
-                            <span className="text-xs text-gray-300 bg-gray-900/60 rounded px-1 py-0.5 sm:px-2 sm:py-0.5 truncate max-w-full sm:max-w-[120px]" title={link.reason}>{link.reason}</span>
-                          )}
-                          <button
-                            className="ml-auto text-red-400 hover:text-red-600 text-xs font-bold px-1 py-0.5 sm:px-2 sm:py-1 rounded self-start sm:self-auto"
-                            onClick={() => handleDeleteRelatedLink(idx)}
-                            aria-label="링크 삭제"
-                          >
-                            삭제
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                <div className="flex flex-col gap-1 sm:gap-2 mb-1 sm:mb-2 w-full -mx-3 sm:mx-0 px-2 sm:px-0">
+                  <input
+                    className="w-full p-3 sm:p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden text-sm"
+                    placeholder={linkPlaceholderMap[activeRelatedLinkTab]}
+                    value={linkUrl}
+                    onChange={e => setLinkUrl(e.target.value)}
+                  />
+                  <input
+                    className="hidden sm:block w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
+                    placeholder="링크주소(URL)를 입력하세요"
+                    value={linkUrl}
+                    onChange={e => setLinkUrl(e.target.value)}
+                  />
+                  <input
+                    className="w-full p-3 sm:p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400 sm:hidden text-sm"
+                    placeholder={reasonPlaceholderMap[activeRelatedLinkTab]}
+                    value={linkReason}
+                    onChange={e => setLinkReason(e.target.value)}
+                  />
+                  <input
+                    className="hidden sm:block w-full p-3 rounded-xl border-2 border-indigo-200 bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition shadow-sm placeholder-gray-400"
+                    placeholder="배경/이유를 적어두면 더 오래 기억됩니다."
+                    value={linkReason}
+                    onChange={e => setLinkReason(e.target.value)}
+                  />
+                  <button
+                    className="self-end px-4 py-2 sm:px-4 sm:py-1 rounded-lg bg-indigo-700 text-white font-bold shadow-md hover:bg-indigo-800 transition disabled:opacity-50 flex items-center justify-center mt-1 text-sm"
+                    onClick={handleAddRelatedLink}
+                    disabled={!linkUrl.trim()}
+                  >
+                    추가
+                  </button>
                 </div>
+                {/* 링크 리스트 */}
+                {filteredLinks.length === 0 ? (
+                  <div className="text-gray-400 text-xs sm:text-sm">(추가된 링크가 없군요.)</div>
+                ) : (
+                  <ul className="space-y-1 sm:space-y-2 w-full">
+                    {filteredLinks.map((link, idx) => (
+                      <li key={idx} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 bg-gray-800/60 rounded px-2 py-1 sm:px-3 sm:py-2 border border-gray-700 shadow">
+                        <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline break-all text-xs sm:text-sm truncate max-w-full sm:max-w-xs">
+                          {link.url}
+                        </a>
+                        {link.reason && (
+                          <span className="text-xs text-gray-300 bg-gray-900/60 rounded px-1 py-0.5 sm:px-2 sm:py-0.5 truncate max-w-full sm:max-w-[120px]" title={link.reason}>{link.reason}</span>
+                        )}
+                        <button
+                          className="ml-auto text-red-400 hover:text-red-600 text-xs font-bold px-1 py-0.5 sm:px-2 sm:py-1 rounded self-start sm:self-auto"
+                          onClick={() => handleDeleteRelatedLink(idx)}
+                          aria-label="링크 삭제"
+                        >
+                          삭제
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </section>
           ) : (
