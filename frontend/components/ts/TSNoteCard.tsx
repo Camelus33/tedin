@@ -343,6 +343,7 @@ export default function TSNoteCard({
   const [editingThreadId, setEditingThreadId] = useState<string | null>(null);
   const [editingThreadContent, setEditingThreadContent] = useState('');
   const [isSubmittingThread, setIsSubmittingThread] = useState(false); // 중복 요청 방지용 상태
+  const submissionRef = useRef<Set<string>>(new Set()); // 컴포넌트별 요청 추적
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -755,10 +756,32 @@ export default function TSNoteCard({
     
     const content = newThreadContent.trim();
     
+    // 컴포넌트별 중복 방지
+    const requestKey = `${note._id}-${content}`;
+    if (submissionRef.current.has(requestKey)) {
+      console.log('컴포넌트 중복 요청 차단:', { noteId: note._id, content, requestKey });
+      return;
+    }
+    
+    // 전역 중복 방지: 같은 노트와 내용으로 이미 요청 중인지 확인
+    if ((window as any).__pendingThreadRequests?.has(requestKey)) {
+      console.log('전역 중복 요청 차단:', { noteId: note._id, content, requestKey });
+      return;
+    }
+    
+    // 컴포넌트별 요청 추적 시작
+    submissionRef.current.add(requestKey);
+    
+    // 전역 요청 추적 시작
+    if (!(window as any).__pendingThreadRequests) {
+      (window as any).__pendingThreadRequests = new Set();
+    }
+    (window as any).__pendingThreadRequests.add(requestKey);
+    
     // 제출 상태로 변경 (중복 요청 방지)
     setIsSubmittingThread(true);
     
-    console.log('인라인메모 쓰레드 추가 시작:', { noteId: note._id, content });
+    console.log('인라인메모 쓰레드 추가 시작:', { noteId: note._id, content, requestKey });
     
     // 즉시 로컬 상태 업데이트 (낙관적 업데이트)
     const tempThread: InlineThread = {
@@ -814,9 +837,16 @@ export default function TSNoteCard({
         inlineThreads: prevNote.inlineThreads?.filter(thread => thread._id !== tempThread._id) || []
       }));
     } finally {
+      // 요청 추적 해제
+      const requestKey = `${note._id}-${content}`;
+      submissionRef.current.delete(requestKey);
+      if ((window as any).__pendingThreadRequests) {
+        (window as any).__pendingThreadRequests.delete(requestKey);
+      }
+      
       // 제출 상태 해제 (성공/실패 관계없이)
       setIsSubmittingThread(false);
-      console.log('인라인메모 쓰레드 추가 완료');
+      console.log('인라인메모 쓰레드 추가 완료:', { requestKey });
     }
   };
 
