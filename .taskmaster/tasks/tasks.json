@@ -137,7 +137,7 @@
           4,
           5
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -145,7 +145,7 @@
             "description": "Define the scope, objectives, and methodologies for all testing types (responsive, functional, cross-browser, performance). Document the testing environment, tools, and data used.",
             "dependencies": [],
             "details": "Create a detailed test plan document outlining the testing strategy, schedule, and resource allocation.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -156,7 +156,7 @@
               1
             ],
             "details": "Use browser developer tools and real devices to verify the layout, content, and functionality adapt correctly to different screen resolutions and orientations.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -167,7 +167,7 @@
               1
             ],
             "details": "Create a functional test checklist covering all user stories and requirements. Execute each test case and record the results.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -178,7 +178,7 @@
               1
             ],
             "details": "Use browser compatibility testing tools and manual testing to ensure the application renders and functions correctly in each browser.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -189,7 +189,7 @@
               1
             ],
             "details": "Use performance testing tools to simulate user load and measure key performance metrics. Identify and address any performance bottlenecks.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -203,7 +203,7 @@
               5
             ],
             "details": "Create detailed bug reports for each identified issue, including steps to reproduce, expected results, and actual results. Assign severity and priority to each bug.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -218,7 +218,7 @@
         "dependencies": [
           6
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -289,7 +289,7 @@
     ],
     "metadata": {
       "created": "2025-07-05T04:59:08.393Z",
-      "updated": "2025-07-05T05:10:17.177Z",
+      "updated": "2025-07-05T05:15:02.670Z",
       "description": "Tasks for mobile-ui-improvement context"
     }
   }

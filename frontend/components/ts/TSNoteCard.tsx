@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AiOutlineQuestionCircle, AiOutlineInfoCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
-import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon, ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import api, { inlineThreadApi } from '@/lib/api'; // Import the central api instance
 import AiCoachPopover from '../common/AiCoachPopover';
@@ -617,23 +617,19 @@ export default function TSNoteCard({
 
     return (
       <div className="mt-3">
-        {/* 쓰레드 토글 버튼 */}
+        {/* 쓰레드 토글 버튼 - 새로운 스타일 */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             toggleInlineThreads();
           }}
-          className="flex items-center text-xs text-gray-400 hover:text-cyan-400 transition-colors duration-200"
+          className="group inline-flex items-center gap-x-2 px-3 py-1.5 rounded-full bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700/50 hover:border-cyan-500/30 transition-all duration-200 cursor-pointer"
           data-no-toggle
         >
-          <svg 
-            className={`h-3 w-3 mr-1 transition-transform duration-200 ${showInlineThreads ? 'rotate-90' : ''}`} 
-            fill="currentColor" 
-            viewBox="0 0 20 20"
-          >
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-          생각 진화 {hasThreads && `(${threads.length})`}
+          <span className="text-xs font-medium text-gray-400 group-hover:text-cyan-400 transition-colors">
+            생각 진화 {hasThreads && `(${threads.length})`}
+          </span>
+          <ChevronRightIcon className={`h-4 w-4 text-gray-500 group-hover:text-cyan-400 transition-all duration-200 ${showInlineThreads ? 'rotate-90' : ''}`} />
         </button>
 
         {/* 쓰레드 목록 */}
@@ -1194,25 +1190,19 @@ export default function TSNoteCard({
       </div>
 
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
-        <div className="mt-3 pt-2 border-t border-gray-700/50">
-          <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
-            <TagIcon className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 text-gray-500" />
-            태그
-          </h4>
-          <div className="flex flex-wrap gap-1.5">
-            {note.tags.map((tag, index) => (
-              <span
-                key={index}
-                className={`px-1.5 py-0.5 sm:px-2 sm:py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center max-w-[100px] sm:max-w-[120px]`}
-                onClick={(e) => e.stopPropagation()}
-                data-no-toggle
-                title={tag}
-              >
-                <TagIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1 flex-shrink-0" />
-                <span className="truncate">{tag}</span>
-              </span>
-            ))}
-          </div>
+        <div className="mt-3 pt-2 border-t border-gray-700/50 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+          <TagIcon className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" title="태그" />
+          {note.tags.map((tag, index) => (
+            <span
+              key={index}
+              className={`px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center max-w-[150px]`}
+              onClick={(e) => e.stopPropagation()}
+              data-no-toggle
+              title={tag}
+            >
+              <span className="truncate">{tag}</span>
+            </span>
+          ))}
         </div>
       )}
 
