@@ -23,6 +23,19 @@ export interface RelatedLink {
   _id?: string; // Optional: Mongoose might add an _id to subdocuments
 }
 
+// Define the structure for inline memo thread
+export interface InlineThread {
+  _id: string;
+  content: string;
+  authorId?: string;
+  authorName?: string;
+  createdAt: string;
+  clientCreatedAt?: string;
+  isTemporary?: boolean;
+  parentNoteId: string;
+  depth?: number; // 쓰레드 깊이 (0이 최상위)
+}
+
 /**
  * @interface TSNote
  * @description TSNoteCard 컴포넌트에서 사용하는 1줄 메모(노트)의 기본 데이터 구조입니다.
@@ -54,6 +67,8 @@ export interface TSNote {
   nickname?: string;
   /** @property {RelatedLink[]} [relatedLinks] - (백엔드 동기화) 관련된 외부 링크 목록. */
   relatedLinks?: RelatedLink[];
+  /** @property {InlineThread[]} [inlineThreads] - 인라인메모 쓰레드 목록. */
+  inlineThreads?: InlineThread[];
   /** @property {boolean} [isArchived] - 노트가 보관된 상태인지 여부. */
   isArchived?: boolean;
   /** @property {boolean} [isTemporary] - 노트가 임시 상태인지 여부. */
@@ -162,6 +177,24 @@ export type TSNoteCardProps = {
   isPageEditing?: boolean;
   /** @property {boolean} [enableOverlayEvolutionMode] - (선택적) 오버레이 진화 모드를 활성화할지 여부 */
   enableOverlayEvolutionMode?: boolean;
+  /** 
+   * @property {(noteId: string, threadContent: string) => void} [onAddInlineThread]
+   * - (선택적) 인라인메모 쓰레드 추가 시 호출되는 콜백 함수입니다.
+   *   노트 ID와 쓰레드 내용을 인자로 전달합니다.
+   */
+  onAddInlineThread?: (noteId: string, threadContent: string) => void;
+  /** 
+   * @property {(threadId: string, updatedContent: string) => void} [onUpdateInlineThread]
+   * - (선택적) 인라인메모 쓰레드 수정 시 호출되는 콜백 함수입니다.
+   *   쓰레드 ID와 수정된 내용을 인자로 전달합니다.
+   */
+  onUpdateInlineThread?: (threadId: string, updatedContent: string) => void;
+  /** 
+   * @property {(threadId: string) => void} [onDeleteInlineThread]
+   * - (선택적) 인라인메모 쓰레드 삭제 시 호출되는 콜백 함수입니다.
+   *   삭제할 쓰레드 ID를 인자로 전달합니다.
+   */
+  onDeleteInlineThread?: (threadId: string) => void;
 };
 
 const tabIconMap = [
@@ -294,10 +327,21 @@ export default function TSNoteCard({
   bookTitle,
   isPageEditing = false, // 기본값을 false로 변경
   enableOverlayEvolutionMode = false,
+  onAddInlineThread,
+  onUpdateInlineThread,
+  onDeleteInlineThread,
 }: TSNoteCardProps) {
   const [note, setNote] = useState(initialNote);
   const [isOpen, setIsOpen] = useState(false); // 오버레이 UI 표시 상태
-  const [isInlineEditing, setIsInlineEditing] = useState(false); // 새로운 상태: 인라인 편집 활성화 여부
+  const [isInlineEditing, setIsInlineEditing] = useState(false); // 인라인 편집 상태 관리
+  const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
+
+  // 인라인메모 쓰레드 관련 상태
+  const [showInlineThreads, setShowInlineThreads] = useState(false);
+  const [isAddingThread, setIsAddingThread] = useState(false);
+  const [newThreadContent, setNewThreadContent] = useState('');
+  const [editingThreadId, setEditingThreadId] = useState<string | null>(null);
+  const [editingThreadContent, setEditingThreadContent] = useState('');
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -311,7 +355,6 @@ export default function TSNoteCard({
 
   const [activeTabKey, setActiveTabKey] = useState<MemoEvolutionFieldKey>(tabKeys[0]);
   const [currentStep, setCurrentStep] = useState(1);
-  const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
   const [isSavingEvolution, setIsSavingEvolution] = useState(false);
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -425,7 +468,7 @@ export default function TSNoteCard({
   };
 
   const handleFieldChange = (key: MemoEvolutionFieldKey, value: string) => {
-    setFields((prev) => ({ ...prev, [key]: value }));
+    setFields(prev => ({ ...prev, [key]: value }));
   };
   
   const handleNextStep = useCallback(() => {
@@ -447,8 +490,8 @@ export default function TSNoteCard({
     : '세션 정보 없음';
   const displaySessionDuration = sessionDetails?.durationSeconds !== undefined ? formatSessionDuration(sessionDetails.durationSeconds) : '';
   const displaySessionPageProgress = (sessionDetails?.startPage !== undefined || sessionDetails?.actualEndPage !== undefined || sessionDetails?.targetPage !== undefined) 
-                                    ? formatSessionPageProgress(sessionDetails.startPage, sessionDetails.actualEndPage, sessionDetails.targetPage) 
-                                    : '';
+                                     ? formatSessionPageProgress(sessionDetails?.startPage, sessionDetails?.actualEndPage, sessionDetails?.targetPage) 
+                                     : '';
   const displayPPM = sessionDetails?.ppm !== undefined ? formatPPM(sessionDetails.ppm) : '';
 
   const displayBookTitle = bookTitle || sessionDetails?.book?.title || "Unknown Book";
@@ -485,41 +528,157 @@ export default function TSNoteCard({
     </div>
   );
   
-  const renderInlineMemoEvolutionEditUI = () => {
-    // 오버레이 모드이거나, 최소 표시거나, 이 카드가 인라인 편집 상태가 아니면 null (isPageEditing 조건 제거)
-    if (enableOverlayEvolutionMode || minimalDisplay || !isInlineEditing) return null;
+  // 인라인메모 쓰레드 렌더링 함수
+  const renderInlineThreads = () => {
+    // 최소 표시 모드이거나 오버레이가 열려있을 때는 쓰레드 숨김
+    if (minimalDisplay || isOpen) return null;
+
+    const threads = note.inlineThreads || [];
+    const hasThreads = threads.length > 0;
 
     return (
-      <div className="mt-4 pt-3 border-t border-gray-700/50 space-y-2 sm:space-y-3">
-        <h4 className="text-xs font-semibold text-gray-400 mb-2">
-          메모 진화 (인라인 편집 중):
-        </h4>
-        {tabKeys.map((fieldKey, index) => (
-          <div key={fieldKey}>
-            <label htmlFor={`evolution-${fieldKey}-${note._id}`} className="block text-xs sm:text-sm font-medium text-cyan-500 mb-1">
-              {prompts[index]?.question || fieldKey}
-            </label>
-            <textarea
-              id={`evolution-${fieldKey}-${note._id}`}
-              value={fields[fieldKey]}
-              onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
-              onBlur={() => {
-                if (fields[fieldKey] !== (note[fieldKey] || '')) {
-                  if (onUpdate) {
-                    onUpdate({ _id: note._id, [fieldKey]: fields[fieldKey] });
-                  }
-                }
-              }}
-              placeholder={prompts[index]?.placeholder || '내용 입력'}
-              rows={1.5}
-              className="w-full p-2 text-xs sm:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 h-auto resize-none text-gray-200 custom-scrollbar"
-            />
+      <div className="mt-3">
+        {/* 쓰레드 토글 버튼 */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleInlineThreads();
+          }}
+          className="flex items-center text-xs text-gray-400 hover:text-cyan-400 transition-colors duration-200"
+          data-no-toggle
+        >
+          <svg 
+            className={`h-3 w-3 mr-1 transition-transform duration-200 ${showInlineThreads ? 'rotate-90' : ''}`} 
+            fill="currentColor" 
+            viewBox="0 0 20 20"
+          >
+            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+          </svg>
+          인라인메모 {hasThreads && `(${threads.length})`}
+        </button>
+
+        {/* 쓰레드 목록 */}
+        {showInlineThreads && (
+          <div className="mt-2 ml-4 space-y-2">
+            {threads.map((thread) => (
+              <div key={thread._id} className="border-l-2 border-gray-600 pl-3 py-1">
+                {editingThreadId === thread._id ? (
+                  // 편집 모드
+                  <div className="space-y-2">
+                    <textarea
+                      value={editingThreadContent}
+                      onChange={(e) => setEditingThreadContent(e.target.value)}
+                      className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none"
+                      rows={2}
+                      placeholder="쓰레드 내용을 입력하세요..."
+                    />
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={handleSaveEditThread}
+                        className="px-2 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700 transition-colors"
+                      >
+                        저장
+                      </button>
+                      <button
+                        onClick={handleCancelEditThread}
+                        className="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // 표시 모드
+                  <div className="group">
+                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap break-words">
+                      {thread.content}
+                    </p>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-gray-500">
+                        {thread.authorName || '익명'} • {formatUserTime(thread.clientCreatedAt, thread.createdAt)}
+                      </span>
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditThread(thread._id, thread.content);
+                          }}
+                          className="p-1 text-xs text-gray-400 hover:text-cyan-400 transition-colors"
+                          title="편집"
+                          data-no-toggle
+                        >
+                          <PencilSquareIcon className="h-3 w-3" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm('이 인라인메모를 삭제하시겠습니까?')) {
+                              handleDeleteThread(thread._id);
+                            }
+                          }}
+                          className="p-1 text-xs text-gray-400 hover:text-red-400 transition-colors"
+                          title="삭제"
+                          data-no-toggle
+                        >
+                          <XMarkIcon className="h-3 w-3" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* 새 쓰레드 추가 */}
+            {isAddingThread ? (
+              <div className="border-l-2 border-cyan-500 pl-3 py-1">
+                <textarea
+                  value={newThreadContent}
+                  onChange={(e) => setNewThreadContent(e.target.value)}
+                  className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none"
+                  rows={2}
+                  placeholder="새 인라인메모를 입력하세요..."
+                  autoFocus
+                />
+                <div className="flex space-x-2 mt-2">
+                  <button
+                    onClick={handleAddThread}
+                    className="px-2 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700 transition-colors"
+                  >
+                    추가
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsAddingThread(false);
+                      setNewThreadContent('');
+                    }}
+                    className="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAddingThread(true);
+                }}
+                className="flex items-center text-xs text-gray-400 hover:text-cyan-400 transition-colors duration-200 ml-4"
+                data-no-toggle
+              >
+                <svg className="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+                인라인메모 추가
+              </button>
+            )}
           </div>
-        ))}
+        )}
       </div>
     );
   };
-  
+
   const renderMemoEvolutionSummary = () => {
     // 다음 조건 중 하나라도 해당되면 요약을 보여주지 않음:
     // 1. 최소 표시 모드일 때
@@ -569,6 +728,49 @@ export default function TSNoteCard({
     );
   };
 
+  // 인라인메모 쓰레드 관련 핸들러들
+  const toggleInlineThreads = () => {
+    setShowInlineThreads(!showInlineThreads);
+  };
+
+  const handleAddThread = async () => {
+    if (!newThreadContent.trim()) return;
+    
+    if (onAddInlineThread) {
+      await onAddInlineThread(note._id, newThreadContent.trim());
+    }
+    
+    setNewThreadContent('');
+    setIsAddingThread(false);
+  };
+
+  const handleEditThread = (threadId: string, currentContent: string) => {
+    setEditingThreadId(threadId);
+    setEditingThreadContent(currentContent);
+  };
+
+  const handleSaveEditThread = async () => {
+    if (!editingThreadId || !editingThreadContent.trim()) return;
+    
+    if (onUpdateInlineThread) {
+      await onUpdateInlineThread(editingThreadId, editingThreadContent.trim());
+    }
+    
+    setEditingThreadId(null);
+    setEditingThreadContent('');
+  };
+
+  const handleCancelEditThread = () => {
+    setEditingThreadId(null);
+    setEditingThreadContent('');
+  };
+
+  const handleDeleteThread = async (threadId: string) => {
+    if (onDeleteInlineThread) {
+      await onDeleteInlineThread(threadId);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -599,6 +801,9 @@ export default function TSNoteCard({
         </p>
 
         {/* 책 제목(출처) 표시 조건을 수정 */}
+        {/* 인라인메모 쓰레드 - 1줄 메모 바로 아래에 배치 */}
+        {renderInlineThreads()}
+
         <div className={cn("mt-2 text-xs text-gray-400 flex items-center min-w-0", {
           "invisible": isInlineEditing || !bookTitle || minimalDisplay || isOpen || isPageEditing
         })}>
@@ -608,29 +813,8 @@ export default function TSNoteCard({
             </span>
         </div>
         
-        <div className="grid">
-          {/* Summary View - always rendered, visibility toggled */}
-          <div
-            className={cn(
-              "transition-opacity duration-300 col-start-1 row-start-1",
-              isInlineEditing ? "opacity-0 pointer-events-none" : "opacity-100"
-            )}
-            aria-hidden={isInlineEditing}
-          >
-            {renderMemoEvolutionSummary()}
-          </div>
-
-          {/* Edit View - always rendered, visibility toggled */}
-          <div
-            className={cn(
-              "transition-opacity duration-300 col-start-1 row-start-1",
-              isInlineEditing ? "opacity-100" : "opacity-0 pointer-events-none"
-            )}
-            aria-hidden={!isInlineEditing}
-          >
-            {renderInlineMemoEvolutionEditUI()}
-          </div>
-        </div>
+        {/* 메모 진화 요약 - 독립적으로 표시 */}
+        {renderMemoEvolutionSummary()}
 
       </div>
       
