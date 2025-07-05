@@ -185,7 +185,7 @@ function NewMemoContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 py-1 px-1 text-gray-200 font-sans">
-      <div className="max-w-lg lg:max-w-2xl mx-auto">
+      <div className="max-w-lg lg:max-w-4xl mx-auto">
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-2 px-1">
           <Link 
@@ -291,7 +291,13 @@ function NewMemoContent() {
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
-                onClick={() => router.back()}
+                onClick={() => {
+                  if (selectedNotebook) {
+                    router.push(`/books/${selectedNotebook}`);
+                  } else {
+                    router.back();
+                  }
+                }}
                 className="flex-1 px-4 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors text-sm"
                 disabled={isSubmitting}
               >
