@@ -764,6 +764,14 @@ export default function TSNoteCard({
     try {
       const newThread = await inlineThreadApi.create(note._id, content);
       
+      // 서버 응답 검증: _id가 있는지 확인
+      if (!newThread || !newThread._id) {
+        console.error('인라인메모 쓰레드 생성 실패: 서버 응답에 _id가 없음:', newThread);
+        throw new Error('서버 응답이 올바르지 않음: _id 누락');
+      }
+      
+      console.log('인라인메모 쓰레드 생성 성공:', { tempId: tempThread._id, newId: newThread._id });
+      
       // 실제 서버 응답으로 임시 쓰레드를 대체
       setNote(prevNote => ({
         ...prevNote,
@@ -792,10 +800,24 @@ export default function TSNoteCard({
   };
 
   const handleSaveEditThread = async () => {
-    if (!editingThreadId || !editingThreadContent.trim()) return;
+    // ID 및 내용 검증
+    if (!editingThreadId || editingThreadId === 'undefined') {
+      console.error('인라인메모 쓰레드 수정 실패: 유효하지 않은 쓰레드 ID:', editingThreadId);
+      return;
+    }
+    
+    if (!editingThreadContent.trim()) {
+      console.error('인라인메모 쓰레드 수정 실패: 내용이 비어있음');
+      return;
+    }
     
     const content = editingThreadContent.trim();
     const originalThread = note.inlineThreads?.find(thread => thread._id === editingThreadId);
+    
+    if (!originalThread) {
+      console.error('인라인메모 쓰레드 수정 실패: 원본 쓰레드를 찾을 수 없음, ID:', editingThreadId);
+      return;
+    }
     
     // 즉시 로컬 상태 업데이트
     setNote(prevNote => ({
@@ -813,6 +835,12 @@ export default function TSNoteCard({
     // 백엔드 API 호출
     try {
       const updatedThread = await inlineThreadApi.update(note._id, editingThreadId, content);
+      
+      // 서버 응답 검증
+      if (!updatedThread || !updatedThread._id) {
+        console.error('인라인메모 쓰레드 수정 실패: 서버 응답에 _id가 없음:', updatedThread);
+        throw new Error('서버 응답이 올바르지 않음');
+      }
       
       // 실제 서버 응답으로 업데이트
       setNote(prevNote => ({
@@ -846,8 +874,19 @@ export default function TSNoteCard({
   };
 
   const handleDeleteThread = async (threadId: string) => {
+    // ID 검증: undefined 또는 빈 문자열 체크
+    if (!threadId || threadId === 'undefined') {
+      console.error('인라인메모 쓰레드 삭제 실패: 유효하지 않은 쓰레드 ID:', threadId);
+      return;
+    }
+
     // 삭제 전 백업 (복원용)
     const threadToDelete = note.inlineThreads?.find(thread => thread._id === threadId);
+    
+    if (!threadToDelete) {
+      console.error('인라인메모 쓰레드 삭제 실패: 쓰레드를 찾을 수 없음, ID:', threadId);
+      return;
+    }
     
     // 즉시 로컬 상태에서 제거
     setNote(prevNote => ({
