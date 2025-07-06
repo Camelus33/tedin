@@ -138,6 +138,8 @@ class PublicShareService {
                 noteCreatedAt: '$createdAt',
                 // 메모 진화 필드들의 시간 정보 (현재는 updatedAt으로 추정)
                 memoEvolutionTimestamp: '$updatedAt',
+                // inlineThreads 개수만 전달 (용량 절감)
+                inlineThreadsCount: { $size: { $ifNull: ['$inlineThreads', []] } },
                 // relatedLinks에 시간 정보 추가하면서 _id 필드 유지
                 relatedLinksWithTimestamp: {
                   $map: {
@@ -166,7 +168,8 @@ class PublicShareService {
               $project: { 
                 sessionDetailsArr: 0, 
                 bookArr: 0,
-                relatedLinksWithTimestamp: 0
+                relatedLinksWithTimestamp: 0,
+                inlineThreads: 0 // 대용량 배열 제거
               } 
             }
           ],
@@ -205,9 +208,13 @@ class PublicShareService {
     // --- 전체 태그 목록 생성 ---
     const allTags = [...new Set(orderedNotes.flatMap(note => note.tags || []))];
 
+    // --- 사용자 표시 이름 결정 (nickname 우선, 그 다음 name) ---
+    const displayName = result.user?.nickname || (result.user as any)?.name || '알 수 없는 사용자';
+
     const dataForBuilder = {
       ...summaryNote,
-      user: result.user || { name: '알 수 없는 사용자', email: ''},
+      // 이메일 등 개인 식별 정보는 포함하지 않고, 표시 이름만 전달
+      user: { name: displayName },
       notes: orderedNotes,
       readingPurpose: summaryNote.readingPurpose || 'general_knowledge',
       totalReadingTimeISO,
