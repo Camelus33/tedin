@@ -553,7 +553,7 @@ export default function EditSummaryNotePage() {
              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
                 Deep Dive
               </h2>
-            <div className="flex-1 min-h-0">
+            <div className="flex-grow h-full">
               <DynamicBlockNoteEditor
                 initialContent={userMarkdownContent}
                 onChange={(content) => setUserMarkdownContent(content)}

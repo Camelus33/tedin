@@ -38,8 +38,6 @@ export default function BlockNoteEditor({
   // BlockNote 에디터 인스턴스 생성
   const editor = useCreateBlockNote({
     defaultStyles: true,
-    // 줄바꿈과 텍스트 처리 개선을 위한 설정
-    initialContent: undefined,
   });
 
   // 초기 콘텐츠 로드
@@ -57,14 +55,14 @@ export default function BlockNoteEditor({
       }
     } catch (error) {
       // JSON이 아니라면 마크다운으로 처리
-      // 줄바꿈을 보존하면서 처리
-      const lines = initialContent.split('\n');
+      // 간단한 텍스트 처리로 시작
+      const lines = initialContent.split('\n').filter(line => line.trim() !== '');
       
       if (lines.length > 0) {
         // 기존 블록을 모두 제거하고 새로운 콘텐츠로 교체
         editor.removeBlocks(editor.document);
         
-        // 각 라인을 문단으로 추가 (빈 줄도 포함)
+        // 각 라인을 문단으로 추가
         lines.forEach((line, index) => {
           if (line.startsWith('# ')) {
             editor.insertBlocks(
@@ -91,7 +89,6 @@ export default function BlockNoteEditor({
               'after'
             );
           } else {
-            // 빈 줄도 문단으로 처리하여 줄바꿈 보존
             editor.insertBlocks(
               [{ type: 'paragraph', content: line }],
               editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
@@ -119,7 +116,7 @@ export default function BlockNoteEditor({
     }
   };
 
-  // 블록을 마크다운으로 변환하는 함수 (줄바꿈 보존)
+  // 블록을 마크다운으로 변환하는 함수
   const blocksToMarkdown = async (blocks: any[]): Promise<string> => {
     const lines: string[] = [];
     
@@ -134,7 +131,6 @@ export default function BlockNoteEditor({
             break;
           case 'paragraph':
             const paragraphText = getTextFromContent(block.content);
-            // 빈 문단도 줄바꿈으로 처리
             lines.push(paragraphText);
             break;
           case 'bulletListItem':
@@ -147,23 +143,22 @@ export default function BlockNoteEditor({
             break;
           default:
             const defaultText = getTextFromContent(block.content);
-            lines.push(defaultText);
+            if (defaultText) {
+              lines.push(defaultText);
+            }
         }
         
         // 자식 블록 처리 (중첩된 블록)
         if (block.children && block.children.length > 0) {
           const childMarkdown = await blocksToMarkdown(block.children);
-          if (childMarkdown.trim()) {
-            lines.push(childMarkdown);
-          }
+          lines.push(childMarkdown);
         }
       } catch (error) {
         console.error('Error processing block:', block, error);
       }
     }
     
-    // 줄바꿈을 정확하게 보존하여 반환
-    return lines.join('\n');
+    return lines.join('\n\n');
   };
 
   // 콘텐츠에서 텍스트 추출하는 헬퍼 함수
@@ -194,20 +189,18 @@ export default function BlockNoteEditor({
       color: 'rgb(209, 213, 219)', // gray-300
       borderRadius: '0.5rem',
       border: '1px solid rgb(75, 85, 99)', // gray-600
+      minHeight: '400px',
       padding: '1rem',
-      height: '100%',
-      overflow: 'hidden',
     }
   }), []);
 
   return (
-    <div className={`${styles.blocknoteEditor} ${className}`}>
+    <div className={`${styles.blocknoteEditor} ${className} ${cyberTheme.bgSecondary} rounded-lg border ${cyberTheme.inputBorder}`}>
       <BlockNoteView 
         editor={editor} 
         editable={editable}
+        theme="dark" // 다크모드 기본 설정
         onChange={handleChange}
-        theme="dark"
-        style={customStyles.editor}
       />
     </div>
   );
