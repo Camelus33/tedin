@@ -549,45 +549,17 @@ export default function EditSummaryNotePage() {
           <PanelResizeHandle className="w-2 md:w-3 bg-gray-700 hover:bg-cyan-600 active:bg-cyan-500 transition-colors duration-200 cursor-col-resize mx-1 rounded-full" />
 
           {/* Right Panel: Markdown Editor */}
-          <Panel defaultSize={50} minSize={30}>
-            <div className="flex flex-col h-full bg-gray-900 rounded-r-lg">
-              {isEditing ? (
-                <>
-                  <div className="p-4 border-b border-gray-700">
-                    <h2 className={`text-2xl font-semibold mb-2 ${cyberTheme.secondary}`}>Deep Dive</h2>
-                    <Input
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="요약 노트 제목"
-                      className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} text-lg font-bold`}
-                    />
-                    <Textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="요약 노트에 대한 간단한 설명"
-                      className={`mt-2 ${cyberTheme.inputBg} ${cyberTheme.inputBorder} text-sm`}
-                      rows={2}
-                    />
-                  </div>
-                  <div className="flex-grow min-h-0">
-                    <DynamicBlockNoteEditor
-                      initialContent={userMarkdownContent}
-                      onChange={setUserMarkdownContent}
-                      editable={true}
-                    />
-                  </div>
-                </>
-              ) : (
-                <div className="p-6">
-                  <h2 className={`text-2xl font-bold ${cyberTheme.primary}`}>{summaryNote?.title}</h2>
-                  <p className={`mt-2 ${cyberTheme.textMuted}`}>{summaryNote?.description}</p>
-                  <div className="mt-4 prose prose-invert max-w-none">
-                    <pre className="whitespace-pre-wrap bg-gray-800 p-4 rounded-md font-sans text-sm">
-                      <code>{summaryNote?.userMarkdownContent || '내용이 없습니다.'}</code>
-                    </pre>
-                  </div>
-                </div>
-              )}
+          <Panel defaultSize={50} minSize={25} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
+             <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
+                Deep Dive
+              </h2>
+            <div className="flex-grow h-full">
+              <DynamicBlockNoteEditor
+                initialContent={userMarkdownContent}
+                onChange={(content) => setUserMarkdownContent(content)}
+                editable={isEditing}
+                className="h-full"
+              />
             </div>
           </Panel>
         </PanelGroup>
