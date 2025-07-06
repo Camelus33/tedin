@@ -75,7 +75,14 @@ export default function DashboardPage() {
 
       // 최근 메모 가져오기 (notes API 사용)
       const memosResponse = await apiClient.get('/notes?limit=3&sort=createdAt:desc');
-      setRecentMemos(memosResponse?.data || []);
+      const rawNotes = memosResponse?.data || [];
+      // 서버는 title 필드를 사용하므로, TSNoteCard에서 필요로 하는 content 필드로 매핑
+      const mappedNotes = rawNotes.map((n: any) => ({
+        ...n,
+        content: n.content || n.title || '',
+        tags: n.tags || [],
+      }));
+      setRecentMemos(mappedNotes);
 
       // 메모 개수 가져오기 (notes API 사용)
       const notesResponse = await apiClient.get('/notes');
