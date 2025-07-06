@@ -171,7 +171,7 @@ export default function DashboardPage() {
   const handleMemoCardClick = (memo: any) => {
     if (memo.bookId) {
       router.push(`/books/${memo.bookId}`);
-    } else {
+      } else {
       console.warn('메모에 bookId가 없습니다:', memo);
     }
   };
@@ -222,7 +222,7 @@ export default function DashboardPage() {
                 <AppLogo />
                 <span className="text-xl font-bold text-white">Habitus33</span>
               </Link>
-            </div>
+              </div>
 
             {/* 우측: 설정 버튼과 사용자 프로필 */}
             <div className="flex items-center space-x-4">
@@ -263,8 +263,8 @@ export default function DashboardPage() {
                       className="block px-4 py-2 text-sm text-cyan-300 hover:bg-indigo-800/50 hover:text-cyan-100"
                       onClick={() => setProfileMenuOpen(false)}
                     >
-                      프로필 설정
-                    </Link>
+                        프로필 설정
+                      </Link>
                     <button
                       onClick={() => {
                         setProfileMenuOpen(false);
@@ -272,9 +272,9 @@ export default function DashboardPage() {
                       }}
                       className="block w-full text-left px-4 py-2 text-sm text-cyan-300 hover:bg-indigo-800/50 hover:text-cyan-100"
                     >
-                      로그아웃
-                    </button>
-                  </div>
+                        로그아웃
+                      </button>
+                    </div>
                 )}
               </div>
             </div>
@@ -326,7 +326,7 @@ export default function DashboardPage() {
                 >
                   <FiGrid className="w-4 h-4" />
                 </button>
-                <button
+                  <button
                   onClick={() => setViewMode('list')}
                                       className={`p-2 rounded-md transition-colors ${
                       viewMode === 'list'
@@ -335,8 +335,8 @@ export default function DashboardPage() {
                     }`}
                 >
                   <FiList className="w-4 h-4" />
-                </button>
-              </div>
+                  </button>
+                </div>
 
               {/* 정렬 드롭다운 */}
               <div className="relative" ref={sortMenuRef}>
@@ -358,8 +358,8 @@ export default function DashboardPage() {
                       className="block w-full text-left px-4 py-2 text-sm text-cyan-300 hover:bg-indigo-800/50 hover:text-cyan-100"
                     >
                       최신 항목
-                    </button>
-                    <button
+                      </button>
+                    <button 
                       onClick={() => {
                         setSortBy('oldest');
                         setSortMenuOpen(false);
@@ -381,8 +381,8 @@ export default function DashboardPage() {
                 <span>→</span>
               </Link>
             </div>
-          </div>
-
+                </div>
+                
           {/* 메모 카드들 - TSNoteCard 사용 */}
           {(() => {
             console.log('🔍 [RENDER] Checking recentMemos condition:', recentMemos.length > 0);
@@ -478,7 +478,7 @@ export default function DashboardPage() {
                   <div className="text-center py-12 text-gray-400">
                     <p>아직 메모가 없습니다.</p>
                     <p className="text-sm mt-2">첫 번째 메모를 작성해보세요!</p>
-                  </div>
+            </div>
                 );
               })()
             );
@@ -507,9 +507,9 @@ export default function DashboardPage() {
                         <div className="flex-shrink-0 mb-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
                             <FiFileText className="w-5 h-5 text-white" />
-                          </div>
-                        </div>
-                        
+        </div>
+      </div>
+
                         {/* 카드 중간: 제목과 내용 */}
                         <div className="flex-1 flex flex-col min-h-0">
                           <h3 className="font-medium text-white mb-2 line-clamp-2 text-sm">
@@ -524,12 +524,12 @@ export default function DashboardPage() {
                         <div className="flex-shrink-0 space-y-1">
                           <div className="text-xs text-cyan-400">
                             연결된 메모: {note.orderedNoteIds?.length || 0}개
-                          </div>
+                  </div>
                           <div className="text-xs text-gray-500">
                             {formatDate(note.updatedAt)}
-                          </div>
-                        </div>
-                      </div>
+                </div>
+                </div>
+              </div>
                     );
                   })}
                 </div>
@@ -539,13 +539,13 @@ export default function DashboardPage() {
                   return (
                     <div className="text-center py-12 text-gray-400">
                       <p>아직 단권화 노트가 없습니다.</p>
-                    </div>
+                  </div>
                   );
                 })()
               );
             })()}
           </div>
-
+          
           {/* Zengo & Zengo Myverse 섹션 */}
           <div>
             <h2 className="text-xl font-medium text-white mb-6">두뇌 훈련</h2>
@@ -570,7 +570,7 @@ export default function DashboardPage() {
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
                       <FiBook className="w-5 h-5 text-white" />
-                    </div>
+                  </div>
                     <h3 className="text-lg font-medium text-white">Zengo Myverse</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
@@ -579,8 +579,8 @@ export default function DashboardPage() {
                   <div className="text-cyan-400 font-medium">체험하기 →</div>
                 </div>
               </Link>
+              </div>
             </div>
-          </div>
 
           {/* 인지 분석 섹션 */}
           <div>
@@ -588,12 +588,12 @@ export default function DashboardPage() {
             <Link href="/analytics" className="group">
               <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
                 <div className="flex items-center justify-between">
-                  <div>
+                <div>
                     <h3 className="text-lg font-medium text-white mb-2">인지 프로필 분석</h3>
                     <p className="text-gray-300">
                       학습 패턴과 인지 능력을 분석하여 개인화된 인사이트를 확인하세요.
-                    </p>
-                  </div>
+                  </p>
+                </div>
                   <div className="text-indigo-400 font-medium">분석 보기 →</div>
                 </div>
               </div>

@@ -177,46 +177,50 @@ function NewMemoContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center px-1">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900 flex items-center justify-center px-4">
         <div className="text-cyan-400 text-sm">노트북을 불러오는 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 py-1 px-1 text-gray-200 font-sans">
-      <div className="max-w-lg lg:max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900 py-4 px-4 text-gray-200 font-sans flex items-center justify-center">
+      <div className="w-full max-w-md mx-auto">
         {/* 헤더 */}
-        <div className="flex items-center justify-between mb-2 px-1">
+        <div className="flex items-center justify-between mb-4">
           <Link 
             href="/dashboard" 
-            className="flex items-center text-cyan-400 hover:text-cyan-300 transition-colors text-xs"
+            className="flex items-center text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
           >
-            <ArrowLeftIcon className="w-3 h-3 mr-1" />
+            <ArrowLeftIcon className="w-4 h-4 mr-2" />
             대시보드로 돌아가기
           </Link>
         </div>
 
-        {/* 메인 카드 */}
-        <div className="bg-gray-800/80 backdrop-blur-md rounded-lg shadow-cyan-500/10 border border-cyan-500/40 p-2">
-          <h1 className="text-lg font-bold text-cyan-300 mb-2 font-orbitron tracking-wide">
+        {/* 메인 카드 - 포스트잇 스타일 */}
+        <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 border border-yellow-300/50 shadow-lg shadow-yellow-600/30 transform rotate-1 hover:rotate-0 transition-all duration-300 relative p-6 !rounded-none">
+          {/* 포스트잇 접힌 모서리 효과 */}
+          <div className="absolute top-0 right-0 w-3 h-3 bg-gradient-to-bl from-black/15 to-transparent transform rotate-45 translate-x-1 -translate-y-1"></div>
+          
+          <h1 className="text-xl font-bold text-gray-800 mb-4 font-orbitron tracking-wide text-center">
             Atomic Memo
           </h1>
           
           {error && (
-            <div className="bg-red-900/30 border border-red-500/50 text-red-300 p-2 rounded-lg mb-2 text-xs">
+            <div className="bg-red-100 border border-red-300 text-red-700 p-3 rounded mb-3 text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-2">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* 1. 노트북 선택 */}
             <div>
+              <label className="block text-gray-700 text-sm font-medium mb-2">노트북 선택</label>
               <div className="flex gap-2">
                 <select
                   value={selectedNotebook}
                   onChange={(e) => setSelectedNotebook(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-1 focus:ring-cyan-400/60 focus:border-cyan-400 text-gray-100 font-mono transition-all text-sm"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 text-sm"
                   required
                 >
                   <option value="">노트북을 선택하세요</option>
@@ -229,7 +233,7 @@ function NewMemoContent() {
                 <button
                   type="button"
                   onClick={handleNewNotebook}
-                  className="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center text-sm font-medium min-w-[44px]"
+                  className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded transition-colors flex items-center justify-center text-sm font-medium min-w-[40px]"
                   title="새 노트북 만들기"
                 >
                   <PlusIcon className="w-4 h-4" />
@@ -239,20 +243,24 @@ function NewMemoContent() {
 
             {/* 2. 메모 타입 선택 */}
             <div>
+              <label className="block text-gray-700 text-sm font-medium mb-2">메모 유형</label>
               <div className="grid grid-cols-3 gap-2">
                 {(['thought', 'quote', 'question'] as MemoType[]).map((type) => (
                   <button
                     key={type}
                     type="button"
                     onClick={() => setMemoType(type)}
-                    className={`px-3 py-2.5 rounded-lg border transition-all text-sm font-medium flex items-center justify-center ${
+                    className={`px-3 py-2 border transition-all text-sm font-medium flex items-center justify-center gap-1 ${
                       memoType === type
-                        ? 'bg-cyan-600/30 border-cyan-400 text-cyan-300'
-                        : 'bg-gray-700/40 border-gray-600 text-gray-300 hover:bg-gray-700/60 hover:border-gray-500'
+                        ? 'bg-indigo-100 border-indigo-400 text-indigo-700'
+                        : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400'
                     }`}
                     title={type === 'thought' ? '생각' : type === 'quote' ? '인용' : '질문'}
                   >
                     {getMemoTypeIcon(type)}
+                    <span className="text-xs">
+                      {type === 'thought' ? '생각' : type === 'quote' ? '인용' : '질문'}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -260,35 +268,37 @@ function NewMemoContent() {
 
             {/* 3. 메모 입력 */}
             <div>
+              <label className="block text-gray-700 text-sm font-medium mb-2">메모 내용</label>
               <textarea
                 value={memoContent}
                 onChange={(e) => setMemoContent(e.target.value)}
                 placeholder={getMemoTypePlaceholder(memoType)}
-                rows={4}
-                className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-1 focus:ring-cyan-400/60 focus:border-cyan-400 text-gray-100 font-mono transition-all resize-none text-sm lg:h-32"
+                rows={6}
+                className="w-full px-3 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 resize-none text-sm"
                 required
               />
-              <div className="text-xs text-gray-400 mt-1 text-right">
+              <div className="text-xs text-gray-500 mt-1 text-right">
                 {memoContent.length}/200자
               </div>
             </div>
 
             {/* 4. 태그 입력 */}
             <div>
+              <label className="block text-gray-700 text-sm font-medium mb-2">태그</label>
               <input
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                placeholder="태그1, 태그2, 태그3 (쉼표로 구분)"
-                className="w-full px-3 py-2 border border-cyan-500/40 rounded-lg bg-gray-700/60 focus:ring-1 focus:ring-cyan-400/60 focus:border-cyan-400 text-gray-100 font-mono transition-all text-sm"
+                placeholder="태그1, 태그2, 태그3"
+                className="w-full px-3 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 text-sm"
               />
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="text-xs text-gray-500 mt-1">
                 쉼표(,)로 태그를 구분해주세요
               </div>
             </div>
 
             {/* 제출 버튼 */}
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => {
@@ -298,17 +308,19 @@ function NewMemoContent() {
                     router.back();
                   }
                 }}
-                className="flex-1 px-4 py-2.5 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors text-sm"
+                className="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded transition-colors text-sm flex items-center justify-center gap-2"
                 disabled={isSubmitting}
               >
                 <XMarkIcon className="w-4 h-4" />
+                취소
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || !selectedNotebook || !memoContent.trim()}
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-400 hover:from-cyan-400 hover:to-purple-400 text-white font-bold rounded-lg shadow-cyan-500/20 hover:shadow-cyan-400/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
               >
                 <CheckIcon className="w-4 h-4" />
+                {isSubmitting ? '저장 중...' : '저장'}
               </button>
             </div>
           </form>
@@ -322,7 +334,7 @@ function NewMemoContent() {
 export default function NewMemoPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center px-1">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900 flex items-center justify-center px-4">
         <div className="text-cyan-400 text-sm">로딩 중...</div>
       </div>
     }>
