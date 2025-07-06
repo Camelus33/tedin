@@ -5,6 +5,7 @@ import AIAccessibleData from '@/components/share/AIAccessibleData';
 import SharePageClient from './SharePageClient';
 import ExpandableText from '@/components/common/ExpandableText';
 import ClientTimeDisplay, { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
+import InlineThreadsViewer from '@/components/share/InlineThreadsViewer';
 
 // interface SharePageProps {
 //   params: { shareId: string };
@@ -239,6 +240,11 @@ export default async function SharePage({ params }: { params: { shareId: string 
                         ))}
                       </ul>
                     </section>
+                  )}
+
+                  {/* 인라인 댓글 표시 */}
+                  {typeof note.inlineThreadsCount === 'number' && note.inlineThreadsCount > 0 && (
+                    <InlineThreadsViewer shareId={params.shareId} noteId={note._id} count={note.inlineThreadsCount} />
                   )}
                 </div>
               </article>
