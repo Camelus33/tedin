@@ -28,6 +28,16 @@ export const createSummaryNote = async (req: Request, res: Response) => {
       return res.status(400).json({ message: '메모가 아직 선택되지 않았어요. 메모를 선택해 볼까요?' });
     }
 
+    // ID 유효성 검사: 임시 ID나 비정상적인 ID가 포함되어 있는지 확인합니다.
+    for (const id of orderedNoteIds) {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        console.warn(`[Data Integrity Warning] User ${userId} attempted to create a SummaryNote with an invalid ObjectId: ${id}`);
+        return res.status(400).json({ 
+          message: '아직 처리 중인 메모가 포함되어 있어요. 1~2초 후에 다시 시도해 주세요.' 
+        });
+      }
+    }
+
     const uniqueBookIds = bookIds && Array.isArray(bookIds) ? [...new Set(bookIds.map(String))] : [];
 
     const newSummaryNote = new SummaryNote({
