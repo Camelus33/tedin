@@ -388,9 +388,46 @@ export default function DashboardPage() {
             console.log('🔍 [RENDER] Checking recentMemos condition:', recentMemos.length > 0);
             console.log('🔍 [RENDER] recentMemos.length:', recentMemos.length);
             return recentMemos.length > 0 ? (
-              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
+              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2' : 'space-y-4 p-2'}>
                 {recentMemos.map((memo, index) => {
                   console.log(`🔍 [RENDER] Rendering memo ${index}:`, memo);
+                  
+                  // 포스트잇 색상 배열 (인덱스에 따라 다른 색상 적용)
+                  const postItColors = [
+                    {
+                      bg: 'from-yellow-100 to-yellow-200',
+                      border: 'border-yellow-300/50',
+                      shadow: 'shadow-yellow-600/20 hover:shadow-yellow-600/30',
+                      rotation: 'rotate-1'
+                    },
+                    {
+                      bg: 'from-pink-100 to-pink-200',
+                      border: 'border-pink-300/50',
+                      shadow: 'shadow-pink-600/20 hover:shadow-pink-600/30',
+                      rotation: '-rotate-1'
+                    },
+                    {
+                      bg: 'from-blue-100 to-blue-200',
+                      border: 'border-blue-300/50',
+                      shadow: 'shadow-blue-600/20 hover:shadow-blue-600/30',
+                      rotation: 'rotate-2'
+                    },
+                    {
+                      bg: 'from-green-100 to-green-200',
+                      border: 'border-green-300/50',
+                      shadow: 'shadow-green-600/20 hover:shadow-green-600/30',
+                      rotation: '-rotate-2'
+                    },
+                    {
+                      bg: 'from-purple-100 to-purple-200',
+                      border: 'border-purple-300/50',
+                      shadow: 'shadow-purple-600/20 hover:shadow-purple-600/30',
+                      rotation: 'rotate-1'
+                    }
+                  ];
+                  
+                  const colorScheme = postItColors[index % postItColors.length];
+                  
                   return (
                     <div 
                       key={memo._id} 
@@ -401,7 +438,22 @@ export default function DashboardPage() {
                         note={memo}
                         showActions={true}
                         minimalDisplay={true}
-                        className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:border-indigo-400/50 hover:bg-gray-800/60 !pb-3"
+                        className={`
+                          bg-gradient-to-br ${colorScheme.bg}
+                          ${colorScheme.border}
+                          shadow-md ${colorScheme.shadow}
+                          transform ${colorScheme.rotation} hover:rotate-0
+                          hover:shadow-xl
+                          hover:scale-105
+                          transition-all duration-300 ease-out
+                          relative
+                          before:absolute before:top-0 before:left-0 before:w-full before:h-full
+                          before:bg-gradient-to-br before:from-transparent before:to-black/5
+                          before:rounded-lg before:pointer-events-none
+                          text-gray-800
+                          !pb-3
+                          backdrop-blur-none
+                        `}
                       />
                     </div>
                   );
