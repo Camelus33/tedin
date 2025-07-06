@@ -447,17 +447,24 @@ export default function DashboardPage() {
                           hover:scale-105
                           transition-all duration-300 ease-out
                           relative
-                          before:absolute before:top-0 before:left-0 before:w-full before:h-full
-                          before:bg-gradient-to-br before:from-transparent before:to-black/5
-                          before:rounded-lg before:pointer-events-none
+                          !rounded-none
                           !pb-3
                           backdrop-blur-none
+                          before:absolute before:top-0 before:left-0 before:w-full before:h-full
+                          before:bg-gradient-to-br before:from-transparent before:to-black/5
+                          before:pointer-events-none
+                          after:absolute after:top-0 after:right-0 after:w-3 after:h-3
+                          after:bg-gradient-to-bl after:from-black/15 after:to-transparent
+                          after:pointer-events-none after:transform after:rotate-45 after:translate-x-1 after:-translate-y-1
+                          [&>div]:!rounded-none
                           [&_p]:!text-gray-800 [&_p]:!font-semibold
                           [&_.text-gray-300]:!text-gray-700
                           [&_.text-white]:!text-gray-800
                           [&_.text-gray-400]:!text-gray-600
                           [&_.text-cyan-400]:!text-indigo-700
                           [&_span]:!text-gray-700
+                          border-t-4 border-t-black/10
+                          shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.6)]
                         `}
                       />
                     </div>
