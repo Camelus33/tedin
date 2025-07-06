@@ -72,7 +72,7 @@ export default function DashboardPage() {
       // 사용자 정보 가져오기
       console.log('🔍 [DEBUG] 0. Starting to fetch user info...');
       try {
-        const userResponse = await apiClient.get('/auth/me');
+        const userResponse = await apiClient.get('/users/profile');
         const userData = Array.isArray(userResponse) ? userResponse[0] : (userResponse?.data || userResponse);
         console.log('🔍 [DEBUG] 0.5. User data:', userData);
         setUser(userData);
@@ -189,6 +189,9 @@ export default function DashboardPage() {
   };
 
   // 렌더링 전 상태 확인
+  console.log('🔍 [RENDER] Current user state:', user);
+  console.log('🔍 [RENDER] Current user nickname:', user?.nickname);
+  console.log('🔍 [RENDER] Redux user state:', reduxUser);
   console.log('🔍 [RENDER] Current recentMemos state:', recentMemos);
   console.log('🔍 [RENDER] Current summaryNotes state:', summaryNotes);
   console.log('🔍 [RENDER] Is recentMemos array?', Array.isArray(recentMemos));
