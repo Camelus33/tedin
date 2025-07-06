@@ -10,4 +10,11 @@ const router = Router();
  */
 router.get('/:shareId', PublicShareController.getPublicShareData);
 
+/**
+ * @route GET /api/public-shares/:shareId/notes/:noteId/inline-threads
+ * @description Fetches inline threads for a specific note in a public share.
+ * @access Public
+ */
+router.get('/:shareId/notes/:noteId/inline-threads', PublicShareController.getInlineThreads);
+
 export default router; 
