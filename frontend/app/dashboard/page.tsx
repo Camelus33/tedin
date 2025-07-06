@@ -67,40 +67,57 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/auth/login');
-        return;
-      }
-
+      
       // 최근 메모 가져오기 (notes API 사용)
+      console.log('🔍 [DEBUG] 1. Starting to fetch recent memos...');
       const memosResponse = await apiClient.get('/notes?limit=3&sort=createdAt:desc');
+      console.log('🔍 [DEBUG] 2. Raw memos API response:', memosResponse);
+      console.log('🔍 [DEBUG] 3. Raw memos data:', memosResponse?.data);
+      console.log('🔍 [DEBUG] 4. Is memos data an array?', Array.isArray(memosResponse?.data));
+      console.log('🔍 [DEBUG] 5. Memos data length:', memosResponse?.data?.length);
+      
       const rawNotes = memosResponse?.data || [];
+      console.log('🔍 [DEBUG] 6. Raw notes after fallback:', rawNotes);
+      
       // 서버는 title 필드를 사용하므로, TSNoteCard에서 필요로 하는 content 필드로 매핑
-      const mappedNotes = rawNotes.map((n: any) => ({
-        ...n,
-        content: n.content || n.title || '',
-        tags: n.tags || [],
-      }));
+      const mappedNotes = rawNotes.map((n: any) => {
+        console.log('🔍 [DEBUG] 7. Mapping individual note:', n);
+        const mapped = {
+          ...n,
+          content: n.content || n.title || '',
+          tags: n.tags || [],
+        };
+        console.log('🔍 [DEBUG] 8. Mapped note result:', mapped);
+        return mapped;
+      });
+      console.log('🔍 [DEBUG] 9. Final mapped notes:', mappedNotes);
       setRecentMemos(mappedNotes);
-
-      // 메모 개수 가져오기 (notes API 사용)
-      const notesResponse = await apiClient.get('/notes');
-      setMemoCount(notesResponse?.data?.length || 0);
+      console.log('🔍 [DEBUG] 10. Set recentMemos state to:', mappedNotes);
 
       // 단권화 노트 가져오기 (최신 3개만 표시)
+      console.log('🔍 [DEBUG] 11. Starting to fetch summary notes...');
       const summaryNotesResponse = await apiClient.get('/summary-notes');
+      console.log('🔍 [DEBUG] 12. Raw summary notes API response:', summaryNotesResponse);
+      console.log('🔍 [DEBUG] 13. Raw summary notes data:', summaryNotesResponse?.data);
+      console.log('🔍 [DEBUG] 14. Is summary notes data an array?', Array.isArray(summaryNotesResponse?.data));
+      console.log('🔍 [DEBUG] 15. Summary notes data length:', summaryNotesResponse?.data?.length);
+      
       const allSummaryNotes = summaryNotesResponse?.data || [];
+      console.log('🔍 [DEBUG] 16. All summary notes after fallback:', allSummaryNotes);
+      
       // 클라이언트 사이드에서 최신 3개만 선택
       const recentSummaryNotes = allSummaryNotes
         .sort((a: SummaryNote, b: SummaryNote) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
         .slice(0, 3);
+      console.log('🔍 [DEBUG] 17. Recent 3 summary notes:', recentSummaryNotes);
       setSummaryNotes(recentSummaryNotes);
+      console.log('🔍 [DEBUG] 18. Set summaryNotes state to:', recentSummaryNotes);
 
     } catch (error) {
-      console.error('대시보드 데이터 로딩 실패:', error);
+      console.error('🔍 [DEBUG] ERROR in fetchDashboardData:', error);
     } finally {
       setIsLoading(false);
+      console.log('🔍 [DEBUG] 19. Finished loading, isLoading set to false');
     }
   };
 
@@ -128,6 +145,14 @@ export default function DashboardPage() {
     if (diffDays < 7) return `${diffDays}일 전`;
     return date.toLocaleDateString('ko-KR');
   };
+
+  // 렌더링 전 상태 확인
+  console.log('🔍 [RENDER] Current recentMemos state:', recentMemos);
+  console.log('🔍 [RENDER] Current summaryNotes state:', summaryNotes);
+  console.log('🔍 [RENDER] Is recentMemos array?', Array.isArray(recentMemos));
+  console.log('🔍 [RENDER] Is summaryNotes array?', Array.isArray(summaryNotes));
+  console.log('🔍 [RENDER] recentMemos length:', recentMemos?.length);
+  console.log('🔍 [RENDER] summaryNotes length:', summaryNotes?.length);
 
   if (isLoading) {
     return (
@@ -314,25 +339,37 @@ export default function DashboardPage() {
           </div>
 
           {/* 메모 카드들 - TSNoteCard 사용 */}
-          {recentMemos.length > 0 ? (
-            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
-              {recentMemos.map((memo) => (
-                <div key={memo._id} className={viewMode === 'list' ? 'w-full' : ''}>
-                  <TSNoteCard
-                    note={memo}
-                    showActions={true}
-                    minimalDisplay={true}
-                    className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:border-indigo-400/50 hover:bg-gray-800/60"
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-gray-400">
-              <p>아직 메모가 없습니다.</p>
-              <p className="text-sm mt-2">첫 번째 메모를 작성해보세요!</p>
-            </div>
-          )}
+          {(() => {
+            console.log('🔍 [RENDER] Checking recentMemos condition:', recentMemos.length > 0);
+            console.log('🔍 [RENDER] recentMemos.length:', recentMemos.length);
+            return recentMemos.length > 0 ? (
+              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
+                {recentMemos.map((memo, index) => {
+                  console.log(`🔍 [RENDER] Rendering memo ${index}:`, memo);
+                  return (
+                    <div key={memo._id} className={viewMode === 'list' ? 'w-full' : ''}>
+                      <TSNoteCard
+                        note={memo}
+                        showActions={true}
+                        minimalDisplay={true}
+                        className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:border-indigo-400/50 hover:bg-gray-800/60"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              (() => {
+                console.log('🔍 [RENDER] Showing "no memos" message');
+                return (
+                  <div className="text-center py-12 text-gray-400">
+                    <p>아직 메모가 없습니다.</p>
+                    <p className="text-sm mt-2">첫 번째 메모를 작성해보세요!</p>
+                  </div>
+                );
+              })()
+            );
+          })()}
         </div>
 
         {/* 스크롤 영역 */}
@@ -340,48 +377,60 @@ export default function DashboardPage() {
           {/* 최근 단권화 노트 섹션 */}
           <div>
             <h2 className="text-xl font-medium text-white mb-6">최근 단권화 노트</h2>
-            {summaryNotes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {summaryNotes.map((note) => (
-                  <div
-                    key={note._id}
-                    className="aspect-square bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-4 hover:shadow-lg hover:shadow-indigo-500/20 transition-all cursor-pointer hover:border-indigo-400/50 hover:bg-gray-800/60 flex flex-col"
-                    onClick={() => router.push(`/summary-notes/${note._id}/edit`)}
-                  >
-                    {/* 카드 상단: 아이콘 */}
-                    <div className="flex-shrink-0 mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                        <FiFileText className="w-5 h-5 text-white" />
+            {(() => {
+              console.log('🔍 [RENDER] Checking summaryNotes condition:', summaryNotes.length > 0);
+              console.log('🔍 [RENDER] summaryNotes.length:', summaryNotes.length);
+              return summaryNotes.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {summaryNotes.map((note, index) => {
+                    console.log(`🔍 [RENDER] Rendering summary note ${index}:`, note);
+                    return (
+                      <div
+                        key={note._id}
+                        className="aspect-square bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-4 hover:shadow-lg hover:shadow-indigo-500/20 transition-all cursor-pointer hover:border-indigo-400/50 hover:bg-gray-800/60 flex flex-col"
+                        onClick={() => router.push(`/summary-notes/${note._id}/edit`)}
+                      >
+                        {/* 카드 상단: 아이콘 */}
+                        <div className="flex-shrink-0 mb-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <FiFileText className="w-5 h-5 text-white" />
+                          </div>
+                        </div>
+                        
+                        {/* 카드 중간: 제목과 내용 */}
+                        <div className="flex-1 flex flex-col min-h-0">
+                          <h3 className="font-medium text-white mb-2 line-clamp-2 text-sm">
+                            {note.title || '제목 없음'}
+                          </h3>
+                          <p className="text-xs text-gray-300 line-clamp-3 mb-3 flex-1">
+                            {note.description || '설명 없음'}
+                          </p>
+                        </div>
+                        
+                        {/* 카드 하단: 메타 정보 */}
+                        <div className="flex-shrink-0 space-y-1">
+                          <div className="text-xs text-cyan-400">
+                            연결된 메모: {note.orderedNoteIds?.length || 0}개
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {formatDate(note.updatedAt)}
+                          </div>
+                        </div>
                       </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                (() => {
+                  console.log('🔍 [RENDER] Showing "no summary notes" message');
+                  return (
+                    <div className="text-center py-12 text-gray-400">
+                      <p>아직 단권화 노트가 없습니다.</p>
                     </div>
-                    
-                    {/* 카드 중간: 제목과 내용 */}
-                    <div className="flex-1 flex flex-col min-h-0">
-                      <h3 className="font-medium text-white mb-2 line-clamp-2 text-sm">
-                        {note.title || '제목 없음'}
-                      </h3>
-                      <p className="text-xs text-gray-300 line-clamp-3 mb-3 flex-1">
-                        {note.description || '설명 없음'}
-                      </p>
-                    </div>
-                    
-                    {/* 카드 하단: 메타 정보 */}
-                    <div className="flex-shrink-0 space-y-1">
-                      <div className="text-xs text-cyan-400">
-                        연결된 메모: {note.orderedNoteIds?.length || 0}개
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {formatDate(note.updatedAt)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 text-gray-400">
-                <p>아직 단권화 노트가 없습니다.</p>
-              </div>
-            )}
+                  );
+                })()
+              );
+            })()}
           </div>
 
           {/* Zengo & Zengo Myverse 섹션 */}
