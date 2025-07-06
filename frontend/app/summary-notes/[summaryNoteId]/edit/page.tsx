@@ -379,7 +379,7 @@ export default function EditSummaryNotePage() {
     : null;
 
   return (
-    <div className={`min-h-screen ${cyberTheme.bgPrimary} ${cyberTheme.textLight} p-4 md:p-8`}>
+    <div className={`min-h-screen ${cyberTheme.bgPrimary} ${cyberTheme.textLight} px-4 md:px-6 lg:px-8`}>
       <AiLinkModal
         isOpen={isAiLinkModalOpen}
         onOpenChange={setIsAiLinkModalOpen}
@@ -410,7 +410,7 @@ export default function EditSummaryNotePage() {
         </div>
         
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-y-4 md:gap-y-5">
           <div className='flex-grow'>
             {isEditing ? (
               <Input
@@ -467,7 +467,7 @@ export default function EditSummaryNotePage() {
         </div>
         
         {/* Description Section */}
-        <div className={isEditing ? `mb-8 p-6 rounded-lg shadow-xl border border-gray-700/50 bg-gray-800/70` : `mb-8 py-2`}>
+        <div className={isEditing ? `mb-6 md:mb-8 p-4 md:p-5 lg:p-6 rounded-lg shadow-xl border border-gray-700/50 bg-gray-800/70` : `mb-6 md:mb-8 py-2`}>
           {isEditing ? (
             <Textarea 
               value={description} 
@@ -545,8 +545,8 @@ export default function EditSummaryNotePage() {
             </div>
           </Panel>
           
-          {/* Resize Handle */}
-          <PanelResizeHandle className="w-2 md:w-3 bg-gray-700 hover:bg-cyan-600 active:bg-cyan-500 transition-colors duration-200 cursor-col-resize mx-1 rounded-full" />
+          {/* Resize Handle (thin divider, hidden on small screens) */}
+          <PanelResizeHandle className="hidden sm:block w-px bg-slate-600/40 hover:bg-cyan-600 active:bg-cyan-500 transition-colors duration-200 cursor-col-resize mx-1" />
 
           {/* Right Panel: Markdown Editor */}
           <Panel defaultSize={50} minSize={25} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
