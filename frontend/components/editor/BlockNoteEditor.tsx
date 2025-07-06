@@ -1,0 +1,266 @@
+'use client';
+
+import React, { useMemo, useEffect } from 'react';
+import { useCreateBlockNote } from '@blocknote/react';
+import { BlockNoteView } from '@blocknote/mantine';
+import '@blocknote/core/fonts/inter.css';
+import '@blocknote/mantine/style.css';
+
+interface BlockNoteEditorProps {
+  initialContent?: string;
+  onChange?: (content: string) => void;
+  editable?: boolean;
+  className?: string;
+}
+
+// cyberTheme 정의 (기존 파일과 동일)
+const cyberTheme = {
+  primary: 'text-cyan-400',
+  secondary: 'text-purple-400',
+  bgPrimary: 'bg-gray-900',
+  bgSecondary: 'bg-gray-800',
+  cardBg: 'bg-gray-800/60',
+  borderPrimary: 'border-cyan-500',
+  borderSecondary: 'border-purple-500',
+  textMuted: 'text-gray-400',
+  textLight: 'text-gray-300',
+  inputBg: 'bg-gray-700/50',
+  inputBorder: 'border-gray-600',
+};
+
+export default function BlockNoteEditor({ 
+  initialContent = '', 
+  onChange, 
+  editable = true,
+  className = ''
+}: BlockNoteEditorProps) {
+  // BlockNote 에디터 인스턴스 생성
+  const editor = useCreateBlockNote({
+    defaultStyles: true,
+  });
+
+  // 초기 콘텐츠 로드
+  useEffect(() => {
+    if (!editor || !initialContent || initialContent.trim() === '') {
+      return;
+    }
+
+    try {
+      // JSON 형태인지 확인 (기존 BlockNote 데이터)
+      const parsed = JSON.parse(initialContent);
+      if (Array.isArray(parsed)) {
+        editor.replaceBlocks(editor.document, parsed);
+        return;
+      }
+    } catch (error) {
+      // JSON이 아니라면 마크다운으로 처리
+      // 간단한 텍스트 처리로 시작
+      const lines = initialContent.split('\n').filter(line => line.trim() !== '');
+      
+      if (lines.length > 0) {
+        // 기존 블록을 모두 제거하고 새로운 콘텐츠로 교체
+        editor.removeBlocks(editor.document);
+        
+        // 각 라인을 문단으로 추가
+        lines.forEach((line, index) => {
+          if (line.startsWith('# ')) {
+            editor.insertBlocks(
+              [{ type: 'heading', props: { level: 1 }, content: line.substring(2) }],
+              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+              'after'
+            );
+          } else if (line.startsWith('## ')) {
+            editor.insertBlocks(
+              [{ type: 'heading', props: { level: 2 }, content: line.substring(3) }],
+              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+              'after'
+            );
+          } else if (line.startsWith('### ')) {
+            editor.insertBlocks(
+              [{ type: 'heading', props: { level: 3 }, content: line.substring(4) }],
+              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+              'after'
+            );
+          } else if (line.startsWith('- ') || line.startsWith('* ')) {
+            editor.insertBlocks(
+              [{ type: 'bulletListItem', content: line.substring(2) }],
+              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+              'after'
+            );
+          } else {
+            editor.insertBlocks(
+              [{ type: 'paragraph', content: line }],
+              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+              'after'
+            );
+          }
+        });
+      }
+    }
+  }, [editor, initialContent]);
+
+  // 에디터 변경사항 처리
+  const handleChange = async () => {
+    if (onChange && editor) {
+      try {
+        // BlockNote 콘텐츠를 마크다운으로 변환
+        const blocks = editor.document;
+        const markdown = await blocksToMarkdown(blocks);
+        onChange(markdown);
+      } catch (error) {
+        console.error('Error converting blocks to markdown:', error);
+        // 실패 시 JSON으로 전달
+        onChange(JSON.stringify(editor.document));
+      }
+    }
+  };
+
+  // 블록을 마크다운으로 변환하는 함수
+  const blocksToMarkdown = async (blocks: any[]): Promise<string> => {
+    const lines: string[] = [];
+    
+    for (const block of blocks) {
+      try {
+        switch (block.type) {
+          case 'heading':
+            const level = block.props?.level || 1;
+            const headingPrefix = '#'.repeat(level);
+            const headingText = getTextFromContent(block.content);
+            lines.push(`${headingPrefix} ${headingText}`);
+            break;
+          case 'paragraph':
+            const paragraphText = getTextFromContent(block.content);
+            lines.push(paragraphText);
+            break;
+          case 'bulletListItem':
+            const bulletText = getTextFromContent(block.content);
+            lines.push(`- ${bulletText}`);
+            break;
+          case 'numberedListItem':
+            const numberedText = getTextFromContent(block.content);
+            lines.push(`1. ${numberedText}`);
+            break;
+          default:
+            const defaultText = getTextFromContent(block.content);
+            if (defaultText) {
+              lines.push(defaultText);
+            }
+        }
+        
+        // 자식 블록 처리 (중첩된 블록)
+        if (block.children && block.children.length > 0) {
+          const childMarkdown = await blocksToMarkdown(block.children);
+          lines.push(childMarkdown);
+        }
+      } catch (error) {
+        console.error('Error processing block:', block, error);
+      }
+    }
+    
+    return lines.join('\n\n');
+  };
+
+  // 콘텐츠에서 텍스트 추출하는 헬퍼 함수
+  const getTextFromContent = (content: any): string => {
+    if (typeof content === 'string') {
+      return content;
+    }
+    
+    if (Array.isArray(content)) {
+      return content.map(item => {
+        if (typeof item === 'string') {
+          return item;
+        }
+        if (item && typeof item === 'object' && 'text' in item) {
+          return item.text;
+        }
+        return '';
+      }).join('');
+    }
+    
+    return '';
+  };
+
+  // 커스텀 스타일 적용
+  const customStyles = useMemo(() => ({
+    editor: {
+      backgroundColor: 'rgb(31, 41, 55)', // gray-800
+      color: 'rgb(209, 213, 219)', // gray-300
+      borderRadius: '0.5rem',
+      border: '1px solid rgb(75, 85, 99)', // gray-600
+      minHeight: '400px',
+      padding: '1rem',
+    }
+  }), []);
+
+  return (
+    <div className={`blocknote-editor ${className} ${cyberTheme.bgSecondary} rounded-lg border ${cyberTheme.inputBorder}`}>
+      <style jsx global>{`
+        .bn-container {
+          background-color: rgb(31, 41, 55) !important;
+          color: rgb(209, 213, 219) !important;
+        }
+        
+        .bn-editor {
+          background-color: rgb(31, 41, 55) !important;
+          color: rgb(209, 213, 219) !important;
+          border: none !important;
+        }
+        
+        .bn-block-content {
+          color: rgb(209, 213, 219) !important;
+        }
+        
+        .bn-block-content p {
+          color: rgb(209, 213, 219) !important;
+        }
+        
+        /* 플레이스홀더 스타일 */
+        .bn-block-content[data-placeholder]:before {
+          color: rgb(156, 163, 175) !important; /* gray-400 */
+        }
+        
+        /* 선택된 블록 스타일 */
+        .bn-block-outer.bn-block-selected {
+          background-color: rgb(55, 65, 81) !important; /* gray-700 */
+        }
+        
+        /* 툴바 스타일 */
+        .bn-toolbar {
+          background-color: rgb(55, 65, 81) !important; /* gray-700 */
+          border: 1px solid rgb(75, 85, 99) !important; /* gray-600 */
+        }
+        
+        .bn-toolbar button {
+          color: rgb(209, 213, 219) !important;
+        }
+        
+        .bn-toolbar button:hover {
+          background-color: rgb(75, 85, 99) !important; /* gray-600 */
+        }
+        
+        /* 슬래시 메뉴 스타일 */
+        .bn-suggestion-menu {
+          background-color: rgb(55, 65, 81) !important; /* gray-700 */
+          border: 1px solid rgb(75, 85, 99) !important; /* gray-600 */
+        }
+        
+        .bn-suggestion-menu-item {
+          color: rgb(209, 213, 219) !important;
+        }
+        
+        .bn-suggestion-menu-item:hover,
+        .bn-suggestion-menu-item.selected {
+          background-color: rgb(34, 197, 94) !important; /* cyan-600 */
+        }
+      `}</style>
+      
+      <BlockNoteView 
+        editor={editor} 
+        editable={editable}
+        theme="dark" // 다크모드 기본 설정
+        onChange={handleChange}
+      />
+    </div>
+  );
+} 

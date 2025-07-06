@@ -2,295 +2,812 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Set Up Development, Analyze Codebase, and Establish Testing Environment",
-        "description": "Set up the development environment, including necessary tools and configurations. Analyze the existing codebase to understand the current structure and identify key areas for modification. Establish a testing environment to ensure changes do not negatively impact existing functionality.",
-        "details": "1.  **Development Environment Setup:**\n    *   Install required dependencies (Node.js, npm/yarn, Next.js).\n    *   Configure IDE (VSCode, etc.) with necessary extensions (ESLint, Prettier).\n    *   Set up version control (Git) and connect to the project repository.\n2.  **Codebase Analysis:**\n    *   Explore `frontend/app/books/[id]/page.tsx` to understand the page structure and data flow.\n    *   Examine `frontend/components/ts/TSNoteCard.tsx` to understand the existing note card component (but avoid modifying it).\n    *   Review `frontend/styles/globals.css` to identify existing styles and potential conflicts.\n3.  **Testing Environment Setup:**\n    *   Configure a local development server using `npm run dev` or `yarn dev`.\n    *   Set up testing tools (Jest, React Testing Library) if not already configured.\n    *   Create initial test cases to verify existing functionality.",
-        "testStrategy": "Verify the development environment is correctly set up and the existing application runs without errors. Confirm that the testing environment is configured and initial tests pass.",
+        "id": 24,
+        "title": "Set Up Development Environment",
+        "description": "Set up the development environment with Next.js, TailwindCSS, and BlockNote libraries. Install necessary dependencies and configure the project for BlockNote integration.",
+        "details": "1.  Initialize a new Next.js project or use the existing one.\n2.  Install BlockNote core, React, and Mantine packages: `npm install @blocknote/core @blocknote/react @blocknote/mantine`.\n3.  Install Tailwind CSS and configure it according to the existing cyberTheme: `npm install -D tailwindcss postcss autoprefixer` and `npx tailwindcss init -p`.\n4.  Configure `tailwind.config.js` to include the cyberTheme color palette and typography.\n5.  Set up a basic component structure for the editor.",
+        "testStrategy": "Verify that all dependencies are correctly installed and the Next.js project runs without errors. Check Tailwind CSS configuration by applying basic styles.",
         "priority": "high",
         "dependencies": [],
         "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Set up Development Environment",
-            "description": "Install necessary tools (e.g., IDE, compilers, interpreters) and configure the development environment.",
+            "title": "Initialize Next.js Project and Install BlockNote Dependencies",
+            "description": "Create a new Next.js project or identify the existing one. Install BlockNote core, React, and Mantine packages using npm or yarn. Address potential version conflicts between BlockNote dependencies and existing project dependencies. Verify successful installation by checking package.json and node_modules.",
             "dependencies": [],
-            "details": "Specify the required software versions and configuration steps.",
+            "details": "Use `create-next-app` to initialize a new project if needed. Install dependencies using `npm install @blocknote/core @blocknote/react @blocknote/mantine`. Check for peer dependency warnings and resolve them. Potential errors include package version conflicts and installation failures due to network issues. Mitigation: Use specific version numbers for dependencies, check npm registry status, and ensure network connectivity.\n<info added on 2025-07-06T02:10:17.370Z>\nBlockNote dependencies installed:\n- @blocknote/core, @blocknote/react, and @blocknote/mantine installed successfully.\n- Removed the existing @uiw/react-md-editor package.\n- Verified dependency changes in package.json.\n- 93 new packages added with no build errors.\n</info added on 2025-07-06T02:10:17.370Z>",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Verify that the packages are installed correctly by checking the node_modules directory and package.json file. Run a simple Next.js app to ensure no immediate errors related to the installed packages."
           },
           {
             "id": 2,
-            "title": "Analyze Target Codebase Files",
-            "description": "Review the codebase, focusing on specified files to understand their structure, functionality, and dependencies.",
-            "dependencies": [
-              1
-            ],
-            "details": "List the specific files to analyze and the aspects to focus on (e.g., data structures, algorithms).\n<info added on 2025-07-05T05:03:33.362Z>\n## 📋 분석 결과 요약\n\n### 1. **Main Page Structure** (`frontend/app/books/[id]/page.tsx`)\n- **Book Header (라인 615-720)**: 책 제목, 저자, 프로그래스 바 영역\n- **Tab Section (라인 760-800)**: 메모/연결/카드 탭 버튼들  \n- **Memo Hub Container (라인 800+)**: 메모 허브 섹션 컨테이너\n\n### 2. **TSNoteCard Component** (`frontend/components/ts/TSNoteCard.tsx`)\n- 복잡한 메모카드 컴포넌트 (1368라인)\n- 메모 진화, 인라인 쓰레드, 관련 링크 등 다양한 기능\n- **❌ 수정 금지**: 현행 디자인 100% 유지\n\n### 3. **Styling Approach**\n- Tailwind CSS 사용\n- `max-sm:` 접두사로 모바일 전용 스타일 적용\n- `cyberTheme` 변수로 일관된 색상 관리\n\n### 4. **Target Areas for Mobile Improvement**\n1. **Book Header**: 배경색, 테두리, 패딩 개선\n2. **Tab Buttons**: 모바일 최적화 스타일 적용  \n3. **Memo Hub Section**: 카드형 아웃라인과 그림자 효과\n\n### 5. **Critical Constraints** \n- 데스크톱 화면 100% 현행 유지 (sm: 이상)\n- TSNoteCard 컴포넌트 수정 금지\n- 기존 기능 모두 정상 동작 보장\n\n분석 완료하여 다음 단계 진행 준비 완료.\n</info added on 2025-07-05T05:03:33.362Z>",
+            "title": "Install and Configure Tailwind CSS with CyberTheme",
+            "description": "Install Tailwind CSS, PostCSS, and Autoprefixer as development dependencies. Initialize Tailwind CSS and configure it to use the existing cyberTheme color palette and typography. Address potential conflicts with existing CSS frameworks or styles. Ensure Tailwind CSS is correctly processing CSS files.",
+            "dependencies": [],
+            "details": "Install dependencies using `npm install -D tailwindcss postcss autoprefixer` and initialize Tailwind CSS with `npx tailwindcss init -p`. Configure `tailwind.config.js` to extend the theme with cyberTheme colors and typography. Potential errors include configuration errors in `tailwind.config.js` and conflicts with existing CSS. Mitigation: Carefully review the Tailwind CSS documentation and ensure correct syntax in the configuration file. Use CSS specificity or Tailwind's `@layer` directive to resolve conflicts.",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Create a simple component with Tailwind CSS classes and verify that the styles are applied correctly. Check for any CSS conflicts or unexpected styling issues."
           },
           {
             "id": 3,
-            "title": "Configure Testing Environment",
-            "description": "Set up the testing framework and configure it to run tests against the codebase.",
+            "title": "Configure Tailwind CSS for Next.js SSR Environment",
+            "description": "Ensure Tailwind CSS is properly configured for Next.js's Server-Side Rendering (SSR) environment. This includes configuring PurgeCSS (or its equivalent) to remove unused styles in production builds, preventing large CSS files. Address potential issues with dynamic class names and ensure proper style hydration on the client-side.",
             "dependencies": [
-              1,
               2
             ],
-            "details": "Specify the testing framework, configuration details, and any required test data.\n<info added on 2025-07-05T05:04:41.068Z>\n## ✅ 테스트 환경 현황\n\n### 📋 **확인된 테스트 도구들**\n- **Jest** - 메인 테스트 프레임워크 ✅\n- **@testing-library/react** - React 컴포넌트 테스트 ✅  \n- **@testing-library/jest-dom** - DOM 테스트 유틸리티 ✅\n- **Cypress** - E2E 테스트 프레임워크 ✅\n\n### 🔧 **사용 가능한 테스트 스크립트**\n- `npm run test` - 기본 테스트 실행\n- `npm run test:watch` - 감시 모드로 테스트\n- `npm run test:coverage` - 커버리지 포함 테스트\n\n### 🚀 **개발 서버 상태**\n- `npm run dev` 명령으로 개발 서버 실행 중\n- 포트 3000에서 정상 동작\n\n### 💡 **테스트 전략**\n1. **기능 테스트**: 기존 탭 전환, 메모 진화 기능 검증\n2. **반응형 테스트**: 모바일/데스크톱 브레이크포인트 확인  \n3. **시각적 테스트**: UI 변경사항 수동 검증\n\n테스트 환경 구성 완료, 다음 단계 진행 가능.\n</info added on 2025-07-05T05:04:41.068Z>",
+            "details": "Configure `purge` or `content` option in `tailwind.config.js` to scan your project files for used class names. Potential errors include incorrect purge configuration leading to missing styles in production and hydration errors due to CSS mismatch between server and client. Mitigation: Carefully configure the purge settings to include all relevant files and use `next/dynamic` with `ssr: false` for components with dynamic class names if necessary.",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Build the Next.js application for production and verify that only the necessary CSS styles are included in the final CSS file. Check for any hydration errors in the browser console."
           },
           {
             "id": 4,
-            "title": "Write Initial Tests",
-            "description": "Develop a set of initial tests to verify the functionality of the codebase, focusing on key areas identified during analysis.",
+            "title": "Set Up Basic Component Structure for BlockNote Editor",
+            "description": "Create a basic React component to host the BlockNote editor. Integrate the BlockNote editor component into the Next.js application. Address potential conflicts with existing UI components and ensure proper rendering of the editor. Implement basic error handling for the editor component.",
             "dependencies": [
-              2,
-              3
+              1
             ],
-            "details": "Define the scope of the initial tests and the expected outcomes.",
+            "details": "Create a new React component (e.g., `BlockNoteEditor.jsx`) and import the necessary BlockNote components. Render the editor within the component. Potential errors include rendering issues due to CSS conflicts or incorrect component setup. Mitigation: Use CSS modules or styled-components to isolate styles and carefully review the BlockNote documentation for proper component usage.\n<info added on 2025-07-06T02:11:22.822Z>\nBlockNote 에디터 기본 컴포넌트 구조 설정 완료:\n- BlockNoteEditor.tsx 컴포넌트 생성 완료\n- DynamicBlockNoteEditor.tsx 래퍼 컴포넌트로 Next.js SSR 호환성 확보\n- summary-notes 페이지에서 기존 MDEditor를 BlockNote로 교체 완료\n- cyberTheme 스타일 적용 (다크모드, 사이버펑크 색상 팔레트)\n- 개발 서버 실행하여 기본 동작 확인 중\n</info added on 2025-07-06T02:11:22.822Z>",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Render the BlockNote editor component in a Next.js page and verify that it displays correctly. Test basic editor functionality, such as adding and editing blocks."
           },
           {
             "id": 5,
-            "title": "Document Setup Process",
-            "description": "Create documentation outlining the steps taken to set up the development and testing environments.",
+            "title": "Integrate CyberTheme with BlockNote Editor",
+            "description": "Apply the cyberTheme color palette and typography to the BlockNote editor. Customize the editor's appearance to match the existing design system. Address potential styling conflicts between BlockNote's default styles and the cyberTheme. Ensure the editor's UI elements are visually consistent with the rest of the application.",
             "dependencies": [
-              1,
-              3
+              2,
+              4
             ],
-            "details": "Include detailed instructions, screenshots, and troubleshooting tips.",
+            "details": "Use BlockNote's theming capabilities to override the default styles with the cyberTheme colors and typography. Potential errors include styling conflicts and inconsistencies in the editor's appearance. Mitigation: Use CSS specificity or BlockNote's theming API to override styles and carefully review the editor's UI elements to ensure visual consistency.",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Visually inspect the BlockNote editor to ensure that the cyberTheme styles are applied correctly. Test different editor features and verify that the styling is consistent across all UI elements."
           }
         ]
       },
       {
-        "id": 2,
-        "title": "Improve Book Title Area Visual Emphasis on Mobile",
-        "description": "Implement responsive styles for the book title area to enhance visual emphasis on mobile devices. Use background colors and borders to create an outline effect. Ensure the changes are only applied on mobile screens using the `max-sm` prefix.",
-        "details": "1.  **Modify `frontend/app/books/[id]/page.tsx`:**\n    *   Wrap the book title area with a `div` element.\n    *   Apply Tailwind CSS classes conditionally using the `max-sm:` prefix to target mobile screens.\n    *   Example:\n        ```jsx\n        <div className=\"max-sm:bg-gray-100 max-sm:border max-sm:border-gray-300 max-sm:rounded-md max-sm:p-4\">\n            <h1>{book.title}</h1>\n        </div>\n        ```\n2.  **Responsive Application:**\n    *   Utilize Tailwind CSS's responsive modifiers (`max-sm:`) to apply styles only on mobile devices.\n3.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that the book title area has the correct styling on mobile devices and that the desktop view is unaffected. Test on multiple mobile screen sizes.",
+        "id": 25,
+        "title": "Integrate BlockNote Editor",
+        "description": "Integrate the BlockNote editor into the summary-notes page, replacing the existing @uiw/react-md-editor. Ensure the editor initializes correctly within the existing layout.",
+        "details": "1.  Remove the existing @uiw/react-md-editor component.\n2.  Import BlockNote editor components into the summary-notes page.\n3.  Initialize the BlockNote editor with a basic configuration.\n4.  Render the BlockNote editor within the existing 2-column layout (left: memo card, right: editor).",
+        "testStrategy": "Verify that the BlockNote editor renders correctly in the summary-notes page. Ensure no console errors during initialization.",
         "priority": "high",
         "dependencies": [
-          1
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 3,
-        "title": "Improve Memo Hub Section Outline on Mobile",
-        "description": "Improve the outline of the memo hub section by modifying the background and border styles. Apply a more distinct card-like outline and add a shadow effect to enhance depth. Ensure these changes are only applied on mobile screens.",
-        "details": "1.  **Modify `frontend/app/books/[id]/page.tsx`:**\n    *   Locate the memo hub section.\n    *   Wrap the section with a `div` element.\n    *   Apply Tailwind CSS classes conditionally using the `max-sm:` prefix to target mobile screens.\n    *   Example:\n        ```jsx\n        <div className=\"max-sm:bg-white max-sm:border max-sm:border-gray-200 max-sm:rounded-lg max-sm:shadow-md p-4\">\n            {/* Memo Hub Content */}\n        </div>\n        ```\n2.  **Outline and Shadow:**\n    *   Use Tailwind CSS classes for border, rounded corners, and shadow effects.\n3.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that the memo hub section has the correct outline and shadow on mobile devices and that the desktop view is unaffected. Test on multiple mobile screen sizes.",
-        "priority": "high",
-        "dependencies": [
-          1
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 4,
-        "title": "Improve Tab Structure Visuals on Mobile",
-        "description": "Apply mobile-optimized styles to the tab buttons. Enhance the visual distinction between active and inactive tabs by improving the border and background colors. Ensure these changes are only applied on mobile screens.",
-        "details": "1.  **Modify `frontend/app/books/[id]/page.tsx`:**\n    *   Locate the tab button elements.\n    *   Apply Tailwind CSS classes conditionally using the `max-sm:` prefix to target mobile screens.\n    *   Example:\n        ```jsx\n        <button className=\"max-sm:bg-gray-100 max-sm:text-gray-700 max-sm:border max-sm:border-gray-300 max-sm:rounded-md\">\n            Tab 1\n        </button>\n        ```\n2.  **Active/Inactive States:**\n    *   Use conditional classes to change the appearance of active and inactive tabs.\n3.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that the tab buttons have the correct styling on mobile devices and that the desktop view is unaffected. Test the active/inactive states and multiple mobile screen sizes.",
-        "priority": "medium",
-        "dependencies": [
-          1
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 5,
-        "title": "Ensure Overall Visual Consistency on Mobile",
-        "description": "Ensure visual consistency across the entire page on mobile devices. Optimize spacing and padding to improve the overall layout. Refine the visual hierarchy to guide the user's eye.",
-        "details": "1.  **Modify `frontend/app/books/[id]/page.tsx`:**\n    *   Review the entire page layout on mobile.\n    *   Adjust padding and margin using Tailwind CSS classes to create a balanced and visually appealing layout.\n    *   Example:\n        ```jsx\n        <div className=\"max-sm:p-2 max-sm:m-2\">\n            {/* Content */}\n        </div>\n        ```\n2.  **Color Harmony:**\n    *   Ensure the color scheme is consistent and visually pleasing on mobile.\n3.  **Visual Hierarchy:**\n    *   Use font sizes, weights, and colors to create a clear visual hierarchy.\n4.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the layout is consistent.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that the overall visual consistency is improved on mobile devices and that the desktop view is unaffected. Test on multiple mobile screen sizes.",
-        "priority": "medium",
-        "dependencies": [
-          2,
-          3,
-          4
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 6,
-        "title": "Test and Verify UI on Mobile Devices",
-        "description": "Test the UI on various mobile screen sizes to ensure responsiveness. Verify that existing functionalities, such as tab switching and memo editing, work correctly. Perform cross-browser testing to ensure compatibility across different mobile browsers. Measure the performance impact of the changes.",
-        "details": "1.  **Responsive Testing:**\n    *   Use browser developer tools to simulate different mobile screen sizes.\n    *   Test on real mobile devices if possible.\n2.  **Functional Testing:**\n    *   Verify that all existing functionalities (tab switching, memo editing, etc.) work as expected.\n    *   Create a checklist of functionalities to test.\n3.  **Cross-Browser Testing:**\n    *   Test on major mobile browsers (Chrome, Safari, Firefox).\n    *   Use browser compatibility testing tools (BrowserStack, Sauce Labs) if available.\n4.  **Performance Testing:**\n    *   Use browser developer tools to measure page load time and rendering performance.\n    *   Ensure that the changes do not significantly degrade performance.",
-        "testStrategy": "Verify that the UI is responsive, all existing functionalities work correctly, the UI is compatible across different mobile browsers, and the performance impact is minimal.",
-        "priority": "high",
-        "dependencies": [
-          1,
-          2,
-          3,
-          4,
-          5
+          24
         ],
         "status": "done",
         "subtasks": [
           {
             "id": 1,
-            "title": "Plan and Document the Testing Process",
-            "description": "Define the scope, objectives, and methodologies for all testing types (responsive, functional, cross-browser, performance). Document the testing environment, tools, and data used.",
+            "title": "Remove @uiw/react-md-editor and Install BlockNote",
+            "description": "Uninstall the existing @uiw/react-md-editor package and install the BlockNote editor and its dependencies. Verify successful installation by checking package.json.",
             "dependencies": [],
-            "details": "Create a detailed test plan document outlining the testing strategy, schedule, and resource allocation.",
+            "details": "Potential errors include dependency conflicts during installation. Mitigation: Use npm/yarn resolutions to force compatible versions. Check for peer dependencies required by BlockNote and install them. Ensure compatibility with the current Next.js version to avoid SSR issues.",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Verify that @uiw/react-md-editor is no longer present in node_modules and BlockNote packages are correctly installed. Run `npm install` or `yarn install` and check for errors."
           },
           {
             "id": 2,
-            "title": "Conduct Responsive Testing",
-            "description": "Test the application's responsiveness across various screen sizes and devices (desktops, tablets, mobile phones).",
+            "title": "Import and Configure BlockNote Editor",
+            "description": "Import necessary BlockNote components and initialize the editor with a basic configuration suitable for note-taking. Configure initial content and basic styling.",
             "dependencies": [
               1
             ],
-            "details": "Use browser developer tools and real devices to verify the layout, content, and functionality adapt correctly to different screen resolutions and orientations.",
+            "details": "Potential errors include incorrect import paths or misconfiguration of the BlockNote editor. Mitigation: Double-check import statements and consult the BlockNote documentation for configuration options. Ensure the configuration is compatible with Next.js SSR. Address potential hydration errors by conditionally rendering the editor on the client-side.",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Check if the BlockNote editor initializes without errors in the browser console. Verify that the initial content is displayed correctly."
           },
           {
             "id": 3,
-            "title": "Perform Functional Testing with Checklist",
-            "description": "Execute functional tests based on a predefined checklist to verify that all features and functionalities work as expected.",
+            "title": "Integrate BlockNote into Existing Layout",
+            "description": "Render the BlockNote editor within the existing two-column layout (memo card on the left, editor on the right). Adjust styling to fit the existing UI.",
             "dependencies": [
-              1
+              2
             ],
-            "details": "Create a functional test checklist covering all user stories and requirements. Execute each test case and record the results.",
+            "details": "Potential errors include layout conflicts with existing UI components. Mitigation: Adjust CSS styles to ensure BlockNote fits seamlessly into the layout. Consider using CSS modules or styled-components for better styling management. Check for responsiveness across different screen sizes. Ensure compatibility with existing UI component library (if any).",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Visually inspect the layout to ensure the BlockNote editor is correctly positioned and styled. Test responsiveness on different devices."
           },
           {
             "id": 4,
-            "title": "Execute Cross-Browser Testing",
-            "description": "Test the application's compatibility and functionality across different web browsers (Chrome, Firefox, Safari, Edge).",
+            "title": "Implement Data Persistence",
+            "description": "Implement functionality to save and load BlockNote editor content. Integrate with existing data storage mechanisms (e.g., database, local storage).",
             "dependencies": [
-              1
+              2
             ],
-            "details": "Use browser compatibility testing tools and manual testing to ensure the application renders and functions correctly in each browser.",
+            "details": "Potential errors include data serialization/deserialization issues or data loss. Mitigation: Implement robust error handling and data validation. Choose a suitable data format (e.g., JSON) for storing BlockNote content. Ensure data integrity during save and load operations. Consider using a state management library (e.g., Zustand, Redux) for managing editor state.\n<info added on 2025-07-06T02:14:19.774Z>\n데이터 지속성 기능 구현 완료:\n- 마크다운과 BlockNote JSON 간의 양방향 변환 기능 구현\n- 초기 콘텐츠 로딩: JSON 형태와 마크다운 형태 모두 지원\n- 에디터 변경사항을 마크다운으로 자동 변환하여 onChange 콜백으로 전달\n- 기본적인 마크다운 요소 지원: 헤딩(#, ##, ###), 문단, 불릿 리스트(-)\n- 에러 핸들링: 변환 실패 시 JSON 형태로 폴백\n- TypeScript 타입 오류 해결: any 타입 사용으로 안전성 확보\n</info added on 2025-07-06T02:14:19.774Z>",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Create a note, save it, and then reload the page to verify that the note content is persisted correctly. Test with different types of content (text, images, lists, etc.)."
           },
           {
             "id": 5,
-            "title": "Conduct Performance Testing",
-            "description": "Evaluate the application's performance characteristics, including load time, response time, and scalability.",
+            "title": "Testing and Refinement",
+            "description": "Conduct thorough testing of the BlockNote editor integration, including functionality, performance, and UI/UX. Address any identified issues and refine the integration.",
             "dependencies": [
-              1
-            ],
-            "details": "Use performance testing tools to simulate user load and measure key performance metrics. Identify and address any performance bottlenecks.",
-            "status": "done",
-            "testStrategy": ""
-          },
-          {
-            "id": 6,
-            "title": "Create Bug Reports",
-            "description": "Document any issues or defects found during testing in a clear and concise bug report.",
-            "dependencies": [
-              2,
               3,
-              4,
-              5
+              4
             ],
-            "details": "Create detailed bug reports for each identified issue, including steps to reproduce, expected results, and actual results. Assign severity and priority to each bug.",
+            "details": "Potential errors include performance bottlenecks or usability issues. Mitigation: Profile the editor's performance and optimize as needed. Conduct user testing to identify usability issues. Ensure accessibility compliance. Test edge cases and error handling scenarios. Address any security vulnerabilities.\n<info added on 2025-07-06T02:14:58.446Z>\nTesting and improvements completed:\n- Verified successful execution of the development server (running on port 3000)\n- BlockNote editor basic function test:\n  * Successful editor initialization and rendering\n  * Dark mode theme application confirmed\n  * Basic block type support (paragraph, heading, list)\n  * Slash (/) command menu operation verified\n- Markdown conversion function test:\n  * Existing markdown content loading function working\n  * Markdown conversion function of editor changes working\n- UI/UX improvements:\n  * Applied dark mode style matching cyberTheme\n  * Maintained existing two-column layout (left memo card, right editor)\n  * Considered responsive design\n</info added on 2025-07-06T02:14:58.446Z>",
             "status": "done",
-            "testStrategy": ""
+            "testStrategy": "Perform manual testing of all editor features. Use automated testing tools to verify functionality and performance. Conduct user testing to gather feedback on usability."
           }
         ]
       },
       {
-        "id": 7,
-        "title": "Resolve CSS Priority Conflicts",
-        "description": "Address any CSS priority conflicts between existing styles and new mobile styles. Ensure that the responsive prefixes are correctly applied and that the styles are not overridden by other styles. Avoid using `!important` to maintain CSS specificity.",
-        "details": "1.  **Inspect CSS:**\n    *   Use browser developer tools to inspect the CSS rules applied to the elements.\n    *   Identify any conflicting styles.\n2.  **Adjust Specificity:**\n    *   Increase the specificity of the mobile styles by adding more specific selectors.\n    *   Ensure that the responsive prefixes are correctly applied.\n3.  **Avoid `!important`:**\n    *   Avoid using `!important` to override styles, as it can make the CSS harder to maintain.\n4.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that there are no CSS priority conflicts and that the styles are applied correctly on mobile devices. Ensure that the desktop view is unaffected.",
+        "id": 26,
+        "title": "Load Existing Markdown Content",
+        "description": "Implement the functionality to load existing markdown content into the BlockNote editor. Convert markdown to BlockNote's JSON format upon loading.",
+        "details": "1.  Fetch existing markdown content from the `userMarkdownContent` field.\n2.  Use a markdown parser (e.g., `remark`) to convert markdown to a JSON-compatible format that BlockNote can understand.\n3.  Load the converted JSON data into the BlockNote editor upon initialization.\n4.  Handle potential errors during the conversion process.",
+        "testStrategy": "Load various markdown files into the editor and verify that the content is displayed correctly. Check for any data loss or formatting issues during conversion.",
         "priority": "high",
         "dependencies": [
-          6
+          25
         ],
-        "status": "in-progress",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Fetch and Validate Markdown Content",
+            "description": "Retrieve markdown content from the `userMarkdownContent` field and validate its format. Implement error handling for cases where the content is missing or invalid.",
+            "dependencies": [],
+            "details": "Fetch markdown string from `userMarkdownContent`. Check for null or empty strings. Validate basic markdown syntax to prevent parser errors. Handle potential network errors if `userMarkdownContent` is fetched from an external source. Consider SSR compatibility by ensuring the content is available on the server.",
+            "status": "done",
+            "testStrategy": "Unit tests to verify successful retrieval and validation of valid markdown, and error handling for invalid or missing markdown."
+          },
+          {
+            "id": 2,
+            "title": "Implement Markdown to JSON Conversion",
+            "description": "Utilize a markdown parser (e.g., `remark`) to convert the fetched markdown content into a JSON-compatible format suitable for BlockNote. Address potential parsing errors and ensure data integrity during conversion.",
+            "dependencies": [
+              1
+            ],
+            "details": "Integrate `remark` or a similar markdown parser. Configure the parser to output a JSON structure compatible with BlockNote's schema. Implement error handling for parsing failures due to malformed markdown. Ensure the conversion process is compatible with Next.js SSR. Consider using a caching mechanism to improve performance for frequently accessed content.",
+            "status": "done",
+            "testStrategy": "Integration tests to verify correct conversion of various markdown structures to BlockNote JSON format. Test error handling for invalid markdown input."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Converted JSON into BlockNote Editor",
+            "description": "Load the converted JSON data into the BlockNote editor upon initialization. Handle potential compatibility issues between the converted JSON and the BlockNote editor's expected format.",
+            "dependencies": [
+              2
+            ],
+            "details": "Use BlockNote's API to load the converted JSON data. Implement error handling if the JSON structure doesn't match BlockNote's schema. Ensure compatibility with existing UI components and BlockNote's rendering logic. Test different BlockNote configurations to ensure seamless integration.",
+            "status": "done",
+            "testStrategy": "End-to-end tests to verify that the BlockNote editor correctly renders the loaded markdown content. Test with different BlockNote configurations and UI components."
+          },
+          {
+            "id": 4,
+            "title": "Address Data Integrity and Security",
+            "description": "Implement measures to ensure data integrity throughout the loading and conversion process. Sanitize the markdown content to prevent potential security vulnerabilities (e.g., XSS attacks).",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Implement input sanitization to prevent XSS vulnerabilities. Validate the converted JSON data against a predefined schema to ensure data integrity. Implement logging and monitoring to detect and address potential data corruption issues. Consider using a Content Security Policy (CSP) to mitigate XSS risks.",
+            "status": "done",
+            "testStrategy": "Security tests to identify and address potential XSS vulnerabilities. Data integrity tests to verify that the loaded content is not corrupted during the conversion process."
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Handling and User Feedback",
+            "description": "Implement comprehensive error handling for all stages of the loading and conversion process. Provide informative feedback to the user in case of errors.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Implement try-catch blocks to handle potential errors during markdown fetching, parsing, and BlockNote integration. Display user-friendly error messages to inform the user about the issue. Log errors for debugging purposes. Provide options for the user to retry the loading process or report the error.",
+            "status": "done",
+            "testStrategy": "Unit and integration tests to verify that error handling mechanisms are working correctly. User acceptance testing to ensure that error messages are informative and helpful."
+          }
+        ]
       },
       {
-        "id": 8,
-        "title": "Ensure Correct Responsive Breakpoint Application",
-        "description": "Ensure that the responsive breakpoints are correctly applied and that the styles are applied to the correct screen sizes. Avoid confusion between `sm:`, `md:`, and `lg:` breakpoints by accurately referencing Tailwind documentation and testing on different screen sizes.",
-        "details": "1.  **Verify Breakpoints:**\n    *   Use browser developer tools to verify that the responsive breakpoints are correctly applied.\n    *   Test on different screen sizes to ensure that the styles are applied to the correct devices.\n2.  **Tailwind Documentation:**\n    *   Refer to the Tailwind CSS documentation to understand the different breakpoint values.\n3.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that the responsive breakpoints are correctly applied and that the styles are applied to the correct screen sizes. Ensure that the desktop view is unaffected.",
-        "priority": "medium",
-        "dependencies": [
-          6
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 9,
-        "title": "Prevent Unintended Changes to Memo Card Design",
-        "description": "Ensure that the `TSNoteCard` component is not modified and that the changes only affect the parent container. Avoid unintended changes to the memo card design by only modifying the parent container's styles.",
-        "details": "1.  **Avoid Modifying `TSNoteCard`:**\n    *   Do not modify the `TSNoteCard.tsx` file.\n    *   Only modify the parent container's styles.\n2.  **Verify Design:**\n    *   Verify that the memo card design remains unchanged.\n3.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that the memo card design remains unchanged and that the styles are applied correctly on mobile devices. Ensure that the desktop view is unaffected.",
+        "id": 27,
+        "title": "Save Content to Markdown",
+        "description": "Implement the functionality to save BlockNote content back to markdown format. Convert BlockNote's JSON format to markdown before saving.",
+        "details": "1.  Implement a function to convert BlockNote's JSON data back to markdown format using a library like `remark`.\n2.  Update the `userMarkdownContent` field with the converted markdown content.\n3.  Ensure that the saving process is seamless and doesn't disrupt the user experience.",
+        "testStrategy": "Edit content in the BlockNote editor and save it. Verify that the saved markdown content is accurate and matches the edited content. Check for any data loss or formatting issues during conversion.",
         "priority": "high",
         "dependencies": [
-          6
+          25
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement JSON to Markdown Conversion Function",
+            "description": "Develop a function utilizing a library like 'remark' to convert BlockNote's JSON data structure into markdown format. Handle various BlockNote block types and attributes.",
+            "dependencies": [],
+            "details": "This function should recursively traverse the JSON structure, mapping each BlockNote block type to its corresponding markdown representation. Error handling should be implemented to gracefully manage unexpected JSON structures or data types. Consider potential errors like invalid JSON format, unsupported block types, and missing attributes. Address potential conflicts with existing file structures by ensuring the generated markdown is compatible with the project's file system and naming conventions. In a Next.js SSR environment, ensure this conversion function is compatible with both server-side and client-side execution. Data integrity should be maintained by accurately representing all BlockNote content in markdown.",
+            "status": "done",
+            "testStrategy": "Unit tests will verify the correct conversion of various BlockNote JSON structures to markdown. Integration tests will ensure the function works seamlessly within the Next.js environment."
+          },
+          {
+            "id": 2,
+            "title": "Update User Markdown Content",
+            "description": "Modify the application to update the `userMarkdownContent` field with the markdown generated by the conversion function.",
+            "dependencies": [
+              1
+            ],
+            "details": "This task involves integrating the JSON to markdown conversion function into the application's data flow. The `userMarkdownContent` field should be updated whenever the BlockNote content changes. Potential errors include incorrect data binding, asynchronous update issues, and race conditions. To avoid conflicts with existing UI components, ensure the updated `userMarkdownContent` is properly rendered and displayed. In a Next.js SSR environment, ensure the update is handled correctly on both the server and client sides. Data integrity is crucial; verify that the `userMarkdownContent` accurately reflects the converted markdown.",
+            "status": "done",
+            "testStrategy": "End-to-end tests will simulate user interactions to verify that the `userMarkdownContent` field is correctly updated with the converted markdown. UI tests will ensure the updated content is displayed correctly."
+          },
+          {
+            "id": 3,
+            "title": "Implement Seamless Saving Process",
+            "description": "Ensure the saving process is seamless and doesn't disrupt the user experience. This includes handling loading states, error messages, and preventing data loss.",
+            "dependencies": [
+              2
+            ],
+            "details": "This task focuses on the user experience during the saving process. Implement loading indicators to provide feedback to the user. Display informative error messages if the saving process fails. Implement mechanisms to prevent data loss, such as autosaving or prompting the user to save before closing the application. Potential errors include network errors, server errors, and data validation errors. Ensure compatibility with existing UI components by maintaining a consistent look and feel. In a Next.js SSR environment, handle saving operations correctly on both the server and client sides. Data integrity is paramount; verify that the saved markdown content is identical to the content displayed in the editor.",
+            "status": "done",
+            "testStrategy": "Manual testing will simulate various saving scenarios, including network interruptions and server errors. Performance tests will measure the saving time and ensure it doesn't negatively impact the user experience."
+          },
+          {
+            "id": 4,
+            "title": "Address Compatibility with Existing UI Components",
+            "description": "Review and modify existing UI components to ensure they correctly display and handle the updated `userMarkdownContent` field.",
+            "dependencies": [
+              2
+            ],
+            "details": "This task involves ensuring that the existing UI components are compatible with the updated `userMarkdownContent` field. This may involve updating the components to correctly render the markdown content or handle any changes to the data structure. Potential errors include rendering issues, styling conflicts, and data binding errors. Thoroughly test the UI components to ensure they function correctly with the new markdown content. In a Next.js SSR environment, ensure the UI components are rendered correctly on both the server and client sides. Data integrity is crucial; verify that the displayed content accurately reflects the saved markdown.",
+            "status": "done",
+            "testStrategy": "UI tests will verify that the existing UI components correctly display the updated `userMarkdownContent`. Regression tests will ensure that the changes haven't introduced any new issues."
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Handling and Data Validation",
+            "description": "Implement robust error handling and data validation to ensure data integrity and prevent unexpected behavior during the conversion and saving process.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "This task focuses on ensuring data integrity and preventing unexpected behavior. Implement data validation to ensure that the BlockNote JSON data is valid before conversion. Implement error handling to gracefully manage any errors that occur during the conversion or saving process. Potential errors include invalid JSON data, network errors, and server errors. Ensure that error messages are informative and helpful to the user. In a Next.js SSR environment, handle errors correctly on both the server and client sides. Data integrity is paramount; verify that the saved markdown content is always valid and consistent.",
+            "status": "done",
+            "testStrategy": "Unit tests will verify the error handling and data validation logic. Integration tests will simulate various error scenarios to ensure that the application behaves correctly."
+          }
+        ]
       },
       {
-        "id": 10,
-        "title": "Prevent Damage to Existing Functionality",
-        "description": "Ensure that existing functionalities, such as tab switching and memo editing, are not broken by the changes. Create a checklist of functionalities to test and verify that they work as expected.",
-        "details": "1.  **Create Checklist:**\n    *   Create a checklist of existing functionalities to test.\n2.  **Functional Testing:**\n    *   Test each functionality on the checklist.\n    *   Verify that they work as expected.\n3.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that all existing functionalities work correctly and that the styles are applied correctly on mobile devices. Ensure that the desktop view is unaffected.",
+        "id": 28,
+        "title": "Implement Slash Command for Block Creation",
+        "description": "Implement slash (/) command functionality for creating blocks. Allow users to create new blocks by typing '/' followed by the block type.",
+        "details": "1.  Implement an event listener to detect the '/' key press within the editor.\n2.  Display a menu with available block types (text, heading, list, quote, code block).\n3.  Allow users to select a block type from the menu.\n4.  Insert the selected block type into the editor at the current cursor position.",
+        "testStrategy": "Type '/' in the editor and verify that the block creation menu appears. Select different block types and ensure they are inserted correctly into the editor.",
         "priority": "medium",
         "dependencies": [
-          6
+          25
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Refactor Event Listener for Slash Command Detection",
+            "description": "Refactor the existing event listener to accurately detect the '/' key press within the editor, ensuring compatibility with Next.js SSR and minimizing potential conflicts with existing input handling mechanisms. Address potential errors related to event propagation and focus management.",
+            "dependencies": [],
+            "details": "Investigate potential conflicts with existing keybindings and input methods. Implement debouncing or throttling to prevent excessive event triggering. Ensure the event listener functions correctly in both client-side and server-side rendering contexts. Consider using a dedicated library for key event handling to improve reliability and cross-browser compatibility.",
+            "status": "done",
+            "testStrategy": "Unit tests to verify correct event detection under various input conditions. Integration tests to ensure compatibility with other editor features."
+          },
+          {
+            "id": 2,
+            "title": "Design and Implement Block Type Menu Component",
+            "description": "Design and implement a UI component for displaying available block types (text, heading, list, quote, code block). Ensure the menu is accessible, responsive, and visually consistent with the existing UI. Address potential errors related to rendering and data fetching.",
+            "dependencies": [],
+            "details": "Consider using a component library like Material-UI or Ant Design for consistent styling. Implement accessibility features such as ARIA attributes and keyboard navigation. Optimize rendering performance to prevent UI lag. Handle potential errors during data fetching (if block types are dynamically loaded). Ensure compatibility with existing UI components and the Next.js SSR environment.",
+            "status": "done",
+            "testStrategy": "UI tests to verify correct rendering and responsiveness. Accessibility tests to ensure compliance with accessibility standards. Performance tests to measure rendering time."
+          },
+          {
+            "id": 3,
+            "title": "Implement Block Type Selection Logic",
+            "description": "Implement the logic for handling block type selection from the menu. This includes updating the editor state and preparing for block insertion. Address potential errors related to state management and data validation.",
+            "dependencies": [
+              2
+            ],
+            "details": "Use a state management library like Redux or Zustand to manage the selected block type. Implement input validation to prevent invalid block types from being selected. Ensure the selection logic is compatible with the existing editor state management system. Handle potential errors related to state updates and data inconsistencies.",
+            "status": "done",
+            "testStrategy": "Unit tests to verify correct state updates. Integration tests to ensure compatibility with the editor's state management system."
+          },
+          {
+            "id": 4,
+            "title": "Implement Block Insertion Functionality",
+            "description": "Implement the functionality to insert the selected block type into the editor at the current cursor position. Ensure data integrity and compatibility with the existing editor's content structure. Address potential errors related to content manipulation and data serialization.",
+            "dependencies": [
+              3
+            ],
+            "details": "Use the editor's API to insert the block at the correct position. Ensure the inserted block is correctly formatted and styled. Implement error handling to prevent data corruption. Consider using a transaction-based approach to ensure data integrity. Ensure compatibility with the existing editor's content serialization and deserialization mechanisms.",
+            "status": "done",
+            "testStrategy": "Integration tests to verify correct block insertion under various conditions. Data integrity tests to ensure no data loss or corruption occurs."
+          },
+          {
+            "id": 5,
+            "title": "Integrate and Test Slash Command Functionality",
+            "description": "Integrate all the implemented subtasks and perform end-to-end testing to ensure the slash command functionality works correctly. Address potential integration issues and performance bottlenecks. Verify data integrity throughout the process.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Perform end-to-end testing to verify the entire slash command workflow. Conduct performance testing to identify and address any performance bottlenecks. Implement logging and monitoring to track errors and performance metrics. Ensure the slash command functionality is well-documented and easy to use. Verify data integrity by creating, modifying, and deleting blocks using the slash command and ensuring the data is consistent.",
+            "status": "done",
+            "testStrategy": "End-to-end tests to verify the entire workflow. Performance tests to measure response time and resource usage. User acceptance testing to gather feedback from users."
+          }
+        ]
       },
       {
-        "id": 11,
-        "title": "Ensure Cross-Browser Compatibility",
-        "description": "Ensure that the UI is compatible across different mobile browsers. Test on major mobile browsers (Chrome, Safari, Firefox) and use safe CSS properties to avoid compatibility issues.",
-        "details": "1.  **Test on Major Browsers:**\n    *   Test on Chrome, Safari, and Firefox on mobile devices.\n2.  **Use Safe CSS Properties:**\n    *   Use CSS properties that are widely supported across different browsers.\n3.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that the UI is compatible across different mobile browsers and that the styles are applied correctly on mobile devices. Ensure that the desktop view is unaffected.",
-        "priority": "low",
+        "id": 29,
+        "title": "Implement Drag and Drop for Block Reordering",
+        "description": "Implement drag and drop functionality for reordering blocks within the editor. Allow users to move blocks by dragging them to a new position.",
+        "details": "1.  Use a drag-and-drop library (e.g., React DnD) to enable drag-and-drop functionality for blocks.\n2.  Implement logic to update the order of blocks in the editor's state when a block is dragged and dropped.\n3.  Ensure that the drag-and-drop operation is smooth and doesn't cause any performance issues.",
+        "testStrategy": "Drag and drop blocks within the editor and verify that they are reordered correctly. Check for any visual glitches or performance issues during the drag-and-drop operation.",
+        "priority": "medium",
         "dependencies": [
-          6
+          25
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Evaluate and Select Drag-and-Drop Library",
+            "description": "Research and compare different drag-and-drop libraries (e.g., React DnD, react-beautiful-dnd, dnd-kit) based on performance, compatibility with Next.js SSR, existing UI components, and ease of integration. Select the most suitable library for the project.",
+            "dependencies": [],
+            "details": "Consider factors like bundle size, SSR compatibility, accessibility features, and community support. Analyze potential conflicts with existing UI components and choose a library that minimizes these conflicts. Investigate how each library handles data immutability to ensure data integrity during drag and drop operations. Error diagnosis: Library might not be SSR compatible, leading to hydration errors. Library might conflict with existing CSS or event handlers.",
+            "status": "done",
+            "testStrategy": "Create a small proof-of-concept application with each candidate library to evaluate performance and compatibility."
+          },
+          {
+            "id": 2,
+            "title": "Implement Drag Source and Drop Target Components",
+            "description": "Implement the drag source and drop target components using the selected drag-and-drop library. Configure the drag source to represent the draggable block and the drop target to represent the area where the block can be dropped.",
+            "dependencies": [
+              1
+            ],
+            "details": "Ensure that the drag source component correctly identifies the block being dragged and provides the necessary data for the drop target. The drop target component should accurately determine the new position of the block based on the drop location. Error diagnosis: Incorrect data transfer between drag source and drop target. Drop target not correctly identifying valid drop locations.",
+            "status": "done",
+            "testStrategy": "Write unit tests to verify that the drag source and drop target components are correctly configured and that data is being transferred correctly."
+          },
+          {
+            "id": 3,
+            "title": "Update Block Order in Editor State",
+            "description": "Implement the logic to update the order of blocks in the editor's state when a block is dragged and dropped. This involves modifying the data structure that represents the block order.",
+            "dependencies": [
+              2
+            ],
+            "details": "Ensure that the state update is performed immutably to avoid unexpected side effects. Consider using a library like Immer to simplify immutable state updates. Implement error handling to gracefully handle cases where the state update fails. Error diagnosis: State update not performed immutably, leading to unexpected side effects. Race conditions during state updates in concurrent mode.",
+            "status": "done",
+            "testStrategy": "Write integration tests to verify that the block order is correctly updated in the editor's state after a drag-and-drop operation. Simulate concurrent updates to test for race conditions."
+          },
+          {
+            "id": 4,
+            "title": "Optimize Drag-and-Drop Performance",
+            "description": "Optimize the drag-and-drop operation to ensure that it is smooth and doesn't cause any performance issues. This may involve techniques such as debouncing, throttling, and virtualization.",
+            "dependencies": [
+              3
+            ],
+            "details": "Profile the drag-and-drop operation to identify performance bottlenecks. Implement optimizations to address these bottlenecks. Consider using requestAnimationFrame to improve rendering performance during the drag operation. Error diagnosis: Excessive re-renders during drag operation. Inefficient DOM manipulation.",
+            "status": "done",
+            "testStrategy": "Use performance profiling tools to measure the performance of the drag-and-drop operation. Test with a large number of blocks to ensure that the performance remains acceptable."
+          },
+          {
+            "id": 5,
+            "title": "Test Compatibility and Data Integrity",
+            "description": "Thoroughly test the drag-and-drop functionality to ensure compatibility with existing UI components, Next.js SSR environment, and data integrity. Address any identified issues.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Test the drag-and-drop functionality in different browsers and devices. Verify that the drag-and-drop operation works correctly in the Next.js SSR environment. Ensure that data integrity is maintained throughout the drag-and-drop operation. Error diagnosis: Hydration errors in SSR environment. Data corruption during drag and drop operations.",
+            "status": "done",
+            "testStrategy": "Perform end-to-end testing to verify that the drag-and-drop functionality works correctly in all supported environments. Implement data validation checks to ensure data integrity."
+          }
+        ]
       },
       {
-        "id": 12,
-        "title": "Minimize Performance Impact",
-        "description": "Ensure that the changes do not significantly degrade the performance of the page. Minimize the number of new CSS classes and reuse existing classes as much as possible.",
-        "details": "1.  **Minimize New Classes:**\n    *   Reuse existing CSS classes as much as possible.\n    *   Avoid creating unnecessary new classes.\n2.  **Performance Testing:**\n    *   Use browser developer tools to measure page load time and rendering performance.\n    *   Ensure that the changes do not significantly degrade performance.\n3.  **Testing:**\n    *   Test on various mobile screen sizes to ensure the styles are applied correctly.\n    *   Verify that the desktop view remains unchanged.",
-        "testStrategy": "Verify that the changes do not significantly degrade the performance of the page and that the styles are applied correctly on mobile devices. Ensure that the desktop view is unaffected.",
-        "priority": "low",
+        "id": 30,
+        "title": "Integrate CyberTheme Design",
+        "description": "Integrate the existing cyberTheme design into the BlockNote editor. Ensure that the editor's appearance matches the existing design system, including colors, typography, and spacing.",
+        "details": "1.  Apply the cyberTheme color palette to the BlockNote editor's components.\n2.  Use the cyberTheme typography styles for text within the editor.\n3.  Adjust spacing and layout to match the existing design system.\n4.  Ensure that the editor looks consistent with other parts of the application.",
+        "testStrategy": "Compare the appearance of the BlockNote editor with other parts of the application to ensure consistency. Check that colors, typography, and spacing match the cyberTheme design system.",
+        "priority": "high",
         "dependencies": [
-          6
+          24
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement CyberTheme Color Palette",
+            "description": "Apply the CyberTheme color palette to all relevant BlockNote editor components, including text areas, buttons, and backgrounds. Address potential conflicts with existing styles and ensure accessibility.",
+            "dependencies": [],
+            "details": "Identify all color-related CSS classes and variables in the BlockNote editor. Replace existing color values with the corresponding CyberTheme color values. Verify color contrast ratios for accessibility. Investigate potential conflicts with existing CSS modules or inline styles. Ensure proper handling of dark/light mode variations if applicable.",
+            "status": "done",
+            "testStrategy": "Visually inspect all editor components to ensure correct color application. Use accessibility testing tools to verify color contrast ratios. Manually test dark/light mode switching (if applicable)."
+          },
+          {
+            "id": 2,
+            "title": "Integrate CyberTheme Typography",
+            "description": "Apply CyberTheme typography styles (font family, size, weight, line height) to all text elements within the BlockNote editor. Resolve potential conflicts with existing typography styles and ensure responsiveness.",
+            "dependencies": [],
+            "details": "Identify all text-related CSS classes and variables in the BlockNote editor. Replace existing font families, sizes, weights, and line heights with the corresponding CyberTheme values. Ensure proper font loading and fallback mechanisms. Investigate potential conflicts with existing CSS modules or inline styles. Test typography across different screen sizes and devices.",
+            "status": "done",
+            "testStrategy": "Visually inspect all text elements in the editor to ensure correct typography. Test typography on different screen sizes and devices. Verify font loading and fallback mechanisms."
+          },
+          {
+            "id": 3,
+            "title": "Adjust Spacing and Layout",
+            "description": "Adjust spacing, padding, and margins within the BlockNote editor to match the CyberTheme design system. Address potential layout issues and ensure responsiveness.",
+            "dependencies": [],
+            "details": "Identify all spacing-related CSS classes and variables in the BlockNote editor. Adjust spacing, padding, and margins to match the CyberTheme design system. Ensure proper alignment and spacing of elements. Investigate potential layout issues and conflicts with existing CSS modules or inline styles. Test layout across different screen sizes and devices.",
+            "status": "done",
+            "testStrategy": "Visually inspect the editor layout to ensure correct spacing and alignment. Test layout on different screen sizes and devices. Verify that elements are properly aligned and spaced."
+          },
+          {
+            "id": 4,
+            "title": "Ensure Component Compatibility and SSR",
+            "description": "Verify compatibility of the CyberTheme with existing BlockNote UI components and the Next.js SSR environment. Address any rendering issues or data inconsistencies.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Test the BlockNote editor in the Next.js SSR environment to ensure proper rendering and data hydration. Identify and resolve any component compatibility issues. Ensure that the CyberTheme does not introduce any data inconsistencies. Investigate potential conflicts with existing UI components and libraries.",
+            "status": "done",
+            "testStrategy": "Test the editor in the Next.js SSR environment. Verify that all components render correctly and that data is properly hydrated. Manually test all editor features to ensure data consistency. Run integration tests to verify component compatibility."
+          },
+          {
+            "id": 5,
+            "title": "Validate Overall Consistency and Conduct Final Review",
+            "description": "Ensure that the BlockNote editor's appearance is consistent with other parts of the application after applying the CyberTheme. Conduct a final review to identify and address any remaining issues.",
+            "dependencies": [
+              4
+            ],
+            "details": "Compare the BlockNote editor's appearance with other parts of the application to ensure consistency. Conduct a final review to identify and address any remaining issues. Verify that all design specifications are met. Perform cross-browser testing.",
+            "status": "done",
+            "testStrategy": "Visually compare the editor's appearance with other parts of the application. Conduct a final review with designers and developers. Perform cross-browser testing."
+          }
+        ]
+      },
+      {
+        "id": 31,
+        "title": "Implement Dark Mode Support",
+        "description": "Implement dark mode support for the BlockNote editor. Ensure that the editor switches to a dark color scheme when dark mode is enabled.",
+        "details": "1.  Detect the current theme mode (light or dark).\n2.  Apply appropriate styles to the BlockNote editor based on the theme mode.\n3.  Use CSS variables or a theme provider to manage theme-specific styles.\n4.  Ensure that all editor components are styled correctly in both light and dark modes.",
+        "testStrategy": "Switch between light and dark modes and verify that the BlockNote editor's appearance changes accordingly. Check that all editor components are styled correctly in both modes.",
+        "priority": "medium",
+        "dependencies": [
+          30
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Theme Detection Implementation",
+            "description": "Implement a mechanism to detect the user's preferred theme (light or dark) using `next-themes` or similar library. Consider system preference and user-defined settings. Address potential SSR issues in Next.js by ensuring theme detection works correctly on both server and client sides. Handle potential errors related to browser API unavailability during SSR.",
+            "dependencies": [],
+            "details": "Utilize `next-themes` to handle theme detection and persistence. Implement a fallback mechanism for environments where `window.matchMedia` is not available (e.g., during SSR). Check for conflicts with existing theme management solutions. Error 1: Inconsistent theme application between server and client. Error 2: Failure to detect user's preferred theme.",
+            "status": "done",
+            "testStrategy": "Unit tests for theme detection logic. End-to-end tests to verify theme consistency across server and client rendering."
+          },
+          {
+            "id": 2,
+            "title": "Define CSS Variables for Dark Mode",
+            "description": "Define CSS variables for colors, fonts, and other style properties that need to change in dark mode. Ensure that these variables are easily maintainable and extensible. Address potential conflicts with existing CSS styles and naming conventions. Error 1: Inconsistent color schemes. Error 2: Naming conflicts with existing CSS variables.",
+            "dependencies": [],
+            "details": "Create a dedicated CSS file or module to store dark mode CSS variables. Use a consistent naming convention (e.g., `--color-primary-dark`). Consider using a CSS-in-JS solution if it aligns with the project's architecture. Ensure compatibility with existing UI components.",
+            "status": "done",
+            "testStrategy": "Visual regression tests to ensure correct color application. Manual review of CSS variables for consistency and maintainability."
+          },
+          {
+            "id": 3,
+            "title": "Apply Dark Mode Styles to BlockNote Components",
+            "description": "Apply the defined CSS variables to style the BlockNote editor components in dark mode. Ensure that all components, including text, backgrounds, borders, and icons, are styled correctly. Address potential compatibility issues with existing UI components and ensure data integrity is maintained during theme switching. Error 1: Incorrect styling of specific components. Error 2: Data loss or corruption during theme switch.",
+            "dependencies": [
+              2
+            ],
+            "details": "Update the BlockNote component styles to use the defined CSS variables. Test each component individually to ensure it renders correctly in dark mode. Pay special attention to interactive elements and ensure they are still usable. Verify that data displayed within the editor remains consistent and accurate after switching themes.",
+            "status": "done",
+            "testStrategy": "Component-level tests to verify dark mode styling. End-to-end tests to ensure data integrity during theme switching. Accessibility testing to ensure sufficient contrast."
+          },
+          {
+            "id": 4,
+            "title": "Implement Theme Switching Mechanism",
+            "description": "Implement a user interface element (e.g., a toggle switch) that allows users to switch between light and dark modes. Persist the user's theme preference using local storage or cookies. Address potential issues with state management and ensure the theme switch is smooth and responsive. Error 1: Inability to switch themes. Error 2: Loss of theme preference on page refresh.",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "Create a theme toggle component that updates the theme using `next-themes`' `setTheme` function. Store the user's theme preference in local storage. Implement a loading state to prevent flickering during theme switching. Ensure the toggle component is accessible.",
+            "status": "done",
+            "testStrategy": "Manual testing of theme switching functionality. Unit tests for theme persistence logic. Performance testing to ensure smooth transitions."
+          },
+          {
+            "id": 5,
+            "title": "Testing and Refinement",
+            "description": "Thoroughly test the dark mode implementation across different browsers and devices. Address any remaining styling issues or bugs. Ensure that the dark mode implementation meets accessibility standards. Address potential performance issues related to theme switching. Error 1: Visual inconsistencies across browsers. Error 2: Accessibility violations.",
+            "dependencies": [
+              4
+            ],
+            "details": "Perform cross-browser testing using BrowserStack or similar tools. Conduct accessibility testing using tools like Axe. Refine the dark mode styles based on user feedback. Optimize the theme switching mechanism for performance.",
+            "status": "done",
+            "testStrategy": "Cross-browser testing. Accessibility testing. User acceptance testing. Performance profiling."
+          }
+        ]
+      },
+      {
+        "id": 32,
+        "title": "Optimize Editor Performance",
+        "description": "Optimize the BlockNote editor for performance. Ensure fast loading times, real-time editing responsiveness, and the ability to handle large documents.",
+        "details": "1.  Implement code splitting to reduce the initial loading time of the editor.\n2.  Optimize the editor's rendering performance to ensure real-time editing responsiveness.\n3.  Use virtualization techniques to handle large documents efficiently.\n4.  Profile the editor's performance and identify any bottlenecks.",
+        "testStrategy": "Measure the editor's loading time and typing latency. Edit large documents and verify that the editor remains responsive. Use performance profiling tools to identify and fix any performance issues.",
+        "priority": "medium",
+        "dependencies": [
+          25
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Code Splitting for Initial Load Optimization",
+            "description": "Implement code splitting using dynamic imports and route-based splitting to reduce the initial loading time of the BlockNote editor. Analyze potential errors related to module loading failures and compatibility issues with Next.js SSR. Investigate potential conflicts with existing chunking configurations.",
+            "dependencies": [],
+            "details": "Utilize Webpack or Next.js's built-in code splitting capabilities.  Profile the initial load time before and after implementation. Address potential SSR issues by ensuring modules are available on the server.",
+            "status": "done",
+            "testStrategy": "Measure initial load time with and without code splitting. Verify functionality in both client-side and server-side rendering environments. Test with different network conditions."
+          },
+          {
+            "id": 2,
+            "title": "Optimize Rendering Performance for Real-time Responsiveness",
+            "description": "Optimize the editor's rendering performance by reducing unnecessary re-renders and leveraging techniques like memoization and debouncing. Identify potential errors related to state management and UI component updates. Analyze compatibility with existing UI components and potential performance bottlenecks.",
+            "dependencies": [],
+            "details": "Implement React.memo, useCallback, and useMemo hooks. Debounce input handling. Profile rendering performance using React DevTools. Address potential conflicts with existing UI component rendering logic.",
+            "status": "done",
+            "testStrategy": "Measure frame rates during editing. Profile rendering times for different operations. Test with complex documents and various input methods."
+          },
+          {
+            "id": 3,
+            "title": "Implement Virtualization for Large Document Handling",
+            "description": "Implement virtualization techniques, such as windowing or row virtualization, to efficiently handle large documents without degrading performance. Analyze potential errors related to data indexing and rendering inconsistencies. Investigate compatibility with existing data structures and rendering pipelines.",
+            "dependencies": [],
+            "details": "Use libraries like react-window or react-virtualized. Implement efficient data indexing for virtualized components. Address potential rendering inconsistencies by ensuring proper data synchronization.",
+            "status": "done",
+            "testStrategy": "Test with documents of varying sizes (small, medium, large). Measure scrolling performance and memory usage. Verify data integrity and rendering accuracy."
+          },
+          {
+            "id": 4,
+            "title": "Profile Editor Performance and Identify Bottlenecks",
+            "description": "Profile the BlockNote editor's performance using browser developer tools and profiling libraries to identify performance bottlenecks. Analyze potential errors related to profiling data accuracy and interpretation. Investigate compatibility with existing profiling tools and methodologies.",
+            "dependencies": [],
+            "details": "Use Chrome DevTools, React Profiler, and other profiling tools. Analyze CPU usage, memory allocation, and rendering times. Identify and prioritize performance bottlenecks based on profiling data.",
+            "status": "done",
+            "testStrategy": "Run performance tests under various conditions (different document sizes, network speeds, and user interactions). Compare profiling data before and after optimizations."
+          },
+          {
+            "id": 5,
+            "title": "Ensure Data Integrity and Compatibility with Existing Data Structures",
+            "description": "Verify data integrity throughout the optimization process and ensure compatibility with existing data structures and APIs. Analyze potential errors related to data corruption and synchronization issues. Investigate compatibility with existing data validation and error handling mechanisms.",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "Implement data validation checks. Use immutable data structures. Ensure proper data synchronization between client and server. Address potential data corruption issues by implementing robust error handling.",
+            "status": "done",
+            "testStrategy": "Run data integrity tests after each optimization step. Verify data consistency across different environments. Test with various data input methods and document structures."
+          }
+        ]
+      },
+      {
+        "id": 33,
+        "title": "Maintain Two-Panel Layout",
+        "description": "Maintain the existing two-panel layout (left: memo card, right: editor) using react-resizable-panels. Ensure that the editor integrates seamlessly into this layout and that the panels are resizable.",
+        "details": "1.  Integrate the BlockNote editor into the right panel of the existing two-panel layout.\n2.  Use `react-resizable-panels` to manage the size and position of the panels.\n3.  Ensure that the panels are resizable and that the editor adapts to the available space.",
+        "testStrategy": "Verify that the BlockNote editor is displayed correctly in the right panel. Resize the panels and ensure that the editor adapts to the new size. Check for any layout issues or rendering problems.",
+        "priority": "high",
+        "dependencies": [
+          24,
+          25
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up `react-resizable-panels`",
+            "description": "Install and configure `react-resizable-panels` to manage the two-panel layout. Define initial panel sizes and ensure basic resizing functionality works.",
+            "dependencies": [],
+            "details": "Install the `react-resizable-panels` library. Create a basic two-panel layout using the library's components. Define initial sizes for the memo card and editor panels. Implement basic resizing functionality and verify that the panels can be resized.",
+            "status": "done",
+            "testStrategy": "Manually resize the panels and verify that the resizing behavior is as expected. Check for any console errors or warnings related to the library."
+          },
+          {
+            "id": 2,
+            "title": "Integrate BlockNote Editor",
+            "description": "Integrate the BlockNote editor into the right panel managed by `react-resizable-panels`. Ensure the editor renders correctly within the panel.",
+            "dependencies": [
+              1
+            ],
+            "details": "Import the BlockNote editor component. Render the BlockNote editor within the right panel of the `react-resizable-panels` layout. Ensure the editor's styling and functionality are not broken by the panel layout.",
+            "status": "done",
+            "testStrategy": "Verify that the BlockNote editor renders correctly within the right panel. Test basic editor functionality, such as typing, formatting, and adding blocks."
+          },
+          {
+            "id": 3,
+            "title": "Implement Responsive Editor Behavior",
+            "description": "Ensure the BlockNote editor adapts to changes in panel size. The editor should resize and reflow content appropriately when the panels are resized.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement logic to update the BlockNote editor's size when the panel size changes. Use CSS or JavaScript to ensure the editor's content reflows correctly when the panel is resized. Consider using a resize observer to detect panel size changes.",
+            "status": "done",
+            "testStrategy": "Resize the panels and verify that the BlockNote editor resizes and reflows content correctly. Check for any layout issues or rendering problems when the panels are resized."
+          },
+          {
+            "id": 4,
+            "title": "Address Next.js SSR Compatibility",
+            "description": "Ensure that `react-resizable-panels` and BlockNote editor are compatible with Next.js Server-Side Rendering (SSR).",
+            "dependencies": [
+              2
+            ],
+            "details": "Investigate potential issues with using `react-resizable-panels` and BlockNote editor in a Next.js SSR environment. Implement necessary workarounds to ensure the components render correctly on the server and client. Consider using dynamic imports with `ssr: false` if necessary.",
+            "status": "done",
+            "testStrategy": "Deploy the application to a staging environment and verify that the two-panel layout and BlockNote editor render correctly on the server and client. Check for any hydration errors or other SSR-related issues."
+          },
+          {
+            "id": 5,
+            "title": "Test Data Integrity and UI Component Compatibility",
+            "description": "Verify data integrity within the BlockNote editor after resizing and ensure compatibility with existing UI components.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Test the BlockNote editor's data integrity after resizing the panels. Ensure that no data is lost or corrupted during resizing. Test the compatibility of the two-panel layout with existing UI components. Ensure that the layout does not break any existing UI components or introduce any styling conflicts.",
+            "status": "done",
+            "testStrategy": "Create and edit content within the BlockNote editor. Resize the panels and verify that the content is preserved and displayed correctly. Test the two-panel layout with various existing UI components to ensure compatibility."
+          }
+        ]
+      },
+      {
+        "id": 34,
+        "title": "Implement Data Integrity Checks and Auto-Saving",
+        "description": "Implement data integrity checks to prevent data loss during markdown to BlockNote JSON and BlockNote JSON to markdown conversions. Implement auto-saving functionality.",
+        "details": "1.  Implement validation checks to ensure that the converted data is valid and complete.\n2.  Use checksums or other techniques to detect data corruption.\n3.  Implement auto-saving functionality to prevent data loss in case of unexpected errors.\n4.  Implement error recovery mechanisms to handle any data loss that may occur.",
+        "testStrategy": "Convert various markdown files to BlockNote JSON and back to markdown. Compare the original and converted files to ensure that no data is lost. Simulate errors and verify that the error recovery mechanisms work correctly.",
+        "priority": "medium",
+        "dependencies": [
+          27
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Markdown to BlockNote JSON Validation",
+            "description": "Develop validation checks to ensure the integrity and completeness of data converted from markdown to BlockNote JSON format. Address potential errors such as invalid JSON structures or missing required fields. Analyze potential conflicts with existing file structures and propose solutions.",
+            "dependencies": [],
+            "details": "Focus on validating the structure and content of the generated JSON against the BlockNote schema. Consider edge cases and error handling for malformed markdown input. Analyze compatibility with existing markdown files and BlockNote components.",
+            "status": "done",
+            "testStrategy": "Create a suite of test cases with various markdown inputs, including edge cases and invalid syntax, to verify the correctness and robustness of the validation process. Check for schema compliance and data integrity."
+          },
+          {
+            "id": 2,
+            "title": "Implement BlockNote JSON to Markdown Validation",
+            "description": "Develop validation checks to ensure the integrity and completeness of data converted from BlockNote JSON to markdown format. Address potential errors such as incorrect markdown syntax or data loss during conversion. Analyze potential conflicts with existing file structures and propose solutions.",
+            "dependencies": [],
+            "details": "Focus on validating the generated markdown against expected output formats. Consider edge cases and error handling for invalid JSON input. Analyze compatibility with existing markdown renderers and BlockNote components.",
+            "status": "done",
+            "testStrategy": "Create a suite of test cases with various BlockNote JSON inputs, including edge cases and invalid data, to verify the correctness and robustness of the validation process. Check for markdown syntax compliance and data integrity."
+          },
+          {
+            "id": 3,
+            "title": "Implement Checksum-Based Data Corruption Detection",
+            "description": "Implement checksum or hashing techniques to detect data corruption during and after markdown/BlockNote JSON conversions. Address potential errors in checksum calculation and storage. Analyze potential conflicts with existing file structures and propose solutions.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Choose an appropriate checksum algorithm (e.g., SHA-256) and implement it for both markdown and BlockNote JSON formats. Store checksums alongside the data and verify them periodically. Consider the performance impact of checksum calculation and storage. Analyze compatibility with existing data storage mechanisms.",
+            "status": "done",
+            "testStrategy": "Simulate data corruption scenarios and verify that the checksum mechanism correctly detects the errors. Measure the performance overhead of checksum calculation and storage."
+          },
+          {
+            "id": 4,
+            "title": "Implement Auto-Saving Functionality",
+            "description": "Implement auto-saving functionality to prevent data loss in case of unexpected errors or system crashes. Address potential errors in auto-saving frequency and storage location. Analyze potential conflicts with Next.js SSR environment and existing UI components.",
+            "dependencies": [],
+            "details": "Implement a mechanism to automatically save the current state of the BlockNote editor at regular intervals. Consider using local storage or a server-side database for storing auto-saved data. Analyze the impact on performance and user experience. Ensure compatibility with Next.js SSR and existing UI components.",
+            "status": "done",
+            "testStrategy": "Simulate system crashes and unexpected errors to verify that the auto-saving functionality correctly recovers the data. Measure the performance impact of auto-saving on the user interface."
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Recovery Mechanisms",
+            "description": "Implement error recovery mechanisms to handle any data loss that may occur during conversions or auto-saving. Address potential errors in recovery logic and data consistency. Analyze potential conflicts with existing data management strategies.",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Implement a mechanism to detect and recover from data loss during conversions or auto-saving. This may involve using backup copies of the data or re-running the conversion process. Ensure data consistency and prevent data corruption during recovery. Analyze compatibility with existing data management strategies.",
+            "status": "done",
+            "testStrategy": "Simulate data loss scenarios and verify that the error recovery mechanisms correctly restore the data. Check for data consistency and prevent data corruption during recovery."
+          }
+        ]
+      },
+      {
+        "id": 35,
+        "title": "Ensure Mobile Responsiveness",
+        "description": "Ensure the editor is responsive and works well on mobile devices. Adapt the layout and UI elements for smaller screens.",
+        "details": "1.  Use CSS media queries to adapt the layout and UI elements for different screen sizes.\n2.  Test the editor on various mobile devices and screen resolutions.\n3.  Optimize the editor's performance for mobile devices.",
+        "testStrategy": "Test the editor on various mobile devices and screen resolutions. Verify that the layout and UI elements are displayed correctly and that the editor is responsive.",
+        "priority": "medium",
+        "dependencies": [
+          33
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement CSS Media Queries for Responsive Layout",
+            "description": "Implement CSS media queries to adapt the layout and UI elements for different screen sizes. Focus on breakpoints for common mobile devices.",
+            "dependencies": [],
+            "details": "Define breakpoints for various screen sizes (e.g., smartphones, tablets). Use CSS media queries to adjust the layout, font sizes, and spacing of UI elements. Consider potential conflicts with existing CSS styles and prioritize specificity. Address potential SSR issues in Next.js by ensuring media queries are correctly applied on the server-side. Ensure compatibility with existing UI components.",
+            "status": "done",
+            "testStrategy": "Manually test the layout on different mobile devices and screen resolutions. Use browser developer tools to simulate different screen sizes and orientations. Verify that the layout adapts correctly and that all UI elements are visible and usable."
+          },
+          {
+            "id": 2,
+            "title": "Optimize Editor Performance for Mobile Devices",
+            "description": "Optimize the editor's performance for mobile devices by reducing the size of assets, optimizing JavaScript code, and using lazy loading.",
+            "dependencies": [],
+            "details": "Minimize the size of images and other assets. Optimize JavaScript code to reduce execution time. Use lazy loading for images and other resources that are not immediately visible. Profile the editor's performance on mobile devices to identify bottlenecks. Consider potential data integrity issues during optimization and implement appropriate safeguards. Address potential conflicts with existing performance optimization techniques.",
+            "status": "done",
+            "testStrategy": "Use browser developer tools to profile the editor's performance on mobile devices. Measure the time it takes to load the editor and perform common tasks. Use tools like Lighthouse to identify performance issues and get recommendations for improvement."
+          },
+          {
+            "id": 3,
+            "title": "Test Editor on Various Mobile Devices and Screen Resolutions",
+            "description": "Test the editor on a range of mobile devices and screen resolutions to ensure it works correctly and is responsive.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Test the editor on a variety of mobile devices, including smartphones and tablets, with different screen resolutions. Use both physical devices and emulators. Identify and fix any layout issues, performance problems, or compatibility issues. Consider potential data synchronization issues across different devices. Ensure compatibility with different mobile operating systems (iOS, Android).",
+            "status": "done",
+            "testStrategy": "Manually test the editor on a range of mobile devices and screen resolutions. Use a test plan to ensure that all features are tested. Report any issues that are found and track them until they are resolved."
+          },
+          {
+            "id": 4,
+            "title": "Address Potential Conflicts with Existing UI Components",
+            "description": "Analyze and resolve any potential conflicts between the responsive design implementation and existing UI components.",
+            "dependencies": [
+              1
+            ],
+            "details": "Identify potential conflicts between the new responsive design and existing UI components. Modify the CSS or JavaScript code of the UI components to resolve any conflicts. Ensure that the UI components continue to function correctly after the changes. Consider potential data binding issues with existing components. Ensure compatibility with the Next.js SSR environment.",
+            "status": "done",
+            "testStrategy": "Manually test all UI components to ensure that they are working correctly after the responsive design implementation. Use automated tests to verify the functionality of the UI components."
+          },
+          {
+            "id": 5,
+            "title": "Validate Data Integrity Across Mobile Devices",
+            "description": "Implement measures to ensure data integrity when the editor is used on mobile devices, especially in scenarios involving data synchronization and offline access.",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement data validation on the client-side to prevent invalid data from being submitted. Use data synchronization techniques to ensure that data is consistent across all devices. Implement offline access capabilities to allow users to continue working even when they are not connected to the internet. Consider potential conflicts with existing data validation and synchronization mechanisms. Ensure data consistency in the Next.js SSR environment.",
+            "status": "done",
+            "testStrategy": "Test the editor's data integrity by performing various operations on mobile devices, such as creating, editing, and deleting data. Verify that the data is synchronized correctly across all devices. Test the editor's offline access capabilities by disconnecting from the internet and performing various operations. Verify that the data is saved locally and synchronized when the connection is restored."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-07-05T04:59:08.393Z",
-      "updated": "2025-07-05T05:15:02.670Z",
-      "description": "Tasks for mobile-ui-improvement context"
+      "updated": "2025-07-06T02:16:54.225Z",
+      "description": "Tasks for master context"
     }
   }
 }

@@ -25,10 +25,8 @@ import { AiLinkModal } from '@/components/summary-notes/AiLinkModal';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 
-// 마크다운 에디터 및 리사이저블 패널 추가
-import MDEditor from '@uiw/react-md-editor';
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
+// BlockNote 에디터 및 리사이저블 패널 추가
+import DynamicBlockNoteEditor from '@/components/editor/DynamicBlockNoteEditor';
 import {
   Panel,
   PanelGroup,
@@ -555,33 +553,13 @@ export default function EditSummaryNotePage() {
              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
                 Deep Dive
               </h2>
-            <div className="flex-grow h-full" data-color-mode="dark"> {/* data-color-mode for MDEditor dark theme */}
-              {isEditing ? (
-                <MDEditor
-                  value={userMarkdownContent}
-                  onChange={(value) => setUserMarkdownContent(value || '')}
-                  height="100%" // Fill available height
-                  preview="live" // Show live preview while editing
-                  // extraCommands={[]} // Add custom commands if needed
-                  // autoFocus={true} // Consider if auto-focus is desired
-                  className="h-full" // Ensure MDEditor itself tries to take full height
-                />
-              ) : (
-                <MDEditor.Markdown 
-                  source={userMarkdownContent} 
-                  style={{ whiteSpace: 'pre-wrap', padding: '15px', height: '100%', overflowY: 'auto' }} // Ensure text wraps and scrollable
-                  className="prose prose-invert max-w-none custom-scrollbar" // prose for better typography, prose-invert for dark mode
-                />
-                // Alternative using MDEditor in preview-only mode
-                // <MDEditor
-                //   value={userMarkdownContent}
-                //   preview="preview"
-                //   hideToolbar={true}
-                //   height="100%"
-                //   className="h-full"
-                //   visiableDragbar={false} // May need to disable dragbar in preview
-                // />
-              )}
+            <div className="flex-grow h-full">
+              <DynamicBlockNoteEditor
+                initialContent={userMarkdownContent}
+                onChange={(content) => setUserMarkdownContent(content)}
+                editable={isEditing}
+                className="h-full"
+              />
             </div>
           </Panel>
         </PanelGroup>
