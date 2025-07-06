@@ -103,19 +103,13 @@ export default function BlockNoteEditor({
   }, [editor]);
 
   // 에디터 변경사항 처리
-  const handleChange = async () => {
-    if (onChange && editor) {
-      try {
-        // BlockNote 콘텐츠를 마크다운으로 변환
-        const blocks = editor.document;
-        const markdown = await blocksToMarkdown(blocks);
-        onChange(markdown);
-      } catch (error) {
-        console.error('Error converting blocks to markdown:', error);
-        // 실패 시 JSON으로 전달
-        onChange(JSON.stringify(editor.document));
-      }
-    }
+  // Markdown으로 변환하면 색상·하이라이트 등 BlockNote 고유 스타일이 손실되므로
+  // JSON 문자열 그대로 상위 컴포넌트에 전달한다.
+  const handleChange = () => {
+    if (!onChange || !editor) return;
+
+    // JSON 직렬화하여 스타일 정보를 100% 보존
+    onChange(JSON.stringify(editor.document));
   };
 
   // 블록을 마크다운으로 변환하는 함수
