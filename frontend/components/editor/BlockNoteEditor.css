@@ -106,4 +106,109 @@
 .bn-suggestion-menu-item:hover,
 .bn-suggestion-menu-item.selected {
   background-color: rgb(34, 197, 94) !important; /* cyan-600 */
+}
+
+/* BlockNote Editor Horizontal Writing Mode Fix */
+
+/* 최상위 에디터 컨테이너 */
+.bn-editor,
+.bn-editor * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* ProseMirror 에디터 영역 */
+.ProseMirror,
+.ProseMirror * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* BlockNote 블록 컨텐츠 */
+.bn-block-content,
+.bn-block-content * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* BlockNote 인라인 컨텐츠 */
+.bn-inline-content,
+.bn-inline-content * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* 텍스트 입력 영역 */
+.bn-editor [contenteditable],
+.bn-editor [contenteditable] * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* 모든 텍스트 노드에 대한 강제 설정 */
+.bn-editor p,
+.bn-editor div,
+.bn-editor span,
+.bn-editor h1,
+.bn-editor h2,
+.bn-editor h3,
+.bn-editor h4,
+.bn-editor h5,
+.bn-editor h6 {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+  display: block !important;
+}
+
+/* BlockNote 특정 클래스들 */
+[class*="bn-"],
+[class*="blocknote"] {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* Mantine UI 컴포넌트들 (BlockNote가 Mantine 사용) */
+[class*="mantine"],
+[data-mantine-color-scheme] {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* 극도로 강력한 선택자 - 모든 요소에 강제 적용 */
+* {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* 특별히 contenteditable 요소들 */
+[contenteditable="true"],
+[contenteditable="true"] * {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* CSS 변수 오버라이드 */
+:root {
+  --bn-writing-mode: horizontal-tb !important;
+  --bn-text-orientation: mixed !important;
+  --bn-direction: ltr !important;
+}
+
+/* 모든 div 요소에 강제 적용 */
+div, p, span, h1, h2, h3, h4, h5, h6 {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+  unicode-bidi: normal !important;
 } 
