@@ -99,6 +99,43 @@ const memoEvolutionQuestionMap: Record<string, string[]> = {
   reading_pleasure: ['이 메모, 어떤 점이 가장 흥미로웠나요?', '이 구절을 읽을 때, 어떤 기분이었나요?', '이 메모의 즐거움, 어떤 다른 작품/경험을 떠올리게 하나요?', '책 속의 어떤 장면이 머릿속에 생생하게 그려졌나요?'],
 };
 
+/**
+ * @function getNoteTypeSemantics
+ * @description 메모 타입에 따른 시맨틱 분류 정보를 반환합니다.
+ */
+const getNoteTypeSemantics = (noteType?: string) => {
+  switch (noteType) {
+    case 'quote':
+      return {
+        schemaType: 'Quotation',
+        rdfType: 'h33r:QuotationNote',
+        typeLabel: '인용',
+        classification: 'ExternalKnowledge',
+        epistemicStatus: 'AuthorityBased',
+        cognitiveFunction: 'KnowledgePreservation'
+      };
+    case 'question':
+      return {
+        schemaType: 'Question',
+        rdfType: 'h33r:QuestionNote', 
+        typeLabel: '질문',
+        classification: 'InquiryDriven',
+        epistemicStatus: 'Exploratory',
+        cognitiveFunction: 'KnowledgeDiscovery'
+      };
+    case 'thought':
+    default:
+      return {
+        schemaType: 'CreativeWork',
+        rdfType: 'h33r:ThoughtNote',
+        typeLabel: '생각',
+        classification: 'PersonalInsight',
+        epistemicStatus: 'ReflectiveSynthesis',
+        cognitiveFunction: 'KnowledgeCreation'
+      };
+  }
+};
+
 const getMemoEvolutionQuestion = (fieldKey: string, purpose: string = 'humanities_self_reflection'): string => {
   const questions = memoEvolutionQuestionMap[purpose] || memoEvolutionQuestionMap.humanities_self_reflection;
   const keyMap: { [key: string]: number } = {
@@ -1106,13 +1143,20 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     // --- 개별 노트의 인지 출처 분석 ---
     const cognitiveProvenance = analyzeCognitiveProvenance(note);
 
+    // 메모 타입별 시맨틱 분류 및 RDF 트리플 생성
+    const noteTypeSemantics = getNoteTypeSemantics(note.noteType);
+    
     const notePart: any = {
-      "@type": "NoteDigitalDocument",
+      "@type": noteTypeSemantics.schemaType,
       "text": content,
       "identifier": `atomic-note-${index + 1}`,
-      "description": `하비투스33 Atomic Reading 방법론으로 추출된 ${index + 1}번째 1줄메모`,
+      "description": `하비투스33 Atomic Reading 방법론으로 추출된 ${index + 1}번째 1줄메모 (${noteTypeSemantics.typeLabel})`,
       "educationalUse": "지식의 원자 단위로 분해된 핵심 인사이트",
       "cognitiveProvenance": cognitiveProvenance, // 인지 출처 데이터 추가
+      "noteType": noteTypeSemantics.rdfType,
+      "semanticClassification": noteTypeSemantics.classification,
+      "epistemicStatus": noteTypeSemantics.epistemicStatus,
+      "cognitiveFunction": noteTypeSemantics.cognitiveFunction,
     };
 
     // --- 태그 정보 추가 ---
@@ -1120,12 +1164,37 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       notePart.keywords = tags.join(', ');
     }
 
-    // 세션 정보: Atomic Reading의 핵심 데이터
+    // 시간 정보: OWL-Time 표준 적용
     const preferredNoteTime = getPreferredNoteCreatedAt(note);
     if (preferredNoteTime) {
-      notePart.dateCreated = TimeUtils.toISOString(preferredNoteTime);
+      const timeInstant = TimeUtils.toISOString(preferredNoteTime);
+      notePart.dateCreated = timeInstant;
+      
+      // OWL-Time 표준 적용
+      notePart.temporalEntity = {
+        "@type": "time:Instant",
+        "time:inXSDDateTime": timeInstant,
+        "rdfs:label": `메모 생성 시점: ${timeInstant}`
+      };
+      
+      // 메모 진화 시간 추가
+      if (note.memoEvolutionTimestamp) {
+        const evolutionTime = TimeUtils.toISOString(note.memoEvolutionTimestamp);
+        notePart.dateModified = evolutionTime;
+        notePart.evolutionTemporal = {
+          "@type": "time:Instant", 
+          "time:inXSDDateTime": evolutionTime,
+          "rdfs:label": `메모 진화 시점: ${evolutionTime}`
+        };
+      }
     } else if (sessionDetails?.createdAtISO) {
-      notePart.dateCreated = new Date(sessionDetails.createdAtISO).toISOString();
+      const sessionTime = new Date(sessionDetails.createdAtISO).toISOString();
+      notePart.dateCreated = sessionTime;
+      notePart.temporalEntity = {
+        "@type": "time:Instant",
+        "time:inXSDDateTime": sessionTime,
+        "rdfs:label": `세션 기반 생성 시점: ${sessionTime}`
+      };
       
       // 세션 성과 데이터를 구조화된 형태로 포함
       notePart.learningActivity = {
@@ -1150,10 +1219,40 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       };
     }
 
+    // 메모 타입별 차별화된 관계 구조
     if (book) {
-      notePart.about = {
-        "@id": `h33r:book:${book._id}`,
+      if (noteTypeSemantics.rdfType === 'h33r:QuotationNote') {
+        // 인용 메모는 출처(책)와 강한 연결
+        notePart.isBasedOn = {
+          "@id": `h33r:book:${book._id}`,
+          "@type": "Book",
+          "title": book.title,
+          "author": book.author
         };
+        notePart.citation = {
+          "@type": "Book",
+          "@id": `h33r:book:${book._id}`,
+          "title": book.title,
+          "author": book.author
+        };
+      } else {
+        // 생각/질문 메모는 주제(about) 관계
+        notePart.about = {
+          "@id": `h33r:book:${book._id}`,
+          "@type": "Book",
+          "title": book.title
+        };
+      }
+    }
+
+    // 사용자와의 관계 정의
+    if (noteTypeSemantics.rdfType !== 'h33r:QuotationNote') {
+      // 생각/질문 메모는 사용자와 강한 연결
+      notePart.creator = {
+        "@id": `h33r:user:${user._id}`,
+        "@type": "Person",
+        "name": user?.name ?? user?.email ?? "학습자"
+      };
     }
 
     // 메모 진화: 4단계 지식 내재화 프로세스
