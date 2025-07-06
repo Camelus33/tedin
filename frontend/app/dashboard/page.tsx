@@ -47,6 +47,12 @@ export default function DashboardPage() {
   const sortMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // ================== DEBUG: API 경로 확인 시작 ==================
+    console.log(
+      '환경변수 NEXT_PUBLIC_API_URL 값:', 
+      process.env.NEXT_PUBLIC_API_URL || '>> 설정되지 않음 <<'
+    );
+    // ================== DEBUG: API 경로 확인 끝 ====================
     fetchDashboardData();
   }, []);
 
