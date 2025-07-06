@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/core/fonts/inter.css';
@@ -40,65 +40,67 @@ export default function BlockNoteEditor({
     defaultStyles: true,
   });
 
-  // 초기 콘텐츠 로드
-  useEffect(() => {
-    if (!editor || !initialContent || initialContent.trim() === '') {
-      return;
-    }
+  const hasLoadedInitialContent = useRef(false);
 
+  useEffect(() => {
+    if (!editor || hasLoadedInitialContent.current) return;
+
+    // ---------- 초기 콘텐츠 로딩 ----------
     try {
-      // JSON 형태인지 확인 (기존 BlockNote 데이터)
       const parsed = JSON.parse(initialContent);
       if (Array.isArray(parsed)) {
         editor.replaceBlocks(editor.document, parsed);
+        hasLoadedInitialContent.current = true;
         return;
       }
-    } catch (error) {
-      // JSON이 아니라면 마크다운으로 처리
-      // 간단한 텍스트 처리로 시작
-      const lines = initialContent.split('\n').filter(line => line.trim() !== '');
-      
-      if (lines.length > 0) {
-        // 기존 블록을 모두 제거하고 새로운 콘텐츠로 교체
-        editor.removeBlocks(editor.document);
-        
-        // 각 라인을 문단으로 추가
-        lines.forEach((line, index) => {
-          if (line.startsWith('# ')) {
-            editor.insertBlocks(
-              [{ type: 'heading', props: { level: 1 }, content: line.substring(2) }],
-              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
-              'after'
-            );
-          } else if (line.startsWith('## ')) {
-            editor.insertBlocks(
-              [{ type: 'heading', props: { level: 2 }, content: line.substring(3) }],
-              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
-              'after'
-            );
-          } else if (line.startsWith('### ')) {
-            editor.insertBlocks(
-              [{ type: 'heading', props: { level: 3 }, content: line.substring(4) }],
-              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
-              'after'
-            );
-          } else if (line.startsWith('- ') || line.startsWith('* ')) {
-            editor.insertBlocks(
-              [{ type: 'bulletListItem', content: line.substring(2) }],
-              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
-              'after'
-            );
-          } else {
-            editor.insertBlocks(
-              [{ type: 'paragraph', content: line }],
-              editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
-              'after'
-            );
-          }
-        });
-      }
+    } catch (_) {
+      // JSON 파싱 실패 → 마크다운(텍스트) 처리
     }
-  }, [editor, initialContent]);
+
+    // 마크다운 또는 일반 텍스트 처리
+    const lines = initialContent
+      .split('\n')
+      .filter((line) => line.trim() !== '');
+
+    if (lines.length > 0) {
+      editor.removeBlocks(editor.document);
+      lines.forEach((line) => {
+        if (line.startsWith('# ')) {
+          editor.insertBlocks(
+            [{ type: 'heading', props: { level: 1 }, content: line.substring(2) }],
+            editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+            'after'
+          );
+        } else if (line.startsWith('## ')) {
+          editor.insertBlocks(
+            [{ type: 'heading', props: { level: 2 }, content: line.substring(3) }],
+            editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+            'after'
+          );
+        } else if (line.startsWith('### ')) {
+          editor.insertBlocks(
+            [{ type: 'heading', props: { level: 3 }, content: line.substring(4) }],
+            editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+            'after'
+          );
+        } else if (line.startsWith('- ') || line.startsWith('* ')) {
+          editor.insertBlocks(
+            [{ type: 'bulletListItem', content: line.substring(2) }],
+            editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+            'after'
+          );
+        } else {
+          editor.insertBlocks(
+            [{ type: 'paragraph', content: line }],
+            editor.document[editor.document.length - 1]?.id || editor.document[0]?.id,
+            'after'
+          );
+        }
+      });
+    }
+
+    hasLoadedInitialContent.current = true;
+  }, [editor]);
 
   // 에디터 변경사항 처리
   const handleChange = async () => {
