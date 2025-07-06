@@ -483,7 +483,7 @@ export default function DashboardPage() {
               })()
             );
           })()}
-        </div>
+          </div>
 
         {/* 스크롤 영역 */}
         <div className="space-y-12">

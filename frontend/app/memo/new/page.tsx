@@ -197,14 +197,14 @@ function NewMemoContent() {
           </Link>
         </div>
 
-        {/* 메인 카드 - 포스트잇 스타일 */}
-        <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 border border-yellow-300/50 shadow-lg shadow-yellow-600/30 transform rotate-1 hover:rotate-0 transition-all duration-300 relative p-6 !rounded-none">
-          {/* 포스트잇 접힌 모서리 효과 */}
-          <div className="absolute top-0 right-0 w-3 h-3 bg-gradient-to-bl from-black/15 to-transparent transform rotate-45 translate-x-1 -translate-y-1"></div>
-          
-          <h1 className="text-xl font-bold text-gray-800 mb-4 font-orbitron tracking-wide text-center">
-            Atomic Memo
-          </h1>
+                 {/* 메인 카드 - 포스트잇 스타일 */}
+         <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 border border-yellow-300/50 shadow-lg shadow-yellow-600/30 transform rotate-1 hover:rotate-0 transition-all duration-300 relative p-6 pt-4 !rounded-none">
+           {/* 포스트잇 접힌 모서리 효과 */}
+           <div className="absolute top-0 right-0 w-3 h-3 bg-gradient-to-bl from-black/15 to-transparent transform rotate-45 translate-x-1 -translate-y-1"></div>
+           
+           <h1 className="text-xl font-bold text-gray-800 mb-3 font-orbitron tracking-wide text-center">
+             Atomic Memo
+           </h1>
           
           {error && (
             <div className="bg-red-100 border border-red-300 text-red-700 p-3 rounded mb-3 text-sm">
@@ -212,7 +212,7 @@ function NewMemoContent() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {/* 1. 노트북 선택 */}
             <div>
               <label className="block text-gray-700 text-sm font-medium mb-2">노트북 선택</label>
@@ -277,7 +277,7 @@ function NewMemoContent() {
                 className="w-full px-3 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 resize-none text-sm"
                 required
               />
-              <div className="text-xs text-gray-500 mt-1 text-right">
+              <div className="text-xs text-gray-500 mt-1 text-right mb-2">
                 {memoContent.length}/200자
               </div>
             </div>
