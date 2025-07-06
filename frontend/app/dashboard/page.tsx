@@ -284,6 +284,17 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Brain Hack Routine 진입점 - 우측 상단 */}
+        <div className="flex justify-end mb-4">
+          <Link
+            href="/brain-hack-routine"
+            className="inline-flex items-center space-x-2 px-3 py-2 text-sm text-indigo-300 hover:text-indigo-100 bg-indigo-900/30 hover:bg-indigo-800/40 border border-indigo-500/40 hover:border-indigo-400/60 rounded-lg transition-all backdrop-blur-md shadow-lg hover:shadow-indigo-500/20"
+          >
+            <span>🌊</span>
+            <span>Brain Hack Routine</span>
+          </Link>
+        </div>
+
         {/* 상태 메시지 */}
         <div className="mb-8">
           <h1 className="text-2xl font-medium text-white">
