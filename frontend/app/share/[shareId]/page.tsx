@@ -6,6 +6,7 @@ import SharePageClient from './SharePageClient';
 import ExpandableText from '@/components/common/ExpandableText';
 import ClientTimeDisplay, { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 import InlineThreadsViewer from '@/components/share/InlineThreadsViewer';
+import dynamic from 'next/dynamic';
 
 // interface SharePageProps {
 //   params: { shareId: string };
@@ -58,6 +59,8 @@ const ErrorDisplay = ({ message, reason }: { message: string, reason: string }) 
     </div>
   </div>
 );
+
+const BlockNoteViewer = dynamic(() => import('@/components/editor/BlockNoteViewer'), { ssr: false });
 
 export default async function SharePage({ params }: { params: { shareId: string } }) {
   const data = await getShareData(params.shareId);
@@ -156,9 +159,16 @@ export default async function SharePage({ params }: { params: { shareId: string 
                   자신의 남다른 생각과 의견을 공유해 보세요.
                 </p>
               </header>
-              <div className="prose prose-gray max-w-none bg-white p-4 rounded border border-purple-200">
-                <pre className="whitespace-pre-wrap font-sans text-lg text-gray-200 leading-loose">{userMarkdownContent}</pre>
-              </div>
+              {/* JSON(BlockNote) vs Markdown 분기 렌더링 */}
+              {userMarkdownContent.trim().startsWith('[') ? (
+                <BlockNoteViewer content={userMarkdownContent} className="bg-white rounded border border-purple-200" />
+              ) : (
+                <div className="prose prose-gray max-w-none bg-white p-4 rounded border border-purple-200">
+                  <pre className="whitespace-pre-wrap font-sans text-lg text-gray-800 leading-loose">
+                    {userMarkdownContent}
+                  </pre>
+                </div>
+              )}
             </section>
           )}
 

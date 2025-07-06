@@ -242,10 +242,15 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
                                   {step.action.result && (
                                     <div className="mt-2 text-xs text-gray-600">
                                       <strong>결과:</strong> 
-                                      {typeof step.action.result === 'object' ? 
-                                        JSON.stringify(step.action.result, null, 2).substring(0, 100) + '...' :
+                                      {typeof step.action.result === 'object' ? (
+                                        Array.isArray(step.action.result)
+                                          ? step.action.result.slice(0, 3).join(', ') + (step.action.result.length > 3 ? '...' : '')
+                                          : Object.entries(step.action.result)
+                                              .map(([key, value]) => `${key}: ${String(value)}`)
+                                              .join(', ')
+                                      ) : (
                                         step.action.result
-                                      }
+                                      )}
                                     </div>
                                   )}
                                 </div>
