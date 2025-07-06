@@ -549,16 +549,16 @@ export default function EditSummaryNotePage() {
           <PanelResizeHandle className="w-2 md:w-3 bg-gray-700 hover:bg-cyan-600 active:bg-cyan-500 transition-colors duration-200 cursor-col-resize mx-1 rounded-full" />
 
           {/* Right Panel: Markdown Editor */}
-          <Panel defaultSize={50} minSize={25} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
+          <Panel defaultSize={50} minSize={25} className="pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full relative">
              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
                 Deep Dive
               </h2>
-            <div className="flex-grow h-full">
+            <div className="flex-grow h-full relative overflow-hidden">
               <DynamicBlockNoteEditor
                 initialContent={userMarkdownContent}
                 onChange={(content) => setUserMarkdownContent(content)}
                 editable={isEditing}
-                className="h-full"
+                className="h-full w-full absolute inset-0"
               />
             </div>
           </Panel>
