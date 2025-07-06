@@ -38,6 +38,18 @@ export const createSummaryNote = async (req: Request, res: Response) => {
       }
     }
 
+    // 존재 & 소유권 검사: 모든 Note가 실제로 DB에 존재하고, 작성자(userId)가 동일한지 확인
+    const existingNotesCount = await Note.countDocuments({
+      _id: { $in: orderedNoteIds.map((id: string) => new mongoose.Types.ObjectId(id)) },
+      userId: new mongoose.Types.ObjectId(userId)
+    });
+
+    if (existingNotesCount !== orderedNoteIds.length) {
+      return res.status(400).json({
+        message: '저장 완료되지 않은(또는 다른 소유자의) 메모가 포함돼 있어요. 잠시 후 다시 시도해 주세요.'
+      });
+    }
+
     const uniqueBookIds = bookIds && Array.isArray(bookIds) ? [...new Set(bookIds.map(String))] : [];
 
     const newSummaryNote = new SummaryNote({
