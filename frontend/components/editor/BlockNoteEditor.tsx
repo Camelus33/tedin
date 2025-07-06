@@ -5,7 +5,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
-import styles from './BlockNoteEditor.module.css';
+import './BlockNoteEditor.css';
 
 interface BlockNoteEditorProps {
   initialContent?: string;
@@ -195,7 +195,7 @@ export default function BlockNoteEditor({
   }), []);
 
   return (
-    <div className={`${styles.blocknoteEditor} ${className} ${cyberTheme.bgSecondary} rounded-lg border ${cyberTheme.inputBorder}`}>
+    <div className={`blocknote-editor ${className} ${cyberTheme.bgSecondary} rounded-lg border ${cyberTheme.inputBorder}`}>
       <BlockNoteView 
         editor={editor} 
         editable={editable}

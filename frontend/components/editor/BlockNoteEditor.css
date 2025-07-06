@@ -1,109 +1,109 @@
 /* BlockNote 세로 텍스트 문제 해결을 위한 글로벌 CSS */
 
-/* 가장 강력한 글로벌 선택자로 모든 BlockNote 요소에 적용 */
-:global(.ProseMirror) {
+/* 가장 강력한 선택자로 모든 BlockNote 요소에 적용 */
+.ProseMirror {
   writing-mode: horizontal-tb !important;
   direction: ltr !important;
   text-orientation: mixed !important;
 }
 
-:global(.bn-editor) {
+.bn-editor {
   writing-mode: horizontal-tb !important;
   direction: ltr !important;
   text-orientation: mixed !important;
 }
 
-:global(.bn-block-content) {
+.bn-block-content {
   writing-mode: horizontal-tb !important;
   direction: ltr !important;
   text-orientation: mixed !important;
 }
 
-:global(.bn-block-content p) {
+.bn-block-content p {
   writing-mode: horizontal-tb !important;
   direction: ltr !important;
   text-orientation: mixed !important;
 }
 
-:global(.bn-block-content div) {
+.bn-block-content div {
   writing-mode: horizontal-tb !important;
   direction: ltr !important;
   text-orientation: mixed !important;
 }
 
-:global(.bn-container) {
+.bn-container {
   writing-mode: horizontal-tb !important;
   direction: ltr !important;
   text-orientation: mixed !important;
 }
 
-:global(.bn-container *) {
+.bn-container * {
   writing-mode: horizontal-tb !important;
   direction: ltr !important;
   text-orientation: mixed !important;
 }
 
 /* 컨테이너 레벨에서 강제 적용 */
-.blocknoteEditor {
+.blocknote-editor {
   writing-mode: horizontal-tb !important;
   direction: ltr !important;
 }
 
-/* 다크 테마 스타일 (글로벌 적용) */
-:global(.bn-container) {
+/* 다크 테마 스타일 */
+.bn-container {
   background-color: rgb(31, 41, 55) !important;
   color: rgb(209, 213, 219) !important;
 }
 
-:global(.bn-editor) {
+.bn-editor {
   background-color: rgb(31, 41, 55) !important;
   color: rgb(209, 213, 219) !important;
   border: none !important;
 }
 
-:global(.bn-block-content) {
+.bn-block-content {
   color: rgb(209, 213, 219) !important;
 }
 
-:global(.bn-block-content p) {
+.bn-block-content p {
   color: rgb(209, 213, 219) !important;
 }
 
 /* 플레이스홀더 스타일 */
-:global(.bn-block-content[data-placeholder]:before) {
+.bn-block-content[data-placeholder]:before {
   color: rgb(156, 163, 175) !important; /* gray-400 */
 }
 
 /* 선택된 블록 스타일 */
-:global(.bn-block-outer.bn-block-selected) {
+.bn-block-outer.bn-block-selected {
   background-color: rgb(55, 65, 81) !important; /* gray-700 */
 }
 
 /* 툴바 스타일 */
-:global(.bn-toolbar) {
+.bn-toolbar {
   background-color: rgb(55, 65, 81) !important; /* gray-700 */
   border: 1px solid rgb(75, 85, 99) !important; /* gray-600 */
 }
 
-:global(.bn-toolbar button) {
+.bn-toolbar button {
   color: rgb(209, 213, 219) !important;
 }
 
-:global(.bn-toolbar button:hover) {
+.bn-toolbar button:hover {
   background-color: rgb(75, 85, 99) !important; /* gray-600 */
 }
 
 /* 슬래시 메뉴 스타일 */
-:global(.bn-suggestion-menu) {
+.bn-suggestion-menu {
   background-color: rgb(55, 65, 81) !important; /* gray-700 */
   border: 1px solid rgb(75, 85, 99) !important; /* gray-600 */
 }
 
-:global(.bn-suggestion-menu-item) {
+.bn-suggestion-menu-item {
   color: rgb(209, 213, 219) !important;
 }
 
-:global(.bn-suggestion-menu-item:hover),
-:global(.bn-suggestion-menu-item.selected) {
+.bn-suggestion-menu-item:hover,
+.bn-suggestion-menu-item.selected {
   background-color: rgb(34, 197, 94) !important; /* cyan-600 */
 } 
