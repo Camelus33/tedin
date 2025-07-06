@@ -34,7 +34,8 @@ interface User {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const user = useSelector((state: RootState) => state.user);
+  const reduxUser = useSelector((state: RootState) => state.user);
+  const [user, setUser] = useState<User | null>(null);
   const [recentMemos, setRecentMemos] = useState<TSNote[]>([]);
   const [summaryNotes, setSummaryNotes] = useState<SummaryNote[]>([]);
   const [memoCount, setMemoCount] = useState(0);
@@ -68,6 +69,26 @@ export default function DashboardPage() {
     try {
       setIsLoading(true);
       
+      // 사용자 정보 가져오기
+      console.log('🔍 [DEBUG] 0. Starting to fetch user info...');
+      try {
+        const userResponse = await apiClient.get('/auth/me');
+        const userData = Array.isArray(userResponse) ? userResponse[0] : (userResponse?.data || userResponse);
+        console.log('🔍 [DEBUG] 0.5. User data:', userData);
+        setUser(userData);
+             } catch (userError) {
+         console.error('🔍 [DEBUG] Error fetching user info:', userError);
+         // Redux에서 가져온 사용자 정보를 fallback으로 사용
+         if (reduxUser && reduxUser.nickname) {
+           setUser({
+             _id: reduxUser.id || 'unknown',
+             nickname: reduxUser.nickname,
+             email: reduxUser.email || '',
+             profileImage: reduxUser.profileImage || undefined
+           });
+         }
+       }
+      
       // 최근 메모 가져오기 (notes API 사용)
       console.log('🔍 [DEBUG] 1. Starting to fetch recent memos...');
       const memosResponse = await apiClient.get('/notes?limit=3&sort=createdAt:desc');
@@ -99,6 +120,10 @@ export default function DashboardPage() {
       console.log('🔍 [DEBUG] 9. Final mapped notes (최근 3개):', mappedNotes);
       setRecentMemos(mappedNotes);
       console.log('🔍 [DEBUG] 10. Set recentMemos state to:', mappedNotes);
+      
+      // 전체 메모 개수 설정 (실제 API에서 받은 전체 개수 사용)
+      setMemoCount(rawNotes.length);
+      console.log('🔍 [DEBUG] 10.5. Set memoCount to:', rawNotes.length);
 
       // 단권화 노트 가져오기 (최신 3개만 표시)
       console.log('🔍 [DEBUG] 11. Starting to fetch summary notes...');
@@ -259,7 +284,7 @@ export default function DashboardPage() {
         {/* 상태 메시지 */}
         <div className="mb-8">
           <h1 className="text-2xl font-medium text-white">
-            <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 현재 <span className="text-indigo-300">{memoCount}개</span>의 메모를 만들었습니다.
+            <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 현재 <span className="text-indigo-300">{memoCount}개</span>의 메모카드를 작성하셨습니다.
           </h1>
         </div>
 
@@ -373,7 +398,7 @@ export default function DashboardPage() {
                         note={memo}
                         showActions={true}
                         minimalDisplay={true}
-                        className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:border-indigo-400/50 hover:bg-gray-800/60"
+                        className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:border-indigo-400/50 hover:bg-gray-800/60 !pb-3"
                       />
                     </div>
                   );
