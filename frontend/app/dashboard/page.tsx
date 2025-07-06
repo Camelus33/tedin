@@ -75,8 +75,11 @@ export default function DashboardPage() {
       console.log('🔍 [DEBUG] 3. Raw memos data:', memosResponse?.data);
       console.log('🔍 [DEBUG] 4. Is memos data an array?', Array.isArray(memosResponse?.data));
       console.log('🔍 [DEBUG] 5. Memos data length:', memosResponse?.data?.length);
+      console.log('🔍 [DEBUG] 5.5. Is memosResponse directly an array?', Array.isArray(memosResponse));
+      console.log('🔍 [DEBUG] 5.6. memosResponse direct length:', memosResponse?.length);
       
-      const rawNotes = memosResponse?.data || [];
+      // API 응답이 직접 배열인지 확인하고 적절히 처리
+      const rawNotes = Array.isArray(memosResponse) ? memosResponse : (memosResponse?.data || []);
       console.log('🔍 [DEBUG] 6. Raw notes after fallback:', rawNotes);
       
       // 서버는 title 필드를 사용하므로, TSNoteCard에서 필요로 하는 content 필드로 매핑
@@ -101,8 +104,11 @@ export default function DashboardPage() {
       console.log('🔍 [DEBUG] 13. Raw summary notes data:', summaryNotesResponse?.data);
       console.log('🔍 [DEBUG] 14. Is summary notes data an array?', Array.isArray(summaryNotesResponse?.data));
       console.log('🔍 [DEBUG] 15. Summary notes data length:', summaryNotesResponse?.data?.length);
+      console.log('🔍 [DEBUG] 15.5. Is summaryNotesResponse directly an array?', Array.isArray(summaryNotesResponse));
+      console.log('🔍 [DEBUG] 15.6. summaryNotesResponse direct length:', summaryNotesResponse?.length);
       
-      const allSummaryNotes = summaryNotesResponse?.data || [];
+      // API 응답이 직접 배열인지 확인하고 적절히 처리
+      const allSummaryNotes = Array.isArray(summaryNotesResponse) ? summaryNotesResponse : (summaryNotesResponse?.data || []);
       console.log('🔍 [DEBUG] 16. All summary notes after fallback:', allSummaryNotes);
       
       // 클라이언트 사이드에서 최신 3개만 선택
