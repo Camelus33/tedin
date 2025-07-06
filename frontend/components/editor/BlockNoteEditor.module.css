@@ -1,0 +1,110 @@
+/* BlockNote 에디터 커스텀 스타일 */
+.blocknoteEditor {
+  background-color: rgb(31, 41, 55);
+  border-radius: 0.5rem;
+  border: 1px solid rgb(75, 85, 99);
+  overflow: hidden;
+}
+
+/* BlockNote 컨테이너 스타일 */
+.blocknoteEditor :global(.bn-container) {
+  background-color: rgb(31, 41, 55) !important;
+  color: rgb(209, 213, 219) !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+  text-orientation: mixed !important;
+}
+
+/* BlockNote 에디터 메인 영역 */
+.blocknoteEditor :global(.bn-editor) {
+  background-color: rgb(31, 41, 55) !important;
+  color: rgb(209, 213, 219) !important;
+  border: none !important;
+  min-height: 400px !important;
+  padding: 1rem !important;
+  writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+}
+
+/* 블록 콘텐츠 스타일 */
+.blocknoteEditor :global(.bn-block-content) {
+  color: rgb(209, 213, 219) !important;
+  writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+  text-orientation: mixed !important;
+}
+
+.blocknoteEditor :global(.bn-block-content p),
+.blocknoteEditor :global(.bn-block-content h1),
+.blocknoteEditor :global(.bn-block-content h2),
+.blocknoteEditor :global(.bn-block-content h3),
+.blocknoteEditor :global(.bn-block-content h4),
+.blocknoteEditor :global(.bn-block-content h5),
+.blocknoteEditor :global(.bn-block-content h6) {
+  color: rgb(209, 213, 219) !important;
+  writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+  text-orientation: mixed !important;
+}
+
+/* 인라인 콘텐츠 강제 수평 방향 */
+.blocknoteEditor :global(.bn-inline-content),
+.blocknoteEditor :global(.ProseMirror),
+.blocknoteEditor :global(.ProseMirror p),
+.blocknoteEditor :global(.ProseMirror div) {
+  writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+  text-orientation: mixed !important;
+  display: inline !important;
+}
+
+/* 플레이스홀더 스타일 */
+.blocknoteEditor :global(.bn-block-content[data-placeholder]:before) {
+  color: rgb(156, 163, 175) !important;
+  writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+}
+
+/* 선택된 블록 스타일 */
+.blocknoteEditor :global(.bn-block-outer.bn-block-selected) {
+  background-color: rgb(55, 65, 81) !important;
+}
+
+/* 툴바 스타일 */
+.blocknoteEditor :global(.bn-toolbar) {
+  background-color: rgb(55, 65, 81) !important;
+  border: 1px solid rgb(75, 85, 99) !important;
+}
+
+.blocknoteEditor :global(.bn-toolbar button) {
+  color: rgb(209, 213, 219) !important;
+}
+
+.blocknoteEditor :global(.bn-toolbar button:hover) {
+  background-color: rgb(75, 85, 99) !important;
+}
+
+/* 슬래시 메뉴 스타일 */
+.blocknoteEditor :global(.bn-suggestion-menu) {
+  background-color: rgb(55, 65, 81) !important;
+  border: 1px solid rgb(75, 85, 99) !important;
+}
+
+.blocknoteEditor :global(.bn-suggestion-menu-item) {
+  color: rgb(209, 213, 219) !important;
+  writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+}
+
+.blocknoteEditor :global(.bn-suggestion-menu-item:hover),
+.blocknoteEditor :global(.bn-suggestion-menu-item.selected) {
+  background-color: rgb(6, 182, 212) !important;
+}
+
+/* 텍스트 입력 강제 수평 방향 */
+.blocknoteEditor :global(*) {
+  writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+  text-orientation: mixed !important;
+} 

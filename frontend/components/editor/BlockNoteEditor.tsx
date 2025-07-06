@@ -5,6 +5,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
+import styles from './BlockNoteEditor.module.css';
 
 interface BlockNoteEditorProps {
   initialContent?: string;
@@ -194,67 +195,7 @@ export default function BlockNoteEditor({
   }), []);
 
   return (
-    <div className={`blocknote-editor ${className} ${cyberTheme.bgSecondary} rounded-lg border ${cyberTheme.inputBorder}`}>
-      <style jsx global>{`
-        .bn-container {
-          background-color: rgb(31, 41, 55) !important;
-          color: rgb(209, 213, 219) !important;
-        }
-        
-        .bn-editor {
-          background-color: rgb(31, 41, 55) !important;
-          color: rgb(209, 213, 219) !important;
-          border: none !important;
-        }
-        
-        .bn-block-content {
-          color: rgb(209, 213, 219) !important;
-        }
-        
-        .bn-block-content p {
-          color: rgb(209, 213, 219) !important;
-        }
-        
-        /* 플레이스홀더 스타일 */
-        .bn-block-content[data-placeholder]:before {
-          color: rgb(156, 163, 175) !important; /* gray-400 */
-        }
-        
-        /* 선택된 블록 스타일 */
-        .bn-block-outer.bn-block-selected {
-          background-color: rgb(55, 65, 81) !important; /* gray-700 */
-        }
-        
-        /* 툴바 스타일 */
-        .bn-toolbar {
-          background-color: rgb(55, 65, 81) !important; /* gray-700 */
-          border: 1px solid rgb(75, 85, 99) !important; /* gray-600 */
-        }
-        
-        .bn-toolbar button {
-          color: rgb(209, 213, 219) !important;
-        }
-        
-        .bn-toolbar button:hover {
-          background-color: rgb(75, 85, 99) !important; /* gray-600 */
-        }
-        
-        /* 슬래시 메뉴 스타일 */
-        .bn-suggestion-menu {
-          background-color: rgb(55, 65, 81) !important; /* gray-700 */
-          border: 1px solid rgb(75, 85, 99) !important; /* gray-600 */
-        }
-        
-        .bn-suggestion-menu-item {
-          color: rgb(209, 213, 219) !important;
-        }
-        
-        .bn-suggestion-menu-item:hover,
-        .bn-suggestion-menu-item.selected {
-          background-color: rgb(34, 197, 94) !important; /* cyan-600 */
-        }
-      `}</style>
-      
+    <div className={`${styles.blocknoteEditor} ${className}`}>
       <BlockNoteView 
         editor={editor} 
         editable={editable}
