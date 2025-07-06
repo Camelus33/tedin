@@ -194,13 +194,14 @@ export default function BlockNoteEditor({
       color: 'rgb(209, 213, 219)', // gray-300
       borderRadius: '0.5rem',
       border: '1px solid rgb(75, 85, 99)', // gray-600
-      minHeight: '400px',
       padding: '1rem',
+      height: '100%',
+      overflow: 'hidden',
     }
   }), []);
 
   return (
-    <div className={`${styles.blocknoteEditor} ${className}`} style={{ height: '100%', width: '100%', position: 'relative' }}>
+    <div className={`${styles.blocknoteEditor} ${className}`}>
       <BlockNoteView 
         editor={editor} 
         editable={editable}
