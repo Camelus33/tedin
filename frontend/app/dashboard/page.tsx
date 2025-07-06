@@ -450,9 +450,14 @@ export default function DashboardPage() {
                           before:absolute before:top-0 before:left-0 before:w-full before:h-full
                           before:bg-gradient-to-br before:from-transparent before:to-black/5
                           before:rounded-lg before:pointer-events-none
-                          text-gray-800
                           !pb-3
                           backdrop-blur-none
+                          [&_p]:!text-gray-800 [&_p]:!font-semibold
+                          [&_.text-gray-300]:!text-gray-700
+                          [&_.text-white]:!text-gray-800
+                          [&_.text-gray-400]:!text-gray-600
+                          [&_.text-cyan-400]:!text-indigo-700
+                          [&_span]:!text-gray-700
                         `}
                       />
                     </div>
