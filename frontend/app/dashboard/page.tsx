@@ -83,17 +83,20 @@ export default function DashboardPage() {
       console.log('🔍 [DEBUG] 6. Raw notes after fallback:', rawNotes);
       
       // 서버는 title 필드를 사용하므로, TSNoteCard에서 필요로 하는 content 필드로 매핑
-      const mappedNotes = rawNotes.map((n: any) => {
-        console.log('🔍 [DEBUG] 7. Mapping individual note:', n);
-        const mapped = {
-          ...n,
-          content: n.content || n.title || '',
-          tags: n.tags || [],
-        };
-        console.log('🔍 [DEBUG] 8. Mapped note result:', mapped);
-        return mapped;
-      });
-      console.log('🔍 [DEBUG] 9. Final mapped notes:', mappedNotes);
+      // 최근 3개만 선택
+      const mappedNotes = rawNotes
+        .slice(0, 3) // 최근 3개만 선택
+        .map((n: any) => {
+          console.log('🔍 [DEBUG] 7. Mapping individual note:', n);
+          const mapped = {
+            ...n,
+            content: n.content || n.title || '',
+            tags: n.tags || [],
+          };
+          console.log('🔍 [DEBUG] 8. Mapped note result:', mapped);
+          return mapped;
+        });
+      console.log('🔍 [DEBUG] 9. Final mapped notes (최근 3개):', mappedNotes);
       setRecentMemos(mappedNotes);
       console.log('🔍 [DEBUG] 10. Set recentMemos state to:', mappedNotes);
 
@@ -138,6 +141,14 @@ export default function DashboardPage() {
 
   const handleNewReading = () => {
     router.push('/ts');
+  };
+
+  const handleMemoCardClick = (memo: any) => {
+    if (memo.bookId) {
+      router.push(`/books/${memo.bookId}`);
+    } else {
+      console.warn('메모에 bookId가 없습니다:', memo);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -353,7 +364,11 @@ export default function DashboardPage() {
                 {recentMemos.map((memo, index) => {
                   console.log(`🔍 [RENDER] Rendering memo ${index}:`, memo);
                   return (
-                    <div key={memo._id} className={viewMode === 'list' ? 'w-full' : ''}>
+                    <div 
+                      key={memo._id} 
+                      className={`${viewMode === 'list' ? 'w-full' : ''} cursor-pointer`}
+                      onClick={() => handleMemoCardClick(memo)}
+                    >
                       <TSNoteCard
                         note={memo}
                         showActions={true}
