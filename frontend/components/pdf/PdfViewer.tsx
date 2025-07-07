@@ -118,7 +118,7 @@ function PdfViewerComponent({
     };
 
     loadPdf();
-  }, [bookId, onError]);
+  }, [bookId]);
 
   // PDF 문서 로드 성공 핸들러
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
