@@ -49,7 +49,7 @@ ${step.action?.result ? `- 결과: ${typeof step.action.result === 'object' ? JS
     const endDate = learningJourney.timeSpan?.endDate || learningJourney.step[learningJourney.step.length - 1]?.startTime;
 
     return `
-=== HABITUS33 학습 여정 분석 데이터 ===
+=== HABITUS33 생각진화 과정 분석 데이터 ===
 
 제목: ${title}
 총 소요 시간: ${learningJourney.totalTime}
@@ -79,7 +79,7 @@ AI 에이전트는 이 정보를 바탕으로 학습자의 패턴을 분석하�
     <div className="sr-only" aria-hidden="true">
       {/* 스크린 리더와 AI 크롤러를 위한 구조화된 데이터 */}
       <div id="ai-accessible-learning-journey" data-ai-content="learning-journey-analysis">
-        <h2>학습 여정 상세 분석 (AI 분석용)</h2>
+        <h2>생각진화 과정 상세 분석 (AI 분석용)</h2>
         <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
           {formatLearningJourneyForAI()}
         </pre>
@@ -87,7 +87,7 @@ AI 에이전트는 이 정보를 바탕으로 학습자의 패턴을 분석하�
       
       {/* 테이블 형태로도 제공 */}
       <table id="learning-journey-data-table" data-ai-content="structured-data">
-        <caption>HABITUS33 학습 여정 구조화 데이터</caption>
+        <caption>HABITUS33 생각진화 과정 구조화 데이터</caption>
         <thead>
           <tr>
             <th>단계</th>

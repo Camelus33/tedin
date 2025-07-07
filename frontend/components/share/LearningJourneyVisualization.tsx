@@ -274,7 +274,7 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
           {/* 하단 인사이트 - NotebookLM 스타일 */}
           <div className="mt-8 p-4 bg-white/50 backdrop-blur-sm rounded-xl border border-white/30">
             <div className="text-sm text-gray-600">
-              <strong className="text-gray-800">AI 분석 포인트:</strong> 이 학습 여정은 HABITUS33의 "Prompt Free, AI - Link" 철학을 보여줍니다. 
+              <strong className="text-gray-800">AI 분석 포인트:</strong> 이 생각진화 과정은 HABITUS33의 "Prompt Free, AI - Link" 철학을 보여줍니다. 
               {learningJourney.totalSteps || learningJourney.step.length}단계에 걸쳐 작은 시작이 깊은 학습으로 확산되는 파도 효과를 확인할 수 있습니다.
             </div>
           </div>

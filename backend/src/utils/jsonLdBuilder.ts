@@ -93,10 +93,10 @@ interface SummaryNoteData {
 
 // Mapping of reading purposes to question sets for memo evolution
 const memoEvolutionQuestionMap: Record<string, string[]> = {
-  exam_prep: ['어떤 부분이 중요하다고 느껴졌나요?', '처음 봤을 때, 어떤 느낌이 들었나요?', '기존의 어떤 지식이 연상되나요?', '표현할 수 있는 방법은 무엇인가요?'],
-  practical_knowledge: ['어떻게 내 업무와 연결되나요?', '이것을 몰라 불편했던 경험이 있나요?', '이 메모는 어떤 나의 경험/지식과 연상시키나요?', '이것의 핵심을 한 문장으로 설명해 본다면?'],
-  humanities_self_reflection: ['이 메모, 어떤 감정/생각을 불러일으켰나요?', '메모를 적던 당시 상황은 무엇을 떠올리게 하나요?', '이 메모, 어떤 다른 지식을 연상시키나요?', '이 메모의 내용을 한 폭의 그림이나 장면으로 묘사한다면?'],
-  reading_pleasure: ['이 메모, 어떤 점이 가장 흥미로웠나요?', '이 구절을 읽을 때, 어떤 기분이었나요?', '이 메모의 즐거움, 어떤 다른 작품/경험을 떠올리게 하나요?', '책 속의 어떤 장면이 머릿속에 생생하게 그려졌나요?'],
+  exam_prep: ['이 정보의 핵심은 무엇이라고 생각하시나요?', '이 정보를 접했을 때, 어떤 생각이나 감정이 먼저 떠올랐나요?', '이것은 당신의 어떤 기존 지식과 연결되나요?', '이 개념을 하나의 이미지나 비유로 표현한다면?'],
+  practical_knowledge: ['이것을 어떻게 당신의 일과 연결할 수 있나요?', '이 정보를 몰라서 불편했던 경험이 있나요?', '이것이 당신의 어떤 경험/지식과 연결되나요?', '이것의 핵심을 한 문장으로 설명한다면?'],
+  humanities_self_reflection: ['이 메모는 어떤 감정이나 생각을 불러일으키나요?', '이 메모를 기록할 당시의 상황은 무엇을 떠올리게 하나요?', '이 메모는 어떤 다른 지식과 연결되나요?', '이 내용을 하나의 이미지나 장면으로 묘사한다면?'],
+  reading_pleasure: ['이 메모의 어떤 점이 가장 흥미로웠나요?', '이 구절을 읽을 때 어떤 기분이었나요?', '이 메모의 즐거움이 어떤 다른 작품이나 경험을 떠올리게 하나요?', '책 속 어떤 장면이 머릿속에 생생하게 그려졌나요?'],
 };
 
 /**
@@ -211,28 +211,28 @@ const ACTION_MODULES = {
 // --- 2. 지식 페르소나 상수 ---
 const KNOWLEDGE_PERSONAS = {
   Visualizer: {
-    profileDescription: "이 학습자는 개념을 공고히 하기 위해 '시각적 이미지'를 활용하는 경향이 강합니다.",
+    profileDescription: "이 사용자는 개념을 시각적 이미지로 구조화하여 이해하는 경향이 강합니다.",
     interactionStrategyForLLM: {
       communicationStyle: "아이디어들을 시각적으로 구조화할 수 있도록 마인드맵이나 순서도 생성을 먼저 제안하시오.",
-      questioningStyle: "'이것을 그림으로 표현한다면 어떤 모습일까요?' 와 같이 시각화를 유도하는 질문을 던져 학습자의 사고를 자극하시오."
+      questioningStyle: "'이것을 그림으로 표현한다면 어떤 모습일까요?' 와 같이 시각화를 유도하는 질문을 던져 사용자의 사고를 자극하시오."
     }
   },
   Connector: {
-    profileDescription: "이 학습자는 새로운 정보를 기존 지식과 '연결'하여 이해하는 것을 선호합니다.",
+    profileDescription: "이 사용자는 새로운 정보를 기존 지식과 '연결'하여 이해하는 것을 선호합니다.",
     interactionStrategyForLLM: {
       communicationStyle: "유추와 비유를 적극적으로 사용하여 설명하시오.",
-      questioningStyle: "'이것은 무엇을 떠오르게 하나요?' 와 같이 연결을 유도하는 질문을 던져 학습자의 사고를 자극하시오."
+      questioningStyle: "'이 개념은 당신의 지식 중 어떤 것과 가장 강하게 연결되나요?' 와 같이 연결을 유도하는 질문을 던져 사용자의 사고를 자극하시오."
     }
   },
   Theorist: {
-    profileDescription: "이 학습자는 개별 사실보다 그背后의 '핵심 원리나 이론'을 파악하는 것을 중요하게 생각합니다.",
+    profileDescription: "이 사용자는 개별 사실보다 그 배후의 '핵심 원리나 이론'을 파악하는 것을 중요하게 생각합니다.",
     interactionStrategyForLLM: {
       communicationStyle: "논리적이고 체계적인 구조로 설명하고, 관련 이론이나 모델을 함께 제시하시오.",
       questioningStyle: "'이 현상의 근본적인 원칙은 무엇일까요?' 와 같이 본질을 탐구하는 질문을 던지시오."
     }
   },
   Pragmatist: {
-    profileDescription: "이 학습자는 지식이 '실제 어떤 상황'에서 어떻게 사용되는지에 대한 실용적 맥락을 중시합니다.",
+    profileDescription: "이 사용자는 지식이 '실제 어떤 상황'에서 어떻게 사용되는지에 대한 실용적 맥락을 중시합니다.",
     interactionStrategyForLLM: {
       communicationStyle: "구체적인 사례나 실제 적용 예시를 중심으로 설명하시오.",
       questioningStyle: "'이 지식을 실제로 어떻게 사용할 수 있을까요?' 와 같이 적용을 유도하는 질문을 던지시오."
@@ -262,10 +262,10 @@ const analyzeKnowledgePersonality = (notes: PopulatedTSNote[]): KnowledgePersona
     return {
       '@type': 'KnowledgePersonality',
       primaryType: 'Balanced',
-      profileDescription: "이 학습자는 다양한 메모 방식을 균형있게 활용합니다.",
+      profileDescription: "이 사용자는 다양한 메모 방식을 균형있게 활용합니다.",
       interactionStrategyForLLM: {
-        communicationStyle: "상황에 맞는 다양한 설명 방식을 사용하고, 학습자의 다음 행동을 예측하여 여러 옵션을 제안하시오.",
-        questioningStyle: "개방형 질문과 구체적인 질문을 조합하여 학습자의 사고를 다각도로 자극하시오."
+        communicationStyle: "상황에 맞는 다양한 설명 방식을 사용하고, 사용자의 다음 행동을 예측하여 여러 옵션을 제안하시오.",
+        questioningStyle: "개방형 질문과 구체적인 질문을 조합하여 사용자의 사고를 다각도로 자극하시오."
       }
     };
   }
@@ -284,10 +284,10 @@ const analyzeKnowledgePersonality = (notes: PopulatedTSNote[]): KnowledgePersona
     return {
       '@type': 'KnowledgePersonality',
       primaryType: 'Balanced',
-      profileDescription: "이 학습자는 다양한 메모 방식을 균형있게 활용하거나, 아직 메모 진화 기능을 사용하지 않았습니다.",
+      profileDescription: "이 사용자는 다양한 메모 방식을 균형있게 활용하거나, 아직 메모 진화 기능을 사용하지 않았습니다.",
       interactionStrategyForLLM: {
-        communicationStyle: "상황에 맞는 다양한 설명 방식을 사용하고, 학습자의 다음 행동을 예측하여 여러 옵션을 제안하시오.",
-        questioningStyle: "개방형 질문과 구체적인 질문을 조합하여 학습자의 사고를 다각도로 자극하시오."
+        communicationStyle: "상황에 맞는 다양한 설명 방식을 사용하고, 사용자의 다음 행동을 예측하여 여러 옵션을 제안하시오.",
+        questioningStyle: "개방형 질문과 구체적인 질문을 조합하여 사용자의 사고를 다각도로 자극하시오."
       }
     };
   }
@@ -421,7 +421,7 @@ const buildEpistemicFramework = async (beliefNetwork: any, notes: PopulatedTSNot
     return {
       '@type': 'EpistemicFramework',
       status: 'insufficient_data',
-      description: '아직 충분한 사고 패턴 데이터가 수집되지 않았습니다.',
+      description: '아직 충분한 생각진화 데이터가 수집되지 않았습니다.',
       totalNodes: 0,
       totalEdges: 0,
       thinkingPatterns: [],
@@ -445,7 +445,7 @@ const buildEpistemicFramework = async (beliefNetwork: any, notes: PopulatedTSNot
   return {
     '@type': 'EpistemicFramework',
     status: 'analyzed',
-    description: `${beliefNetwork.nodes.length}개의 신념 노드와 ${beliefNetwork.edges.length}개의 관계를 바탕으로 분석된 사고 패턴`,
+    description: `${beliefNetwork.nodes.length}개의 개념 노드와 ${beliefNetwork.edges.length}개의 관계로 분석된 생각진화 패턴`,
     totalNodes: beliefNetwork.nodes.length,
     totalEdges: beliefNetwork.edges.length,
     lastUpdated: beliefNetwork.lastUpdated,
@@ -747,7 +747,7 @@ const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePerson
 
   // PBAM 기반 사고 패턴 요약 추가
   const thinkingPatternSummary = epistemicFramework?.status === 'analyzed'
-    ? `• 사고 패턴: ${getThinkingPatternDescription(epistemicFramework.aiGuidance)} (신념 노드 ${epistemicFramework.totalNodes}개, 관계 ${epistemicFramework.totalEdges}개 분석)`
+    ? `• 사고 패턴: ${getThinkingPatternDescription(epistemicFramework.aiGuidance)} (개념 노드 ${epistemicFramework.totalNodes}개, 관계 ${epistemicFramework.totalEdges}개 분석)`
     : '• 사고 패턴: 아직 충분한 데이터가 수집되지 않음.';
 
   return `
@@ -759,7 +759,7 @@ const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePerson
 • 주요 주제: ${mainTopics}
 • 포함된 1줄메모 수: ${summaryNoteData.notes?.length || 0}개
 
-**2. 소유자의 학습 및 창작 성향:**
+**2. 소유자의 사고 및 창작 성향:**
 ${personaSummary}
 ${creativeStyleSummary}
 ${thinkingPatternSummary}
@@ -1052,7 +1052,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         },
         result: {
           '@type': 'WebPage',
-          description: 'AI 에이전트가 분석 가능한 구조화된 학습 데이터'
+          description: 'AI 에이전트가 분석 가능한 구조화된 생각진화 데이터'
         },
         startTime: TimeUtils.toISOString(currentTime)
       }
@@ -1064,8 +1064,8 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     // Schema.org HowTo 구조로 변환
     return {
       '@type': 'HowTo',
-      name: '하비투스33 학습 여정',
-      description: '아토믹 리딩부터 AI 링크 생성까지의 완전한 학습 과정',
+      name: '하비투스33 생각진화 과정',
+      description: '아토믹 리딩에서 생각진화 과정을 AI에게 전달하고, 온톨로지 지식 그래프 기반 인과 추론까지 이어지는 전체 흐름',
       totalTime: timeRequired,
       step: learningEvents.map((event, index) => ({
         '@type': 'HowToStep',
@@ -1077,7 +1077,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       })),
       learningOutcome: {
         '@type': 'LearningOutcome',
-        description: '체계적인 지식 관리와 AI 에이전트와의 효과적 상호작용을 위한 구조화된 학습 데이터 생성',
+        description: '체계적인 지식 관리와 AI 에이전트와의 효과적 상호작용을 위한 구조화된 사고 데이터 생성',
         totalSteps: learningEvents.length,
         timeSpan: learningEvents.length > 0 ? {
           startDate: TimeUtils.toISOString(learningEvents[0].timestamp),
@@ -1087,26 +1087,26 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     };
   };
 
-  // 학습 여정 생성
-  const learningJourney = buildLearningJourney(summaryNoteData);
+  // 생각진화 과정 생성
+  const thoughtEvolutionJourney = buildLearningJourney(summaryNoteData);
 
-  // 하비투스33 학습 방법론 및 시스템 맥락 정보
+  // 하비투스33 방법론 및 시스템 맥락 정보
   const methodologyContext = {
     "@type": "EducationalFramework",
     "name": "Atomic Reading",
     "description": "3분 읽고 1줄 메모 단위의 초집중 독서를 통한 개인화된 지식관리 방법론",
     "learningResourceType": "methodology",
-    "educationalUse": "self-directed learning",
-    "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 작은 물방울이 깊은 학습의 파도로 확산되는 방법론",
+    "educationalUse": "self-directed thinking",
+    "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 작은 물방울이 깊은 사고의 파도로 확산되는 방법론",
     "timeRequired": "PT3M",
     "pageUnit": "1줄 메모",
     "methodology": {
       "atomicReading": {
-        "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 작은 물방울이 깊은 학습의 파도로 확산되는 방법론",
+        "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 작은 물방울이 깊은 사고의 파도로 확산되는 방법론",
         "timeUnit": "3분 (180초)",
         "pageUnit": "11페이지",
-        "cognitiveLoad": "최소화된 인지부하로 지속가능한 학습 패턴 형성",
-        "purpose": "완독 부담 제거, 첫 페이지를 넘기는 용기 제공, 성취감을 통한 학습 동기 유지"
+        "cognitiveLoad": "최소화된 인지부하로 지속가능한 사고 패턴 형성",
+        "purpose": "완독 부담 제거, 첫 페이지를 넘기는 용기 제공, 성취감을 통한 사고 동기 유지"
       },
       "thoughtSprints": {
         "definition": "TS(Thought Sprints) 모드를 통한 집중독서 세션",
@@ -1126,14 +1126,14 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       "knowledgeManagement": {
         "atomicNotes": "최소 의미 단위의 1줄메모로 복잡한 지식을 원자 단위로 분해",
         "contextualLinking": "관련링크를 통한 지식 네트워크 형성, 연결 이유 명시로 맥락 보존",
-        "spacedRepetition": "플래시카드를 통한 간격반복학습으로 장기기억 전환",
+        "spacedRepetition": "플래시카드를 통한 간격 반복으로 장기기억 전환",
         "synthesisMode": "단권화 노트를 통한 지식 재구성 및 개인적 인사이트 도출"
       }
     },
     "dataMetrics": {
       "ppmSignificance": "분당 페이지 수(PPM)는 읽기속도, 정보처리능력, 문해력을 종합한 개인화 지표",
-              "sessionAnalysis": "3분 단위 세션데이터는 학습자의 인지적 특성과 최적 학습 파도 패턴 발견에 활용",
-      "progressTracking": "지속적 데이터 수집을 통한 개인별 학습 효율성 최적화"
+      "sessionAnalysis": "3분 단위 세션데이터는 사용자의 인지적 특성과 최적 사고 흐름 패턴 발견에 활용",
+      "progressTracking": "지속적 데이터 수집을 통한 개인별 사고 효율성 최적화"
     }
   };
 
@@ -1225,7 +1225,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
           "efficiency": sessionDetails.ppm && sessionDetails.ppm > 3 ? "높은 정보처리능력" : 
                        sessionDetails.ppm && sessionDetails.ppm > 2 ? "보통 정보처리능력" : "신중한 독서 패턴"
         },
-        "educationalContext": "3분 읽고 1줄 메모 Atomic Reading 원칙에 따른 지속가능한 학습 세션"
+        "educationalContext": "3분 읽고 1줄 메모 Atomic Reading 원칙에 따른 지속가능한 사고 세션"
       };
     }
 
@@ -1261,7 +1261,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       notePart.creator = {
         "@id": `h33r:user:${user._id}`,
         "@type": "Person",
-        "name": user?.name ?? user?.email ?? "학습자"
+        "name": user?.name ?? user?.email ?? "사용자"
       };
     }
 
@@ -1292,11 +1292,11 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
             "text": fieldValue,
             "author": {
               "@type": "Person",
-              "name": user?.name ?? user?.email ?? "학습자",
+              "name": user?.name ?? user?.email ?? "사용자",
             },
             "dateCreated": preferredNoteTime ? TimeUtils.toISOString(preferredNoteTime) : 
                           (sessionDetails?.createdAtISO ? new Date(sessionDetails.createdAtISO).toISOString() : undefined),
-            "learningContext": `${purpose} 단계에서 학습자가 직접 성찰하고 기록한 내용`
+            "learningContext": `${purpose} 단계에서 사용자가 직접 성찰하고 기록한 내용`
           }
         });
       }
@@ -1314,12 +1314,12 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
           url: link.url,
           identifier: `knowledge-link-${index + 1}-${linkIndex + 1}`,
           educationalPurpose: "1줄메모와 맥락적으로 연결된 확장 지식 자원",
-          linkingStrategy: "학습자가 직접 선별하고 연결 이유를 명시한 큐레이션된 지식 네트워크"
+          linkingStrategy: "사용자가 직접 선별하고 연결 이유를 명시한 큐레이션된 지식 네트워크"
         };
         
         if (link.reason) {
           citation.description = link.reason;
-          citation.connectionRationale = `학습자가 직접 기록한 연결 이유: ${link.reason}`;
+          citation.connectionRationale = `사용자가 직접 기록한 연결 이유: ${link.reason}`;
         }
 
         switch (link.type) {
@@ -1356,13 +1356,19 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         "description": link.reason || "1줄메모와 맥락적으로 연결된 확장 정보",
         "isPartOf": {
           "@type": "Course", 
-          "name": "하비투스33 개인화 학습 과정"
+          "name": "하비투스33 개인화 사고 과정"
         },
         "potentialAction": {
           "@type": "ReadAction",
           "target": link.url,
           "actionStatus": "PotentialActionStatus",
-          "description": `이 링크의 내용을 분석하여 다음 1줄메모와의 연결점을 찾아주세요: "${content}"`
+          "description": `이 링크의 내용을 분석하여 다음 1줄메모와의 연결점을 찾아주세요: "${content}"`,
+          "reason": link.reason,
+          "connectedBy": {
+            "@id": `h33r:user:${user._id}`,
+            "@type": "Person",
+            "name": user?.name ?? user?.email ?? "사용자"
+          }
         },
         "contextualConnection": {
           "sourceNote": content,
@@ -1396,7 +1402,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       "@id": `h33r:user:${user._id}`,
       "@type": "Person",
       "name": user?.name ?? user?.email ?? "알 수 없는 사용자",
-      "roleName": "능동적 학습자 (Active Learner)"
+      "roleName": "지식 구축가 (Knowledge Architect)"
     },
     "datePublished": createdAt ? new Date(createdAt).toISOString() : new Date().toISOString(),
     "timeRequired": timeRequired, // 총 독서 시간 추가
@@ -1405,7 +1411,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     "educationalUse": readingPurpose || "General Knowledge Acquisition",
     "audience": {
       "@type": "EducationalAudience",
-      "educationalRole": "학습자, 연구자, 지식 관리 전문가"
+      "educationalRole": "지식 노동자, 연구자, 전문가"
     },
     "genre": "지식관리, 학습분석, 개인화 교육",
     "totalTime": totalReadingTimeISO,
@@ -1458,7 +1464,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         },
         "answerType": "개인적 인사이트 및 종합적 분석",
         "cognitiveProcess": "다수의 1줄메모를 통합하여 고차원적 통찰 생성",
-        "learningEvidence": "학습자의 지식 연결능력, 비판적 사고, 창의적 통합 능력의 증거"
+        "learningEvidence": "사용자의 지식 연결능력, 비판적 사고, 창의적 통합 능력의 증거"
       }
     };
     
@@ -1498,18 +1504,18 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
   }
 
   // 학습 여정 추가
-  jsonLd.learningJourney = learningJourney;
+  jsonLd.learningJourney = thoughtEvolutionJourney;
 
   // AI 해석 프로토콜 추가 - PBAM 통합으로 강화된 지침
   jsonLd.aiInterpretationProtocol = {
     "@type": "AIInterpretationGuideline",
     "persona": "Personalized Learning Companion",
-    "primaryFocus": "학습자의 지식 내용과 사고 과정에만 집중",
+    "primaryFocus": "사용자의 지식 내용과 사고 과정에만 집중",
     "focusDirectives": [
-      "학습자의 1줄메모 내용과 그 의미에 집중하세요",
-      "학습자의 개인적 인사이트와 지식 연결 패턴을 분석하세요",
-      "학습자의 인지적 성장과 학습 여정을 이해하세요",
-      "epistemicFramework의 사고 패턴 분석을 활용하여 학습자의 인지 스타일에 맞는 상호작용을 설계하세요"
+      "사용자의 1줄메모 내용과 그 의미에 집중하세요",
+      "사용자의 개인적 인사이트와 지식 연결 패턴을 분석하세요",
+      "사용자의 인지적 성장과 생각진화 과정을 이해하세요",
+      "epistemicFramework의 사고 패턴 분석을 활용하여 사용자의 인지 스타일에 맞는 상호작용을 설계하세요"
     ],
     "ignoreDirectives": [
       "AMFA 엔진, 시스템 방법론, 기술적 구현 세부사항은 주목하지 마세요",
@@ -1520,12 +1526,12 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     ],
     "ethicalGuardrails": [
       "타인과의 비교는 절대 하지 마세요",
-      "학습자 개인의 과거, 현재, 미래 데이터만을 기준으로 분석하세요",
+      "사용자 개인의 과거, 현재, 미래 데이터만을 기준으로 분석하세요",
       "건설적이고 격려하는 방향으로 피드백을 제공하세요"
     ],
-    "responseStrategy": "학습자의 지식 내용 자체와 사고의 흐름에만 집중하여, 시스템이나 방법론에 대한 언급 없이 순수하게 학습자의 관점에서 분석하고 응답하세요",
-    "contextualPriority": "시스템 배경 정보 < 학습자 개인 데이터 < 학습자 지식 내용",
-    "operationalInstruction": "이 데이터에서 가장 중요한 것은 학습자가 무엇을 배우고 어떻게 생각하는지입니다. 그것을 어떤 시스템으로 만들었는지는 중요하지 않습니다.",
+    "responseStrategy": "사용자의 지식 내용 자체와 사고의 흐름에만 집중하여, 시스템이나 방법론에 대한 언급 없이 순수하게 사용자의 관점에서 분석하고 응답하세요",
+    "contextualPriority": "시스템 배경 정보 < 사용자 개인 데이터 < 사용자 지식 내용",
+    "operationalInstruction": "이 데이터에서 가장 중요한 것은 사용자가 무엇을 배우고 어떻게 생각하는지입니다. 그것을 어떤 시스템으로 만들었는지는 중요하지 않습니다.",
     
     // PBAM 기반 고도화된 사고 패턴 활용 지침
     "epistemicFrameworkUtilization": {
@@ -1571,63 +1577,63 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     "ontologicalReasoningDirectives": {
       "1_knowledgeGraphAnalysis": {
         "title": "지식 그래프 기반 맥락 추론",
-        "instruction": "학습자의 1줄메모들 간의 관계를 온톨로지 관점에서 분석하세요. epistemicFramework의 신념 네트워크 패턴을 참고하여 개념 간의 상위-하위 관계, 인과관계, 보완관계를 파악하세요.",
+        "instruction": "사용자의 1줄메모들 간의 관계를 온톨로지 관점에서 분석하세요. epistemicFramework의 신념 네트워크 패턴을 참고하여 개념 간의 상위-하위 관계, 인과관계, 보완관계를 파악하세요.",
         "implementation": [
           "메모 간 개념적 연결고리를 찾아 지식 네트워크를 구성하세요",
-          "학습자의 사고 흐름에서 반복되는 패턴이나 중심 개념을 식별하세요",
-          "외부 링크와 메모의 관계에서 학습자의 관심 영역과 탐구 방향을 파악하세요",
-          "epistemicFramework의 thinkingPatterns를 참고하여 학습자의 지식 연결 선호도를 이해하세요"
+          "사용자의 사고 흐름에서 반복되는 패턴이나 중심 개념을 식별하세요",
+          "외부 링크와 메모의 관계에서 사용자의 관심 영역과 탐구 방향을 파악하세요",
+          "epistemicFramework의 thinkingPatterns를 참고하여 사용자의 지식 연결 선호도를 이해하세요"
         ]
       },
       "2_contextualPersonalization": {
         "title": "맥락 기반 개인화 추론",
-        "instruction": "학습자의 개인적 맥락과 epistemicFramework의 인지 스타일을 기반으로 개인화된 추론을 수행하세요. 같은 내용이라도 학습자의 사고 패턴에 따라 다른 의미와 가치를 가질 수 있음을 인식하세요.",
+        "instruction": "사용자의 개인적 맥락과 epistemicFramework의 인지 스타일을 기반으로 개인화된 추론을 수행하세요. 같은 내용이라도 사용자의 사고 패턴에 따라 다른 의미와 가치를 가질 수 있음을 인식하세요.",
         "implementation": [
-          "학습자의 읽기 목적(시험준비, 실무지식, 인문학적 성찰)에 맞는 관점으로 해석하세요",
-          "학습자가 중요하게 여기는 가치나 관심사를 메모에서 추출하여 반영하세요",
-          "학습자의 직업, 전공, 생활 맥락을 고려한 실용적 연결점을 제안하세요",
+          "사용자의 읽기 목적(시험준비, 실무지식, 인문학적 성찰)에 맞는 관점으로 해석하세요",
+          "사용자가 중요하게 여기는 가치나 관심사를 메모에서 추출하여 반영하세요",
+          "사용자의 직업, 전공, 생활 맥락을 고려한 실용적 연결점을 제안하세요",
           "epistemicFramework의 cognitiveApproach에 따라 정보 처리 방식을 조정하세요"
         ]
       },
       "3_temporalEvolutionTracking": {
         "title": "시간적 변화 패턴 인식",
-        "instruction": "학습자의 지식과 사고가 시간에 따라 어떻게 진화하고 있는지 추적하세요. epistemicFramework의 신념 강도 변화와 함께 사고 발전 과정을 분석하세요.",
+        "instruction": "사용자의 지식과 사고가 시간에 따라 어떻게 진화하고 있는지 추적하세요. epistemicFramework의 신념 강도 변화와 함께 사고 발전 과정을 분석하세요.",
         "implementation": [
-          "메모 생성 시점을 고려하여 학습자의 사고 발전 과정을 분석하세요",
+          "메모 생성 시점을 고려하여 사용자의 사고 발전 과정을 분석하세요",
           "초기 메모와 후기 메모 간의 관점 변화나 이해 심화를 인식하세요",
-          "학습자의 지식 성장 궤적을 바탕으로 다음 학습 방향을 예측하세요",
-          "epistemicFramework의 beliefStrength 패턴을 통해 학습자의 확신도 변화를 파악하세요"
+          "사용자의 지식 성장 궤적을 바탕으로 다음 사고 방향을 예측하세요",
+          "epistemicFramework의 beliefStrength 패턴을 통해 사용자의 확신도 변화를 파악하세요"
         ]
       },
       "4_insightSynthesis": {
         "title": "지식 연결망 기반 통찰 도출",
-        "instruction": "개별 메모들을 연결하여 학습자가 명시적으로 표현하지 않은 잠재적 통찰을 도출하세요. epistemicFramework의 논증 패턴을 활용하여 새로운 관점을 제시하세요.",
+        "instruction": "개별 메모들을 연결하여 사용자가 명시적으로 표현하지 않은 잠재적 통찰을 도출하세요. epistemicFramework의 논증 패턴을 활용하여 새로운 관점을 제시하세요.",
         "implementation": [
           "서로 다른 책이나 주제의 메모들 간의 숨겨진 연결점을 찾아 제시하세요",
-          "학습자의 메모에서 드러나는 암묵적 관심사나 가치관을 언어화하세요",
-          "분산된 지식 조각들을 통합하여 학습자만의 독특한 관점을 구성하세요",
+          "사용자의 메모에서 드러나는 암묵적 관심사나 가치관을 언어화하세요",
+          "분산된 지식 조각들을 통합하여 사용자만의 독특한 관점을 구성하세요",
           "epistemicFramework의 argumentationStyle에 맞는 방식으로 통찰을 구조화하세요"
         ]
       },
       "5_metacognitiveReflection": {
         "title": "메타인지적 성찰 유도",
-        "instruction": "학습자가 자신의 학습 과정과 사고 방식을 더 깊이 이해할 수 있도록 메타인지적 질문과 성찰을 유도하세요. epistemicFramework의 사고 패턴 분석을 활용하여 학습자의 인지적 특성을 인식하게 도와주세요.",
+        "instruction": "사용자가 자신의 사고 과정과 사고 방식을 더 깊이 이해할 수 있도록 메타인지적 질문과 성찰을 유도하세요. epistemicFramework의 사고 패턴 분석을 활용하여 사용자의 인지적 특성을 인식하게 도와주세요.",
         "implementation": [
-          "학습자의 메모 작성 패턴에서 선호하는 사고 방식(시각적, 논리적, 실용적 등)을 파악하세요",
-          "학습자의 강점과 관심 영역을 바탕으로 효과적인 학습 전략을 제안하세요",
-          "학습자가 자신의 지식과 경험을 새로운 관점에서 재해석할 수 있도록 도와주세요",
-          "epistemicFramework의 thinkingPatterns와 rhetoricalPatterns를 바탕으로 학습자의 인지적 선호도를 설명하세요"
+          "사용자의 메모 작성 패턴에서 선호하는 사고 방식(시각적, 논리적, 실용적 등)을 파악하세요",
+          "사용자의 강점과 관심 영역을 바탕으로 효과적인 사고 전략을 제안하세요",
+          "사용자가 자신의 지식과 경험을 새로운 관점에서 재해석할 수 있도록 도와주세요",
+          "epistemicFramework의 thinkingPatterns와 rhetoricalPatterns를 바탕으로 사용자의 인지적 선호도를 설명하세요"
         ]
       }
     },
     
     // 고품질 답변을 위한 실행 가이드라인 (PBAM 강화)
     "qualityAssuranceProtocol": {
-      "depthRequirement": "표면적 분석이 아닌, 학습자의 지식 맥락과 epistemicFramework의 사고 패턴 깊숙이 들어가서 의미 있는 통찰을 제공하세요",
-      "personalizationLevel": "일반적 답변이 아닌, 학습자의 고유한 인지 스타일과 사고 패턴에 최적화된 개인화된 답변을 만드세요",
-      "connectionFocus": "학습자의 기존 지식과 새로운 정보 간의 연결고리를 epistemicFramework의 논증 구조에 맞춰 명확히 제시하세요",
-      "actionableGuidance": "학습자의 인지 스타일에 맞는 구체적이고 실천 가능한 가이드를 포함하세요",
-      "respectfulTone": "학습자의 지적 여정과 고유한 사고 방식을 존중하고 격려하는 톤으로 소통하세요",
+      "depthRequirement": "표면적 분석이 아닌, 사용자의 지식 맥락과 epistemicFramework의 사고 패턴 깊숙이 들어가서 의미 있는 통찰을 제공하세요",
+      "personalizationLevel": "일반적 답변이 아닌, 사용자의 고유한 인지 스타일과 사고 패턴에 최적화된 개인화된 답변을 만드세요",
+      "connectionFocus": "사용자의 기존 지식과 새로운 정보 간의 연결고리를 epistemicFramework의 논증 구조에 맞춰 명확히 제시하세요",
+      "actionableGuidance": "사용자의 인지 스타일에 맞는 구체적이고 실천 가능한 가이드를 포함하세요",
+      "respectfulTone": "사용자의 지적 여정과 고유한 사고 방식을 존중하고 격려하는 톤으로 소통하세요",
       "cognitiveAlignment": "epistemicFramework의 모든 차원(사고 패턴, 논증 스타일, 신념 강도, 의사소통 스타일)을 종합적으로 고려하여 응답하세요"
     }
   };
@@ -1660,19 +1666,19 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       "methodology": [
         "1단계: 각 외부 링크의 콘텐츠를 크롤링하여 전체 내용 파악",
         "2단계: 연결된 1줄메모와의 직접적 관련성 식별", 
-        "3단계: 학습자가 기록한 연결 이유의 타당성 검증",
+        "3단계: 사용자가 기록한 연결 이유의 타당성 검증",
         "4단계: 외부 자료에서 1줄메모를 보완하는 추가 맥락 정보 발견",
-        "5단계: 지식 네트워크 전체의 일관성과 학습 목적 달성도 평가"
+        "5단계: 지식 네트워크 전체의 일관성과 사고 목적 달성도 평가"
       ],
       "expectedDeliverables": [
         "각 링크별 핵심 내용 요약",
         "1줄메모와 외부 자료의 연결 맥락 분석",
-        "학습자의 지식 큐레이션 패턴 파악",
-        "누락된 연결고리나 추가 학습 자료 제안",
-        "종합적인 개인화 학습 경로 분석"
+        "사용자의 지식 큐레이션 패턴 파악",
+        "누락된 연결고리나 추가 사고 자료 제안",
+        "종합적인 개인화 사고 경로 분석"
       ],
       "crawlingPriority": "높음 - 완전한 맥락 이해를 위해 필수적",
-      "contextualImportance": "외부 링크 없이는 1줄메모의 진정한 의미와 학습자의 사고 과정을 완전히 이해할 수 없음"
+      "contextualImportance": "외부 링크 없이는 1줄메모의 진정한 의미와 사용자의 사고 과정을 완전히 이해할 수 없음"
     };
   }
 
