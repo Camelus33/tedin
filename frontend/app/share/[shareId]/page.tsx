@@ -44,8 +44,9 @@ const formatSessionDuration = (seconds?: number): string => {
   return durationString.trim();
 };
 
-const formatPPM = (ppm?: number): string => {
-  if (ppm === undefined) return '정보 없음';
+const formatPPM = (ppm?: number | null): string => {
+  // 값이 없거나 숫자가 아닐 때 안전 처리
+  if (ppm == null || !Number.isFinite(ppm)) return '정보 없음';
   return `분당 ${ppm.toFixed(1)} 페이지`;
 };
 
