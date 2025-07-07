@@ -850,8 +850,18 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
   const suggestedActions = buildSuggestedActions(creativePersona, allTags);
   
   // --- PBAM 데이터 수집 및 분석 ---
-  const beliefNetwork = await getBeliefNetwork(user._id);
-  const epistemicFramework = await buildEpistemicFramework(beliefNetwork, notes);
+  // 사용자 정보(user)가 없을 수 있는 공유 링크(비로그인) 상황을 대비하여 방어 로직 추가
+  let beliefNetwork: any | null = null;
+  let epistemicFramework: any | null = null;
+
+  if (user && user._id) {
+    // 로그인 사용자의 경우에만 신념 네트워크(PBAM) 분석을 수행
+    beliefNetwork = await getBeliefNetwork(user._id);
+    epistemicFramework = await buildEpistemicFramework(beliefNetwork, notes);
+  } else {
+    // 비로그인(anonymous) 접근 시에는 분석 데이터를 생성하지 않고 "no_data" 상태로 처리
+    epistemicFramework = { status: 'no_user' };
+  }
   
   const executiveSummary = buildExecutiveSummary(summaryNoteData, knowledgePersonality, creativePersona, epistemicFramework);
 
