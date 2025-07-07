@@ -16,8 +16,11 @@ export interface IBook extends Document {
   avgPpm?: number | null;
   readingPurpose?: 'exam_prep' | 'practical_knowledge' | 'humanities_self_reflection' | 'reading_pleasure' | null;
   purchaseLink?: string;
-  pdfUrl?: string;
-  pdfFileSize?: number;
+  // PDF 관련 필드 - 로컬 저장용
+  hasLocalPdf?: boolean; // 로컬에 PDF가 저장되어 있는지 여부
+  pdfFileName?: string; // 원본 파일명
+  pdfFileSize?: number; // 파일 크기
+  pdfFingerprint?: string; // 파일 무결성 체크용
   createdAt: Date;
   updatedAt: Date;
 }
@@ -109,15 +112,23 @@ const BookSchema: Schema = new Schema(
       trim: true,
       default: ''
     },
-    pdfUrl: {
+    // PDF 관련 필드 - 로컬 저장용
+    hasLocalPdf: {
+      type: Boolean,
+      default: false,
+    },
+    pdfFileName: {
       type: String,
       trim: true,
-      default: null,
     },
     pdfFileSize: {
       type: Number,
       default: null,
       min: 0,
+    },
+    pdfFingerprint: {
+      type: String,
+      trim: true,
     }
   },
   { timestamps: true }

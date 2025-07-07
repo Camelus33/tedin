@@ -117,8 +117,14 @@ function NewBookContent() {
   const [isUploading, setIsUploading] = useState(false);
   
   // PDF 업로드 상태
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [pdfMetadata, setPdfMetadata] = useState<PdfMetadata | null>(null);
+  const [pdfInfo, setPdfInfo] = useState<{
+    bookId: string;
+    fileName: string;
+    title: string;
+    author: string;
+    totalPages: number;
+    fileSize: number;
+  } | null>(null);
   const [inputMethod, setInputMethod] = useState<'manual' | 'pdf'>('manual'); // 입력 방식
   
   // 폼 제출 상태
@@ -177,46 +183,28 @@ function NewBookContent() {
     }
   };
   
-  // PDF 업로드 핸들러
-  const handlePdfSelected = (file: File, metadata: PdfMetadata) => {
-    setPdfFile(file);
-    setPdfMetadata(metadata);
+  // PDF 업로드 핸들러 (새로운 로컬 저장 방식)
+  const handlePdfSelect = (pdfData: {
+    bookId: string;
+    fileName: string;
+    title: string;
+    author: string;
+    totalPages: number;
+    fileSize: number;
+  }) => {
+    setPdfInfo(pdfData);
     setInputMethod('pdf');
     
     // 폼 데이터 자동 채우기
     setFormData(prev => ({
       ...prev,
-      title: metadata.title || file.name.replace(/\.pdf$/i, ''),
-      author: metadata.author || '',
-      totalPages: metadata.totalPages > 0 ? metadata.totalPages.toString() : ''
+      title: pdfData.title,
+      author: pdfData.author || '',
+      totalPages: pdfData.totalPages.toString()
     }));
     
     setError(null);
-  };
-  
-  const handlePdfError = (error: string) => {
-    setError(error);
-  };
-  
-  const clearPdfFile = () => {
-    setPdfFile(null);
-    setPdfMetadata(null);
-    setInputMethod('manual');
-    
-    // 폼 초기화 (PDF에서 자동 입력된 내용만)
-    if (inputMethod === 'pdf') {
-      setFormData(prev => ({
-        ...prev,
-        title: '',
-        author: '',
-        totalPages: ''
-      }));
-    }
-  };
-  
-  const switchToManualInput = () => {
-    setInputMethod('manual');
-    // PDF 파일은 유지하되 수동 입력 모드로 변경
+    console.log('PDF 정보 설정 완료:', pdfData);
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -279,6 +267,14 @@ function NewBookContent() {
         apiFormData.append('purchaseLink', formData.purchaseLink);
       }
 
+      // 로컬 PDF 메타데이터 추가 (PDF가 있는 경우)
+      if (pdfInfo && bookType === 'book') {
+        apiFormData.append('hasLocalPdf', 'true');
+        apiFormData.append('pdfFileName', pdfInfo.fileName);
+        apiFormData.append('pdfFileSize', pdfInfo.fileSize.toString());
+        apiFormData.append('pdfFingerprint', pdfInfo.bookId); // bookId를 fingerprint로 사용
+      }
+
       console.log("전송할 FormData:", apiFormData); // FormData 내용을 직접 로깅하기는 어려움
       console.log("전송 토큰:", token.substring(0, 10) + "...");
       
@@ -317,43 +313,19 @@ function NewBookContent() {
         throw new Error("서버 응답을 처리하는 데 잠시 어려움이 있어요.");
       }
       
-      // 책 등록 성공 후 PDF 업로드 (있는 경우)
+      // 책 등록 성공 후 추가 처리 없음 (PDF는 이미 로컬에 저장됨)
       const bookId = data._id || (data.book && data.book._id);
       
       if (!bookId) {
         console.error("책 ID를 찾을 수 없습니다:", data);
         throw new Error("성장의 기록은 잘 만들어졌는데, 잠시 길을 잃은 것 같아요. 다시 확인해 주세요.");
       }
-      
-      // PDF 파일이 있으면 업로드
-      if (pdfFile && bookType === 'book') {
-        try {
-          const pdfFormData = new FormData();
-          pdfFormData.append('pdfFile', pdfFile);
-          
-          const pdfResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${bookId}/upload-pdf`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${token}`
-            },
-            body: pdfFormData
-          });
-          
-          if (!pdfResponse.ok) {
-            console.error("PDF 업로드 실패:", await pdfResponse.text());
-            // PDF 업로드 실패는 전체 등록을 실패시키지 않음
-            setError("책은 등록되었지만 PDF 업로드에 실패했습니다. 나중에 다시 시도해주세요.");
-          } else {
-            console.log("PDF 업로드 성공");
-          }
-        } catch (pdfError) {
-          console.error("PDF 업로드 오류:", pdfError);
-          setError("책은 등록되었지만 PDF 업로드에 실패했습니다. 나중에 다시 시도해주세요.");
-        }
+
+      console.log("책 등록 완료:", bookId);
+      if (pdfInfo) {
+        console.log("PDF 정보도 함께 저장됨:", pdfInfo.fileName);
       }
 
-
-      
       // 약간의 딜레이 후 이동 (UX 개선)
       setTimeout(() => {
         router.push(`/books/${bookId}`);
@@ -611,7 +583,7 @@ function NewBookContent() {
                       {inputMethod === 'pdf' && (
                         <button
                           type="button"
-                          onClick={switchToManualInput}
+                          onClick={() => setInputMethod('manual')}
                           className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
                         >
                           수동 입력
@@ -620,13 +592,11 @@ function NewBookContent() {
                     </div>
                     
                     <PdfUploadComponent
-                      onPdfSelected={handlePdfSelected}
-                      onError={handlePdfError}
-                      disabled={isSubmitting}
+                      onPdfSelect={handlePdfSelect}
                       className="mb-2"
                     />
                     
-                    {pdfFile && (
+                    {pdfInfo && (
                       <div className="bg-purple-900/30 rounded-lg p-2 w-full text-xs border border-purple-500/20">
                         <div className="flex items-center justify-between">
                           <span className="text-purple-300">
@@ -634,7 +604,7 @@ function NewBookContent() {
                           </span>
                           <button
                             type="button"
-                            onClick={clearPdfFile}
+                            onClick={() => setPdfInfo(null)}
                             className="text-red-400 hover:text-red-300 transition-colors ml-2"
                             title="PDF 제거"
                           >

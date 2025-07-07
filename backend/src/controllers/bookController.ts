@@ -109,7 +109,23 @@ export const addBook = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
-    const { title, author, totalPages, currentPage, isbn, category, readingPurpose, coverImage, purchaseLink, bookType } = req.body;
+    const { 
+      title, 
+      author, 
+      totalPages, 
+      currentPage, 
+      isbn, 
+      category, 
+      readingPurpose, 
+      coverImage, 
+      purchaseLink, 
+      bookType,
+      // 로컬 PDF 관련 필드
+      hasLocalPdf,
+      pdfFileName,
+      pdfFileSize,
+      pdfFingerprint
+    } = req.body;
     const coverImageFile = req.file as Express.Multer.File;
 
     // Validate bookType
@@ -128,6 +144,14 @@ export const addBook = async (req: Request, res: Response) => {
       readingPurpose,
       purchaseLink: purchaseLink || '',
     };
+
+    // 로컬 PDF 정보 저장
+    if (hasLocalPdf) {
+      newBookData.hasLocalPdf = true;
+      newBookData.pdfFileName = pdfFileName;
+      newBookData.pdfFileSize = pdfFileSize;
+      newBookData.pdfFingerprint = pdfFingerprint;
+    }
 
     // For BOOK type, totalPages is required and currentPage is relevant
     if (finalBookType === 'BOOK') {
@@ -535,32 +559,24 @@ export const uploadPdf = async (req: Request, res: Response) => {
       return res.status(404).json({ message: '해당 책을 찾을 수 없거나 권한이 없습니다.' });
     }
 
-    // 기존 PDF 파일이 있다면 삭제
-    if (book.pdfUrl) {
-      const oldPdfFileName = path.basename(book.pdfUrl);
-      const oldPdfPath = path.join(__dirname, '../../uploads/pdfs', oldPdfFileName);
-      if (fs.existsSync(oldPdfPath)) {
-        try {
-          await fs.promises.unlink(oldPdfPath);
-          console.log(`[uploadPdf] Old PDF file deleted: ${oldPdfPath}`);
-        } catch (unlinkError) {
-          console.error(`[uploadPdf] Failed to delete old PDF file:`, unlinkError);
-        }
-      }
-    }
+    // 기존 PDF 파일이 있다면 삭제 (로컬 저장 방식에서는 불필요)
+    // if (book.hasLocalPdf) {
+    //   // 로컬 저장 방식에서는 서버에 파일이 없으므로 삭제 로직 불필요
+    // }
 
-    // PDF URL 생성 (상대 경로)
-    const pdfUrl = `/uploads/pdfs/${pdfFile.filename}`;
+    // PDF 메타데이터만 저장 (실제 파일은 로컬에 저장됨)
     const pdfFileSize = pdfFile.size;
+    const pdfFileName = pdfFile.originalname;
 
-    console.log(`[uploadPdf] Updating book with PDF info - URL: ${pdfUrl}, Size: ${pdfFileSize}`);
+    console.log(`[uploadPdf] Updating book with PDF metadata - FileName: ${pdfFileName}, Size: ${pdfFileSize}`);
 
-    // Book 모델 업데이트
+    // Book 모델 업데이트 - 로컬 PDF 메타데이터만 저장
     const updatedBook = await Book.findByIdAndUpdate(
       bookId,
       { 
         $set: { 
-          pdfUrl: pdfUrl,
+          hasLocalPdf: true,
+          pdfFileName: pdfFileName,
           pdfFileSize: pdfFileSize
         } 
       },
@@ -585,7 +601,6 @@ export const uploadPdf = async (req: Request, res: Response) => {
       book: updatedBook,
       pdfInfo: {
         originalName: pdfFile.originalname,
-        url: pdfUrl,
         size: pdfFileSize
       }
     });

@@ -8,12 +8,13 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import { PdfHighlight, HIGHLIGHT_COLORS } from '@/types/pdf';
 import { createHighlight } from '@/lib/pdfHighlightUtils';
 import PdfHighlightOverlay from './PdfHighlightOverlay';
+import { loadPdfFromLocal } from '../../lib/localPdfStorage';
 
 // PDF.js worker 설정 - static asset 사용
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 interface PdfViewerProps {
-  pdfUrl: string;
+  bookId: string;
   onTextSelect?: (selectedText: string, coordinates: DOMRect) => void;
   onError?: (error: string) => void;
   className?: string;
@@ -37,10 +38,11 @@ interface PdfViewerState {
   isLoading: boolean;
   error: string | null;
   highlightMode: boolean;
+  pdfData: ArrayBuffer | null;
 }
 
 export default function PdfViewer({
-  pdfUrl,
+  bookId,
   onTextSelect,
   onError,
   className = "",
@@ -57,15 +59,62 @@ export default function PdfViewer({
   const [state, setState] = useState<PdfViewerState>({
     numPages: null,
     pageNumber: currentPage,
-    scale: 1.0,
+    scale: 1.2,
     rotation: 0,
     isLoading: true,
     error: null,
-    highlightMode: false
+    highlightMode: false,
+    pdfData: null
   });
 
   const pageRef = useRef<HTMLDivElement>(null);
   const documentRef = useRef<HTMLDivElement>(null);
+
+  // 로컬에서 PDF 로드
+  useEffect(() => {
+    const loadPdf = async () => {
+      if (!bookId) {
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: 'Book ID가 제공되지 않았습니다.'
+        }));
+        return;
+      }
+
+      setState(prev => ({ ...prev, isLoading: true, error: null }));
+
+      try {
+        console.log('로컬에서 PDF 로드 시작:', bookId);
+        const pdfData = await loadPdfFromLocal(bookId);
+        
+        if (!pdfData) {
+          throw new Error('로컬에서 PDF 파일을 찾을 수 없습니다. PDF를 다시 업로드해주세요.');
+        }
+
+        setState(prev => ({
+          ...prev,
+          pdfData,
+          isLoading: false,
+          error: null
+        }));
+
+        console.log('PDF 로컬 로드 완료');
+      } catch (error) {
+        console.error('PDF 로컬 로드 실패:', error);
+        const errorMessage = error instanceof Error ? error.message : 'PDF를 로드하는데 실패했습니다.';
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: errorMessage,
+          pdfData: null
+        }));
+        onError?.(errorMessage);
+      }
+    };
+
+    loadPdf();
+  }, [bookId, onError]);
 
   // PDF 문서 로드 성공 핸들러
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
@@ -299,7 +348,7 @@ export default function PdfViewer({
         )}
 
         <Document
-          file={pdfUrl}
+          file={state.pdfData}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
           loading=""

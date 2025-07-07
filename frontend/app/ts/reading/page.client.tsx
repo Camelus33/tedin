@@ -40,7 +40,8 @@ type SessionData = {
     _id: string;
     title: string;
     author: string;
-    pdfUrl?: string;
+    hasLocalPdf?: boolean;
+    pdfFileName?: string;
     pdfFileSize?: number;
   };
   startPage: number;
@@ -316,7 +317,7 @@ export default function TSReadingPage() {
 
         {/* Main reading area - PDF viewer or breathing text */}
         <div className="flex-1 flex flex-col mb-10">
-          {sessionData.bookId.pdfUrl ? (
+          {sessionData.bookId.hasLocalPdf ? (
             <div className="flex-1">
               {/* PDF 뷰어 토글 버튼 */}
               <div className="flex justify-center mb-4">
@@ -343,7 +344,7 @@ export default function TSReadingPage() {
                     </div>
                   ) : (
                     <PdfViewer
-                      pdfUrl={`${process.env.NEXT_PUBLIC_API_URL}${sessionData.bookId.pdfUrl}`}
+                      bookId={sessionData.bookId._id}
                       onTextSelect={handlePdfTextSelect}
                       onError={handlePdfError}
                       currentPage={currentPdfPage}
