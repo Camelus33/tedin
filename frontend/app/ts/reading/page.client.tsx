@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PauseIcon, PlayIcon, StopIcon, ExclamationTriangleIcon, DocumentIcon } from '@heroicons/react/24/solid';
+import { PauseIcon, PlayIcon, StopIcon, ExclamationTriangleIcon, DocumentIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import Spinner from '@/components/ui/Spinner';
 import { cyberTheme } from '@/src/styles/theme';
 import api from '@/lib/api';
@@ -76,6 +76,10 @@ export default function TSReadingPage() {
   const [selectedText, setSelectedText] = useState<string>('');
   const [selectedPageNumber, setSelectedPageNumber] = useState<number>(1);
   const [isPausedForMemo, setIsPausedForMemo] = useState<boolean>(false); // 메모 작성으로 인한 일시정지 구분
+
+  // PDF 하이라이트 상태
+  const [highlights, setHighlights] = useState<any[]>([]);
+  const [selectedCoordinates, setSelectedCoordinates] = useState<DOMRect | null>(null);
 
   // Format seconds into MM:SS
   const formatTime = (seconds: number) => {
@@ -151,7 +155,7 @@ export default function TSReadingPage() {
   // Timer logic
   useEffect(() => {
     // Don't start timer if loading, paused, or no time remaining
-    if (isLoading || isPaused || timeRemaining <= 0 || !sessionData) {
+    if (isLoading || isPaused || isPausedForMemo || timeRemaining <= 0 || !sessionData) {
       return;
     }
 
@@ -168,7 +172,7 @@ export default function TSReadingPage() {
     }, 1000);
 
     return () => clearInterval(timerId);
-  }, [isLoading, isPaused, timeRemaining, sessionData, sessionId, router]);
+  }, [isLoading, isPaused, isPausedForMemo, timeRemaining, sessionData, sessionId, router]);
 
   const handlePauseResume = () => {
     if (isMemoModalOpen) {
@@ -198,30 +202,22 @@ export default function TSReadingPage() {
   };
 
   const handlePdfTextSelect = (selectedText: string, coordinates: DOMRect) => {
-    // 이미 메모 모달이 열려있다면 무시 (중복 방지)
-    if (isMemoModalOpen) {
-      return;
-    }
+    console.log('[PDF 텍스트 선택]', selectedText, coordinates);
     
-    // 텍스트 선택 시 타이머 일시정지 (아직 일시정지되지 않은 경우에만)
-    if (!isPaused && !isPausedForMemo) {
-      setIsPaused(true);
-      setIsPausedForMemo(true);
-    }
-    
-    // 선택된 텍스트와 페이지 정보 저장
     setSelectedText(selectedText);
+    setSelectedCoordinates(coordinates);
     setSelectedPageNumber(currentPdfPage);
-    
-    // 메모 모달 열기
     setIsMemoModalOpen(true);
     
-    console.log('Selected text:', selectedText);
-    console.log('Page:', currentPdfPage);
-    console.log('Coordinates:', coordinates);
+    // 메모 작성 중 타이머 일시정지
+    setIsPausedForMemo(true);
+    if (sessionData?.isActive && !sessionData?.isPaused) {
+      setSessionData(prev => prev ? { ...prev, isPaused: true } : null);
+    }
   };
 
   const handlePdfError = (error: string) => {
+    console.error('[PDF 에러]', error);
     setPdfError(error);
   };
 
@@ -233,9 +229,11 @@ export default function TSReadingPage() {
   const handleMemoModalClose = () => {
     setIsMemoModalOpen(false);
     setSelectedText('');
+    setSelectedCoordinates(null);
+    setIsPausedForMemo(false);
     
-    // 타이머 재개
-    if (sessionData?.isActive && !sessionData?.isPaused) {
+    // 메모 작성 완료 후 타이머 재개
+    if (sessionData?.isActive) {
       setSessionData(prev => prev ? { ...prev, isPaused: false } : null);
     }
   };
@@ -243,13 +241,24 @@ export default function TSReadingPage() {
   const handleMemoSave = (memoData: PdfMemoData) => {
     console.log('[PDF 메모 저장 완료]', memoData);
     
-    // 성공 피드백 (선택사항)
-    // TODO: 성공 토스트 메시지 표시
-    
-    // 타이머 재개
-    if (sessionData?.isActive && !sessionData?.isPaused) {
-      setSessionData(prev => prev ? { ...prev, isPaused: false } : null);
+    // 하이라이트 생성
+    if (selectedCoordinates && selectedText) {
+      const newHighlight = {
+        id: Date.now().toString(),
+        text: selectedText,
+        pageNumber: selectedPageNumber,
+        boundingRect: selectedCoordinates,
+        color: '#ffeb3b',
+        opacity: 0.3,
+        note: memoData.content,
+        createdAt: new Date().toISOString(),
+      };
+      
+      setHighlights(prev => [...prev, newHighlight]);
     }
+    
+    // 메모 작성 완료 - 모달 닫기 (handleMemoModalClose에서 타이머 재개 처리)
+    handleMemoModalClose();
   };
 
   if (isLoading) {
@@ -321,24 +330,33 @@ export default function TSReadingPage() {
         <div className="flex-1 flex flex-col mb-10">
           {sessionData.bookId.hasLocalPdf ? (
             <div className="flex-1">
-              {/* PDF 뷰어 토글 버튼 */}
-              <div className="flex justify-center mb-4">
-                <button
-                  onClick={handleTogglePdfViewer}
-                  className={`px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-all ${
-                    showPdfViewer
-                      ? 'bg-cyan-600/80 text-white border border-cyan-500 hover:bg-cyan-700/80'
-                      : 'bg-gray-800/80 text-cyan-300 border border-cyan-500/40 hover:border-cyan-500/60 hover:bg-gray-700/80'
-                  }`}
-                >
-                  <DocumentIcon className="h-5 w-5" />
-                  <span>{showPdfViewer ? 'PDF 숨기기' : 'PDF 보기'}</span>
-                </button>
-              </div>
+              {/* PDF 뷰어 토글 버튼 - PDF 뷰어가 활성화되지 않았을 때만 표시 */}
+              {!showPdfViewer && (
+                <div className="flex justify-center mb-4">
+                  <button
+                    onClick={handleTogglePdfViewer}
+                    className="px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-all bg-gray-800/80 text-cyan-300 border border-cyan-500/40 hover:border-cyan-500/60 hover:bg-gray-700/80"
+                  >
+                    <DocumentIcon className="h-4 w-4" />
+                    <span>PDF 보기</span>
+                  </button>
+                </div>
+              )}
 
               {/* PDF 뷰어 또는 호흡 텍스트 */}
               {showPdfViewer ? (
-                <div className="pdf-viewer-container">
+                <div className="pdf-viewer-container relative">
+                  {/* PDF 뷰어 닫기 버튼 */}
+                  <div className="absolute top-2 right-2 z-20">
+                    <button
+                      onClick={handleTogglePdfViewer}
+                      className="p-2 rounded-lg bg-gray-900/80 text-gray-300 border border-gray-600 hover:bg-gray-800 hover:text-white transition-all"
+                      title="PDF 닫기"
+                    >
+                      <XMarkIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                  
                   {pdfError ? (
                     <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-6 text-center">
                       <p className="text-red-400 font-semibold mb-2">PDF 로드 오류</p>
@@ -352,6 +370,7 @@ export default function TSReadingPage() {
                       currentPage={currentPdfPage}
                       onPageChange={handlePdfPageChange}
                       enableTextSelection={true}
+                      highlights={highlights}
                       className="mx-auto max-w-4xl"
                     />
                   )}

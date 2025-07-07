@@ -57,6 +57,7 @@ export default function PdfMemoModal({
   const [memoText, setMemoText] = useState('');
   const [keywords, setKeywords] = useState('');
   const [selfRating, setSelfRating] = useState<number>(3);
+  const [maxRating, setMaxRating] = useState<number>(5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,12 +68,20 @@ export default function PdfMemoModal({
     }
   }, [isOpen, selectedText]);
 
+  // maxRating이 변경될 때 selfRating 조정
+  useEffect(() => {
+    if (selfRating > maxRating) {
+      setSelfRating(Math.ceil(maxRating / 2));
+    }
+  }, [maxRating, selfRating]);
+
   // 모달 닫을 때 상태 초기화
   const handleClose = () => {
     setMemoType('quote');
     setMemoText('');
     setKeywords('');
     setSelfRating(3);
+    setMaxRating(5);
     setError(null);
     onClose();
   };
@@ -165,7 +174,7 @@ export default function PdfMemoModal({
         )}
 
         {/* 메모 성격 선택 */}
-        <div className="mb-4">
+        <div className="mb-3">
           <label className="block text-sm font-medium text-purple-300 mb-2">
             메모 성격
           </label>
@@ -193,7 +202,7 @@ export default function PdfMemoModal({
         </div>
 
         {/* 메모 내용 */}
-        <div className="mb-4">
+        <div className="mb-3">
           <label className="block text-sm font-medium text-purple-300 mb-2">
             메모 내용
           </label>
@@ -207,7 +216,7 @@ export default function PdfMemoModal({
         </div>
 
         {/* 키워드 */}
-        <div className="mb-4">
+        <div className="mb-3">
           <label className="block text-sm font-medium text-purple-300 mb-2">
             키워드 (쉼표로 구분)
           </label>
@@ -222,12 +231,33 @@ export default function PdfMemoModal({
         </div>
 
         {/* 셀프 평가 */}
-        <div className="mb-6">
+        <div className="mb-4">
           <label className="block text-sm font-medium text-purple-300 mb-2">
             중요도 평가
           </label>
+
+          {/* 별점 스케일 선택 */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm text-gray-400">별점 개수:</span>
+            {[3, 5, 7, 10].map((scale) => (
+              <button
+                key={scale}
+                onClick={() => setMaxRating(scale)}
+                disabled={isLoading}
+                className={`px-2 py-1 text-xs rounded transition-all disabled:opacity-50 ${
+                  maxRating === scale
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                }`}
+              >
+                {scale}개
+              </button>
+            ))}
+          </div>
+          
+          {/* 별점 선택 */}
           <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((rating) => (
+            {Array.from({ length: maxRating }, (_, i) => i + 1).map((rating) => (
               <button
                 key={rating}
                 onClick={() => setSelfRating(rating)}
@@ -241,6 +271,9 @@ export default function PdfMemoModal({
                 ⭐
               </button>
             ))}
+            <span className="ml-2 text-sm text-gray-400 self-center">
+              {selfRating}/{maxRating}
+            </span>
           </div>
         </div>
 
