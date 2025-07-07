@@ -74,6 +74,7 @@ export default function PdfViewer({
   useEffect(() => {
     const loadPdf = async () => {
       if (!bookId) {
+        console.error('PDF 뷰어: bookId가 제공되지 않았습니다.');
         setState(prev => ({
           ...prev,
           isLoading: false,
@@ -82,16 +83,19 @@ export default function PdfViewer({
         return;
       }
 
+      console.log('PDF 뷰어: 로딩 시작 - bookId:', bookId);
       setState(prev => ({ ...prev, isLoading: true, error: null }));
 
       try {
-        console.log('로컬에서 PDF 로드 시작:', bookId);
+        console.log('PDF 뷰어: 로컬에서 PDF 로드 시작:', bookId);
         const pdfData = await loadPdfFromLocal(bookId);
         
         if (!pdfData) {
+          console.error('PDF 뷰어: 로컬에서 PDF 파일을 찾을 수 없습니다:', bookId);
           throw new Error('로컬에서 PDF 파일을 찾을 수 없습니다. PDF를 다시 업로드해주세요.');
         }
 
+        console.log('PDF 뷰어: PDF 데이터 로드 완료, 크기:', pdfData.byteLength, 'bytes');
         setState(prev => ({
           ...prev,
           pdfData,
@@ -99,9 +103,9 @@ export default function PdfViewer({
           error: null
         }));
 
-        console.log('PDF 로컬 로드 완료');
+        console.log('PDF 뷰어: PDF 로컬 로드 완료');
       } catch (error) {
-        console.error('PDF 로컬 로드 실패:', error);
+        console.error('PDF 뷰어: PDF 로컬 로드 실패:', error);
         const errorMessage = error instanceof Error ? error.message : 'PDF를 로드하는데 실패했습니다.';
         setState(prev => ({
           ...prev,
@@ -118,6 +122,7 @@ export default function PdfViewer({
 
   // PDF 문서 로드 성공 핸들러
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
+    console.log('PDF 뷰어: 문서 로드 성공, 총 페이지 수:', numPages);
     setState(prev => ({
       ...prev,
       numPages,
@@ -128,14 +133,14 @@ export default function PdfViewer({
 
   // PDF 문서 로드 실패 핸들러
   const onDocumentLoadError = useCallback((error: Error) => {
-    const errorMessage = 'PDF 파일을 불러오는 데 실패했습니다.';
+    console.error('PDF 뷰어: 문서 로드 실패:', error);
+    const errorMessage = `PDF 파일을 불러오는 데 실패했습니다: ${error.message}`;
     setState(prev => ({
       ...prev,
       isLoading: false,
       error: errorMessage
     }));
     onError?.(errorMessage);
-    console.error('PDF 로드 오류:', error);
   }, [onError]);
 
   // 페이지 변경 핸들러

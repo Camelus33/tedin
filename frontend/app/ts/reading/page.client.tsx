@@ -114,6 +114,8 @@ export default function TSReadingPage() {
         const data = res.data;
 
         console.log('세션 데이터 로드:', data);
+        console.log('Book 데이터:', data.bookId);
+        console.log('hasLocalPdf 값:', data.bookId?.hasLocalPdf);
         
         // Validate session data exists
         if (!data) {
