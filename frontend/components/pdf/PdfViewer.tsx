@@ -10,7 +10,7 @@ import { createHighlight } from '@/lib/pdfHighlightUtils';
 import PdfHighlightOverlay from './PdfHighlightOverlay';
 
 // PDF.js worker 설정 - static asset 사용
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 interface PdfViewerProps {
   pdfUrl: string;
