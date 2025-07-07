@@ -324,6 +324,16 @@ function NewBookContent() {
       console.log("책 등록 완료:", bookId);
       if (pdfInfo) {
         console.log("PDF 정보도 함께 저장됨:", pdfInfo.fileName);
+        // 임시 ID로 저장된 PDF를 실제 책 ID로 이동
+        if (pdfInfo.bookId !== bookId) {
+          import('@/lib/localPdfStorage').then(async mod => {
+            try {
+              await mod.renamePdfId(pdfInfo.bookId, bookId);
+            } catch (err) {
+              console.error('로컬 PDF ID 변경 실패:', err);
+            }
+          });
+        }
       }
 
       // 약간의 딜레이 후 이동 (UX 개선)

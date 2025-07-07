@@ -206,4 +206,23 @@ export const cleanupOldPdfs = async (daysOld: number = 30): Promise<number> => {
     console.error('PDF 정리 실패:', error);
     return 0;
   }
+};
+
+// PDF ID 변경(이동) – 서버 책 ID가 확정된 뒤 기존 임시 ID에서 실제 ID로 복사
+export const renamePdfId = async (oldId: string, newId: string): Promise<void> => {
+  if (oldId === newId) return;
+  try {
+    const db = await getDB();
+    const pdfData = await db.get('pdfs', oldId);
+    if (!pdfData) {
+      console.warn(`renamePdfId: 원본 ID(${oldId})로 저장된 PDF를 찾을 수 없습니다.`);
+      return;
+    }
+    // 새 ID로 저장 후 기존 항목 삭제
+    await db.put('pdfs', { ...pdfData, id: newId, lastAccessed: new Date() });
+    await db.delete('pdfs', oldId);
+    console.log(`renamePdfId: PDF ID를 ${oldId} → ${newId} 로 변경 완료`);
+  } catch (error) {
+    console.error('renamePdfId: PDF ID 변경 실패:', error);
+  }
 }; 
