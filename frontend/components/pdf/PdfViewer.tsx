@@ -94,8 +94,8 @@ const ThumbnailPage: React.FC<ThumbnailPageProps> = React.memo(({
       onClick={() => onPageClick(pageNumber)}
       title={`페이지 ${pageNumber}로 이동`}
     >
-      {isInView && pdfFile ? (
-        <Document file={pdfFile} onLoadSuccess={() => setIsLoaded(true)}>
+      {isInView && pdfFile && (pdfFile instanceof ArrayBuffer) ? (
+        <Document file={pdfFile.slice(0)} onLoadSuccess={() => setIsLoaded(true)}>
           <Page
             pageNumber={pageNumber}
             scale={scale}
@@ -739,9 +739,9 @@ function PdfViewerComponent({
             className="pdf-document-container flex-1 overflow-y-auto bg-gray-900 p-4"
             style={{ scrollBehavior: 'smooth' }}
           >
-            {state.pdfData && (
+            {state.pdfData && (state.pdfData instanceof ArrayBuffer) && (
               <Document
-                file={state.pdfData}
+                file={state.pdfData.slice(0)}
                 onLoadSuccess={onDocumentLoadSuccess}
                 onLoadError={(error) => {
                   console.error('PDF 로드 에러:', error);
