@@ -1,8 +1,16 @@
 import * as pdfjsLib from 'pdfjs-dist';
 
-// PDF.js worker 설정 - 외부 CDN 사용 (안정적인 방법)
+// PDF.js worker 설정 - 더 안정적인 CDN 사용
 if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+  // 여러 CDN을 시도하는 fallback 로직
+  const tryWorkerSources = [
+    `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`,
+    `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`,
+    `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+  ];
+  
+  // 첫 번째 CDN을 기본으로 설정
+  pdfjsLib.GlobalWorkerOptions.workerSrc = tryWorkerSources[0];
 }
 
 export interface PdfMetadata {

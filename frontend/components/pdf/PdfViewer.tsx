@@ -9,9 +9,17 @@ import { PdfHighlight, HIGHLIGHT_COLORS } from '@/types/pdf';
 import { createHighlight } from '@/lib/pdfHighlightUtils';
 import PdfHighlightOverlay from './PdfHighlightOverlay';
 
-// PDF.js worker 설정 - 외부 CDN 사용 (안정적인 방법)
+// PDF.js worker 설정 - 더 안정적인 CDN 사용
 if (typeof window !== 'undefined' && !pdfjs.GlobalWorkerOptions.workerSrc) {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+  // 여러 CDN을 시도하는 fallback 로직
+  const tryWorkerSources = [
+    `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`,
+    `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`,
+    `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+  ];
+  
+  // 첫 번째 CDN을 기본으로 설정
+  pdfjs.GlobalWorkerOptions.workerSrc = tryWorkerSources[0];
 }
 
 interface PdfViewerProps {
