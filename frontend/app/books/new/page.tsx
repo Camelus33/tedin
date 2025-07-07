@@ -4,9 +4,22 @@ import { useState, useRef, ChangeEvent, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { FiArrowLeft, FiUpload, FiX, FiFileText } from "react-icons/fi";
-import { PdfUploadComponent } from "@/components/books";
 import { PdfMetadata } from "@/lib/pdfUtils";
+
+// PDF 업로드 컴포넌트를 동적 import로 변경 (SSR 방지)
+const PdfUploadComponent = dynamic(
+  () => import("@/components/books").then(mod => ({ default: mod.PdfUploadComponent })),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="border-2 border-dashed border-purple-600/30 rounded-xl p-8 text-center bg-purple-900/20">
+        <div className="text-purple-400">PDF 업로드 컴포넌트 로딩 중...</div>
+      </div>
+    )
+  }
+);
 
 // 장르 옵션
 const genres = [

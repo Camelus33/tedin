@@ -8,7 +8,31 @@ import { PauseIcon, PlayIcon, StopIcon, ExclamationTriangleIcon, DocumentIcon } 
 import Spinner from '@/components/ui/Spinner';
 import { cyberTheme } from '@/src/styles/theme';
 import api from '@/lib/api';
-import { PdfViewer, PdfMemoModal, type PdfMemoData } from '@/components/pdf';
+import dynamic from 'next/dynamic';
+
+// PDF 컴포넌트들을 동적 import로 변경 (SSR 방지)
+const PdfViewer = dynamic(
+  () => import('@/components/pdf').then(mod => ({ default: mod.PdfViewer })),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="bg-black/40 backdrop-blur-sm border border-purple-500/30 rounded-lg p-4">
+        <div className="text-purple-400">PDF 뷰어 로딩 중...</div>
+      </div>
+    )
+  }
+);
+
+const PdfMemoModal = dynamic(
+  () => import('@/components/pdf').then(mod => ({ default: mod.PdfMemoModal })),
+  { 
+    ssr: false,
+    loading: () => null
+  }
+);
+
+// 타입 import는 런타임에 영향을 주지 않으므로 그대로 유지
+import type { PdfMemoData } from '@/components/pdf';
 
 type SessionData = {
   _id: string;
