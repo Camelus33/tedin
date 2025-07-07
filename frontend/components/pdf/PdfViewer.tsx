@@ -462,8 +462,8 @@ function PdfViewerComponent({
       {/* PDF 문서 영역 */}
       <div 
         ref={documentRef}
-        className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto"
-        style={{ height: '80vh', maxHeight: '800px' }}
+        className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x"
+        style={{ height: '80vh', maxHeight: '800px', width: '60vw', minWidth: '400px', maxWidth: '100%' }}
       >
         {state.isLoading && (
           <div className="flex items-center justify-center h-full">
