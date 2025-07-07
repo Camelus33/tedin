@@ -36,7 +36,11 @@ class PublicShareController {
 
       const SummaryNote = (await import('../models/SummaryNote')).default as any;
       const summaryNote = await SummaryNote.findById(share.summaryNoteId, 'orderedNoteIds').lean();
-      if (!summaryNote || !summaryNote.orderedNoteIds.includes(noteId)) {
+
+      // ObjectId vs string 형태 차이로 비교가 실패하지 않도록 모두 문자열로 변환해서 검사
+      const orderedIds: string[] = (summaryNote?.orderedNoteIds || []).map((id: any) => id.toString());
+
+      if (!summaryNote || !orderedIds.includes(noteId)) {
         res.status(404).json({ message: '해당 노트가 공유 문서에 포함되어 있지 않습니다.' });
         return;
       }
