@@ -41,7 +41,7 @@ interface PdfViewerState {
   pdfData: ArrayBuffer | null;
 }
 
-export default function PdfViewer({
+function PdfViewerComponent({
   bookId,
   onTextSelect,
   onError,
@@ -398,4 +398,10 @@ export default function PdfViewer({
       )}
     </div>
   );
-} 
+}
+
+// React.memo로 래핑하여 상위 컴포넌트 재렌더(타이머 등)가 있을 때도
+// PdfViewer가 불필요하게 언마운트‧리마운트되지 않도록 함
+const MemoizedPdfViewer = React.memo(PdfViewerComponent);
+
+export default MemoizedPdfViewer; 
