@@ -315,9 +315,8 @@ export default function PdfMemoModal({
         {/* 버튼들 */}
         <div className="flex gap-3">
           <button
-            onClick={handleCancelClick}
-            className="flex-1 px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition-colors cursor-pointer"
-            style={{ pointerEvents: 'auto' }}
+            onClick={handleClose}
+            className="flex-1 px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition-colors"
           >
             취소
           </button>
