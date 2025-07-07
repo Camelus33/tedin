@@ -101,6 +101,23 @@ export default function PdfMemoModal({
     onClose();
   };
 
+  // 취소 버튼 이벤트 핸들러 (더 강력한 버전)
+  const handleCancelClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('[PDF 메모] 취소 버튼 클릭 - 이벤트 핸들러');
+    console.log('[PDF 메모] isLoading 상태:', isLoading);
+    handleCancel();
+  };
+
+  // 백드롭 클릭 핸들러
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      console.log('[PDF 메모] 백드롭 클릭으로 모달 닫기');
+      handleCancel();
+    }
+  };
+
   const handleSave = async () => {
     if (!memoText.trim()) {
       setError('메모 내용을 입력해주세요.');
@@ -161,7 +178,10 @@ export default function PdfMemoModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+    >
       <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-4">
@@ -295,9 +315,9 @@ export default function PdfMemoModal({
         {/* 버튼들 */}
         <div className="flex gap-3">
           <button
-            onClick={handleCancel}
-            disabled={isLoading}
-            className="flex-1 px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50"
+            onClick={handleCancelClick}
+            className="flex-1 px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition-colors cursor-pointer"
+            style={{ pointerEvents: 'auto' }}
           >
             취소
           </button>
