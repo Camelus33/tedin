@@ -28,6 +28,10 @@ const InlineThreadsViewer = ({ shareId, noteId, count }: InlineThreadsViewerProp
     try {
       setLoading(true);
       const res = await fetch(`/api/public-shares/${shareId}/notes/${noteId}/inline-threads`);
+      if (res.status === 404) {
+        setThreads([]);
+        return;
+      }
       if (!res.ok) {
         throw new Error('failed');
       }
