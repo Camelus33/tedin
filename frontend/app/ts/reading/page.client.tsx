@@ -347,13 +347,14 @@ export default function TSReadingPage() {
               {showPdfViewer ? (
                 <div className="pdf-viewer-container relative">
                   {/* PDF 뷰어 닫기 버튼 */}
-                  <div className="absolute top-2 right-2 z-20">
+                  <div className="absolute -top-12 right-0 z-20">
                     <button
                       onClick={handleTogglePdfViewer}
-                      className="p-2 rounded-lg bg-gray-900/80 text-gray-300 border border-gray-600 hover:bg-gray-800 hover:text-white transition-all"
+                      className="px-3 py-1 rounded-lg bg-gray-900/90 text-gray-300 border border-gray-600 hover:bg-gray-800 hover:text-white transition-all text-sm"
                       title="PDF 닫기"
                     >
-                      <XMarkIcon className="h-4 w-4" />
+                      <XMarkIcon className="h-4 w-4 inline mr-1" />
+                      <span>닫기</span>
                     </button>
                   </div>
                   
