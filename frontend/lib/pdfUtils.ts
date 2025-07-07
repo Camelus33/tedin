@@ -1,11 +1,8 @@
 import * as pdfjsLib from 'pdfjs-dist';
 
-// PDF.js worker 설정 - 더 안정적인 방법으로 변경
+// PDF.js worker 설정 - 외부 CDN 사용 (안정적인 방법)
 if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.js',
-    import.meta.url,
-  ).toString();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
 }
 
 export interface PdfMetadata {
