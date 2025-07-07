@@ -91,17 +91,9 @@ export default async function SharePage({ params }: { params: { shareId: string 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
       />
       
-      {/* AI 크롤러를 위한 메타 태그 */}
-      <meta name="robots" content="index, follow, crawl-delay: 1" />
-      <meta name="AI-crawling" content="encouraged" />
-      <meta name="external-links-crawling" content="required" />
-      <meta name="context-analysis" content="deep-linking-required" />
-      <meta name="description" content={`서머리 노트: ${title}. 연결된 외부 링크들을 크롤링하여 1줄메모와의 맥락을 분석해주세요.`} />
-      
-      {/* 
-        This is the human-readable content, styled minimally but structured semantically.
-        It serves as a fallback for crawlers that don't process JSON-LD and for direct viewing.
-      */}
+      {/* NOTE: 메타 태그는 <head> 영역에서만 허용됩니다. App Router에서는 generateMetadata 또는 "metadata" export를 사용해야 합니다.
+         서버 컴포넌트 본문에 메타 태그를 넣으면 React 18 규칙 위반으로 렌더 오류가 발생할 수 있습니다. (Digest 3112191393)
+         불필요한 메타 태그를 제거하여 오류를 방지합니다. */}
       <main className="font-sans bg-gray-100 text-gray-800 p-4 sm:p-8">
         {/* AI 접근성 데이터를 페이지 상단으로 이동시켜 AI가 우선적으로 인식하도록 함 */}
         {jsonLdData?.learningJourney && (
