@@ -436,7 +436,7 @@ function PdfViewerComponent({
   }
 
   return (
-    <div className={`pdf-viewer ${className}`}>
+    <div className={`pdf-viewer ${className} mx-auto`}>
       {/* PDF 뷰어 컨트롤 */}
       <div className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -506,7 +506,8 @@ function PdfViewerComponent({
           maxHeight: '800px', 
           width: `${viewerWidth}px`,
           minWidth: `${MIN_WIDTH}px`,
-          maxWidth: 'calc(100vw - 50px)' // 화면 너비에서 여백 제외
+          maxWidth: 'calc(100vw - 50px)', // 화면 너비에서 여백 제외
+          scrollBehavior: 'smooth' // 부드러운 스크롤 추가
         }}
       >
         {state.isLoading && (
@@ -523,7 +524,7 @@ function PdfViewerComponent({
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
           loading=""
-          className="flex flex-col items-center p-4 gap-4"
+          className="flex flex-col items-center justify-center p-4 gap-4 w-full"
         >
           {/* 모든 페이지를 세로로 렌더링 */}
           {state.numPages && Array.from({ length: state.numPages }, (_, index) => {
