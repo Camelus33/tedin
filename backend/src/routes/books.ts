@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUserBooks, getBookById, addBook, updateBookProgress, removeBook, getBooksByIds, updateBookInfo } from '../controllers/bookController';
+import { getUserBooks, getBookById, addBook, updateBookProgress, removeBook, getBooksByIds, updateBookInfo, uploadPdf } from '../controllers/bookController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -24,7 +24,18 @@ if (!fs.existsSync(uploadDir)) {
   console.log(`[BooksRoutes] Upload directory ${uploadDir} already exists.`);
 }
 
-// Multer configuration for file uploads
+// Ensure PDF uploads directory exists
+const pdfUploadDir = path.resolve(process.cwd(), 'uploads', 'pdfs');
+console.log(`[BooksRoutes] PDF upload directory configured to: ${pdfUploadDir}`);
+if (!fs.existsSync(pdfUploadDir)) {
+  console.log(`[BooksRoutes] PDF upload directory ${pdfUploadDir} does not exist. Creating...`);
+  fs.mkdirSync(pdfUploadDir, { recursive: true });
+  console.log(`[BooksRoutes] PDF upload directory ${pdfUploadDir} created.`);
+} else {
+  console.log(`[BooksRoutes] PDF upload directory ${pdfUploadDir} already exists.`);
+}
+
+// Multer configuration for image uploads (existing)
 const storage = multer.diskStorage({
   destination: function (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
     console.log(`[BooksRoutes-MulterDest] Destination function called. Calculated uploadDir: ${uploadDir}`);
@@ -56,7 +67,48 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
-console.log(`[BooksRoutes] Multer instance configured.`);
+// Multer configuration for PDF uploads (new)
+const pdfStorage = multer.diskStorage({
+  destination: function (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
+    console.log(`[BooksRoutes-PDFMulterDest] PDF destination function called. Using pdfUploadDir: ${pdfUploadDir}`);
+    cb(null, pdfUploadDir);
+  },
+  filename: function (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const extension = path.extname(file.originalname);
+    const newFilename = file.fieldname + '-' + uniqueSuffix + extension;
+    console.log(`[BooksRoutes-PDFMulterFilename] PDF filename function called. Generating filename: ${newFilename}`);
+    cb(null, newFilename);
+  }
+});
+
+const pdfFileFilter = (req: express.Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+  // MIME 타입 검증
+  if (file.mimetype === 'application/pdf') {
+    // 파일 확장자 검증
+    const extension = path.extname(file.originalname).toLowerCase();
+    if (extension === '.pdf') {
+      console.log(`[BooksRoutes-PDFFilter] PDF file accepted: ${file.originalname}`);
+      cb(null, true);
+    } else {
+      console.log(`[BooksRoutes-PDFFilter] File rejected - invalid extension: ${extension}`);
+      cb(new Error('PDF 파일만 업로드 가능합니다. (.pdf 확장자 필요)'));
+    }
+  } else {
+    console.log(`[BooksRoutes-PDFFilter] File rejected - invalid MIME type: ${file.mimetype}`);
+    cb(new Error('PDF 파일만 업로드 가능합니다. (application/pdf MIME 타입 필요)'));
+  }
+};
+
+const pdfUpload = multer({
+  storage: pdfStorage,
+  limits: {
+    fileSize: 20 * 1024 * 1024 // 20MB limit for PDF files
+  },
+  fileFilter: pdfFileFilter
+});
+
+console.log(`[BooksRoutes] Multer instances configured.`);
 
 // All book routes require authentication
 router.use(authenticate);
@@ -157,5 +209,12 @@ router.delete('/:bookId', removeBook);
 
 // Batch get books by IDs
 router.post('/batch', getBooksByIds);
+
+// PDF upload endpoint
+router.post(
+  '/:bookId/upload-pdf',
+  pdfUpload.single('pdfFile'),
+  uploadPdf
+);
 
 export default router; 

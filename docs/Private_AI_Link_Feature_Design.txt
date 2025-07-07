@@ -1,0 +1,76 @@
+Private Context-Only AI-Link 기능 설계서
+========================================
+
+목표
+----
+사용자의 상세 메모(프롬프트 노하우 등)를 노출하지 않고도 LLM이 해당 맥락을 활용하도록 하는 "비공개 AI-Link" 기능을 구현한다.
+
+핵심 요구사항
+-------------
+1. 노출 제한: 링크를 열어도 일반 사용자는 상세 메모 내용을 볼 수 없어야 한다.
+2. 컨텍스트 전달: LLM은 링크 내부 구조화 데이터를 파싱해 맥락을 활용할 수 있어야 한다.
+3. 기존 AI-Link 호환: 현재 PublicShare 구조를 확장하되 기존 공개 링크 기능과 충돌하지 않아야 한다.
+4. 보안 옵션: 토큰 기반 접근 제어(선택), 링크 만료 설정(선택)을 지원한다.
+5. 세분화 가능성: "영상 프롬프트", "이미지 프롬프트" 등 도메인별 프리셋 탬플릿을 손쉽게 추가할 수 있도록 설계한다.
+
+아키텍처 개요
+-------------
+1. 새 모델: PrivateShare
+   • `_id` (string, nanoid)
+   • `summaryNoteId` (ObjectId)
+   • `userId` (ObjectId)
+   • `contextPayload` (Mixed)  // 구조화 컨텍스트(JSON-LD or JSON)
+   • `expiresAt` (Date, optional)
+   • `accessKey` (string, optional)  // 공유 토큰
+   • timestamps
+
+2. 라우트 추가
+   • POST   `/api/summary-notes/:id/private-link`  → private 링크 생성
+   • GET    `/api/private-shares/:shareId`         → 구조화 컨텍스트 JSON 반환
+     – 헤더 `X-Access-Key` 또는 쿼리 `?key=` 로 토큰 전달(선택)
+
+3. 프런트엔드 흐름
+   AiLinkModal → "비공개 링크 생성" 탭 추가 → 링크 생성 후 클립보드 복사
+
+4. LLM 사용 예
+   "이 링크의 컨텍스트를 참고해 영상 시나리오 작성" + URL
+
+데이터 포맷 예시 (contextPayload)
+----------------------------------
+{
+  "@context": "/ai-link-context.jsonld",
+  "@type": "AiLinkPrivate",
+  "domain": "video_prompting",
+  "promptTemplate": "{subject} in the style of ...",
+  "knowledgeGraph": {
+    "nodes": [...],
+    "edges": [...]
+  },
+  "guidelines": [
+    "Use cinematic lighting",
+    "Maintain 30fps"
+  ]
+}
+
+보안·프라이버시
+---------------
+• 기본 설정: 링크는 난수 ID만으로 접근 가능(보안 기준: URL Guessing 불가)
+• 옵션:
+  – 토큰(accessKey) 필요 시 헤더·쿼리로 전달
+  – expiresAt 이전에만 유효
+
+MVP 개발 단계
+--------------
+1. 모델 추가: `PrivateShare.ts`
+2. 컨트롤러 추가: `privateShareController.ts`
+3. 라우터 추가: `privateShareRoutes.ts`, `app.use('/api/private-shares', ...)`
+4. SummaryNoteController에 `createPrivateShareLink` 메서드 추가
+5. AiLinkModal 확장(비공개 탭)
+6. 컨텍스트 빌더: `utils/privateJsonLdBuilder.ts` (기존 빌더 재사용 가능)
+7. 문서 갱신 및 단위 테스트 작성
+
+향후 확장 아이디어
+------------------
+• 웹훅: 링크 사용 시 호출되어 통계 수집
+• 버전 관리: contextPayload 히스토리 저장
+• 템플릿 마켓플레이스: 프롬프트 장인이 자신만의 프리셋을 유료 배포 

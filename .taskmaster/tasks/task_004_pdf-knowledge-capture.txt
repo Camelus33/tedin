@@ -1,0 +1,143 @@
+# Task ID: 4
+# Title: Implement PDF Note-Taking Modal
+# Status: done
+# Dependencies: 3
+# Priority: high
+# Description: Implement a reusable PDF note-taking modal with the same UI/UX as the existing review session memo input form. This modal will be triggered upon highlighting text in the PDF viewer, pausing the timer and pre-filling the modal with the highlighted text.
+# Details:
+1.  Create a new, reusable component for the PDF note-taking modal, mirroring the UI/UX of the existing review session memo input form.
+2.  Implement logic to pause the timer when text is highlighted in the PDF viewer.
+3.  Implement logic to invoke the PDF note-taking modal upon text highlighting.
+4.  Automatically populate the modal with the highlighted text.
+5.  Implement functionality to save the note and return to the TS reading session upon saving, resuming the timer.
+6. Ensure the modal is properly integrated with the highlighting functionality implemented in Task 3.
+
+# Test Strategy:
+1.  Highlight text in the PDF viewer and verify that the timer pauses.
+2.  Verify that the PDF note-taking modal is invoked upon text highlighting.
+3.  Ensure that the highlighted text is automatically populated in the modal.
+4.  Save the note and verify that the user is returned to the TS reading session and the timer resumes.
+5.  Test the modal with different lengths of highlighted text.
+6.  Verify that the saved note is correctly associated with the highlighted text.
+
+# Subtasks:
+## 1. 기존 TS 리뷰 메모 UI 분석 및 재사용 컴포넌트 추출 [done]
+### Dependencies: None
+### Description: TSReviewPage의 메모 입력 폼을 분석하고 재사용 가능한 컴포넌트로 추출
+### Details:
+TSReviewPage.client.tsx의 메모 입력 폼 UI/UX를 분석하여 PDF 메모 작성에 재사용할 수 있도록 별도 컴포넌트로 추출
+<info added on 2025-07-07T03:51:48.988Z>
+✅ 서브태스크 4.1 완료!
+
+**완료 내용:**
+- TSReviewPage의 메모 입력 폼 UI/UX를 분석 완료
+- 동일한 cyberTheme와 스타일을 사용하는 PdfMemoModal 컴포넌트 생성
+- 기존 TS 리뷰 폼과 동일한 필드들 구현:
+  - 메모 성격 선택 (생각/인용/질문)
+  - 메모 텍스트 입력 (하이라이트된 텍스트 자동 입력)
+  - 키워드 입력
+  - 셀프 평가 (별점 1-5)
+- 모달 형태로 구현하여 PDF 뷰어 위에 오버레이
+- 반응형 디자인 및 접근성 고려
+- 에러 핸들링 및 로딩 상태 관리
+- PdfMemoData 타입 정의 및 export 추가
+</info added on 2025-07-07T03:51:48.988Z>
+
+## 2. PDF 메모 모달 컴포넌트 생성 [done]
+### Dependencies: 4.1
+### Description: 하이라이트된 텍스트를 받아 메모를 작성할 수 있는 모달 컴포넌트 생성
+### Details:
+기존 TS 리뷰 메모 UI와 동일한 스타일의 PDF 메모 모달 컴포넌트를 생성하고, 하이라이트된 텍스트를 자동으로 입력하는 기능 구현
+<info added on 2025-07-07T03:52:30.188Z>
+PdfMemoModal 컴포넌트는 서브태스크 4.1에서 이미 완성됨
+- 하이라이트된 텍스트를 자동으로 메모 필드에 입력하는 기능 구현
+- 기존 TS 리뷰 메모와 동일한 UI/UX 스타일 적용
+- 모든 필수 기능 구현:
+  - 메모 성격 선택 (생각/인용/질문)
+  - 메모 텍스트 입력 (하이라이트 텍스트 자동 입력)
+  - 키워드 입력
+  - 중요도 평가 (별점)
+  - 에러 핸들링 및 로딩 상태
+- PdfMemoData 타입 정의 및 export
+- 모달 형태로 구현하여 PDF 뷰어 위에 오버레이
+
+**다음 단계:** TSReadingPage에 모달을 통합하고 하이라이트 이벤트와 연동
+</info added on 2025-07-07T03:52:30.188Z>
+
+## 3. TSReadingPage에 PDF 메모 모달 통합 [done]
+### Dependencies: 4.2
+### Description: TSReadingPage에 PDF 메모 모달을 통합하고 하이라이트 이벤트와 연동
+### Details:
+TSReadingPage에 PDF 메모 모달을 추가하고, 하이라이트 생성 시 타이머 일시정지 및 모달 호출 로직 구현
+<info added on 2025-07-07T03:54:51.529Z>
+- TSReadingPage에 PdfMemoModal 컴포넌트 import 및 통합 완료
+- PDF 메모 모달 상태 관리 추가:
+  - isMemoModalOpen: 모달 열림/닫힘 상태
+  - selectedText: 하이라이트된 텍스트
+  - selectedPageNumber: 현재 페이지 번호
+- 하이라이트 이벤트와 모달 연동 구현:
+  - handlePdfTextSelect에서 타이머 자동 일시정지
+  - 선택된 텍스트와 페이지 정보 저장
+  - 메모 모달 자동 호출
+- 모달 핸들러 구현:
+  - handleMemoModalClose: 모달 닫기 및 타이머 재개
+  - handleMemoSave: 메모 저장 로직 (임시로 localStorage 사용)
+- 메모 저장 후 타이머 자동 재개 구현
+- Phase 5 API 연동을 위한 TODO 주석 추가
+
+**다음 단계:** 타이머 일시정지/재개 로직 최적화
+</info added on 2025-07-07T03:54:51.529Z>
+
+## 4. 타이머 일시정지/재개 로직 구현 [done]
+### Dependencies: 4.3
+### Description: 하이라이트 시 타이머 일시정지, 메모 저장 후 타이머 재개 로직 구현
+### Details:
+PDF 하이라이트 생성 시 자동으로 타이머를 일시정지하고, 메모 저장 완료 후 타이머를 자동으로 재개하는 로직 구현
+<info added on 2025-07-07T03:55:20.886Z>
+🔍 서브태스크 4.4 분석 시작
+
+**현재 타이머 로직 검토:**
+- 기본 일시정지/재개 기능은 이미 구현됨
+- PDF 하이라이트 시 자동 일시정지 구현됨
+- 메모 저장 후 자동 재개 구현됨
+- 모달 닫기 시 자동 재개 구현됨
+
+**추가 최적화 필요 사항:**
+1. 중복 일시정지 방지 로직
+2. 타이머 상태 표시 개선
+3. 메모 작성 중 타이머 상태 명확화
+4. 에지 케이스 처리 (모달 열림 중 수동 일시정지 등)
+
+**구현 진행:**
+- 현재 로직이 이미 요구사항을 충족하고 있음을 확인
+- 필요한 경우에만 최소한의 개선 적용
+</info added on 2025-07-07T03:55:20.886Z>
+<info added on 2025-07-07T03:56:34.974Z>
+✅ 서브태스크 4.4 완료!
+
+**완료된 타이머 로직 최적화:**
+
+1. **메모 작성 상태 구분**:
+   - `isPausedForMemo` 상태 추가로 메모 작성으로 인한 일시정지와 수동 일시정지 구분
+   - 타이머 상태 텍스트 개선 (몰입하는 중/일시정지됨/메모 작성 중)
+
+2. **중복 방지 로직**:
+   - 메모 모달이 이미 열려있을 때 텍스트 선택 무시
+   - 이미 일시정지된 상태에서 중복 일시정지 방지
+
+3. **수동 컨트롤 제한**:
+   - 메모 작성 중에는 수동 일시정지/재개 버튼 비활성화
+   - 메모 작성 중에는 수동 종료 버튼 비활성화
+   - 버튼 상태에 따른 시각적 피드백 개선
+
+4. **정확한 타이머 재개**:
+   - 메모 저장 완료 시에만 타이머 재개
+   - 모달 닫기 시에도 정확한 타이머 재개
+   - 메모 작성으로 인한 일시정지인 경우에만 자동 재개
+
+**사용자 경험 개선:**
+- 타이머 상태가 명확하게 표시됨
+- 메모 작성 중 실수로 타이머 조작 방지
+- 일관된 타이머 동작 보장
+</info added on 2025-07-07T03:56:34.974Z>
+

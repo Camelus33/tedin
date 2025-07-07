@@ -2,168 +2,527 @@
   "master": {
     "tasks": [
       {
-        "id": 36,
-        "title": "Initialize Next.js 13+ Project with Tailwind CSS",
-        "description": "Set up the Next.js 13+ project with TypeScript and Tailwind CSS, ensuring the App Router is configured correctly.",
-        "details": "1.  Initialize a new Next.js project using `create-next-app` with the `--typescript` flag.\n2.  Install Tailwind CSS and configure it according to the Next.js documentation (using `tailwindcss init -p`).\n3.  Verify that the project is using Next.js 13+ and React 18+.\n4.  Structure the project directory according to best practices for Next.js 13+ with the App Router (e.g., using the `app/` directory for routes).\n\n```bash\nnpx create-next-app@latest habitus33-dashboard --typescript\ncd habitus33-dashboard\nnpm install -D tailwindcss postcss autoprefixer\nnpx tailwindcss init -p\n```\n\nUpdate `tailwind.config.js`:\n\n```javascript\n/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\n    './app/**/*.{js,ts,jsx,tsx,mdx}',\n    './pages/**/*.{js,ts,jsx,tsx,mdx}',\n    './components/**/*.{js,ts,jsx,tsx,mdx}',\n    // Or if using `src` directory:\n    './src/**/*.{js,ts,jsx,tsx,mdx}',\n  ],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n}\n```\n<info added on 2025-07-06T08:50:07.718Z>\n## Potential Errors and Solutions\n\n1.  **TypeScript Version Compatibility Error**: When using async Server Components in Next.js 13+ App Router, a \"'Promise<Element>' is not a valid JSX element\" error may occur.\n    -   Solution: Upgrade to TypeScript 5.1.3 or later and @types/react 18.2.8 or later, or temporarily use the `@ts-expect-error` comment.\n\n2.  **Fragment Export Error**: A \"has an invalid default export: Type\" error may occur.\n    -   Solution: Use an array (`[]`) instead of a React Fragment (`<>`), or wrap it with a single JSX element.\n\n## Best Practices\n\nAccording to the Next.js official documentation, when configuring TypeScript, you should enable `\"strict\": true` in `tsconfig.json` and use the `next.config.ts` file to ensure type safety.\n</info added on 2025-07-06T08:50:07.718Z>",
-        "testStrategy": "1.  Run the development server (`npm run dev`) and ensure the application starts without errors.\n2.  Verify that Tailwind CSS styles are applied correctly by adding a simple Tailwind class to a component and checking if it renders as expected.",
-        "priority": "high",
-        "dependencies": [],
+        "id": 1,
+        "title": "Implement PDF Upload API and Update Book Model",
+        "description": "Extend the Book model with pdfUrl and pdfFileSize fields and implement an API endpoint for uploading PDF files to cloud storage, including server-side validation.",
+        "details": "1.  Modify the Book model in the database schema to include the `pdfUrl` (string) and `pdfFileSize` (integer) fields.\n2.  Implement a new API endpoint `/books/{bookId}/upload-pdf` that accepts a PDF file as input.\n3.  Implement server-side validation to check the file format (must be PDF) and file size (must be less than 20MB).\n4.  Upon successful validation, upload the PDF file to cloud storage (e.g., AWS S3, Google Cloud Storage, or Azure Blob Storage).\n5.  Store the URL of the uploaded PDF file in the `pdfUrl` field of the Book model.\n6.  Store the size of the uploaded PDF file in the `pdfFileSize` field of the Book model.\n7.  Return a success response with the updated Book model.\n8.  Handle potential errors such as invalid file format, file size exceeding the limit, and cloud storage upload failures, returning appropriate error responses.",
+        "testStrategy": "1.  Create a test PDF file.\n2.  Send a POST request to the `/books/{bookId}/upload-pdf` endpoint with the test PDF file.\n3.  Verify that the API returns a success response with the updated Book model, including the `pdfUrl` and `pdfFileSize` fields.\n4.  Verify that the PDF file is successfully uploaded to cloud storage.\n5.  Verify that the `pdfUrl` field in the Book model contains the correct URL of the uploaded PDF file.\n6.  Verify that the `pdfFileSize` field in the Book model contains the correct size of the uploaded PDF file.\n7.  Test with a file larger than 20MB and verify that the API returns an error response.\n8.  Test with a non-PDF file and verify that the API returns an error response.\n9.  Test error handling for cloud storage upload failures.",
         "status": "done",
+        "dependencies": [],
+        "priority": "high",
         "subtasks": [
           {
             "id": 1,
-            "title": "Initialize Next.js project with TypeScript",
-            "description": "Use `create-next-app` to initialize a new Next.js project with TypeScript support. Verify the project uses Next.js 13+ and React 18+.",
-            "dependencies": [],
-            "details": "Execute `npx create-next-app@latest habitus33-dashboard --typescript` and confirm the Next.js and React versions in `package.json`.",
+            "title": "현재 백엔드 구조 분석",
+            "description": "backend/ 폴더의 기존 코드를 분석하여 Prisma 스키마와 Book 모델 구조를 파악한다",
+            "details": "- backend/prisma/schema.prisma 파일 확인\n- Book 모델의 현재 필드 구조 파악\n- 기존 Book 관련 API 엔드포인트 확인\n- 파일 업로드 관련 기존 구현 확인\n<info added on 2025-07-07T03:14:11.703Z>\n**현재 상황:**\n- 프로젝트는 MongoDB + Mongoose 사용\n- Book 모델은 `backend/src/models/Book.ts`에 정의\n- Book API는 `backend/src/routes/books.ts`에 구현\n- 이미 multer를 사용한 이미지 업로드 기능 존재 (5MB 제한)\n- 업로드 디렉토리: `uploads/` (프로젝트 루트)\n\n**Book 모델 현재 필드:**\n- userId, title, author, bookType, totalPages, currentPage\n- isbn, coverImage, category, status, completionPercentage\n- estimatedRemainingMinutes, avgPpm, readingPurpose, purchaseLink\n- createdAt, updatedAt (timestamps)\n\n**다음 단계:**\n1. Book 모델에 pdfUrl, pdfFileSize 필드 추가\n2. PDF 파일 업로드를 위한 multer 설정 추가\n3. PDF 업로드 API 엔드포인트 구현\n4. PDF 파일 검증 로직 구현\n</info added on 2025-07-07T03:14:11.703Z>",
             "status": "done",
-            "testStrategy": "Check `package.json` for Next.js version 13 or higher and React version 18 or higher. Run `npm run dev` and verify the application starts without errors."
+            "dependencies": [],
+            "parentTaskId": 1
           },
           {
             "id": 2,
-            "title": "Install Tailwind CSS, PostCSS, and Autoprefixer",
-            "description": "Install Tailwind CSS and its peer dependencies (PostCSS and Autoprefixer) using npm.",
+            "title": "Book 모델에 PDF 필드 추가",
+            "description": "Book 모델의 인터페이스와 스키마에 pdfUrl과 pdfFileSize 필드를 추가한다",
+            "details": "- IBook 인터페이스에 pdfUrl?: string, pdfFileSize?: number 필드 추가\n- BookSchema에 해당 필드들의 Mongoose 스키마 정의 추가\n- 기존 Book 타입과의 호환성 유지\n<info added on 2025-07-07T03:15:28.807Z>\n- pdfUrl은 String 타입, trim 적용, 기본값 null\n- pdfFileSize는 Number 타입, 최소값 0, 기본값 null\n- backend/src/models/Book.ts 파일 수정\n- 기존 필드들에는 영향 없음\n- 새로운 필드들은 옵셔널이므로 기존 데이터와 호환\n</info added on 2025-07-07T03:15:28.807Z>",
+            "status": "done",
             "dependencies": [
               1
             ],
-            "details": "Run `npm install -D tailwindcss postcss autoprefixer` in the project directory.",
-            "status": "done",
-            "testStrategy": "Check `package.json` to ensure Tailwind CSS, PostCSS, and Autoprefixer are listed as devDependencies."
+            "parentTaskId": 1
           },
           {
             "id": 3,
-            "title": "Configure Tailwind CSS",
-            "description": "Initialize Tailwind CSS configuration file and update the `tailwind.config.js` file to include the necessary content paths.",
+            "title": "PDF 업로드를 위한 multer 설정 구성",
+            "description": "PDF 파일 업로드를 위한 별도의 multer 인스턴스를 생성하고 PDF 파일 검증 로직을 구현한다",
+            "details": "- PDF 파일만 허용하는 fileFilter 함수 구현\n- 20MB 파일 크기 제한 설정\n- PDF 전용 업로드 디렉토리 설정 (uploads/pdfs/)\n- MIME 타입 검증 (application/pdf)\n- 파일 확장자 검증 (.pdf)\n<info added on 2025-07-07T03:16:36.856Z>\nPDF 업로드 multer 설정 완료:\n\n**완료된 작업:**\n- PDF 전용 업로드 디렉토리 생성 (uploads/pdfs/)\n- PDF 파일 전용 multer 인스턴스 (uploadPdf) 구성\n- PDF 파일 검증 로직 구현:\n  - MIME 타입 검증: application/pdf만 허용\n  - 파일 확장자 검증: .pdf 확장자만 허용\n  - 파일 크기 제한: 20MB\n- 상세한 로깅 추가로 디버깅 용이성 확보\n- 기존 이미지 업로드 기능과 분리하여 독립적 운영\n\n**변경 사항:**\n- backend/src/routes/books.ts 파일에 PDF 업로드 설정 추가\n- pdfStorage, pdfFileFilter, uploadPdf 인스턴스 생성\n- 에러 메시지 한국어로 사용자 친화적 구성\n</info added on 2025-07-07T03:16:36.856Z>",
+            "status": "done",
             "dependencies": [
               2
             ],
-            "details": "Run `npx tailwindcss init -p` and update `tailwind.config.js` with the provided content paths.",
-            "status": "done",
-            "testStrategy": "Inspect `tailwind.config.js` to ensure the content array includes the correct paths for `app`, `pages`, `components`, and `src` directories."
+            "parentTaskId": 1
           },
           {
             "id": 4,
-            "title": "Address TypeScript Version Compatibility",
-            "description": "Upgrade TypeScript and @types/react to resolve potential compatibility issues with async Server Components in Next.js 13+ App Router.",
-            "dependencies": [
-              1
-            ],
-            "details": "Upgrade to TypeScript 5.1.3 or later and @types/react 18.2.8 or later using npm. If upgrading is not feasible, temporarily use the `@ts-expect-error` comment.",
+            "title": "PDF 업로드 API 엔드포인트 구현",
+            "description": "책에 PDF 파일을 업로드하는 API 엔드포인트를 구현하고 Book 모델을 업데이트한다",
+            "details": "- POST /books/:bookId/upload-pdf 엔드포인트 생성\n- bookController에 uploadPdf 함수 구현\n- 업로드된 PDF 파일 정보를 Book 모델에 저장\n- 파일 URL과 크기 정보 업데이트\n- 에러 핸들링 및 검증 로직 추가\n- 응답 형식 정의\n<info added on 2025-07-07T03:19:34.472Z>\n**완료된 작업:**\n- POST /books/:bookId/upload-pdf 엔드포인트 생성\n- bookController에 uploadPdf 함수 구현\n- 업로드된 PDF 파일 정보를 Book 모델에 저장 (pdfUrl, pdfFileSize)\n- 상세한 에러 핸들링 및 검증 로직:\n  - 사용자 인증 확인\n  - 파일 존재 여부 확인\n  - 책 소유권 확인\n  - 기존 PDF 파일 삭제 (교체 시)\n  - 업로드 실패 시 파일 정리\n- 응답 형식 정의 (성공 메시지, 업데이트된 책 정보, PDF 정보)\n- multer 인스턴스 이름 충돌 해결 (pdfUpload로 변경)\n\n**API 사용법:**\n- POST /books/:bookId/upload-pdf\n- Content-Type: multipart/form-data\n- Field name: pdfFile\n- 최대 파일 크기: 20MB\n- 지원 형식: PDF (.pdf, application/pdf)\n\n**응답 형식:**\n```json\n{\n  \"message\": \"PDF 파일이 성공적으로 업로드되었습니다.\",\n  \"book\": { /* 업데이트된 책 정보 */ },\n  \"pdfInfo\": {\n    \"originalName\": \"document.pdf\",\n    \"url\": \"/uploads/pdfs/pdfFile-1234567890-123456789.pdf\",\n    \"size\": 1234567\n  }\n}\n```\n</info added on 2025-07-07T03:19:34.472Z>",
             "status": "done",
-            "testStrategy": "Check TypeScript and @types/react versions in `package.json`. Run the application and verify that no TypeScript-related errors occur, especially when using async Server Components."
-          },
-          {
-            "id": 5,
-            "title": "Verify Tailwind CSS Integration",
-            "description": "Create a simple component and apply Tailwind CSS classes to verify that Tailwind CSS is correctly integrated and styled.",
             "dependencies": [
               3
             ],
-            "details": "Create a new component in the `app/` directory (e.g., `app/components/TestComponent.tsx`) and apply Tailwind CSS classes to it. Import and render this component in a page (e.g., `app/page.tsx`).",
-            "status": "done",
-            "testStrategy": "Run the application and inspect the rendered component in the browser. Verify that the Tailwind CSS classes are applied correctly and the component is styled as expected."
+            "parentTaskId": 1
           }
         ]
       },
       {
-        "id": 37,
-        "title": "Implement Header Section",
-        "description": "Implement the header section with the Habitus33 logo (left), settings button (right), and user profile image button (right).",
-        "details": "1.  Create a `Header` component in the `components/` directory.\n2.  Add the Habitus33 logo using an `<img>` tag or a `<Image>` component from `next/image` for optimized image loading.\n3.  Implement the settings and user profile image buttons using `<button>` elements.\n4.  Use Tailwind CSS to style the header and its elements, ensuring proper alignment and spacing.\n5.  Position the logo on the left and the buttons on the right using Flexbox or Grid.\n\n```jsx\n// components/Header.tsx\nimport Image from 'next/image';\n\nconst Header = () => {\n  return (\n    <header className=\"bg-white shadow-md py-4 px-6 flex items-center justify-between\">\n      <Image src=\"/habitus33-logo.svg\" alt=\"Habitus33 Logo\" width={100} height={30} />\n      <div className=\"flex items-center space-x-4\">\n        <button>Settings</button>\n        <button>Profile</button>\n      </div>\n    </header>\n  );\n};\n\nexport default Header;\n```\n<info added on 2025-07-06T08:50:42.231Z>\nPossible Errors and Solutions for Task 37:\n\n1.  **Complex Component Structure Error**: The \"functions properties\" syntax can be confusing when storing functions as properties of an object in the React header component.\n    -   Solution: Export a base object and include each component as a property. Access them as `Header.Root`, `Header.Logo`, etc., for clarity.\n\n2.  **User Profile Button Accessibility Error**: The user settings button may lack `aria-label` or `role` attributes, preventing screen reader users from understanding the button's purpose.\n    -   Solution: Add accessibility attributes such as `aria-label=\"User Settings\"`, `role=\"button\"`, and `tabindex=\"0\"` and ensure keyboard navigation is supported.\n\nBest Practices: According to TailGrids and the Primer design system, header components should clearly separate the logo, navigation, and user action areas, and responsive design and accessibility should be considered.\n</info added on 2025-07-06T08:50:42.231Z>\n<info added on 2025-07-06T08:56:13.372Z>\nTask 37 Complete: Implemented a NotebookLM-style header.\n- Habitus33 logo on the left.\n- Settings button on the right (gear icon + \"Settings\" text).\n- User profile image button on the right (with dropdown menu).\n- Clean white background with a gray border.\n- Accessibility considerations (aria-label, keyboard navigation).\n- Mobile-responsive design applied.\n\nNext Steps: Implement the main area (status message, create new, recent notes, library button).\n</info added on 2025-07-06T08:56:13.372Z>",
-        "testStrategy": "1.  Verify that the logo, settings button, and user profile image button are displayed correctly in the header.\n2.  Check that the header is styled according to the design specifications.\n3.  Ensure that the logo is clickable (if it's a link) and the buttons are functional (e.g., by adding a `console.log` statement to their `onClick` handlers).",
+        "id": 2,
+        "title": "Implement PDF Upload Book Registration UI",
+        "description": "Implement the UI for registering books via PDF upload, adding a 'Register via PDF' tab to the existing book registration page. This includes file upload, drag-and-drop functionality, and automatic metadata extraction using pdf.js.",
+        "details": "1.  Modify the existing book registration page to include a new tab labeled 'Register via PDF'.\n2.  Implement a file upload component within the 'Register via PDF' tab, allowing users to select PDF files from their local system.\n3.  Implement drag-and-drop functionality for PDF files onto the upload component.\n4.  Integrate pdf.js to extract metadata from the uploaded PDF file, including title, author, and other relevant information.\n5.  Automatically populate the corresponding form fields on the book registration page with the extracted metadata.\n6.  Handle cases where metadata extraction fails or is incomplete, providing users with the option to manually enter the missing information.\n7.  Ensure the UI is responsive and handles large PDF files efficiently, providing appropriate loading indicators.\n8.  Implement client-side validation to ensure that only PDF files are accepted.\n9.  Consider accessibility requirements when designing the UI, ensuring it is usable by people with disabilities.",
+        "testStrategy": "1.  Upload a variety of PDF files with different metadata structures.\n2.  Verify that the metadata is correctly extracted and populated into the corresponding form fields.\n3.  Test the drag-and-drop functionality with different PDF files.\n4.  Test the UI with large PDF files to ensure it remains responsive.\n5.  Verify that the client-side validation prevents non-PDF files from being uploaded.\n6.  Manually enter data into the form fields and submit the form to ensure that the data is correctly saved.\n7.  Test the UI on different browsers and devices to ensure compatibility.\n8.  Verify that the UI is accessible to users with disabilities, using assistive technologies such as screen readers.",
+        "status": "done",
+        "dependencies": [
+          1
+        ],
         "priority": "high",
-        "dependencies": [
-          36
-        ],
-        "status": "done",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "PDF.js 라이브러리 설치 및 설정",
+            "description": "PDF 메타데이터 추출을 위한 PDF.js 라이브러리를 프론트엔드에 설치하고 설정합니다.",
+            "details": "- npm install pdfjs-dist 실행\n- PDF.js worker 설정\n- TypeScript 타입 정의 추가\n- 기본 PDF 파싱 함수 구현\n<info added on 2025-07-07T03:26:31.637Z>\n**구현 내용:**\n1. ✅ pdfjs-dist 라이브러리 설치 완료\n2. ✅ @types/pdfjs-dist TypeScript 타입 정의 설치 완료\n3. ✅ frontend/lib/pdfUtils.ts 파일 생성\n4. ✅ PDF.js worker 설정 구현\n5. ✅ PDF 메타데이터 추출 함수 구현\n6. ✅ PDF 파일 유효성 검사 함수 구현\n7. ✅ 파일 크기 포맷팅 유틸리티 함수 구현\n\n**주요 기능:**\n- extractPdfMetadata(): PDF에서 제목, 저자, 페이지 수 추출\n- validatePdfFile(): PDF 파일 유효성 검사 (타입, 크기, 확장자)\n- formatFileSize(): 파일 크기를 읽기 쉬운 형태로 변환\n- 20MB 파일 크기 제한\n- 에러 핸들링 및 폴백 로직 포함\n\n**TypeScript 타입:**\n- PdfMetadata 인터페이스\n- PdfExtractionResult 인터페이스\n- 완전한 타입 안전성 보장\n</info added on 2025-07-07T03:26:31.637Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
+          },
+          {
+            "id": 2,
+            "title": "PDF 업로드 UI 컴포넌트 생성",
+            "description": "드래그앤드롭 기능이 포함된 PDF 업로드 UI 컴포넌트를 생성합니다.",
+            "details": "- PdfUploadComponent.tsx 파일 생성\n- 드래그앤드롭 기능 구현\n- PDF 파일 검증 로직\n- 업로드 진행상태 표시\n- 에러 핸들링 UI\n<info added on 2025-07-07T03:28:14.881Z>\n**구현 내용:**\n1. ✅ PdfUploadComponent.tsx 컴포넌트 생성 완료\n2. ✅ 드래그앤드롭 기능 구현\n3. ✅ PDF 파일 검증 로직 구현\n4. ✅ 업로드 진행상태 표시 구현\n5. ✅ 에러 핸들링 UI 구현\n6. ✅ 메타데이터 표시 UI 구현\n\n**주요 기능:**\n- 클릭 또는 드래그앤드롭으로 PDF 파일 업로드\n- 실시간 파일 유효성 검증 (타입, 크기, 확장자)\n- PDF 메타데이터 자동 추출 및 표시\n- 로딩 상태 및 진행률 표시\n- 상세한 에러 메시지 및 경고\n- 업로드된 파일 정보 미리보기\n- 파일 제거 기능\n\n**UI/UX 특징:**\n- Habitus33 사이버펑크 테마 적용\n- 반응형 디자인\n- 접근성 고려 (키보드 네비게이션, 스크린 리더)\n- 직관적인 아이콘 및 상태 표시\n- 부드러운 애니메이션 효과\n\n**기술적 특징:**\n- TypeScript 완전 지원\n- React hooks 활용 (useState, useRef, useCallback)\n- 메모리 누수 방지\n- 에러 경계 처리\n- 컴포넌트 재사용성 고려\n</info added on 2025-07-07T03:28:14.881Z>",
+            "status": "done",
+            "dependencies": [
+              "2.1"
+            ],
+            "parentTaskId": 2
+          },
+          {
+            "id": 3,
+            "title": "PDF 메타데이터 추출 함수 구현",
+            "description": "PDF.js를 사용하여 PDF 파일에서 메타데이터(제목, 저자, 페이지 수)를 추출하는 함수를 구현합니다.",
+            "details": "- extractPdfMetadata 함수 구현\n- PDF 문서 정보 파싱\n- 제목, 저자, 페이지 수 추출\n- 에러 핸들링 및 폴백 로직\n- TypeScript 타입 정의",
+            "status": "done",
+            "dependencies": [
+              "2.1"
+            ],
+            "parentTaskId": 2
+          },
+          {
+            "id": 4,
+            "title": "기존 책 등록 페이지에 PDF 업로드 기능 통합",
+            "description": "기존 /books/new/page.tsx에 PDF 업로드 기능을 통합하고 자동 폼 채우기 기능을 구현합니다.",
+            "details": "- 기존 폼에 PDF 업로드 섹션 추가\n- PDF 업로드 시 자동 폼 필드 채우기\n- 수동 입력과 PDF 업로드 방식 병행 지원\n- 반응형 레이아웃 조정\n- 상태 관리 로직 구현\n<info added on 2025-07-07T03:31:31.278Z>\n**구현 내용:**\n1. ✅ 기존 책 등록 페이지에 PDF 업로드 기능 통합 완료\n2. ✅ PDF 업로드 상태 관리 추가 (pdfFile, pdfMetadata, inputMethod)\n3. ✅ PDF 업로드 핸들러 함수 구현 (handlePdfSelected, handlePdfError, clearPdfFile)\n4. ✅ 자동 폼 채우기 기능 구현 (제목, 저자, 페이지 수)\n5. ✅ 수동 입력과 PDF 업로드 방식 병행 지원\n6. ✅ PDF 업로드 UI 섹션 추가 (오른쪽 컬럼)\n7. ✅ 책 등록 후 PDF 업로드 API 연동\n8. ✅ 반응형 레이아웃 조정\n\n**주요 기능:**\n- PDF 파일 업로드 시 메타데이터 자동 추출 및 폼 필드 자동 채우기\n- 수동 입력 모드와 PDF 모드 간 전환 가능\n- PDF 업로드 성공/실패 상태 표시\n- 책 등록 후 자동 PDF 업로드 처리\n- PDF 업로드 실패 시에도 책 등록은 유지 (부분 성공 처리)\n\n**UI/UX 개선:**\n- 직관적인 PDF 업로드 인터페이스\n- 자동 추출된 정보 표시 및 안내\n- 사용자 피드백 메시지 (성공/실패/진행 상태)\n- 기존 디자인과 일관성 유지\n\n**에러 처리:**\n- PDF 업로드 실패 시 적절한 에러 메시지\n- 부분 성공 시나리오 처리 (책 등록 성공, PDF 업로드 실패)\n- 사용자 친화적인 오류 안내\n</info added on 2025-07-07T03:31:31.278Z>",
+            "status": "done",
+            "dependencies": [
+              "2.2",
+              "2.3"
+            ],
+            "parentTaskId": 2
+          }
+        ]
       },
       {
-        "id": 38,
-        "title": "Implement Main Area",
-        "description": "Implement the main area, including the user status message, 'Create New' button, recent memos section (with card/list view toggle and sort dropdown), and 'My Library' button.",
-        "details": "1.  Create a `MainArea` component.\n2.  Fetch the user's name and memo count from the existing API endpoint and display the status message.\n3.  Implement the 'Create New' button using a `<button>` element.\n4.  Create a `RecentMemos` component to display the recent memos.\n5.  Implement the card/list view toggle using a state variable and conditional rendering.\n6.  Implement the sort dropdown using a `<select>` element and a state variable to track the selected sort order.\n7.  Fetch the recent memos from the existing API endpoint and display them as cards or a list.\n8.  Implement the 'My Library' button using a `<button>` element.\n\n```jsx\n// components/MainArea.tsx\nimport { useState, useEffect } from 'react';\n\nconst MainArea = () => {\n  const [memoCount, setMemoCount] = useState(0);\n  const [viewMode, setViewMode] = useState('card'); // 'card' or 'list'\n  const [sortOrder, setSortOrder] = useState('latest');\n\n  useEffect(() => {\n    // Fetch memo count from API\n    setMemoCount(5); // Example\n  }, []);\n\n  return (\n    <main className=\"p-6\">\n      <p>[사용자이름]님, 현재 {memoCount}개의 메모를 만들었습니다.</p>\n      <button>+ 새로 만들기</button>\n      <section>\n        <h2>최근 메모</h2>\n        <button onClick={() => setViewMode(viewMode === 'card' ? 'list' : 'card')}>Toggle View</button>\n        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>\n          <option value=\"latest\">최신순</option>\n          {/* Add other sort options */}\n        </select>\n        {/* Render recent memos based on viewMode and sortOrder */}\n        <button>나의 도서관</button>\n      </section>\n    </main>\n  );\n};\n\nexport default MainArea;\n```\n<info added on 2025-07-06T08:51:03.822Z>\nPossible Errors and Solutions for Task 38:\n\n1. **Card/List View Toggle State Error**: A \"Cannot read property 'map' of undefined\" error may occur if the initial value of useState in the view toggle button is undefined or set to an incorrect type.\n   - Solution: Define the initial state clearly and use conditional rendering. Use the `{data?.length > 0 && data.map(...)}` pattern for safe rendering.\n\n2. **Memo Card Key Property Error**: A \"Each child in a list should have a unique key prop\" warning may occur if the key prop is missing or duplicated in the memo card list.\n   - Solution: Use a unique ID as the key for each memo card. If an ID is not available, generate a UUID or unique identifier.\n\nBest Practices: According to the React documentation, avoid using array indices as keys when rendering lists. Use stable and unique identifiers instead.\n</info added on 2025-07-06T08:51:03.822Z>",
-        "testStrategy": "1.  Verify that the user status message displays the correct user name and memo count.\n2.  Check that the 'Create New' button is functional.\n3.  Ensure that the recent memos are displayed correctly in both card and list views.\n4.  Verify that the sort dropdown correctly sorts the memos.\n5.  Check that the 'My Library' button is functional.",
+        "id": 3,
+        "title": "Integrate PDF Viewer and Implement Highlighting in TS Reading Session",
+        "description": "Integrate a PDF viewer into the TS reading session page using react-pdf and implement a rounded-corner highlighting feature using SVG overlays. This includes text selection, coordinate calculation, and PDF note modal invocation.",
+        "details": "1. Integrate the react-pdf library into the TS reading session page.\n2. Implement an SVG overlay to enable rounded-corner highlighting functionality.\n3. Implement text selection functionality within the PDF viewer.\n4. Calculate text coordinates upon selection for highlighting purposes.\n5. Implement a PDF note modal that is invoked upon text selection, allowing users to add notes to highlighted sections.\n6. Ensure the highlighting feature is visually appealing with rounded corners and a subtle color scheme.\n7. Optimize the PDF viewer for performance, ensuring smooth scrolling and rendering even with large PDF documents.\n8. Implement error handling for cases where PDF loading fails or the PDF format is invalid.",
+        "testStrategy": "1. Load various PDF documents into the TS reading session page to test the PDF viewer integration.\n2. Select text within the PDF viewer and verify that the rounded-corner highlighting is applied correctly.\n3. Test the text selection functionality with different text sizes and fonts.\n4. Verify that the correct text coordinates are calculated upon selection.\n5. Invoke the PDF note modal and ensure that it displays correctly with the selected text.\n6. Test the performance of the PDF viewer with large PDF documents, ensuring smooth scrolling and rendering.\n7. Simulate PDF loading errors and invalid PDF formats to verify that the error handling is implemented correctly.",
+        "status": "done",
+        "dependencies": [
+          1,
+          2
+        ],
         "priority": "high",
-        "dependencies": [
-          37
-        ],
-        "status": "done",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "react-pdf 라이브러리 설치 및 설정",
+            "description": "react-pdf 라이브러리를 설치하고 프로젝트에서 사용할 수 있도록 기본 설정을 구성합니다.",
+            "details": "- react-pdf 및 필요한 peer dependencies 설치\\n- PDF 뷰어 기본 컴포넌트 설정\\n- TypeScript 타입 정의 추가\\n- Worker 설정 및 최적화\n<info added on 2025-07-07T03:36:49.893Z>\n**구현 내용:**\n1. ✅ react-pdf 라이브러리 설치 완료\n2. ✅ @types/react-pdf TypeScript 타입 정의 설치 완료\n3. ✅ PdfViewer.tsx 컴포넌트 생성 완료\n4. ✅ PDF.js worker 설정 구현\n5. ✅ 기본 PDF 뷰어 기능 구현\n\n**주요 기능:**\n- 완전한 PDF 문서 렌더링\n- 페이지 네비게이션 (이전/다음 페이지)\n- 줌 인/아웃 기능 (50% ~ 300%)\n- 90도 회전 기능\n- 텍스트 선택 지원 (onTextSelect 콜백)\n- 로딩 상태 및 에러 핸들링\n- 반응형 디자인\n\n**UI/UX 특징:**\n- Habitus33 사이버펑크 테마 적용\n- 직관적인 컨트롤 버튼\n- 실시간 페이지/줌 상태 표시\n- 텍스트 선택 안내 메시지\n- 부드러운 애니메이션 효과\n\n**기술적 특징:**\n- TypeScript 완전 지원\n- React hooks 활용 (useState, useCallback, useRef, useEffect)\n- 텍스트 선택 이벤트 처리\n- 좌표 계산 기능 (하이라이트 준비)\n- 에러 경계 처리\n- 메모리 누수 방지\n</info added on 2025-07-07T03:36:49.893Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3
+          },
+          {
+            "id": 2,
+            "title": "TSReadingPage에 PDF 뷰어 통합",
+            "description": "TSReadingPage 컴포넌트에 PDF 뷰어를 통합하여 PDF가 있는 책의 경우 조건부로 렌더링합니다.",
+            "details": "- TSReadingPage에서 책의 PDF 파일 존재 여부 확인\\n- PDF가 있는 경우 PdfViewer 컴포넌트 렌더링\\n- PDF 로딩 및 에러 상태 처리\\n- 기존 TS 세션 플로우와의 호환성 유지\n<info added on 2025-07-07T03:39:14.801Z>\n**구현 내용:**\n1. ✅ TSReadingPage에 PDF 뷰어 통합 완료\n2. ✅ SessionData 타입에 PDF 정보 필드 추가 (pdfUrl, pdfFileSize)\n3. ✅ PDF 뷰어 상태 관리 추가 (showPdfViewer, currentPdfPage, pdfError)\n4. ✅ PDF 뷰어 토글 버튼 구현\n5. ✅ 조건부 렌더링 구현 (PDF 있음/없음)\n6. ✅ PDF 텍스트 선택 시 자동 일시정지 기능\n7. ✅ PDF 에러 핸들링 및 사용자 안내\n\n**주요 기능:**\n- PDF가 있는 책: PDF 뷰어 토글 버튼 표시\n- PDF가 없는 책: 기존 호흡 텍스트 유지\n- PDF 뷰어 표시/숨기기 토글 기능\n- 텍스트 선택 시 타이머 자동 일시정지\n- PDF 로딩 에러 시 사용자 친화적 메시지\n\n**UI/UX 특징:**\n- 사이버펑크 테마 일관성 유지\n- 직관적인 PDF 뷰어 토글 버튼\n- 반응형 디자인 (최대 너비 4xl)\n- 부드러운 상태 전환 애니메이션\n\n**기술적 특징:**\n- 기존 TS 세션 플로우와 완전 호환\n- PDF URL 자동 구성 (API URL + 상대 경로)\n- 메모리 효율적인 상태 관리\n- 타입 안전성 보장\n\n**다음 단계 준비:**\n- 텍스트 선택 이벤트 핸들러 준비 완료\n- 메모 모달 연동 준비 (Phase 4)\n- 하이라이트 기능 연동 준비\n</info added on 2025-07-07T03:39:14.801Z>",
+            "status": "done",
+            "dependencies": [
+              "3.1"
+            ],
+            "parentTaskId": 3
+          },
+          {
+            "id": 3,
+            "title": "SVG 오버레이 하이라이트 시스템 구현",
+            "description": "PDF 텍스트 위에 SVG 오버레이를 사용하여 둥근 모서리 하이라이트 기능을 구현합니다.",
+            "details": "- SVG 오버레이 컴포넌트 생성\\n- 텍스트 좌표를 SVG 좌표로 변환\\n- 둥근 모서리 하이라이트 렌더링\\n- 하이라이트 상태 관리\\n- 여러 하이라이트 지원\n<info added on 2025-07-07T03:44:04.886Z>\n**구현 내용:**\n1. ✅ PDF 하이라이트 타입 정의 완료 (types/pdf.ts)\n2. ✅ 하이라이트 유틸리티 함수 구현 (lib/pdfHighlightUtils.ts)\n3. ✅ SVG 오버레이 하이라이트 컴포넌트 생성 (PdfHighlightOverlay.tsx)\n4. ✅ PdfViewer에 하이라이트 시스템 통합 완료\n5. ✅ 하이라이트 모드 토글 기능 구현\n6. ✅ 둥근 모서리 하이라이트 렌더링 구현\n7. ✅ 다중 하이라이트 지원\n\n**주요 기능:**\n- **하이라이트 생성**: 텍스트 선택 시 자동 하이라이트 생성\n- **둥근 모서리**: SVG rect에 rx/ry 속성으로 세련된 모양\n- **다중 색상 지원**: 6가지 하이라이트 색상 (yellow, green, blue, purple, pink, orange)\n- **인터랙티브**: 클릭, 더블클릭, 우클릭 이벤트 지원\n- **시각적 피드백**: 호버 시 투명도 변경 및 테두리 표시\n- **메모 표시**: 메모가 있는 하이라이트에 작은 원 아이콘\n\n**기술적 특징:**\n- **좌표 변환**: DOM 좌표 → SVG 좌표 정확한 변환\n- **성능 최적화**: MutationObserver로 컨테이너 변경 감지\n- **반응형**: 스케일 변경 시 하이라이트 크기 자동 조정\n- **페이지별 필터링**: 현재 페이지의 하이라이트만 렌더링\n- **메모리 관리**: 컴포넌트 언마운트 시 이벤트 리스너 정리\n\n**UI/UX 특징:**\n- **하이라이트 모드 토글**: 노란색 아이콘으로 직관적 표시\n- **상태별 안내 메시지**: 일반 모드와 하이라이트 모드 구분\n- **부드러운 애니메이션**: 호버 및 상태 전환 효과\n- **접근성**: 키보드 네비게이션 및 툴팁 지원\n\n**다음 단계 준비:**\n- 하이라이트 생성 이벤트 준비 완료\n- 메모 모달 연동 준비 (Phase 4)\n- TSReadingPage 통합 준비\n</info added on 2025-07-07T03:44:04.886Z>",
+            "status": "done",
+            "dependencies": [
+              "3.2"
+            ],
+            "parentTaskId": 3
+          }
+        ]
       },
       {
-        "id": 39,
-        "title": "Implement Scroll Area",
-        "description": "Implement the scroll area with three summary notes, Zengo/Zengo Myverse buttons, and an 'Cognitive Analysis' button.",
-        "details": "1.  Create a `ScrollArea` component.\n2.  Fetch three summary notes from the existing API endpoint and display them.\n3.  Implement the Zengo/Zengo Myverse buttons using `<button>` elements.\n4.  Implement the 'Cognitive Analysis' button using a `<button>` element.\n\n```jsx\n// components/ScrollArea.tsx\nimport { useEffect, useState } from 'react';\n\nconst ScrollArea = () => {\n  const [summaryNotes, setSummaryNotes] = useState([]);\n\n  useEffect(() => {\n    // Fetch summary notes from API\n    setSummaryNotes([{}, {}, {}]); // Example\n  }, []);\n\n  return (\n    <div className=\"p-6\">\n      <section>\n        <h2>단권화 노트</h2>\n        {summaryNotes.map((note, index) => (\n          <div key={index}>Summary Note</div> // Replace with actual note component\n        ))}\n      </section>\n      <button>Zengo / Zengo Myverse</button>\n      <button>인지 분석</button>\n    </div>\n  );\n};\n\nexport default ScrollArea;\n```\n<info added on 2025-07-06T08:51:18.057Z>\nPossible Errors and Solutions for Task 39:\n\n1.  **Summary Notes API Call Error**: A \"404 Not Found\" or \"Network Error\" may occur due to a non-existent or incorrect API endpoint when fetching summary notes data.\n    -   Solution: Verify the API endpoint and use a try-catch block to handle errors. Implement components to display loading and error states.\n\n2.  **Scroll Area Rendering Error**: Components in the scroll area may not render due to incorrect conditional rendering or a \"Cannot read property of null\" error.\n    -   Solution: Provide appropriate fallback UI for each section and handle empty states when data is unavailable.\n\nBest Practices: Use data fetching libraries like React Query or SWR to automatically manage loading, error, and success states, and provide skeleton UI to improve user experience.\n</info added on 2025-07-06T08:51:18.057Z>",
-        "testStrategy": "1.  Verify that the three summary notes are displayed correctly.\n2.  Check that the Zengo/Zengo Myverse buttons and the 'Cognitive Analysis' button are functional.",
-        "priority": "medium",
-        "dependencies": [
-          38
-        ],
+        "id": 4,
+        "title": "Implement PDF Note-Taking Modal",
+        "description": "Implement a reusable PDF note-taking modal with the same UI/UX as the existing review session memo input form. This modal will be triggered upon highlighting text in the PDF viewer, pausing the timer and pre-filling the modal with the highlighted text.",
+        "details": "1.  Create a new, reusable component for the PDF note-taking modal, mirroring the UI/UX of the existing review session memo input form.\n2.  Implement logic to pause the timer when text is highlighted in the PDF viewer.\n3.  Implement logic to invoke the PDF note-taking modal upon text highlighting.\n4.  Automatically populate the modal with the highlighted text.\n5.  Implement functionality to save the note and return to the TS reading session upon saving, resuming the timer.\n6. Ensure the modal is properly integrated with the highlighting functionality implemented in Task 3.",
+        "testStrategy": "1.  Highlight text in the PDF viewer and verify that the timer pauses.\n2.  Verify that the PDF note-taking modal is invoked upon text highlighting.\n3.  Ensure that the highlighted text is automatically populated in the modal.\n4.  Save the note and verify that the user is returned to the TS reading session and the timer resumes.\n5.  Test the modal with different lengths of highlighted text.\n6.  Verify that the saved note is correctly associated with the highlighted text.",
         "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 40,
-        "title": "Integrate Components into Dashboard Layout",
-        "description": "Integrate all components into the main dashboard layout, ensuring proper structure and responsiveness.",
-        "details": "1.  Create a `DashboardLayout` component in the `app/` directory.\n2.  Import the `Header`, `MainArea`, and `ScrollArea` components.\n3.  Arrange the components in the desired layout using Flexbox or Grid.\n4.  Use Tailwind CSS to style the layout and ensure it is responsive on different screen sizes.\n\n```jsx\n// app/page.tsx\nimport Header from '@/components/Header';\nimport MainArea from '@/components/MainArea';\nimport ScrollArea from '@/components/ScrollArea';\n\nexport default function Dashboard() {\n  return (\n    <div className=\"flex flex-col h-screen\">\n      <Header />\n      <div className=\"flex-grow overflow-y-auto\">\n        <MainArea />\n        <ScrollArea />\n      </div>\n    </div>\n  );\n}\n```\n<info added on 2025-07-06T08:51:32.902Z>\nPossible Errors and Solutions for Task 40:\n\n1.  **Mobile Responsive Layout Error**: Incorrect application of Tailwind CSS responsive classes may cause headers or buttons to overlap or be displayed outside the screen on mobile devices.\n    -   Solution: Use responsive prefixes such as `sm:`, `md:`, and `lg:` correctly and apply a mobile-first approach. Test various screen sizes in Chrome DevTools' responsive mode.\n\n2.  **CSS Class Conflict Error**: Conflicts between existing styles and new Tailwind classes may result in unexpected styling.\n    -   Solution: Check CSS specificity and use `!important` or Tailwind's `!` prefix if necessary. Isolate styles to avoid conflicts with existing CSS.\n\nBest Practices: According to the official Tailwind CSS documentation, design with a mobile-first approach for responsive design and separate styles by component to increase maintainability.\n</info added on 2025-07-06T08:51:32.902Z>",
-        "testStrategy": "1.  Verify that all components are displayed correctly in the dashboard layout.\n2.  Check that the layout is responsive on different screen sizes.\n3.  Ensure that the components are arranged in the desired order and with proper spacing.",
+        "dependencies": [
+          3
+        ],
         "priority": "high",
-        "dependencies": [
-          37,
-          38,
-          39
-        ],
-        "status": "done",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "기존 TS 리뷰 메모 UI 분석 및 재사용 컴포넌트 추출",
+            "description": "TSReviewPage의 메모 입력 폼을 분석하고 재사용 가능한 컴포넌트로 추출",
+            "details": "TSReviewPage.client.tsx의 메모 입력 폼 UI/UX를 분석하여 PDF 메모 작성에 재사용할 수 있도록 별도 컴포넌트로 추출\n<info added on 2025-07-07T03:51:48.988Z>\n✅ 서브태스크 4.1 완료!\n\n**완료 내용:**\n- TSReviewPage의 메모 입력 폼 UI/UX를 분석 완료\n- 동일한 cyberTheme와 스타일을 사용하는 PdfMemoModal 컴포넌트 생성\n- 기존 TS 리뷰 폼과 동일한 필드들 구현:\n  - 메모 성격 선택 (생각/인용/질문)\n  - 메모 텍스트 입력 (하이라이트된 텍스트 자동 입력)\n  - 키워드 입력\n  - 셀프 평가 (별점 1-5)\n- 모달 형태로 구현하여 PDF 뷰어 위에 오버레이\n- 반응형 디자인 및 접근성 고려\n- 에러 핸들링 및 로딩 상태 관리\n- PdfMemoData 타입 정의 및 export 추가\n</info added on 2025-07-07T03:51:48.988Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4
+          },
+          {
+            "id": 2,
+            "title": "PDF 메모 모달 컴포넌트 생성",
+            "description": "하이라이트된 텍스트를 받아 메모를 작성할 수 있는 모달 컴포넌트 생성",
+            "details": "기존 TS 리뷰 메모 UI와 동일한 스타일의 PDF 메모 모달 컴포넌트를 생성하고, 하이라이트된 텍스트를 자동으로 입력하는 기능 구현\n<info added on 2025-07-07T03:52:30.188Z>\nPdfMemoModal 컴포넌트는 서브태스크 4.1에서 이미 완성됨\n- 하이라이트된 텍스트를 자동으로 메모 필드에 입력하는 기능 구현\n- 기존 TS 리뷰 메모와 동일한 UI/UX 스타일 적용\n- 모든 필수 기능 구현:\n  - 메모 성격 선택 (생각/인용/질문)\n  - 메모 텍스트 입력 (하이라이트 텍스트 자동 입력)\n  - 키워드 입력\n  - 중요도 평가 (별점)\n  - 에러 핸들링 및 로딩 상태\n- PdfMemoData 타입 정의 및 export\n- 모달 형태로 구현하여 PDF 뷰어 위에 오버레이\n\n**다음 단계:** TSReadingPage에 모달을 통합하고 하이라이트 이벤트와 연동\n</info added on 2025-07-07T03:52:30.188Z>",
+            "status": "done",
+            "dependencies": [
+              "4.1"
+            ],
+            "parentTaskId": 4
+          },
+          {
+            "id": 3,
+            "title": "TSReadingPage에 PDF 메모 모달 통합",
+            "description": "TSReadingPage에 PDF 메모 모달을 통합하고 하이라이트 이벤트와 연동",
+            "details": "TSReadingPage에 PDF 메모 모달을 추가하고, 하이라이트 생성 시 타이머 일시정지 및 모달 호출 로직 구현\n<info added on 2025-07-07T03:54:51.529Z>\n- TSReadingPage에 PdfMemoModal 컴포넌트 import 및 통합 완료\n- PDF 메모 모달 상태 관리 추가:\n  - isMemoModalOpen: 모달 열림/닫힘 상태\n  - selectedText: 하이라이트된 텍스트\n  - selectedPageNumber: 현재 페이지 번호\n- 하이라이트 이벤트와 모달 연동 구현:\n  - handlePdfTextSelect에서 타이머 자동 일시정지\n  - 선택된 텍스트와 페이지 정보 저장\n  - 메모 모달 자동 호출\n- 모달 핸들러 구현:\n  - handleMemoModalClose: 모달 닫기 및 타이머 재개\n  - handleMemoSave: 메모 저장 로직 (임시로 localStorage 사용)\n- 메모 저장 후 타이머 자동 재개 구현\n- Phase 5 API 연동을 위한 TODO 주석 추가\n\n**다음 단계:** 타이머 일시정지/재개 로직 최적화\n</info added on 2025-07-07T03:54:51.529Z>",
+            "status": "done",
+            "dependencies": [
+              "4.2"
+            ],
+            "parentTaskId": 4
+          },
+          {
+            "id": 4,
+            "title": "타이머 일시정지/재개 로직 구현",
+            "description": "하이라이트 시 타이머 일시정지, 메모 저장 후 타이머 재개 로직 구현",
+            "details": "PDF 하이라이트 생성 시 자동으로 타이머를 일시정지하고, 메모 저장 완료 후 타이머를 자동으로 재개하는 로직 구현\n<info added on 2025-07-07T03:55:20.886Z>\n🔍 서브태스크 4.4 분석 시작\n\n**현재 타이머 로직 검토:**\n- 기본 일시정지/재개 기능은 이미 구현됨\n- PDF 하이라이트 시 자동 일시정지 구현됨\n- 메모 저장 후 자동 재개 구현됨\n- 모달 닫기 시 자동 재개 구현됨\n\n**추가 최적화 필요 사항:**\n1. 중복 일시정지 방지 로직\n2. 타이머 상태 표시 개선\n3. 메모 작성 중 타이머 상태 명확화\n4. 에지 케이스 처리 (모달 열림 중 수동 일시정지 등)\n\n**구현 진행:**\n- 현재 로직이 이미 요구사항을 충족하고 있음을 확인\n- 필요한 경우에만 최소한의 개선 적용\n</info added on 2025-07-07T03:55:20.886Z>\n<info added on 2025-07-07T03:56:34.974Z>\n✅ 서브태스크 4.4 완료!\n\n**완료된 타이머 로직 최적화:**\n\n1. **메모 작성 상태 구분**:\n   - `isPausedForMemo` 상태 추가로 메모 작성으로 인한 일시정지와 수동 일시정지 구분\n   - 타이머 상태 텍스트 개선 (몰입하는 중/일시정지됨/메모 작성 중)\n\n2. **중복 방지 로직**:\n   - 메모 모달이 이미 열려있을 때 텍스트 선택 무시\n   - 이미 일시정지된 상태에서 중복 일시정지 방지\n\n3. **수동 컨트롤 제한**:\n   - 메모 작성 중에는 수동 일시정지/재개 버튼 비활성화\n   - 메모 작성 중에는 수동 종료 버튼 비활성화\n   - 버튼 상태에 따른 시각적 피드백 개선\n\n4. **정확한 타이머 재개**:\n   - 메모 저장 완료 시에만 타이머 재개\n   - 모달 닫기 시에도 정확한 타이머 재개\n   - 메모 작성으로 인한 일시정지인 경우에만 자동 재개\n\n**사용자 경험 개선:**\n- 타이머 상태가 명확하게 표시됨\n- 메모 작성 중 실수로 타이머 조작 방지\n- 일관된 타이머 동작 보장\n</info added on 2025-07-07T03:56:34.974Z>",
+            "status": "done",
+            "dependencies": [
+              "4.3"
+            ],
+            "parentTaskId": 4
+          }
+        ]
       },
       {
-        "id": 41,
-        "title": "Implement Responsive Design",
-        "description": "Ensure the dashboard is fully responsive and adapts to different screen sizes, adhering to mobile-first principles.",
-        "details": "1.  Use Tailwind CSS's responsive modifiers (e.g., `sm:`, `md:`, `lg:`) to adjust the layout and styling of the components on different screen sizes.\n2.  Test the dashboard on different devices and screen sizes using browser developer tools or real devices.\n3.  Ensure that the layout is fluid and adapts to different screen orientations.\n\n```jsx\n// Example using Tailwind CSS responsive modifiers\n<div className=\"flex flex-col md:flex-row\">\n  <div className=\"w-full md:w-1/4\">{/* Sidebar */}</div>\n  <div className=\"w-full md:w-3/4\">{/* Main Content */}</div>\n</div>\n```\n<info added on 2025-07-06T08:51:48.359Z>\nPossible Errors and Solutions for Task 41:\n\n1. **API Endpoint Connection Error**: Encountering \"Access to fetch blocked by CORS policy\" or \"401 Unauthorized\" errors due to CORS issues or expired authentication tokens when connecting to existing APIs.\n   - Solution: Use Next.js API Routes to set up a proxy or verify CORS settings on the server side. Implement token refresh logic to manage authentication status.\n\n2. **Data Format Mismatch Error**: Receiving \"Cannot read property 'length' of undefined\" errors because the data format returned by the API differs from what the component expects.\n   - Solution: Define TypeScript interfaces to clarify data types and use data transformation functions to convert data into a consistent format.\n\nBest Practices: Implement common error handling using Axios interceptors or React Query's error handling during API integration. Use schema validation libraries like Zod or Yup for data validation.\n</info added on 2025-07-06T08:51:48.359Z>",
-        "testStrategy": "1.  Test the dashboard on different devices and screen sizes using browser developer tools or real devices.\n2.  Verify that the layout adapts correctly to different screen sizes and orientations.\n3.  Ensure that all components are visible and functional on all screen sizes.",
+        "id": 5,
+        "title": "Implement PDF Memo Saving API",
+        "description": "Develop a dedicated API endpoint to save PDF memos generated during TS reading sessions to the database. This API will handle data persistence for PDF notes.",
+        "details": "1. Create a new API endpoint `/api/ts-notes` that accepts POST requests.\n2. Implement server-side validation to ensure the request body contains `bookId` (integer), `pageNumber` (integer), `highlightedText` (string), `memoContent` (string), and `memoType` (string).\n3. Create a `Note` model in the database with fields corresponding to the validated request body parameters.\n4. Upon successful validation, create a new record in the `Note` table with the provided data.\n5. Return a success response with the newly created note's ID.\n6. Implement error handling to return appropriate error codes and messages for invalid requests or database errors.\n7. Ensure the API is secured with appropriate authentication and authorization mechanisms.\n8. Optimize database queries for performance, especially when retrieving notes for a specific book and page.",
+        "testStrategy": "1. Send a POST request to `/api/ts-notes` with valid data for `bookId`, `pageNumber`, `highlightedText`, `memoContent`, and `memoType`.\n2. Verify that a new record is created in the `Note` table with the provided data.\n3. Verify that the API returns a success response with the newly created note's ID.\n4. Send a POST request with invalid data (e.g., missing fields, incorrect data types) and verify that the API returns an appropriate error response.\n5. Test the API with different combinations of `bookId`, `pageNumber`, `highlightedText`, `memoContent`, and `memoType` to ensure it handles various scenarios correctly.\n6. Test the API's performance by sending multiple concurrent requests and monitoring response times.\n7. Verify that the API is properly secured by attempting to access it without proper authentication and authorization.",
+        "status": "in-progress",
+        "dependencies": [
+          3,
+          4
+        ],
         "priority": "high",
-        "dependencies": [
-          40
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 42,
-        "title": "Optimize Performance",
-        "description": "Optimize the dashboard for performance, ensuring fast loading times and smooth interactions.",
-        "details": "1.  Use code splitting to reduce the initial load time of the dashboard.\n2.  Optimize images using `next/image`.\n3.  Use lazy loading for components that are not immediately visible.\n4.  Monitor the dashboard's performance using browser developer tools or a performance monitoring tool like Google PageSpeed Insights.\n\n```jsx\n// Example using next/image\nimport Image from 'next/image';\n\n<Image src=\"/my-image.jpg\" alt=\"My Image\" width={500} height={300} priority />\n```\n<info added on 2025-07-06T08:52:01.748Z>\nPossible Errors and Solutions for Task 42:\n\n1. **Jest Test Environment Configuration Error**: Conflicts between Next.js 13+ App Router and Jest configuration may cause \"Cannot resolve module\" or \"Unexpected token\" errors.\n   - Solution: Configure Next.js settings correctly in jest.config.js and set up @testing-library/jest-dom. Use moduleNameMapping to resolve absolute paths.\n\n2. **Component Test Rendering Error**: If a component depends on Context or Router, a \"Cannot read property of undefined\" error may occur.\n   - Solution: Wrap the required Provider in the test and provide mock data. Customize the render function to automatically provide common Providers.\n\nBest Practice: Follow React Testing Library's principle of \"test the way your users interact\" and write tests that focus on user behavior rather than implementation details.\n</info added on 2025-07-06T08:52:01.748Z>",
-        "testStrategy": "1.  Measure the dashboard's loading time using browser developer tools or Google PageSpeed Insights.\n2.  Verify that images are optimized and lazy-loaded correctly.\n3.  Ensure that the dashboard is responsive and interactive.",
-        "priority": "medium",
-        "dependencies": [
-          40
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 43,
-        "title": "Ensure Accessibility",
-        "description": "Ensure the dashboard is accessible to users with disabilities, following accessibility best practices.",
-        "details": "1.  Use semantic HTML elements.\n2.  Provide alternative text for images.\n3.  Use ARIA attributes to improve the accessibility of interactive elements.\n4.  Ensure that the dashboard is keyboard-accessible.\n5.  Test the dashboard's accessibility using an accessibility testing tool like Axe or WAVE.\n\n```jsx\n// Example using ARIA attributes\n<button aria-label=\"Close\">Close</button>\n```\n<info added on 2025-07-06T08:52:22.209Z>\nPossible errors and solutions for Task 43:\n\n1. **Test environment setup error**: A \"Module not found\" error may occur due to an incorrect setupFilesAfterEnv path or missing polyfills in Jest and React Testing Library configurations.\n   - Solution: Correctly set the setupFilesAfterEnv path in jest.config.js and add jsdom environment and TextEncoder/TextDecoder polyfills if necessary.\n\n2. **Asynchronous test timing error**: \"act()\" warnings or \"Can't perform a React state update on an unmounted component\" errors may occur when testing API calls or state updates.\n   - Solution: Use waitFor and findBy* queries to wait for asynchronous operations correctly, and cancel pending requests in the cleanup function.\n\nBest practices: Follow the \"Arrange-Act-Assert\" pattern, ensure each test is independent and isolated, and use test doubles (mock, stub) appropriately to control external dependencies.\n</info added on 2025-07-06T08:52:22.209Z>",
-        "testStrategy": "1.  Test the dashboard's accessibility using an accessibility testing tool like Axe or WAVE.\n2.  Verify that the dashboard is keyboard-accessible.\n3.  Ensure that all elements have appropriate ARIA attributes.",
-        "priority": "medium",
-        "dependencies": [
-          40
-        ],
-        "status": "done",
         "subtasks": []
       }
     ],
     "metadata": {
-      "created": "2025-07-05T04:59:08.393Z",
-      "updated": "2025-07-06T08:57:03.391Z",
-      "description": "Tasks for master context"
+      "created": "2025-07-07T03:10:48.522Z",
+      "updated": "2025-07-07T03:57:29.826Z",
+      "description": "PDF 기반 동적 지식 캡처 시스템 구현을 위한 태스크 관리"
+    }
+  },
+  "pdf-knowledge-capture": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Implement PDF Upload API and Update Book Model",
+        "description": "Extend the Book model with pdfUrl and pdfFileSize fields and implement an API endpoint for uploading PDF files to cloud storage, including server-side validation.",
+        "details": "1.  Modify the Book model in the database schema to include the `pdfUrl` (string) and `pdfFileSize` (integer) fields.\n2.  Implement a new API endpoint `/books/{bookId}/upload-pdf` that accepts a PDF file as input.\n3.  Implement server-side validation to check the file format (must be PDF) and file size (must be less than 20MB).\n4.  Upon successful validation, upload the PDF file to cloud storage (e.g., AWS S3, Google Cloud Storage, or Azure Blob Storage).\n5.  Store the URL of the uploaded PDF file in the `pdfUrl` field of the Book model.\n6.  Store the size of the uploaded PDF file in the `pdfFileSize` field of the Book model.\n7.  Return a success response with the updated Book model.\n8.  Handle potential errors such as invalid file format, file size exceeding the limit, and cloud storage upload failures, returning appropriate error responses.",
+        "testStrategy": "1.  Create a test PDF file.\n2.  Send a POST request to the `/books/{bookId}/upload-pdf` endpoint with the test PDF file.\n3.  Verify that the API returns a success response with the updated Book model, including the `pdfUrl` and `pdfFileSize` fields.\n4.  Verify that the PDF file is successfully uploaded to cloud storage.\n5.  Verify that the `pdfUrl` field in the Book model contains the correct URL of the uploaded PDF file.\n6.  Verify that the `pdfFileSize` field in the Book model contains the correct size of the uploaded PDF file.\n7.  Test with a file larger than 20MB and verify that the API returns an error response.\n8.  Test with a non-PDF file and verify that the API returns an error response.\n9.  Test error handling for cloud storage upload failures.",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "현재 백엔드 구조 분석",
+            "description": "backend/ 폴더의 기존 코드를 분석하여 Prisma 스키마와 Book 모델 구조를 파악한다",
+            "details": "- backend/prisma/schema.prisma 파일 확인\n- Book 모델의 현재 필드 구조 파악\n- 기존 Book 관련 API 엔드포인트 확인\n- 파일 업로드 관련 기존 구현 확인\n<info added on 2025-07-07T03:14:11.703Z>\n**현재 상황:**\n- 프로젝트는 MongoDB + Mongoose 사용\n- Book 모델은 `backend/src/models/Book.ts`에 정의\n- Book API는 `backend/src/routes/books.ts`에 구현\n- 이미 multer를 사용한 이미지 업로드 기능 존재 (5MB 제한)\n- 업로드 디렉토리: `uploads/` (프로젝트 루트)\n\n**Book 모델 현재 필드:**\n- userId, title, author, bookType, totalPages, currentPage\n- isbn, coverImage, category, status, completionPercentage\n- estimatedRemainingMinutes, avgPpm, readingPurpose, purchaseLink\n- createdAt, updatedAt (timestamps)\n\n**다음 단계:**\n1. Book 모델에 pdfUrl, pdfFileSize 필드 추가\n2. PDF 파일 업로드를 위한 multer 설정 추가\n3. PDF 업로드 API 엔드포인트 구현\n4. PDF 파일 검증 로직 구현\n</info added on 2025-07-07T03:14:11.703Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 2,
+            "title": "Book 모델에 PDF 필드 추가",
+            "description": "Book 모델의 인터페이스와 스키마에 pdfUrl과 pdfFileSize 필드를 추가한다",
+            "details": "- IBook 인터페이스에 pdfUrl?: string, pdfFileSize?: number 필드 추가\n- BookSchema에 해당 필드들의 Mongoose 스키마 정의 추가\n- 기존 Book 타입과의 호환성 유지\n<info added on 2025-07-07T03:15:28.807Z>\n- pdfUrl은 String 타입, trim 적용, 기본값 null\n- pdfFileSize는 Number 타입, 최소값 0, 기본값 null\n- backend/src/models/Book.ts 파일 수정\n- 기존 필드들에는 영향 없음\n- 새로운 필드들은 옵셔널이므로 기존 데이터와 호환\n</info added on 2025-07-07T03:15:28.807Z>",
+            "status": "done",
+            "dependencies": [
+              1
+            ],
+            "parentTaskId": 1
+          },
+          {
+            "id": 3,
+            "title": "PDF 업로드를 위한 multer 설정 구성",
+            "description": "PDF 파일 업로드를 위한 별도의 multer 인스턴스를 생성하고 PDF 파일 검증 로직을 구현한다",
+            "details": "- PDF 파일만 허용하는 fileFilter 함수 구현\n- 20MB 파일 크기 제한 설정\n- PDF 전용 업로드 디렉토리 설정 (uploads/pdfs/)\n- MIME 타입 검증 (application/pdf)\n- 파일 확장자 검증 (.pdf)\n<info added on 2025-07-07T03:16:36.856Z>\nPDF 업로드 multer 설정 완료:\n\n**완료된 작업:**\n- PDF 전용 업로드 디렉토리 생성 (uploads/pdfs/)\n- PDF 파일 전용 multer 인스턴스 (uploadPdf) 구성\n- PDF 파일 검증 로직 구현:\n  - MIME 타입 검증: application/pdf만 허용\n  - 파일 확장자 검증: .pdf 확장자만 허용\n  - 파일 크기 제한: 20MB\n- 상세한 로깅 추가로 디버깅 용이성 확보\n- 기존 이미지 업로드 기능과 분리하여 독립적 운영\n\n**변경 사항:**\n- backend/src/routes/books.ts 파일에 PDF 업로드 설정 추가\n- pdfStorage, pdfFileFilter, uploadPdf 인스턴스 생성\n- 에러 메시지 한국어로 사용자 친화적 구성\n</info added on 2025-07-07T03:16:36.856Z>",
+            "status": "done",
+            "dependencies": [
+              2
+            ],
+            "parentTaskId": 1
+          },
+          {
+            "id": 4,
+            "title": "PDF 업로드 API 엔드포인트 구현",
+            "description": "책에 PDF 파일을 업로드하는 API 엔드포인트를 구현하고 Book 모델을 업데이트한다",
+            "details": "- POST /books/:bookId/upload-pdf 엔드포인트 생성\n- bookController에 uploadPdf 함수 구현\n- 업로드된 PDF 파일 정보를 Book 모델에 저장\n- 파일 URL과 크기 정보 업데이트\n- 에러 핸들링 및 검증 로직 추가\n- 응답 형식 정의\n<info added on 2025-07-07T03:19:34.472Z>\n**완료된 작업:**\n- POST /books/:bookId/upload-pdf 엔드포인트 생성\n- bookController에 uploadPdf 함수 구현\n- 업로드된 PDF 파일 정보를 Book 모델에 저장 (pdfUrl, pdfFileSize)\n- 상세한 에러 핸들링 및 검증 로직:\n  - 사용자 인증 확인\n  - 파일 존재 여부 확인\n  - 책 소유권 확인\n  - 기존 PDF 파일 삭제 (교체 시)\n  - 업로드 실패 시 파일 정리\n- 응답 형식 정의 (성공 메시지, 업데이트된 책 정보, PDF 정보)\n- multer 인스턴스 이름 충돌 해결 (pdfUpload로 변경)\n\n**API 사용법:**\n- POST /books/:bookId/upload-pdf\n- Content-Type: multipart/form-data\n- Field name: pdfFile\n- 최대 파일 크기: 20MB\n- 지원 형식: PDF (.pdf, application/pdf)\n\n**응답 형식:**\n```json\n{\n  \"message\": \"PDF 파일이 성공적으로 업로드되었습니다.\",\n  \"book\": { /* 업데이트된 책 정보 */ },\n  \"pdfInfo\": {\n    \"originalName\": \"document.pdf\",\n    \"url\": \"/uploads/pdfs/pdfFile-1234567890-123456789.pdf\",\n    \"size\": 1234567\n  }\n}\n```\n</info added on 2025-07-07T03:19:34.472Z>",
+            "status": "done",
+            "dependencies": [
+              3
+            ],
+            "parentTaskId": 1
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement PDF Upload Book Registration UI",
+        "description": "Implement the UI for registering books via PDF upload, adding a 'Register via PDF' tab to the existing book registration page. This includes file upload, drag-and-drop functionality, and automatic metadata extraction using pdf.js.",
+        "details": "1.  Modify the existing book registration page to include a new tab labeled 'Register via PDF'.\n2.  Implement a file upload component within the 'Register via PDF' tab, allowing users to select PDF files from their local system.\n3.  Implement drag-and-drop functionality for PDF files onto the upload component.\n4.  Integrate pdf.js to extract metadata from the uploaded PDF file, including title, author, and other relevant information.\n5.  Automatically populate the corresponding form fields on the book registration page with the extracted metadata.\n6.  Handle cases where metadata extraction fails or is incomplete, providing users with the option to manually enter the missing information.\n7.  Ensure the UI is responsive and handles large PDF files efficiently, providing appropriate loading indicators.\n8.  Implement client-side validation to ensure that only PDF files are accepted.\n9.  Consider accessibility requirements when designing the UI, ensuring it is usable by people with disabilities.",
+        "testStrategy": "1.  Upload a variety of PDF files with different metadata structures.\n2.  Verify that the metadata is correctly extracted and populated into the corresponding form fields.\n3.  Test the drag-and-drop functionality with different PDF files.\n4.  Test the UI with large PDF files to ensure it remains responsive.\n5.  Verify that the client-side validation prevents non-PDF files from being uploaded.\n6.  Manually enter data into the form fields and submit the form to ensure that the data is correctly saved.\n7.  Test the UI on different browsers and devices to ensure compatibility.\n8.  Verify that the UI is accessible to users with disabilities, using assistive technologies such as screen readers.",
+        "status": "done",
+        "dependencies": [
+          1
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "PDF.js 라이브러리 설치 및 설정",
+            "description": "PDF 메타데이터 추출을 위한 PDF.js 라이브러리를 프론트엔드에 설치하고 설정합니다.",
+            "details": "- npm install pdfjs-dist 실행\n- PDF.js worker 설정\n- TypeScript 타입 정의 추가\n- 기본 PDF 파싱 함수 구현\n<info added on 2025-07-07T03:26:31.637Z>\n**구현 내용:**\n1. ✅ pdfjs-dist 라이브러리 설치 완료\n2. ✅ @types/pdfjs-dist TypeScript 타입 정의 설치 완료\n3. ✅ frontend/lib/pdfUtils.ts 파일 생성\n4. ✅ PDF.js worker 설정 구현\n5. ✅ PDF 메타데이터 추출 함수 구현\n6. ✅ PDF 파일 유효성 검사 함수 구현\n7. ✅ 파일 크기 포맷팅 유틸리티 함수 구현\n\n**주요 기능:**\n- extractPdfMetadata(): PDF에서 제목, 저자, 페이지 수 추출\n- validatePdfFile(): PDF 파일 유효성 검사 (타입, 크기, 확장자)\n- formatFileSize(): 파일 크기를 읽기 쉬운 형태로 변환\n- 20MB 파일 크기 제한\n- 에러 핸들링 및 폴백 로직 포함\n\n**TypeScript 타입:**\n- PdfMetadata 인터페이스\n- PdfExtractionResult 인터페이스\n- 완전한 타입 안전성 보장\n</info added on 2025-07-07T03:26:31.637Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
+          },
+          {
+            "id": 2,
+            "title": "PDF 업로드 UI 컴포넌트 생성",
+            "description": "드래그앤드롭 기능이 포함된 PDF 업로드 UI 컴포넌트를 생성합니다.",
+            "details": "- PdfUploadComponent.tsx 파일 생성\n- 드래그앤드롭 기능 구현\n- PDF 파일 검증 로직\n- 업로드 진행상태 표시\n- 에러 핸들링 UI\n<info added on 2025-07-07T03:28:14.881Z>\n**구현 내용:**\n1. ✅ PdfUploadComponent.tsx 컴포넌트 생성 완료\n2. ✅ 드래그앤드롭 기능 구현\n3. ✅ PDF 파일 검증 로직 구현\n4. ✅ 업로드 진행상태 표시 구현\n5. ✅ 에러 핸들링 UI 구현\n6. ✅ 메타데이터 표시 UI 구현\n\n**주요 기능:**\n- 클릭 또는 드래그앤드롭으로 PDF 파일 업로드\n- 실시간 파일 유효성 검증 (타입, 크기, 확장자)\n- PDF 메타데이터 자동 추출 및 표시\n- 로딩 상태 및 진행률 표시\n- 상세한 에러 메시지 및 경고\n- 업로드된 파일 정보 미리보기\n- 파일 제거 기능\n\n**UI/UX 특징:**\n- Habitus33 사이버펑크 테마 적용\n- 반응형 디자인\n- 접근성 고려 (키보드 네비게이션, 스크린 리더)\n- 직관적인 아이콘 및 상태 표시\n- 부드러운 애니메이션 효과\n\n**기술적 특징:**\n- TypeScript 완전 지원\n- React hooks 활용 (useState, useRef, useCallback)\n- 메모리 누수 방지\n- 에러 경계 처리\n- 컴포넌트 재사용성 고려\n</info added on 2025-07-07T03:28:14.881Z>",
+            "status": "done",
+            "dependencies": [
+              "2.1"
+            ],
+            "parentTaskId": 2
+          },
+          {
+            "id": 3,
+            "title": "PDF 메타데이터 추출 함수 구현",
+            "description": "PDF.js를 사용하여 PDF 파일에서 메타데이터(제목, 저자, 페이지 수)를 추출하는 함수를 구현합니다.",
+            "details": "- extractPdfMetadata 함수 구현\n- PDF 문서 정보 파싱\n- 제목, 저자, 페이지 수 추출\n- 에러 핸들링 및 폴백 로직\n- TypeScript 타입 정의",
+            "status": "done",
+            "dependencies": [
+              "2.1"
+            ],
+            "parentTaskId": 2
+          },
+          {
+            "id": 4,
+            "title": "기존 책 등록 페이지에 PDF 업로드 기능 통합",
+            "description": "기존 /books/new/page.tsx에 PDF 업로드 기능을 통합하고 자동 폼 채우기 기능을 구현합니다.",
+            "details": "- 기존 폼에 PDF 업로드 섹션 추가\n- PDF 업로드 시 자동 폼 필드 채우기\n- 수동 입력과 PDF 업로드 방식 병행 지원\n- 반응형 레이아웃 조정\n- 상태 관리 로직 구현\n<info added on 2025-07-07T03:31:31.278Z>\n**구현 내용:**\n1. ✅ 기존 책 등록 페이지에 PDF 업로드 기능 통합 완료\n2. ✅ PDF 업로드 상태 관리 추가 (pdfFile, pdfMetadata, inputMethod)\n3. ✅ PDF 업로드 핸들러 함수 구현 (handlePdfSelected, handlePdfError, clearPdfFile)\n4. ✅ 자동 폼 채우기 기능 구현 (제목, 저자, 페이지 수)\n5. ✅ 수동 입력과 PDF 업로드 방식 병행 지원\n6. ✅ PDF 업로드 UI 섹션 추가 (오른쪽 컬럼)\n7. ✅ 책 등록 후 PDF 업로드 API 연동\n8. ✅ 반응형 레이아웃 조정\n\n**주요 기능:**\n- PDF 파일 업로드 시 메타데이터 자동 추출 및 폼 필드 자동 채우기\n- 수동 입력 모드와 PDF 모드 간 전환 가능\n- PDF 업로드 성공/실패 상태 표시\n- 책 등록 후 자동 PDF 업로드 처리\n- PDF 업로드 실패 시에도 책 등록은 유지 (부분 성공 처리)\n\n**UI/UX 개선:**\n- 직관적인 PDF 업로드 인터페이스\n- 자동 추출된 정보 표시 및 안내\n- 사용자 피드백 메시지 (성공/실패/진행 상태)\n- 기존 디자인과 일관성 유지\n\n**에러 처리:**\n- PDF 업로드 실패 시 적절한 에러 메시지\n- 부분 성공 시나리오 처리 (책 등록 성공, PDF 업로드 실패)\n- 사용자 친화적인 오류 안내\n</info added on 2025-07-07T03:31:31.278Z>",
+            "status": "done",
+            "dependencies": [
+              "2.2",
+              "2.3"
+            ],
+            "parentTaskId": 2
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Integrate PDF Viewer and Implement Highlighting in TS Reading Session",
+        "description": "Integrate a PDF viewer into the TS reading session page using react-pdf and implement a rounded-corner highlighting feature using SVG overlays. This includes text selection, coordinate calculation, and PDF note modal invocation.",
+        "details": "1. Integrate the react-pdf library into the TS reading session page.\n2. Implement an SVG overlay to enable rounded-corner highlighting functionality.\n3. Implement text selection functionality within the PDF viewer.\n4. Calculate text coordinates upon selection for highlighting purposes.\n5. Implement a PDF note modal that is invoked upon text selection, allowing users to add notes to highlighted sections.\n6. Ensure the highlighting feature is visually appealing with rounded corners and a subtle color scheme.\n7. Optimize the PDF viewer for performance, ensuring smooth scrolling and rendering even with large PDF documents.\n8. Implement error handling for cases where PDF loading fails or the PDF format is invalid.",
+        "testStrategy": "1. Load various PDF documents into the TS reading session page to test the PDF viewer integration.\n2. Select text within the PDF viewer and verify that the rounded-corner highlighting is applied correctly.\n3. Test the text selection functionality with different text sizes and fonts.\n4. Verify that the correct text coordinates are calculated upon selection.\n5. Invoke the PDF note modal and ensure that it displays correctly with the selected text.\n6. Test the performance of the PDF viewer with large PDF documents, ensuring smooth scrolling and rendering.\n7. Simulate PDF loading errors and invalid PDF formats to verify that the error handling is implemented correctly.",
+        "status": "done",
+        "dependencies": [
+          1,
+          2
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "react-pdf 라이브러리 설치 및 설정",
+            "description": "react-pdf 라이브러리를 설치하고 프로젝트에서 사용할 수 있도록 기본 설정을 구성합니다.",
+            "details": "- react-pdf 및 필요한 peer dependencies 설치\\n- PDF 뷰어 기본 컴포넌트 설정\\n- TypeScript 타입 정의 추가\\n- Worker 설정 및 최적화\n<info added on 2025-07-07T03:36:49.893Z>\n**구현 내용:**\n1. ✅ react-pdf 라이브러리 설치 완료\n2. ✅ @types/react-pdf TypeScript 타입 정의 설치 완료\n3. ✅ PdfViewer.tsx 컴포넌트 생성 완료\n4. ✅ PDF.js worker 설정 구현\n5. ✅ 기본 PDF 뷰어 기능 구현\n\n**주요 기능:**\n- 완전한 PDF 문서 렌더링\n- 페이지 네비게이션 (이전/다음 페이지)\n- 줌 인/아웃 기능 (50% ~ 300%)\n- 90도 회전 기능\n- 텍스트 선택 지원 (onTextSelect 콜백)\n- 로딩 상태 및 에러 핸들링\n- 반응형 디자인\n\n**UI/UX 특징:**\n- Habitus33 사이버펑크 테마 적용\n- 직관적인 컨트롤 버튼\n- 실시간 페이지/줌 상태 표시\n- 텍스트 선택 안내 메시지\n- 부드러운 애니메이션 효과\n\n**기술적 특징:**\n- TypeScript 완전 지원\n- React hooks 활용 (useState, useCallback, useRef, useEffect)\n- 텍스트 선택 이벤트 처리\n- 좌표 계산 기능 (하이라이트 준비)\n- 에러 경계 처리\n- 메모리 누수 방지\n</info added on 2025-07-07T03:36:49.893Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 3
+          },
+          {
+            "id": 2,
+            "title": "TSReadingPage에 PDF 뷰어 통합",
+            "description": "TSReadingPage 컴포넌트에 PDF 뷰어를 통합하여 PDF가 있는 책의 경우 조건부로 렌더링합니다.",
+            "details": "- TSReadingPage에서 책의 PDF 파일 존재 여부 확인\\n- PDF가 있는 경우 PdfViewer 컴포넌트 렌더링\\n- PDF 로딩 및 에러 상태 처리\\n- 기존 TS 세션 플로우와의 호환성 유지\n<info added on 2025-07-07T03:39:14.801Z>\n**구현 내용:**\n1. ✅ TSReadingPage에 PDF 뷰어 통합 완료\n2. ✅ SessionData 타입에 PDF 정보 필드 추가 (pdfUrl, pdfFileSize)\n3. ✅ PDF 뷰어 상태 관리 추가 (showPdfViewer, currentPdfPage, pdfError)\n4. ✅ PDF 뷰어 토글 버튼 구현\n5. ✅ 조건부 렌더링 구현 (PDF 있음/없음)\n6. ✅ PDF 텍스트 선택 시 자동 일시정지 기능\n7. ✅ PDF 에러 핸들링 및 사용자 안내\n\n**주요 기능:**\n- PDF가 있는 책: PDF 뷰어 토글 버튼 표시\n- PDF가 없는 책: 기존 호흡 텍스트 유지\n- PDF 뷰어 표시/숨기기 토글 기능\n- 텍스트 선택 시 타이머 자동 일시정지\n- PDF 로딩 에러 시 사용자 친화적 메시지\n\n**UI/UX 특징:**\n- 사이버펑크 테마 일관성 유지\n- 직관적인 PDF 뷰어 토글 버튼\n- 반응형 디자인 (최대 너비 4xl)\n- 부드러운 상태 전환 애니메이션\n\n**기술적 특징:**\n- 기존 TS 세션 플로우와 완전 호환\n- PDF URL 자동 구성 (API URL + 상대 경로)\n- 메모리 효율적인 상태 관리\n- 타입 안전성 보장\n\n**다음 단계 준비:**\n- 텍스트 선택 이벤트 핸들러 준비 완료\n- 메모 모달 연동 준비 (Phase 4)\n- 하이라이트 기능 연동 준비\n</info added on 2025-07-07T03:39:14.801Z>",
+            "status": "done",
+            "dependencies": [
+              "3.1"
+            ],
+            "parentTaskId": 3
+          },
+          {
+            "id": 3,
+            "title": "SVG 오버레이 하이라이트 시스템 구현",
+            "description": "PDF 텍스트 위에 SVG 오버레이를 사용하여 둥근 모서리 하이라이트 기능을 구현합니다.",
+            "details": "- SVG 오버레이 컴포넌트 생성\\n- 텍스트 좌표를 SVG 좌표로 변환\\n- 둥근 모서리 하이라이트 렌더링\\n- 하이라이트 상태 관리\\n- 여러 하이라이트 지원\n<info added on 2025-07-07T03:44:04.886Z>\n**구현 내용:**\n1. ✅ PDF 하이라이트 타입 정의 완료 (types/pdf.ts)\n2. ✅ 하이라이트 유틸리티 함수 구현 (lib/pdfHighlightUtils.ts)\n3. ✅ SVG 오버레이 하이라이트 컴포넌트 생성 (PdfHighlightOverlay.tsx)\n4. ✅ PdfViewer에 하이라이트 시스템 통합 완료\n5. ✅ 하이라이트 모드 토글 기능 구현\n6. ✅ 둥근 모서리 하이라이트 렌더링 구현\n7. ✅ 다중 하이라이트 지원\n\n**주요 기능:**\n- **하이라이트 생성**: 텍스트 선택 시 자동 하이라이트 생성\n- **둥근 모서리**: SVG rect에 rx/ry 속성으로 세련된 모양\n- **다중 색상 지원**: 6가지 하이라이트 색상 (yellow, green, blue, purple, pink, orange)\n- **인터랙티브**: 클릭, 더블클릭, 우클릭 이벤트 지원\n- **시각적 피드백**: 호버 시 투명도 변경 및 테두리 표시\n- **메모 표시**: 메모가 있는 하이라이트에 작은 원 아이콘\n\n**기술적 특징:**\n- **좌표 변환**: DOM 좌표 → SVG 좌표 정확한 변환\n- **성능 최적화**: MutationObserver로 컨테이너 변경 감지\n- **반응형**: 스케일 변경 시 하이라이트 크기 자동 조정\n- **페이지별 필터링**: 현재 페이지의 하이라이트만 렌더링\n- **메모리 관리**: 컴포넌트 언마운트 시 이벤트 리스너 정리\n\n**UI/UX 특징:**\n- **하이라이트 모드 토글**: 노란색 아이콘으로 직관적 표시\n- **상태별 안내 메시지**: 일반 모드와 하이라이트 모드 구분\n- **부드러운 애니메이션**: 호버 및 상태 전환 효과\n- **접근성**: 키보드 네비게이션 및 툴팁 지원\n\n**다음 단계 준비:**\n- 하이라이트 생성 이벤트 준비 완료\n- 메모 모달 연동 준비 (Phase 4)\n- TSReadingPage 통합 준비\n</info added on 2025-07-07T03:44:04.886Z>",
+            "status": "done",
+            "dependencies": [
+              "3.2"
+            ],
+            "parentTaskId": 3
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Implement PDF Note-Taking Modal",
+        "description": "Implement a reusable PDF note-taking modal with the same UI/UX as the existing review session memo input form. This modal will be triggered upon highlighting text in the PDF viewer, pausing the timer and pre-filling the modal with the highlighted text.",
+        "details": "1.  Create a new, reusable component for the PDF note-taking modal, mirroring the UI/UX of the existing review session memo input form.\n2.  Implement logic to pause the timer when text is highlighted in the PDF viewer.\n3.  Implement logic to invoke the PDF note-taking modal upon text highlighting.\n4.  Automatically populate the modal with the highlighted text.\n5.  Implement functionality to save the note and return to the TS reading session upon saving, resuming the timer.\n6. Ensure the modal is properly integrated with the highlighting functionality implemented in Task 3.",
+        "testStrategy": "1.  Highlight text in the PDF viewer and verify that the timer pauses.\n2.  Verify that the PDF note-taking modal is invoked upon text highlighting.\n3.  Ensure that the highlighted text is automatically populated in the modal.\n4.  Save the note and verify that the user is returned to the TS reading session and the timer resumes.\n5.  Test the modal with different lengths of highlighted text.\n6.  Verify that the saved note is correctly associated with the highlighted text.",
+        "status": "done",
+        "dependencies": [
+          3
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "기존 TS 리뷰 메모 UI 분석 및 재사용 컴포넌트 추출",
+            "description": "TSReviewPage의 메모 입력 폼을 분석하고 재사용 가능한 컴포넌트로 추출",
+            "details": "TSReviewPage.client.tsx의 메모 입력 폼 UI/UX를 분석하여 PDF 메모 작성에 재사용할 수 있도록 별도 컴포넌트로 추출\n<info added on 2025-07-07T03:51:48.988Z>\n✅ 서브태스크 4.1 완료!\n\n**완료 내용:**\n- TSReviewPage의 메모 입력 폼 UI/UX를 분석 완료\n- 동일한 cyberTheme와 스타일을 사용하는 PdfMemoModal 컴포넌트 생성\n- 기존 TS 리뷰 폼과 동일한 필드들 구현:\n  - 메모 성격 선택 (생각/인용/질문)\n  - 메모 텍스트 입력 (하이라이트된 텍스트 자동 입력)\n  - 키워드 입력\n  - 셀프 평가 (별점 1-5)\n- 모달 형태로 구현하여 PDF 뷰어 위에 오버레이\n- 반응형 디자인 및 접근성 고려\n- 에러 핸들링 및 로딩 상태 관리\n- PdfMemoData 타입 정의 및 export 추가\n</info added on 2025-07-07T03:51:48.988Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 4
+          },
+          {
+            "id": 2,
+            "title": "PDF 메모 모달 컴포넌트 생성",
+            "description": "하이라이트된 텍스트를 받아 메모를 작성할 수 있는 모달 컴포넌트 생성",
+            "details": "기존 TS 리뷰 메모 UI와 동일한 스타일의 PDF 메모 모달 컴포넌트를 생성하고, 하이라이트된 텍스트를 자동으로 입력하는 기능 구현\n<info added on 2025-07-07T03:52:30.188Z>\nPdfMemoModal 컴포넌트는 서브태스크 4.1에서 이미 완성됨\n- 하이라이트된 텍스트를 자동으로 메모 필드에 입력하는 기능 구현\n- 기존 TS 리뷰 메모와 동일한 UI/UX 스타일 적용\n- 모든 필수 기능 구현:\n  - 메모 성격 선택 (생각/인용/질문)\n  - 메모 텍스트 입력 (하이라이트 텍스트 자동 입력)\n  - 키워드 입력\n  - 중요도 평가 (별점)\n  - 에러 핸들링 및 로딩 상태\n- PdfMemoData 타입 정의 및 export\n- 모달 형태로 구현하여 PDF 뷰어 위에 오버레이\n\n**다음 단계:** TSReadingPage에 모달을 통합하고 하이라이트 이벤트와 연동\n</info added on 2025-07-07T03:52:30.188Z>",
+            "status": "done",
+            "dependencies": [
+              "4.1"
+            ],
+            "parentTaskId": 4
+          },
+          {
+            "id": 3,
+            "title": "TSReadingPage에 PDF 메모 모달 통합",
+            "description": "TSReadingPage에 PDF 메모 모달을 통합하고 하이라이트 이벤트와 연동",
+            "details": "TSReadingPage에 PDF 메모 모달을 추가하고, 하이라이트 생성 시 타이머 일시정지 및 모달 호출 로직 구현\n<info added on 2025-07-07T03:54:51.529Z>\n- TSReadingPage에 PdfMemoModal 컴포넌트 import 및 통합 완료\n- PDF 메모 모달 상태 관리 추가:\n  - isMemoModalOpen: 모달 열림/닫힘 상태\n  - selectedText: 하이라이트된 텍스트\n  - selectedPageNumber: 현재 페이지 번호\n- 하이라이트 이벤트와 모달 연동 구현:\n  - handlePdfTextSelect에서 타이머 자동 일시정지\n  - 선택된 텍스트와 페이지 정보 저장\n  - 메모 모달 자동 호출\n- 모달 핸들러 구현:\n  - handleMemoModalClose: 모달 닫기 및 타이머 재개\n  - handleMemoSave: 메모 저장 로직 (임시로 localStorage 사용)\n- 메모 저장 후 타이머 자동 재개 구현\n- Phase 5 API 연동을 위한 TODO 주석 추가\n\n**다음 단계:** 타이머 일시정지/재개 로직 최적화\n</info added on 2025-07-07T03:54:51.529Z>",
+            "status": "done",
+            "dependencies": [
+              "4.2"
+            ],
+            "parentTaskId": 4
+          },
+          {
+            "id": 4,
+            "title": "타이머 일시정지/재개 로직 구현",
+            "description": "하이라이트 시 타이머 일시정지, 메모 저장 후 타이머 재개 로직 구현",
+            "details": "PDF 하이라이트 생성 시 자동으로 타이머를 일시정지하고, 메모 저장 완료 후 타이머를 자동으로 재개하는 로직 구현\n<info added on 2025-07-07T03:55:20.886Z>\n🔍 서브태스크 4.4 분석 시작\n\n**현재 타이머 로직 검토:**\n- 기본 일시정지/재개 기능은 이미 구현됨\n- PDF 하이라이트 시 자동 일시정지 구현됨\n- 메모 저장 후 자동 재개 구현됨\n- 모달 닫기 시 자동 재개 구현됨\n\n**추가 최적화 필요 사항:**\n1. 중복 일시정지 방지 로직\n2. 타이머 상태 표시 개선\n3. 메모 작성 중 타이머 상태 명확화\n4. 에지 케이스 처리 (모달 열림 중 수동 일시정지 등)\n\n**구현 진행:**\n- 현재 로직이 이미 요구사항을 충족하고 있음을 확인\n- 필요한 경우에만 최소한의 개선 적용\n</info added on 2025-07-07T03:55:20.886Z>\n<info added on 2025-07-07T03:56:34.974Z>\n✅ 서브태스크 4.4 완료!\n\n**완료된 타이머 로직 최적화:**\n\n1. **메모 작성 상태 구분**:\n   - `isPausedForMemo` 상태 추가로 메모 작성으로 인한 일시정지와 수동 일시정지 구분\n   - 타이머 상태 텍스트 개선 (몰입하는 중/일시정지됨/메모 작성 중)\n\n2. **중복 방지 로직**:\n   - 메모 모달이 이미 열려있을 때 텍스트 선택 무시\n   - 이미 일시정지된 상태에서 중복 일시정지 방지\n\n3. **수동 컨트롤 제한**:\n   - 메모 작성 중에는 수동 일시정지/재개 버튼 비활성화\n   - 메모 작성 중에는 수동 종료 버튼 비활성화\n   - 버튼 상태에 따른 시각적 피드백 개선\n\n4. **정확한 타이머 재개**:\n   - 메모 저장 완료 시에만 타이머 재개\n   - 모달 닫기 시에도 정확한 타이머 재개\n   - 메모 작성으로 인한 일시정지인 경우에만 자동 재개\n\n**사용자 경험 개선:**\n- 타이머 상태가 명확하게 표시됨\n- 메모 작성 중 실수로 타이머 조작 방지\n- 일관된 타이머 동작 보장\n</info added on 2025-07-07T03:56:34.974Z>",
+            "status": "done",
+            "dependencies": [
+              "4.3"
+            ],
+            "parentTaskId": 4
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Implement PDF Memo Saving API",
+        "description": "Develop a dedicated API endpoint to save PDF memos generated during TS reading sessions to the database. This API will handle data persistence for PDF notes.",
+        "details": "1. Create a new API endpoint `/api/ts-notes` that accepts POST requests.\n2. Implement server-side validation to ensure the request body contains `bookId` (integer), `pageNumber` (integer), `highlightedText` (string), `memoContent` (string), and `memoType` (string).\n3. Create a `Note` model in the database with fields corresponding to the validated request body parameters.\n4. Upon successful validation, create a new record in the `Note` table with the provided data.\n5. Return a success response with the newly created note's ID.\n6. Implement error handling to return appropriate error codes and messages for invalid requests or database errors.\n7. Ensure the API is secured with appropriate authentication and authorization mechanisms.\n8. Optimize database queries for performance, especially when retrieving notes for a specific book and page.",
+        "testStrategy": "1. Send a POST request to `/api/ts-notes` with valid data for `bookId`, `pageNumber`, `highlightedText`, `memoContent`, and `memoType`.\n2. Verify that a new record is created in the `Note` table with the provided data.\n3. Verify that the API returns a success response with the newly created note's ID.\n4. Send a POST request with invalid data (e.g., missing fields, incorrect data types) and verify that the API returns an appropriate error response.\n5. Test the API with different combinations of `bookId`, `pageNumber`, `highlightedText`, `memoContent`, and `memoType` to ensure it handles various scenarios correctly.\n6. Test the API's performance by sending multiple concurrent requests and monitoring response times.\n7. Verify that the API is properly secured by attempting to access it without proper authentication and authorization.",
+        "status": "done",
+        "dependencies": [
+          3,
+          4
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "기존 Note 모델 및 API 구조 분석",
+            "description": "기존 Note 모델의 스키마와 API 엔드포인트를 분석하여 PDF 메모와 호환 가능한 구조 파악",
+            "details": "1. Note 모델 스키마 분석 (필드, 타입, 제약조건)\\n2. notes API 엔드포인트 분석 (/notes 라우트)\\n3. PDF 메모를 위한 추가 필드 필요성 검토\\n4. 기존 TS 메모와 PDF 메모 구분 방법 설계\n<info added on 2025-07-07T04:00:32.568Z>\n✅ 기존 Note 모델 및 API 구조 분석 완료\n\n**Note 모델 분석 결과:**\n1. **기존 필드들:**\n   - 필수: userId, bookId, type ('quote'|'thought'|'question'), content\n   - 옵셔널: tags[], originSession, importanceReason, momentContext, relatedKnowledge, mentalImage, relatedLinks[], inlineThreads[]\n   - 시간: createdAt, clientCreatedAt\n\n2. **PDF 메모를 위해 추가 필요한 필드들:**\n   - pageNumber: PDF 페이지 번호 (number)\n   - highlightedText: 하이라이트된 원문 텍스트 (string)\n   - highlightData: 하이라이트 좌표 정보 (object, 옵셔널)\n   - isPdfMemo: PDF 메모 구분 플래그 (boolean, 기본값 false)\n\n3. **기존 API 엔드포인트:**\n   - GET /notes - 전체 노트 목록\n   - POST /notes - 새 노트 생성 (기존 TS 메모용)\n   - GET /notes/book/:bookId - 책별 노트 조회\n   - PUT /notes/:noteId - 노트 수정\n   - DELETE /notes/:noteId - 노트 삭제\n\n4. **PDF 메모 전용 API 설계:**\n   - POST /notes/pdf - PDF 메모 전용 생성 엔드포인트\n   - 기존 createNote와 분리하여 PDF 전용 validation 적용\n   - 기존 API들과 호환성 유지\n\n**다음 단계:** Note 모델에 PDF 관련 필드 추가 준비 완료\n</info added on 2025-07-07T04:00:32.568Z>",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 5
+          },
+          {
+            "id": 2,
+            "title": "Note 모델에 PDF 관련 필드 추가",
+            "description": "PDF 메모를 저장하기 위한 추가 필드를 Note 모델에 추가 (pageNumber, highlightedText, pdfUrl 등)",
+            "details": "1. INote 인터페이스에 PDF 관련 필드 추가\\n2. NoteSchema에 새 필드들의 Mongoose 스키마 정의\\n3. 기존 데이터와의 호환성 유지 (옵셔널 필드)\\n4. 인덱스 추가 (성능 최적화)\n<info added on 2025-07-07T04:01:41.967Z>\n✅ Note 모델에 PDF 관련 필드 추가 완료\n\n**추가된 필드들:**\n\n1. **INote 인터페이스 확장:**\n   - `isPdfMemo?: boolean` - PDF 메모 구분 플래그\n   - `pageNumber?: number` - PDF 페이지 번호\n   - `highlightedText?: string` - 하이라이트된 원문 텍스트\n   - `highlightData?: object` - 하이라이트 좌표 정보 (x, y, width, height, pageIndex)\n\n2. **NoteSchema 확장:**\n   - 모든 새 필드를 옵셔널로 설정하여 기존 데이터와 호환성 유지\n   - `isPdfMemo`: Boolean, 기본값 false\n   - `pageNumber`: Number, 최소값 1, 기본값 null\n   - `highlightedText`: String, 최대 2000자 (PDF 텍스트는 더 길 수 있음)\n   - `highlightData`: 중첩 객체로 좌표 정보 저장, 모든 하위 필드 required\n\n3. **성능 최적화 인덱스 추가:**\n   - `{ userId: 1, bookId: 1, isPdfMemo: 1 }` - PDF 메모 필터링용\n   - `{ userId: 1, bookId: 1, pageNumber: 1 }` - 페이지별 메모 조회용\n   - `{ isPdfMemo: 1, pageNumber: 1 }` - PDF 메모 페이지 검색용\n\n**다음 단계:** PDF 메모 저장 API 컨트롤러 함수 구현 준비 완료\n</info added on 2025-07-07T04:01:41.967Z>",
+            "status": "done",
+            "dependencies": [
+              "5.1"
+            ],
+            "parentTaskId": 5
+          },
+          {
+            "id": 3,
+            "title": "PDF 메모 저장 API 엔드포인트 구현",
+            "description": "PDF 메모를 저장하는 새로운 API 엔드포인트를 notes 컨트롤러에 구현",
+            "details": "1. noteController에 createPdfNote 함수 구현\\n2. 요청 데이터 검증 (bookId, pageNumber, highlightedText, memoData)\\n3. 사용자 인증 및 권한 확인\\n4. PDF 메모 데이터베이스 저장\\n5. 에러 핸들링 및 응답 처리\n<info added on 2025-07-07T04:03:01.065Z>\n✅ PDF 메모 저장 API 엔드포인트 구현 완료\n\n**구현된 createPdfNote 함수 기능:**\n\n1. **인증 및 권한 검증:**\n   - 사용자 인증 상태 확인\n   - 책 소유권 확인 (userId와 bookId 매칭)\n   - PDF 파일 등록 여부 확인 (book.pdfUrl 존재 확인)\n\n2. **요청 데이터 처리:**\n   - bookId, type, content, tags (기본 메모 필드)\n   - pageNumber, highlightedText, highlightData (PDF 전용 필드)\n   - selfRating (별점 평가)\n   - isPdfMemo: true 자동 설정\n\n3. **에러 핸들링:**\n   - MongoDB ValidationError 처리 (필드 유효성 검사 실패)\n   - MongoDB CastError 처리 (잘못된 ObjectId 형식)\n   - 일반적인 서버 에러 처리\n   - 상세한 에러 메시지 제공\n\n4. **개발 환경 로깅:**\n   - PDF 메모 생성 성공 시 상세 정보 로깅\n   - 디버깅 및 모니터링을 위한 메타데이터 포함\n\n5. **Note 모델 업데이트:**\n   - selfRating 필드 추가 (1-5 범위, 옵셔널)\n   - PDF 메모 작성 시 별점 평가 저장 지원\n\n**다음 단계:** notes 라우트에 PDF 메모 엔드포인트 추가 준비 완료\n</info added on 2025-07-07T04:03:01.065Z>",
+            "status": "done",
+            "dependencies": [
+              "5.2"
+            ],
+            "parentTaskId": 5
+          },
+          {
+            "id": 4,
+            "title": "notes 라우트에 PDF 메모 엔드포인트 추가",
+            "description": "notes.ts 라우터에 PDF 메모 저장을 위한 새로운 라우트와 validation 추가",
+            "details": "1. POST /notes/pdf 라우트 추가\\n2. PDF 메모 전용 validation 미들웨어 구성\\n3. express-validator를 사용한 요청 데이터 검증\\n4. 라우트를 createPdfNote 컨트롤러 함수에 연결\n<info added on 2025-07-07T04:04:06.160Z>\n✅ notes 라우트에 PDF 메모 엔드포인트 추가 완료\n\n**구현된 내용:**\n\n1. **createPdfNote 함수 import 추가:**\n   - noteController에서 createPdfNote 함수를 import\n   - 기존 import 목록에 추가\n\n2. **PDF 메모 전용 validation 미들웨어 구성:**\n   - `createPdfNoteValidation` 배열 생성\n   - 필수 필드 검증: bookId, type, content, pageNumber, highlightedText\n   - 옵셔널 필드 검증: tags, selfRating, highlightData\n   - 상세한 타입 및 범위 검증 (MongoId, 정수, 문자열 길이 등)\n\n3. **POST /notes/pdf 라우트 추가:**\n   - PDF 메모 전용 엔드포인트 생성\n   - validation → validateRequest → createPdfNote 순서로 미들웨어 체인 구성\n   - 기존 POST /notes와 분리하여 PDF 전용 로직 적용\n\n4. **상세한 validation 규칙:**\n   - bookId: MongoDB ObjectId 형식 검증\n   - pageNumber: 1 이상의 정수\n   - highlightedText: 최대 2000자 (PDF 텍스트는 더 길 수 있음)\n   - selfRating: 1-5 범위의 정수\n   - highlightData: 좌표 정보 객체 (x, y, width, height, pageIndex)\n\n**API 엔드포인트 완성:** `POST /api/notes/pdf`로 PDF 메모 저장 가능\n\n**다음 단계:** 프론트엔드 API 연동 구현 준비 완료\n</info added on 2025-07-07T04:04:06.160Z>",
+            "status": "done",
+            "dependencies": [
+              "5.3"
+            ],
+            "parentTaskId": 5
+          },
+          {
+            "id": 5,
+            "title": "프론트엔드 API 연동 구현",
+            "description": "PdfMemoModal에서 localStorage 대신 실제 API를 호출하도록 수정하고 에러 핸들링 추가",
+            "details": "1. lib/api.ts에 PDF 메모 저장 API 함수 추가\\n2. PdfMemoModal의 handleSave 함수 수정\\n3. API 호출 에러 핸들링 및 사용자 피드백\\n4. 성공/실패 상태 UI 업데이트\\n5. TSReadingPage에서 메모 저장 완료 후 처리 로직\n<info added on 2025-07-07T04:06:58.305Z>\n✅ 프론트엔드 API 연동 구현 완료\n\n**구현된 내용:**\n\n1. **lib/api.ts에 PDF 메모 저장 API 함수 추가:**\n   - `notes.createPdf(pdfNoteData)` 함수 구현\n   - POST /notes/pdf 엔드포인트 호출\n   - 기존 notes API와 일관된 구조 유지\n\n2. **PdfMemoModal 대폭 수정:**\n   - localStorage 제거하고 실제 API 호출로 변경\n   - notes.createPdf API 연동\n   - 상세한 에러 핸들링 (validation 에러, 서버 에러 등)\n   - 로딩 상태 UI 추가 (스피너, 버튼 비활성화)\n   - 사용자 친화적인 에러 메시지 표시\n\n3. **API 요청 데이터 구조:**\n   - bookId, type, content, tags (기본 메모 필드)\n   - pageNumber, highlightedText (PDF 전용 필드)\n   - selfRating (별점 평가)\n   - highlightData (향후 하이라이트 좌표 정보 확장 가능)\n\n4. **에러 핸들링 개선:**\n   - API 응답 에러 메시지 표시\n   - validation 에러 배열 처리\n   - 네트워크 오류 등 일반적인 에러 처리\n   - 사용자에게 명확한 피드백 제공\n\n5. **TSReadingPage 연동 수정:**\n   - handleMemoSave 함수 간소화 (API 호출은 모달에서 처리)\n   - props 인터페이스 변경에 맞게 수정 (selectedText, bookId)\n   - null 체크 추가로 타입 안전성 향상\n\n**API 연동 완료:** PDF 메모가 실제 데이터베이스에 저장되고 백엔드 API와 완전히 연동됨\n\n**Phase 5 완료:** PDF 메모 저장 시스템 전체 구현 완료! 🎉\n</info added on 2025-07-07T04:06:58.305Z>",
+            "status": "done",
+            "dependencies": [
+              "5.4"
+            ],
+            "parentTaskId": 5
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-07T03:10:48.522Z",
+      "updated": "2025-07-07T04:07:15.819Z",
+      "description": "PDF 기반 동적 지식 캡처 시스템 구현을 위한 태스크 관리"
     }
   }
 }

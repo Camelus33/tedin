@@ -279,6 +279,11 @@ export const notes = {
     return response.data;
   },
   
+  createPdf: async (pdfNoteData: any) => {
+    const response = await api.post('/notes/pdf', pdfNoteData);
+    return response.data;
+  },
+  
   update: async (id: string, noteData: any) => {
     const response = await api.put(`/notes/${id}`, noteData);
     return response.data;

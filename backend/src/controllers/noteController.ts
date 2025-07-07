@@ -504,4 +504,93 @@ export const deleteInlineThread = async (req: Request, res: Response) => {
     console.error('인라인메모 쓰레드 삭제 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
+};
+
+// PDF 메모 생성 (PDF 전용)
+export const createPdfNote = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    const { 
+      bookId, 
+      type, 
+      content, 
+      tags, 
+      pageNumber, 
+      highlightedText, 
+      highlightData,
+      selfRating 
+    } = req.body;
+
+    // 책이 존재하고 사용자가 소유하는지 확인
+    const book = await Book.findOne({ _id: bookId, userId });
+    if (!book) {
+      return res.status(404).json({ message: '해당 책을 찾을 수 없습니다.' });
+    }
+
+    // PDF 파일이 있는 책인지 확인
+    if (!book.pdfUrl) {
+      return res.status(400).json({ message: 'PDF 파일이 등록되지 않은 책입니다.' });
+    }
+
+    // PDF 메모 데이터 생성
+    const pdfNoteData = {
+      userId,
+      bookId,
+      type,
+      content,
+      tags: tags || [],
+      isPdfMemo: true,
+      pageNumber,
+      highlightedText,
+      ...(highlightData && { highlightData }),
+      ...(selfRating && { selfRating }),
+    };
+
+    const newPdfNote = new Note(pdfNoteData);
+    const savedPdfNote = await newPdfNote.save();
+
+    // 개발 환경에서 PDF 메모 생성 로깅
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[PDF 메모 생성] 성공:', {
+        noteId: savedPdfNote._id,
+        bookId: bookId,
+        pageNumber: pageNumber,
+        type: type,
+        contentLength: content.length,
+        highlightedTextLength: highlightedText?.length || 0,
+        hasHighlightData: !!highlightData,
+      });
+    }
+    
+    res.status(201).json({
+      message: 'PDF 메모가 성공적으로 저장되었습니다.',
+      note: savedPdfNote
+    });
+  } catch (error) {
+    console.error('PDF 메모 생성 중 오류 발생:', error);
+    
+    // MongoDB validation 에러 처리
+    if (error instanceof mongoose.Error.ValidationError) {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        message: '입력 데이터가 올바르지 않습니다.',
+        errors: validationErrors
+      });
+    }
+    
+    // MongoDB cast 에러 처리 (잘못된 ObjectId 등)
+    if (error instanceof mongoose.Error.CastError) {
+      return res.status(400).json({ 
+        message: '잘못된 데이터 형식입니다.',
+        field: error.path
+      });
+    }
+    
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
 }; 

@@ -4,10 +4,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PauseIcon, PlayIcon, StopIcon, ExclamationTriangleIcon } from '@heroicons/react/24/solid';
+import { PauseIcon, PlayIcon, StopIcon, ExclamationTriangleIcon, DocumentIcon } from '@heroicons/react/24/solid';
 import Spinner from '@/components/ui/Spinner';
 import { cyberTheme } from '@/src/styles/theme';
 import api from '@/lib/api';
+import { PdfViewer, PdfMemoModal, type PdfMemoData } from '@/components/pdf';
 
 type SessionData = {
   _id: string;
@@ -15,6 +16,8 @@ type SessionData = {
     _id: string;
     title: string;
     author: string;
+    pdfUrl?: string;
+    pdfFileSize?: number;
   };
   startPage: number;
   endPage: number;
@@ -22,6 +25,8 @@ type SessionData = {
   progressGradientStart: '#06b6d4';
   progressGradientMid: '#8b5cf6';
   progressGradientEnd: '#ec4899';
+  isActive: boolean;
+  isPaused: boolean;
 };
 
 export default function TSReadingPage() {
@@ -35,6 +40,17 @@ export default function TSReadingPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [startTime, setStartTime] = useState<number | null>(null);
+  
+  // PDF 뷰어 상태
+  const [showPdfViewer, setShowPdfViewer] = useState<boolean>(false);
+  const [currentPdfPage, setCurrentPdfPage] = useState<number>(1);
+  const [pdfError, setPdfError] = useState<string>('');
+
+  // PDF 메모 모달 상태
+  const [isMemoModalOpen, setIsMemoModalOpen] = useState<boolean>(false);
+  const [selectedText, setSelectedText] = useState<string>('');
+  const [selectedPageNumber, setSelectedPageNumber] = useState<number>(1);
+  const [isPausedForMemo, setIsPausedForMemo] = useState<boolean>(false); // 메모 작성으로 인한 일시정지 구분
 
   // Format seconds into MM:SS
   const formatTime = (seconds: number) => {
@@ -47,6 +63,17 @@ export default function TSReadingPage() {
   const progressPercentage = sessionData 
     ? ((sessionData.durationSec - timeRemaining) / sessionData.durationSec) * 100 
     : 0;
+
+  // Get timer status text
+  const getTimerStatusText = () => {
+    if (isPausedForMemo) {
+      return '메모 작성 중...';
+    }
+    if (isPaused) {
+      return '일시정지됨';
+    }
+    return '몰입하는 중...';
+  };
 
   // Fetch session data
   useEffect(() => {
@@ -117,7 +144,15 @@ export default function TSReadingPage() {
   }, [isLoading, isPaused, timeRemaining, sessionData, sessionId, router]);
 
   const handlePauseResume = () => {
-    setIsPaused(!isPaused);
+    if (isMemoModalOpen) {
+      // 메모 모달이 열려있을 때는 수동 일시정지/재개 비활성화
+      return;
+    }
+    
+    // 메모 작성 중이 아닌 경우에만 수동 일시정지/재개 허용
+    if (!isPausedForMemo) {
+      setIsPaused(!isPaused);
+    }
   };
 
   const handleFinishEarly = () => {
@@ -128,6 +163,66 @@ export default function TSReadingPage() {
     }
     const finalElapsedSeconds = Math.max(1, elapsedSeconds);
     router.push(`/ts/review?sessionId=${sessionId}&elapsed=${finalElapsedSeconds}`);
+  };
+
+  // PDF 뷰어 핸들러
+  const handleTogglePdfViewer = () => {
+    setShowPdfViewer(!showPdfViewer);
+  };
+
+  const handlePdfTextSelect = (selectedText: string, coordinates: DOMRect) => {
+    // 이미 메모 모달이 열려있다면 무시 (중복 방지)
+    if (isMemoModalOpen) {
+      return;
+    }
+    
+    // 텍스트 선택 시 타이머 일시정지 (아직 일시정지되지 않은 경우에만)
+    if (!isPaused && !isPausedForMemo) {
+      setIsPaused(true);
+      setIsPausedForMemo(true);
+    }
+    
+    // 선택된 텍스트와 페이지 정보 저장
+    setSelectedText(selectedText);
+    setSelectedPageNumber(currentPdfPage);
+    
+    // 메모 모달 열기
+    setIsMemoModalOpen(true);
+    
+    console.log('Selected text:', selectedText);
+    console.log('Page:', currentPdfPage);
+    console.log('Coordinates:', coordinates);
+  };
+
+  const handlePdfError = (error: string) => {
+    setPdfError(error);
+  };
+
+  const handlePdfPageChange = (pageNumber: number) => {
+    setCurrentPdfPage(pageNumber);
+  };
+
+  // PDF 메모 모달 핸들러
+  const handleMemoModalClose = () => {
+    setIsMemoModalOpen(false);
+    setSelectedText('');
+    
+    // 타이머 재개
+    if (sessionData?.isActive && !sessionData?.isPaused) {
+      setSessionData(prev => prev ? { ...prev, isPaused: false } : null);
+    }
+  };
+
+  const handleMemoSave = (memoData: PdfMemoData) => {
+    console.log('[PDF 메모 저장 완료]', memoData);
+    
+    // 성공 피드백 (선택사항)
+    // TODO: 성공 토스트 메시지 표시
+    
+    // 타이머 재개
+    if (sessionData?.isActive && !sessionData?.isPaused) {
+      setSessionData(prev => prev ? { ...prev, isPaused: false } : null);
+    }
   };
 
   if (isLoading) {
@@ -168,7 +263,7 @@ export default function TSReadingPage() {
             <div className="flex-grow text-center sm:text-left min-w-0">
               <h1 className={`font-bold text-lg sm:text-xl ${cyberTheme.textLight} truncate`}>{sessionData.bookId.title}</h1>
               <p className={`text-sm ${cyberTheme.textMuted} mt-1 truncate`}>({sessionData.startPage} - {sessionData.endPage} 페이지)</p>
-              <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>몰입하는 중...</p>
+              <p className={`text-xs mt-2 ${cyberTheme.textMuted}`}>{getTimerStatusText()}</p>
             </div>
             
             <div className={`text-center p-3 rounded-lg border ${cyberTheme.inputBorder} bg-gray-900/50 shadow-inner min-w-[100px] sm:min-w-[140px] flex-shrink-0`}>
@@ -195,9 +290,56 @@ export default function TSReadingPage() {
           </div>
         </div>
 
-        {/* Main reading area - stylish and minimal */}
-        <div className="flex-1 flex flex-col justify-center items-center mb-10">
-          <BreathingText />
+        {/* Main reading area - PDF viewer or breathing text */}
+        <div className="flex-1 flex flex-col mb-10">
+          {sessionData.bookId.pdfUrl ? (
+            <div className="flex-1">
+              {/* PDF 뷰어 토글 버튼 */}
+              <div className="flex justify-center mb-4">
+                <button
+                  onClick={handleTogglePdfViewer}
+                  className={`px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-all ${
+                    showPdfViewer
+                      ? 'bg-cyan-600/80 text-white border border-cyan-500 hover:bg-cyan-700/80'
+                      : 'bg-gray-800/80 text-cyan-300 border border-cyan-500/40 hover:border-cyan-500/60 hover:bg-gray-700/80'
+                  }`}
+                >
+                  <DocumentIcon className="h-5 w-5" />
+                  <span>{showPdfViewer ? 'PDF 숨기기' : 'PDF 보기'}</span>
+                </button>
+              </div>
+
+              {/* PDF 뷰어 또는 호흡 텍스트 */}
+              {showPdfViewer ? (
+                <div className="pdf-viewer-container">
+                  {pdfError ? (
+                    <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-6 text-center">
+                      <p className="text-red-400 font-semibold mb-2">PDF 로드 오류</p>
+                      <p className="text-red-300 text-sm">{pdfError}</p>
+                    </div>
+                  ) : (
+                    <PdfViewer
+                      pdfUrl={`${process.env.NEXT_PUBLIC_API_URL}${sessionData.bookId.pdfUrl}`}
+                      onTextSelect={handlePdfTextSelect}
+                      onError={handlePdfError}
+                      currentPage={currentPdfPage}
+                      onPageChange={handlePdfPageChange}
+                      enableTextSelection={true}
+                      className="mx-auto max-w-4xl"
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col justify-center items-center">
+                  <BreathingText />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col justify-center items-center">
+              <BreathingText />
+            </div>
+          )}
         </div>
 
         {/* Controls - styled buttons */}
@@ -205,27 +347,39 @@ export default function TSReadingPage() {
           <Button
             type="button"
             onClick={handlePauseResume}
+            disabled={isMemoModalOpen || isPausedForMemo}
             variant="outline"
             className={`w-full sm:w-auto !px-6 !py-3 !rounded-xl !font-medium flex items-center justify-center transition-all !border-gray-600 ${ 
               isPaused 
                 ? `!bg-emerald-600/80 !text-white !border-emerald-500 hover:!bg-emerald-700/80` 
                 : `${cyberTheme.cardBg} ${cyberTheme.textLight} hover:!border-gray-500 hover:!text-white` 
-            }`}
+            } ${(isMemoModalOpen || isPausedForMemo) ? '!opacity-50 !cursor-not-allowed' : ''}`}
           >
             {isPaused ? <PlayIcon className="h-5 w-5 mr-2" /> : <PauseIcon className="h-5 w-5 mr-2" />}
-            {isPaused ? '다시 시작' : '잠시 멈춤'}
+            {isPausedForMemo ? '메모 작성 중' : (isPaused ? '다시 시작' : '잠시 멈춤')}
           </Button>
           <Button
             type="button"
             onClick={handleFinishEarly}
+            disabled={isMemoModalOpen}
             variant="outline"
-            className={`w-full sm:w-auto !px-6 !py-3 !rounded-xl !font-medium flex items-center justify-center transition-all !border-red-500/50 ${cyberTheme.cardBg} !text-red-400 hover:!bg-red-900/30 hover:!border-red-600/50`}
+            className={`w-full sm:w-auto !px-6 !py-3 !rounded-xl !font-medium flex items-center justify-center transition-all !border-red-500/50 ${cyberTheme.cardBg} !text-red-400 hover:!bg-red-900/30 hover:!border-red-600/50 ${isMemoModalOpen ? '!opacity-50 !cursor-not-allowed' : ''}`}
           >
             <StopIcon className="h-5 w-5 mr-2" />
             끝 (수동 종료)
           </Button>
         </div>
       </div>
+
+      {/* PDF 메모 작성 모달 */}
+      <PdfMemoModal
+        isOpen={isMemoModalOpen}
+        onClose={handleMemoModalClose}
+        onSave={handleMemoSave}
+        selectedText={selectedText}
+        pageNumber={selectedPageNumber}
+        bookId={sessionData?.bookId._id || ''}
+      />
     </div>
   );
 }

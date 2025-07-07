@@ -11,7 +11,8 @@ import {
   analyzePBAM,
   addInlineThread,
   updateInlineThread,
-  deleteInlineThread
+  deleteInlineThread,
+  createPdfNote
 } from '../controllers/noteController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
@@ -39,6 +40,63 @@ const createNoteValidation = [
     .optional()
     .isArray()
     .withMessage('태그는 배열 형태여야 합니다'),
+];
+
+// Validation for creating a PDF memo
+const createPdfNoteValidation = [
+  body('bookId')
+    .notEmpty()
+    .withMessage('책 ID가 필요합니다')
+    .isMongoId()
+    .withMessage('유효한 책 ID가 아닙니다'),
+  body('type')
+    .isIn(['quote', 'thought', 'question'])
+    .withMessage('유효한 노트 유형이 아닙니다'),
+  body('content')
+    .notEmpty()
+    .withMessage('메모 내용을 입력해주세요')
+    .isLength({ max: 1000 })
+    .withMessage('메모 내용은 최대 1000자까지 가능합니다'),
+  body('pageNumber')
+    .isInt({ min: 1 })
+    .withMessage('페이지 번호는 1 이상의 정수여야 합니다'),
+  body('highlightedText')
+    .notEmpty()
+    .withMessage('하이라이트된 텍스트가 필요합니다')
+    .isLength({ max: 2000 })
+    .withMessage('하이라이트된 텍스트는 최대 2000자까지 가능합니다'),
+  body('tags')
+    .optional()
+    .isArray()
+    .withMessage('태그는 배열 형태여야 합니다'),
+  body('selfRating')
+    .optional()
+    .isInt({ min: 1, max: 5 })
+    .withMessage('자체 평가는 1에서 5 사이의 정수여야 합니다'),
+  body('highlightData')
+    .optional()
+    .isObject()
+    .withMessage('하이라이트 데이터는 객체 형태여야 합니다'),
+  body('highlightData.x')
+    .optional()
+    .isNumeric()
+    .withMessage('하이라이트 x 좌표는 숫자여야 합니다'),
+  body('highlightData.y')
+    .optional()
+    .isNumeric()
+    .withMessage('하이라이트 y 좌표는 숫자여야 합니다'),
+  body('highlightData.width')
+    .optional()
+    .isNumeric()
+    .withMessage('하이라이트 너비는 숫자여야 합니다'),
+  body('highlightData.height')
+    .optional()
+    .isNumeric()
+    .withMessage('하이라이트 높이는 숫자여야 합니다'),
+  body('highlightData.pageIndex')
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage('하이라이트 페이지 인덱스는 0 이상의 정수여야 합니다'),
 ];
 
 // Validation for updating a note
@@ -84,6 +142,14 @@ router.post(
   createNoteValidation,
   validateRequest,
   createNote
+);
+
+// Create a new PDF memo
+router.post(
+  '/pdf',
+  createPdfNoteValidation,
+  validateRequest,
+  createPdfNote
 );
 
 // Update a note

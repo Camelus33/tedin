@@ -1,0 +1,108 @@
+AI-Link 아키텍처 가이드 (신규 개발자용)
+====================================
+
+0. 개발 환경 준비
+-----------------
+• Node.js 18+ / npm 9+ 설치
+• MongoDB ≥ 6.0 실행(로컬 또는 Atlas)
+• `.env` 파일에 필수 변수 입력
+  - `MONGO_URI=mongodb://localhost:27017/habitus33`
+  - `JWT_SECRET=yourSecret`
+• 백엔드: `cd backend && npm i && npm run dev`
+• 프런트엔드: `cd frontend && npm i && npm run dev`
+
+1. 목적
+--------
+AI-Link는 사용자의 지식 컨텍스트를 JSON-LD 캡슐로 변환하여 외부 AI 에이전트(Perplexity, Gemini 등)가 별도 프롬프트 없이도 고품질 응답을 생성할 수 있게 합니다. 사용자는 단권화 노트(Summary Note)마다 고유한 공개 URL을 만들 수 있으며, 시스템은 두 가지 핵심 페이로드를 제공합니다:
+• 사람을 위한 HTML 페이지(Share Page)
+• 기계를 위한 JSON-LD 스크립트 블록(AI 접근용 컨텍스트)
+
+2. End-to-End 데이터 흐름
+-------------------------
+A. 사용자가 AiLinkModal 에서  "공유 링크 생성" 버튼을 클릭합니다.
+B. 프론트엔드가 `/api/summary-notes/:id/public-link`(POST)를 호출하면 백엔드가 `PublicShare` 문서를 생성하고 `shareId` 를 반환합니다.
+C. 모달이 전체 URL(`/share/{shareId}`)을 사용자에게 보여줍니다.
+D. 누군가 해당 URL에 접근하면 서버는 `/api/public-shares/{shareId}`(GET)를 호출합니다.
+E. 백엔드는 SummaryNote·Note·Book·Session 데이터를 집계한 뒤 `jsonLdBuilder`에 전달하여 `{ htmlData, jsonLdData }`를 돌려받습니다.
+F. Next.js가 htmlData로 Share Page를 SSR 렌더링하고, jsonLdData를 `<script type="application/ld+json">`로 삽입합니다. 이 스크립트는 `public/ai-link-context.jsonld`를 @context로 사용합니다.
+G. 외부 AI 크롤러가 페이지를 읽어 JSON-LD를 파싱하고 풍부한 사용자 컨텍스트를 확보합니다.
+
+🔎 **전체 호출 순서를 그림으로 보고 싶다면** `docs/AI_Link_Data_Flow.mmd`(Mermaid) 또는 `docs/AI_Link_Data_Flow.png`(렌더링 버전)을 확인하세요.
+
+3. 프론트엔드 구성요소
+----------------------
+• components/summary-notes/AiLinkModal.tsx
+  – 공유 링크 생성 및 AI-Link 원시 데이터(탭: 공유 링크 / AI 데이터) 요청 처리
+• app/share/[shareId]/page.tsx + SharePageClient.tsx
+  – 백엔드에서 받은 집계 데이터를 렌더링
+• public/ai-link-context.jsonld
+  – Habitus33 온톨로지(`h33o:*`)에 매핑된 JSON-LD 컨텍스트
+
+4. 백엔드 라우트 및 컨트롤러
+----------------------------
+| Method | Endpoint | 설명 |
+|--------|----------|------|
+| POST | /api/summary-notes/:summaryNoteId/public-link | 공유 링크 생성 |
+| GET  | /api/summary-notes/:summaryNoteId/data | SummaryNote 원본 JSON(미리보기) |
+| GET  | /api/public-shares/:shareId | Share Page 렌더링용 집계 데이터 |
+| GET  | /api/public-shares/:shareId/notes/:noteId/inline-threads | 인라인 댓글 로드 |
+
+5. 서비스 계층 & JSON-LD 빌더
+----------------------------
+> 초보자를 위한 요약: **PublicShareService**는 MongoDB 집계 파이프라인으로 데이터를 한 번에 모은 뒤, **jsonLdBuilder**에 "AI가 쉽게 이해할 수 있는 구조"로 포장해 달라고 요청합니다.
+
+• PublicShareService.getShareData(shareId)
+  – SummaryNote, Notes, Books, Sessions, User 정보를 집계
+  – buildJsonLd() 호출로 AI-Link 캡슐 생성
+• utils/jsonLdBuilder.ts
+  – 액션 모듈, 지식 페르소나, 인지 출처 분석, Executive Summary, Learning Journey 등을 생성
+  – `ai-link-context.jsonld` 규격을 만족하는 JSON-LD 반환
+
+6. 데이터베이스 모델
+---------------------
+• PublicShare : string _id, summaryNoteId, userId, timestamps
+• SummaryNote : orderedNoteIds 포함(기존 모델)
+• Note, Book, Session, User : 기존 모델 재사용
+
+7. 동작 순서
+-------------
+예시 시나리오
+```
+1) summaryNoteId = 64f2...
+2) POST /summary-notes/64f2.../public-link → {"shareId":"k3HV9wZpQ8qE"}
+3) 브라우저에서 /share/k3HV9wZpQ8qE 방문
+4) Next.js 서버가 /api/public-shares/k3HV9wZpQ8qE 호출
+5) HTML + JSON-LD 응답으로 페이지 렌더
+```
+
+8. 확장·디버깅 팁
+------------------
+• **JSON-LD 예시**
+```
+{
+  "@context": "/ai-link-context.jsonld",
+  "@type": "AiLink",
+  "shareId": "k3HV9wZpQ8qE",
+  "summaryNoteId": "64f2...",
+  "learningJourney": {
+    "totalSteps": 42,
+    "step": [{"position":1,"name":"Atomic Reading"}, {...}]
+  },
+  "actionableModules": [{"@type":"HowToAction","name":"시험 대비 모의고사 즉시 생성"}]
+}
+```
+이 구조를 보면 외부 AI가 어떤 추가 행동(액션)을 제안받을지 예측할 수 있습니다.
+
+• 기계 판독 필드를 추가하려면 jsonLdBuilder.ts와 ai-link-context.jsonld를 함께 수정하세요.
+• UI 변경은 AiLinkModal(생성) 또는 Share Page 컴포넌트(렌더링)에서 수행하세요.
+• 링크 오류 디버깅 순서
+  1) `PublicShare` 문서가 shareId로 존재하는지 확인
+  2) 연결된 SummaryNote 및 Notes가 삭제되지 않았는지 확인
+  3) 서버 집계 파이프라인이 빈 배열을 반환하지 않는지 확인(Mongo Shell로 테스트)
+• 커밋 전 Jest/통합 테스트를 실행하여 회귀 오류를 방지하세요.
+
+9. 추가 참고 문서
+-----------------
+• docs/AILink_Upgrade_Guide.md – 차세대(v3) 기능 계획
+• docs/ONTOLOGY_GUIDELINES.md – 온톨로지 모델링 및 컨텍스트 매핑 규칙
+• README.md('AI-Link' 섹션) – 제품 수준 개요 

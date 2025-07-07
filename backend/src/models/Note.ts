@@ -19,6 +19,17 @@ export interface INote extends Document {
     reason?: string;
   }>;
   inlineThreads?: mongoose.Types.ObjectId[];
+  isPdfMemo?: boolean;
+  pageNumber?: number;
+  highlightedText?: string;
+  highlightData?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    pageIndex: number;
+  };
+  selfRating?: number;
 }
 
 const NoteSchema: Schema = new Schema({
@@ -110,6 +121,57 @@ const NoteSchema: Schema = new Schema({
     type: Date,
     default: null,
   },
+  isPdfMemo: {
+    type: Boolean,
+    default: false,
+  },
+  pageNumber: {
+    type: Number,
+    default: null,
+    min: 1,
+  },
+  highlightedText: {
+    type: String,
+    default: null,
+    trim: true,
+    maxlength: 2000,
+  },
+  highlightData: {
+    type: {
+      x: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      y: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      width: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      height: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      pageIndex: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+    },
+    default: null,
+  },
+  selfRating: {
+    type: Number,
+    default: null,
+    min: 1,
+    max: 5,
+  },
 });
 
 NoteSchema.index({ userId: 1, clientCreatedAt: -1 });
@@ -118,5 +180,8 @@ NoteSchema.index({ userId: 1, bookId: 1 });
 NoteSchema.index({ userId: 1, bookId: 1, originSession: 1 });
 NoteSchema.index({ userId: 1, tags: 1 });
 NoteSchema.index({ content: 'text' });
+NoteSchema.index({ userId: 1, bookId: 1, isPdfMemo: 1 });
+NoteSchema.index({ userId: 1, bookId: 1, pageNumber: 1 });
+NoteSchema.index({ isPdfMemo: 1, pageNumber: 1 });
 
 export default mongoose.model<INote>('Note', NoteSchema); 

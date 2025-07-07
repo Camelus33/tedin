@@ -496,4 +496,121 @@ export const updateBook = async (req: Request, res: Response) => {
     }
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
+};
+
+// PDF 파일 업로드
+export const uploadPdf = async (req: Request, res: Response) => {
+  try {
+    const { bookId } = req.params;
+    const userId = req.user?._id;
+    const pdfFile = req.file as Express.Multer.File;
+
+    console.log(`[uploadPdf] Starting PDF upload for book ${bookId}`);
+    console.log(`[uploadPdf] User ID: ${userId}`);
+    console.log(`[uploadPdf] File info:`, pdfFile ? {
+      originalname: pdfFile.originalname,
+      filename: pdfFile.filename,
+      size: pdfFile.size,
+      mimetype: pdfFile.mimetype
+    } : 'No file');
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    if (!pdfFile) {
+      return res.status(400).json({ message: 'PDF 파일을 선택해주세요.' });
+    }
+
+    // 책이 존재하고 사용자 소유인지 확인
+    const book = await Book.findOne({ _id: bookId, userId });
+    if (!book) {
+      // 업로드된 파일 삭제 (권한이 없는 경우)
+      try {
+        await fs.promises.unlink(pdfFile.path);
+        console.log(`[uploadPdf] Unauthorized file deleted: ${pdfFile.path}`);
+      } catch (unlinkError) {
+        console.error(`[uploadPdf] Failed to delete unauthorized file:`, unlinkError);
+      }
+      return res.status(404).json({ message: '해당 책을 찾을 수 없거나 권한이 없습니다.' });
+    }
+
+    // 기존 PDF 파일이 있다면 삭제
+    if (book.pdfUrl) {
+      const oldPdfFileName = path.basename(book.pdfUrl);
+      const oldPdfPath = path.join(__dirname, '../../uploads/pdfs', oldPdfFileName);
+      if (fs.existsSync(oldPdfPath)) {
+        try {
+          await fs.promises.unlink(oldPdfPath);
+          console.log(`[uploadPdf] Old PDF file deleted: ${oldPdfPath}`);
+        } catch (unlinkError) {
+          console.error(`[uploadPdf] Failed to delete old PDF file:`, unlinkError);
+        }
+      }
+    }
+
+    // PDF URL 생성 (상대 경로)
+    const pdfUrl = `/uploads/pdfs/${pdfFile.filename}`;
+    const pdfFileSize = pdfFile.size;
+
+    console.log(`[uploadPdf] Updating book with PDF info - URL: ${pdfUrl}, Size: ${pdfFileSize}`);
+
+    // Book 모델 업데이트
+    const updatedBook = await Book.findByIdAndUpdate(
+      bookId,
+      { 
+        $set: { 
+          pdfUrl: pdfUrl,
+          pdfFileSize: pdfFileSize
+        } 
+      },
+      { new: true }
+    ).select('-__v');
+
+    if (!updatedBook) {
+      // 업로드된 파일 삭제 (업데이트 실패 시)
+      try {
+        await fs.promises.unlink(pdfFile.path);
+        console.log(`[uploadPdf] File deleted due to update failure: ${pdfFile.path}`);
+      } catch (unlinkError) {
+        console.error(`[uploadPdf] Failed to delete file after update failure:`, unlinkError);
+      }
+      return res.status(500).json({ message: '책 정보 업데이트 중 오류가 발생했습니다.' });
+    }
+
+    console.log(`[uploadPdf] PDF upload successful for book ${bookId}`);
+
+    res.status(200).json({
+      message: 'PDF 파일이 성공적으로 업로드되었습니다.',
+      book: updatedBook,
+      pdfInfo: {
+        originalName: pdfFile.originalname,
+        url: pdfUrl,
+        size: pdfFileSize
+      }
+    });
+
+  } catch (error) {
+    console.error('[uploadPdf] PDF 업로드 중 오류 발생:', error);
+    
+    // 에러 발생 시 업로드된 파일 삭제
+    const pdfFile = req.file as Express.Multer.File;
+    if (pdfFile && pdfFile.path) {
+      try {
+        await fs.promises.unlink(pdfFile.path);
+        console.log(`[uploadPdf] File deleted due to error: ${pdfFile.path}`);
+      } catch (unlinkError) {
+        console.error(`[uploadPdf] Failed to delete file after error:`, unlinkError);
+      }
+    }
+
+    if (error instanceof multer.MulterError) {
+      if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ message: 'PDF 파일 크기는 20MB를 초과할 수 없습니다.' });
+      }
+      return res.status(400).json({ message: `파일 업로드 오류: ${error.message}` });
+    }
+    
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
 }; 

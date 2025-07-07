@@ -1,0 +1,145 @@
+# Task ID: 1
+# Title: Implement PDF Upload API and Update Book Model
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Extend the Book model with pdfUrl and pdfFileSize fields and implement an API endpoint for uploading PDF files to cloud storage, including server-side validation.
+# Details:
+1.  Modify the Book model in the database schema to include the `pdfUrl` (string) and `pdfFileSize` (integer) fields.
+2.  Implement a new API endpoint `/books/{bookId}/upload-pdf` that accepts a PDF file as input.
+3.  Implement server-side validation to check the file format (must be PDF) and file size (must be less than 20MB).
+4.  Upon successful validation, upload the PDF file to cloud storage (e.g., AWS S3, Google Cloud Storage, or Azure Blob Storage).
+5.  Store the URL of the uploaded PDF file in the `pdfUrl` field of the Book model.
+6.  Store the size of the uploaded PDF file in the `pdfFileSize` field of the Book model.
+7.  Return a success response with the updated Book model.
+8.  Handle potential errors such as invalid file format, file size exceeding the limit, and cloud storage upload failures, returning appropriate error responses.
+
+# Test Strategy:
+1.  Create a test PDF file.
+2.  Send a POST request to the `/books/{bookId}/upload-pdf` endpoint with the test PDF file.
+3.  Verify that the API returns a success response with the updated Book model, including the `pdfUrl` and `pdfFileSize` fields.
+4.  Verify that the PDF file is successfully uploaded to cloud storage.
+5.  Verify that the `pdfUrl` field in the Book model contains the correct URL of the uploaded PDF file.
+6.  Verify that the `pdfFileSize` field in the Book model contains the correct size of the uploaded PDF file.
+7.  Test with a file larger than 20MB and verify that the API returns an error response.
+8.  Test with a non-PDF file and verify that the API returns an error response.
+9.  Test error handling for cloud storage upload failures.
+
+# Subtasks:
+## 1. 현재 백엔드 구조 분석 [done]
+### Dependencies: None
+### Description: backend/ 폴더의 기존 코드를 분석하여 Prisma 스키마와 Book 모델 구조를 파악한다
+### Details:
+- backend/prisma/schema.prisma 파일 확인
+- Book 모델의 현재 필드 구조 파악
+- 기존 Book 관련 API 엔드포인트 확인
+- 파일 업로드 관련 기존 구현 확인
+<info added on 2025-07-07T03:14:11.703Z>
+**현재 상황:**
+- 프로젝트는 MongoDB + Mongoose 사용
+- Book 모델은 `backend/src/models/Book.ts`에 정의
+- Book API는 `backend/src/routes/books.ts`에 구현
+- 이미 multer를 사용한 이미지 업로드 기능 존재 (5MB 제한)
+- 업로드 디렉토리: `uploads/` (프로젝트 루트)
+
+**Book 모델 현재 필드:**
+- userId, title, author, bookType, totalPages, currentPage
+- isbn, coverImage, category, status, completionPercentage
+- estimatedRemainingMinutes, avgPpm, readingPurpose, purchaseLink
+- createdAt, updatedAt (timestamps)
+
+**다음 단계:**
+1. Book 모델에 pdfUrl, pdfFileSize 필드 추가
+2. PDF 파일 업로드를 위한 multer 설정 추가
+3. PDF 업로드 API 엔드포인트 구현
+4. PDF 파일 검증 로직 구현
+</info added on 2025-07-07T03:14:11.703Z>
+
+## 2. Book 모델에 PDF 필드 추가 [done]
+### Dependencies: 1.1
+### Description: Book 모델의 인터페이스와 스키마에 pdfUrl과 pdfFileSize 필드를 추가한다
+### Details:
+- IBook 인터페이스에 pdfUrl?: string, pdfFileSize?: number 필드 추가
+- BookSchema에 해당 필드들의 Mongoose 스키마 정의 추가
+- 기존 Book 타입과의 호환성 유지
+<info added on 2025-07-07T03:15:28.807Z>
+- pdfUrl은 String 타입, trim 적용, 기본값 null
+- pdfFileSize는 Number 타입, 최소값 0, 기본값 null
+- backend/src/models/Book.ts 파일 수정
+- 기존 필드들에는 영향 없음
+- 새로운 필드들은 옵셔널이므로 기존 데이터와 호환
+</info added on 2025-07-07T03:15:28.807Z>
+
+## 3. PDF 업로드를 위한 multer 설정 구성 [done]
+### Dependencies: 1.2
+### Description: PDF 파일 업로드를 위한 별도의 multer 인스턴스를 생성하고 PDF 파일 검증 로직을 구현한다
+### Details:
+- PDF 파일만 허용하는 fileFilter 함수 구현
+- 20MB 파일 크기 제한 설정
+- PDF 전용 업로드 디렉토리 설정 (uploads/pdfs/)
+- MIME 타입 검증 (application/pdf)
+- 파일 확장자 검증 (.pdf)
+<info added on 2025-07-07T03:16:36.856Z>
+PDF 업로드 multer 설정 완료:
+
+**완료된 작업:**
+- PDF 전용 업로드 디렉토리 생성 (uploads/pdfs/)
+- PDF 파일 전용 multer 인스턴스 (uploadPdf) 구성
+- PDF 파일 검증 로직 구현:
+  - MIME 타입 검증: application/pdf만 허용
+  - 파일 확장자 검증: .pdf 확장자만 허용
+  - 파일 크기 제한: 20MB
+- 상세한 로깅 추가로 디버깅 용이성 확보
+- 기존 이미지 업로드 기능과 분리하여 독립적 운영
+
+**변경 사항:**
+- backend/src/routes/books.ts 파일에 PDF 업로드 설정 추가
+- pdfStorage, pdfFileFilter, uploadPdf 인스턴스 생성
+- 에러 메시지 한국어로 사용자 친화적 구성
+</info added on 2025-07-07T03:16:36.856Z>
+
+## 4. PDF 업로드 API 엔드포인트 구현 [done]
+### Dependencies: 1.3
+### Description: 책에 PDF 파일을 업로드하는 API 엔드포인트를 구현하고 Book 모델을 업데이트한다
+### Details:
+- POST /books/:bookId/upload-pdf 엔드포인트 생성
+- bookController에 uploadPdf 함수 구현
+- 업로드된 PDF 파일 정보를 Book 모델에 저장
+- 파일 URL과 크기 정보 업데이트
+- 에러 핸들링 및 검증 로직 추가
+- 응답 형식 정의
+<info added on 2025-07-07T03:19:34.472Z>
+**완료된 작업:**
+- POST /books/:bookId/upload-pdf 엔드포인트 생성
+- bookController에 uploadPdf 함수 구현
+- 업로드된 PDF 파일 정보를 Book 모델에 저장 (pdfUrl, pdfFileSize)
+- 상세한 에러 핸들링 및 검증 로직:
+  - 사용자 인증 확인
+  - 파일 존재 여부 확인
+  - 책 소유권 확인
+  - 기존 PDF 파일 삭제 (교체 시)
+  - 업로드 실패 시 파일 정리
+- 응답 형식 정의 (성공 메시지, 업데이트된 책 정보, PDF 정보)
+- multer 인스턴스 이름 충돌 해결 (pdfUpload로 변경)
+
+**API 사용법:**
+- POST /books/:bookId/upload-pdf
+- Content-Type: multipart/form-data
+- Field name: pdfFile
+- 최대 파일 크기: 20MB
+- 지원 형식: PDF (.pdf, application/pdf)
+
+**응답 형식:**
+```json
+{
+  "message": "PDF 파일이 성공적으로 업로드되었습니다.",
+  "book": { /* 업데이트된 책 정보 */ },
+  "pdfInfo": {
+    "originalName": "document.pdf",
+    "url": "/uploads/pdfs/pdfFile-1234567890-123456789.pdf",
+    "size": 1234567
+  }
+}
+```
+</info added on 2025-07-07T03:19:34.472Z>
+

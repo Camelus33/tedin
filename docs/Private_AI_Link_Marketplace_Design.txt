@@ -1,0 +1,100 @@
+비공개 AI-Link 마켓플레이스 설계서
+=================================
+
+목적
+----
+• 프롬프트 전문가(판매자)가 자신의 비공개 AI-Link(1회 사용) 패키지를 서비스 내에서 판매할 수 있도록 한다.
+• 학습자·크리에이터(구매자)는 필요한 도메인 지식 캡슐을 구매하여 LLM 작업 품질을 즉시 향상시킬 수 있다.
+
+주요 기능
+---------
+1. **마켓플레이스 홈** `/marketplace`
+   – 추천·신규·카테고리별 AI-Link 카드 리스트
+2. **상세 페이지** `/marketplace/[listingId]`
+   – AI-Link 설명, 썸네일/데모 영상, 가격, 잔여 재고(선택) 표시
+3. **구매 플로우**
+   – Stripe Checkout(이미 구축된 결제 라우트 재사용)
+   – 결제 완료 → LinkPurchase 생성 → 구매자에게 개인 accessKey 전달
+4. **판매자 대시보드** `/marketplace/seller`
+   – 내 Listing 관리(생성/수정/판매 통계)
+5. **구매 내역** `/marketplace/my-purchases`
+   – 구매한 비공개 AI-Link 목록(+ 잔여 호출 0/1) 표시
+6. **보안/사용 제한**
+   – PrivateShare usageLimit=1, buyerAccessKey 필요, usageCount 서버 증분
+
+DB 모델
+--------
+1. **LinkListing**
+   | 필드 | 타입 | 설명 |
+   |------|------|------|
+   | _id | ObjectId | | 
+   | privateShareId | string | 실제 비공개 링크 참조 |
+   | sellerId | ObjectId | User |
+   | title | string | 카드 제목 |
+   | description | string | 상세 설명(마크다운) |
+   | price | number | 정가(원) |
+   | thumbnailUrl | string | 미리보기 썸네일 |
+   | category | enum | video_prompt, image_prompt 등 |
+   | tags | [string] | 검색용 태그 |
+   | createdAt / updatedAt | Date | |
+   | purchasesCount | number | 판매량 집계 |
+
+2. **LinkPurchase**
+   | 필드 | 타입 | 설명 |
+   |------|------|------|
+   | _id | ObjectId |
+   | listingId | ObjectId | LinkListing |
+   | buyerId | ObjectId |
+   | privateShareId | string | 복사본(ID 재사용) |
+   | buyerAccessKey | string | 난수 32bytes |
+   | used | boolean | LLM 호출 완료 여부 |
+   | createdAt | Date |
+
+백엔드 API
+-----------
+`/api/marketplace`
+| Method | Endpoint | 권한 | 설명 |
+|--------|----------|------|------|
+| GET | /listings | Public | 검색/필터 파라미터 지원 |
+| POST | /listings | Auth(Seller) | 판매자 Listing 생성 |
+| GET | /listings/:id | Public | 상세 조회 |
+| PUT | /listings/:id | Seller | 수정 |
+| POST | /listings/:id/purchase | Auth | Stripe 세션 생성 ↔ 결제 완료 webhook |
+
+결제 완료 Webhook 흐름
+---------------------
+1. Stripe → `/api/webhooks/stripe` (이미 존재)
+2. event.type=='checkout.session.completed' && metadata.listingId 존재
+3. 서버: LinkPurchase 생성, buyerAccessKey 생성, email/알림 전송
+
+링크 접근 흐름 (구매자)
+----------------------
+1. LLM 또는 브라우저가 `GET /api/private-shares/:shareId?key=buyerAccessKey` 호출
+2. 서버: LinkPurchase 검증 → 사용 여부 체크
+   – 사용 전: usageCount++, LinkPurchase.used=true, 컨텍스트 JSON 반환
+   – 사용 후: 410 Gone or 403 사용 완료
+
+프런트엔드 컴포넌트 변경
+------------------------
+• **새 네비게이션**: 사이드바/헤더에 "마켓플레이스" 추가
+• **AiLinkModal**: "마켓플레이스에 등록" CTA(판매자 모드) 노출 조건 – 권한 체크
+• **ListingCard.tsx**, **ListingForm.tsx** 페이지/컴포넌트
+
+검색 & 추천
+-----------
+• MongoDB text index (title, description, tags)
+• 필터: 카테고리, 가격 범위, 인기순
+
+보안 고려 사항
+--------------
+• PrivateShare usageLimit=1로 고정
+• buyerAccessKey는 uuidv4 + hashing 저장(서버 비교 시 bcrypt.compare)
+• 다운로드/스크래핑 방지: CORS 제한, Rate-Limit
+
+MVP 일정(2주)
+-------------
+| 주차 | 작업 | 담당 |
+|------|------|------|
+| 1주 | 모델·API·Stripe 연동, PrivateShare 로직 확장 | BE 팀 |
+| 1주 | 프런트 페이지(목록·상세·구매), 판매자 폼 | FE 팀 |
+| 0.5주 | 통합 테스트, 배포 | 공통 | 

@@ -4,7 +4,9 @@ import { useState, useRef, ChangeEvent, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { FiArrowLeft, FiUpload, FiX } from "react-icons/fi";
+import { FiArrowLeft, FiUpload, FiX, FiFileText } from "react-icons/fi";
+import { PdfUploadComponent } from "@/components/books";
+import { PdfMetadata } from "@/lib/pdfUtils";
 
 // 장르 옵션
 const genres = [
@@ -101,6 +103,11 @@ function NewBookContent() {
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   
+  // PDF 업로드 상태
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfMetadata, setPdfMetadata] = useState<PdfMetadata | null>(null);
+  const [inputMethod, setInputMethod] = useState<'manual' | 'pdf'>('manual'); // 입력 방식
+  
   // 폼 제출 상태
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -155,6 +162,48 @@ function NewBookContent() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+  
+  // PDF 업로드 핸들러
+  const handlePdfSelected = (file: File, metadata: PdfMetadata) => {
+    setPdfFile(file);
+    setPdfMetadata(metadata);
+    setInputMethod('pdf');
+    
+    // 폼 데이터 자동 채우기
+    setFormData(prev => ({
+      ...prev,
+      title: metadata.title || file.name.replace(/\.pdf$/i, ''),
+      author: metadata.author || '',
+      totalPages: metadata.totalPages > 0 ? metadata.totalPages.toString() : ''
+    }));
+    
+    setError(null);
+  };
+  
+  const handlePdfError = (error: string) => {
+    setError(error);
+  };
+  
+  const clearPdfFile = () => {
+    setPdfFile(null);
+    setPdfMetadata(null);
+    setInputMethod('manual');
+    
+    // 폼 초기화 (PDF에서 자동 입력된 내용만)
+    if (inputMethod === 'pdf') {
+      setFormData(prev => ({
+        ...prev,
+        title: '',
+        author: '',
+        totalPages: ''
+      }));
+    }
+  };
+  
+  const switchToManualInput = () => {
+    setInputMethod('manual');
+    // PDF 파일은 유지하되 수동 입력 모드로 변경
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -220,7 +269,7 @@ function NewBookContent() {
       console.log("전송할 FormData:", apiFormData); // FormData 내용을 직접 로깅하기는 어려움
       console.log("전송 토큰:", token.substring(0, 10) + "...");
       
-      // API 요청 - 백엔드 포트(8000)로 전송
+      // 먼저 책 등록
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/books`, {
         method: "POST",
         headers: {
@@ -255,14 +304,42 @@ function NewBookContent() {
         throw new Error("서버 응답을 처리하는 데 잠시 어려움이 있어요.");
       }
       
-      // 성공 메시지 표시 후 책 상세 페이지로 이동
-      // 백엔드 응답 구조에 따라 data._id 또는 data.book._id 사용
+      // 책 등록 성공 후 PDF 업로드 (있는 경우)
       const bookId = data._id || (data.book && data.book._id);
       
       if (!bookId) {
         console.error("책 ID를 찾을 수 없습니다:", data);
         throw new Error("성장의 기록은 잘 만들어졌는데, 잠시 길을 잃은 것 같아요. 다시 확인해 주세요.");
       }
+      
+      // PDF 파일이 있으면 업로드
+      if (pdfFile && bookType === 'book') {
+        try {
+          const pdfFormData = new FormData();
+          pdfFormData.append('pdfFile', pdfFile);
+          
+          const pdfResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${bookId}/upload-pdf`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${token}`
+            },
+            body: pdfFormData
+          });
+          
+          if (!pdfResponse.ok) {
+            console.error("PDF 업로드 실패:", await pdfResponse.text());
+            // PDF 업로드 실패는 전체 등록을 실패시키지 않음
+            setError("책은 등록되었지만 PDF 업로드에 실패했습니다. 나중에 다시 시도해주세요.");
+          } else {
+            console.log("PDF 업로드 성공");
+          }
+        } catch (pdfError) {
+          console.error("PDF 업로드 오류:", pdfError);
+          setError("책은 등록되었지만 PDF 업로드에 실패했습니다. 나중에 다시 시도해주세요.");
+        }
+      }
+
+
       
       // 약간의 딜레이 후 이동 (UX 개선)
       setTimeout(() => {
@@ -508,8 +585,63 @@ function NewBookContent() {
                 )}
               </div>
               
-              {/* 오른쪽 컬럼: 이미지 업로드 */}
-              <div className="flex flex-col items-center justify-start space-y-2">
+              {/* 오른쪽 컬럼: PDF 업로드 및 이미지 업로드 */}
+              <div className="flex flex-col items-center justify-start space-y-4">
+                {/* PDF 업로드 - 책 모드에서만 표시 */}
+                {bookType === 'book' && (
+                  <div className="w-full">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs font-semibold text-purple-300 font-barlow">
+                        <FiFileText className="inline mr-1" size={14} />
+                        PDF 파일 업로드
+                      </label>
+                      {inputMethod === 'pdf' && (
+                        <button
+                          type="button"
+                          onClick={switchToManualInput}
+                          className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                        >
+                          수동 입력
+                        </button>
+                      )}
+                    </div>
+                    
+                    <PdfUploadComponent
+                      onPdfSelected={handlePdfSelected}
+                      onError={handlePdfError}
+                      disabled={isSubmitting}
+                      className="mb-2"
+                    />
+                    
+                    {pdfFile && (
+                      <div className="bg-purple-900/30 rounded-lg p-2 w-full text-xs border border-purple-500/20">
+                        <div className="flex items-center justify-between">
+                          <span className="text-purple-300">
+                            📄 PDF에서 자동 추출된 정보가 폼에 입력되었습니다
+                          </span>
+                          <button
+                            type="button"
+                            onClick={clearPdfFile}
+                            className="text-red-400 hover:text-red-300 transition-colors ml-2"
+                            title="PDF 제거"
+                          >
+                            <FiX size={14} />
+                          </button>
+                        </div>
+                        {inputMethod === 'pdf' && (
+                          <p className="text-purple-400 mt-1">
+                            필요시 아래에서 정보를 수정하실 수 있습니다.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    
+                    <div className="bg-purple-900/20 rounded-md p-2 w-full text-[11px] text-purple-300 border border-purple-500/20">
+                      <p>💡 PDF 업로드 시 제목, 저자, 페이지 수가 자동으로 입력됩니다.</p>
+                    </div>
+                  </div>
+                )}
+                
                 {/* 표지 업로드 - 책 모드에서만 표시 */}
                 {bookType === 'book' && (
                   <div className="w-full text-center">

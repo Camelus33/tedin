@@ -16,6 +16,8 @@ export interface IBook extends Document {
   avgPpm?: number | null;
   readingPurpose?: 'exam_prep' | 'practical_knowledge' | 'humanities_self_reflection' | 'reading_pleasure' | null;
   purchaseLink?: string;
+  pdfUrl?: string;
+  pdfFileSize?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -94,6 +96,16 @@ const BookSchema: Schema = new Schema(
       type: String,
       trim: true,
       default: ''
+    },
+    pdfUrl: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    pdfFileSize: {
+      type: Number,
+      default: null,
+      min: 0,
     }
   },
   { timestamps: true }

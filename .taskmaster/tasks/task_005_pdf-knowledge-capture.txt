@@ -1,0 +1,56 @@
+# Task ID: 5
+# Title: Implement PDF Memo Saving API
+# Status: in-progress
+# Dependencies: 3, 4
+# Priority: high
+# Description: Develop a dedicated API endpoint to save PDF memos generated during TS reading sessions to the database. This API will handle data persistence for PDF notes.
+# Details:
+1. Create a new API endpoint `/api/ts-notes` that accepts POST requests.
+2. Implement server-side validation to ensure the request body contains `bookId` (integer), `pageNumber` (integer), `highlightedText` (string), `memoContent` (string), and `memoType` (string).
+3. Create a `Note` model in the database with fields corresponding to the validated request body parameters.
+4. Upon successful validation, create a new record in the `Note` table with the provided data.
+5. Return a success response with the newly created note's ID.
+6. Implement error handling to return appropriate error codes and messages for invalid requests or database errors.
+7. Ensure the API is secured with appropriate authentication and authorization mechanisms.
+8. Optimize database queries for performance, especially when retrieving notes for a specific book and page.
+
+# Test Strategy:
+1. Send a POST request to `/api/ts-notes` with valid data for `bookId`, `pageNumber`, `highlightedText`, `memoContent`, and `memoType`.
+2. Verify that a new record is created in the `Note` table with the provided data.
+3. Verify that the API returns a success response with the newly created note's ID.
+4. Send a POST request with invalid data (e.g., missing fields, incorrect data types) and verify that the API returns an appropriate error response.
+5. Test the API with different combinations of `bookId`, `pageNumber`, `highlightedText`, `memoContent`, and `memoType` to ensure it handles various scenarios correctly.
+6. Test the API's performance by sending multiple concurrent requests and monitoring response times.
+7. Verify that the API is properly secured by attempting to access it without proper authentication and authorization.
+
+# Subtasks:
+## 1. 기존 Note 모델 및 API 구조 분석 [pending]
+### Dependencies: None
+### Description: 기존 Note 모델의 스키마와 API 엔드포인트를 분석하여 PDF 메모와 호환 가능한 구조 파악
+### Details:
+1. Note 모델 스키마 분석 (필드, 타입, 제약조건)\n2. notes API 엔드포인트 분석 (/notes 라우트)\n3. PDF 메모를 위한 추가 필드 필요성 검토\n4. 기존 TS 메모와 PDF 메모 구분 방법 설계
+
+## 2. Note 모델에 PDF 관련 필드 추가 [pending]
+### Dependencies: 5.1
+### Description: PDF 메모를 저장하기 위한 추가 필드를 Note 모델에 추가 (pageNumber, highlightedText, pdfUrl 등)
+### Details:
+1. INote 인터페이스에 PDF 관련 필드 추가\n2. NoteSchema에 새 필드들의 Mongoose 스키마 정의\n3. 기존 데이터와의 호환성 유지 (옵셔널 필드)\n4. 인덱스 추가 (성능 최적화)
+
+## 3. PDF 메모 저장 API 엔드포인트 구현 [pending]
+### Dependencies: 5.2
+### Description: PDF 메모를 저장하는 새로운 API 엔드포인트를 notes 컨트롤러에 구현
+### Details:
+1. noteController에 createPdfNote 함수 구현\n2. 요청 데이터 검증 (bookId, pageNumber, highlightedText, memoData)\n3. 사용자 인증 및 권한 확인\n4. PDF 메모 데이터베이스 저장\n5. 에러 핸들링 및 응답 처리
+
+## 4. notes 라우트에 PDF 메모 엔드포인트 추가 [pending]
+### Dependencies: 5.3
+### Description: notes.ts 라우터에 PDF 메모 저장을 위한 새로운 라우트와 validation 추가
+### Details:
+1. POST /notes/pdf 라우트 추가\n2. PDF 메모 전용 validation 미들웨어 구성\n3. express-validator를 사용한 요청 데이터 검증\n4. 라우트를 createPdfNote 컨트롤러 함수에 연결
+
+## 5. 프론트엔드 API 연동 구현 [pending]
+### Dependencies: 5.4
+### Description: PdfMemoModal에서 localStorage 대신 실제 API를 호출하도록 수정하고 에러 핸들링 추가
+### Details:
+1. lib/api.ts에 PDF 메모 저장 API 함수 추가\n2. PdfMemoModal의 handleSave 함수 수정\n3. API 호출 에러 핸들링 및 사용자 피드백\n4. 성공/실패 상태 UI 업데이트\n5. TSReadingPage에서 메모 저장 완료 후 처리 로직
+
