@@ -89,8 +89,12 @@ const BookSchema: Schema = new Schema(
     },
     readingPurpose: {
       type: String,
-      enum: ['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'],
+      enum: {
+        values: ['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'],
+        message: '{VALUE} is not a valid reading purpose'
+      },
       default: null,
+      required: false,
     },
     purchaseLink: {
       type: String,
