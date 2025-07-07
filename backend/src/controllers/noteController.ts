@@ -532,9 +532,9 @@ export const createPdfNote = async (req: Request, res: Response) => {
       return res.status(404).json({ message: '해당 책을 찾을 수 없습니다.' });
     }
 
-    // PDF 파일이 있는 책인지 확인
-    if (!book.pdfUrl) {
-      return res.status(400).json({ message: 'PDF 파일이 등록되지 않은 책입니다.' });
+    // 로컬 PDF가 등록된 책인지 확인
+    if (!book.hasLocalPdf) {
+      return res.status(400).json({ message: '로컬 PDF가 등록되지 않은 책입니다.' });
     }
 
     // PDF 메모 데이터 생성
