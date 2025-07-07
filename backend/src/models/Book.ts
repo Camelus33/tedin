@@ -89,12 +89,20 @@ const BookSchema: Schema = new Schema(
     },
     readingPurpose: {
       type: String,
-      enum: {
-        values: ['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'],
-        message: '{VALUE} is not a valid reading purpose'
-      },
+      enum: ['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'],
       default: null,
       required: false,
+      validate: {
+        validator: function(value: any) {
+          // null이나 undefined는 허용
+          if (value === null || value === undefined) {
+            return true;
+          }
+          // 값이 있으면 enum 값 중 하나여야 함
+          return ['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'].includes(value);
+        },
+        message: '{VALUE} is not a valid reading purpose'
+      }
     },
     purchaseLink: {
       type: String,
