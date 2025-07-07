@@ -73,6 +73,44 @@ function PdfViewerComponent({
   const documentRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  // === 가로 리사이즈 상태 및 핸들러 ===
+  const MIN_WIDTH = 400;
+  const DEFAULT_WIDTH = typeof window !== 'undefined' ? Math.min(window.innerWidth * 0.6, 800) : 600;
+  const [viewerWidth, setViewerWidth] = useState<number>(DEFAULT_WIDTH);
+  const startXRef = useRef<number>(0);
+  const startWidthRef = useRef<number>(DEFAULT_WIDTH);
+
+  // 윈도우 리사이즈 시 최대 폭 재검증
+  useEffect(() => {
+    const handleResize = () => {
+      setViewerWidth(prev => Math.min(prev, window.innerWidth - 100));
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const onDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    startXRef.current = e.clientX;
+    startWidthRef.current = viewerWidth;
+    document.addEventListener('mousemove', onDragging);
+    document.addEventListener('mouseup', onDragEnd);
+  };
+
+  const onDragging = (e: MouseEvent) => {
+    const delta = e.clientX - startXRef.current;
+    let newWidth = startWidthRef.current + delta;
+    const max = window.innerWidth - 100;
+    if (newWidth < MIN_WIDTH) newWidth = MIN_WIDTH;
+    if (newWidth > max) newWidth = max;
+    setViewerWidth(newWidth);
+  };
+
+  const onDragEnd = () => {
+    document.removeEventListener('mousemove', onDragging);
+    document.removeEventListener('mouseup', onDragEnd);
+  };
+
   // 로컬에서 PDF 로드
   useEffect(() => {
     const loadPdf = async () => {
@@ -398,7 +436,7 @@ function PdfViewerComponent({
   }
 
   return (
-    <div className={`pdf-viewer ${className}`}>
+    <div className={`pdf-viewer ${className} flex`}>
       {/* PDF 뷰어 컨트롤 */}
       <div className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -462,8 +500,8 @@ function PdfViewerComponent({
       {/* PDF 문서 영역 */}
       <div 
         ref={documentRef}
-        className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x"
-        style={{ height: '80vh', maxHeight: '800px', width: '60vw', minWidth: '400px', maxWidth: '100%' }}
+        className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto"
+        style={{ height: '80vh', maxHeight: '800px', width: viewerWidth }}
       >
         {state.isLoading && (
           <div className="flex items-center justify-center h-full">
@@ -543,6 +581,15 @@ function PdfViewerComponent({
         </Document>
       </div>
 
+      {/* 드래그 바 */}
+      <div
+        onMouseDown={onDragStart}
+        className="w-1.5 cursor-col-resize bg-gray-600/30 hover:bg-gray-500/60 transition-colors"
+        style={{ userSelect: 'none' }}
+      />
+      {/* 남는 공간 */}
+      <div className="flex-1" />
+
       {/* 텍스트 선택 안내 */}
       {enableTextSelection && (
         <div className="pdf-help bg-gray-800/60 border border-cyan-500/20 rounded-lg p-2 mt-2">
@@ -566,3 +613,17 @@ function PdfViewerComponent({
 const MemoizedPdfViewer = React.memo(PdfViewerComponent);
 
 export default MemoizedPdfViewer; 
+
+// 간단한 throttle 유틸 (lodash 대체) 
+function throttle<Func extends (...args: any[]) => void>(func: Func, limit: number): Func {
+  let inThrottle: boolean;
+  let lastArgs: any;
+  return function(this: any, ...args: any[]) {
+    lastArgs = args;
+    if (!inThrottle) {
+      func.apply(this, lastArgs);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  } as Func;
+} 
