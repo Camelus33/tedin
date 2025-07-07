@@ -436,172 +436,174 @@ function PdfViewerComponent({
   }
 
   return (
-    <div className={`pdf-viewer ${className} mx-auto`}>
-      {/* PDF 뷰어 컨트롤 */}
-      <div className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          {/* 현재 페이지 정보 (네비게이션 버튼 제거) */}
-          <span className="text-cyan-300 text-sm font-mono px-2">
-            {state.pageNumber} / {state.numPages || '?'}
-          </span>
-          <span className="text-cyan-400/60 text-xs">
-            연속 스크롤 모드
-          </span>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {/* 줌 컨트롤 */}
-          <button
-            onClick={() => adjustScale(-0.2)}
-            className="p-2 bg-purple-600/20 hover:bg-purple-600/40 rounded-lg transition-colors"
-            title="축소"
-          >
-            <FiZoomOut size={16} className="text-purple-300" />
-          </button>
-          
-          <span className="text-purple-300 text-sm font-mono px-2">
-            {Math.round(state.scale * 100)}%
-          </span>
-          
-          <button
-            onClick={() => adjustScale(0.2)}
-            className="p-2 bg-purple-600/20 hover:bg-purple-600/40 rounded-lg transition-colors"
-            title="확대"
-          >
-            <FiZoomIn size={16} className="text-purple-300" />
-          </button>
-
-          {/* 회전 컨트롤 */}
-          <button
-            onClick={rotate}
-            className="p-2 bg-emerald-600/20 hover:bg-emerald-600/40 rounded-lg transition-colors"
-            title="90도 회전"
-          >
-            <FiRotateCw size={16} className="text-emerald-300" />
-          </button>
-
-          {/* 하이라이트 모드 토글 */}
-          {enableHighlighting && (
-            <button
-              onClick={toggleHighlightMode}
-              className={`p-2 rounded-lg transition-colors ${
-                state.highlightMode
-                  ? 'bg-yellow-600/40 hover:bg-yellow-600/60'
-                  : 'bg-yellow-600/20 hover:bg-yellow-600/40'
-              }`}
-              title={state.highlightMode ? '하이라이트 모드 비활성화' : '하이라이트 모드 활성화'}
-            >
-              <FiEdit3 size={16} className={state.highlightMode ? 'text-yellow-200' : 'text-yellow-300'} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* PDF 문서 영역 - 오른쪽 경계선 드래그로 폭 조절 가능 */}
-      <div 
-        ref={documentRef}
-        className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x"
-        style={{ 
-          height: '80vh', 
-          maxHeight: '800px', 
-          width: `${viewerWidth}px`,
-          minWidth: `${MIN_WIDTH}px`,
-          maxWidth: 'calc(100vw - 50px)', // 화면 너비에서 여백 제외
-          scrollBehavior: 'smooth' // 부드러운 스크롤 추가
-        }}
-      >
-        {state.isLoading && (
-          <div className="flex items-center justify-center h-full">
-            <div className="flex flex-col items-center space-y-3">
-              <FiLoader className="animate-spin text-cyan-400" size={32} />
-              <p className="text-cyan-300 text-sm">PDF 로딩 중...</p>
-            </div>
+    <div className="flex justify-center w-full">
+      <div className={`pdf-viewer ${className}`}>
+        {/* PDF 뷰어 컨트롤 */}
+        <div className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            {/* 현재 페이지 정보 (네비게이션 버튼 제거) */}
+            <span className="text-cyan-300 text-sm font-mono px-2">
+              {state.pageNumber} / {state.numPages || '?'}
+            </span>
+            <span className="text-cyan-400/60 text-xs">
+              연속 스크롤 모드
+            </span>
           </div>
-        )}
 
-        <Document
-          file={state.pdfData}
-          onLoadSuccess={onDocumentLoadSuccess}
-          onLoadError={onDocumentLoadError}
-          loading=""
-          className="flex flex-col items-center justify-center p-4 gap-4 w-full"
-        >
-          {/* 모든 페이지를 세로로 렌더링 */}
-          {state.numPages && Array.from({ length: state.numPages }, (_, index) => {
-            const pageNumber = index + 1;
-            const isVisible = state.visiblePages.has(pageNumber);
+          <div className="flex items-center space-x-2">
+            {/* 줌 컨트롤 */}
+            <button
+              onClick={() => adjustScale(-0.2)}
+              className="p-2 bg-purple-600/20 hover:bg-purple-600/40 rounded-lg transition-colors"
+              title="축소"
+            >
+              <FiZoomOut size={16} className="text-purple-300" />
+            </button>
             
-            return (
-              <div
-                key={pageNumber}
-                ref={(el) => {
-                  pageRefs.current[index] = el;
-                }}
-                data-page-number={pageNumber}
-                className="pdf-page-container relative"
+            <span className="text-purple-300 text-sm font-mono px-2">
+              {Math.round(state.scale * 100)}%
+            </span>
+            
+            <button
+              onClick={() => adjustScale(0.2)}
+              className="p-2 bg-purple-600/20 hover:bg-purple-600/40 rounded-lg transition-colors"
+              title="확대"
+            >
+              <FiZoomIn size={16} className="text-purple-300" />
+            </button>
+
+            {/* 회전 컨트롤 */}
+            <button
+              onClick={rotate}
+              className="p-2 bg-emerald-600/20 hover:bg-emerald-600/40 rounded-lg transition-colors"
+              title="90도 회전"
+            >
+              <FiRotateCw size={16} className="text-emerald-300" />
+            </button>
+
+            {/* 하이라이트 모드 토글 */}
+            {enableHighlighting && (
+              <button
+                onClick={toggleHighlightMode}
+                className={`p-2 rounded-lg transition-colors ${
+                  state.highlightMode
+                    ? 'bg-yellow-600/40 hover:bg-yellow-600/60'
+                    : 'bg-yellow-600/20 hover:bg-yellow-600/40'
+                }`}
+                title={state.highlightMode ? '하이라이트 모드 비활성화' : '하이라이트 모드 활성화'}
               >
-                {/* 성능 최적화: 보이는 페이지만 렌더링, 나머지는 placeholder */}
-                {isVisible ? (
-                  <>
-                    <Page
-                      pageNumber={pageNumber}
-                      scale={state.scale}
-                      rotate={state.rotation}
-                      renderTextLayer={enableTextSelection}
-                      renderAnnotationLayer={false}
-                      className="shadow-lg"
-                    />
-                    
-                    {/* 하이라이트 오버레이 */}
-                    {enableHighlighting && highlights.length > 0 && pageRefs.current[index] && (
-                      <PdfHighlightOverlay
-                        highlights={highlights}
+                <FiEdit3 size={16} className={state.highlightMode ? 'text-yellow-200' : 'text-yellow-300'} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* PDF 문서 영역 - 오른쪽 경계선 드래그로 폭 조절 가능 */}
+        <div 
+          ref={documentRef}
+          className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x"
+          style={{ 
+            height: '80vh', 
+            maxHeight: '800px', 
+            width: `${viewerWidth}px`,
+            minWidth: `${MIN_WIDTH}px`,
+            maxWidth: 'calc(100vw - 50px)', // 화면 너비에서 여백 제외
+            scrollBehavior: 'smooth' // 부드러운 스크롤 추가
+          }}
+        >
+          {state.isLoading && (
+            <div className="flex items-center justify-center h-full">
+              <div className="flex flex-col items-center space-y-3">
+                <FiLoader className="animate-spin text-cyan-400" size={32} />
+                <p className="text-cyan-300 text-sm">PDF 로딩 중...</p>
+              </div>
+            </div>
+          )}
+
+          <Document
+            file={state.pdfData}
+            onLoadSuccess={onDocumentLoadSuccess}
+            onLoadError={onDocumentLoadError}
+            loading=""
+            className="flex flex-col items-center justify-center p-4 gap-4 w-full"
+          >
+            {/* 모든 페이지를 세로로 렌더링 */}
+            {state.numPages && Array.from({ length: state.numPages }, (_, index) => {
+              const pageNumber = index + 1;
+              const isVisible = state.visiblePages.has(pageNumber);
+              
+              return (
+                <div
+                  key={pageNumber}
+                  ref={(el) => {
+                    pageRefs.current[index] = el;
+                  }}
+                  data-page-number={pageNumber}
+                  className="pdf-page-container relative"
+                >
+                  {/* 성능 최적화: 보이는 페이지만 렌더링, 나머지는 placeholder */}
+                  {isVisible ? (
+                    <>
+                      <Page
                         pageNumber={pageNumber}
                         scale={state.scale}
-                        containerRef={{ current: pageRefs.current[index]! }}
-                        onHighlightClick={handleHighlightClick}
-                        onHighlightEdit={handleHighlightEdit}
-                        onHighlightDelete={handleHighlightDelete}
+                        rotate={state.rotation}
+                        renderTextLayer={enableTextSelection}
+                        renderAnnotationLayer={false}
+                        className="shadow-lg"
                       />
-                    )}
-                  </>
-                ) : (
-                  /* 페이지 placeholder - 실제 PDF 페이지 크기 근사치 */
-                  <div 
-                    className="bg-gray-800/40 border border-gray-600/30 rounded flex items-center justify-center shadow-lg transition-opacity duration-300"
-                    style={{ 
-                      width: `${595 * state.scale}px`, // PDF 기본 width (A4: 595pt)
-                      height: `${842 * state.scale}px`, // PDF 기본 height (A4: 842pt)
-                      minHeight: '400px' // 최소 높이 보장
-                    }}
-                  >
-                    <div className="text-gray-500 text-center">
-                      <FiLoader className="animate-pulse mx-auto mb-2" size={24} />
-                      <p className="text-sm font-mono">페이지 {pageNumber}</p>
-                      <p className="text-xs text-gray-600 mt-1">스크롤하여 로드</p>
+                      
+                      {/* 하이라이트 오버레이 */}
+                      {enableHighlighting && highlights.length > 0 && pageRefs.current[index] && (
+                        <PdfHighlightOverlay
+                          highlights={highlights}
+                          pageNumber={pageNumber}
+                          scale={state.scale}
+                          containerRef={{ current: pageRefs.current[index]! }}
+                          onHighlightClick={handleHighlightClick}
+                          onHighlightEdit={handleHighlightEdit}
+                          onHighlightDelete={handleHighlightDelete}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    /* 페이지 placeholder - 실제 PDF 페이지 크기 근사치 */
+                    <div 
+                      className="bg-gray-800/40 border border-gray-600/30 rounded flex items-center justify-center shadow-lg transition-opacity duration-300"
+                      style={{ 
+                        width: `${595 * state.scale}px`, // PDF 기본 width (A4: 595pt)
+                        height: `${842 * state.scale}px`, // PDF 기본 height (A4: 842pt)
+                        minHeight: '400px' // 최소 높이 보장
+                      }}
+                    >
+                      <div className="text-gray-500 text-center">
+                        <FiLoader className="animate-pulse mx-auto mb-2" size={24} />
+                        <p className="text-sm font-mono">페이지 {pageNumber}</p>
+                        <p className="text-xs text-gray-600 mt-1">스크롤하여 로드</p>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </Document>
-      </div>
-
-      {/* 텍스트 선택 안내 */}
-      {enableTextSelection && (
-        <div className="pdf-help bg-gray-800/60 border border-cyan-500/20 rounded-lg p-2 mt-2">
-          <p className="text-xs text-cyan-400 text-center mb-1">
-            {state.highlightMode 
-              ? '🎨 하이라이트 모드: 텍스트를 선택하면 자동으로 하이라이트됩니다'
-              : '💡 마우스 휠로 스크롤하여 모든 페이지를 연속으로 볼 수 있습니다. 오른쪽 하단 모서리를 드래그하여 뷰어 폭을 조절할 수 있습니다.'
-            }
-          </p>
-          <p className="text-xs text-gray-500 text-center">
-            키보드 단축키: +/- (줌), R (회전), H (하이라이트 모드)
-          </p>
+                  )}
+                </div>
+              );
+            })}
+          </Document>
         </div>
-      )}
+
+        {/* 텍스트 선택 안내 */}
+        {enableTextSelection && (
+          <div className="pdf-help bg-gray-800/60 border border-cyan-500/20 rounded-lg p-2 mt-2">
+            <p className="text-xs text-cyan-400 text-center mb-1">
+              {state.highlightMode 
+                ? '🎨 하이라이트 모드: 텍스트를 선택하면 자동으로 하이라이트됩니다'
+                : '�� 마우스 휠로 스크롤하여 모든 페이지를 연속으로 볼 수 있습니다. 오른쪽 하단 모서리를 드래그하여 뷰어 폭을 조절할 수 있습니다.'
+              }
+            </p>
+            <p className="text-xs text-gray-500 text-center">
+              키보드 단축키: +/- (줌), R (회전), H (하이라이트 모드)
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
