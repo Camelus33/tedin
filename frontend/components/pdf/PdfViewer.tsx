@@ -436,7 +436,7 @@ function PdfViewerComponent({
   }
 
   return (
-    <div className={`pdf-viewer ${className} flex`}>
+    <div className={`pdf-viewer ${className}`}>
       {/* PDF 뷰어 컨트롤 */}
       <div className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -497,11 +497,17 @@ function PdfViewerComponent({
         </div>
       </div>
 
-      {/* PDF 문서 영역 */}
+      {/* PDF 문서 영역 - 오른쪽 경계선 드래그로 폭 조절 가능 */}
       <div 
         ref={documentRef}
-        className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto"
-        style={{ height: '80vh', maxHeight: '800px', width: viewerWidth }}
+        className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x"
+        style={{ 
+          height: '80vh', 
+          maxHeight: '800px', 
+          width: `${viewerWidth}px`,
+          minWidth: `${MIN_WIDTH}px`,
+          maxWidth: 'calc(100vw - 50px)' // 화면 너비에서 여백 제외
+        }}
       >
         {state.isLoading && (
           <div className="flex items-center justify-center h-full">
@@ -581,26 +587,17 @@ function PdfViewerComponent({
         </Document>
       </div>
 
-      {/* 드래그 바 */}
-      <div
-        onMouseDown={onDragStart}
-        className="w-1.5 cursor-col-resize bg-gray-600/30 hover:bg-gray-500/60 transition-colors"
-        style={{ userSelect: 'none' }}
-      />
-      {/* 남는 공간 */}
-      <div className="flex-1" />
-
       {/* 텍스트 선택 안내 */}
       {enableTextSelection && (
         <div className="pdf-help bg-gray-800/60 border border-cyan-500/20 rounded-lg p-2 mt-2">
           <p className="text-xs text-cyan-400 text-center mb-1">
             {state.highlightMode 
               ? '🎨 하이라이트 모드: 텍스트를 선택하면 자동으로 하이라이트됩니다'
-              : '💡 마우스 휠로 스크롤하여 모든 페이지를 연속으로 볼 수 있습니다. 텍스트를 선택하여 하이라이트하고 메모를 추가할 수 있습니다'
+              : '💡 마우스 휠로 스크롤하여 모든 페이지를 연속으로 볼 수 있습니다. 오른쪽 하단 모서리를 드래그하여 뷰어 폭을 조절할 수 있습니다.'
             }
           </p>
           <p className="text-xs text-gray-500 text-center">
-            키보드: +/- (줌), R (회전){enableHighlighting && ', H (하이라이트 모드)'}
+            키보드 단축키: +/- (줌), R (회전), H (하이라이트 모드)
           </p>
         </div>
       )}
