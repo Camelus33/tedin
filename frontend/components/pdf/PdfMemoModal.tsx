@@ -57,7 +57,6 @@ export default function PdfMemoModal({
   const [memoText, setMemoText] = useState('');
   const [keywords, setKeywords] = useState('');
   const [selfRating, setSelfRating] = useState<number>(3);
-  const [maxRating, setMaxRating] = useState<number>(5);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,20 +67,12 @@ export default function PdfMemoModal({
     }
   }, [isOpen, selectedText]);
 
-  // maxRating이 변경될 때 selfRating 조정
-  useEffect(() => {
-    if (selfRating > maxRating) {
-      setSelfRating(Math.ceil(maxRating / 2));
-    }
-  }, [maxRating, selfRating]);
-
   // 모달 닫을 때 상태 초기화
   const handleClose = () => {
     setMemoType('quote');
     setMemoText('');
     setKeywords('');
     setSelfRating(3);
-    setMaxRating(5);
     setError(null);
     onClose();
   };
@@ -94,7 +85,6 @@ export default function PdfMemoModal({
     setMemoText('');
     setKeywords('');
     setSelfRating(3);
-    setMaxRating(5);
     setError(null);
     setIsLoading(false);
     // 모달 닫기
@@ -182,10 +172,10 @@ export default function PdfMemoModal({
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        {/* 헤더 */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-purple-300">PDF 메모 작성</h2>
+      <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-4 w-full max-w-lg max-h-[85vh] overflow-y-auto">
+        {/* 헤더 - 컴팩트하게 */}
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-bold text-purple-300">PDF 메모 작성</h2>
           <button
             onClick={handleClose}
             disabled={isLoading}
@@ -195,7 +185,7 @@ export default function PdfMemoModal({
           </button>
         </div>
 
-        {/* 페이지 정보 */}
+        {/* 페이지 정보 - 컴팩트하게 */}
         <div className="mb-3 p-2 bg-slate-800 rounded-lg border border-purple-500/20">
           <p className="text-sm text-purple-300">페이지 {pageNumber}</p>
           <p className="text-xs text-gray-400 mt-1">하이라이트: "{selectedText.slice(0, 50)}..."</p>
@@ -208,115 +198,107 @@ export default function PdfMemoModal({
           </div>
         )}
 
-        {/* 메모 성격 선택 */}
-        <div className="mb-2">
-          <label className="block text-sm font-medium text-purple-300 mb-2">
-            메모 성격
-          </label>
-          <div className="flex gap-2">
-            {[
-              { value: 'quote', label: '인용', icon: '📖' },
-              { value: 'thought', label: '생각', icon: '💭' },
-              { value: 'question', label: '질문', icon: '❓' }
-            ].map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setMemoType(option.value as any)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* 왼쪽 컬럼 */}
+          <div className="space-y-3">
+            {/* 메모 성격 선택 */}
+            <div>
+              <label className="block text-sm font-medium text-purple-300 mb-1">
+                메모 성격
+              </label>
+              <div className="flex gap-1">
+                {[
+                  { value: 'quote', label: '인용', icon: '📖' },
+                  { value: 'thought', label: '생각', icon: '💭' },
+                  { value: 'question', label: '질문', icon: '❓' }
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setMemoType(option.value as any)}
+                    disabled={isLoading}
+                    className={`flex-1 p-2 rounded-lg border transition-all disabled:opacity-50 ${
+                      memoType === option.value
+                        ? 'bg-purple-600 border-purple-400 text-white'
+                        : 'bg-slate-800 border-purple-500/30 text-gray-300 hover:border-purple-400'
+                    }`}
+                  >
+                    <div className="text-sm mb-1">{option.icon}</div>
+                    <div className="text-xs">{option.label}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 키워드 */}
+            <div>
+              <label className="block text-sm font-medium text-purple-300 mb-1">
+                키워드 (쉼표로 구분)
+              </label>
+              <input
+                type="text"
+                value={keywords}
+                onChange={(e) => setKeywords(e.target.value)}
                 disabled={isLoading}
-                className={`flex-1 p-2 rounded-lg border transition-all disabled:opacity-50 ${
-                  memoType === option.value
-                    ? 'bg-purple-600 border-purple-400 text-white'
-                    : 'bg-slate-800 border-purple-500/30 text-gray-300 hover:border-purple-400'
-                }`}
-              >
-                <div className="text-lg mb-1">{option.icon}</div>
-                <div className="text-sm">{option.label}</div>
-              </button>
-            ))}
+                placeholder="예: 개념, 중요, 핵심"
+                className="w-full p-2 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none disabled:opacity-50"
+              />
+            </div>
+
+            {/* 중요도 평가 - 5개 별점 고정 */}
+            <div>
+              <label className="block text-sm font-medium text-purple-300 mb-1">
+                중요도 평가
+              </label>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <button
+                    key={rating}
+                    onClick={() => setSelfRating(rating)}
+                    disabled={isLoading}
+                    className={`w-8 h-8 rounded transition-all disabled:opacity-50 flex items-center justify-center ${
+                      rating <= selfRating
+                        ? 'text-yellow-400 hover:text-yellow-300'
+                        : 'text-gray-600 hover:text-yellow-400'
+                    }`}
+                    title={`${rating}점`}
+                  >
+                    ⭐
+                  </button>
+                ))}
+                <span className="ml-2 text-sm text-gray-400">
+                  {selfRating}/5
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                1: 낮음 → 5: 매우 높음
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* 메모 내용 */}
-        <div className="mb-2">
-          <label className="block text-sm font-medium text-purple-300 mb-2">
-            메모 내용
-          </label>
-          <textarea
-            value={memoText}
-            onChange={(e) => setMemoText(e.target.value)}
-            disabled={isLoading}
-            placeholder="하이라이트한 내용에 대한 메모를 작성해주세요..."
-            className="w-full h-24 p-2 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none resize-none disabled:opacity-50"
-          />
-        </div>
-
-        {/* 키워드 */}
-        <div className="mb-2">
-          <label className="block text-sm font-medium text-purple-300 mb-2">
-            키워드 (쉼표로 구분)
-          </label>
-          <input
-            type="text"
-            value={keywords}
-            onChange={(e) => setKeywords(e.target.value)}
-            disabled={isLoading}
-            placeholder="예: 개념, 중요, 핵심"
-            className="w-full p-2 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none disabled:opacity-50"
-          />
-        </div>
-
-        {/* 셀프 평가 */}
-        <div className="mb-3">
-          <label className="block text-sm font-medium text-purple-300 mb-2">
-            중요도 평가
-          </label>
-
-          {/* 별점 스케일 선택 */}
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm text-gray-400">별점 개수:</span>
-            {[3, 5, 7, 10].map((scale) => (
-              <button
-                key={scale}
-                onClick={() => setMaxRating(scale)}
+          {/* 오른쪽 컬럼 */}
+          <div>
+            {/* 메모 내용 */}
+            <div>
+              <label className="block text-sm font-medium text-purple-300 mb-1">
+                메모 내용
+              </label>
+              <textarea
+                value={memoText}
+                onChange={(e) => setMemoText(e.target.value)}
                 disabled={isLoading}
-                className={`px-2 py-1 text-xs rounded transition-all disabled:opacity-50 ${
-                  maxRating === scale
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                }`}
-              >
-                {scale}개
-              </button>
-            ))}
-          </div>
-          
-          {/* 별점 선택 */}
-          <div className="flex gap-1">
-            {Array.from({ length: maxRating }, (_, i) => i + 1).map((rating) => (
-              <button
-                key={rating}
-                onClick={() => setSelfRating(rating)}
-                disabled={isLoading}
-                className={`w-8 h-8 rounded transition-all disabled:opacity-50 ${
-                  rating <= selfRating
-                    ? 'text-yellow-400'
-                    : 'text-gray-600 hover:text-yellow-400'
-                }`}
-              >
-                ⭐
-              </button>
-            ))}
-            <span className="ml-2 text-sm text-gray-400 self-center">
-              {selfRating}/{maxRating}
-            </span>
+                placeholder="하이라이트한 내용에 대한 메모를 작성해주세요..."
+                className="w-full h-32 p-2 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none resize-none disabled:opacity-50"
+              />
+            </div>
           </div>
         </div>
 
         {/* 버튼들 */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 mt-4">
           <button
             onClick={handleClose}
-            className="flex-1 px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition-colors"
+            disabled={isLoading}
+            className="flex-1 px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50"
           >
             취소
           </button>
