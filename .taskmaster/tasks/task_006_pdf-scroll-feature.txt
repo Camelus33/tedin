@@ -1,0 +1,17 @@
+# Task ID: 6
+# Title: Implement Continuous Vertical Scrolling in PDF Viewer
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Modify PdfViewer.tsx to enable continuous vertical scrolling, stacking all pages vertically.
+# Details:
+1.  Modify the `PdfViewer.tsx` component to render all pages of the PDF in a vertical stack.
+2.  Remove the existing page navigation buttons.
+3.  Adjust the container height and styles to accommodate the continuous scroll.
+4.  Ensure the existing props interface is maintained.
+
+# Test Strategy:
+1.  Verify that all pages are rendered in a vertical stack.
+2.  Check that the page navigation buttons are removed.
+3.  Ensure the container height and styles are adjusted correctly.
+4.  Test that the existing props interface is maintained.

@@ -1,0 +1,17 @@
+# Task ID: 8
+# Title: Implement Scroll-Based Page Tracking and Control Bar Synchronization
+# Status: pending
+# Dependencies: 7
+# Priority: high
+# Description: Implement scroll-based page tracking and synchronize it with the control bar, ensuring compatibility with existing highlight and text selection features.
+# Details:
+1.  Use the `IntersectionObserver` to track the currently visible page based on scroll position.
+2.  Update the control bar to reflect the current page number.
+3.  Ensure that the highlight overlay and text selection features continue to function correctly.
+4.  Maintain compatibility with existing zoom and rotation features.
+
+# Test Strategy:
+1.  Verify that the control bar updates correctly as the user scrolls.
+2.  Check that the highlight overlay and text selection features continue to function correctly.
+3.  Ensure compatibility with existing zoom and rotation features.
+4.  Test with various PDF documents to ensure consistent behavior.

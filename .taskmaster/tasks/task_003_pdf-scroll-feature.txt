@@ -1,0 +1,19 @@
+# Task ID: 3
+# Title: Implement Memo Card Loading and '더보기' Functionality
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Modify the dashboard to initially load only the recent 3 memo cards in 'grid' mode and implement the '더보기' (more) button functionality to load all memo cards.
+# Details:
+1.  Fetch the initial 3 memo cards and store them in a state variable `recentMemos`.
+2.  Display `recentMemos` in a 3-column grid layout when `viewMode` is 'grid'.
+3.  Implement an API call to fetch all memo cards when the '더보기' button is clicked.
+4.  Store all memo cards in a state variable `allMemos`.
+5.  Update the UI to display `allMemos` in a 6-column grid layout when `viewMode` is 'more'.
+6.  Implement error handling for the API call.
+
+# Test Strategy:
+1.  Verify that only 3 memo cards are loaded initially in 'grid' mode.
+2.  Test the '더보기' button to ensure all memo cards are loaded and displayed in 'more' mode.
+3.  Check for correct grid layout in both 'grid' and 'more' modes.
+4.  Test error handling for API call failures.

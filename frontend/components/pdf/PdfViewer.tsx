@@ -39,6 +39,7 @@ interface PdfViewerState {
   error: string | null;
   highlightMode: boolean;
   pdfData: ArrayBuffer | null;
+  visiblePages: Set<number>;
 }
 
 function PdfViewerComponent({
@@ -64,11 +65,13 @@ function PdfViewerComponent({
     isLoading: true,
     error: null,
     highlightMode: false,
-    pdfData: null
+    pdfData: null,
+    visiblePages: new Set([1])
   });
 
   const pageRef = useRef<HTMLDivElement>(null);
   const documentRef = useRef<HTMLDivElement>(null);
+  const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // 로컬에서 PDF 로드
   useEffect(() => {
@@ -127,7 +130,9 @@ function PdfViewerComponent({
       ...prev,
       numPages,
       isLoading: false,
-      error: null
+      error: null,
+      // 연속 스크롤에서는 처음 몇 페이지를 초기에 로드
+      visiblePages: new Set(Array.from({ length: Math.min(3, numPages) }, (_, i) => i + 1))
     }));
   }, []);
 
@@ -143,7 +148,7 @@ function PdfViewerComponent({
     onError?.(errorMessage);
   }, [onError]);
 
-  // 페이지 변경 핸들러
+  // 페이지 변경 핸들러 (연속 스크롤에서는 사용하지 않지만 호환성을 위해 유지)
   const changePage = useCallback((offset: number) => {
     setState(prev => {
       if (!prev.numPages) return prev;
@@ -160,10 +165,19 @@ function PdfViewerComponent({
 
   // 줌 조정 핸들러
   const adjustScale = useCallback((scaleDelta: number) => {
-    setState(prev => ({
-      ...prev,
-      scale: Math.max(0.5, Math.min(3.0, prev.scale + scaleDelta))
-    }));
+    setState(prev => {
+      const newScale = Math.max(0.5, Math.min(3.0, prev.scale + scaleDelta));
+      
+      // 개발 환경에서 줌 변경 로깅
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`PDF 뷰어: 줌 변경 ${prev.scale.toFixed(1)} → ${newScale.toFixed(1)}`);
+      }
+      
+      return {
+        ...prev,
+        scale: newScale
+      };
+    });
   }, []);
 
   // 회전 핸들러
@@ -176,7 +190,7 @@ function PdfViewerComponent({
 
   // 텍스트 선택 핸들러
   const handleTextSelection = useCallback(() => {
-    if (!enableTextSelection || !pageRef.current) return;
+    if (!enableTextSelection) return;
 
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return;
@@ -188,9 +202,27 @@ function PdfViewerComponent({
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
     
+    // 선택된 텍스트가 어느 페이지에 있는지 확인
+    let selectedPageNumber = state.pageNumber; // 기본값은 현재 페이지
+    
+    // 선택 영역이 포함된 페이지 컨테이너 찾기
+    const commonAncestor = range.commonAncestorContainer;
+    let pageContainer = commonAncestor.nodeType === Node.ELEMENT_NODE 
+      ? commonAncestor as Element 
+      : commonAncestor.parentElement;
+    
+    while (pageContainer && !pageContainer.hasAttribute('data-page-number')) {
+      pageContainer = pageContainer.parentElement;
+    }
+    
+    if (pageContainer) {
+      const pageNum = parseInt(pageContainer.getAttribute('data-page-number') || '1');
+      selectedPageNumber = pageNum;
+    }
+    
     // 하이라이트 모드가 활성화되어 있으면 하이라이트 생성
     if (state.highlightMode && enableHighlighting && onHighlightCreate) {
-      const highlight = createHighlight(selectedText, state.pageNumber, rect);
+      const highlight = createHighlight(selectedText, selectedPageNumber, rect);
       onHighlightCreate(highlight);
       
       // 선택 해제
@@ -224,6 +256,73 @@ function PdfViewerComponent({
     onHighlightDelete?.(highlightId);
   }, [onHighlightDelete]);
 
+  // IntersectionObserver를 사용한 페이지 가시성 추적
+  useEffect(() => {
+    if (!state.numPages) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visiblePageNumbers = new Set<number>();
+        let mostVisiblePage = state.pageNumber;
+        let maxIntersectionRatio = 0;
+
+        entries.forEach((entry) => {
+          const pageNumber = parseInt(entry.target.getAttribute('data-page-number') || '1');
+          
+          if (entry.isIntersecting) {
+            visiblePageNumbers.add(pageNumber);
+            
+            // 가장 많이 보이는 페이지를 현재 페이지로 설정
+            if (entry.intersectionRatio > maxIntersectionRatio) {
+              maxIntersectionRatio = entry.intersectionRatio;
+              mostVisiblePage = pageNumber;
+            }
+            
+            // 현재 페이지 근처의 페이지도 미리 로딩 (성능 최적화)
+            const preloadRange = 2; // 앞뒤 2페이지씩 미리 로딩
+            for (let i = Math.max(1, pageNumber - preloadRange); 
+                 i <= Math.min(state.numPages || pageNumber, pageNumber + preloadRange); 
+                 i++) {
+              visiblePageNumbers.add(i);
+            }
+          }
+        });
+
+        setState(prev => ({
+          ...prev,
+          visiblePages: visiblePageNumbers,
+          pageNumber: mostVisiblePage
+        }));
+
+        // 성능 모니터링 로깅 (개발 환경에서만)
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`PDF 뷰어: 로드된 페이지 수: ${visiblePageNumbers.size}, 현재 페이지: ${mostVisiblePage}, 보이는 페이지: [${Array.from(visiblePageNumbers).sort().join(', ')}]`);
+        }
+
+        // 현재 페이지 변경 콜백 호출
+        if (mostVisiblePage !== state.pageNumber) {
+          onPageChange?.(mostVisiblePage);
+        }
+      },
+      {
+        root: documentRef.current,
+        rootMargin: '200px 0px', // 위아래 200px 미리 로딩
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 0.9] // 더 세밀한 교차 비율 감지
+      }
+    );
+
+    // 모든 페이지 요소를 관찰
+    pageRefs.current.forEach((pageElement) => {
+      if (pageElement) {
+        observer.observe(pageElement);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [state.numPages, onPageChange]);
+
   // 외부에서 currentPage prop이 변경될 때 내부 상태 업데이트
   useEffect(() => {
     setState(prev => ({
@@ -249,6 +348,44 @@ function PdfViewerComponent({
     };
   }, [enableTextSelection, handleTextSelection]);
 
+  // 키보드 단축키 등록
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // PDF 문서 영역에 포커스가 있을 때만 작동
+      if (!documentRef.current?.contains(document.activeElement)) return;
+      
+      switch (e.key) {
+        case '+':
+        case '=':
+          e.preventDefault();
+          adjustScale(0.2);
+          break;
+        case '-':
+          e.preventDefault();
+          adjustScale(-0.2);
+          break;
+        case 'r':
+        case 'R':
+          e.preventDefault();
+          rotate();
+          break;
+        case 'h':
+        case 'H':
+          if (enableHighlighting) {
+            e.preventDefault();
+            toggleHighlightMode();
+          }
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [adjustScale, rotate, toggleHighlightMode, enableHighlighting]);
+
   if (state.error) {
     return (
       <div className={`pdf-viewer-error flex flex-col items-center justify-center p-8 bg-red-900/20 border border-red-500/30 rounded-xl ${className}`}>
@@ -265,28 +402,13 @@ function PdfViewerComponent({
       {/* PDF 뷰어 컨트롤 */}
       <div className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          {/* 페이지 네비게이션 */}
-          <button
-            onClick={() => changePage(-1)}
-            disabled={state.pageNumber <= 1}
-            className="p-2 bg-cyan-600/20 hover:bg-cyan-600/40 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
-            title="이전 페이지"
-          >
-            <FiChevronLeft size={16} className="text-cyan-300" />
-          </button>
-          
+          {/* 현재 페이지 정보 (네비게이션 버튼 제거) */}
           <span className="text-cyan-300 text-sm font-mono px-2">
             {state.pageNumber} / {state.numPages || '?'}
           </span>
-          
-          <button
-            onClick={() => changePage(1)}
-            disabled={!state.numPages || state.pageNumber >= state.numPages}
-            className="p-2 bg-cyan-600/20 hover:bg-cyan-600/40 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
-            title="다음 페이지"
-          >
-            <FiChevronRight size={16} className="text-cyan-300" />
-          </button>
+          <span className="text-cyan-400/60 text-xs">
+            연속 스크롤 모드
+          </span>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -341,7 +463,7 @@ function PdfViewerComponent({
       <div 
         ref={documentRef}
         className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto"
-        style={{ height: '600px' }}
+        style={{ height: '80vh', maxHeight: '800px' }}
       >
         {state.isLoading && (
           <div className="flex items-center justify-center h-full">
@@ -357,42 +479,81 @@ function PdfViewerComponent({
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
           loading=""
-          className="flex justify-center p-4"
+          className="flex flex-col items-center p-4 gap-4"
         >
-          <div ref={pageRef} className="pdf-page-container relative">
-            <Page
-              pageNumber={state.pageNumber}
-              scale={state.scale}
-              rotate={state.rotation}
-              renderTextLayer={enableTextSelection}
-              renderAnnotationLayer={false}
-              className="shadow-lg"
-            />
+          {/* 모든 페이지를 세로로 렌더링 */}
+          {state.numPages && Array.from({ length: state.numPages }, (_, index) => {
+            const pageNumber = index + 1;
+            const isVisible = state.visiblePages.has(pageNumber);
             
-            {/* 하이라이트 오버레이 */}
-            {enableHighlighting && highlights.length > 0 && (
-              <PdfHighlightOverlay
-                highlights={highlights}
-                pageNumber={state.pageNumber}
-                scale={state.scale}
-                containerRef={pageRef}
-                onHighlightClick={handleHighlightClick}
-                onHighlightEdit={handleHighlightEdit}
-                onHighlightDelete={handleHighlightDelete}
-              />
-            )}
-          </div>
+            return (
+              <div
+                key={pageNumber}
+                ref={(el) => {
+                  pageRefs.current[index] = el;
+                }}
+                data-page-number={pageNumber}
+                className="pdf-page-container relative"
+              >
+                {/* 성능 최적화: 보이는 페이지만 렌더링, 나머지는 placeholder */}
+                {isVisible ? (
+                  <>
+                    <Page
+                      pageNumber={pageNumber}
+                      scale={state.scale}
+                      rotate={state.rotation}
+                      renderTextLayer={enableTextSelection}
+                      renderAnnotationLayer={false}
+                      className="shadow-lg"
+                    />
+                    
+                    {/* 하이라이트 오버레이 */}
+                    {enableHighlighting && highlights.length > 0 && pageRefs.current[index] && (
+                      <PdfHighlightOverlay
+                        highlights={highlights}
+                        pageNumber={pageNumber}
+                        scale={state.scale}
+                        containerRef={{ current: pageRefs.current[index]! }}
+                        onHighlightClick={handleHighlightClick}
+                        onHighlightEdit={handleHighlightEdit}
+                        onHighlightDelete={handleHighlightDelete}
+                      />
+                    )}
+                  </>
+                ) : (
+                  /* 페이지 placeholder - 실제 PDF 페이지 크기 근사치 */
+                  <div 
+                    className="bg-gray-800/40 border border-gray-600/30 rounded flex items-center justify-center shadow-lg transition-opacity duration-300"
+                    style={{ 
+                      width: `${595 * state.scale}px`, // PDF 기본 width (A4: 595pt)
+                      height: `${842 * state.scale}px`, // PDF 기본 height (A4: 842pt)
+                      minHeight: '400px' // 최소 높이 보장
+                    }}
+                  >
+                    <div className="text-gray-500 text-center">
+                      <FiLoader className="animate-pulse mx-auto mb-2" size={24} />
+                      <p className="text-sm font-mono">페이지 {pageNumber}</p>
+                      <p className="text-xs text-gray-600 mt-1">스크롤하여 로드</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </Document>
       </div>
 
       {/* 텍스트 선택 안내 */}
       {enableTextSelection && (
         <div className="pdf-help bg-gray-800/60 border border-cyan-500/20 rounded-lg p-2 mt-2">
-          <p className="text-xs text-cyan-400 text-center">
+          <p className="text-xs text-cyan-400 text-center mb-1">
             {state.highlightMode 
               ? '🎨 하이라이트 모드: 텍스트를 선택하면 자동으로 하이라이트됩니다'
-              : '💡 텍스트를 선택하여 하이라이트하고 메모를 추가할 수 있습니다'
+              : '💡 마우스 휠로 스크롤하여 모든 페이지를 연속으로 볼 수 있습니다. 텍스트를 선택하여 하이라이트하고 메모를 추가할 수 있습니다'
             }
+          </p>
+          <p className="text-xs text-gray-500 text-center">
+            키보드: +/- (줌), R (회전){enableHighlighting && ', H (하이라이트 모드)'}
           </p>
         </div>
       )}

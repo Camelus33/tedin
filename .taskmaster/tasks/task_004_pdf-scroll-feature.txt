@@ -1,0 +1,18 @@
+# Task ID: 4
+# Title: Implement UI Components for Grid and More Views
+# Status: pending
+# Dependencies: 3
+# Priority: medium
+# Description: Implement the UI components for both Grid and More views, ensuring the correct layout and styling.
+# Details:
+1.  Create a `GridView` component to display memo cards in a 3-column grid layout.
+2.  Create a `MoreView` component to display memo cards in a 6-column grid layout.
+3.  Use Tailwind CSS to style the components, ensuring responsiveness.
+4.  Implement smaller card sizes in `MoreView`.
+5.  Ensure the `TSNoteCard` component is reused in both views.
+
+# Test Strategy:
+1.  Verify that the `GridView` component displays memo cards in a 3-column grid.
+2.  Verify that the `MoreView` component displays memo cards in a 6-column grid.
+3.  Check for correct styling and responsiveness in both views.
+4.  Ensure that the `TSNoteCard` component is rendered correctly in both views.

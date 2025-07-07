@@ -1,0 +1,15 @@
+# Task ID: 5
+# Title: Implement Hover Animation
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: Add hover animation to the memo cards in the 'more' view using Tailwind CSS.
+# Details:
+1.  Add the `hover:scale-110` class to the `TSNoteCard` component in the `MoreView`.
+2.  Add the `transition-all duration-300 ease-out` class to the `TSNoteCard` component to ensure a smooth animation.
+3.  Test the hover animation to ensure it scales the card up smoothly.
+
+# Test Strategy:
+1.  Verify that the memo cards scale up on hover in the `MoreView`.
+2.  Check that the animation is smooth and lasts for 300ms.
+3.  Ensure that the animation does not cause any layout shifts.
