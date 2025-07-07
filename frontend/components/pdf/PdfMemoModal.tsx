@@ -86,6 +86,21 @@ export default function PdfMemoModal({
     onClose();
   };
 
+  // 취소 버튼 전용 핸들러
+  const handleCancel = () => {
+    console.log('[PDF 메모] 취소 버튼 클릭');
+    // 상태 즉시 초기화
+    setMemoType('quote');
+    setMemoText('');
+    setKeywords('');
+    setSelfRating(3);
+    setMaxRating(5);
+    setError(null);
+    setIsLoading(false);
+    // 모달 닫기
+    onClose();
+  };
+
   const handleSave = async () => {
     if (!memoText.trim()) {
       setError('메모 내용을 입력해주세요.');
@@ -149,7 +164,7 @@ export default function PdfMemoModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* 헤더 */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-purple-300">PDF 메모 작성</h2>
           <button
             onClick={handleClose}
@@ -161,20 +176,20 @@ export default function PdfMemoModal({
         </div>
 
         {/* 페이지 정보 */}
-        <div className="mb-4 p-3 bg-slate-800 rounded-lg border border-purple-500/20">
+        <div className="mb-3 p-2 bg-slate-800 rounded-lg border border-purple-500/20">
           <p className="text-sm text-purple-300">페이지 {pageNumber}</p>
           <p className="text-xs text-gray-400 mt-1">하이라이트: "{selectedText.slice(0, 50)}..."</p>
         </div>
 
         {/* 에러 메시지 */}
         {error && (
-          <div className="mb-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg">
+          <div className="mb-3 p-2 bg-red-900/30 border border-red-500/50 rounded-lg">
             <p className="text-red-300 text-sm">{error}</p>
           </div>
         )}
 
         {/* 메모 성격 선택 */}
-        <div className="mb-3">
+        <div className="mb-2">
           <label className="block text-sm font-medium text-purple-300 mb-2">
             메모 성격
           </label>
@@ -188,7 +203,7 @@ export default function PdfMemoModal({
                 key={option.value}
                 onClick={() => setMemoType(option.value as any)}
                 disabled={isLoading}
-                className={`flex-1 p-3 rounded-lg border transition-all disabled:opacity-50 ${
+                className={`flex-1 p-2 rounded-lg border transition-all disabled:opacity-50 ${
                   memoType === option.value
                     ? 'bg-purple-600 border-purple-400 text-white'
                     : 'bg-slate-800 border-purple-500/30 text-gray-300 hover:border-purple-400'
@@ -202,7 +217,7 @@ export default function PdfMemoModal({
         </div>
 
         {/* 메모 내용 */}
-        <div className="mb-3">
+        <div className="mb-2">
           <label className="block text-sm font-medium text-purple-300 mb-2">
             메모 내용
           </label>
@@ -211,12 +226,12 @@ export default function PdfMemoModal({
             onChange={(e) => setMemoText(e.target.value)}
             disabled={isLoading}
             placeholder="하이라이트한 내용에 대한 메모를 작성해주세요..."
-            className="w-full h-32 p-3 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none resize-none disabled:opacity-50"
+            className="w-full h-24 p-2 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none resize-none disabled:opacity-50"
           />
         </div>
 
         {/* 키워드 */}
-        <div className="mb-3">
+        <div className="mb-2">
           <label className="block text-sm font-medium text-purple-300 mb-2">
             키워드 (쉼표로 구분)
           </label>
@@ -226,18 +241,18 @@ export default function PdfMemoModal({
             onChange={(e) => setKeywords(e.target.value)}
             disabled={isLoading}
             placeholder="예: 개념, 중요, 핵심"
-            className="w-full p-3 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none disabled:opacity-50"
+            className="w-full p-2 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none disabled:opacity-50"
           />
         </div>
 
         {/* 셀프 평가 */}
-        <div className="mb-4">
+        <div className="mb-3">
           <label className="block text-sm font-medium text-purple-300 mb-2">
             중요도 평가
           </label>
 
           {/* 별점 스케일 선택 */}
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-2">
             <span className="text-sm text-gray-400">별점 개수:</span>
             {[3, 5, 7, 10].map((scale) => (
               <button
@@ -280,7 +295,7 @@ export default function PdfMemoModal({
         {/* 버튼들 */}
         <div className="flex gap-3">
           <button
-            onClick={handleClose}
+            onClick={handleCancel}
             disabled={isLoading}
             className="flex-1 px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50"
           >
