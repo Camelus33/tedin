@@ -3,8 +3,8 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { FiZoomIn, FiZoomOut, FiRotateCw, FiChevronLeft, FiChevronRight, FiLoader, FiEdit3 } from 'react-icons/fi';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import { PdfHighlight, HIGHLIGHT_COLORS } from '@/types/pdf';
 import { createHighlight } from '@/lib/pdfHighlightUtils';
 import PdfHighlightOverlay from './PdfHighlightOverlay';
