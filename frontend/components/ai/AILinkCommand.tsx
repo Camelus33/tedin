@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux'; // Redux 훅 임포트
+import { RootState } from '@/store/store'; // Redux 스토어 타입 임포트
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -27,16 +29,26 @@ export function AILinkCommand() {
   const [response, setResponse] = useState<AILinkResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Redux 스토어에서 사용자 정보 가져오기
+  const user = useSelector((state: RootState) => state.user);
+  const isAuthenticated = user.isAuthenticated;
+  const userId = user.id;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setResponse(null);
     setError(null);
 
+    if (!isAuthenticated || !userId) {
+      setError('로그인이 필요합니다.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // TODO: 실제 userId와 apiKey를 안전하게 가져와야 합니다.
-      const userId = '60c72b2f9b1d8c001f8e4d1a'; // 임시 사용자 ID
-      const apiKey = localStorage.getItem('openai_api_key') || ''; // 예시: 로컬 스토리지
+      // TODO: apiKey를 안전하게 관리해야 합니다. (예: 서버에서 관리)
+      const apiKey = localStorage.getItem('openai_api_key') || '';
 
       const res = await fetch('/api/ai-link/execute', {
         method: 'POST',
@@ -45,9 +57,9 @@ export function AILinkCommand() {
           'x-user-api-key': apiKey,
         },
         body: JSON.stringify({
-          userId,
+          userId, // 실제 사용자 ID 사용
           aiLinkGoal: goal,
-          targetModel: 'openai', // 현재는 openai로 고정
+          targetModel: 'openai',
         }),
       });
 
@@ -71,7 +83,14 @@ export function AILinkCommand() {
       <Button
         className="fixed bottom-8 right-8 h-16 w-16 rounded-full shadow-lg z-50"
         size="icon"
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+            if (!isAuthenticated) {
+                // TODO: 로그인 페이지로 유도하는 더 나은 UX 필요
+                alert('AI-Link 기능을 사용하려면 로그인이 필요합니다.');
+                return;
+            }
+            setIsOpen(true);
+        }}
       >
         <Sparkles className="h-8 w-8" />
       </Button>
