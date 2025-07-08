@@ -35,6 +35,40 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
   const [selectedStep, setSelectedStep] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
+  // Helper function to get clean title and description parts from a step
+  const getCleanStepParts = (step: LearningStep): [string, string | null] => {
+    let title = step.name || '';
+    let description = step.description || '';
+
+    // If the title itself contains a colon, we treat it as the primary source of both parts.
+    if (title.includes(':')) {
+        const parts = title.split(':', 2);
+        title = parts[0].trim();
+        const descFromName = parts[1].trim();
+        if (descFromName) {
+            description = descFromName;
+        }
+    }
+
+    // If the final description is identical to the final title, it's redundant.
+    if (description === title) {
+        return [title, null];
+    }
+
+    // Also handle cases where the description is prefixed, e.g., "action: real description"
+    if (description.includes(':')) {
+        const descParts = description.split(':', 2);
+        const descContent = descParts[1].trim();
+        // If the content after the colon is the same as the title, it's also redundant.
+        if (descContent === title) {
+            return [title, null];
+        }
+        description = descContent;
+    }
+    
+    return [title, description || null];
+  };
+
   // 단계별 아이콘 매핑 (HABITUS33 AMFA 프레임워크 기반)
   const getStepIcon = (stepName: string, position: number) => {
     if (stepName.includes('아토믹 리딩') || stepName.includes('atomic_reading')) {
@@ -183,6 +217,7 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
             
             <div className="space-y-6">
               {learningJourney.step.map((step, index) => {
+                const [title, description] = getCleanStepParts(step);
                 const isSelected = selectedStep === step.position;
                 const nextStep = learningJourney.step[index + 1];
                 const duration = nextStep ? calculateDuration(step.startTime, nextStep.startTime) : null;
@@ -209,17 +244,17 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
                           isSelected ? 'border-cyan-300 shadow-lg' : 'border-white/30 hover:border-cyan-200'
                         }`}>
                           <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold text-gray-800 truncate">{step.name}</h3>
+                            <h3 className="font-semibold text-gray-800 truncate">{title}</h3>
                             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                               {step.position}단계
                             </span>
                           </div>
                           
-                          <p className="text-sm text-gray-600 mb-3">
-                            {step.description.includes(':') 
-                              ? step.description.split(':').slice(1).join(':').trim() 
-                              : step.description}
-                          </p>
+                          {description && (
+                            <p className="text-sm text-gray-600 mb-3">
+                              {description}
+                            </p>
+                          )}
                           
                           <div className="flex items-center gap-4 text-xs text-gray-500">
                             <div className="flex items-center gap-1">
