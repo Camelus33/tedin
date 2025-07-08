@@ -1119,7 +1119,7 @@ export default function TSNoteCard({
   return (
     <div
       className={cn(
-        "relative bg-gray-900/20 backdrop-blur-md p-4 rounded-lg shadow-lg transition-transform duration-300 group",
+        "relative bg-gray-900/20 backdrop-blur-md p-4 rounded-lg shadow-lg transition-transform duration-300 group paper-texture",
         isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500" : "",
         minimalDisplay ? "max-h-44 overflow-hidden group-hover:max-h-none" : "",
         className
