@@ -6,7 +6,10 @@ import User from '../models/User'; // 실제 사용자 모델
 import { getAIClient } from '../lib/aiClients'; // AI 클라이언트 팩토리 (가상)
 
 export const executeAILink = async (req: Request, res: Response) => {
-  const { userId, aiLinkGoal, targetModel } = req.body;
+  const { userId: bodyUserId, aiLinkGoal, targetModel } = req.body;
+
+  // userId 우선순위: 1) body, 2) auth 미들웨어에서 주입된 req.user
+  const userId = bodyUserId || req.user?._id;
 
   if (!userId || !aiLinkGoal || !targetModel) {
     return res.status(400).json({ error: 'userId, aiLinkGoal, targetModel are required.' });

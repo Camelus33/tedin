@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { executeAILink } from '../controllers/AILinkController';
+import { authenticate } from '../middlewares/auth';
 // import { authMiddleware } from '../middlewares/auth'; // 실제 서비스에서는 인증 미들웨어 추가
 
 const router = Router();
@@ -11,7 +12,7 @@ const router = Router();
  */
 router.post(
   '/execute',
-  // authMiddleware, 
+  authenticate, // Ensure request has valid JWT and req.user
   executeAILink
 );
 

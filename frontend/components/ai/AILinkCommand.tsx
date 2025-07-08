@@ -54,11 +54,14 @@ export function AILinkCommand() {
       // TODO: apiKey를 안전하게 관리해야 합니다. (예: 서버에서 관리)
       const apiKey = localStorage.getItem('openai_api_key') || '';
 
+      const bearerToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
+
       const res = await fetch('/api/ai-link/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-user-api-key': apiKey,
+          ...(bearerToken ? { 'Authorization': `Bearer ${bearerToken}` } : {}),
         },
         body: JSON.stringify({
           ...(userId ? { userId } : {}),
