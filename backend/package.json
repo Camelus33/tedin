@@ -9,6 +9,7 @@
     "dev:watch": "PORT=8000 nodemon --exec ts-node --transpile-only src/app.ts",
     "build": "tsc",
     "test": "jest",
+    "test:integration": "jest --testMatch '**/tests/**/*.integration.test.ts'",
     "test:lint-jsonld": "echo 'JSON-LD linting not implemented yet'",
     "test:shacl": "echo 'SHACL validation not implemented yet'",
     "clean-zengo-data": "ts-node src/scripts/cleanAndUseExpandedData.ts",

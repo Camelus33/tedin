@@ -1,0 +1,50 @@
+# 외부 온톨로지 재사용 목록 (Reused Ontologies)
+_버전: 1.0.0_
+
+이 문서는 Habitus33 온톨로지 개발 시 재사용하는 표준 외부 온톨로지의 목록과 그 활용 범위를 정의합니다. 이는 개발 효율성을 높이고, 외부 시스템과의 상호운용성을 보장하기 위함입니다.
+
+---
+
+### **1. FOAF (Friend of a Friend)**
+
+-   **접두어:** `foaf`
+-   **URI:** `http://xmlns.com/foaf/0.1/`
+-   **재사용 목적:** 사용자, 저자 등 '사람'과 관련된 정보를 표현하기 위한 표준 모델을 사용합니다.
+-   **핵심 재사용 항목:**
+    -   `foaf:Person`: 사람을 나타내는 클래스. 우리 시스템의 `User` 클래스가 `foaf:Person`을 상속(subclass)하게 됩니다.
+    -   `foaf:name`: 사람의 이름을 나타내는 속성.
+    -   `foaf:mbox`: 이메일 주소를 나타내는 속성.
+
+### **2. SKOS (Simple Knowledge Organization System)**
+
+-   **접두어:** `skos`
+-   **URI:** `http://www.w3.org/2004/02/skos/core#`
+-   **재사용 목적:** 책의 장르, 메모의 태그, 학습 목표의 핵심 개념 등 '개념 체계'를 구조화하기 위해 사용합니다.
+-   **핵심 재사용 항목:**
+    -   `skos:Concept`: '개념'을 나타내는 핵심 클래스. 우리 시스템의 모든 태그와 카테고리는 `skos:Concept`의 개체가 됩니다.
+    -   `skos:prefLabel`: 개념의 대표 이름 (예: "머신러닝").
+    -   `skos:altLabel`: 개념의 동의어 (예: "기계학습").
+    -   `skos:broader` / `skos:narrower`: 개념 간의 상-하위 관계를 정의하는 속성 (예: "머신러닝" `skos:broader` "인공지능").
+    -   `skos:related`: 관련된 개념을 연결하는 속성. '숨겨진 연결 발견'의 기반이 됩니다.
+
+### **3. DC Terms (Dublin Core Metadata Terms)**
+
+-   **접두어:** `dcterms`
+-   **URI:** `http://purl.org/dc/terms/`
+-   **재사용 목적:** 책, 메모, 노트 등 모든 '정보 자원'의 생성일, 제목, 저자 등 기본적인 메타데이터를 표현하기 위한 국제 표준을 따릅니다.
+-   **핵심 재사용 항목:**
+    -   `dcterms:title`: 자원의 제목.
+    -   `dcterms:creator`: 자원의 창작자 (`foaf:Person`과 연결).
+    -   `dcterms:created`: 자원의 생성 일시.
+    -   `dcterms:description`: 자원에 대한 설명.
+    -   `dcterms:type`: 자원의 유형 (예: Book, Note).
+
+### **4. BIBO (Bibliographic Ontology)**
+
+-   **접두어:** `bibo`
+-   **URI:** `http://purl.org/ontology/bibo/`
+-   **재사용 목적:** 책, 논문 등 '서지 정보'를 보다 상세하게 표현하기 위해 사용합니다.
+-   **핵심 재사용 항목:**
+    -   `bibo:Book`: '책'을 나타내는 클래스. 우리 시스템의 `Book` 클래스가 이 클래스를 상속합니다.
+    -   `bibo:isbn10` / `bibo:isbn13`: 책의 ISBN 번호.
+    -   `bibo:numPages`: 책의 페이지 수.

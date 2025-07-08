@@ -32,6 +32,7 @@ import flashcardRoutes from './routes/flashcards';
 import notificationRoutes from './routes/notifications';
 import summaryNoteRoutes from './routes/summaryNoteRoutes';
 import publicShareRoutes from './routes/publicShareRoutes';
+import aiLinkRoutes from './routes/aiLink'; // AI-Link 라우트 임포트
 
 // Initialize Express app
 const app: Express = express();
@@ -125,6 +126,7 @@ app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/summary-notes', summaryNoteRoutes);
 app.use('/api/public-shares', publicShareRoutes);
+app.use('/api/ai-link', aiLinkRoutes); // AI-Link 라우트 등록
 
 // Cognitive metrics API route
 import cognitiveRoutes from './routes/cognitive';
