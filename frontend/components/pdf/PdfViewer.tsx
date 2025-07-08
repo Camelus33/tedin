@@ -6,7 +6,11 @@ import { FiZoomIn, FiZoomOut, FiRotateCw, FiChevronLeft, FiChevronRight, FiLoade
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { PdfHighlight, HIGHLIGHT_COLORS } from '@/types/pdf';
-import { createHighlight } from '@/lib/pdfHighlightUtils';
+import { 
+  domRectToPdfCoordinates,
+  createHighlightWithPdfCoords,
+  createHighlight
+} from '@/lib/pdfHighlightUtils';
 import PdfHighlightOverlay from './PdfHighlightOverlay';
 import { loadPdfFromLocal } from '../../lib/localPdfStorage';
 
@@ -282,7 +286,20 @@ function PdfViewerComponent({
     
     // 하이라이트 모드가 활성화되어 있으면 하이라이트 생성
     if (state.highlightMode && enableHighlighting && onHighlightCreate) {
-      const highlight = createHighlight(selectedText, selectedPageNumber, rect);
+      // 페이지 요소가 존재하면 PDF 네이티브 좌표 계산
+      let highlight;
+      if (pageContainer instanceof HTMLElement) {
+        const pdfCoords = domRectToPdfCoordinates(rect, pageContainer, state.scale);
+        highlight = createHighlightWithPdfCoords(
+          selectedText,
+          selectedPageNumber,
+          rect,
+          pdfCoords
+        );
+      } else {
+        // Fallback (레거시)
+        highlight = createHighlight(selectedText, selectedPageNumber, rect);
+      }
       onHighlightCreate(highlight);
       
       // 선택 해제

@@ -203,10 +203,12 @@ export default function PdfHighlightOverlay({
           
           if (highlight.pdfCoordinates) {
             // 새로운 방식: PDF 네이티브 좌표를 현재 화면 좌표로 변환
+            const containerRect = containerRef.current?.getBoundingClientRect();
             coordinates = pdfCoordinatesToScreen(
               highlight.pdfCoordinates,
               pageElement,
-              scale
+              scale,
+              containerRect
             );
           } else {
             // 레거시 방식: DOM 좌표를 SVG 좌표로 변환 (하위 호환성)

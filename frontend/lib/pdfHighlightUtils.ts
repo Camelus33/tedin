@@ -44,14 +44,17 @@ export function domRectToPdfCoordinates(
 export function pdfCoordinatesToScreen(
   pdfCoords: PdfNativeCoordinates,
   pageElement: HTMLElement,
-  scale: number = 1
+  scale: number = 1,
+  containerRect?: DOMRect
 ): PdfHighlightCoordinates {
   const pageRect = pageElement.getBoundingClientRect();
-  
-  // PDF 좌표를 현재 스케일과 페이지 위치에 맞게 변환
+  const offsetX = containerRect ? pageRect.left - containerRect.left : 0;
+  const offsetY = containerRect ? pageRect.top - containerRect.top : 0;
+
+  // PDF 좌표를 현재 스케일과 페이지 위치+컨테이너 오프셋에 맞게 변환
   return {
-    x: pdfCoords.x * scale,
-    y: pdfCoords.y * scale,
+    x: offsetX + pdfCoords.x * scale,
+    y: offsetY + pdfCoords.y * scale,
     width: pdfCoords.width * scale,
     height: pdfCoords.height * scale
   };
