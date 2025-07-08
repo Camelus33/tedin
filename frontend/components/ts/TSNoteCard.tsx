@@ -1137,10 +1137,15 @@ export default function TSNoteCard({
       <div className="flex-grow mb-2">
         <p
           className={cn(
-            "text-base sm:text-lg leading-relaxed whitespace-pre-wrap break-words break-all font-medium",
+            // 기본 글꼴 크기와 굵기: minimalDisplay 에 따라 다르게 설정
+            minimalDisplay ?
+              "text-xs sm:text-sm leading-snug font-normal" :
+              "text-base sm:text-lg leading-relaxed font-medium",
+            "whitespace-pre-wrap break-words break-all",
             isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
             // 인라인 편집 중이 아닐 때만 왼쪽 border 적용 (또는 isPageEditing && !isInlineEditing 조건 추가)
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-4 border-cyan-600 pl-2 sm:pl-3 py-1' : 'py-1'
+            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-4 border-cyan-600 pl-2 sm:pl-3 py-1' : 'py-1',
+            minimalDisplay ? 'pb-5' : '' // 하단 오버레이(책 제목/날짜) 공간 확보
           )}
         >
           {note.content}
