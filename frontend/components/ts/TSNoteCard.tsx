@@ -1127,13 +1127,6 @@ export default function TSNoteCard({
       onClick={handleCardClick}
       ref={cardRef}
     >
-      {/* 1줄 메모 라벨 – 카드 바깥쪽에 작게 표시 */}
-      {!minimalDisplay && (
-        <span className="absolute -left-2 top-2 px-2 py-0.5 bg-gray-800/90 border border-cyan-600 text-cyan-400 text-[10px] font-semibold rounded z-10 select-none pointer-events-none">
-          1줄 메모
-        </span>
-      )}
-
       {!minimalDisplay && sessionDetails && Object.keys(sessionDetails).length > 0 && ( 
         <>
           {renderSessionInfoButton()}
@@ -1151,7 +1144,7 @@ export default function TSNoteCard({
             "whitespace-pre-wrap break-words break-all",
             isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
             // 인라인 편집 중이 아닐 때만 왼쪽 border 적용 (또는 isPageEditing && !isInlineEditing 조건 추가)
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'pl-2 sm:pl-3 py-1' : 'py-1',
+            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-4 border-cyan-600 pl-2 sm:pl-3 py-1' : 'py-1',
             minimalDisplay ? 'pb-5' : '' // 하단 오버레이(책 제목/날짜) 공간 확보
           )}
         >
