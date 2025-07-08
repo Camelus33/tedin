@@ -1119,7 +1119,7 @@ export default function TSNoteCard({
   return (
     <div
       className={cn(
-        "relative bg-gray-900/20 backdrop-blur-md p-4 rounded-lg shadow-lg transition-transform duration-300 group",
+        "relative bg-gray-900/20 backdrop-blur-md p-2 sm:p-4 rounded-lg shadow-lg transition-transform duration-300 group",
         isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500" : "",
         minimalDisplay ? "max-h-44 overflow-hidden group-hover:max-h-none" : "",
         className
@@ -1291,7 +1291,7 @@ export default function TSNoteCard({
               value={fields[activeTabKey]}
               onChange={(e) => handleFieldChange(activeTabKey, e.target.value)}
               placeholder={prompts[tabKeys.indexOf(activeTabKey)]?.placeholder}
-              className="w-full flex-1 p-3 lg:p-2 text-sm lg:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none custom-scrollbar"
+              className="w-full flex-1 p-2 sm:p-3 lg:p-2 text-sm lg:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none custom-scrollbar"
               style={{ minHeight: 'calc(100% - 20px)' }}
             />
           </div>
