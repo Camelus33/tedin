@@ -487,7 +487,7 @@ export default function DashboardPage() {
                       <TSNoteCard
                         note={memo}
                         showActions={true}
-                        minimalDisplay={true}
+                        minimalDisplay={viewMode === 'list'}
                         className={`
                           bg-gradient-to-br ${colorScheme.bg}
                           ${colorScheme.border}
@@ -517,18 +517,7 @@ export default function DashboardPage() {
                           shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.6)]
                         `}
                       />
-                      {viewMode === 'list' && (
-                        <>
-                          {/* 좌측 하단: 출처(책 제목) */}
-                          <span className="absolute bottom-1 left-2 text-[10px] text-gray-600 truncate max-w-[80%]">
-                            {bookInfoMap.get(memo.bookId)?.title || ''}
-                          </span>
-                          {/* 우측 하단: 날짜 */}
-                          <span className="absolute bottom-1 right-2 text-[10px] text-gray-600">
-                            {formatDate(memo.createdAt || memo.clientCreatedAt || '')}
-                          </span>
-                        </>
-                      )}
+                      {/* 내부 오버레이(책 제목·날짜)는 TSNoteCard minimalDisplay 모드에서 이미 처리 */}
                     </div>
                   );
                 })}
