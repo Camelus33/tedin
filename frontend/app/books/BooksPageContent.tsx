@@ -200,6 +200,26 @@ export default function BooksPageContent() {
     }
   }, [activeTab, fetchBooks, fetchSummaryNotes]);
   
+  const applySort = useCallback((booksToSort: Book[]) => {
+    let sorted = [...booksToSort];
+    if (sortBy === "title") {
+      sorted.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === "date") {
+      sorted.sort((a, b) => {
+        const dateA = a.lastReadAt ? new Date(a.lastReadAt).getTime() : 0;
+        const dateB = b.lastReadAt ? new Date(b.lastReadAt).getTime() : 0;
+        return dateB - dateA;
+      });
+    } else if (sortBy === "progress") {
+      sorted.sort((a, b) => {
+        const progressA = calculateProgress(a.currentPage, a.totalPages);
+        const progressB = calculateProgress(b.currentPage, b.totalPages);
+        return progressB - progressA;
+      });
+    }
+    setFilteredBooks(sorted);
+  }, [sortBy]);
+
   useEffect(() => {
     if (activeTab === 'books') {
         if (!searchQuery.trim()) {
@@ -224,28 +244,7 @@ export default function BooksPageContent() {
         );
         setFilteredSummaryNotes(filtered);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, books, summaryNotes, activeTab]); // applySort is memoized for books
-
-  const applySort = useCallback((booksToSort: Book[]) => {
-    let sorted = [...booksToSort];
-    if (sortBy === "title") {
-      sorted.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortBy === "date") {
-      sorted.sort((a, b) => {
-        const dateA = a.lastReadAt ? new Date(a.lastReadAt).getTime() : 0;
-        const dateB = b.lastReadAt ? new Date(b.lastReadAt).getTime() : 0;
-        return dateB - dateA;
-      });
-    } else if (sortBy === "progress") {
-      sorted.sort((a, b) => {
-        const progressA = calculateProgress(a.currentPage, a.totalPages);
-        const progressB = calculateProgress(b.currentPage, b.totalPages);
-        return progressB - progressA;
-      });
-    }
-    setFilteredBooks(sorted);
-  }, [sortBy]);
+  }, [searchQuery, books, summaryNotes, activeTab, applySort]);
 
   const handleSortChange = (newSortBy: SortByType) => {
     setSortBy(newSortBy);

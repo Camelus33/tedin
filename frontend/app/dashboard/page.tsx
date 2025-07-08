@@ -9,6 +9,7 @@ import { apiClient } from '@/lib/apiClient';
 import { FiSettings, FiGrid, FiList, FiChevronDown, FiBook, FiTarget, FiFileText } from 'react-icons/fi';
 import AppLogo from '@/components/common/AppLogo';
 import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard';
+import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 // 타입 정의 - TSNote를 사용
 
@@ -179,13 +180,24 @@ export default function DashboardPage() {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffTime = now.getTime() - date.getTime();
+    
+    // 시간, 분, 초, 밀리초를 0으로 설정하여 날짜만 비교
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const diffTime = startOfToday.getTime() - startOfDate.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) return '오늘';
     if (diffDays === 1) return '어제';
     if (diffDays < 7) return `${diffDays}일 전`;
-    return date.toLocaleDateString('ko-KR');
+    
+    // 일주일 이상 된 경우, 'YYYY. MM. DD.' 형식으로 표시
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).replace(/ /g, '').slice(0, -1); // "YYYY. MM. DD." 형식으로 만듦
   };
 
   // 렌더링 전 상태 확인
@@ -509,38 +521,17 @@ export default function DashboardPage() {
                   {summaryNotes.map((note, index) => {
                     console.log(`🔍 [RENDER] Rendering summary note ${index}:`, note);
                     return (
-                      <div
-                        key={note._id}
-                        className="aspect-square bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-4 hover:shadow-lg hover:shadow-indigo-500/20 transition-all cursor-pointer hover:border-indigo-400/50 hover:bg-gray-800/60 flex flex-col"
-                        onClick={() => router.push(`/summary-notes/${note._id}/edit`)}
-                      >
-                        {/* 카드 상단: 아이콘 */}
-                        <div className="flex-shrink-0 mb-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-                            <FiFileText className="w-5 h-5 text-white" />
-        </div>
-      </div>
-
-                        {/* 카드 중간: 제목과 내용 */}
-                        <div className="flex-1 flex flex-col min-h-0">
-                          <h3 className="font-medium text-white mb-2 line-clamp-2 text-sm">
-                            {note.title || '제목 없음'}
-                          </h3>
-                          <p className="text-xs text-gray-300 line-clamp-3 mb-3 flex-1">
-                            {note.description || '설명 없음'}
-                          </p>
-                        </div>
-                        
-                        {/* 카드 하단: 메타 정보 */}
-                        <div className="flex-shrink-0 space-y-1">
-                          <div className="text-xs text-cyan-400">
-                            연결된 메모: {note.orderedNoteIds?.length || 0}개
+                      <Link key={note._id} href={`/summary-notes/${note._id}/edit`}>
+                <div className="bg-white/5 rounded-lg p-4 flex flex-col h-full border border-white/10 hover:border-cyan-400/50 transition-colors duration-300 shadow-lg hover:shadow-cyan-500/10">
+                  <FiFileText className="w-6 h-6 text-cyan-400 mb-3" />
+                  <h3 className="font-bold text-white text-md mb-2 flex-grow">{note.title}</h3>
+                  <p className="text-sm text-gray-300 mb-4 flex-grow">{note.description || '설명이 없습니다.'}</p>
+                  <div className="mt-auto pt-4 border-t border-white/10 flex justify-between items-center">
+                    <p className="text-xs text-gray-400">연결된 메모: {note.orderedNoteIds?.length || 0}개</p>
+                    <p className="text-xs text-gray-400">{formatDate(note.createdAt)}</p>
                   </div>
-                          <div className="text-xs text-gray-500">
-                            {formatDate(note.updatedAt)}
                 </div>
-                </div>
-              </div>
+              </Link>
                     );
                   })}
                 </div>
