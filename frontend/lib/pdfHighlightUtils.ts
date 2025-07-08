@@ -1,7 +1,64 @@
-import { PdfHighlight, PdfHighlightCoordinates, HIGHLIGHT_COLORS } from '@/types/pdf';
+import { PdfHighlight, PdfHighlightCoordinates, PdfNativeCoordinates, HIGHLIGHT_COLORS } from '@/types/pdf';
 
 /**
- * DOM 좌표를 SVG 좌표로 변환합니다
+ * DOM 좌표를 PDF 네이티브 좌표로 변환합니다 (스크롤 독립적)
+ * @param domRect DOM 좌표
+ * @param pageElement 페이지 DOM 요소
+ * @param scale 현재 스케일
+ * @returns PDF 네이티브 좌표
+ */
+export function domRectToPdfCoordinates(
+  domRect: DOMRect,
+  pageElement: HTMLElement,
+  scale: number = 1
+): PdfNativeCoordinates {
+  const pageRect = pageElement.getBoundingClientRect();
+  
+  // 페이지 내 상대 좌표 계산 (스크롤 독립적)
+  const relativeX = (domRect.left - pageRect.left) / scale;
+  const relativeY = (domRect.top - pageRect.top) / scale;
+  const width = domRect.width / scale;
+  const height = domRect.height / scale;
+  
+  // 페이지 크기도 스케일 보정
+  const pageWidth = pageRect.width / scale;
+  const pageHeight = pageRect.height / scale;
+  
+  return {
+    x: relativeX,
+    y: relativeY,
+    width,
+    height,
+    pageWidth,
+    pageHeight
+  };
+}
+
+/**
+ * PDF 네이티브 좌표를 현재 화면 좌표로 변환합니다
+ * @param pdfCoords PDF 네이티브 좌표
+ * @param pageElement 페이지 DOM 요소
+ * @param scale 현재 스케일
+ * @returns 화면 표시용 좌표
+ */
+export function pdfCoordinatesToScreen(
+  pdfCoords: PdfNativeCoordinates,
+  pageElement: HTMLElement,
+  scale: number = 1
+): PdfHighlightCoordinates {
+  const pageRect = pageElement.getBoundingClientRect();
+  
+  // PDF 좌표를 현재 스케일과 페이지 위치에 맞게 변환
+  return {
+    x: pdfCoords.x * scale,
+    y: pdfCoords.y * scale,
+    width: pdfCoords.width * scale,
+    height: pdfCoords.height * scale
+  };
+}
+
+/**
+ * DOM 좌표를 SVG 좌표로 변환합니다 (레거시 호환성)
  * @param rect DOM 좌표 (DOMRect)
  * @param containerRect 컨테이너 좌표 (DOMRect)
  * @param scale PDF 스케일
@@ -29,6 +86,36 @@ export function generateHighlightId(): string {
 }
 
 /**
+ * 새로운 하이라이트 객체를 생성합니다 (개선된 버전)
+ * @param text 선택된 텍스트
+ * @param pageNumber 페이지 번호
+ * @param boundingRect DOM 좌표 (레거시)
+ * @param pdfCoordinates PDF 네이티브 좌표
+ * @param color 하이라이트 색상 (기본값: yellow)
+ * @param opacity 투명도 (기본값: 0.3)
+ * @returns 새로운 하이라이트 객체
+ */
+export function createHighlightWithPdfCoords(
+  text: string,
+  pageNumber: number,
+  boundingRect: DOMRect,
+  pdfCoordinates: PdfNativeCoordinates,
+  color: keyof typeof HIGHLIGHT_COLORS = 'yellow',
+  opacity: number = 0.3
+): PdfHighlight {
+  return {
+    id: generateHighlightId(),
+    text: text.trim(),
+    pageNumber,
+    boundingRect, // 레거시 호환성
+    pdfCoordinates, // 새로운 네이티브 좌표
+    color: HIGHLIGHT_COLORS[color],
+    opacity,
+    createdAt: new Date(),
+  };
+}
+
+/**
  * 새로운 하이라이트 객체를 생성합니다
  * @param text 선택된 텍스트
  * @param pageNumber 페이지 번호
@@ -44,15 +131,17 @@ export function createHighlight(
   color: keyof typeof HIGHLIGHT_COLORS = 'yellow',
   opacity: number = 0.3
 ): PdfHighlight {
-  return {
-    id: generateHighlightId(),
-    text: text.trim(),
-    pageNumber,
-    boundingRect,
-    color: HIGHLIGHT_COLORS[color],
-    opacity,
-    createdAt: new Date(),
+  // 임시로 pdfCoordinates를 boundingRect 기반으로 생성 (마이그레이션 용도)
+  const pdfCoordinates: PdfNativeCoordinates = {
+    x: boundingRect.x,
+    y: boundingRect.y,
+    width: boundingRect.width,
+    height: boundingRect.height,
+    pageWidth: 595, // A4 기본값
+    pageHeight: 842 // A4 기본값
   };
+  
+  return createHighlightWithPdfCoords(text, pageNumber, boundingRect, pdfCoordinates, color, opacity);
 }
 
 /**

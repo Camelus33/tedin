@@ -2,11 +2,21 @@ export interface PdfHighlight {
   id: string;
   text: string;
   pageNumber: number;
-  boundingRect: DOMRect;
+  boundingRect: DOMRect; // 레거시 호환성을 위해 유지
+  pdfCoordinates: PdfNativeCoordinates; // 새로운 PDF 네이티브 좌표
   color: string;
   opacity: number;
   createdAt: Date;
   note?: string;
+}
+
+export interface PdfNativeCoordinates {
+  x: number; // PDF 좌표계 기준 (72 DPI)
+  y: number; // PDF 좌표계 기준 (72 DPI)
+  width: number;
+  height: number;
+  pageWidth: number; // 해당 페이지의 전체 너비
+  pageHeight: number; // 해당 페이지의 전체 높이
 }
 
 export interface PdfHighlightCoordinates {

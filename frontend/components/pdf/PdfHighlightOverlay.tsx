@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { PdfHighlight, PdfHighlightOverlayProps, PdfHighlightCoordinates } from '@/types/pdf';
-import { domRectToSvgCoordinates, getHighlightsForPage, validateCoordinates } from '@/lib/pdfHighlightUtils';
+import { pdfCoordinatesToScreen, getHighlightsForPage, validateCoordinates } from '@/lib/pdfHighlightUtils';
 
 interface HighlightElementProps {
   highlight: PdfHighlight;
@@ -103,14 +103,22 @@ export default function PdfHighlightOverlay({
   onHighlightDelete
 }: PdfHighlightOverlayProps) {
   const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
-  const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
+  const overlayRef = useRef<SVGSVGElement>(null);
+
+  // 페이지 요소 찾기 (스크롤 독립적 좌표 계산용)
+  const getPageElement = (): HTMLElement | null => {
+    if (!containerRef.current) return null;
+    
+    // 현재 페이지의 DOM 요소를 찾습니다
+    const pageElement = containerRef.current.querySelector(`[data-page-number="${pageNumber}"]`) as HTMLElement;
+    return pageElement;
+  };
 
   // 컨테이너 크기 업데이트
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        setContainerRect(rect);
         setSvgDimensions({
           width: rect.width,
           height: rect.height
@@ -122,6 +130,16 @@ export default function PdfHighlightOverlay({
 
     // 윈도우 리사이즈 시 업데이트
     window.addEventListener('resize', updateDimensions);
+    
+    // 스크롤 이벤트 리스너 추가 (하이라이트 위치 재계산용)
+    const handleScroll = () => {
+      // 스크롤 시 하이라이트 위치 재계산을 위해 강제 리렌더링
+      updateDimensions();
+    };
+    
+    if (containerRef.current) {
+      containerRef.current.addEventListener('scroll', handleScroll, { passive: true });
+    }
     
     // MutationObserver로 컨테이너 변경 감지
     let observer: MutationObserver | null = null;
@@ -137,6 +155,9 @@ export default function PdfHighlightOverlay({
 
     return () => {
       window.removeEventListener('resize', updateDimensions);
+      if (containerRef.current) {
+        containerRef.current.removeEventListener('scroll', handleScroll);
+      }
       observer?.disconnect();
     };
   }, [containerRef, scale, pageNumber]);
@@ -144,12 +165,13 @@ export default function PdfHighlightOverlay({
   // 현재 페이지의 하이라이트만 필터링
   const currentPageHighlights = getHighlightsForPage(highlights, pageNumber);
 
-  if (!containerRect || svgDimensions.width === 0 || svgDimensions.height === 0) {
+  if (svgDimensions.width === 0 || svgDimensions.height === 0) {
     return null;
   }
 
   return (
     <svg
+      ref={overlayRef}
       className="absolute top-0 left-0 pointer-events-none z-10"
       width={svgDimensions.width}
       height={svgDimensions.height}
@@ -170,12 +192,34 @@ export default function PdfHighlightOverlay({
       
       <g style={{ pointerEvents: 'auto' }}>
         {currentPageHighlights.map((highlight) => {
-          // DOM 좌표를 SVG 좌표로 변환
-          const coordinates = domRectToSvgCoordinates(
-            highlight.boundingRect,
-            containerRect,
-            scale
-          );
+          const pageElement = getPageElement();
+          
+          if (!pageElement) {
+            return null; // 페이지 요소를 찾을 수 없으면 렌더링하지 않음
+          }
+
+          // PDF 네이티브 좌표가 있으면 사용, 없으면 레거시 방식 사용
+          let coordinates: PdfHighlightCoordinates;
+          
+          if (highlight.pdfCoordinates) {
+            // 새로운 방식: PDF 네이티브 좌표를 현재 화면 좌표로 변환
+            coordinates = pdfCoordinatesToScreen(
+              highlight.pdfCoordinates,
+              pageElement,
+              scale
+            );
+          } else {
+            // 레거시 방식: DOM 좌표를 SVG 좌표로 변환 (하위 호환성)
+            const containerRect = containerRef.current?.getBoundingClientRect();
+            if (!containerRect) return null;
+            
+            coordinates = {
+              x: (highlight.boundingRect.left - containerRect.left) / scale,
+              y: (highlight.boundingRect.top - containerRect.top) / scale,
+              width: highlight.boundingRect.width / scale,
+              height: highlight.boundingRect.height / scale
+            };
+          }
 
           return (
             <HighlightElement
