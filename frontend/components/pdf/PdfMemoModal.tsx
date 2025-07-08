@@ -176,13 +176,6 @@ export default function PdfMemoModal({
         {/* 헤더 - 컴팩트하게 */}
         <div className="flex justify-between items-center mb-3">
           <h2 className={`text-lg font-bold ${cyberTheme.textLight}`}>PDF 메모 작성</h2>
-          <button
-            onClick={handleClose}
-            disabled={isLoading}
-            className={`${cyberTheme.textMuted} hover:${cyberTheme.textLight} transition-colors disabled:opacity-50`}
-          >
-            ✕
-          </button>
         </div>
 
         {/* 페이지 정보 - 컴팩트하게 */}
@@ -262,7 +255,7 @@ export default function PdfMemoModal({
                     }`}
                     title={`${rating}점`}
                   >
-                    ⭐
+                    <StarIcon className="w-6 h-6" />
                   </button>
                 ))}
                 <span className={`ml-2 text-sm ${cyberTheme.textMuted}`}>
