@@ -39,7 +39,31 @@ class ClaudePromptStrategy implements PromptStrategy {
   }
 }
 
-export type SupportedModels = 'openai' | 'claude';
+// Gemini Prompt Strategy (Google Gemini) – 단순 Chat 스타일
+class GeminiPromptStrategy implements PromptStrategy {
+  createPrompt(bundle: ContextBundle, userQuery: string) {
+    const contextString = bundle.relevantNotes.map(n => `• ${n.content}`).join('\n');
+    return `You are a helpful assistant. Context:\n${contextString}\n\nUser: ${userQuery}\nAssistant:`;
+  }
+}
+
+// Perplexity Prompt Strategy – Q&A 스타일
+class PerplexityPromptStrategy implements PromptStrategy {
+  createPrompt(bundle: ContextBundle, userQuery: string) {
+    const context = bundle.relevantNotes.map(n => n.content).join('\n');
+    return { context, question: userQuery };
+  }
+}
+
+// Midjourney Prompt Strategy – 이미지 프롬프트 구성 (텍스트 기반)
+class MidjourneyPromptStrategy implements PromptStrategy {
+  createPrompt(bundle: ContextBundle, userQuery: string) {
+    const keywords = bundle.relevantNotes.slice(0, 5).map(n => n.tags.join(',')).join(' ');
+    return `${userQuery} | ${keywords} --v 6 --stylize 60`;
+  }
+}
+
+export type SupportedModels = 'openai' | 'claude' | 'gemini' | 'perplexity' | 'midjourney';
 
 /**
  * PromptGenerator
@@ -49,12 +73,24 @@ export class PromptGenerator {
   private strategy: PromptStrategy;
 
   constructor(model: SupportedModels) {
-    if (model === 'openai') {
-      this.strategy = new OpenAIPromptStrategy();
-    } else if (model === 'claude') {
-      this.strategy = new ClaudePromptStrategy();
-    } else {
-      throw new Error(`Unsupported model type: ${model}`);
+    switch (model) {
+      case 'openai':
+        this.strategy = new OpenAIPromptStrategy();
+        break;
+      case 'claude':
+        this.strategy = new ClaudePromptStrategy();
+        break;
+      case 'gemini':
+        this.strategy = new GeminiPromptStrategy();
+        break;
+      case 'perplexity':
+        this.strategy = new PerplexityPromptStrategy();
+        break;
+      case 'midjourney':
+        this.strategy = new MidjourneyPromptStrategy();
+        break;
+      default:
+        throw new Error(`Unsupported model type: ${model}`);
     }
   }
 

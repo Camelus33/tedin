@@ -35,6 +35,45 @@ class ClaudeClient implements IAIClient {
     }
 }
 
+// Google Gemini API 클라이언트 (가상 구현)
+class GeminiClient implements IAIClient {
+  private apiKey: string;
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+    if (!this.apiKey) throw new Error('Gemini API key is required.');
+  }
+  async completion(prompt: any): Promise<any> {
+    console.log('--- Calling Google Gemini API ---');
+    return Promise.resolve({ output: '이것은 Gemini의 응답입니다.' });
+  }
+}
+
+// Perplexity AI 클라이언트 (가상 구현)
+class PerplexityClient implements IAIClient {
+  private apiKey: string;
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+    if (!this.apiKey) throw new Error('Perplexity API key is required.');
+  }
+  async completion(prompt: any): Promise<any> {
+    console.log('--- Calling Perplexity AI API ---');
+    return Promise.resolve({ answer: '이것은 Perplexity의 응답입니다.' });
+  }
+}
+
+// Midjourney(이미지) 클라이언트 (가상 구현 - 텍스트 프롬프트도 반환)
+class MidjourneyClient implements IAIClient {
+  private apiKey: string;
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+    if (!this.apiKey) throw new Error('Midjourney API key is required.');
+  }
+  async completion(prompt: any): Promise<any> {
+    console.log('--- Calling Midjourney API ---');
+    return Promise.resolve({ imageUrl: 'https://example.com/generated-image.jpg' });
+  }
+}
+
 /**
  * AI 모델 타입에 맞는 클라이언트 인스턴스를 생성하는 팩토리 함수
  * @param model - 'openai' | 'claude'
@@ -47,6 +86,12 @@ export const getAIClient = (model: SupportedModels, apiKey: string): IAIClient =
       return new OpenAIClient(apiKey);
     case 'claude':
       return new ClaudeClient(apiKey);
+    case 'gemini':
+      return new GeminiClient(apiKey);
+    case 'perplexity':
+      return new PerplexityClient(apiKey);
+    case 'midjourney':
+      return new MidjourneyClient(apiKey);
     default:
       throw new Error(`Unsupported model type for client factory: ${model}`);
   }
