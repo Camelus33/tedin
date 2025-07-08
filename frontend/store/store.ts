@@ -9,11 +9,11 @@ import myverseGameReducer from './slices/myverseGameSlice'
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    books: bookReducer,
+    book: bookReducer, // revert to original key
     session: sessionReducer,
-    zengo: zengoReducer,
+    zengoProverb: zengoReducer, // revert to original key
     collections: collectionReducer,
-    myverseGame: myverseGameReducer,
+    myverseGames: myverseGameReducer, // revert to original key
   },
 })
 
