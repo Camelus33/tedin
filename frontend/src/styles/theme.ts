@@ -3,7 +3,7 @@ export const cyberTheme = {
   secondary: 'text-purple-400',
   bgPrimary: 'bg-gray-900',
   bgSecondary: 'bg-gray-800',
-  cardBg: 'bg-gray-800/60',
+  cardBg: 'bg-[#122a55]/60',
   borderPrimary: 'border-cyan-500',
   borderSecondary: 'border-purple-500',
   gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',

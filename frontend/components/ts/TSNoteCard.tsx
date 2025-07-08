@@ -628,7 +628,7 @@ export default function TSNoteCard({
           data-no-toggle
         >
           <span className="text-xs font-medium text-gray-400 group-hover:text-cyan-400 transition-colors">
-            생각 진화 {hasThreads && `(${threads.length})`}
+            생각 진화 ({threads.length}/5)
           </span>
           <ChevronRightIcon className={`h-4 w-4 text-gray-500 group-hover:text-cyan-400 transition-all duration-200 ${showInlineThreads ? 'rotate-90' : ''}`} />
         </button>

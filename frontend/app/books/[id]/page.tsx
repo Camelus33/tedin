@@ -832,7 +832,7 @@ export default function BookDetailPage() {
                   const isNoteInCart = cartItems.some(item => item.noteId === note._id);
 
                   return (
-                    <div key={note._id} className={`${cyberTheme.cardBg} p-0.5 sm:p-3 rounded-md border ${cyberTheme.inputBorder}`}>
+                    <div key={note._id} className={`${cyberTheme.cardBg} p-4 sm:p-6 rounded-md border ${cyberTheme.inputBorder} transition-transform duration-300 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer`}>
                       <TSNoteCard
                         note={note as TSNote}
                         readingPurpose={bookData.readingPurpose || 'humanities_self_reflection'}
