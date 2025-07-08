@@ -317,6 +317,8 @@ export const updateBookProgress = async (req: Request, res: Response) => {
     if (currentPage !== undefined && currentPage !== book.currentPage) { // 현재 페이지가 변경되었을 때만
       updateData.currentPage = currentPage;
       shouldRecalculateTime = true; // 현재 페이지 변경 시 시간 재계산
+      // 마지막 읽은 시각 업데이트
+      updateData.lastReadAt = new Date();
       
       // 완료 퍼센티지 계산
       if (book.totalPages > 0) {
@@ -338,6 +340,7 @@ export const updateBookProgress = async (req: Request, res: Response) => {
     
     if (status !== undefined && status !== book.status) { // 상태가 변경되었을 때
       updateData.status = status;
+      updateData.lastReadAt = new Date(); // 상태 변경도 읽기 활동으로 간주
       if(status === 'completed') {
         updateData.estimatedRemainingMinutes = 0; // 완독 상태 변경 시 예상 시간 0
         shouldRecalculateTime = false;

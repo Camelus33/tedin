@@ -14,6 +14,8 @@ export interface IBook extends Document {
   completionPercentage: number;
   estimatedRemainingMinutes?: number | null;
   avgPpm?: number | null;
+  // 마지막으로 읽은 시각
+  lastReadAt?: Date;
   readingPurpose?: 'exam_prep' | 'practical_knowledge' | 'humanities_self_reflection' | 'reading_pleasure' | null;
   purchaseLink?: string;
   // PDF 관련 필드 - 로컬 저장용
@@ -90,6 +92,10 @@ const BookSchema: Schema = new Schema(
       type: Number,
       default: null,
     },
+    // 마지막 읽은 시각 (책을 읽을 때마다 갱신)
+    lastReadAt: {
+      type: Date,
+    },
     readingPurpose: {
       type: String,
       enum: ['exam_prep', 'practical_knowledge', 'humanities_self_reflection', 'reading_pleasure'],
@@ -138,5 +144,7 @@ const BookSchema: Schema = new Schema(
 BookSchema.index({ userId: 1, status: 1 });
 BookSchema.index({ userId: 1, bookType: 1 }); // Index for filtering by book type
 BookSchema.index({ title: 'text', author: 'text' }); // Text index for search
+// 최근 읽은 시각으로 정렬할 때를 대비한 인덱스 (옵션)
+BookSchema.index({ userId: 1, lastReadAt: -1 });
 
 export default mongoose.model<IBook>('Book', BookSchema); 

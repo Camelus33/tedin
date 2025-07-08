@@ -249,6 +249,7 @@ export const completeSession = async (req: Request, res: Response) => {
               Math.round((newCurrentPage / book.totalPages) * 100),
               100
             ),
+            lastReadAt: new Date(),
             status: newCurrentPage >= book.totalPages ? 'completed' : 'in_progress'
           } 
         }
