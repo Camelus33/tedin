@@ -215,7 +215,11 @@ const LearningJourneyVisualization: React.FC<Props> = ({ learningJourney, classN
                             </span>
                           </div>
                           
-                          <p className="text-sm text-gray-600 mb-3">{step.description}</p>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {step.description.includes(':') 
+                              ? step.description.split(':').slice(1).join(':').trim() 
+                              : step.description}
+                          </p>
                           
                           <div className="flex items-center gap-4 text-xs text-gray-500">
                             <div className="flex items-center gap-1">
