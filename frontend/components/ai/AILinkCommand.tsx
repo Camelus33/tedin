@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import { useSelector } from 'react-redux'; // Redux 훅 임포트
 import { RootState } from '@/store/store'; // Redux 스토어 타입 임포트
 import { Button } from '@/components/ui/button';
@@ -25,9 +26,33 @@ interface AILinkResponse {
 export function AILinkCommand() {
   const [isOpen, setIsOpen] = useState(false);
   const [goal, setGoal] = useState('');
+  // 2-step 흐름 상태: 'key' 단계 또는 'goal' 단계
+  const [currentStep, setCurrentStep] = useState<'key' | 'goal'>('key');
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const modelOptions = [
+    { id: 'openai', label: 'OpenAI' },
+    { id: 'claude', label: 'Claude' },
+    { id: 'gemini', label: 'Gemini' },
+    { id: 'perplexity', label: 'Perplexity' },
+    { id: 'midjourney', label: 'Midjourney' },
+  ] as const;
+  type ModelId = typeof modelOptions[number]['id'];
+  const [selectedModel, setSelectedModel] = useState<ModelId>('openai');
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<AILinkResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // 최초 렌더 시 로컬스토리지에 저장된 키가 있으면 바로 Goal 단계로 전환
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storedModel = (localStorage.getItem('ai_link_model') as ModelId) || 'openai';
+    setSelectedModel(storedModel);
+    const storedKey = localStorage.getItem(`${storedModel}_api_key`);
+    if (storedKey) {
+      setApiKeyInput(storedKey);
+      setCurrentStep('goal');
+    }
+  }, []);
 
   // Redux 스토어에서 사용자 정보 가져오기
   const user = useSelector((state: RootState) => state.user);
@@ -52,7 +77,7 @@ export function AILinkCommand() {
 
     try {
       // TODO: apiKey를 안전하게 관리해야 합니다. (예: 서버에서 관리)
-      const apiKey = localStorage.getItem('openai_api_key') || '';
+      const apiKey = localStorage.getItem(`${selectedModel}_api_key`) || '';
 
       const bearerToken = typeof window !== 'undefined' ? localStorage.getItem('token') : '';
 
@@ -66,7 +91,7 @@ export function AILinkCommand() {
         body: JSON.stringify({
           ...(userId ? { userId } : {}),
           aiLinkGoal: goal,
-          targetModel: 'openai',
+          targetModel: selectedModel,
         }),
       });
 
@@ -96,7 +121,12 @@ export function AILinkCommand() {
                 alert('AI-Link 기능을 사용하려면 로그인이 필요합니다.');
                 return;
             }
-            setIsOpen(true);
+    // 플로팅 버튼을 클릭할 때마다 저장된 키 유무를 확인 후 단계 설정
+    const storedModel = (typeof window !== 'undefined' ? localStorage.getItem('ai_link_model') : null) as ModelId | null;
+    setSelectedModel(storedModel || 'openai');
+    const storedKey = typeof window !== 'undefined' ? localStorage.getItem(`${storedModel || 'openai'}_api_key`) : null;
+    setCurrentStep(storedKey ? 'goal' : 'key');
+    setIsOpen(true);
         }}
       >
         <Sparkles className="h-8 w-8" />
@@ -110,36 +140,108 @@ export function AILinkCommand() {
               <Bot className="mr-2" />
               AI-Link Command
             </DialogTitle>
-            <DialogDescription>
-              달성하고 싶은 목표를 알려주세요. 당신의 지식 베이스를 활용하여 최적의 결과를 만들어 드립니다.
-            </DialogDescription>
+            {currentStep === 'key' ? (
+              <DialogDescription>
+                처음 사용 시, OpenAI 등 사용하실 AI 모델의 API Key를 입력해 주세요. 로컬 스토리지에만 저장되며 서버로 전송되지 않습니다.
+              </DialogDescription>
+            ) : (
+              <DialogDescription>
+                달성하고 싶은 목표를 알려주세요. 당신의 지식 베이스를 활용하여 최적의 결과를 만들어 드립니다.
+              </DialogDescription>
+            )}
           </DialogHeader>
-          
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <Textarea
-                id="goal"
-                placeholder="예: 내 메모들을 바탕으로 '머신러닝'에 대한 블로그 글 초안을 작성해줘."
-                value={goal}
-                onChange={(e) => setGoal(e.target.value)}
-                rows={4}
-                disabled={isLoading}
-              />
-            </div>
 
-            <DialogFooter>
-              <Button type="submit" disabled={isLoading || !goal}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    실행 중...
-                  </>
-                ) : (
-                  '실행'
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
+          {currentStep === 'key' && (
+            <>
+              <div className="grid gap-4 py-4">
+                {/* 모델 선택 토글 */}
+                <div className="flex flex-wrap gap-2">
+                  {modelOptions.map((m) => (
+                    <Button
+                      key={m.id}
+                      type="button"
+                      variant={selectedModel === m.id ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => {
+                        setSelectedModel(m.id);
+                        const existingKey = typeof window !== 'undefined' ? localStorage.getItem(`${m.id}_api_key`) : '';
+                        setApiKeyInput(existingKey || '');
+                      }}
+                    >
+                      {m.label}
+                    </Button>
+                  ))}
+                </div>
+                {/* API Key 입력 */}
+                <Input
+                  id="apiKey"
+                  placeholder="sk-..."
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (!apiKeyInput) {
+                      setError('API Key를 입력해주세요.');
+                      return;
+                    }
+                    localStorage.setItem(`${selectedModel}_api_key`, apiKeyInput);
+                    localStorage.setItem('ai_link_model', selectedModel);
+                    toast.success('API Key가 저장되었습니다.');
+                    setError(null);
+                    setCurrentStep('goal');
+                  }}
+                  disabled={isLoading}
+                >
+                  저장
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+
+          {currentStep === 'goal' && (
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <Textarea
+                  id="goal"
+                  placeholder="예: 내 메모들을 바탕으로 '머신러닝'에 대한 블로그 글 초안을 작성해줘."
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                  rows={4}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <DialogFooter className="flex-col items-stretch gap-2">
+                <div className="self-end flex gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      setCurrentStep('key');
+                    }}
+                  >
+                    API Key 재설정
+                  </Button>
+                  <Button type="submit" disabled={isLoading || !goal}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        실행 중...
+                      </>
+                    ) : (
+                      '실행'
+                    )}
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          )}
 
           {/* 결과 표시 영역 */}
           {response && (
