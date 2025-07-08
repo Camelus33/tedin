@@ -123,7 +123,7 @@ export default function PdfMemoModal({
         bookId,
         type: memoType,
         content: memoText.trim(),
-        tags: keywords.split(',').map(tag => tag.trim()).filter(tag => tag),
+        tags: keywords.split(' ').map(tag => tag.trim()).filter(tag => tag),
         pageNumber,
         highlightedText: selectedText,
         selfRating,
@@ -139,7 +139,7 @@ export default function PdfMemoModal({
       const memoData: PdfMemoData = {
         type: memoType,
         content: memoText.trim(),
-        keywords: keywords.split(',').map(tag => tag.trim()).filter(tag => tag),
+        keywords: keywords.split(' ').map(tag => tag.trim()).filter(tag => tag),
         selfRating,
         pageNumber,
         highlightedText: selectedText,
@@ -172,29 +172,29 @@ export default function PdfMemoModal({
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-slate-900 border border-purple-500/30 rounded-xl p-4 w-full max-w-lg max-h-[85vh] overflow-y-auto">
+      <div className={`${cyberTheme.cardBg} border ${cyberTheme.inputBorder} rounded-xl p-4 w-full max-w-lg max-h-[85vh] overflow-y-auto`}>
         {/* 헤더 - 컴팩트하게 */}
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-bold text-purple-300">PDF 메모 작성</h2>
+          <h2 className={`text-lg font-bold ${cyberTheme.textLight}`}>PDF 메모 작성</h2>
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+            className={`${cyberTheme.textMuted} hover:${cyberTheme.textLight} transition-colors disabled:opacity-50`}
           >
             ✕
           </button>
         </div>
 
         {/* 페이지 정보 - 컴팩트하게 */}
-        <div className="mb-3 p-2 bg-slate-800 rounded-lg border border-purple-500/20">
-          <p className="text-sm text-purple-300">페이지 {pageNumber}</p>
-          <p className="text-xs text-gray-400 mt-1">하이라이트: "{selectedText.slice(0, 50)}..."</p>
+        <div className={`mb-3 p-2 ${cyberTheme.inputBg} rounded-lg border ${cyberTheme.inputBorder}`}>
+          <p className={`text-sm ${cyberTheme.primary}`}>페이지 {pageNumber}</p>
+          <p className={`text-xs ${cyberTheme.textMuted} mt-1`}>하이라이트: "{selectedText.slice(0, 50)}..."</p>
         </div>
 
         {/* 에러 메시지 */}
         {error && (
-          <div className="mb-3 p-2 bg-red-900/30 border border-red-500/50 rounded-lg">
-            <p className="text-red-300 text-sm">{error}</p>
+          <div className={`mb-3 p-2 bg-red-900/30 border ${cyberTheme.errorBorder} rounded-lg`}>
+            <p className={`${cyberTheme.errorText} text-sm`}>{error}</p>
           </div>
         )}
 
@@ -203,7 +203,7 @@ export default function PdfMemoModal({
           <div className="space-y-3">
             {/* 메모 성격 선택 */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-1">
+              <label className={`block text-sm font-medium ${cyberTheme.textLight} mb-1`}>
                 메모 성격
               </label>
               <div className="flex gap-1">
@@ -218,8 +218,8 @@ export default function PdfMemoModal({
                     disabled={isLoading}
                     className={`flex-1 p-2 rounded-lg border transition-all disabled:opacity-50 ${
                       memoType === option.value
-                        ? 'bg-purple-600 border-purple-400 text-white'
-                        : 'bg-slate-800 border-purple-500/30 text-gray-300 hover:border-purple-400'
+                        ? `${cyberTheme.buttonPrimaryBg} ${cyberTheme.borderPrimary} text-white`
+                        : `${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} ${cyberTheme.inputFocusBorder}`
                     }`}
                   >
                     <div className="text-sm mb-1">{option.icon}</div>
@@ -231,22 +231,22 @@ export default function PdfMemoModal({
 
             {/* 키워드 */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-1">
-                키워드 (쉼표로 구분)
+              <label className={`block text-sm font-medium ${cyberTheme.textLight} mb-1`}>
+                키워드
               </label>
               <input
                 type="text"
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
                 disabled={isLoading}
-                placeholder="예: 개념, 중요, 핵심"
-                className="w-full p-2 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none disabled:opacity-50"
+                placeholder="띄어쓰기로 입력하세요."
+                className={`w-full p-2 ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} rounded-lg ${cyberTheme.textLight} placeholder-gray-400 ${cyberTheme.inputFocusBorder} focus:outline-none disabled:opacity-50`}
               />
             </div>
 
             {/* 중요도 평가 - 5개 별점 고정 */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-1">
+              <label className={`block text-sm font-medium ${cyberTheme.textLight} mb-1`}>
                 중요도 평가
               </label>
               <div className="flex items-center gap-1">
@@ -257,19 +257,19 @@ export default function PdfMemoModal({
                     disabled={isLoading}
                     className={`w-8 h-8 rounded transition-all disabled:opacity-50 flex items-center justify-center ${
                       rating <= selfRating
-                        ? 'text-yellow-400 hover:text-yellow-300'
-                        : 'text-gray-600 hover:text-yellow-400'
+                        ? `${cyberTheme.ratingActive} hover:text-yellow-300`
+                        : `${cyberTheme.ratingInactive} hover:${cyberTheme.ratingActive}`
                     }`}
                     title={`${rating}점`}
                   >
                     ⭐
                   </button>
                 ))}
-                <span className="ml-2 text-sm text-gray-400">
+                <span className={`ml-2 text-sm ${cyberTheme.textMuted}`}>
                   {selfRating}/5
                 </span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className={`text-xs ${cyberTheme.textMuted} mt-1`}>
                 1: 낮음 → 5: 매우 높음
               </p>
             </div>
@@ -279,7 +279,7 @@ export default function PdfMemoModal({
           <div>
             {/* 메모 내용 */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-1">
+              <label className={`block text-sm font-medium ${cyberTheme.textLight} mb-1`}>
                 메모 내용
               </label>
               <textarea
@@ -287,7 +287,7 @@ export default function PdfMemoModal({
                 onChange={(e) => setMemoText(e.target.value)}
                 disabled={isLoading}
                 placeholder="하이라이트한 내용에 대한 메모를 작성해주세요..."
-                className="w-full h-32 p-2 bg-slate-800 border border-purple-500/30 rounded-lg text-white placeholder-gray-400 focus:border-purple-400 focus:outline-none resize-none disabled:opacity-50"
+                className={`w-full h-32 p-2 ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} rounded-lg ${cyberTheme.textLight} placeholder-gray-400 ${cyberTheme.inputFocusBorder} focus:outline-none resize-none disabled:opacity-50`}
               />
             </div>
           </div>
@@ -298,14 +298,14 @@ export default function PdfMemoModal({
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="flex-1 px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50"
+            className={`flex-1 px-4 py-2 ${cyberTheme.buttonSecondaryBg} ${cyberTheme.textLight} rounded-lg ${cyberTheme.buttonSecondaryHoverBg} transition-colors disabled:opacity-50`}
           >
             취소
           </button>
           <button
             onClick={handleSave}
             disabled={isLoading || !memoText.trim()}
-            className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className={`flex-1 px-4 py-2 ${cyberTheme.buttonPrimaryBg} text-white rounded-lg ${cyberTheme.buttonPrimaryHoverBg} transition-colors disabled:opacity-50 flex items-center justify-center gap-2`}
           >
             {isLoading ? (
               <>

@@ -129,7 +129,7 @@ function NewMemoContent() {
           bookId: selectedNotebook,
           content: memoContent.trim(),
           type: memoType,
-          tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
+          tags: tags.split(' ').map(tag => tag.trim()).filter(tag => tag.length > 0),
           page: 1, // 노트북은 페이지 개념이 없으므로 기본값
         }),
       });
@@ -289,12 +289,9 @@ function NewMemoContent() {
                 type="text"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                placeholder="태그1, 태그2, 태그3"
+                placeholder="띄어쓰기로 입력하세요."
                 className="w-full px-3 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 text-sm"
               />
-              <div className="text-xs text-gray-500 mt-1">
-                쉼표(,)로 태그를 구분해주세요
-              </div>
             </div>
 
             {/* 제출 버튼 */}
