@@ -797,12 +797,14 @@ export default function BookDetailPage() {
         {activeTab === 'memo' && (
           <section className={`mt-0 ${cyberTheme.bgSecondary} p-2 sm:p-3 md:p-4 rounded-lg border ${cyberTheme.borderPrimary}/30 max-sm:bg-gray-800/90 max-sm:border-cyan-400/40 max-sm:shadow-cyan-500/25 max-sm:shadow-2xl max-sm:backdrop-blur-md max-sm:ring-1 max-sm:ring-cyan-400/20`}>
             {/* Mobile Optimized Memo Hub Header - 모바일에서 높이 최소화 */}
-            <div className="mb-1 sm:mb-4 text-center">
-              <h2 className="text-base sm:text-xl font-bold text-cyan-400 mb-0 sm:mb-1 flex items-center justify-center gap-1 sm:gap-2">
-                <AiOutlineEdit className="h-4 sm:h-5 w-4 sm:w-5" />
-                Memo Hub
+            <div className="mb-1 sm:mb-4">
+              <h2 className="text-base sm:text-xl font-bold text-cyan-400 mb-0 sm:mb-1 flex items-center justify-between gap-1 sm:gap-2">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <AiOutlineEdit className="h-4 sm:h-5 w-4 sm:w-5" />
+                  <span>Memo Hub</span>
+                </div>
+                <span className="text-xs sm:text-sm text-gray-400 font-normal">Expand ideas</span>
               </h2>
-              <p className="text-xs sm:text-sm text-gray-400">💡 메모에 생각을 계속 더하세요</p>
             </div>
 
             {/* Notes List */}
