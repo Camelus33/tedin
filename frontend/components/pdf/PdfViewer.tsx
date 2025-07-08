@@ -40,6 +40,7 @@ interface PdfViewerState {
   highlightMode: boolean;
   pdfData: ArrayBuffer | null;
   visiblePages: Set<number>;
+  pageHeights: Map<number, number>; // 실제 페이지 높이 저장
 }
 
 function PdfViewerComponent({
@@ -66,7 +67,8 @@ function PdfViewerComponent({
     error: null,
     highlightMode: false,
     pdfData: null,
-    visiblePages: new Set([1])
+    visiblePages: new Set([1]),
+    pageHeights: new Map()
   });
 
   const pageRef = useRef<HTMLDivElement>(null);
@@ -170,8 +172,28 @@ function PdfViewerComponent({
       isLoading: false,
       error: null,
       // 연속 스크롤에서는 처음 몇 페이지를 초기에 로드
-      visiblePages: new Set(Array.from({ length: Math.min(3, numPages) }, (_, i) => i + 1))
+      visiblePages: new Set(Array.from({ length: Math.min(3, numPages) }, (_, i) => i + 1)),
+      pageHeights: new Map() // 페이지 높이 맵 초기화
     }));
+  }, []);
+
+  // 페이지 렌더링 완료 후 높이 측정
+  const onPageLoadSuccess = useCallback((pageNumber: number) => {
+    // 페이지 렌더링 완료 후 실제 높이 측정
+    setTimeout(() => {
+      const pageElement = pageRefs.current[pageNumber - 1];
+      if (pageElement) {
+        const actualHeight = pageElement.getBoundingClientRect().height;
+        setState(prev => ({
+          ...prev,
+          pageHeights: new Map(prev.pageHeights).set(pageNumber, actualHeight)
+        }));
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`PDF 뷰어: 페이지 ${pageNumber} 높이 측정 완료: ${actualHeight}px`);
+        }
+      }
+    }, 100); // 렌더링 완료를 위한 짧은 지연
   }, []);
 
   // PDF 문서 로드 실패 핸들러
@@ -298,54 +320,68 @@ function PdfViewerComponent({
   useEffect(() => {
     if (!state.numPages) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visiblePageNumbers = new Set<number>();
-        let mostVisiblePage = state.pageNumber;
-        let maxIntersectionRatio = 0;
+    // throttled observer 콜백으로 성능 최적화
+    const handleIntersection = throttle((entries: IntersectionObserverEntry[]) => {
+      const visiblePageNumbers = new Set<number>();
+      let mostVisiblePage = state.pageNumber;
+      let maxIntersectionRatio = 0;
 
-        entries.forEach((entry) => {
-          const pageNumber = parseInt(entry.target.getAttribute('data-page-number') || '1');
+      entries.forEach((entry) => {
+        const pageNumber = parseInt(entry.target.getAttribute('data-page-number') || '1');
+        
+        // 50% 이상 보이는 경우에만 가시 페이지로 간주 (안정성 향상)
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+          visiblePageNumbers.add(pageNumber);
           
-          if (entry.isIntersecting) {
-            visiblePageNumbers.add(pageNumber);
-            
-            // 가장 많이 보이는 페이지를 현재 페이지로 설정
-            if (entry.intersectionRatio > maxIntersectionRatio) {
-              maxIntersectionRatio = entry.intersectionRatio;
-              mostVisiblePage = pageNumber;
-            }
-            
-            // 현재 페이지 근처의 페이지도 미리 로딩 (성능 최적화)
-            const preloadRange = 2; // 앞뒤 2페이지씩 미리 로딩
-            for (let i = Math.max(1, pageNumber - preloadRange); 
-                 i <= Math.min(state.numPages || pageNumber, pageNumber + preloadRange); 
-                 i++) {
-              visiblePageNumbers.add(i);
-            }
+          // 가장 많이 보이는 페이지를 현재 페이지로 설정
+          if (entry.intersectionRatio > maxIntersectionRatio) {
+            maxIntersectionRatio = entry.intersectionRatio;
+            mostVisiblePage = pageNumber;
           }
-        });
-
-        setState(prev => ({
-          ...prev,
-          visiblePages: visiblePageNumbers,
-          pageNumber: mostVisiblePage
-        }));
-
-        // 성능 모니터링 로깅 (개발 환경에서만)
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`PDF 뷰어: 로드된 페이지 수: ${visiblePageNumbers.size}, 현재 페이지: ${mostVisiblePage}, 보이는 페이지: [${Array.from(visiblePageNumbers).sort().join(', ')}]`);
         }
-
-        // 현재 페이지 변경 콜백 호출
-        if (mostVisiblePage !== state.pageNumber) {
-          onPageChange?.(mostVisiblePage);
+        
+        // 조금이라도 보이는 페이지는 미리 로딩 (성능 최적화)
+        if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
+          const preloadRange = 1; // 앞뒤 1페이지씩만 미리 로딩 (메모리 절약)
+          for (let i = Math.max(1, pageNumber - preloadRange); 
+               i <= Math.min(state.numPages || pageNumber, pageNumber + preloadRange); 
+               i++) {
+            visiblePageNumbers.add(i);
+          }
         }
-      },
+      });
+
+      // 현재 페이지가 실제로 변경된 경우에만 상태 업데이트
+      setState(prev => {
+        if (prev.pageNumber !== mostVisiblePage || 
+            prev.visiblePages.size !== visiblePageNumbers.size ||
+            ![...prev.visiblePages].every(page => visiblePageNumbers.has(page))) {
+          return {
+            ...prev,
+            visiblePages: visiblePageNumbers,
+            pageNumber: mostVisiblePage
+          };
+        }
+        return prev;
+      });
+
+      // 성능 모니터링 로깅 (개발 환경에서만)
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`PDF 뷰어: 로드된 페이지 수: ${visiblePageNumbers.size}, 현재 페이지: ${mostVisiblePage}, 보이는 페이지: [${Array.from(visiblePageNumbers).sort().join(', ')}]`);
+      }
+
+      // 현재 페이지 변경 콜백 호출 (실제 변경된 경우에만)
+      if (mostVisiblePage !== state.pageNumber) {
+        onPageChange?.(mostVisiblePage);
+      }
+    }, 150); // 150ms throttle로 성능 최적화
+
+    const observer = new IntersectionObserver(
+      handleIntersection,
       {
         root: documentRef.current,
-        rootMargin: '200px 0px', // 위아래 200px 미리 로딩
-        threshold: [0, 0.1, 0.25, 0.5, 0.75, 0.9] // 더 세밀한 교차 비율 감지
+        rootMargin: '100px 0px', // 위아래 100px로 줄여서 정확성 향상
+        threshold: [0.1, 0.5, 0.9] // threshold 단순화로 계산 부하 감소
       }
     );
 
@@ -508,7 +544,10 @@ function PdfViewerComponent({
             width: `${viewerWidth}px`,
             minWidth: `${MIN_WIDTH}px`,
             maxWidth: 'calc(100vw - 50px)', // 화면 너비에서 여백 제외
-            scrollBehavior: 'smooth' // 부드러운 스크롤 추가
+            scrollBehavior: 'smooth', // 부드러운 스크롤 추가
+            // 스크롤 성능 최적화
+            overflowAnchor: 'none', // 스크롤 앵커링 비활성화로 점프 방지
+            scrollbarGutter: 'stable' // 스크롤바 공간 안정화
           }}
         >
           {state.isLoading && (
@@ -551,6 +590,7 @@ function PdfViewerComponent({
                         renderTextLayer={enableTextSelection}
                         renderAnnotationLayer={false}
                         className="shadow-lg"
+                        onLoadSuccess={() => onPageLoadSuccess(pageNumber)}
                       />
                       
                       {/* 하이라이트 오버레이 */}
@@ -572,7 +612,9 @@ function PdfViewerComponent({
                       className="bg-gray-800/40 border border-gray-600/30 rounded flex items-center justify-center shadow-lg transition-opacity duration-300"
                       style={{ 
                         width: `${595 * state.scale}px`, // PDF 기본 width (A4: 595pt)
-                        height: `${842 * state.scale}px`, // PDF 기본 height (A4: 842pt)
+                        height: state.pageHeights.has(pageNumber) 
+                          ? `${state.pageHeights.get(pageNumber)}px` // 실제 측정된 높이 사용
+                          : `${842 * state.scale}px`, // 기본 높이 (A4: 842pt)
                         minHeight: '400px' // 최소 높이 보장
                       }}
                     >
