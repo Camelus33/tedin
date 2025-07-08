@@ -289,7 +289,7 @@ export default function PdfMemoModal({
         {/* 버튼들 */}
         <div className="flex gap-3 mt-4">
           <button
-            onClick={handleClose}
+            onClick={handleCancelClick}
             disabled={isLoading}
             className={`flex-1 px-4 py-2 ${cyberTheme.buttonSecondaryBg} ${cyberTheme.textLight} rounded-lg ${cyberTheme.buttonSecondaryHoverBg} transition-colors disabled:opacity-50`}
           >
