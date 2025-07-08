@@ -34,13 +34,17 @@ export function AILinkCommand() {
   const isAuthenticated = user.isAuthenticated;
   const userId = user.id;
 
+  // 로컬 스토리지 토큰도 확인하여 로그인 상태를 보완적으로 판단
+  const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('token');
+  const isLoggedIn = isAuthenticated || hasToken;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setResponse(null);
     setError(null);
 
-    if (!isAuthenticated || !userId) {
+    if (!isLoggedIn) {
       setError('로그인이 필요합니다.');
       setIsLoading(false);
       return;
@@ -57,7 +61,7 @@ export function AILinkCommand() {
           'x-user-api-key': apiKey,
         },
         body: JSON.stringify({
-          userId, // 실제 사용자 ID 사용
+          ...(userId ? { userId } : {}),
           aiLinkGoal: goal,
           targetModel: 'openai',
         }),
@@ -84,7 +88,7 @@ export function AILinkCommand() {
         className="fixed bottom-8 right-8 h-16 w-16 rounded-full shadow-lg z-50"
         size="icon"
         onClick={() => {
-            if (!isAuthenticated) {
+            if (!isLoggedIn) {
                 // TODO: 로그인 페이지로 유도하는 더 나은 UX 필요
                 alert('AI-Link 기능을 사용하려면 로그인이 필요합니다.');
                 return;
