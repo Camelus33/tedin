@@ -349,6 +349,7 @@ export default function TSNoteCard({
   const abortControllerRef = useRef<AbortController | null>(null); // API 호출 중단용
   const isFirstRenderRef = useRef(true); // 첫 번째 렌더링 체크
   const isMountedRef = useRef(true); // 컴포넌트 마운트 상태 추적
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const [fields, setFields] = useState({
     importanceReason: initialNote.importanceReason || '',
@@ -1118,12 +1119,13 @@ export default function TSNoteCard({
   return (
     <div
       className={cn(
-        "relative p-2 sm:p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out min-h-[120px] flex flex-col justify-between",
-        (isOpen && enableOverlayEvolutionMode) || (isInlineEditing && isPageEditing && !enableOverlayEvolutionMode) ? "ring-2 ring-cyan-500 bg-gray-800" : "bg-gray-800/60 hover:bg-gray-700/80",
-        minimalDisplay ? "p-2 sm:p-3 min-h-0" : "",
+        "relative bg-gray-900/20 backdrop-blur-md p-4 rounded-lg shadow-lg transition-transform duration-300 group",
+        isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500" : "",
+        minimalDisplay ? "max-h-44 overflow-hidden group-hover:max-h-none" : "",
         className
       )}
       onClick={handleCardClick}
+      ref={cardRef}
     >
       {!minimalDisplay && sessionDetails && Object.keys(sessionDetails).length > 0 && ( 
         <>
@@ -1352,6 +1354,22 @@ export default function TSNoteCard({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Source & Date overlay for minimalDisplay */}
+      {minimalDisplay && (
+        <>
+          {bookTitle && (
+            <span className="absolute bottom-1 left-2 text-[10px] text-gray-600 truncate max-w-[80%] pointer-events-none">
+              {bookTitle}
+            </span>
+          )}
+          {(note.createdAt || note.clientCreatedAt) && (
+            <span className="absolute bottom-1 right-2 text-[10px] text-gray-600 pointer-events-none">
+              {formatNoteCreatedAt(note)}
+            </span>
+          )}
+        </>
       )}
     </div>
   );
