@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
@@ -37,7 +37,10 @@ export default function DashboardPage() {
   const router = useRouter();
   const reduxUser = useSelector((state: RootState) => state.user);
   const [user, setUser] = useState<User | null>(null);
+  // 원본 메모 데이터 (서버에서 가져온 전체 목록)
   const [recentMemos, setRecentMemos] = useState<TSNote[]>([]);
+  // bookId -> 책 정보(title 등) 매핑
+  const [bookInfoMap, setBookInfoMap] = useState<Map<string, { title: string }>>(new Map());
   const [summaryNotes, setSummaryNotes] = useState<SummaryNote[]>([]);
   const [memoCount, setMemoCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,9 +93,8 @@ export default function DashboardPage() {
          }
        }
       
-      // 최근 메모 가져오기 (notes API 사용)
-      console.log('🔍 [DEBUG] 1. Starting to fetch recent memos...');
-      const memosResponse = await apiClient.get('/notes?limit=3&sort=createdAt:desc');
+      // 1) 모든 메모를 가져오되, 기본 정렬은 최신순으로 요청
+      const memosResponse = await apiClient.get('/notes?sort=createdAt:desc');
       console.log('🔍 [DEBUG] 2. Raw memos API response:', memosResponse);
       console.log('🔍 [DEBUG] 3. Raw memos data:', memosResponse?.data);
       console.log('🔍 [DEBUG] 4. Is memos data an array?', Array.isArray(memosResponse?.data));
@@ -104,11 +106,8 @@ export default function DashboardPage() {
       const rawNotes = Array.isArray(memosResponse) ? memosResponse : (memosResponse?.data || []);
       console.log('🔍 [DEBUG] 6. Raw notes after fallback:', rawNotes);
       
-      // 서버는 title 필드를 사용하므로, TSNoteCard에서 필요로 하는 content 필드로 매핑
-      // 최근 3개만 선택
-      const mappedNotes = rawNotes
-        .slice(0, 3) // 최근 3개만 선택
-        .map((n: any) => {
+      // 클라이언트에서 필요한 필드 매핑 (content 보완)
+      const mappedNotes = rawNotes.map((n: any) => {
           console.log('🔍 [DEBUG] 7. Mapping individual note:', n);
           const mapped = {
             ...n,
@@ -125,6 +124,21 @@ export default function DashboardPage() {
       // 전체 메모 개수 설정 (실제 API에서 받은 전체 개수 사용)
       setMemoCount(rawNotes.length);
       console.log('🔍 [DEBUG] 10.5. Set memoCount to:', rawNotes.length);
+
+      // 2) 책 정보 batch 요청 (중복 bookId 제거)
+      const uniqueBookIds = [...new Set(mappedNotes.map((m: TSNote) => m.bookId).filter(Boolean))];
+      if (uniqueBookIds.length > 0) {
+        try {
+          const booksRes = await apiClient.post('/books/batch', { bookIds: uniqueBookIds });
+          const map = new Map<string, { title: string }>();
+          (booksRes?.data || []).forEach((b: any) => {
+            map.set(b._id, { title: b.title });
+          });
+          setBookInfoMap(map);
+        } catch (bookErr) {
+          console.warn('Failed to batch fetch books', bookErr);
+        }
+      }
 
       // 단권화 노트 가져오기 (최신 3개만 표시)
       console.log('🔍 [DEBUG] 11. Starting to fetch summary notes...');
@@ -154,7 +168,7 @@ export default function DashboardPage() {
       setIsLoading(false);
       console.log('🔍 [DEBUG] 19. Finished loading, isLoading set to false');
     }
-  };
+  }; // end fetchDashboardData
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -210,6 +224,19 @@ export default function DashboardPage() {
   console.log('🔍 [RENDER] Is summaryNotes array?', Array.isArray(summaryNotes));
   console.log('🔍 [RENDER] recentMemos length:', recentMemos?.length);
   console.log('🔍 [RENDER] summaryNotes length:', summaryNotes?.length);
+
+  // 파생 상태: viewMode, sortBy, recentMemos 로부터 화면에 표시할 메모 목록 계산
+  const displayedMemos = useMemo(() => {
+    if (!recentMemos || recentMemos.length === 0) return [] as TSNote[];
+
+    const sorted = [...recentMemos].sort((a, b) => {
+      const dateA = new Date(a.createdAt ?? a.clientCreatedAt ?? 0).getTime();
+      const dateB = new Date(b.createdAt ?? b.clientCreatedAt ?? 0).getTime();
+      return sortBy === 'latest' ? dateB - dateA : dateA - dateB;
+    });
+
+    return viewMode === 'grid' ? sorted.slice(0, 3) : sorted;
+  }, [recentMemos, sortBy, viewMode]);
 
   if (isLoading) {
     return (
@@ -410,9 +437,9 @@ export default function DashboardPage() {
           {(() => {
             console.log('🔍 [RENDER] Checking recentMemos condition:', recentMemos.length > 0);
             console.log('🔍 [RENDER] recentMemos.length:', recentMemos.length);
-            return recentMemos.length > 0 ? (
-              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2' : 'space-y-4 p-2'}>
-                {recentMemos.map((memo, index) => {
+            return displayedMemos.length > 0 ? (
+              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2' : 'grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3 p-2'}>
+                {displayedMemos.map((memo, index) => {
                   console.log(`🔍 [RENDER] Rendering memo ${index}:`, memo);
                   
                   // 포스트잇 색상 배열 (인덱스에 따라 다른 색상 적용)
@@ -454,7 +481,7 @@ export default function DashboardPage() {
                   return (
                     <div 
                       key={memo._id} 
-                      className={`${viewMode === 'list' ? 'w-full' : ''} cursor-pointer`}
+                      className={`${viewMode === 'list' ? 'relative' : ''} cursor-pointer`}
                       onClick={() => handleMemoCardClick(memo)}
                     >
                       <TSNoteCard
@@ -467,7 +494,7 @@ export default function DashboardPage() {
                           shadow-md ${colorScheme.shadow}
                           transform ${colorScheme.rotation} hover:rotate-0
                           hover:shadow-xl
-                          hover:scale-105
+                          hover:scale-110
                           transition-all duration-300 ease-out
                           relative
                           !rounded-none
@@ -490,13 +517,25 @@ export default function DashboardPage() {
                           shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.6)]
                         `}
                       />
+                      {viewMode === 'list' && (
+                        <>
+                          {/* 좌측 하단: 출처(책 제목) */}
+                          <span className="absolute bottom-1 left-2 text-[10px] text-gray-600 truncate max-w-[80%]">
+                            {bookInfoMap.get(memo.bookId)?.title || ''}
+                          </span>
+                          {/* 우측 하단: 날짜 */}
+                          <span className="absolute bottom-1 right-2 text-[10px] text-gray-600">
+                            {formatDate(memo.createdAt || memo.clientCreatedAt || '')}
+                          </span>
+                        </>
+                      )}
                     </div>
                   );
                 })}
               </div>
             ) : (
               (() => {
-                console.log('🔍 [RENDER] Showing "no memos" message');
+                console.log('�� [RENDER] Showing "no memos" message');
                 return (
                   <div className="text-center py-12 text-gray-400">
                     <p>아직 메모가 없습니다.</p>
