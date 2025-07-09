@@ -35,7 +35,8 @@ export const uploadProfileImage = async (req: Request, res: Response) => {
     }
 
     const userId = req.user._id;
-    const imageUrl = `/uploads/profiles/${req.file.filename}`;
+    const baseUrl = process.env.PUBLIC_BASE_URL || 'http://localhost:8000';
+    const imageUrl = `${baseUrl}/uploads/profiles/${req.file.filename}`;
 
     await User.findByIdAndUpdate(userId, { profileImage: imageUrl }, { new: true });
 
