@@ -286,98 +286,97 @@ export function AILinkCommand() {
               className="flex-grow mb-4"
               disabled={isLoading}
             />
-            <DialogFooter className="mt-4 flex flex-col items-stretch">
-              <div className="flex flex-row justify-between items-center">
-                <div className="flex gap-2 items-center">
-                  <Select
-                    value={selectedProvider}
-                    onValueChange={(v) => handleProviderChange(v as ProviderId)}
-                  >
-                    <SelectTrigger className="w-[120px]">
-                      <SelectValue placeholder="Provider" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(modelRegistry).map(([id, { label }]) => (
-                        <SelectItem key={id} value={id}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={selectedModelId}
-                    onValueChange={handleModelChange}
-                  >
-                    <SelectTrigger className="w-[220px]">
-                      <SelectValue placeholder="Model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {currentModels.map((model) => (
-                        <SelectItem key={model.id} value={model.id}>
-                          {model.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <button
-                    type="button"
-                    title="API 키 수정"
-                    onClick={() => {
-                      setProviderForApiKey(selectedProvider);
-                      const storedKey =
-                        localStorage.getItem(`${selectedProvider}_api_key`) || '';
-                      setApiKeyInput(storedKey);
-                      setShowApiKeyForm((prev) => !prev);
-                    }}
-                    className="p-2 rounded-md hover:bg-gray-100 transition-colors"
-                  >
-                    <KeyRound className="h-4 w-4 text-gray-600" />
-                  </button>
-                </div>
-                <Button type="submit" disabled={isLoading || !goal}>
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      실행 중...
-                    </>
-                  ) : (
-                    '실행'
-                  )}
-                </Button>
-              </div>
+            <div className="flex gap-2 items-center">
+              <Select
+                value={selectedProvider}
+                onValueChange={(v) => handleProviderChange(v as ProviderId)}
+              >
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue placeholder="Provider" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(modelRegistry).map(([id, { label }]) => (
+                    <SelectItem key={id} value={id}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={selectedModelId}
+                onValueChange={handleModelChange}
+              >
+                <SelectTrigger className="w-[220px]">
+                  <SelectValue placeholder="Model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {currentModels.map((model) => (
+                    <SelectItem key={model.id} value={model.id}>
+                      {model.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              {showApiKeyForm && (
-                <div className="mt-4 p-4 border rounded-md bg-gray-50/80">
-                  <h3 className="font-semibold mb-2 text-sm text-gray-800">
-                    {
-                      modelRegistry[providerForApiKey || selectedProvider]
-                        .label
-                    }{' '}
-                    API Key
-                  </h3>
-                  <Input
-                    id="apiKeyInline"
-                    type="password"
-                    placeholder="sk-..."
-                    value={apiKeyInput}
-                    onChange={(e) => setApiKeyInput(e.target.value)}
-                  />
-                  <div className="flex justify-end gap-2 mt-3">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setShowApiKeyForm(false);
-                      }}
-                    >
-                      취소
-                    </Button>
-                    <Button size="sm" onClick={saveApiKey}>
-                      저장
-                    </Button>
-                  </div>
+            {showApiKeyForm && (
+              <div className="mt-4 p-4 border rounded-md bg-gray-50/80">
+                <h3 className="font-semibold mb-2 text-sm text-gray-800">
+                  {
+                    modelRegistry[providerForApiKey || selectedProvider]
+                      .label
+                  }{' '}
+                  API Key
+                </h3>
+                <Input
+                  id="apiKeyInline"
+                  type="password"
+                  placeholder="sk-..."
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                />
+                <div className="flex justify-end gap-2 mt-3">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setShowApiKeyForm(false);
+                    }}
+                  >
+                    취소
+                  </Button>
+                  <Button size="sm" onClick={saveApiKey}>
+                    저장
+                  </Button>
                 </div>
-              )}
+              </div>
+            )}
+
+            <DialogFooter className="mt-auto pt-4 flex justify-between items-center">
+              <button
+                type="button"
+                title="API 키 수정"
+                onClick={() => {
+                  setProviderForApiKey(selectedProvider);
+                  const storedKey =
+                    localStorage.getItem(`${selectedProvider}_api_key`) || '';
+                  setApiKeyInput(storedKey);
+                  setShowApiKeyForm((prev) => !prev);
+                }}
+                className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+              >
+                <KeyRound className="h-5 w-5 text-gray-500 hover:text-gray-800" />
+              </button>
+              <Button type="submit" disabled={isLoading || !goal}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    실행 중...
+                  </>
+                ) : (
+                  '실행'
+                )}
+              </Button>
             </DialogFooter>
           </form>
 
