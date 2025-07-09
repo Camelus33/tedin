@@ -27,8 +27,8 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const [phone, setPhone] = useState('');
-  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [phone, setPhone] = useState<string>('');
+  const [recoveryEmail, setRecoveryEmail] = useState<string>('');
   const [birth, setBirth] = useState('');
   const [interest, setInterest] = useState('');
   const [goal, setGoal] = useState('');
@@ -61,6 +61,8 @@ export default function ProfilePage() {
           profileData = await profileResponse.json();
           setProfile(profileData);
           setEditNickname(profileData?.nickname || '');
+          setPhone((profileData as any).phone || '');
+          setRecoveryEmail((profileData as any).recoveryEmail || '');
         } catch (profileError) {
           console.error('프로필 데이터 로딩 오류:', profileError);
           // 서버 연결 오류 시 더미 데이터 설정
@@ -118,7 +120,7 @@ export default function ProfilePage() {
     setError('');
 
     try {
-      let updatedData: any = { nickname: editNickname };
+      let updatedData: any = { nickname: editNickname, phone, recoveryEmail };
       let profileImageUrl = profile.profileImage;
 
       // Upload profile image if selected
@@ -165,6 +167,8 @@ export default function ProfilePage() {
 
       const data = await response.json();
       setProfile(data);
+      setPhone(data.phone || '');
+      setRecoveryEmail(data.recoveryEmail || '');
       setIsEditing(false);
       setProfileImage(null);
     } catch (err: any) {
@@ -295,17 +299,35 @@ export default function ProfilePage() {
           </div>
 
           {/* 휴대폰 번호 */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <PhoneIcon className="w-5 h-5 text-indigo-400" />
-            <input type="tel" className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50" placeholder="휴대폰 번호 (준비중)" value={phone} onChange={e => setPhone(e.target.value)} disabled />
-            <span className="ml-2 text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5">준비중</span>
+          <div className="flex items-center gap-3 mb-4">
+            <PhoneIcon className="w-5 h-5 text-indigo-500" />
+            {isEditing ? (
+              <input
+                type="tel"
+                className="w-full px-4 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="휴대폰 번호"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+              />
+            ) : (
+              <span className="text-gray-800">{phone || '휴대폰 번호 미입력'}</span>
+            )}
           </div>
 
           {/* 복구 이메일 */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <EnvelopeIcon className="w-5 h-5 text-indigo-400" />
-            <input type="email" className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50" placeholder="복구 이메일 (준비중)" value={recoveryEmail} onChange={e => setRecoveryEmail(e.target.value)} disabled />
-            <span className="ml-2 text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5">준비중</span>
+          <div className="flex items-center gap-3 mb-4">
+            <EnvelopeIcon className="w-5 h-5 text-indigo-500" />
+            {isEditing ? (
+              <input
+                type="email"
+                className="w-full px-4 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="복구 이메일"
+                value={recoveryEmail}
+                onChange={e => setRecoveryEmail(e.target.value)}
+              />
+            ) : (
+              <span className="text-gray-800">{recoveryEmail || '복구 이메일 미입력'}</span>
+            )}
           </div>
 
           {/* 프로필 저장/수정 버튼 */}
@@ -369,7 +391,7 @@ export default function ProfilePage() {
           {/* FAQ/고객센터 */}
           <div className="flex items-center gap-3 mt-4">
             <QuestionMarkCircleIcon className="w-5 h-5 text-indigo-400" />
-            <a href="/help" className="text-indigo-600 text-sm hover:underline">구독 FAQ / 고객센터</a>
+            <a href="mailto:habitus33.tedin@gmail.com" className="text-indigo-600 text-sm hover:underline">구독 FAQ / 고객센터</a>
           </div>
         </section>
 
@@ -422,7 +444,7 @@ export default function ProfilePage() {
           {/* 고객센터/피드백 */}
           <div className="flex items-center gap-3 mt-4">
             <LifebuoyIcon className="w-5 h-5 text-indigo-400" />
-            <a href="/help" className="text-indigo-600 text-sm hover:underline">고객센터 / 피드백</a>
+            <a href="mailto:habitus33.tedin@gmail.com" className="text-indigo-600 text-sm hover:underline">고객센터 / 피드백</a>
           </div>
         </section>
       </div>

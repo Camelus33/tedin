@@ -9,6 +9,9 @@ export interface IUser extends Document {
   trialEndsAt: Date;
   roles: string[];
   createdAt: Date;
+  phone?: string;
+  recoveryEmail?: string;
+  profileImage?: string;
   preferences: {
     goals?: Array<'focus'|'memory'|'exam'>;
     memorySpanScore?: number;
@@ -40,6 +43,21 @@ const UserSchema: Schema = new Schema({
     trim: true,
     minlength: 2,
     maxlength: 20,
+  },
+  phone: {
+    type: String,
+    trim: true,
+    default: '',
+  },
+  recoveryEmail: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    default: '',
+  },
+  profileImage: {
+    type: String,
+    default: '',
   },
   invitedBy: {
     type: String,

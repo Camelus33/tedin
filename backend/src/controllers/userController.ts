@@ -14,6 +14,9 @@ export const getProfile = async (req: Request, res: Response) => {
       userId: user._id,
       email: user.email,
       nickname: user.nickname,
+      phone: (user as any).phone || '',
+      recoveryEmail: (user as any).recoveryEmail || '',
+      profileImage: (user as any).profileImage || '',
       trialEndsAt: user.trialEndsAt,
     });
   } catch (error) {
@@ -31,12 +34,18 @@ export const updateProfile = async (req: Request, res: Response) => {
 
   try {
     const userId = req.user._id;
-    const { nickname } = req.body;
+    const { nickname, phone, recoveryEmail, profileImage } = req.body;
     
     // Find and update user
+    const updateFields: any = {};
+    if (nickname !== undefined) updateFields.nickname = nickname;
+    if (phone !== undefined) updateFields.phone = phone;
+    if (recoveryEmail !== undefined) updateFields.recoveryEmail = recoveryEmail;
+    if (profileImage !== undefined) updateFields.profileImage = profileImage;
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { nickname },
+      updateFields,
       { new: true, runValidators: true }
     );
     
@@ -48,6 +57,9 @@ export const updateProfile = async (req: Request, res: Response) => {
       userId: updatedUser._id,
       email: updatedUser.email,
       nickname: updatedUser.nickname,
+      phone: updatedUser.phone || '',
+      recoveryEmail: updatedUser.recoveryEmail || '',
+      profileImage: updatedUser.profileImage || '',
       trialEndsAt: updatedUser.trialEndsAt,
     });
   } catch (error) {
