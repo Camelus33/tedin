@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { KeyRound, CheckCircle, XCircle, Bot } from 'lucide-react';
 
 interface AIProvider {
-  id: 'openai' | 'anthropic' | 'google';
+  id: 'openai' | 'anthropic' | 'gemini';
   name: string;
   envVar: string;
 }
@@ -15,7 +15,7 @@ interface AIProvider {
 const providers: AIProvider[] = [
   { id: 'openai', name: 'OpenAI (GPT-4, etc.)', envVar: 'OPENAI_API_KEY' },
   { id: 'anthropic', name: 'Anthropic (Claude 3, etc.)', envVar: 'ANTHROPIC_API_KEY' },
-  { id: 'google', name: 'Google (Gemini, etc.)', envVar: 'GOOGLE_API_KEY' },
+  { id: 'gemini', name: 'Gemini (Google)', envVar: 'gemini_api_key' },
 ];
 
 const AIProviderCard = ({ provider }: { provider: AIProvider }) => {

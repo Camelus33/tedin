@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Bot, ChevronDown, Loader2, Sparkles } from 'lucide-react';
+import { Bot, ChevronDown, Loader2, Sparkles, KeyRound } from 'lucide-react';
 
 interface AILinkResponse {
   content: string;
@@ -74,6 +74,7 @@ export function AILinkCommand() {
   const [selectedModelId, setSelectedModelId] = useState<string>(modelRegistry.gemini.models[0].id);
 
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [showApiKeyForm, setShowApiKeyForm] = useState(false);
   const [providerForApiKey, setProviderForApiKey] = useState<ProviderId | null>(null);
   const [apiKeyInput, setApiKeyInput] = useState('');
 
@@ -170,6 +171,7 @@ export function AILinkCommand() {
     if (!key) {
       setProviderForApiKey(providerId);
       setIsApiKeyModalOpen(true);
+      setShowApiKeyForm(true);
     }
   };
 
@@ -275,7 +277,7 @@ export function AILinkCommand() {
           <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
             <Textarea
               id="goal"
-              placeholder="예) 내 지식 공백을 분석해 줘 / 나에게 보이지 않는 메모, 책 등 숨겨진 모든 연결을 찾아 줘"
+              placeholder="예) 메모를 이용해 내 투자성향을 정밀분석해 줘 / 내 지식 공백을 분석해 줘 / 메모간의 숨은 연관성을 모두 찾아 줘"
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               className="flex-grow mb-4"
@@ -327,28 +329,23 @@ export function AILinkCommand() {
         </DialogContent>
       </Dialog>
       
-      <Dialog open={isApiKeyModalOpen} onOpenChange={setIsApiKeyModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{modelRegistry[providerForApiKey!]?.label} API Key 입력</DialogTitle>
-            <DialogDescription>
-              선택하신 모델을 사용하려면 API 키가 필요합니다. 키는 당신의 브라우저(로컬 스토리지)에만 안전하게 저장됩니다.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Input
-              id="apiKey"
-              placeholder="sk-..."
-              value={apiKeyInput}
-              onChange={(e) => setApiKeyInput(e.target.value)}
-            />
+      {showApiKeyForm && (
+        <div className="mt-4 p-4 border rounded-md bg-gray-50">
+          <h3 className="font-semibold mb-2">{modelRegistry[providerForApiKey || selectedProvider].label} API Key 관리</h3>
+          <Input
+            id="apiKeyInline"
+            placeholder="sk-..."
+            value={apiKeyInput}
+            onChange={(e) => setApiKeyInput(e.target.value)}
+          />
+          <div className="flex justify-end gap-2 mt-3">
+            <Button variant="outline" size="sm" onClick={() => { setShowApiKeyForm(false); }}>
+              취소
+            </Button>
+            <Button size="sm" onClick={saveApiKey}>저장</Button>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsApiKeyModalOpen(false)}>취소</Button>
-            <Button onClick={saveApiKey}>저장</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </>
   );
 }
