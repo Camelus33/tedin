@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Bot, ChevronDown, Loader2, Sparkles, KeyRound } from 'lucide-react';
+import { Bot, KeyRound, Loader2, Sparkles } from 'lucide-react';
 
 interface AILinkResponse {
   content: string;
@@ -73,9 +73,10 @@ export function AILinkCommand() {
   const [selectedProvider, setSelectedProvider] = useState<ProviderId>('gemini');
   const [selectedModelId, setSelectedModelId] = useState<string>(modelRegistry.gemini.models[0].id);
 
-  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [showApiKeyForm, setShowApiKeyForm] = useState(false);
-  const [providerForApiKey, setProviderForApiKey] = useState<ProviderId | null>(null);
+  const [providerForApiKey, setProviderForApiKey] = useState<ProviderId | null>(
+    null
+  );
   const [apiKeyInput, setApiKeyInput] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
@@ -170,8 +171,8 @@ export function AILinkCommand() {
     const key = localStorage.getItem(`${providerId}_api_key`);
     if (!key) {
       setProviderForApiKey(providerId);
-      setIsApiKeyModalOpen(true);
-      setShowApiKeyForm(true);
+      // setIsApiKeyModalOpen(true); // 더 이상 별도 모달을 사용하지 않음
+      setShowApiKeyForm(true); // 인라인 폼을 바로 보여줌
     }
   };
 
@@ -182,7 +183,7 @@ export function AILinkCommand() {
     }
     localStorage.setItem(`${providerForApiKey}_api_key`, apiKeyInput);
     toast.success(`${modelRegistry[providerForApiKey].label} API 키가 저장되었습니다.`);
-    setIsApiKeyModalOpen(false);
+    setShowApiKeyForm(false); // 폼 닫기
     setApiKeyInput('');
     setProviderForApiKey(null);
   };
@@ -203,7 +204,9 @@ export function AILinkCommand() {
       const apiKey = localStorage.getItem(`${selectedProvider}_api_key`);
       if (!apiKey) {
         checkApiKey(selectedProvider);
-        throw new Error(`${modelRegistry[selectedProvider].label} API 키가 필요합니다.`);
+        throw new Error(
+          `${modelRegistry[selectedProvider].label} API 키가 필요합니다.`
+        );
       }
 
       const bearerToken = localStorage.getItem('token') || '';
@@ -283,69 +286,124 @@ export function AILinkCommand() {
               className="flex-grow mb-4"
               disabled={isLoading}
             />
-            <DialogFooter className="mt-4 flex flex-row justify-between items-center">
-              <div className="flex gap-2 items-center">
-                <Select value={selectedProvider} onValueChange={(v) => handleProviderChange(v as ProviderId)}>
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Provider" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(modelRegistry).map(([id, { label }]) => (
-                      <SelectItem key={id} value={id}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={selectedModelId} onValueChange={handleModelChange}>
-                  <SelectTrigger className="w-[220px]">
-                    <SelectValue placeholder="Model" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {currentModels.map(model => (
-                      <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <DialogFooter className="mt-4 flex flex-col items-stretch">
+              <div className="flex flex-row justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <Select
+                    value={selectedProvider}
+                    onValueChange={(v) => handleProviderChange(v as ProviderId)}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue placeholder="Provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(modelRegistry).map(([id, { label }]) => (
+                        <SelectItem key={id} value={id}>
+                          {label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={selectedModelId}
+                    onValueChange={handleModelChange}
+                  >
+                    <SelectTrigger className="w-[220px]">
+                      <SelectValue placeholder="Model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {currentModels.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>
+                          {model.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <button
+                    type="button"
+                    title="API 키 수정"
+                    onClick={() => {
+                      setProviderForApiKey(selectedProvider);
+                      const storedKey =
+                        localStorage.getItem(`${selectedProvider}_api_key`) || '';
+                      setApiKeyInput(storedKey);
+                      setShowApiKeyForm((prev) => !prev);
+                    }}
+                    className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+                  >
+                    <KeyRound className="h-4 w-4 text-gray-600" />
+                  </button>
+                </div>
+                <Button type="submit" disabled={isLoading || !goal}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      실행 중...
+                    </>
+                  ) : (
+                    '실행'
+                  )}
+                </Button>
               </div>
-              <Button type="submit" disabled={isLoading || !goal}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    실행 중...
-                  </>
-                ) : '실행'}
-              </Button>
+
+              {showApiKeyForm && (
+                <div className="mt-4 p-4 border rounded-md bg-gray-50/80">
+                  <h3 className="font-semibold mb-2 text-sm text-gray-800">
+                    {
+                      modelRegistry[providerForApiKey || selectedProvider]
+                        .label
+                    }{' '}
+                    API Key
+                  </h3>
+                  <Input
+                    id="apiKeyInline"
+                    type="password"
+                    placeholder="sk-..."
+                    value={apiKeyInput}
+                    onChange={(e) => setApiKeyInput(e.target.value)}
+                  />
+                  <div className="flex justify-end gap-2 mt-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setShowApiKeyForm(false);
+                      }}
+                    >
+                      취소
+                    </Button>
+                    <Button size="sm" onClick={saveApiKey}>
+                      저장
+                    </Button>
+                  </div>
+                </div>
+              )}
             </DialogFooter>
           </form>
 
-          {error && <div className="text-red-500 mt-4"><p>{error}</p></div>}
-          
-          {response && (
-             <div className="mt-4 border-t pt-4 overflow-y-auto">
-                <h3 className="font-bold">결과</h3>
-                <div className="mt-2 p-3 bg-gray-50 rounded-md whitespace-pre-wrap">{response.content}</div>
-             </div>
-           )}
+          {error && (
+            <div className="text-red-500 mt-4">
+              <p>{error}</p>
+            </div>
+          )}
 
+          {response && (
+            <div className="mt-4 border-t pt-4 overflow-y-auto">
+              <h3 className="font-bold">결과</h3>
+              <div className="mt-2 p-3 bg-gray-50 rounded-md whitespace-pre-wrap">
+                {response.content}
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
-      
-      {showApiKeyForm && (
-        <div className="mt-4 p-4 border rounded-md bg-gray-50">
-          <h3 className="font-semibold mb-2">{modelRegistry[providerForApiKey || selectedProvider].label} API Key 관리</h3>
-          <Input
-            id="apiKeyInline"
-            placeholder="sk-..."
-            value={apiKeyInput}
-            onChange={(e) => setApiKeyInput(e.target.value)}
-          />
-          <div className="flex justify-end gap-2 mt-3">
-            <Button variant="outline" size="sm" onClick={() => { setShowApiKeyForm(false); }}>
-              취소
-            </Button>
-            <Button size="sm" onClick={saveApiKey}>저장</Button>
-          </div>
-        </div>
-      )}
+
+      {/* 
+        기존 별도 API Key Dialog는 인라인 폼으로 대체되었으므로 주석 처리 또는 삭제합니다.
+        <Dialog open={isApiKeyModalOpen} onOpenChange={setIsApiKeyModalOpen}>
+        ...
+        </Dialog> 
+      */}
     </>
   );
 }
