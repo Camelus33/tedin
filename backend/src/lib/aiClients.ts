@@ -3,50 +3,78 @@ import fetch from 'node-fetch';
 
 // 모든 AI 클라이언트가 구현해야 할 기본 인터페이스
 interface IAIClient {
-  completion(prompt: any): Promise<any>;
+  completion(prompt: any, modelName?: string): Promise<any>;
 }
 
-// OpenAI API를 호출하는 클라이언트 (가상 구현)
+// OpenAI API를 호출하는 클라이언트
 class OpenAIClient implements IAIClient {
   private apiKey: string;
   constructor(apiKey: string) {
     this.apiKey = apiKey;
     if (!this.apiKey) throw new Error('OpenAI API key is required.');
   }
-  async completion(prompt: any): Promise<any> {
-    console.log('--- Calling OpenAI API ---');
-    // 실제로는 fetch나 axios를 사용하여 API를 호출합니다.
-    // const response = await fetch('https://api.openai.com/v1/chat/completions', ...)
-    return Promise.resolve({
-      choices: [{ message: { content: '이것은 OpenAI의 응답입니다.' } }],
+  async completion(prompt: any, modelName: string = 'gpt-4o'): Promise<any> {
+    console.log(`--- Calling OpenAI API with model: ${modelName} ---`);
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages: prompt,
+      }),
     });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`OpenAI API error: ${res.status} ${txt}`);
+    }
+    return res.json();
   }
 }
 
-// Claude API를 호출하는 클라이언트 (가상 구현)
+// Claude API를 호출하는 클라이언트
 class ClaudeClient implements IAIClient {
     private apiKey: string;
     constructor(apiKey: string) {
       this.apiKey = apiKey;
       if (!this.apiKey) throw new Error('Anthropic API key is required.');
     }
-    async completion(prompt: any): Promise<any> {
-      console.log('--- Calling Anthropic Claude API ---');
-      return Promise.resolve("Assistant: 이것은 Claude의 응답입니다.");
+    async completion(prompt: any, modelName: string = 'claude-3-haiku-20240307'): Promise<any> {
+      console.log(`--- Calling Anthropic Claude API with model: ${modelName} ---`);
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': this.apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: modelName,
+          max_tokens: 4096,
+          messages: [{ role: 'user', content: prompt }],
+        }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Claude API error: ${res.status} ${txt}`);
+      }
+      return res.json();
     }
 }
 
-// Google Gemini API 클라이언트 (가상 구현)
+// Google Gemini API 클라이언트
 class GeminiClient implements IAIClient {
   private apiKey: string;
   constructor(apiKey: string) {
     this.apiKey = apiKey;
     if (!this.apiKey) throw new Error('Gemini API key is required.');
   }
-  async completion(prompt: any): Promise<any> {
-    console.log('--- Calling Google Gemini API ---');
+  async completion(prompt: any, modelName: string = 'gemini-1.5-flash-latest'): Promise<any> {
+    console.log(`--- Calling Google Gemini API with model: ${modelName} ---`);
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${this.apiKey}`;
       const res = await fetch(url, {
         method: 'POST',
         headers: {
@@ -73,16 +101,31 @@ class GeminiClient implements IAIClient {
   }
 }
 
-// Perplexity AI 클라이언트 (가상 구현)
+// Perplexity AI 클라이언트
 class PerplexityClient implements IAIClient {
   private apiKey: string;
   constructor(apiKey: string) {
     this.apiKey = apiKey;
     if (!this.apiKey) throw new Error('Perplexity API key is required.');
   }
-  async completion(prompt: any): Promise<any> {
-    console.log('--- Calling Perplexity AI API ---');
-    return Promise.resolve({ answer: '이것은 Perplexity의 응답입니다.' });
+  async completion(prompt: any, modelName: string = 'llama-3-sonar-large-32k-online'): Promise<any> {
+    console.log(`--- Calling Perplexity AI API with model: ${modelName} ---`);
+    const res = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Perplexity API error: ${res.status} ${txt}`);
+    }
+    return res.json();
   }
 }
 
@@ -93,8 +136,9 @@ class MidjourneyClient implements IAIClient {
     this.apiKey = apiKey;
     if (!this.apiKey) throw new Error('Midjourney API key is required.');
   }
-  async completion(prompt: any): Promise<any> {
+  async completion(prompt: any, modelName?: string): Promise<any> {
     console.log('--- Calling Midjourney API ---');
+    // In a real scenario, you'd use the modelName if needed for different image models
     return Promise.resolve({ imageUrl: 'https://example.com/generated-image.jpg' });
   }
 }

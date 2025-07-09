@@ -34,7 +34,7 @@ export const executeAILink = async (req: Request, res: Response) => {
     // 사용자의 API 키는 요청 헤더나 세션에서 안전하게 받아와야 함 (여기서는 임시)
     const userApiKey = req.headers['x-user-api-key'] as string; 
     const aiClient = getAIClient(targetModel as SupportedModels, userApiKey);
-    const aiResponse = await aiClient.completion(prompt);
+    const aiResponse = await aiClient.completion(prompt, targetModel);
 
     // 5. 응답 처리 및 가공
     const handler = new ResponseHandler(aiResponse, contextBundle);
