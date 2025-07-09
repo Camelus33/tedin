@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -66,7 +67,14 @@ const modelRegistry = {
   },
 };
 
+const examplePrompts = [
+  '메모를 이용해 내 투자성향을 정밀분석해 줘',
+  '내 지식 공백을 분석해 줘',
+  '메모간의 숨은 연관성을 모두 찾아 줘',
+];
+
 export function AILinkCommand() {
+  const pathname = usePathname();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [goal, setGoal] = useState('');
   
@@ -167,6 +175,25 @@ export function AILinkCommand() {
     checkApiKey(selectedProvider);
   };
 
+  const isVisible = useMemo(() => {
+    if (!pathname) return false;
+    const allowedPaths = [
+      '/dashboard',
+      '/books',
+      '/myverse', // myverse도 도서관 관련 페이지일 수 있으므로 추가
+    ];
+
+    if (allowedPaths.includes(pathname)) {
+      return true;
+    }
+
+    if (pathname.startsWith('/books/') || pathname.startsWith('/summary-notes/')) {
+      return true;
+    }
+    
+    return false;
+  }, [pathname]);
+
   const checkApiKey = (providerId: ProviderId) => {
     const key = localStorage.getItem(`${providerId}_api_key`);
     if (!key) {
@@ -243,6 +270,10 @@ export function AILinkCommand() {
 
   const currentModels = modelRegistry[selectedProvider]?.models || [];
 
+  if (!isVisible) {
+    return null;
+  }
+
   return (
     <>
       {/*
@@ -280,12 +311,25 @@ export function AILinkCommand() {
           <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
             <Textarea
               id="goal"
-              placeholder="예) 메모를 이용해 내 투자성향을 정밀분석해 줘 / 내 지식 공백을 분석해 줘 / 메모간의 숨은 연관성을 모두 찾아 줘"
+              placeholder="AI에게 요청할 목표를 입력하거나 아래 예시를 선택하세요."
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              className="flex-grow mb-4"
+              className="flex-grow"
               disabled={isLoading}
             />
+            <div className="grid grid-cols-3 gap-2 my-3">
+              {examplePrompts.map((prompt) => (
+                <Button
+                  key={prompt}
+                  type="button"
+                  variant="outline"
+                  className="h-full text-xs font-normal text-slate-500 p-2 whitespace-normal text-left"
+                  onClick={() => setGoal(prompt)}
+                >
+                  {prompt}
+                </Button>
+              ))}
+            </div>
             <div className="flex gap-2 items-center">
               <Select
                 value={selectedProvider}
