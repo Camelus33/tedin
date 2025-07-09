@@ -268,7 +268,7 @@ export function AILinkCommand() {
               AI-Link Command
             </DialogTitle>
             <DialogDescription>
-              달성하고 싶은 목표를 알려주세요. 구체적인 목표, 특정 메모와 AI 모델을 설정하여 최고의 퍼포먼스를 경험하세요
+              달성하고 싶은 목표를 구체적으로 알려주세요, 특정 메모 내용 언급시 온톨로지 성능이 향상됩니다.
             </DialogDescription>
           </DialogHeader>
           
