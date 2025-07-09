@@ -84,11 +84,11 @@ export function AILinkCommand() {
   /* ────────────────────────────────
    *  DRAGGABLE FAB (Floating Action Button)
    * --------------------------------------
-   *  버튼을 사용자가 자유롭게 끌어서 위치를 변경할 수 있도록 position state를 추가한다.
-   *  초기값은 기존 bottom-right 위치와 동일하도록 window 사이즈를 참조한다.
+   *  버튼을 사용자가 자유롭게 끌어서 위치를 변경할 수 있습니다.
+   *  초기 위치는 **좌측 하단** 32px 마진으로 지정합니다.
    */
   const defaultPos = typeof window !== 'undefined'
-    ? { x: window.innerWidth - 80 /* btn w */ - 32, y: window.innerHeight - 80 - 32 }
+    ? { x: 32, y: window.innerHeight - 80 /* btn h */ - 32 } // bottom-left
     : { x: 0, y: 0 };
 
   const [{ x, y }, setPos] = useState<{ x: number; y: number }>(defaultPos);
@@ -263,14 +263,14 @@ export function AILinkCommand() {
               AI-Link Command
             </DialogTitle>
             <DialogDescription>
-              달성하고 싶은 목표를 알려주세요. 당신의 메모와 선택한 AI 모델을 활용하여 최적의 결과를 만들어 드립니다.
+              달성하고 싶은 목표를 알려주세요. 구체적인 목표, 특정 메모와 AI 모델을 설정하여 최고의 퍼포먼스를 경험하세요
             </DialogDescription>
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
             <Textarea
               id="goal"
-              placeholder="예) 내 지식 공백을 분석해 줘 / 내가 놀치고 있는 메모와 책 간 숨겨진 연결을 찾아 줘"
+              placeholder="예) 내 지식 공백을 분석해 줘 / 나에게 보이지 않는 메모, 책 등 숨겨진 모든 연결을 찾아 줘"
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               className="flex-grow mb-4"
