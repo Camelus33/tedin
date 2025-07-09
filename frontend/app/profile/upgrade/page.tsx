@@ -56,7 +56,7 @@ export default function UpgradePage() {
       priceYearly: 200000,
       priceYearlyMonthlyEquivalent: 16667,
       intervalUnit: '월',
-      description: 'AI 분석·추천으로 사고 진화와 고맥락 지식 연결을 가속하세요.',
+      description: 'AI 분석·추천으로 사고 진화 추적 및 고맥락 지식 연결을 가속하세요.',
       features: [
         '무료 플랜의 모든 기능 포함',
         '사고 진화 패턴 분석 & 중복 정보 알림',
@@ -78,7 +78,7 @@ export default function UpgradePage() {
       priceYearly: 260000, // 약 200 USD
       priceYearlyMonthlyEquivalent: 21667,
       intervalUnit: '월',
-      description: '팀 협업·보안 & 고급 모델 최적화로 사고·지식 생태계를 확장하세요.',
+      description: '팀 협업·보안 & 고급 모델 최적화로 사고 진화 추적과 고맥락 지식 생태계를 확장하세요.',
       features: [
         'Plus 플랜의 모든 기능 포함',
         '고급 AI 모델 사용 최적화(토큰 절감·캐싱)',
