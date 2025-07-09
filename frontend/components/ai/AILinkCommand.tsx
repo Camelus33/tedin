@@ -304,32 +304,22 @@ export function AILinkCommand() {
               Ontology Command
             </DialogTitle>
             <DialogDescription>
-              달성하고 싶은 목표를 구체적으로 알려주세요, 특정 메모 내용 언급시 온톨로지 성능이 향상됩니다.
+              달성하고 싶은 목표를 구체적으로 알려주세요. 관련 메모가 많을수록 온톨로지 성능이 향상됩니다.
             </DialogDescription>
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
             <Textarea
               id="goal"
-              placeholder="AI에게 요청할 목표를 입력하거나 아래 예시를 선택하세요."
+              placeholder={
+                `메모를 이용해 내 투자 판단을 정밀분석해 줘\n메모를 이용해 내 지식 공백을 분석해 줘\n내 관점에서 놓칠 숨은 메모들의 연관성을 보여줘`
+              }
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               className="flex-grow"
               disabled={isLoading}
             />
-            <div className="grid grid-cols-3 gap-2 my-3">
-              {examplePrompts.map((prompt) => (
-                <Button
-                  key={prompt}
-                  type="button"
-                  variant="outline"
-                  className="h-full text-xs font-normal text-slate-500 p-2 whitespace-normal text-left"
-                  onClick={() => setGoal(prompt)}
-                >
-                  {prompt}
-                </Button>
-              ))}
-            </div>
+            {/* 예시 버튼 제거: placeholder 자체에 3줄 예시 제공 */}
             <div className="flex gap-2 items-center">
               <Select
                 value={selectedProvider}
