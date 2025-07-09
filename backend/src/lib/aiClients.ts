@@ -1,4 +1,5 @@
 import { SupportedModels } from '../services/PromptGenerator';
+import fetch from 'node-fetch';
 
 // 모든 AI 클라이언트가 구현해야 할 기본 인터페이스
 interface IAIClient {
@@ -44,7 +45,31 @@ class GeminiClient implements IAIClient {
   }
   async completion(prompt: any): Promise<any> {
     console.log('--- Calling Google Gemini API ---');
-    return Promise.resolve({ output: '이것은 Gemini의 응답입니다.' });
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.apiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
+        }),
+      });
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Gemini API error: ${res.status} ${errText}`);
+      }
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   }
 }
 

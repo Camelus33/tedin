@@ -55,6 +55,10 @@ export class ResponseHandler {
     if (this.rawResponse?.imageUrl) {
       return `이미지 생성 완료: ${this.rawResponse.imageUrl}`;
     }
+    // Gemini 실제 응답: candidates[0].content.parts[0].text
+    if (this.rawResponse?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return this.rawResponse.candidates[0].content.parts[0].text;
+    }
     return '';
   }
 

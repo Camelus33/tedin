@@ -34,7 +34,6 @@ export function AILinkCommand() {
     { id: 'claude', label: 'Claude' },
     { id: 'gemini', label: 'Gemini' },
     { id: 'perplexity', label: 'Perplexity' },
-    { id: 'midjourney', label: 'Midjourney' },
   ] as const;
   type ModelId = typeof modelOptions[number]['id'];
   const [selectedModel, setSelectedModel] = useState<ModelId>('openai');
@@ -45,9 +44,11 @@ export function AILinkCommand() {
   // 최초 렌더 시 로컬스토리지에 저장된 키가 있으면 바로 Goal 단계로 전환
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const storedModel = (localStorage.getItem('ai_link_model') as ModelId) || 'openai';
-    setSelectedModel(storedModel);
-    const storedKey = localStorage.getItem(`${storedModel}_api_key`);
+    const storedModelRaw = typeof window !== 'undefined' ? localStorage.getItem('ai_link_model') : null;
+    const isAllowed = modelOptions.some(m=>m.id===storedModelRaw);
+    const allowedModel = isAllowed ? (storedModelRaw as ModelId) : 'openai';
+    setSelectedModel(allowedModel);
+    const storedKey = isAllowed ? localStorage.getItem(`${allowedModel}_api_key`) : null;
     if (storedKey) {
       setApiKeyInput(storedKey);
       setCurrentStep('goal');
@@ -122,9 +123,11 @@ export function AILinkCommand() {
                 return;
             }
     // 플로팅 버튼을 클릭할 때마다 저장된 키 유무를 확인 후 단계 설정
-    const storedModel = (typeof window !== 'undefined' ? localStorage.getItem('ai_link_model') : null) as ModelId | null;
-    setSelectedModel(storedModel || 'openai');
-    const storedKey = typeof window !== 'undefined' ? localStorage.getItem(`${storedModel || 'openai'}_api_key`) : null;
+    const storedModelRaw = typeof window !== 'undefined' ? localStorage.getItem('ai_link_model') : null;
+    const isAllowed = modelOptions.some(m=>m.id===storedModelRaw);
+    const allowedModel = isAllowed ? (storedModelRaw as ModelId) : 'openai';
+    setSelectedModel(allowedModel);
+    const storedKey = typeof window !== 'undefined' ? localStorage.getItem(`${allowedModel}_api_key`) : null;
     setCurrentStep(storedKey ? 'goal' : 'key');
     setIsOpen(true);
         }}
