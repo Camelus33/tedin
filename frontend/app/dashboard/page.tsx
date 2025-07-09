@@ -523,10 +523,8 @@ export default function DashboardPage() {
                           <span className="absolute bottom-1 left-2 text-[10px] text-gray-600 truncate max-w-[80%]">
                             {bookInfoMap.get(memo.bookId)?.title || ''}
                           </span>
-                          {/* 우측 하단: 날짜 */}
-                          <span className="absolute bottom-1 right-2 text-[10px] text-gray-600">
-                            {formatDate(memo.createdAt || memo.clientCreatedAt || '')}
-                          </span>
+                          {/* 우측 하단: 날짜 표시(리스트 모드에서 중복 방지) */}
+                          {/* 날짜는 TSNoteCard의 minimalDisplay 모드에서 이미 표시되므로 중복을 방지하기 위해 제거 */}
                         </>
                       )}
                     </div>
