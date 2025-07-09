@@ -44,7 +44,7 @@ npm install
 MONGODB_URI=mongodb://localhost:27017/habitus33
 GRAPHDB_URL=http://localhost:7200/repositories/habitus33
 # ... 기타 필요한 변수들
-```
+  ```
 
 ### 실행
 

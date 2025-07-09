@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -31,36 +31,39 @@ interface AILinkResponse {
 
 type ProviderId = 'gemini' | 'openai' | 'claude' | 'perplexity';
 
+// 최신(2025-07) 모델 라인업으로 업데이트
 const modelRegistry = {
   gemini: {
     label: 'Gemini',
     models: [
-      { id: 'gemini-1.5-flash-latest', name: '1.5 Flash (빠름/균형)' },
-      { id: 'gemini-1.5-pro-latest', name: '1.5 Pro (고품질)' },
+      { id: 'gemini-2.5-flash-latest', name: '2.5 Flash (초고속)' },
+      { id: 'gemini-2.5-pro-latest', name: '2.5 Pro (최고 품질)' },
     ],
   },
   openai: {
     label: 'OpenAI',
     models: [
-      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo (빠름)' },
-      { id: 'gpt-4o', name: 'GPT-4o (최신/고품질)' },
+      { id: 'gpt-4o', name: 'GPT-4o (멀티모달/빠름)' },
+      { id: 'gpt-4.1', name: 'GPT-4.1 (초장문/코딩)' },
+      { id: 'o3', name: 'o3 (고급 추론)' },
+      { id: 'o3-pro', name: 'o3-Pro (최고 성능)' },
     ],
   },
   claude: {
     label: 'Claude',
     models: [
-      { id: 'claude-3-haiku-20240307', name: '3 Haiku (가장 빠름)' },
-      { id: 'claude-3-sonnet-20240229', name: '3 Sonnet (균형)' },
-      { id: 'claude-3-opus-20240229', name: '3 Opus (최고 성능)' },
+      { id: 'claude-4-haiku', name: '4 Haiku (가장 빠름)' },
+      { id: 'claude-4-sonnet', name: '4 Sonnet (균형)' },
+      { id: 'claude-4-opus', name: '4 Opus (최고 성능)' },
     ],
   },
   perplexity: {
     label: 'Perplexity',
     models: [
-       { id: 'llama-3-sonar-small-32k-online', name: 'Llama3 Sonar Small (실시간 웹)' },
-       { id: 'llama-3-sonar-large-32k-online', name: 'Llama3 Sonar Large (실시간 웹)' },
-    ]
-  }
+      { id: 'llama-4-scout', name: 'Llama4 Scout (저비용)' },
+      { id: 'llama-4-maverick', name: 'Llama4 Maverick (고성능)' },
+    ],
+  },
 };
 
 export function AILinkCommand() {
@@ -77,6 +80,50 @@ export function AILinkCommand() {
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<AILinkResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  /* ────────────────────────────────
+   *  DRAGGABLE FAB (Floating Action Button)
+   * --------------------------------------
+   *  버튼을 사용자가 자유롭게 끌어서 위치를 변경할 수 있도록 position state를 추가한다.
+   *  초기값은 기존 bottom-right 위치와 동일하도록 window 사이즈를 참조한다.
+   */
+  const defaultPos = typeof window !== 'undefined'
+    ? { x: window.innerWidth - 80 /* btn w */ - 32, y: window.innerHeight - 80 - 32 }
+    : { x: 0, y: 0 };
+
+  const [{ x, y }, setPos] = useState<{ x: number; y: number }>(defaultPos);
+  const isDraggingRef = useRef(false);
+  const dragOffsetRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+
+  // 마우스/터치 move 핸들러 – window 단위로 등록 (drag 중)
+  useEffect(() => {
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      if (!isDraggingRef.current) return;
+      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+      setPos({ x: clientX - dragOffsetRef.current.dx, y: clientY - dragOffsetRef.current.dy });
+    };
+    const handleUp = () => {
+      isDraggingRef.current = false;
+    };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('touchend', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      window.removeEventListener('touchend', handleUp);
+    };
+  }, []);
+
+  const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    dragOffsetRef.current = { dx: clientX - x, dy: clientY - y };
+    isDraggingRef.current = true;
+  };
 
   const user = useSelector((state: RootState) => state.user);
   const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('token');
@@ -188,8 +235,12 @@ export function AILinkCommand() {
 
   return (
     <>
+      {/*
+        position: fixed  + inline style → 사용자 이동 좌표 적용
+      */}
       <Button
-        className="fixed bottom-8 right-8 h-16 w-16 rounded-full shadow-lg z-50"
+        className="h-16 w-16 rounded-full shadow-lg z-50"
+        style={{ position: 'fixed', left: x, top: y }}
         size="icon"
         onClick={() => {
             if (!isLoggedIn) {
@@ -198,6 +249,8 @@ export function AILinkCommand() {
             }
             setIsCommandOpen(true);
         }}
+        onMouseDown={startDrag}
+        onTouchStart={startDrag}
       >
         <Sparkles className="h-8 w-8" />
       </Button>
@@ -210,17 +263,17 @@ export function AILinkCommand() {
               AI-Link Command
             </DialogTitle>
             <DialogDescription>
-              달성하고 싶은 목표를 알려주세요. 당신의 지식 베이스와 선택한 AI 모델을 활용하여 최적의 결과를 만들어 드립니다.
+              달성하고 싶은 목표를 알려주세요. 당신의 메모와 선택한 AI 모델을 활용하여 최적의 결과를 만들어 드립니다.
             </DialogDescription>
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
             <Textarea
               id="goal"
-              placeholder="예: 내 메모들을 바탕으로 '머신러닝'에 대한 블로그 글 초안을 작성해줘."
+              placeholder="예) 내 지식 공백을 분석해 줘 / 내가 놀치고 있는 메모와 책 간 숨겨진 연결을 찾아 줘"
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              className="flex-grow text-base"
+              className="flex-grow mb-4"
               disabled={isLoading}
             />
             <DialogFooter className="mt-4 flex flex-row justify-between items-center">
