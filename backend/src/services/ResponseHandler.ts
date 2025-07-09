@@ -43,6 +43,18 @@ export class ResponseHandler {
         const assistantResponse = this.rawResponse.split('Assistant:')[1];
         return assistantResponse ? assistantResponse.trim() : '';
     }
+    // Gemini stub { output: '...' }
+    if (this.rawResponse?.output) {
+      return this.rawResponse.output;
+    }
+    // Perplexity stub { answer: '...' }
+    if (this.rawResponse?.answer) {
+      return this.rawResponse.answer;
+    }
+    // Midjourney stub { imageUrl: '...' }
+    if (this.rawResponse?.imageUrl) {
+      return `이미지가 생성되었습니다: ${this.rawResponse.imageUrl}`;
+    }
     return '';
   }
 
