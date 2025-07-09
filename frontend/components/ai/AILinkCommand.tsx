@@ -84,14 +84,19 @@ export function AILinkCommand() {
   /* ────────────────────────────────
    *  DRAGGABLE FAB (Floating Action Button)
    * --------------------------------------
-   *  버튼을 사용자가 자유롭게 끌어서 위치를 변경할 수 있습니다.
-   *  초기 위치는 **좌측 하단** 32px 마진으로 지정합니다.
+   *  버튼 사이즈 / 초기 좌표 관리
    */
-  const defaultPos = typeof window !== 'undefined'
-    ? { x: 32, y: window.innerHeight - 80 /* btn h */ - 32 } // bottom-left
-    : { x: 0, y: 0 };
+  const BUTTON_SIZE = 64; // h-16 w-16 (Tailwind 4rem)
 
-  const [{ x, y }, setPos] = useState<{ x: number; y: number }>(defaultPos);
+  // 서버 사이드 렌더 단계에선 window가 없으므로 임시 값(좌측 상단)
+  const [{ x, y }, setPos] = useState<{ x: number; y: number }>({ x: 32, y: 32 });
+
+  // 마운트 시 실제 뷰포트 높이를 사용해 **좌측 하단**으로 스냅
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setPos({ x: 32, y: window.innerHeight - BUTTON_SIZE - 32 });
+    }
+  }, []);
   const isDraggingRef = useRef(false);
   const dragOffsetRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
 
@@ -239,7 +244,7 @@ export function AILinkCommand() {
         position: fixed  + inline style → 사용자 이동 좌표 적용
       */}
       <Button
-        className="h-16 w-16 rounded-full shadow-lg z-50"
+        className="h-16 w-16 rounded-full shadow-lg z-50 cursor-pointer select-none"
         style={{ position: 'fixed', left: x, top: y }}
         size="icon"
         onClick={() => {
