@@ -4,7 +4,47 @@ import Session from '../models/Session';
 import Book from '../models/Book';
 import UserStats from '../models/UserStats';
 import mongoose from 'mongoose';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
+// Multer configuration for profile image uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.resolve(process.cwd(), 'uploads', 'profiles');
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    cb(null, `${req.user._id}-${Date.now()}${ext}`);
+  },
+});
+
+export const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+});
+
+export const uploadProfileImage = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: '이미지 파일이 필요합니다.' });
+    }
+
+    const userId = req.user._id;
+    const imageUrl = `/uploads/profiles/${req.file.filename}`;
+
+    await User.findByIdAndUpdate(userId, { profileImage: imageUrl }, { new: true });
+
+    res.status(200).json({ imageUrl });
+  } catch (error) {
+    console.error('Profile image upload error:', error);
+    res.status(500).json({ error: '프로필 이미지 업로드 중 오류가 발생했습니다.' });
+  }
+};
 // Get user profile
 export const getProfile = async (req: Request, res: Response) => {
   try {

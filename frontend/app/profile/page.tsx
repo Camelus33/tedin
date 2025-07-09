@@ -127,9 +127,10 @@ export default function ProfilePage() {
       if (profileImage) {
         try {
           const formData = new FormData();
-          formData.append('profileImage', profileImage);
-          
-          const imageResponse = await fetch('/api/users/profile-image', {
+          formData.append('image', profileImage);
+
+          const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          const imageResponse = await fetch(`${apiBase}/api/users/profile-image`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`,

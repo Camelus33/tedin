@@ -1,5 +1,5 @@
 import express from 'express';
-import { getProfile, updateProfile, getSettings, updateSettings, searchUsers, getUserStats } from '../controllers/userController';
+import { getProfile, updateProfile, getSettings, updateSettings, searchUsers, getUserStats, upload, uploadProfileImage } from '../controllers/userController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -72,6 +72,9 @@ router.put(
   validateRequest,
   updateSettings
 );
+
+// Upload profile image
+router.post('/profile-image', upload.single('image'), uploadProfileImage);
 
 // 여러 사용자 ID로 닉네임 정보 조회
 router.get('/bulk', async (req, res) => {
