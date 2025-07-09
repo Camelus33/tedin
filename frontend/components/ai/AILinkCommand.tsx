@@ -265,7 +265,7 @@ export function AILinkCommand() {
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <Bot className="mr-2" />
-              AI-Link Command
+              Ontology Command
             </DialogTitle>
             <DialogDescription>
               달성하고 싶은 목표를 구체적으로 알려주세요, 특정 메모 내용 언급시 온톨로지 성능이 향상됩니다.
