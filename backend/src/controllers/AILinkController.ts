@@ -2,55 +2,52 @@ import { Request, Response } from 'express';
 import { ContextOrchestrator } from '../services/ContextOrchestrator';
 import { PromptGenerator, SupportedModels } from '../services/PromptGenerator';
 import { ResponseHandler } from '../services/ResponseHandler';
-import User from '../models/User'; // 실제 사용자 모델
-import { getAIClient } from '../lib/aiClients'; // AI 클라이언트 팩토리 (가상)
+import User from '../models/User';
+import { getAIClient } from '../lib/aiClients';
 
 export const executeAILink = async (req: Request, res: Response) => {
-  const { userId: bodyUserId, aiLinkGoal, targetModel } = req.body;
+  const { userId: bodyUserId, aiLinkGoal, targetProvider, targetModel } = req.body;
+  const userId = bodyUserId || (req as any).user?._id;
 
-  // userId 우선순위: 1) body, 2) auth 미들웨어에서 주입된 req.user
-  const userId = bodyUserId || req.user?._id;
-
-  if (!userId || !aiLinkGoal || !targetModel) {
-    return res.status(400).json({ error: 'userId, aiLinkGoal, targetModel are required.' });
+  if (!userId) {
+    return res.status(401).json({ error: 'User not authenticated' });
+  }
+  if (!aiLinkGoal) {
+    return res.status(400).json({ error: 'AI-Link goal is required' });
+  }
+  if (!targetProvider || !targetModel) {
+    return res.status(400).json({ error: 'targetProvider and targetModel are required' });
   }
 
   try {
-    // 1. 사용자 정보 조회
+    const userApiKey = req.headers['x-user-api-key'] as string;
+    if (!userApiKey) {
+      return res.status(400).json({ error: 'API key is required in x-user-api-key header' });
+    }
+    
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    // 2. 컨텍스트 조합
     const orchestrator = new ContextOrchestrator(user);
     const contextBundle = await orchestrator.getContextBundle(aiLinkGoal);
 
-    // 3. 프롬프트 생성
-    const promptGenerator = new PromptGenerator(targetModel as SupportedModels);
+    const promptGenerator = new PromptGenerator(targetProvider as SupportedModels);
     const prompt = promptGenerator.generate(contextBundle, aiLinkGoal);
-
-    // 4. 외부 AI API 호출
-    // 사용자의 API 키는 요청 헤더나 세션에서 안전하게 받아와야 함 (여기서는 임시)
-    const userApiKey = req.headers['x-user-api-key'] as string; 
-    const aiClient = getAIClient(targetModel as SupportedModels, userApiKey);
+    
+    const aiClient = getAIClient(targetProvider as SupportedModels, userApiKey);
     const aiResponse = await aiClient.completion(prompt, targetModel);
 
-    // 5. 응답 처리 및 가공
     const handler = new ResponseHandler(aiResponse, contextBundle);
     const formattedResponse = handler.formatForDisplay();
-    
-    // (선택) 새로운 지식 비동기 저장
-    const newKnowledge = handler.extractNewKnowledge();
-    if (newKnowledge.length > 0) {
-      // TODO: GraphDB에 새로운 트리플 저장
-      console.log('New knowledge to be saved:', newKnowledge);
-    }
-    
-    res.status(200).json(formattedResponse);
 
-  } catch (error) {
+    res.status(200).json(formattedResponse);
+  } catch (error: any) {
     console.error('AI-Link execution failed:', error);
-    res.status(500).json({ error: 'An unexpected error occurred during AI-Link execution.' });
+    res.status(500).json({
+      error: 'An unexpected error occurred during AI-Link execution.',
+      details: error.message,
+    });
   }
 }; 
