@@ -409,25 +409,7 @@ export default function ProfilePage() {
             <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>
           </div>
 
-          {/* 테마 설정 (UI만) */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <MoonIcon className="w-5 h-5 text-indigo-400" />
-            <span className="text-gray-700">다크모드</span>
-            <input type="checkbox" className="accent-indigo-500" disabled />
-            <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>
-          </div>
-
-          {/* 데이터/개인정보 관리 (UI만) */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <DocumentArrowDownIcon className="w-5 h-5 text-indigo-400" />
-            <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm cursor-not-allowed" disabled>내 데이터 다운로드</button>
-            <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>
-          </div>
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <ShieldCheckIcon className="w-5 h-5 text-indigo-400" />
-            <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm cursor-not-allowed" disabled>개인정보 처리방침</button>
-            <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>
-          </div>
+          {/* (다크모드, 데이터 다운로드, 개인정보 처리방침 옵션 제거됨) */}
 
           {/* 계정 탈퇴 (UI만) */}
           <div className="flex items-center gap-3 mb-4 opacity-60">
