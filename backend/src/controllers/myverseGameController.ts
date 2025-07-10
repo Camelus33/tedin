@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import MyverseGame, { IMyverseGame } from '../models/MyverseGame';
 import Collection from '../models/Collection';
-import mongoose from 'mongoose';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { validationResult } from 'express-validator';
 import MyVerseSessionResult from '../models/MyVerseSessionResult';
 import { processCommonSessionResultTasks } from '../services/sessionResultService';

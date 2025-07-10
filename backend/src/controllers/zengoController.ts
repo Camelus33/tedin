@@ -685,7 +685,7 @@ export const getProverbContent = async (req: Request, res: Response) => {
             console.log(`reshuffleWords=true: 동일한 문장에 새로운 위치 생성`);
             
             // 보드 사이즈 결정
-            let boardSize = existingContent.boardSize;
+            const boardSize = existingContent.boardSize;
             
             // 단어 수에 맞는 새로운 좌표 생성 (일렬 방지)
             const wordPositions = generateNonColinearPositions(existingContent.wordMappings.length, boardSize);
@@ -757,7 +757,7 @@ export const getProverbContent = async (req: Request, res: Response) => {
       console.log(`reshuffleWords=true: 선택된 랜덤 속담에 새로운 위치 생성`);
       
       // 보드 사이즈 결정
-      let boardSize = randomProverb.boardSize;
+      const boardSize = randomProverb.boardSize;
       
       // 단어 수에 맞는 새로운 좌표 생성 (일렬 방지)
       const wordPositions = generateNonColinearPositions(randomProverb.wordMappings.length, boardSize);

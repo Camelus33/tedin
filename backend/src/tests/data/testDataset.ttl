@@ -1,0 +1,13 @@
+@prefix ex: <http://example.org/> .
+@prefix schema: <http://schema.org/> .
+
+ex:book1 a schema:Book ;
+  schema:name "테스트 북 1"@ko ;
+  schema:author ex:author1 .
+
+ex:author1 a schema:Person ;
+  schema:name "홍길동"@ko .
+
+ex:memo1 a ex:Memo ;
+  schema:about ex:book1 ;
+  schema:text "이 책은 테스트용입니다."@ko . 

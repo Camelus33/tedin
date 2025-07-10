@@ -1,0 +1,38 @@
+# 코드 크기 & 중복 방지 가이드
+
+- **함수(Fn) 길이 제한:** 한 함수는 **최대 50줄**(공백·주석 포함)로 작성합니다.
+  - 50줄을 초과하면 즉시 리팩터링하여 작은 단위 함수로 분리합니다.
+  - 예외 상황(`switch` 문 등)에도 50줄을 넘지 않도록 보조 함수 추출을 우선 고려합니다.
+
+- **컴포넌트(Component) 길이 제한:** React 컴포넌트 파일(`*.tsx`)은 **최대 200줄**을 넘지 않도록 합니다.
+  - UI + 로직이 길어질 경우 `hooks/`, `utils/`, `partials/` 디렉토리로 로직·하위 영역을 분리합니다.
+
+- **중복 코드 발견 시 즉시 공통 함수 추출:**
+  - 같은(또는 유사) 로직이 2곳 이상 나타나면 **즉시** `utils/` 또는 적절한 모듈로 추출하여 재사용합니다.
+  - DRY(Don't Repeat Yourself) 원칙을 적용해 유지보수성을 향상시킵니다.
+
+## 예시 (TypeScript)
+```typescript
+// ❌ 50줄 넘는 함수 – 리팩터링 필요
+function handleLargeProcess(data: Data[]) {
+  // ... 70줄짜리 복잡한 로직 ...
+}
+
+// ✅ 분리된 함수 – 가독성 & 재사용성 향상
+function preprocess(data: Data[]) { /* 20 lines */ }
+function calculate(data: Data[])  { /* 25 lines */ }
+function postprocess(data: Data[]) { /* 15 lines */ }
+
+function handleLargeProcess(data: Data[]) {
+  const cleaned = preprocess(data);
+  const result  = calculate(cleaned);
+  return postprocess(result);
+}
+```
+
+---
+**Tip:** VS Code/IDE 플러그인(ESLint `max-lines` & `max-lines-per-function`)과 함께 사용하면 자동으로 규칙 위반을 감지할 수 있습니다.
+description:
+globs:
+alwaysApply: false
+---

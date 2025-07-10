@@ -1,0 +1,47 @@
+# Task ID: 2
+# Title: Develop ETL Script for MongoDB to Fuseki Migration
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Develop an ETL (Extract, Transform, Load) script to migrate existing notes and books data from a MongoDB database into a Fuseki RDF store, adhering to the Habitus33 ontology schema.
+# Details:
+1. **Data Extraction:** Establish a connection to the MongoDB database containing the notes and books data. Implement queries to extract all relevant data fields from the 'notes' and 'books' collections.
+2. **Data Transformation:** Map the extracted MongoDB data fields to the corresponding properties defined in the Habitus33 ontology schema. This involves converting data types, renaming fields, and restructuring the data to fit the RDF triple format (subject, predicate, object).  Handle potential data inconsistencies or missing values gracefully by implementing appropriate data cleaning and transformation rules.  Consider using a data transformation library or framework (e.g., Apache Beam, Pandas) to streamline the transformation process.
+3. **RDF Triples Generation:** Generate RDF triples based on the transformed data and the Habitus33 ontology. Each note and book should be represented as a resource in the RDF store, with properties defined by the ontology. Use appropriate URIs for resources and properties.
+4. **Data Loading:** Establish a connection to the Fuseki RDF store. Implement the data loading process to insert the generated RDF triples into the Fuseki store. Use the SPARQL Update language or the Fuseki API for data loading.  Optimize the loading process for performance, considering batch loading and indexing strategies.
+5. **Error Handling and Logging:** Implement robust error handling to catch and log any errors that occur during the ETL process.  Include detailed logging of data extraction, transformation, and loading steps to facilitate debugging and monitoring.
+6. **Configuration:** Externalize database connection details, ontology schema location, and other relevant parameters into a configuration file to allow for easy modification and deployment in different environments.
+
+# Test Strategy:
+1. **Data Validation:** After the ETL process is complete, verify that all notes and books data from MongoDB has been successfully migrated to the Fuseki RDF store.
+2. **Ontology Compliance:** Validate that the migrated data adheres to the Habitus33 ontology schema. Verify that all required properties are present and that data types are correct.
+3. **SPARQL Query Testing:** Execute SPARQL queries against the Fuseki RDF store to retrieve and verify the migrated data. Test various query patterns to ensure that the data is correctly structured and accessible.
+4. **Data Integrity Checks:** Perform data integrity checks to ensure that the relationships between notes and books are preserved during the migration process.
+5. **Performance Testing:** Measure the performance of the ETL process, including data extraction, transformation, and loading times. Identify and address any performance bottlenecks.
+6. **Error Handling Verification:** Simulate error conditions (e.g., invalid data, database connection errors) to verify that the error handling mechanisms are functioning correctly and that errors are logged appropriately.
+
+# Subtasks:
+## 1. Design RDF mapping for Note and Book collections [done]
+### Dependencies: None
+### Description: Map MongoDB fields to ontology: Note -> core-k-unit:Note, Book -> core-k-resource:Book; include properties content, tags, createdAt, etc.
+### Details:
+Produce docs/rdf_mapping.md with mapping table.
+
+## 2. Implement TypeScript ETL script and add npm run etl:mongo-to-fuseki [done]
+### Dependencies: 2.1
+### Description: Create mongoToFusekiETL.ts to read MongoDB, transform to RDF using Habitus33 ontology, and insert into Fuseki via SPARQL UPDATE. Add npm script.
+### Details:
+Implemented at backend/scripts/mongoToFusekiETL.ts with n3 & sparql-http-client libs. npm script 'etl:mongo-to-fuseki' added.
+
+## 3. Run ETL locally and verify triple counts match documents [done]
+### Dependencies: 2.2
+### Description: Execute npm run etl:mongo-to-fuseki in dev environment; run SPARQL COUNT queries to compare books/notes counts; log discrepancies.
+### Details:
+Add verification query in script or separate script.
+
+## 4. Update README with ETL usage instructions [done]
+### Dependencies: 2.3
+### Description: Document prerequisites, environment variables, and command to run ETL. Add section under Backend README.
+### Details:
+Include steps to start Fuseki via docker compose, set MONGO_URI, run npm script.
+

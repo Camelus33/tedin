@@ -1,0 +1,51 @@
+# Task ID: 6
+# Title: Create Integration Tests for /api/ai-link/execute
+# Status: in-progress
+# Dependencies: 3, 4, 5
+# Priority: medium
+# Description: Create integration tests for the /api/ai-link/execute endpoint using real graph queries to validate gap/link results and response formatting, ensuring comprehensive testing of the AI linking functionality.
+# Details:
+1.  **Test Case Design:** Design a comprehensive suite of integration tests for the `/api/ai-link/execute` endpoint. These tests should cover various scenarios, including:
+    *   Valid queries that should return expected gap/link results.
+    *   Queries with ambiguous terms that should return appropriate disambiguation suggestions.
+    *   Queries that should return no results.
+    *   Queries that trigger specific error conditions (e.g., invalid input, database connection errors).
+2.  **Graph Query Implementation:** Implement the test cases using real graph queries against the Fuseki database. These queries should be representative of the types of queries users will submit through the API.
+3.  **Gap/Link Result Validation:** Validate that the gap/link results returned by the API are accurate and consistent with the expected results based on the graph data and the query.
+4.  **Response Formatting Validation:** Verify that the API response is correctly formatted according to the API specification. This includes checking the structure of the JSON response, the data types of the fields, and the presence of required fields.
+5.  **Error Handling Validation:** Ensure that the API handles errors gracefully and returns appropriate error messages to the client. Test cases should be designed to trigger specific error conditions and verify that the API returns the expected error response.
+6.  **Performance Testing:** Measure the response time of the API for different types of queries. Identify any performance bottlenecks and optimize the queries or the API implementation to improve performance.
+
+# Test Strategy:
+1.  **Automated Test Execution:** Implement the integration tests using a testing framework (e.g., JUnit, pytest) and automate their execution as part of the continuous integration (CI) pipeline.
+2.  **Test Data Setup:** Create a test dataset in the Fuseki database that is representative of the real-world data. This dataset should include a variety of concepts, relationships, and data quality issues.
+3.  **Assertion Library:** Use an assertion library (e.g., AssertJ, Hamcrest) to write clear and concise assertions that verify the expected behavior of the API.
+4.  **Code Coverage Analysis:** Use code coverage analysis tools to measure the percentage of code covered by the integration tests. Aim for high code coverage to ensure that all parts of the API are thoroughly tested.
+5.  **Monitoring and Logging:** Monitor the API logs during test execution to identify any errors or warnings. Use logging to capture detailed information about the API's behavior, which can be helpful for debugging.
+6.  **Regular Test Maintenance:** Regularly review and update the integration tests to ensure that they remain relevant and effective as the API evolves.
+
+# Subtasks:
+## 1. 테스트 데이터 및 Fuseki 픽스처 준비 [pending]
+### Dependencies: None
+### Description: 통합 테스트에서 사용할 샘플 트리플(책·메모·개념)을 Fuseki에 사전 로딩하고 테스트 종료 후 정리하는 유틸리티 작성
+### Details:
+- testDataset.ttl 생성 (3-5개 도메인 객체)
+- beforeAll 에서 Fuseki SPARQL UPDATE 로 로드
+- afterAll 에서 데이터 삭제
+
+## 2. 유효 쿼리 시나리오 통합 테스트 [pending]
+### Dependencies: 6.1
+### Description: 실제 그래프 쿼리를 포함한 정상 요청에 대해 gap/link 결과와 응답 포맷을 검증
+### Details:
+- axios 혹은 supertest로 /api/ai-link/execute 호출
+- 예상 triple 결과와 비교
+- HTTP 200, JSON 구조 검증
+
+## 3. 에러·모호 쿼리 처리 테스트 [pending]
+### Dependencies: 6.1
+### Description: 잘못된 입력·모호한 용어 등에 대해 API가 적절한 에러/제안 응답을 반환하는지 검증
+### Details:
+- 잘못된 파라미터 전달 → 400 검사
+- 모호 용어 → disambiguation 제안 필드 존재 확인
+- 예상 에러 메시지 검증
+

@@ -1,0 +1,53 @@
+# Task ID: 1
+# Title: Set up Graph Database Infrastructure
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Evaluate Neo4j and RDF triple stores, select a graph database solution, and deploy it using Docker Compose. Configure the backend connection to the chosen graph database.
+# Details:
+1. **Evaluation:** Research and compare Neo4j and RDF triple stores (e.g., Apache Jena, Stardog) based on performance, scalability, ease of use, community support, and suitability for the project's specific graph data modeling needs. Document the evaluation criteria and findings in a comparative table.
+2. **Selection:** Based on the evaluation, choose the most appropriate graph database solution. Justify the selection with clear reasoning.
+3. **Docker Compose Setup:** Create a `docker-compose.yml` file to define and configure the chosen graph database service. Include necessary environment variables for initial setup (e.g., usernames, passwords, data directory).
+4. **Deployment:** Deploy the graph database using Docker Compose (`docker-compose up -d`). Verify that the container starts successfully and the database is accessible.
+5. **Backend Connection Configuration:** Configure the backend application to connect to the deployed graph database. This involves setting up the appropriate database driver or client library, configuring connection parameters (host, port, username, password), and testing the connection.
+6. **Initial Schema Design:** Design a basic schema for the graph database based on the project's data model. This includes defining node labels, relationship types, and properties. Implement the initial schema using the graph database's query language (e.g., Cypher for Neo4j, SPARQL for RDF triple stores).
+7. **Data Import (Optional):** If applicable, import a small sample dataset into the graph database to test the schema and connection.
+
+# Test Strategy:
+1. **Database Accessibility:** Verify that the graph database container is running and accessible via the configured port.
+2. **Connection Test:** Implement a simple test script in the backend application to connect to the graph database and execute a basic query (e.g., `MATCH (n) RETURN count(n)`). Verify that the query returns the expected result.
+3. **Schema Validation:** Verify that the initial schema has been created successfully by querying the graph database's metadata.
+4. **Data Integrity (if data import is performed):** Verify that the imported data is present in the graph database and that relationships are correctly established.
+5. **Performance Testing (Optional):** Conduct basic performance tests to measure query execution time and resource utilization. This can help identify potential performance bottlenecks early on.
+
+# Subtasks:
+## 1. Evaluate Neo4j vs RDF triple store and select technology + hosting approach [done]
+### Dependencies: None
+### Description: Compare Neo4j and Apache Jena Fuseki (or similar RDF store) regarding compatibility with existing ontology files, query language, tooling, performance, licensing. Decide on final choice and whether to self-host via Docker or use managed offering.
+### Details:
+Produce comparison table and rationale. Output decision in docs/graph_db_decision.md for future reference.
+
+## 2. Add Docker Compose service for chosen graph DB with persistent volume [done]
+### Dependencies: 1.1
+### Description: Create docker-compose.yml entry to spin up graph database locally with default credentials, mapped ports, volume for data persistence.
+### Details:
+Include docker-compose override example in docs. Ensure `docker compose up -d graphdb` starts container.
+
+## 3. Install graph DB driver/client and write connectivity test script [done]
+### Dependencies: 1.2
+### Description: Add appropriate Node.js driver (neo4j-driver or rdf-data-factory/SPARQL client). Implement simple script or Jest test that connects, runs basic query, exits successfully.
+### Details:
+Script path: scripts/testGraphConnection.ts. Should fail CI if connection cannot be established.
+
+## 4. Introduce environment variables and centralized config loader for graph DB connection [done]
+### Dependencies: 1.3
+### Description: Add .env entries (GRAPH_DB_URI, GRAPH_DB_USER, GRAPH_DB_PASS, GRAPH_DB_NAMESPACE) and implement config helper to expose these in backend.
+### Details:
+Use dotenv-flow or similar. Update README with setup instructions.
+
+## 5. Implement connection helper/service providing singleton graph session [done]
+### Dependencies: 1.4
+### Description: Create backend/lib/graphClient.ts exporting a singleton driver/session or SPARQL client with connection pooling, error handling, and graceful shutdown hook.
+### Details:
+Ensure all future services import from this helper rather than instantiating new connections.
+

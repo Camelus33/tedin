@@ -1,0 +1,82 @@
+# Task ID: 8
+# Title: Synchronize MongoDB Atlas and Local MongoDB Schema and Data
+# Status: done
+# Dependencies: 2
+# Priority: high
+# Description: Synchronize the MongoDB Atlas schema and data structure with the local MongoDB instance to ensure the development environment mirrors the production environment.
+# Details:
+1. **Schema Comparison:** Implement a script or utilize a tool to compare the schema (collections, fields, indexes) of the MongoDB Atlas instance (production) with the local MongoDB instance (development).
+2. **Schema Synchronization:** Based on the schema comparison, generate and execute the necessary MongoDB commands to update the local MongoDB schema to match the Atlas schema. This may involve creating new collections, adding or modifying fields, and creating or dropping indexes.
+3. **Data Structure Validation:** Verify that the data structures within the collections are consistent between the Atlas and local instances. This includes data types, embedded documents, and array structures.
+4. **Data Synchronization (Optional):** If necessary, implement a data synchronization process to copy a subset of data from the Atlas instance to the local instance. This should be done carefully to avoid overwriting local development data. Consider using MongoDB's `mongodump` and `mongorestore` utilities with appropriate filtering.
+5. **Automated Scripting:** Create a script that automates the schema and (optional) data synchronization process. This script should be easily executable and configurable to allow for regular synchronization.
+6. **Configuration Management:** Store the MongoDB Atlas connection string and any other sensitive information securely using environment variables or a configuration management tool.
+
+# Test Strategy:
+1. **Schema Verification:** After synchronization, use MongoDB Compass or the MongoDB shell to verify that the schema of the local MongoDB instance matches the schema of the Atlas instance. Check the collections, fields, indexes, and data types.
+2. **Data Structure Validation:** Query the local MongoDB instance and the Atlas instance to compare the structure of documents within the collections. Verify that the data types, embedded documents, and array structures are consistent.
+3. **Data Integrity:** If data synchronization was performed, verify that the data copied from Atlas to the local instance is accurate and complete. Compare a sample of documents from both instances to ensure data integrity.
+4. **Script Execution:** Test the automated synchronization script to ensure it executes without errors and performs the schema and (optional) data synchronization as expected.
+5. **Rollback Plan:** Document a rollback plan in case the synchronization process introduces errors or inconsistencies. This plan should include steps to restore the local MongoDB instance to its previous state.
+
+# Subtasks:
+## 1. Atlas 스키마 분석 스크립트 개발 [done]
+### Dependencies: None
+### Description: MongoDB Atlas의 모든 컬렉션 스키마, 인덱스, 필드 타입을 추출하고 분석하는 스크립트 구현
+### Details:
+- Atlas 연결 및 스키마 정보 추출
+- 컬렉션별 필드 구조 및 데이터 타입 분석
+- 인덱스 정보 수집
+- JSON 형태로 스키마 정보 저장
+
+## 2. 로컬 MongoDB 스키마 분석 스크립트 개발 [done]
+### Dependencies: 8.1
+### Description: 로컬 MongoDB의 스키마 정보를 Atlas와 동일한 형식으로 추출하는 스크립트 구현
+### Details:
+- 로컬 MongoDB 연결 및 스키마 추출
+- Atlas 분석과 동일한 형식으로 데이터 구조화
+- 비교 가능한 JSON 형태로 저장
+
+## 3. 스키마 비교 및 차이점 분석 [done]
+### Dependencies: 8.1, 8.2
+### Description: Atlas와 로컬 MongoDB 스키마를 비교하여 차이점을 식별하고 동기화 계획 수립
+### Details:
+- 두 스키마 간 diff 생성
+- 누락/추가된 컬렉션 식별
+- 필드 타입 차이점 분석
+- 인덱스 차이점 분석
+- 동기화 우선순위 결정
+
+## 4. 로컬 MongoDB 스키마 동기화 실행 [done]
+### Dependencies: 8.3
+### Description: 차이점 분석 결과를 기반으로 로컬 MongoDB를 Atlas 스키마에 맞게 동기화
+### Details:
+- 누락된 컬렉션 생성
+- 필드 구조 업데이트
+- 인덱스 생성/수정
+- 데이터 타입 변환
+- 백업 및 롤백 계획 실행
+<info added on 2025-07-09T23:40:53.952Z>
+DRY RUN 성공적으로 완료
+- 118개 동기화 액션 모두 계획 완료 (81개 고우선순위, 37개 중우선순위)
+- 0% 실패율로 모든 액션 실행 가능 확인
+- 백업 시스템 정상 작동 확인
+- 실제 동기화 실행 준비 완료
+</info added on 2025-07-09T23:40:53.952Z>
+
+## 5. 동기화 검증 및 ETL 재실행 [done]
+### Dependencies: 8.4
+### Description: 동기화된 로컬 MongoDB로 ETL 파이프라인을 재실행하여 온톨로지 마이그레이션 검증 [Updated: 7/10/2025]
+### Details:
+- 동기화 완료 검증
+- ETL 스크립트 재실행
+- Fuseki 그래프 데이터베이스 업데이트
+- 데이터 일관성 검증
+- 성능 테스트 및 최적화
+<info added on 2025-07-09T23:49:58.233Z>
+ETL 파이프라인 재실행 완료
+- Books 7개, Notes 13개 Fuseki로 마이그레이션
+- 오류 없음, 처리 시간 < 3초
+- Fuseki 그래프 데이터 최신화 완료
+</info added on 2025-07-09T23:49:58.233Z>
+

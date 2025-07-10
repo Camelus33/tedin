@@ -123,7 +123,7 @@ export const createSession = async (req: Request, res: Response) => {
     }
 
     // durationSec 보정 로직
-    let durationSecRaw = durationSec || 0;
+    const durationSecRaw = durationSec || 0;
     let durationSecFinal = durationSecRaw;
     if (durationSecRaw > 0 && durationSecRaw <= 100) {
       durationSecFinal = durationSecRaw * 60;

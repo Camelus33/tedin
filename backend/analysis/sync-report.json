@@ -1,0 +1,26 @@
+{
+  "totalActions": 118,
+  "successfulActions": 117,
+  "failedActions": 1,
+  "skippedActions": 0,
+  "errors": [
+    {
+      "action": {
+        "action": "create_index",
+        "collectionName": "users",
+        "details": {
+          "indexName": "email_1",
+          "keys": {
+            "email": 1
+          },
+          "unique": true,
+          "sparse": false
+        },
+        "priority": "medium",
+        "command": "db.users.createIndex({ \"email\": 1 }, { name: \"email_1\", unique: true })"
+      },
+      "error": "Action returned false"
+    }
+  ],
+  "executionTime": 228
+}
