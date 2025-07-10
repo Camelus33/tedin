@@ -1,7 +1,6 @@
 // Graph client helper – provides a singleton SparqlClient instance
 // NOTE: The sparql-http-client library lacks TS types, so we suppress the check.
-// CommonJS 방식으로 import하여 Jest 호환성 확보
-const SparqlClient = require('sparql-http-client');
+import SparqlClient from 'sparql-http-client';
 import { GRAPH_DB_ENDPOINT, GRAPH_DB_USER, GRAPH_DB_PASS } from './graphConfig';
 
 let client: any; // Using `any` because library has no types.

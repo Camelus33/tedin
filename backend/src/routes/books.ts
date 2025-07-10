@@ -9,6 +9,12 @@ import fs from 'fs';
 
 console.log(`[BooksRoutes] Initializing book routes...`);
 console.log(`[BooksRoutes] Current working directory (cwd): ${process.cwd()}`);
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 console.log(`[BooksRoutes] __dirname: ${__dirname}`);
 
 const router = express.Router();

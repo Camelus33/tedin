@@ -30,7 +30,7 @@ class OpenAIPromptStrategy implements PromptStrategy {
 class ClaudePromptStrategy implements PromptStrategy {
   createPrompt(bundle: ContextBundle, userQuery: string) {
     const contextString = bundle.relevantNotes
-      .map(note => `<note tags="${note.tags.join(', ')}">\n${note.content}\n</note>`)
+      .map(note => `<note tags="${note.tags.join(',')}">\n${note.content}\n</note>`)
       .join('\n\n');
 
     // Claude 3는 XML 태그를 사용한 컨텍스트 분리를 잘 처리합니다.

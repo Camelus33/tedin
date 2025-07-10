@@ -1,13 +1,12 @@
 module.exports = {
-  transform: {
-    '^.+\\.[tj]s$': 'babel-jest',
-  },
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
-  transformIgnorePatterns: [
-    '/node_modules/(?!(sparql-http-client|nanoid|natural|underscore)/)',
-  ],
-  moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
+  transform: {
+    '^.+\.m?tsx?$': ['ts-jest', { useESM: true }],
+    '^.+\.jsx?$': 'babel-jest',
   },
-}; 
+  transformIgnorePatterns: [
+    '/node_modules/(?!(nanoid|natural|@rdfjs/data-model|underscore)/)'
+  ],
+  testMatch: ['<rootDir>/src/**/*.test.ts'],
+};

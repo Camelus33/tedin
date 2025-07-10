@@ -1,5 +1,5 @@
-import { FusekiUpdateService } from '../src/services/FusekiUpdateService';
-import { NewKnowledgeTriple } from '../src/services/ResponseHandler';
+import { FusekiUpdateService } from '@/services/FusekiUpdateService';
+import { NewKnowledgeTriple } from '@/services/ResponseHandler';
 
 /**
  * Fuseki 통합 테스트 스크립트

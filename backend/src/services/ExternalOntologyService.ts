@@ -1,5 +1,5 @@
 // sparql-http-client의 올바른 import
-const StreamClient = require('sparql-http-client').default || require('sparql-http-client');
+import StreamClient from 'sparql-http-client';
 
 // 웹 검색 결과 기반: CypherBench 방식의 Property Graph 변환을 위한 인터페이스
 export interface PropertyGraphNode {

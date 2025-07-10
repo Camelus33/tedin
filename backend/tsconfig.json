@@ -1,23 +1,29 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "NodeNext",
+    "target": "es2021",
+    "module": "node16", // Change module to node16 for consistency with moduleResolution
+    "lib": ["es2021"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": false,
+    "strict": true,
     "skipLibCheck": true,
     "noImplicitAny": false,
     "outDir": "dist",
     "rootDir": "src",
-    "moduleResolution": "NodeNext",
+    "baseUrl": ".", // Add baseUrl to resolve modules from the project root
+    "paths": { // Add paths for absolute imports from src
+      "@/services/*": ["src/services/*"],
+      "@/services/ResponseHandler": ["src/services/ResponseHandler"],
+      "@/utils/*": ["src/utils/*"]
+    },
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
-    "lib": ["es2017", "dom"],
-    "types": ["node", "jest"],
-    "noImplicitThis": false,
-    "strictNullChecks": false,
-    "noEmitOnError": false,
     "isolatedModules": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/scripts/_deprecated_*.ts"]
+  "exclude": ["node_modules"]
+,
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 } 
