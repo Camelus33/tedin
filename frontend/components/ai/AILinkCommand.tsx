@@ -312,7 +312,7 @@ export function AILinkCommand() {
             <Textarea
               id="goal"
               placeholder={
-                `메모를 이용해 내 투자 판단을 정밀분석해 줘\n메모를 이용해 내 지식 공백을 분석해 줘\n내 관점에서 놓칠 숨은 메모들의 연관성을 보여줘`
+                `최근 남긴 투자관련 메모로 내 투자 판단의 흐름을 분석해 줘\n내가 놓치고 있는 지식 공백이 뭔지 알려줘\n지난 1주일간 내가 중요하게 여긴 주제를 분석해`
               }
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
