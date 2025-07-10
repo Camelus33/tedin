@@ -17,8 +17,8 @@ const notoSerifKr = Noto_Serif_KR({
 });
 
 export const metadata = {
-  title: 'Habitus33 - Seamless, Memo to Your Goal',
-  description: 'Habitus33 is a seamless memo to Goal tool that allows you to create',
+  title: 'Habitus33 - Memo to, Thinking about thinking',
+  description: 'Habitus33: Your metacognitive reasoning companion, transforming memos into accomplished goals.',
 };
 
 export default function RootLayout({
