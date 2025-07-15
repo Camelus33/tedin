@@ -1,0 +1,57 @@
+# Task ID: 11
+# Title: Adapt Student Marketing Page for Investors
+# Status: pending
+# Dependencies: 10, 9
+# Priority: medium
+# Description: Refactor the student-focused marketing page to target investors. Adapt the text in each section to align with investor perspectives and interests.
+# Details:
+1. **Analyze Existing Content:** Review the current content of each section on the student-focused marketing page.
+2. **Identify Key Areas for Revision:** Pinpoint sections that require significant modification to appeal to investors, such as the value proposition, problem statement, and solution overview.
+3. **Rewrite Section Text:** Rewrite the text in each identified section to emphasize aspects relevant to investors, including potential ROI, market opportunity, competitive advantages, and the company's vision.
+4. **Incorporate Investor-Specific Language:** Use language and terminology that resonates with investors, such as financial metrics, growth potential, and market analysis.
+5. **Review and Iterate:** Conduct a thorough review of the revised content to ensure it effectively communicates the value proposition to investors. Iterate based on feedback from stakeholders.
+
+# Test Strategy:
+1. **Content Accuracy:** Verify that the revised content accurately reflects the company's value proposition and investment opportunity.
+2. **Investor Appeal:** Conduct a review with a sample group of potential investors to assess the effectiveness of the messaging and its ability to generate interest.
+3. **Clarity and Conciseness:** Ensure that the revised content is clear, concise, and easy for investors to understand.
+4. **Consistency:** Verify that the tone and style of the revised content are consistent throughout the marketing page.
+5. **Compliance:** Ensure that the revised content complies with all relevant regulations and guidelines for investor communications.
+
+# Subtasks:
+## 1. Hero Slide 텍스트 콘텐츠 수정 [pending]
+### Dependencies: None
+### Description: 학생 대상 페이지의 Hero Slide 텍스트를 투자자 관점으로 재구성합니다.
+### Details:
+기존 헤드라인, 서브텍스트, 강조 문구를 투자 유치를 위한 메시지로 변경합니다.
+
+## 2. Problem Slide 텍스트 콘텐츠 수정 [pending]
+### Dependencies: None
+### Description: 학생 대상 페이지의 Problem Slide 텍스트를 투자자 관점으로 재구성합니다.
+### Details:
+기존 헤드라인과 문제점 상세 설명을 시장의 거시적 문제점으로 확장하여 변경합니다.
+
+## 3. Your Role Slide 텍스트 콘텐츠 수정 [pending]
+### Dependencies: None
+### Description: 학생 대상 페이지의 Your Role Slide 텍스트를 투자자 관점으로 재구성합니다.
+### Details:
+헤드라인, 두 카드 내용, 결론 텍스트를 Habitus33의 AMFA 엔진 및 핵심 철학을 설명하는 내용으로 변경합니다.
+
+## 4. AI Features Slide 텍스트 콘텐츠 수정 [pending]
+### Dependencies: None
+### Description: 학생 대상 페이지의 AI Features Slide 텍스트를 투자자 관점으로 재구성합니다.
+### Details:
+헤드라인, 서론 텍스트, 세 가지 기능 카드 각각의 내용을 AI-Link와 온톨로지 기반 지식 그래프의 기술적 우위를 강조하는 내용으로 변경합니다.
+
+## 5. Benefits Slide 텍스트 콘텐츠 수정 [pending]
+### Dependencies: None
+### Description: 학생 대상 페이지의 Benefits Slide 텍스트를 투자자 관점으로 재구성합니다.
+### Details:
+헤드라인, 도입 문단, 두 번째 문단, 강조 텍스트를 투자 회수 가능성, 시장 내 포지셔닝, 지속 가능한 성장을 위한 비즈니스적 이점을 강조하는 내용으로 변경합니다.
+
+## 6. Conclusion Slide 텍스트 콘텐츠 수정 [pending]
+### Dependencies: None
+### Description: 학생 대상 페이지의 Conclusion Slide 텍스트를 투자자 관점으로 재구성합니다.
+### Details:
+헤드라인, 결론 문단, 콜투액션 텍스트 및 링크를 투자자 의사결정 유도 및 다음 단계 상호작용 연결을 위한 내용으로 변경합니다.
+

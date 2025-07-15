@@ -522,11 +522,259 @@
             "parentTaskId": 9
           }
         ]
+      },
+      {
+        "id": 10,
+        "title": "Revise Hero Slide Text for Investor Marketing Page",
+        "description": "Revise the hero slide text on the investor-focused marketing page to emphasize Habitus33's vision and the paradigm shift in the AI era, tailoring the messaging to resonate with investors.",
+        "details": "1. **Analyze Existing Hero Slide Content:** Review the current headline, subtext, and key phrases in the hero slide of the investor marketing page.\n2. **Research Habitus33 Vision and AI Paradigm:** Gather information about Habitus33's core vision, mission, and values, as well as the key aspects of the AI-driven paradigm shift.\n3. **Draft New Headline:** Create a compelling headline that captures the essence of Habitus33's vision and its relevance to the AI era. Consider using strong action verbs and quantifiable benefits.\n4. **Develop Supporting Subtext:** Write a concise subtext that expands on the headline, providing additional context and highlighting the investment opportunity.\n5. **Craft Key Phrases:** Identify and refine key phrases that emphasize the unique value proposition of Habitus33 in the AI landscape. Focus on aspects that would appeal to investors, such as market potential, competitive advantage, and financial projections.\n6. **Investor-Centric Language:** Ensure all text uses language that is clear, concise, and persuasive to investors. Highlight the potential return on investment and the long-term growth prospects.\n7. **Content Review and Iteration:** Review the revised hero slide content with stakeholders to gather feedback and make necessary adjustments.\n8. **Implement Changes:** Update the hero slide text on the investor marketing page with the finalized content.",
+        "testStrategy": "1. **Content Accuracy:** Verify that the revised hero slide text accurately reflects Habitus33's vision and the AI paradigm shift.\n2. **Investor Appeal:** Conduct a review with a sample group of potential investors to assess the effectiveness of the messaging and its ability to generate interest.\n3. **Clarity and Conciseness:** Ensure that the text is easy to understand and avoids jargon or technical terms that may not be familiar to all investors.\n4. **Visual Harmony:** Verify that the revised text visually complements the overall design of the hero slide and the investor marketing page.\n5. **A/B Testing (Optional):** If possible, conduct A/B testing with different versions of the hero slide text to determine which performs best in terms of engagement and conversion rates.",
+        "status": "pending",
+        "dependencies": [
+          1,
+          9
+        ],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Adapt Student Marketing Page for Investors",
+        "description": "Refactor the student-focused marketing page to target investors. Adapt the text in each section to align with investor perspectives and interests.",
+        "details": "1. **Analyze Existing Content:** Review the current content of each section on the student-focused marketing page.\n2. **Identify Key Areas for Revision:** Pinpoint sections that require significant modification to appeal to investors, such as the value proposition, problem statement, and solution overview.\n3. **Rewrite Section Text:** Rewrite the text in each identified section to emphasize aspects relevant to investors, including potential ROI, market opportunity, competitive advantages, and the company's vision.\n4. **Incorporate Investor-Specific Language:** Use language and terminology that resonates with investors, such as financial metrics, growth potential, and market analysis.\n5. **Review and Iterate:** Conduct a thorough review of the revised content to ensure it effectively communicates the value proposition to investors. Iterate based on feedback from stakeholders.",
+        "testStrategy": "1. **Content Accuracy:** Verify that the revised content accurately reflects the company's value proposition and investment opportunity.\n2. **Investor Appeal:** Conduct a review with a sample group of potential investors to assess the effectiveness of the messaging and its ability to generate interest.\n3. **Clarity and Conciseness:** Ensure that the revised content is clear, concise, and easy for investors to understand.\n4. **Consistency:** Verify that the tone and style of the revised content are consistent throughout the marketing page.\n5. **Compliance:** Ensure that the revised content complies with all relevant regulations and guidelines for investor communications.",
+        "status": "pending",
+        "dependencies": [
+          10,
+          9
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Hero Slide 텍스트 콘텐츠 수정",
+            "description": "학생 대상 페이지의 Hero Slide 텍스트를 투자자 관점으로 재구성합니다.",
+            "details": "기존 헤드라인, 서브텍스트, 강조 문구를 투자 유치를 위한 메시지로 변경합니다.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 2,
+            "title": "Problem Slide 텍스트 콘텐츠 수정",
+            "description": "학생 대상 페이지의 Problem Slide 텍스트를 투자자 관점으로 재구성합니다.",
+            "details": "기존 헤드라인과 문제점 상세 설명을 시장의 거시적 문제점으로 확장하여 변경합니다.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 3,
+            "title": "Your Role Slide 텍스트 콘텐츠 수정",
+            "description": "학생 대상 페이지의 Your Role Slide 텍스트를 투자자 관점으로 재구성합니다.",
+            "details": "헤드라인, 두 카드 내용, 결론 텍스트를 Habitus33의 AMFA 엔진 및 핵심 철학을 설명하는 내용으로 변경합니다.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 4,
+            "title": "AI Features Slide 텍스트 콘텐츠 수정",
+            "description": "학생 대상 페이지의 AI Features Slide 텍스트를 투자자 관점으로 재구성합니다.",
+            "details": "헤드라인, 서론 텍스트, 세 가지 기능 카드 각각의 내용을 AI-Link와 온톨로지 기반 지식 그래프의 기술적 우위를 강조하는 내용으로 변경합니다.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 5,
+            "title": "Benefits Slide 텍스트 콘텐츠 수정",
+            "description": "학생 대상 페이지의 Benefits Slide 텍스트를 투자자 관점으로 재구성합니다.",
+            "details": "헤드라인, 도입 문단, 두 번째 문단, 강조 텍스트를 투자 회수 가능성, 시장 내 포지셔닝, 지속 가능한 성장을 위한 비즈니스적 이점을 강조하는 내용으로 변경합니다.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 6,
+            "title": "Conclusion Slide 텍스트 콘텐츠 수정",
+            "description": "학생 대상 페이지의 Conclusion Slide 텍스트를 투자자 관점으로 재구성합니다.",
+            "details": "헤드라인, 결론 문단, 콜투액션 텍스트 및 링크를 투자자 의사결정 유도 및 다음 단계 상호작용 연결을 위한 내용으로 변경합니다.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "투자자 마케팅 페이지 전환",
+        "description": "`/frontend/app/marketing/investor/page.tsx` 파일의 텍스트 콘텐츠를 투자자 관점에 맞춰 수정합니다. 온보딩 페이지의 투자자 페르소나 관련 문구를 참조하여 각 섹션별로 문구를 제안하고 사용자님의 승인을 받은 후 적용합니다.",
+        "details": "",
+        "testStrategy": "",
+        "status": "done",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Hero Slide 문구 개선",
+            "description": "Hero Slide의 헤드라인, 서브텍스트, 강조 문구를 투자자 관점에 맞춰 재구성합니다. 온보딩 페이지의 '투자자' 페르소나 가치 제안을 참조합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 2,
+            "title": "Problem Slide 문구 개선",
+            "description": "Problem Slide의 헤드라인과 내용을 투자자 관점에서 시장 문제 및 AI 활용 장벽으로 재구성합니다. 온보딩 페이지의 투자자 페르소나 관련 내용을 참조합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 3,
+            "title": "Your Role Slide 문구 재구성 (AMFA 엔진 설명으로 전환)",
+            "description": "Your Role Slide를 AMFA 엔진의 핵심 철학 및 단계(Atomic, Memo Evolution)를 설명하는 섹션으로 재구성합니다. 온보딩 페이지의 AMFA 소개 내용을 참조합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 4,
+            "title": "AI Features Slide 문구 재구성 (AI-Link 및 온톨로지 기술 설명으로 전환)",
+            "description": "AI Features Slide를 AI-Link와 온톨로지 기반 지식 그래프의 기술적 우위 및 확장성을 설명하는 섹션으로 재구성합니다. 온보딩 페이지의 AI-Link 관련 내용을 참조합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 5,
+            "title": "Benefits Slide 문구 재구성",
+            "description": "Benefits Slide의 내용을 투자 회수 가능성, 시장 포지셔닝, 지속 가능한 성장 등 비즈니스적 이점에 초점을 맞춰 재구성합니다. 온보딩 페이지의 투자자 페르소나 가치 제안을 참조합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 6,
+            "title": "Conclusion Slide 문구 재구성",
+            "description": "Conclusion Slide의 내용을 투자자의 의사 결정을 유도하고 다음 단계의 상호작용으로 연결하는 콜 투 액션으로 재구성합니다. 온보딩 페이지의 투자자 페르소나 가치 제안을 참조합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 7,
+            "title": "전체 페이지 문구 간결화",
+            "description": "이미 개선된 각 섹션의 문구를 직관적이고 간결하게 재조정합니다. 투자자 관점의 핵심 메시지는 유지하되, 불필요한 수식어와 긴 문장을 제거합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 8,
+            "title": "Hero Slide 문구 간결화",
+            "description": "Hero Slide의 헤드라인, 서브텍스트, 강조 문구를 투자자 관점의 핵심 메시지는 유지하되, 직관적이고 간결하게 재조정합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 9,
+            "title": "Problem Slide 문구 간결화",
+            "description": "Problem Slide의 헤드라인과 내용을 투자자 관점의 핵심 메시지는 유지하되, 직관적이고 간결하게 재조정합니다. 기존 AI 투자 서비스의 한계를 명확하고 간결하게 제시합니다.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 10,
+            "title": "Your Role Slide 문구 간결화",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 11,
+            "title": "AI Features Slide 문구 간결화",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 12,
+            "title": "Benefits Slide 문구 간결화",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 13,
+            "title": "Conclusion Slide 문구 간결화",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 14,
+            "title": "Hero Slide 문구 간결화",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 15,
+            "title": "Hero Slide 핵심 요약 문구 재간결화",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 16,
+            "title": "Hero Slide 핵심 요약 문구 최종 간결화",
+            "description": "",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 17,
+            "title": "Hero Slide 문구 간결화",
+            "description": "Hero Slide의 문구를 사용자님의 피드백에 맞춰 직관적이고 간결하게 재조정합니다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-07-09T11:53:58.517Z",
-      "updated": "2025-07-15T01:42:27.307Z",
+      "updated": "2025-07-15T06:46:41.902Z",
       "description": "Tasks for implementing graph database infrastructure, context orchestration, and knowledge gap detection features."
     }
   }

@@ -1,0 +1,22 @@
+# Task ID: 10
+# Title: Revise Hero Slide Text for Investor Marketing Page
+# Status: pending
+# Dependencies: 1, 9
+# Priority: medium
+# Description: Revise the hero slide text on the investor-focused marketing page to emphasize Habitus33's vision and the paradigm shift in the AI era, tailoring the messaging to resonate with investors.
+# Details:
+1. **Analyze Existing Hero Slide Content:** Review the current headline, subtext, and key phrases in the hero slide of the investor marketing page.
+2. **Research Habitus33 Vision and AI Paradigm:** Gather information about Habitus33's core vision, mission, and values, as well as the key aspects of the AI-driven paradigm shift.
+3. **Draft New Headline:** Create a compelling headline that captures the essence of Habitus33's vision and its relevance to the AI era. Consider using strong action verbs and quantifiable benefits.
+4. **Develop Supporting Subtext:** Write a concise subtext that expands on the headline, providing additional context and highlighting the investment opportunity.
+5. **Craft Key Phrases:** Identify and refine key phrases that emphasize the unique value proposition of Habitus33 in the AI landscape. Focus on aspects that would appeal to investors, such as market potential, competitive advantage, and financial projections.
+6. **Investor-Centric Language:** Ensure all text uses language that is clear, concise, and persuasive to investors. Highlight the potential return on investment and the long-term growth prospects.
+7. **Content Review and Iteration:** Review the revised hero slide content with stakeholders to gather feedback and make necessary adjustments.
+8. **Implement Changes:** Update the hero slide text on the investor marketing page with the finalized content.
+
+# Test Strategy:
+1. **Content Accuracy:** Verify that the revised hero slide text accurately reflects Habitus33's vision and the AI paradigm shift.
+2. **Investor Appeal:** Conduct a review with a sample group of potential investors to assess the effectiveness of the messaging and its ability to generate interest.
+3. **Clarity and Conciseness:** Ensure that the text is easy to understand and avoids jargon or technical terms that may not be familiar to all investors.
+4. **Visual Harmony:** Verify that the revised text visually complements the overall design of the hero slide and the investor marketing page.
+5. **A/B Testing (Optional):** If possible, conduct A/B testing with different versions of the hero slide text to determine which performs best in terms of engagement and conversion rates.

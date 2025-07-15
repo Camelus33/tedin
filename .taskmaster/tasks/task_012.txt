@@ -1,0 +1,115 @@
+# Task ID: 12
+# Title: 투자자 마케팅 페이지 전환
+# Status: done
+# Dependencies: None
+# Priority: medium
+# Description: `/frontend/app/marketing/investor/page.tsx` 파일의 텍스트 콘텐츠를 투자자 관점에 맞춰 수정합니다. 온보딩 페이지의 투자자 페르소나 관련 문구를 참조하여 각 섹션별로 문구를 제안하고 사용자님의 승인을 받은 후 적용합니다.
+# Details:
+
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Hero Slide 문구 개선 [done]
+### Dependencies: None
+### Description: Hero Slide의 헤드라인, 서브텍스트, 강조 문구를 투자자 관점에 맞춰 재구성합니다. 온보딩 페이지의 '투자자' 페르소나 가치 제안을 참조합니다.
+### Details:
+
+
+## 2. Problem Slide 문구 개선 [done]
+### Dependencies: None
+### Description: Problem Slide의 헤드라인과 내용을 투자자 관점에서 시장 문제 및 AI 활용 장벽으로 재구성합니다. 온보딩 페이지의 투자자 페르소나 관련 내용을 참조합니다.
+### Details:
+
+
+## 3. Your Role Slide 문구 재구성 (AMFA 엔진 설명으로 전환) [done]
+### Dependencies: None
+### Description: Your Role Slide를 AMFA 엔진의 핵심 철학 및 단계(Atomic, Memo Evolution)를 설명하는 섹션으로 재구성합니다. 온보딩 페이지의 AMFA 소개 내용을 참조합니다.
+### Details:
+
+
+## 4. AI Features Slide 문구 재구성 (AI-Link 및 온톨로지 기술 설명으로 전환) [done]
+### Dependencies: None
+### Description: AI Features Slide를 AI-Link와 온톨로지 기반 지식 그래프의 기술적 우위 및 확장성을 설명하는 섹션으로 재구성합니다. 온보딩 페이지의 AI-Link 관련 내용을 참조합니다.
+### Details:
+
+
+## 5. Benefits Slide 문구 재구성 [done]
+### Dependencies: None
+### Description: Benefits Slide의 내용을 투자 회수 가능성, 시장 포지셔닝, 지속 가능한 성장 등 비즈니스적 이점에 초점을 맞춰 재구성합니다. 온보딩 페이지의 투자자 페르소나 가치 제안을 참조합니다.
+### Details:
+
+
+## 6. Conclusion Slide 문구 재구성 [done]
+### Dependencies: None
+### Description: Conclusion Slide의 내용을 투자자의 의사 결정을 유도하고 다음 단계의 상호작용으로 연결하는 콜 투 액션으로 재구성합니다. 온보딩 페이지의 투자자 페르소나 가치 제안을 참조합니다.
+### Details:
+
+
+## 7. 전체 페이지 문구 간결화 [done]
+### Dependencies: None
+### Description: 이미 개선된 각 섹션의 문구를 직관적이고 간결하게 재조정합니다. 투자자 관점의 핵심 메시지는 유지하되, 불필요한 수식어와 긴 문장을 제거합니다.
+### Details:
+
+
+## 8. Hero Slide 문구 간결화 [done]
+### Dependencies: None
+### Description: Hero Slide의 헤드라인, 서브텍스트, 강조 문구를 투자자 관점의 핵심 메시지는 유지하되, 직관적이고 간결하게 재조정합니다.
+### Details:
+
+
+## 9. Problem Slide 문구 간결화 [done]
+### Dependencies: None
+### Description: Problem Slide의 헤드라인과 내용을 투자자 관점의 핵심 메시지는 유지하되, 직관적이고 간결하게 재조정합니다. 기존 AI 투자 서비스의 한계를 명확하고 간결하게 제시합니다.
+### Details:
+
+
+## 10. Your Role Slide 문구 간결화 [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 11. AI Features Slide 문구 간결화 [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 12. Benefits Slide 문구 간결화 [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 13. Conclusion Slide 문구 간결화 [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 14. Hero Slide 문구 간결화 [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 15. Hero Slide 핵심 요약 문구 재간결화 [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 16. Hero Slide 핵심 요약 문구 최종 간결화 [done]
+### Dependencies: None
+### Description: 
+### Details:
+
+
+## 17. Hero Slide 문구 간결화 [pending]
+### Dependencies: None
+### Description: Hero Slide의 문구를 사용자님의 피드백에 맞춰 직관적이고 간결하게 재조정합니다.
+### Details:
+
+
