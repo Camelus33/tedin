@@ -6,22 +6,22 @@ import { Database, Link as LinkIcon, Award } from 'lucide-react';
 const steps = [
   {
     icon: Database,
-    title: "1. 지식 베이스 구축",
-    description: "당신의 메모, 문서, 기록이 모여 관점을 담은 '지식 베이스'가 됩니다. 당신처럼 생각하는 AI 두뇌가 탄생합니다.",
+    title: "심층 지식 온톨로지 구축",
+    description: "불확실한 시장, 방대한 자료, 혹은 쌓여가는 정보 속에서 당신이 간과했을지 모르는 '숨은 신호'와 '간과한 연결고리'를 찾기 위해, 모든 투자 정보, 연구 데이터, 학습 기록을 지식 온톨로지로 정교하게 구조화합니다.",
     color: "text-blue-600",
     bg: "bg-blue-100",
   },
   {
     icon: LinkIcon,
-    title: "2. AI-Link 생성",
-    description: "작업을 요청하면 목표와 지식 베이스가 결합한 만능 설계도 'AI-Link'가 즉시 생성됩니다.",
+    title: "온톨로지 기반 맥락 추론",
+    description: "구축된 지식 온톨로지를 기반으로 '온톨로지 증강 맥락추론 AI'는 당신의 분석, 가설, 지식 체계에 존재하는 '사고의 비약'이나 '논리적 허점'을 깊이 있게 이해하고 정밀하게 진단하여, 빈틈없는 사고를 돕습니다.",
     color: "text-indigo-600",
     bg: "bg-indigo-100",
   },
   {
     icon: Award,
-    title: "3. 맞춤 결과물 도출",
-    description: "AI-Link 하나로 텍스트, 이미지, 영상 AI를 조종하세요. 차원이 다른 결과물을 얻게 됩니다.",
+    title: "숨겨진 기회 및 통찰 제안",
+    description: "AI는 방대한 지식 온톨로지 속에서 겉으로는 무관해 보이는 데이터들 간의 '숨겨진 연결성'과 '잠재적 기회'를 발굴하여, 투자 결정, 연구 방향 설정, 학습 효율에 치명적인 영향을 줄 수 있는 맹점을 제거하고 혁신적인 통찰을 제안합니다.",
     color: "text-purple-600",
     bg: "bg-purple-100",
   }
@@ -52,10 +52,10 @@ export default function HowItWorksSection() {
           className="mb-16 md:mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold font-serif tracking-tight text-gray-900 mb-5">
-            AI 행동 설계, 3단계 프로세스
+            온톨로지 증강 맥락추론 AI
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            당신의 생각과 AI의 능력이 만나, 최고의 결과물을 만드는 과정입니다.
+            당신의 지적 성과를 극대화하는 세 가지 핵심 단계
           </p>
         </motion.div>
         
@@ -107,7 +107,7 @@ export default function HowItWorksSection() {
               />
             </div>
              <p className="mt-6 text-center text-gray-600 font-medium">
-              하나의 <span className="text-indigo-600 font-semibold">'AI-Link'</span>로, 딥 리서치, 글쓰기, 이미지/영상 생성까지. <br/>모든 AI의 성능을 극대화하세요.
+              이제 AI는 단순한 정보 검색 도구를 넘어, 당신의 <span className="text-indigo-600 font-semibold">'가장 강력한 지적 파트너'</span>로서 비즈니스와 학업에서 압도적인 우위를 제공합니다.
             </p>
           </motion.div>
         </div>

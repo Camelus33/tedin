@@ -73,13 +73,13 @@ export default function FadingContextAnimation() {
         </div>
 
         <div className="pl-14 pt-2 space-y-2">
-          <ContextLine text="기억 소실..." delay={0} isFading={true} />
-          <ContextLine text="맥락 증발..." delay={0.2} isFading={true} />
-          <ContextLine text="반복 요청..." delay={0.4} isFading={true} />
+          <ContextLine text="간과한 사실" delay={0} isFading={true} />
+          <ContextLine text="논리적 비약" delay={0.2} isFading={true} />
+          <ContextLine text="미발견 연결" delay={0.4} isFading={true} />
         </div>
       </div>
        <p className="text-center text-xs text-gray-400 mt-4">
-        AI는 금붕어와 같습니다. 돌아서면 잊어버립니다.
+        당신의 생각을 '지도'로 그려, 모두 찾아냅니다.
       </p>
     </div>
   )

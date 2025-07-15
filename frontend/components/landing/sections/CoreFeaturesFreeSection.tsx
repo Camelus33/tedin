@@ -144,22 +144,22 @@ const UniqueResultViz = () => {
 const benefits = [
   {
     icon: DollarSign,
-    title: "API 호출 1/3 감소",
-    description: "매번 같은 맥락을 반복하던 API 호출이 1/3로 줄어듭니다. 핵심 로직에 더 많은 예산을 집중하세요.",
+    title: "사고의 맹점 정밀 진단",
+    description: "AI가 당신의 투자 분석, 연구 가설, 학습 체계에서 간과된 비약과 논리적 허점을 정밀하게 진단하여, 빈틈없는 의사결정 기반을 마련합니다.",
     color: "text-green-600",
     viz: ApiCostViz,
   },
   {
     icon: Clock,
-    title: "업무 시간 53% 단축",
-    description: "자료 검색, 요약, 초안 작성에 걸리던 시간이 절반 이상 줄어듭니다. 창의적인 아이디어에 시간을 더 쓰세요.",
+    title: "미발견 연결고리 발굴",
+    description: "방대한 데이터 속에서 겉으로는 무관해 보이는 정보들 간의 숨겨진 연결성을 찾아내, 투자 시장의 미묘한 신호나 연구의 새로운 방향, 학습 효율을 극대화할 기회를 포착하게 돕습니다.",
     color: "text-blue-600",
     viz: TimeSaveViz,
   },
   {
     icon: Award,
-    title: "'AI 복붙'과 다른 결과물",
-    description: "AI가 만든 획일적인 결과물이 아닌, 당신의 관점이 담긴 제안서는 모두를 설득합니다.",
+    title: "결정적 통찰력 확보",
+    description: "AI가 당신의 고유한 맥락을 온톨로지 기반으로 이해하여, 단순히 정보를 넘어 투자 결정, 연구 방향, 학습 전략에서 압도적인 우위를 제공하는 차별화된 통찰력을 선사합니다.",
     color: "text-purple-600",
     viz: UniqueResultViz,
   }
@@ -177,10 +177,10 @@ export default function CoreFeaturesFreeSection() {
           className="mb-16 md:mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold font-serif tracking-tight text-gray-900 mb-5">
-            어떻게 달라질까요?
+            당신의 <span className="font-semibold text-indigo-600">'결정'</span>은 어떻게 달라질까요?
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            'AI 행동 설계'는 <span className="font-semibold text-indigo-600">시간과 비용, 그리고 결과물의 수준</span>을 바꾸는 가장 강력한 전략입니다.
+            Habitus33의 <span className="font-semibold text-indigo-600">'맥락추론 AI'</span>가 당신의 돈과 시간을 아껴줍니다
           </p>
         </motion.div>
         

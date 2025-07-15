@@ -46,18 +46,17 @@ export default function HeroSection() {
             {/* Text Content */}
             <div className="max-w-xl text-left">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
-                AI에게 설명하지 말고,<br />
-                <span className="text-indigo-600">행동을 설계하세요.</span>
+                중요한 결정, <br /> 어떻게 하고 계시나요? 
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-gray-600">
-                반복적인 프롬프트는 이제 그만. 당신의 지식과 맥락으로 <span className="font-semibold text-indigo-600">'AI 행동 설계도'</span>를 만들고, AI를 <span className="font-semibold text-indigo-600">'마음껏 조종하세요'</span>.
+                수많은 정보 속에서, Habitus33의 온톨로지 증강 맥락추론 AI가 당신의 <span className="font-semibold text-indigo-600">생각의 빈틈을 진단</span>하고 <span className="font-semibold text-indigo-600">숨겨진 기회를 포착</span>하여, 의사결정 우위를 선사합니다.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                 <Link
                   href="/auth/register"
                   className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150 ease-in-out w-full sm:w-auto"
                 >
-                  나만의 AI 조수 설계하기
+                  숨은 기회 포착하기 (무료)
                 </Link>
               </div>
             </div>
