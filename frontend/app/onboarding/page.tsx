@@ -20,7 +20,8 @@ import {
   ArrowRightIcon,
   ArrowLeftIcon,
   PlayIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  XCircleIcon
 } from '@heroicons/react/24/outline';
 
 // Types
@@ -47,10 +48,12 @@ const PERSONAS = {
     id: 'learner',
     title: 'Your Personal AI Tutor',
     subtitle: '학습자 / 수험생',
-    description: '프롬프트 없이 당신의 학습 스타일과 약점을 아는 개인 튜터',
+    description: '지식 형성 과정의 맹점을 진단하고 쉽게 이해할 수 있는 연결고리를 발견합니다.',
     icon: AcademicCapIcon,
     color: 'from-blue-400 to-cyan-500',
     bgGradient: 'from-blue-50 to-cyan-50',
+    valuePropositionTitle: '학습 과정의 맹점을 넘어, 지적 성장을 가속화하세요.',
+    valuePropositionDescription: '',
     sampleContent: {
       title: 'TOEFL Reading Practice',
       description: '영어 지문을 읽고 AI 튜터의 맞춤 조언을 받아보세요',
@@ -61,10 +64,12 @@ const PERSONAS = {
     id: 'researcher',
     title: 'Your Research Co-Pilot',
     subtitle: '연구자',
-    description: '연구 도메인과 방법론을 이해하는 지능형 연구 파트너',
+    description: '파편화된 연구 메모를 구조화하고 새로운 연구 방향을 발견합니다.',
     icon: BeakerIcon,
     color: 'from-purple-400 to-pink-500',
     bgGradient: 'from-purple-50 to-pink-50',
+    valuePropositionTitle: '파편화된 정보를 통합하고, 연구 혁신을 이끌어갑니다.',
+    valuePropositionDescription: '',
     sampleContent: {
       title: 'AI Research Paper Analysis',
       description: 'AI 논문을 분석하고 연구 방향 제안을 받아보세요',
@@ -74,11 +79,13 @@ const PERSONAS = {
   professional: {
     id: 'professional',
     title: 'Your Intelligent Work Partner',
-    subtitle: '직장인',
-    description: '프로젝트와 업무 스타일을 아는 지능형 업무 파트너',
+    subtitle: '투자자',
+    description: '잠재적 투자 리스크를 최소화하고 숨겨진 투자 기회를 발견합니다.',
     icon: BriefcaseIcon,
     color: 'from-green-400 to-teal-500',
     bgGradient: 'from-green-50 to-teal-50',
+    valuePropositionTitle: '불확실한 시장에서 빈틈없는 의사결정을 내리세요.',
+    valuePropositionDescription: '',
     sampleContent: {
       title: 'Market Analysis Report',
       description: '시장 리포트를 분석하고 비즈니스 전략을 제안받아보세요',
@@ -326,13 +333,10 @@ function WelcomeStep({ onPersonaSelect }: { onPersonaSelect: (persona: UserPerso
       >
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
           <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            AI, Prompt Free
+            당신의 결정, 이제 '맹점' 없이!
           </span>
         </h1>
-        <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto">
-          <br />
-          
-        </p>
+        
       </motion.div>
 
       <motion.div
@@ -342,7 +346,7 @@ function WelcomeStep({ onPersonaSelect }: { onPersonaSelect: (persona: UserPerso
         className="mb-12"
       >
         <h2 className="text-2xl font-semibold mb-8 text-gray-200">
-          당신은 어떤 분야에서 AI의 도움이 필요하신가요?
+          어떤 분야에서 Habitus33의 도움을 받아볼까요?
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -388,6 +392,7 @@ function PersonaValueStep({ persona, onNext }: { persona: UserPersona; onNext: (
   
   const personaConfig = PERSONAS[persona];
   
+  
   return (
     <div className="text-center py-16">
       <motion.div
@@ -401,11 +406,11 @@ function PersonaValueStep({ persona, onNext }: { persona: UserPersona; onNext: (
         </div>
         <h1 className="text-3xl md:text-5xl font-bold mb-4">
           <span className={`bg-gradient-to-r ${personaConfig.color} bg-clip-text text-transparent`}>
-            {personaConfig.title}
+            {personaConfig.valuePropositionTitle}
           </span>
         </h1>
         <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          {personaConfig.description}
+          {personaConfig.valuePropositionDescription}
         </p>
       </motion.div>
 
@@ -416,31 +421,31 @@ function PersonaValueStep({ persona, onNext }: { persona: UserPersona; onNext: (
         className="bg-gray-800/50 rounded-2xl p-8 max-w-4xl mx-auto mb-12"
       >
         <h2 className="text-2xl font-semibold mb-6 text-white">
-          이런 경험을 하게 됩니다
+          Habitus33이 당신의 '결정'을 어떻게 바꿀까요?
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">
             <h3 className={`text-lg font-semibold bg-gradient-to-r ${personaConfig.color} bg-clip-text text-transparent`}>
-              Before: 기존 AI 사용
+              Before: 불확실한 결정
             </h3>
             <div className="space-y-2 text-gray-400">
-              <p>• 매번 긴 프롬프트 작성</p>
-              <p>• 맥락 설명에 시간 소모</p>
-              <p>• 일반적인 답변만 제공</p>
-              <p>• 개인화된 조언 부족</p>
+              <p>• 간과된 정보와 맹점 발생</p>
+              <p>• 숨겨진 연결고리 파악 불가</p>
+              <p>• 표면적인 통찰력</p>
+              <p>• 비효율적인 의사결정</p>
             </div>
           </div>
           
           <div className="space-y-4">
             <h3 className={`text-lg font-semibold bg-gradient-to-r ${personaConfig.color} bg-clip-text text-transparent`}>
-              After: Habitus33 AI-Link
+              After: Habitus33 AI-Link와 함께
             </h3>
             <div className="space-y-2 text-gray-300">
-              <p>• 프롬프트 없이 즉시 소통</p>
-              <p>• 당신의 맥락을 완벽 이해</p>
-              <p>• 개인화된 전문가 수준 조언</p>
-              <p>• 학습/연구/업무 스타일 반영</p>
+              <p>• 맹점 정밀 진단</p>
+              <p>• 숨겨진 기회 자동 발굴</p>
+              <p>• 빈틈없는 의사결정</p>
+              <p>• 차원이 다른 지적 성과</p>
             </div>
           </div>
         </div>
@@ -458,7 +463,7 @@ function PersonaValueStep({ persona, onNext }: { persona: UserPersona; onNext: (
           shadow-lg hover:shadow-xl
         `}
       >
-        AMFA 프로세스 체험해보기
+        결정적 통찰력 경험하기
       </motion.button>
     </div>
   );
@@ -471,11 +476,11 @@ function AMFAIntroStep({ onNext }: { onNext: () => void }) {
       <div className="text-center mb-12">
         <h1 className="text-3xl md:text-5xl font-bold mb-6">
           <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            AMFA 프로세스
+            AMFA, 당신의 결정을 책임지겠습니다.
           </span>
         </h1>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-          4단계로 당신만의 지식 캡슐을 만드는 여정을 시작합니다
+          흩어진 생각과 메모를 모두 연결하여, 당신에게 성취감과 안정감을 선사합니다.
         </p>
       </div>
 
@@ -498,22 +503,128 @@ function AMFAIntroStep({ onNext }: { onNext: () => void }) {
 }
 
 // Step 4: Interactive Demo
-function InteractiveDemoStep({ 
-  persona, 
-  onNext, 
-  onDemoComplete 
-}: { 
-  persona: UserPersona; 
+function InteractiveDemoStep({
+  persona,
+  onNext,
+  onDemoComplete
+}: {
+  persona: UserPersona;
   onNext: () => void;
   onDemoComplete: (progress: Partial<OnboardingState['demoProgress']>) => void;
 }) {
-  const [demoStep, setDemoStep] = useState(1);
-  const [generatedContent, setGeneratedContent] = useState('');
-  
-  if (!persona) return null;
-  
-  const personaConfig = PERSONAS[persona];
-  
+  if (!persona) return null; // Persona가 null일 경우 렌더링 중단
+
+  const personaConfig = PERSONAS[persona]; // personaConfig를 여기서 선언
+
+  const [currentDemoPhase, setCurrentDemoPhase] = useState<number>(0);
+  const [showDemoCompleteToast, setShowDemoCompleteToast] = useState<boolean>(false);
+  const [showLoading, setShowLoading] = useState<boolean>(false);
+
+  const isDemoComplete = currentDemoPhase === 3; // After phase 0, 1, 2
+
+  const demoPhases = [
+    {
+      title: "데이터 속 당신의 맹점을 발견하고 숨겨진 기회를 찾으세요.",
+      description: "지금 바로 Habitus33의 강력한 맥락 추론 AI가 어떻게 당신의 생각과 정보를 연결하여, 기존에는 볼 수 없었던 새로운 통찰력을 제공하는지 경험해 보세요.",
+      content: (
+        <div className="bg-gray-800/50 rounded-2xl p-6 mb-8">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-4 text-white">샘플 콘텐츠</h3>
+            <div className="bg-gray-700/50 rounded-lg p-4 text-gray-300">
+              {personaConfig.sampleContent.content}
+            </div>
+          </div>
+          
+          {/* AMFA process simulation */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-8 h-8 bg-cyan-400 rounded-full flex items-center justify-center text-gray-900 font-bold">
+                1
+              </div>
+              <span className="text-white">Atomic Memo 생성 중...</span>
+            </div>
+            
+            {currentDemoPhase >= 2 && (
+              <div className="flex items-center space-x-4">
+                <div className="w-8 h-8 bg-purple-400 rounded-full flex items-center justify-center text-white font-bold">
+                  2
+                </div>
+                <span className="text-white">Memo Evolution 진행 중...</span>
+              </div>
+            )}
+            
+            {currentDemoPhase >= 3 && (
+              <div className="flex items-center space-x-4">
+                <div className="w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center text-white font-bold">
+                  3
+                </div>
+                <span className="text-white">Focused Note 완성 중...</span>
+              </div>
+            )}
+            
+            {currentDemoPhase >= 4 && (
+              <div className="flex items-center space-x-4">
+                <div className="w-8 h-8 bg-violet-400 rounded-full flex items-center justify-center text-white font-bold">
+                  4
+                </div>
+                <span className="text-white">AI-Link 생성 완료!</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )},
+    {
+      title: "데이터 속 당신의 맹점을 발견하고 숨겨진 기회를 찾으세요.",
+      description: "지금 바로 Habitus33의 강력한 맥락 추론 AI가 어떻게 당신의 생각과 정보를 연결하여, 기존에는 볼 수 없었던 새로운 통찰력을 제공하는지 경험해 보세요.",
+      content: (
+        <div className="bg-gray-800/50 rounded-2xl p-6 mb-8">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-4 text-white">샘플 콘텐츠</h3>
+            <div className="bg-gray-700/50 rounded-lg p-4 text-gray-300">
+              {personaConfig.sampleContent.content}
+            </div>
+          </div>
+          
+          {/* AMFA process simulation */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-8 h-8 bg-cyan-400 rounded-full flex items-center justify-center text-gray-900 font-bold">
+                1
+              </div>
+              <span className="text-white">Atomic Memo 생성 중...</span>
+            </div>
+            
+            {currentDemoPhase >= 2 && (
+              <div className="flex items-center space-x-4">
+                <div className="w-8 h-8 bg-purple-400 rounded-full flex items-center justify-center text-white font-bold">
+                  2
+                </div>
+                <span className="text-white">Memo Evolution 진행 중...</span>
+              </div>
+            )}
+            
+            {currentDemoPhase >= 3 && (
+              <div className="flex items-center space-x-4">
+                <div className="w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center text-white font-bold">
+                  3
+                </div>
+                <span className="text-white">Focused Note 완성 중...</span>
+              </div>
+            )}
+            
+            {currentDemoPhase >= 4 && (
+              <div className="flex items-center space-x-4">
+                <div className="w-8 h-8 bg-violet-400 rounded-full flex items-center justify-center text-white font-bold">
+                  4
+                </div>
+                <span className="text-white">AI-Link 생성 완료!</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )},
+  ];
+
   const handleDemoComplete = () => {
     onDemoComplete({ hasTriedAMFA: true, hasCreatedAILink: true });
     onNext();
@@ -551,7 +662,7 @@ function InteractiveDemoStep({
               <span className="text-white">Atomic Memo 생성 중...</span>
             </div>
             
-            {demoStep >= 2 && (
+            {currentDemoPhase >= 2 && (
               <div className="flex items-center space-x-4">
                 <div className="w-8 h-8 bg-purple-400 rounded-full flex items-center justify-center text-white font-bold">
                   2
@@ -560,7 +671,7 @@ function InteractiveDemoStep({
               </div>
             )}
             
-            {demoStep >= 3 && (
+            {currentDemoPhase >= 3 && (
               <div className="flex items-center space-x-4">
                 <div className="w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center text-white font-bold">
                   3
@@ -569,7 +680,7 @@ function InteractiveDemoStep({
               </div>
             )}
             
-            {demoStep >= 4 && (
+            {currentDemoPhase >= 4 && (
               <div className="flex items-center space-x-4">
                 <div className="w-8 h-8 bg-violet-400 rounded-full flex items-center justify-center text-white font-bold">
                   4
@@ -582,9 +693,9 @@ function InteractiveDemoStep({
 
         {/* Demo controls */}
         <div className="text-center">
-          {demoStep < 4 ? (
+          {currentDemoPhase < 4 ? (
             <button
-              onClick={() => setDemoStep(prev => prev + 1)}
+              onClick={() => setCurrentDemoPhase(prev => prev + 1)}
               className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold text-white transition-colors"
             >
               다음 단계 진행
@@ -648,17 +759,17 @@ function BeforeAfterComparisonStep({ persona, onNext }: { persona: UserPersona; 
   
   const data = comparisonData[persona];
   const personaConfig = PERSONAS[persona];
-  
+
   return (
     <div className="py-16">
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold mb-6">
           <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            차이를 직접 확인하세요
+            Habitus33, 당신의 '지식'에 어떤 변화를 가져올까요?
           </span>
         </h1>
         <p className="text-xl text-gray-300">
-          일반 AI와 AI-Link의 차이점을 비교해보세요
+          기존의 단편적 지식과 Habitus33으로 '맹점 없는 통찰'을 얻은 후의 변화를 직접 비교해 보세요. 숨겨진 연결고리가 어떻게 당신의 의사결정을 혁신하는지 경험할 수 있습니다.
         </p>
         <div className="mt-4 p-3 bg-gray-800/30 rounded-lg inline-block">
           <p className="text-gray-400 text-sm">질문 예시:</p>
@@ -667,46 +778,44 @@ function BeforeAfterComparisonStep({ persona, onNext }: { persona: UserPersona; 
       </div>
 
       <div className="max-w-6xl mx-auto mb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Before: General AI */}
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-red-400/30">
-            <h3 className="text-xl font-semibold mb-4 text-red-400">일반 AI 응답</h3>
-            <div className="space-y-4 text-gray-300">
-              <p className="text-sm bg-gray-700/50 p-4 rounded-lg leading-relaxed">
-                "{data.generalAI.response}"
-              </p>
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-red-300 mb-2">한계점:</p>
-                {data.generalAI.issues.map((issue, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-xs text-gray-400">
-                    <span className="text-red-400">×</span>
-                    <span>{issue}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Before Habitus33 */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="bg-gray-800 rounded-lg shadow-xl p-8 border border-gray-700"
+          >
+            <h2 className="text-2xl font-bold mb-4 text-red-400">Habitus33 이전</h2>
+            <p className="text-gray-300 mb-6">{data.generalAI.response}</p>
+            <ul className="space-y-2 text-gray-400">
+              {data.generalAI.issues.map((issue: string, index: number) => (
+                <li key={index} className="flex items-start">
+                  <XCircleIcon className="h-5 w-5 text-red-400 mr-2 flex-shrink-0" />
+                  <span>{issue}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
 
-          {/* After: AI-Link */}
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-cyan-400/50">
-            <h3 className="text-xl font-semibold mb-4 text-cyan-400">
-              {personaConfig.title} 응답
-            </h3>
-            <div className="space-y-4 text-gray-300">
-              <p className="text-sm bg-cyan-900/20 p-4 rounded-lg leading-relaxed border border-cyan-500/20">
-                "{data.aiLink.response}"
-              </p>
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-cyan-300 mb-2">강점:</p>
-                {data.aiLink.benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-xs text-gray-300">
-                    <span className="text-cyan-400">✓</span>
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* After Habitus33 */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="bg-gray-800 rounded-lg shadow-xl p-8 border border-gray-700"
+          >
+            <h2 className="text-2xl font-bold mb-4 text-green-400">Habitus33 이후</h2>
+            <p className="text-gray-300 mb-6">{data.aiLink.response}</p>
+            <ul className="space-y-2 text-gray-400">
+              {data.aiLink.benefits.map((benefit: string, index: number) => (
+                <li key={index} className="flex items-start">
+                  <CheckCircleIcon className="h-5 w-5 text-green-400 mr-2 flex-shrink-0" />
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
         </div>
       </div>
 
@@ -755,18 +864,29 @@ function AILinkUsageStep({
   persona: UserPersona; 
   onNext: () => void;
 }) {
-  if (!persona) return null;
-  
+  if (!persona) return null; // Persona가 null일 경우 렌더링 중단
+  const personaConfig = PERSONAS[persona];
+
   return (
-    <div className="py-16">
-      {/* Zone 1: 제목 (간소화) */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-6">
-          <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            AI-Link 사용법
-          </span>
-        </h1>
-      </div>
+    <div className="flex flex-col items-center justify-center text-center px-4">
+      <motion.h1
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="text-3xl md:text-5xl font-bold mb-6"
+      >
+        <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+          AI-Link: 당신의 지식에 새로운 통찰력을 더합니다.
+        </span>
+      </motion.h1>
+      <motion.p
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="text-xl text-gray-300 max-w-3xl mx-auto mb-10"
+      >
+        Habitus33의 AI-Link는 당신의 모든 생각과 데이터를 온톨로지 기반의 지식 그래프로 구조화합니다. 이를 통해 숨겨진 맹점과 새로운 연결고리를 발견하고, 당신만이 만들 수 있는 깊이 있는 통찰력을 제공합니다. 이제 '프롬프트' 없이도 AI가 당신의 맥락을 완벽하게 이해하고, 당신의 잠재력을 극대화할 수 있습니다.
+      </motion.p>
 
       {/* Zone 2: 스크린샷 + 인터랙티브 (메인 콘텐츠) */}
       <div className="max-w-3xl mx-auto mb-12">

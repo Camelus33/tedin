@@ -25,7 +25,7 @@
 6.  **Regular Test Maintenance:** Regularly review and update the integration tests to ensure that they remain relevant and effective as the API evolves.
 
 # Subtasks:
-## 1. 테스트 데이터 및 Fuseki 픽스처 준비 [pending]
+## 1. 테스트 데이터 및 Fuseki 픽스처 준비 [done]
 ### Dependencies: None
 ### Description: 통합 테스트에서 사용할 샘플 트리플(책·메모·개념)을 Fuseki에 사전 로딩하고 테스트 종료 후 정리하는 유틸리티 작성
 ### Details:

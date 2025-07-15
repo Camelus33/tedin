@@ -12,7 +12,7 @@ export default function Header() {
             <AppLogo className="w-10 h-10" />
             <div className="flex items-end space-x-1.5">
               <span className="text-2xl font-bold text-gray-800 leading-none">habitus33</span>
-              <span className="text-xs font-medium tracking-wider text-gray-500 pb-0.5">Atomic Memo</span>
+              <span className="text-xs font-medium tracking-wider text-gray-500 pb-0.5"></span>
             </div>
           </Link>
           <div className="flex items-center space-x-3">
@@ -26,7 +26,7 @@ export default function Header() {
               href="/auth/register"
               className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              나의 AI-Link 만들기
+              무료 시작
             </Link>
           </div>
         </div>

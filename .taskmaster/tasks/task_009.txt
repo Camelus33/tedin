@@ -1,0 +1,60 @@
+# Task ID: 9
+# Title: Refine Onboarding Section Text for New Landing Page Message
+# Status: pending
+# Dependencies: 7
+# Priority: medium
+# Description: Adjust the wording of the onboarding section to align with the new landing page message (blind spot diagnosis, hidden opportunity discovery).
+# Details:
+1. **Review New Landing Page Message:** Analyze the new landing page message focusing on 'blind spot diagnosis' and 'hidden opportunity discovery' to understand the core value proposition.
+2. **Identify Onboarding Section:** Locate the specific onboarding section within the application's frontend code.
+3. **Rewrite Onboarding Text:** Modify the text within the onboarding section to reflect the new landing page message. This includes:
+    *   Highlighting the ability of the application to identify blind spots in the user's knowledge.
+    *   Emphasizing the discovery of hidden opportunities through AI-driven analysis.
+    *   Ensuring the language is clear, concise, and engaging for new users.
+4. **Update UI Components:** Adjust any relevant UI components (e.g., tooltips, help text) to align with the updated onboarding message.
+5. **Code Review:** Submit the changes for code review to ensure clarity, accuracy, and consistency with the overall application messaging.
+
+# Test Strategy:
+1. **Verify Text Accuracy:** Ensure that the updated text in the onboarding section accurately reflects the new landing page message.
+2. **Check UI Component Alignment:** Verify that all related UI components (tooltips, help text) are consistent with the updated onboarding message.
+3. **User Testing:** Conduct user testing with new users to assess the clarity and effectiveness of the updated onboarding message. Gather feedback on whether the message effectively communicates the value proposition of the application.
+4. **Cross-Browser Compatibility:** Test the onboarding section in different browsers (Chrome, Firefox, Safari, Edge) to ensure consistent display and functionality.
+5. **Responsiveness:** Verify that the onboarding section is responsive and displays correctly on different screen sizes (desktop, tablet, mobile).
+
+# Subtasks:
+## 1. WelcomeStep 문구 수정 [pending]
+### Dependencies: None
+### Description: 온보딩 첫 화면의 환영 메시지를 랜딩 페이지의 핵심 가치와 일관되게 수정합니다.
+### Details:
+
+
+## 2. PersonaValueStep 문구 수정 [pending]
+### Dependencies: None
+### Description: 선택된 페르소나에 따른 가치 설명 문구를 랜딩 페이지의 핵심 가치와 연결하여 수정합니다.
+### Details:
+
+
+## 3. AMFAIntroStep 문구 수정 [pending]
+### Dependencies: None
+### Description: AMFA 소개 단계의 문구를 '맹점 진단' 및 '기회 발견' 맥락에 맞춰 수정합니다.
+### Details:
+
+
+## 4. InteractiveDemoStep 문구 수정 [pending]
+### Dependencies: None
+### Description: 대화형 데모 단계의 안내 문구를 랜딩 페이지 메시지와 일관되게 수정합니다.
+### Details:
+
+
+## 5. BeforeAfterComparisonStep 문구 수정 [pending]
+### Dependencies: None
+### Description: 비교 단계의 문구를 '맹점 진단' 및 '기회 발견'을 통한 변화에 초점을 맞춰 수정합니다.
+### Details:
+
+
+## 6. AILinkUsageStep 문구 수정 [pending]
+### Dependencies: None
+### Description: AI-Link 사용 안내 단계의 문구를 랜딩 페이지의 핵심 가치와 연결하여 수정합니다.
+### Details:
+
+

@@ -454,11 +454,79 @@
             "parentTaskId": 8
           }
         ]
+      },
+      {
+        "id": 9,
+        "title": "Refine Onboarding Section Text for New Landing Page Message",
+        "description": "Adjust the wording of the onboarding section to align with the new landing page message (blind spot diagnosis, hidden opportunity discovery).",
+        "details": "1. **Review New Landing Page Message:** Analyze the new landing page message focusing on 'blind spot diagnosis' and 'hidden opportunity discovery' to understand the core value proposition.\n2. **Identify Onboarding Section:** Locate the specific onboarding section within the application's frontend code.\n3. **Rewrite Onboarding Text:** Modify the text within the onboarding section to reflect the new landing page message. This includes:\n    *   Highlighting the ability of the application to identify blind spots in the user's knowledge.\n    *   Emphasizing the discovery of hidden opportunities through AI-driven analysis.\n    *   Ensuring the language is clear, concise, and engaging for new users.\n4. **Update UI Components:** Adjust any relevant UI components (e.g., tooltips, help text) to align with the updated onboarding message.\n5. **Code Review:** Submit the changes for code review to ensure clarity, accuracy, and consistency with the overall application messaging.",
+        "testStrategy": "1. **Verify Text Accuracy:** Ensure that the updated text in the onboarding section accurately reflects the new landing page message.\n2. **Check UI Component Alignment:** Verify that all related UI components (tooltips, help text) are consistent with the updated onboarding message.\n3. **User Testing:** Conduct user testing with new users to assess the clarity and effectiveness of the updated onboarding message. Gather feedback on whether the message effectively communicates the value proposition of the application.\n4. **Cross-Browser Compatibility:** Test the onboarding section in different browsers (Chrome, Firefox, Safari, Edge) to ensure consistent display and functionality.\n5. **Responsiveness:** Verify that the onboarding section is responsive and displays correctly on different screen sizes (desktop, tablet, mobile).",
+        "status": "pending",
+        "dependencies": [
+          7
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "WelcomeStep 문구 수정",
+            "description": "온보딩 첫 화면의 환영 메시지를 랜딩 페이지의 핵심 가치와 일관되게 수정합니다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9
+          },
+          {
+            "id": 2,
+            "title": "PersonaValueStep 문구 수정",
+            "description": "선택된 페르소나에 따른 가치 설명 문구를 랜딩 페이지의 핵심 가치와 연결하여 수정합니다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9
+          },
+          {
+            "id": 3,
+            "title": "AMFAIntroStep 문구 수정",
+            "description": "AMFA 소개 단계의 문구를 '맹점 진단' 및 '기회 발견' 맥락에 맞춰 수정합니다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9
+          },
+          {
+            "id": 4,
+            "title": "InteractiveDemoStep 문구 수정",
+            "description": "대화형 데모 단계의 안내 문구를 랜딩 페이지 메시지와 일관되게 수정합니다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9
+          },
+          {
+            "id": 5,
+            "title": "BeforeAfterComparisonStep 문구 수정",
+            "description": "비교 단계의 문구를 '맹점 진단' 및 '기회 발견'을 통한 변화에 초점을 맞춰 수정합니다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9
+          },
+          {
+            "id": 6,
+            "title": "AILinkUsageStep 문구 수정",
+            "description": "AI-Link 사용 안내 단계의 문구를 랜딩 페이지의 핵심 가치와 연결하여 수정합니다.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 9
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-07-09T11:53:58.517Z",
-      "updated": "2025-07-09T23:57:03.763Z",
+      "updated": "2025-07-15T01:42:27.307Z",
       "description": "Tasks for implementing graph database infrastructure, context orchestration, and knowledge gap detection features."
     }
   }
