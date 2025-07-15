@@ -512,13 +512,13 @@ function InteractiveDemoStep({
   onNext: () => void;
   onDemoComplete: (progress: Partial<OnboardingState['demoProgress']>) => void;
 }) {
-  if (!persona) return null; // Persona가 null일 경우 렌더링 중단
-
-  const personaConfig = PERSONAS[persona]; // personaConfig를 여기서 선언
-
   const [currentDemoPhase, setCurrentDemoPhase] = useState<number>(0);
   const [showDemoCompleteToast, setShowDemoCompleteToast] = useState<boolean>(false);
   const [showLoading, setShowLoading] = useState<boolean>(false);
+
+  if (!persona) return null; // Persona가 null일 경우 렌더링 중단
+
+  const personaConfig = PERSONAS[persona]; // personaConfig를 여기서 선언
 
   const isDemoComplete = currentDemoPhase === 3; // After phase 0, 1, 2
 
