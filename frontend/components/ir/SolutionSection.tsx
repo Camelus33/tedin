@@ -2,29 +2,29 @@
 
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { FiBox, FiCpu, FiGitMerge, FiZap } from 'react-icons/fi';
+import { FiBox, FiCpu, FiGitMerge, FiZap, FiTarget, FiTrendingUp, FiEye } from 'react-icons/fi';
 import AMFAAnimation from './AMFAAnimation';
 
 const steps = [
   {
     icon: FiBox,
-    title: "1. Capture & Refine: 가치있는 지식 포착",
-    description: "개인의 모든 디지털 활동에서 핵심 아이디어와 유의미한 데이터만 정확히 포착하고 정제하여 노이즈를 제거합니다."
+    title: "1. 투자 메모 수집 & 정제",
+    description: "증권분석 보고서, 투자일지, 뉴스 기사 등 모든 투자 관련 자료를 수집하고 핵심 정보만 정확히 추출하여 투자자의 관심사와 판단 근거를 파악합니다."
   },
   {
     icon: FiGitMerge,
-    title: "2. Structure & Contextualize: 맥락적 지식망 구축",
-    description: "정제된 지식들을 연결하고 시간과 인과관계에 따라 구조화하여, AI가 사용자의 사고 흐름을 이해할 수 있는 '지식 그래프'를 생성합니다."
+    title: "2. 온톨로지 지식망 구축",
+    description: "분산된 투자 메모들을 연결하고 시간순, 인과관계에 따라 구조화하여 투자자의 사고 패턴과 편향을 분석할 수 있는 '투자 지식 그래프'를 생성합니다."
   },
   {
     icon: FiCpu,
-    title: "3. Generate & Encapsulate: AI-Link 생성",
-    description: "거대한 지식 그래프를 AI가 즉시 이해하고 활용할 수 있도록, 최적화된 고농축 데이터 캡슐인 'AI-Link'로 변환합니다."
+    title: "3. 편향 패턴 & 기회 분석",
+    description: "온톨로지 AI가 투자자의 반복 실수 패턴과 편향을 진단하고, 동시에 놓치고 있는 숨은 투자기회를 발굴하여 개인화된 투자 인사이트를 생성합니다."
   },
   {
     icon: FiZap,
-    title: "4. Transmit & Augment: AI 지능 증강",
-    description: "AI-Link를 통해 AI에게 '기억'과 '맥락'을 주입합니다. AI는 비로소 사용자의 의도를 완벽히 이해하고, 비용 효율적인 초개인화 결과물을 생성합니다."
+    title: "4. AI 진단 & 기회 제시",
+    description: "AI-Link를 통해 투자자의 모든 맥락을 이해한 AI가 '내 투자 편향과 맹점을 진단해'라는 질문에 대해 정확한 진단과 함께 놓친 투자기회까지 제시합니다."
   }
 ];
 
@@ -57,14 +57,32 @@ const SolutionSection = () => {
         <div className="relative pt-16">
           <div className="text-left mb-16" style={{ height: '100vh' }}>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-              The Solution: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">AI's External Brain</span>
+              The Solution: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">편향 진단 & 기회 발굴 AI</span>
             </h2>
             <h3 className="text-2xl sm:text-3xl font-semibold text-indigo-300 mb-6">
-              AI-Link: AI에게 기억력과 지능을 부여하다
+              온톨로지 AI: 투자자의 반복 실수와 숨은 기회를 동시에 찾아내다
             </h3>
             <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
-              AI-Link는 AI의 근본적인 한계인 '컨텍스트 부족' 문제를 해결하는 독보적인 솔루션입니다. 사용자의 고유한 지식과 경험을 AI에게 '기억'시켜, 불필요한 API 호출과 토큰 낭비를 원천적으로 차단합니다. 그 결과, AI 운영 비용을 획기적으로 절감하고 진정한 초개인화 결과물을 얻을 수 있습니다.
+              온톨로지 AI는 투자자의 근본적인 한계인 '편향 인지 부족'과 '기회 놓침' 문제를 동시에 해결하는 독보적인 솔루션입니다. 투자자의 모든 메모를 온톨로지로 분석하여 반복 실수 패턴을 진단하고, 동시에 놓치고 있는 숨은 투자기회까지 발굴합니다. 그 결과, 투자자는 자신의 편향을 인지하고 새로운 기회를 발견할 수 있습니다.
             </p>
+            
+            {/* 핵심 가치 강조 */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <FiTarget className="text-red-400 mr-2" size={20} />
+                  <h4 className="text-red-400 font-semibold">편향 진단</h4>
+                </div>
+                <p className="text-red-300 text-sm">확증편향, 손실회피, 앵커링 등 투자자의 편향 패턴을 정확히 진단</p>
+              </div>
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <FiEye className="text-green-400 mr-2" size={20} />
+                  <h4 className="text-green-400 font-semibold">기회 발굴</h4>
+                </div>
+                <p className="text-green-300 text-sm">투자자가 놓치고 있는 숨은 투자기회를 발굴하여 새로운 수익 창출</p>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-24">

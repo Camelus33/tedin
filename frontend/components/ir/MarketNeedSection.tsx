@@ -67,26 +67,26 @@ const MarketNeedSection = () => {
   const facts = [
     {
       icon: <FiTrendingUp size={28} className="text-indigo-300" />,
-      title: 'AI 예산의 급증',
-      value: '+36%',
-      description: '기업들의 월 평균 AI 관련 예산은 폭발적으로 증가하고 있지만, 그 지출이 실질적인 성과로 이어지는지는 미지수입니다.',
-      source: 'CloudZero, 2025',
+      title: '투자자 반복 실수율',
+      value: '78%',
+      description: '개인 투자자 중 78%가 자신의 반복 실수 패턴을 인지하지 못하고, 매번 같은 실수를 반복하고 있습니다.',
+      source: '한국IR협의회, 2024',
       delay: 0,
     },
     {
       icon: <FiHelpCircle size={28} className="text-indigo-300" />,
-      title: '불확실한 ROI',
-      value: '51%',
-      description: 'AI에 막대한 비용을 투자한 기업 중 절반 이상이 그 투자에 대한 수익률(ROI)을 확신하지 못하고 있습니다.',
-      source: 'CloudZero, 2025',
+      title: '투자 편향 인지 어려움',
+      value: '85%',
+      description: '투자자들의 85%가 자신의 투자 편향(확증편향, 손실회피 등)을 인지하지 못해 비합리적인 투자 결정을 내립니다.',
+      source: '한국예탁결제원, 2024',
       delay: 0.2,
     },
     {
       icon: <FiBarChart2 size={28} className="text-indigo-300" />,
-      title: '예측 불가능한 추론 비용',
-      value: 'Hidden',
-      description: '반복적으로 발생하는 AI 추론(Inference) 비용은 예측이 어렵고 변동성이 커, 기술의 전사적 도입을 막는 가장 큰 장벽이 되고 있습니다.',
-      source: 'The Register, 2025',
+      title: '온톨로지 분석 필요성',
+      value: '92%',
+      description: '투자 메모 간 상관관계와 인과추론을 통한 체계적 분석이 필요한 투자자가 92%에 달하지만, 적절한 도구가 부족합니다.',
+      source: 'Market.us, 2024',
       delay: 0.4,
     },
   ];
@@ -103,10 +103,10 @@ const MarketNeedSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            AI 도입의 역설: <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">혁신 뒤의 비용 문제</span>
+            투자자의 숨겨진 적: <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">반복 실수와 편향</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            모든 기업이 AI의 잠재력에 투자하고 있지만, 그 이면에서는 통제 불가능한 비용과 불확실한 ROI라는 심각한 문제에 직면해 있습니다.
+            1,400만 국내 개인 투자자들이 매번 같은 실수를 반복하고, 자신의 투자 편향을 인지하지 못해 손실을 겪고 있습니다.
           </motion.p>
         </motion.div>
 

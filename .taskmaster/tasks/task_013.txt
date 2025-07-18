@@ -1,0 +1,92 @@
+# Task ID: 13
+# Title: IR 섹션별 투자자 중심 메시지 수정
+# Status: in_progress
+# Dependencies: None
+# Priority: high
+# Description: IR 페이지의 각 섹션을 투자자 대상 온톨로지 메모관리 서비스로 전환하여 수정합니다. 각 섹션별로 실제 시장 통계와 경쟁사 분석을 기반으로 한 문구를 제안하고 승인 후 적용합니다.
+# Details: 
+# - 투자자 대상 서비스로 전환: "내가 쓴 투자 메모에서 반복해서 범하는 투자 실수를 찾아줘!"
+# - 실제 시장 통계 기반: 글로벌 투자 앱 시장 USD 444억(2023), CAGR 19.1%, 국내 개인 투자자 1,400만 명
+# - 경쟁사 분석: Robinhood, Webull, eToro 등 vs 온톨로지 기반 AI 분석 차별화
+# - 각 섹션별 수정 후 승인 받고 다음 섹션 진행
+
+# Test Strategy:
+# - 각 섹션 수정 후 실제 투자자 관점에서 검토
+# - 시장 통계 출처 명확히 표기
+# - 경쟁사와의 차별점 강조
+
+# Subtasks:
+## 1. IntroSection 수정 [pending]
+### Dependencies: None
+### Description: IntroSection을 투자자 대상 메시지로 변경합니다. "내가 쓴 투자 메모에서 반복 실수를 찾아줘" 핵심 메시지로 전환
+### Details: 헤드라인, 서브텍스트, CTA를 투자자 관점으로 재구성
+
+## 2. MarketNeedSection 수정 [pending]
+### Dependencies: 1
+### Description: 시장 수요 섹션을 투자자용 온톨로지 메모관리 시장으로 재구성
+### Details: 글로벌 투자 앱 시장 규모, 개인 투자자 1,400만 명, AI 투자관리 시장 성장률 등 실제 통계 활용
+
+## 3. ProblemSection 수정 [pending]
+### Dependencies: 2
+### Description: 문제 정의를 투자자의 반복 실수, 편향, 매매 타이밍 놓침 등으로 재구성
+### Details: 투자자 78% "반복 실수/편향 인지 어려움" 경험 등 실제 설문 결과 활용
+
+## 4. SolutionSection 수정 [pending]
+### Dependencies: 3
+### Description: 솔루션을 온톨로지 기반 투자 메모 분석으로 재구성
+### Details: AI가 투자 간 상관관계·인과추론·편향 탐지, 반복 실수 자동 진단 등
+
+## 5. TechnologySection 수정 [pending]
+### Dependencies: 4
+### Description: 기술 섹션을 온톨로지 기반 투자 메모 추적/분석 엔진으로 재구성
+### Details: AI-Link 투자자별 맥락 캡슐화, 투자 편향/실수 패턴 자동 탐지 등
+
+## 6. BenefitsSection 수정 [pending]
+### Dependencies: 5
+### Description: 혜택을 투자자 관점의 실질적 가치로 재구성
+### Details: 반복 실수/편향 자동 진단, 매매 타이밍 실수 사전 경고, 투자 인사이트 그래프 등
+
+## 7. UserScenarioSection 수정 [pending]
+### Dependencies: 6
+### Description: 사용자 시나리오를 투자자 실제 사용 사례로 재구성
+### Details: "내가 쓴 투자 메모에서 반복 실수를 AI가 자동으로 찾아줍니다" 등 실제 적용 사례
+
+## 8. WhyNowSection 수정 [pending]
+### Dependencies: 7
+### Description: 시기적절성을 투자자용 AI 분석 시장 성장으로 재구성
+### Details: AI 투자분석/메모 시장 연 18% 성장, ChatGPT 등 생성형 AI 투자자 활용률 35% 등
+
+## 9. MarketSizeSection 수정 [pending]
+### Dependencies: 8
+### Description: 시장 규모를 투자자용 온톨로지 메모관리 시장으로 재구성
+### Details: 글로벌 투자 앱 시장 USD 444억(2023), CAGR 19.1%, 개인 투자자 1,400만 명 등
+
+## 10. CompetitorAnalysisSection 수정 [pending]
+### Dependencies: 9
+### Description: 경쟁사 분석을 투자자용 앱 시장으로 재구성
+### Details: Robinhood, Webull, eToro 등 vs 온톨로지 기반 AI 분석 차별화
+
+## 11. BusinessModelSection 수정 [pending]
+### Dependencies: 10
+### Description: 비즈니스 모델을 투자자용 구독 서비스로 재구성
+### Details: Free/Pro/Enterprise 플랜, 클랜/밴드 협업 지원 등
+
+## 12. GrowthStrategySection 수정 [pending]
+### Dependencies: 11
+### Description: 성장 전략을 투자자 커뮤니티/밴드/클랜 중심으로 재구성
+### Details: 투자자 커뮤니티 집중 공략, 투자 유튜버/인플루언서 협업 등
+
+## 13. FinancialsSection 수정 [pending]
+### Dependencies: 12
+### Description: 재무 섹션을 투자자용 서비스 재무 전망으로 재구성
+### Details: 2025년 목표 가입자 10만 명, Pro 전환율 8%, 연매출 12억 원 등
+
+## 14. TeamSection 수정 [pending]
+### Dependencies: 13
+### Description: 팀 섹션을 투자자 경험 기반 팀으로 재구성
+### Details: 금융/AI/온톨로지 전문가, 투자자 출신 PM 등
+
+## 15. HistorySection 수정 [pending]
+### Dependencies: 14
+### Description: 연혁을 투자자용 온톨로지 메모관리 서비스 개발 과정으로 재구성
+### Details: 2023년 온톨로지 엔진 개발, 2024년 투자자용 AI 실수 진단 출시 등 

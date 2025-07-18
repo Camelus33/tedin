@@ -7,35 +7,35 @@ import AppLogo from '@/components/common/AppLogo';
 const competitorGroups = [
   {
     icon: <FileText className="w-8 h-8 text-slate-400" />,
-    name: 'The Siloed Way: 정보의 무덤',
-    examples: 'Notion, Evernote',
-    approach: '정보를 깔끔하게 저장하지만, 연결되지 않은 채 각자의 서랍 속에서 잠자게 만듭니다.',
-    limitation: '검색하지 않으면 존재조차 잊히는 수동적 데이터로, 지식 자산이 아닌 비용을 발생시킵니다.',
+    name: 'The Fragmented Way: 투자 메모의 산재',
+    examples: 'Excel, Notion, 메모장',
+    approach: '투자 메모를 개별적으로 저장하지만, 투자 패턴과 편향을 연결 분석할 수 없습니다.',
+    limitation: '반복되는 투자 실수를 인식하지 못하고, 개별 메모로는 전체 투자 철학을 파악할 수 없습니다.',
   },
   {
     icon: <Hand className="w-8 h-8 text-blue-400" />,
-    name: 'The Manual Way: 소수 전문가의 길',
-    examples: 'Obsidian, Roam',
-    approach: '사용자가 직접 모든 지식을 연결하고 구조화해야 하는 높은 수준의 규율을 요구합니다.',
-    limitation: '뛰어난 소수를 제외한 99%의 사용자는 결국 지쳐서 포기하게 만드는 높은 진입 장벽이 존재합니다.',
+    name: 'The Manual Way: 전문 투자자의 도구',
+    examples: 'Bloomberg Terminal, 전문 분석 도구',
+    approach: '고가의 전문 도구로 시장 데이터는 분석하지만, 개인 투자 패턴과 편향은 분석하지 못합니다.',
+    limitation: '일반 투자자에게는 접근이 어렵고, 개인 투자 철학의 일관성을 검증할 수 없습니다.',
   },
   {
     icon: <Zap className="w-8 h-8 text-purple-400" />,
-    name: 'The Volatile Way: 똑똑한 단기기억상실',
-    examples: 'ChatGPT, Gemini',
-    approach: '매번의 대화가 독립적이며, 과거의 맥락을 기억하지 못하는 일회성 상호작용에 그칩니다.',
-    limitation: '사용자 메모리를 점점 지원하지만, 소중한 도메인 지식을 무료로 모두 넘겨 줘야 합니다.',
+    name: 'The Generic Way: 범용 AI의 한계',
+    examples: 'ChatGPT, Gemini, Claude',
+    approach: '투자 관련 질문에 답변하지만, 사용자의 투자 맥락과 철학을 이해하지 못합니다.',
+    limitation: '개인 투자 패턴을 학습하지 못하고, 매번 새로운 대화로 시작해야 하는 한계가 있습니다.',
   },
 ];
 
 const positioningData = {
     axisLabels: {
-        x: ['Manual', 'Automatic'],
-        y: ['Stateless', 'Stateful'],
+        x: ['Manual Analysis', 'AI-Powered Analysis'],
+        y: ['Generic Tools', 'Personalized Investment AI'],
     },
     competitors: [
-        { name: 'Notion, Evernote', x: 20, y: 75, color: 'text-slate-300' },
-        { name: 'Obsidian, Roam', x: 25, y: 25, color: 'text-blue-300' },
+        { name: 'Excel, Notion', x: 20, y: 75, color: 'text-slate-300' },
+        { name: 'Bloomberg Terminal', x: 25, y: 25, color: 'text-blue-300' },
         { name: 'ChatGPT, Gemini', x: 80, y: 75, color: 'text-purple-300' },
     ],
     habitus: {
@@ -68,10 +68,10 @@ const CompetitorAnalysisSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            Why We Win: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">A New Game, New Rules</span>
+            Why We Win: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Personalized Investment AI</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-4xl mx-auto leading-relaxed">
-            기존의 툴들은 '정보 저장'이라는 낡은 경기장에서 경쟁합니다. 우리는 '지식 자산화'라는 새로운 경기장을 창조하며, 이 게임의 규칙은 우리가 만듭니다.
+            기존 도구들은 '시장 분석'이나 '메모 저장'에만 집중합니다. 우리는 '개인 투자 패턴 학습'과 '편향 진단'이라는 새로운 영역을 개척하며, 투자자의 개인적 성장을 돕는 AI를 제공합니다.
           </p>
         </motion.div>
 

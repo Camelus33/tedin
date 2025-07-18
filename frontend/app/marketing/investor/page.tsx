@@ -16,17 +16,14 @@ export default function HighStressStudentsPage() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const element = entry.target as HTMLElement;
-          element.style.opacity = '1';
-          element.style.transform = 'translateY(0)';
+          element.classList.add('animate-fade-in-up');
+          observer.unobserve(element);
         }
       });
     }, observerOptions);
 
     slidesRef.current.forEach(slide => {
       if (slide) {
-        slide.style.opacity = '0';
-        slide.style.transform = 'translateY(30px)';
-        slide.style.transition = 'all 0.6s ease-out';
         observer.observe(slide);
       }
     });
@@ -100,20 +97,20 @@ export default function HighStressStudentsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8">
               <div 
                 onClick={handleCardClick}
-                className="bg-white/5 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 ease-out cursor-pointer
+                className="bg-white/5 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 ease-out
                            border border-white/10 hover:bg-white/10 hover:transform hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="text-4xl sm:text-5xl mb-4 sm:mb-6">🚫</div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2 sm:mb-3">거짓 정보 생성</h3>
+                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2 sm:mb-3">거짓 정보 생성</h3>
                 <p className="text-sm sm:text-base text-gray-300 leading-relaxed">AI가 생성하는 부정확하거나 잘못된 정보는 오히려 투자 판단을 흐리게 만듭니다.</p>
               </div>
               <div 
                 onClick={handleCardClick}
-                className="bg-white/5 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 ease-out cursor-pointer
+                className="bg-white/5 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 ease-out
                            border border-white/10 hover:bg-white/10 hover:transform hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="text-4xl sm:text-5xl mb-4 sm:mb-6">💡</div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2 sm:mb-3">'뻔한' 조언</h3>
+                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2 sm:mb-3">'뻔한' 조언</h3>
                 <p className="text-sm sm:text-base text-gray-300 leading-relaxed">개인화되지 않은 일반적인 투자 조언은 실제 투자에 큰 도움이 되지 않습니다.</p>
               </div>
               <div 
@@ -122,7 +119,7 @@ export default function HighStressStudentsPage() {
                            border border-white/10 hover:bg-white/10 hover:transform hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="text-4xl sm:text-5xl mb-4 sm:mb-6">❓</div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2 sm:mb-3">근거 불명확한 종목 추천</h3>
+                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2 sm:mb-3">근거 불명확한 종목 추천</h3>
                 <p className="text-sm sm:text-base text-gray-300 leading-relaxed">왜 특정 종목을 추천하는지 명확한 근거 없이 제시되는 AI 추천은 신뢰하기 어렵습니다.</p>
               </div>
             </div>
@@ -153,7 +150,7 @@ export default function HighStressStudentsPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/3 to-pink-600/3 -z-10"></div>
               <div className="text-3xl sm:text-4xl font-bold text-indigo-500 mb-3 sm:mb-4">1</div>
-              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">방대한 투자 정보, 메모와 관련된 정보만 검색</h3>
+              <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3 sm:mb-4">방대한 투자 정보, 메모 관련 정보만 검색</h3>
               <p className="text-sm sm:text-base text-gray-300 leading-relaxed">수많은 투자 리포트, 뉴스, 데이터, AI가 당신의 고유한 투자 관점과 목표에 맞춰 필요한 정보만 선별적으로 가져다줍니다. 딱 필요한 것만 보세요.</p>
             </div>
             <div 
@@ -165,7 +162,7 @@ export default function HighStressStudentsPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/3 to-pink-600/3 -z-10"></div>
               <div className="text-3xl sm:text-4xl font-bold text-indigo-500 mb-3 sm:mb-4">2</div>
-              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">파편화된 투자 메모, AI가 자동 연결</h3>
+              <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3 sm:mb-4">파편화된 투자 메모, AI가 자동 연결</h3>
               <p className="text-sm sm:text-base text-gray-300 leading-relaxed">당신이 어딘가 적어둔 투자 기록(메모, 스크랩)을 AI가 온톨로지 기반의 지식 그래프로 일일이 연결하여 복잡한 맥락을 추론합니다. 관련된 정보들을 연결해 당신만의 '투자 인사이트 그래프'를 만듭니다.</p>
             </div>
           </div>
@@ -187,7 +184,7 @@ export default function HighStressStudentsPage() {
             <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
           </h2>
           <div className="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8 leading-relaxed">
-            온톨로지 기반의 '지식 그래프'를 통해, 신뢰가능한 투자결정 프로세스를 구축하세요.
+            온톨로지 기반의 '지식 그래프'를 통해, 당신만의 투자 인사이트를 만드세요
           </div>
           
           <div className="bg-gradient-to-br from-blue-500/8 to-indigo-600/8 border border-blue-500/20 
@@ -203,7 +200,7 @@ export default function HighStressStudentsPage() {
                 🏷️
               </div>
               <div className="flex-1">
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">AI '블랙박스' 해소</h3>
+                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2">AI '블랙박스' 해소</h3>
                 <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
                   당신의 모든 투자 관련 기록(메모, 리포트)에 AI가 출처와 맥락을 자동 부착합니다. AI는 이 투명한 구조 위에서 추론하므로, '왜' 이런 분석을 추천하는지 명확한 근거를 제시합니다.
                 </p>
@@ -221,7 +218,7 @@ export default function HighStressStudentsPage() {
                 📦
               </div>
               <div className="flex-1">
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">'정보 홍수' 극복</h3>
+                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2">'정보 홍수' 극복</h3>
                 <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
                   산재된 투자 지식이 AI-Link를 통해 하나의 유기적인 '초개인화된 지식 그래프'로 통합됩니다. AI는 전체 맥락을 이해하며, 필요한 정보만을 정확하게 찾아내 당신의 의사결정을 돕습니다.
                 </p>
@@ -239,7 +236,7 @@ export default function HighStressStudentsPage() {
                 🎧
               </div>
               <div className="flex-1">
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">'숨겨진 투자 기회' 포착</h3>
+                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2">'숨겨진 투자 기회' 포착</h3>
                 <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
                   당신만의 지식 그래프를 기반으로, AI는 일반적인 조언을 넘어 당신의 투자 성향과 목표에 최적화된 심층 분석과 인사이트를 제공합니다. 경쟁자들이 놓치는 '숨겨진 투자 기회'를 찾아냅니다.
                 </p>
@@ -269,7 +266,7 @@ export default function HighStressStudentsPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-purple-600/3 to-pink-600/3 -z-10"></div>
               <div className="text-3xl sm:text-4xl font-bold text-purple-500 mb-3 sm:mb-4">🔍</div>
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">빈틈없는 의사결정</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">빈틈없는 의사결정</h3>
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">AI-Link는 당신의 지식 그래프를 LLM에 직접 연결, 모든 투자 결정의 근거를 투명하게 제시하고 '맹점'을 제거합니다. 투자자는 AI 추천을 맹목적으로 따르지 않고 스스로 검증하며 확신을 가집니다.</p>
             </div>
             <div
@@ -281,7 +278,7 @@ export default function HighStressStudentsPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-purple-600/3 to-pink-600/3 -z-10"></div>
               <div className="text-3xl sm:text-4xl font-bold text-purple-500 mb-3 sm:mb-4">✨</div>
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">초개인화된 인사이트</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">초개인화된 인사이트</h3>
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">당신의 독점적인 지식(메모, 분석)이 AI 학습 데이터가 되어, 시장 정보와 결합됩니다. 다른 투자자들이 놓치는 '숨겨진 기회'와 리스크를 발견합니다.</p>
             </div>
             <div
@@ -293,7 +290,7 @@ export default function HighStressStudentsPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-purple-600/3 to-pink-600/3 -z-10"></div>
               <div className="text-3xl sm:text-4xl font-bold text-purple-500 mb-3 sm:mb-4">⏱️</div>
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">시간과 비용 절약</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">시간과 비용 절약</h3>
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">정보 과부하와 파편화된 지식 통합에 드는 막대한 시간과 노력을 AI가 대신합니다. 당신은 본질적인 사유와 전략 수립에만 집중하세요.</p>
             </div>
             <div
@@ -305,7 +302,7 @@ export default function HighStressStudentsPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-purple-600/3 to-pink-600/3 -z-10"></div>
               <div className="text-3xl sm:text-4xl font-bold text-purple-500 mb-3 sm:mb-4">🌱</div>
-              <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">지속 가능한 성장 모멘텀</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">지속 가능한 성장 모멘텀</h3>
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">당신의 지적 자산이 쌓이고 진화할수록, Habitus33 AI는 더욱 정교하고 개인화된 통찰력을 제공합니다. 이는 시장 변화 속에서 당신이 앞서 나갈 독점적 우위가 됩니다.</p>
             </div>
           </div>
@@ -322,7 +319,7 @@ export default function HighStressStudentsPage() {
             아무도 보지 못한 연결이 보인다면?
             <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
           </h2>
-          <div className="text-center mb-10 sm:mb-12 text-lg sm:text-xl text-gray-300 leading-relaxed">
+          <div className="text-center mb-10 sm:mb-12 text-lg sm:text-xl text-gray-200 leading-relaxed">
             당신만의 투자 철학을 완성하세요
           </div>
           <Link 

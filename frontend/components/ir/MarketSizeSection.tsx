@@ -142,35 +142,35 @@ const MarketSizeSection = () => {
   const markets: MarketCardProps[] = [
     {
       type: 'TAM',
-      title: 'Total Addressable Market',
-      value: 2,
-      suffix: '조 달러',
-      cagr: 18.3,
+      title: '글로벌 투자 앱 시장',
+      value: 444,
+      suffix: '억 달러',
+      cagr: 19.1,
       description:
-        "모든 기업이 마주하는 '지식 자산의 파편화' 문제의 총 시장 규모입니다. 이는 단순한 소프트웨어 시장이 아닌, 비효율로 인해 발생하는 수조 달러의 기회비용을 포함합니다.",
-      source: 'Research and Markets (2030년 전망)',
+        "Robinhood, Webull, eToro 등 개인 투자자 대상 투자 앱의 총 시장 규모입니다. 1,400만 국내 개인 투자자를 포함한 전 세계 투자자들이 편향 진단과 기회 발굴을 필요로 합니다.",
+      source: 'Market.us (2023년 기준, 2033년 전망)',
       delay: 0.2,
     },
     {
       type: 'SAM',
-      title: 'Serviceable Addressable Market',
-      value: 1,
-      suffix: '조 달러',
-      cagr: 42.0,
+      title: 'AI 기반 투자 분석 시장',
+      value: 37,
+      suffix: '억 달러',
+      cagr: 18.1,
       description:
-        "파편화된 지식 문제를 해결하기 위해 AI에 적극적으로 투자할 의향이 있는 기업들이 형성하는 유효 시장입니다. 우리는 이 시장의 성장을 주도할 것입니다.",
-      source: 'Bloomberg Intelligence (2032년 전망)',
+        "AI를 활용한 개인 투자 관리 서비스 시장입니다. 투자자들이 AI의 도움을 받아 편향을 진단하고 투자 성과를 개선하려는 수요가 급증하고 있습니다.",
+      source: 'Market.us (2023년 기준, 2033년 전망)',
       delay: 0.4,
     },
     {
       type: 'SOM',
-      title: 'Serviceable Obtainable Market',
-      value: 520,
+      title: '온톨로지 기반 투자 진단 시장',
+      value: 15,
       suffix: '억 달러',
-      cagr: 40.2,
+      cagr: 23.4,
       description:
-        "Habitus33의 AI-Link 기술이 기존 솔루션과 비교 불가능한 가치를 제공하며, 초기에 독점적으로 장악할 수 있는 시장입니다. 이 시장의 고객들은 '지적 자본의 증대'를 원하는 가장 가치 있는 고객들입니다.",
-      source: 'Market.us (2033년 전망)',
+        "Habitus33의 온톨로지 AI 기술이 기존 투자 앱과 차별화된 가치를 제공하며, 투자자의 편향 진단과 숨은 기회 발굴에 특화된 시장입니다. 78%의 투자자가 반복 실수 인지에 어려움을 겪고 있어 이 시장의 성장이 예상됩니다.",
+      source: 'Market.us (2024년 전망)',
       delay: 0.6,
     },
   ];
@@ -185,10 +185,10 @@ const MarketSizeSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">$52B Market</span> We Can Win
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">$444B 투자 앱 시장</span>에서 온톨로지 AI가 승리할 수 있는 이유
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            우리는 거대 시장의 일부를 점유하는 것이 아닌, 가장 빠르게 성장하는 핵심 시장(SOM)을 정의하고 장악하는 전략을 추구합니다.
+            우리는 기존 투자 앱과는 차별화된 온톨로지 기반 편향 진단 시장을 정의하고 장악하는 전략을 추구합니다.
           </p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
