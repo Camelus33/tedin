@@ -5,7 +5,6 @@ import { Providers } from './providers'
 import './dashboard/styles/dashboard.css';
 import Footer from '@/components/common/Footer';
 import CartUIManager from '@/components/cart/CartUIManager';
-import { Toaster } from 'react-hot-toast';
 import { AILinkCommand } from '@/components/ai/AILinkCommand'; // AI-Link 컴포넌트 임포트
 
 // Noto Serif KR 폰트 설정
@@ -44,7 +43,6 @@ export default function RootLayout({
               {children}
             </div>
             <CartUIManager />
-            <Toaster />
             <AILinkCommand /> {/* 모든 페이지에 AI-Link 버튼과 모달을 렌더링 */}
           </ReduxProvider>
           
