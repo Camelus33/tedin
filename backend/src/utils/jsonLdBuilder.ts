@@ -2,10 +2,10 @@ import {
   ActionModule,
   CognitiveProvenance,
   KnowledgePersonality,
-} from '../types/common';
-import { TimeUtils } from './timeUtils';
-import { CreativePersonaEngine } from './creativePersonaUtils';
-import { getBeliefNetwork } from '../services/BeliefNetworkService';
+} from '../types/common.js';
+import { TimeUtils } from './timeUtils.js';
+import { CreativePersonaEngine } from './creativePersonaUtils.js';
+import { getBeliefNetwork } from '../services/BeliefNetworkService.js';
 
 // frontend/components/ts/TSNoteCard.tsx 에서 가져온 타입 정의를
 // 백엔드에서 사용할 수 있도록 아래에 직접 정의하거나, 공유 타입 파일에서 가져와야 합니다.
@@ -38,6 +38,11 @@ export interface TSNote {
   noteCreatedAt?: Date | string; // 메모 생성 시점 (서버 시간)
   clientCreatedAt?: Date | string; // 메모 생성 시점 (클라이언트 시간)
   memoEvolutionTimestamp?: Date | string; // 메모 진화 시점
+  inlineThreads?: {
+    content: string;
+    authorName: string;
+    createdAt: Date;
+  }[];
 }
 
 export interface TSSessionDetails {
@@ -1387,6 +1392,19 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         "expectedOutcome": "1줄메모와 외부 자료 간의 지식 연결고리 발견 및 학습 맥락 이해",
         "crawlingPurpose": "개인화된 지식 네트워크의 완전한 이해를 위한 외부 맥락 정보 수집"
       };
+    }
+
+    // --- 인라인 쓰레드 정보 추가 ---
+    if (note.inlineThreads && note.inlineThreads.length > 0) {
+      notePart.hasPart = note.inlineThreads.map((thread) => ({
+        '@type': 'Comment',
+        text: thread.content,
+        author: {
+          '@type': 'Person',
+          name: thread.authorName
+        },
+        dateCreated: TimeUtils.toISOString(thread.createdAt)
+      }));
     }
 
     return notePart;

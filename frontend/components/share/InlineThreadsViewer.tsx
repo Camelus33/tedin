@@ -68,7 +68,15 @@ const InlineThreadsViewer = ({ shareId, noteId, count }: InlineThreadsViewerProp
           {threads && threads.map((t) => (
             <div key={t._id} className="border-l-2 border-gray-300 pl-3">
               <p className="text-sm text-gray-800 whitespace-pre-wrap">{t.content}</p>
-              <p className="text-xs text-gray-500 mt-1">— {t.authorName}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-gray-500">{t.authorName}</span>
+                <span className="text-xs text-gray-400">
+                  {new Date(t.createdAt).toLocaleString('ko-KR', {
+                    year: '2-digit', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                  })}
+                </span>
+              </div>
             </div>
           ))}
         </div>
