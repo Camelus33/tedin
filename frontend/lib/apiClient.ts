@@ -42,15 +42,9 @@ class ApiClient {
     try {
       const url = `${API_BASE_URL}/api${endpoint}`;
       
-      // 개발 환경에서는 디버그 래퍼 사용
-      if (process.env.NODE_ENV === 'development') {
-        const response = await apiDebug.logApiRequest(url, config, 'apiClient');
-        return await this.handleResponse(response, endpoint);
-      } else {
-        // 프로덕션 환경에서는 기존 방식 사용
-        const response = await fetch(url, config);
-        return await this.handleResponse(response, endpoint);
-      }
+      // 개발 환경에서도 기본 fetch 사용 (디버그 래퍼로 인한 스트림 소비 문제 해결)
+      const response = await fetch(url, config);
+      return await this.handleResponse(response, endpoint);
     } catch (error: any) {
       const errorMessage = error.message || '서버와 연결이 어려워요. 잠시 후 다시 시도해 주세요.';
       toast.error(errorMessage);
@@ -121,7 +115,16 @@ class ApiClient {
   // 인증 관련 오류 핸들링 개선
   private async handleResponse(response: Response, url: string): Promise<any> {
     if (response.ok) {
-      return response.json();
+      try {
+        const data = await response.json();
+        console.log('handleResponse 파싱 성공:', data);
+        return data;
+      } catch (error) {
+        console.error('handleResponse JSON 파싱 실패:', error);
+        console.log('response.status:', response.status);
+        console.log('response.headers:', response.headers);
+        throw error;
+      }
     }
 
     // 오류 응답 처리
