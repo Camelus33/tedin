@@ -149,6 +149,7 @@ export const apiDebug = {
         body: responseBody
       });
 
+      // 원본 response 객체 반환 (handleResponse에서 다시 파싱할 수 있도록)
       return response;
     } catch (error: any) {
       // 오류 로깅
