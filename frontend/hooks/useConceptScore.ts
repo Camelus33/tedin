@@ -47,6 +47,9 @@ export const useConceptScore = (noteId: string) => {
     try {
       const response = await apiClient.get(`/notes/${noteId}/concept-score`);
       
+      console.log('API 응답 전체:', response);
+      console.log('response.data:', response.data);
+      
       if (response.data && response.data.conceptUnderstandingScore) {
         setScore(response.data.conceptUnderstandingScore);
         setLastUpdated(response.data.lastUpdated);
