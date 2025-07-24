@@ -387,18 +387,15 @@ export default function TSNoteCard({
   
   // 마운트 상태 추적 useEffect (React Strict Mode 대응)
   useEffect(() => {
-    console.log('TSNoteCard 마운트 상태 설정');
     setIsMounted(true);
     isMountedRef.current = true;
     
     return () => {
-      console.log('TSNoteCard 언마운트 cleanup');
       setIsMounted(false);
       isMountedRef.current = false;
       
       // 진행 중인 API 호출 중단
       if (abortControllerRef.current) {
-        console.log('진행 중인 API 호출 중단');
         abortControllerRef.current.abort();
       }
       
@@ -418,31 +415,19 @@ export default function TSNoteCard({
 
     // 마운트되지 않은 상태에서는 실행하지 않음
     if (!isMounted) {
-      console.log('TSNoteCard 아직 마운트되지 않음, initialNote 변경 처리 건너뜀');
       return;
     }
 
     // 첫 번째 렌더링에서는 실행하지 않음 (React Strict Mode 대응)
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false;
-      console.log('TSNoteCard 첫 번째 렌더링, initialNote 변경 처리 건너뜀');
       return;
     }
 
     // 컴포넌트가 언마운트된 상태에서는 실행하지 않음
     if (!isMountedRef.current) {
-      console.log('TSNoteCard 언마운트 상태, initialNote 변경 처리 건너뜀');
       return;
     }
-
-    console.log('TSNoteCard initialNote 변경 처리:', {
-      noteId: initialNote._id,
-      hasInlineThreads: !!initialNote.inlineThreads?.length,
-      isPageEditing,
-      enableOverlayEvolutionMode,
-      isMounted,
-      isFirstRender: isFirstRenderRef.current
-    });
 
     // 안전한 상태 업데이트 (cleanup 플래그와 마운트 상태 재확인)
     if (!isCleandUp && isMountedRef.current) {
@@ -465,7 +450,6 @@ export default function TSNoteCard({
 
     // cleanup 함수: isCleandUp 플래그 설정
     return () => {
-      console.log('TSNoteCard initialNote useEffect cleanup 실행');
       isCleandUp = true;
     };
   }, [initialNote, isPageEditing, enableOverlayEvolutionMode, isMounted]);
@@ -1142,9 +1126,9 @@ export default function TSNoteCard({
     }
   };
 
-  // 컴포넌트 마운트 시 점수 조회
+  // 컴포넌트 마운트 시 점수 조회 - 조건부 호출
   useEffect(() => {
-    if (note._id) {
+    if (note._id && note._id !== 'temp' && !note.isTemporary) {
       fetchScore();
     }
   }, [note._id, fetchScore]);

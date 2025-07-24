@@ -106,15 +106,13 @@ export default function DashboardPage() {
       const rawNotes = Array.isArray(memosResponse) ? memosResponse : (memosResponse?.data || []);
       console.log('🔍 [DEBUG] 6. Raw notes after fallback:', rawNotes);
       
-      // 클라이언트에서 필요한 필드 매핑 (content 보완)
+      // 클라이언트에서 필요한 필드 매핑 (content 보완) - 로그 제거
       const mappedNotes = rawNotes.map((n: any) => {
-          console.log('🔍 [DEBUG] 7. Mapping individual note:', n);
           const mapped = {
             ...n,
             content: n.content || n.title || '',
             tags: n.tags || [],
           };
-          console.log('🔍 [DEBUG] 8. Mapped note result:', mapped);
           return mapped;
         });
       console.log('🔍 [DEBUG] 9. Final mapped notes (최근 3개):', mappedNotes);
@@ -214,16 +212,8 @@ export default function DashboardPage() {
     }).replace(/ /g, '').slice(0, -1); // "YYYY. MM. DD." 형식으로 만듦
   };
 
-  // 렌더링 전 상태 확인
-  console.log('🔍 [RENDER] Current user state:', user);
-  console.log('🔍 [RENDER] Current user nickname:', user?.nickname);
-  console.log('🔍 [RENDER] Redux user state:', reduxUser);
-  console.log('🔍 [RENDER] Current recentMemos state:', recentMemos);
-  console.log('🔍 [RENDER] Current summaryNotes state:', summaryNotes);
-  console.log('🔍 [RENDER] Is recentMemos array?', Array.isArray(recentMemos));
-  console.log('🔍 [RENDER] Is summaryNotes array?', Array.isArray(summaryNotes));
-  console.log('🔍 [RENDER] recentMemos length:', recentMemos?.length);
-  console.log('🔍 [RENDER] summaryNotes length:', summaryNotes?.length);
+  // 렌더링 전 상태 확인 - 로그 간소화
+  console.log('🔍 [RENDER] User:', user?.nickname, 'Memos:', recentMemos?.length, 'SummaryNotes:', summaryNotes?.length);
 
   // 파생 상태: viewMode, sortBy, recentMemos 로부터 화면에 표시할 메모 목록 계산
   const displayedMemos = useMemo(() => {
@@ -435,13 +425,9 @@ export default function DashboardPage() {
                 
           {/* 메모 카드들 - TSNoteCard 사용 */}
           {(() => {
-            console.log('🔍 [RENDER] Checking recentMemos condition:', recentMemos.length > 0);
-            console.log('🔍 [RENDER] recentMemos.length:', recentMemos.length);
             return displayedMemos.length > 0 ? (
               <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2' : 'grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-3 p-2'}>
                 {displayedMemos.map((memo, index) => {
-                  console.log(`🔍 [RENDER] Rendering memo ${index}:`, memo);
-                  
                   // 포스트잇 색상 배열 (인덱스에 따라 다른 색상 적용)
                   const postItColors = [
                     {
@@ -535,7 +521,6 @@ export default function DashboardPage() {
               </div>
             ) : (
               (() => {
-                console.log('�� [RENDER] Showing "no memos" message');
                 return (
                   <div className="text-center py-12 text-gray-400">
                     <p>아직 메모가 없습니다.</p>
@@ -553,12 +538,9 @@ export default function DashboardPage() {
           <div>
             <h2 className="text-xl font-medium text-white mb-6">최근 단권화 노트</h2>
             {(() => {
-              console.log('🔍 [RENDER] Checking summaryNotes condition:', summaryNotes.length > 0);
-              console.log('🔍 [RENDER] summaryNotes.length:', summaryNotes.length);
               return summaryNotes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {summaryNotes.map((note, index) => {
-                    console.log(`🔍 [RENDER] Rendering summary note ${index}:`, note);
                     return (
                       <Link key={note._id} href={`/summary-notes/${note._id}/edit`}>
                 <div className="bg-white/5 rounded-lg p-4 flex flex-col h-full border border-white/10 hover:border-cyan-400/50 transition-colors duration-300 shadow-lg hover:shadow-cyan-500/10">
@@ -576,7 +558,6 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 (() => {
-                  console.log('🔍 [RENDER] Showing "no summary notes" message');
                   return (
                     <div className="text-center py-12 text-gray-400">
                       <p>아직 단권화 노트가 없습니다.</p>

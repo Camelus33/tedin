@@ -47,9 +47,6 @@ export const useConceptScore = (noteId: string) => {
     try {
       const response = await apiClient.get(`/notes/${noteId}/concept-score`);
       
-      console.log('API 응답 전체:', response);
-      console.log('response.data:', response.data);
-      
       if (response.data && response.data.conceptUnderstandingScore) {
         setScore(response.data.conceptUnderstandingScore);
         setLastUpdated(response.data.lastUpdated);
@@ -57,7 +54,12 @@ export const useConceptScore = (noteId: string) => {
         console.warn('API 응답에 conceptUnderstandingScore가 없습니다:', response.data);
         setError('점수 데이터를 찾을 수 없습니다.');
       }
-    } catch (err) {
+    } catch (err: any) {
+      // 404 에러는 조용히 처리 (노트가 존재하지 않거나 concept-score가 지원되지 않는 경우)
+      if (err.status === 404) {
+        console.warn('Concept score not available for note:', noteId);
+        return;
+      }
       console.error('개념이해도 점수 조회 실패:', err);
       setError('점수를 불러오는데 실패했습니다.');
     } finally {
