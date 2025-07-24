@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AiOutlineQuestionCircle, AiOutlineInfoCircle } from 'react-icons/ai';
 import { GiCutDiamond, GiRock } from 'react-icons/gi';
-import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon, ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/solid';
+import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon, ChatBubbleOvalLeftEllipsisIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import api, { inlineThreadApi } from '@/lib/api'; // Import the central api instance
 import AiCoachPopover from '../common/AiCoachPopover';
@@ -346,6 +346,9 @@ export default function TSNoteCard({
   const [editingThreadId, setEditingThreadId] = useState<string | null>(null);
   const [editingThreadContent, setEditingThreadContent] = useState('');
   const [isSubmittingThread, setIsSubmittingThread] = useState(false); // 중복 요청 방지용 상태
+  
+  // 메모진화 접기/펼치기 상태
+  const [showMemoEvolution, setShowMemoEvolution] = useState(false);
   
   // 개념이해도 점수 관련 상태
   const [showConceptScorePopup, setShowConceptScorePopup] = useState(false);
@@ -799,10 +802,32 @@ export default function TSNoteCard({
 
     return (
       <div className="mt-4 pt-3 border-t border-gray-700/50">
-        <h4 className="text-xs font-semibold text-gray-400 mb-2">
-          메모 진화 내용:
-        </h4>
-        {details}
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-xs font-semibold text-gray-400">
+            메모 진화 내용:
+          </h4>
+          <button
+            onClick={() => setShowMemoEvolution(!showMemoEvolution)}
+            className="text-xs text-cyan-500 hover:text-cyan-400 transition-colors duration-200 flex items-center"
+          >
+            {showMemoEvolution ? (
+              <>
+                <ChevronUpIcon className="h-3 w-3 mr-1" />
+                접기
+              </>
+            ) : (
+              <>
+                <ChevronDownIcon className="h-3 w-3 mr-1" />
+                펼치기
+              </>
+            )}
+          </button>
+        </div>
+        <div className={`transition-all duration-300 overflow-hidden ${
+          showMemoEvolution ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}>
+          {details}
+        </div>
       </div>
     );
   };
