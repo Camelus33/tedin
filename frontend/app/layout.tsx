@@ -30,6 +30,7 @@ export default function RootLayout({
     <html lang="ko" className={notoSerifKr.variable} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="manifest" href="/manifest.json" />
         <link
           rel="stylesheet"
           as="style"

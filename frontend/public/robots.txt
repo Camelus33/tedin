@@ -1,0 +1,34 @@
+# Habitus33 - robots.txt
+# Allow all crawlers to access the main site
+User-agent: *
+Allow: /
+
+# Disallow sensitive areas
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /auth/
+Disallow: /profile/
+Disallow: /dashboard/
+Disallow: /books/
+Disallow: /memo/
+Disallow: /myverse/
+Disallow: /reading-session/
+Disallow: /summary-notes/
+Disallow: /zengo/
+Disallow: /ts/
+Disallow: /dev/
+Disallow: /test-concept-score/
+
+# Allow important public pages
+Allow: /
+Allow: /privacy-policy/
+Allow: /terms-of-service/
+Allow: /marketing/
+Allow: /ir/
+
+# Sitemap location
+Sitemap: https://habitus33.vercel.app/api/sitemap
+
+# Crawl delay (optional - adjust based on server capacity)
+Crawl-delay: 1 

@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
+    "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "sitemap": "next-sitemap"
   },
   "dependencies": {
     "@blocknote/core": "^0.33.0",
@@ -39,6 +41,7 @@
     "idb": "^8.0.3",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.503.0",
+    "next-sitemap": "^4.2.3",
     "pdfjs-dist": "^5.3.93",
     "react-chartjs-2": "^5.2.0",
     "react-countup": "^6.5.3",
