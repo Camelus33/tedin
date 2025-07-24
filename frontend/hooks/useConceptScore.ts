@@ -47,8 +47,13 @@ export const useConceptScore = (noteId: string) => {
     try {
       const response = await apiClient.get(`/notes/${noteId}/concept-score`);
       
-      setScore(response.data.conceptUnderstandingScore);
-      setLastUpdated(response.data.lastUpdated);
+      if (response.data && response.data.conceptUnderstandingScore) {
+        setScore(response.data.conceptUnderstandingScore);
+        setLastUpdated(response.data.lastUpdated);
+      } else {
+        console.warn('API 응답에 conceptUnderstandingScore가 없습니다:', response.data);
+        setError('점수 데이터를 찾을 수 없습니다.');
+      }
     } catch (err) {
       console.error('개념이해도 점수 조회 실패:', err);
       setError('점수를 불러오는데 실패했습니다.');
@@ -73,8 +78,13 @@ export const useConceptScore = (noteId: string) => {
       const response = await apiClient.post(`/notes/${noteId}/update-score`, requestData);
       
       // 업데이트된 점수로 상태 갱신
-      setScore(response.data.conceptScore);
-      setLastUpdated(response.data.lastUpdated);
+      if (response.data && response.data.conceptScore) {
+        setScore(response.data.conceptScore);
+        setLastUpdated(response.data.lastUpdated);
+      } else {
+        console.warn('업데이트 응답에 conceptScore가 없습니다:', response.data);
+        setError('업데이트된 점수 데이터를 찾을 수 없습니다.');
+      }
       
       return response.data;
     } catch (err) {
