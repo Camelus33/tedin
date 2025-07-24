@@ -94,7 +94,6 @@ export default function TestConceptScorePage() {
           score={mockScore}
           isOpen={showPopup}
           onClose={() => setShowPopup(false)}
-          onActionClick={handleActionClick}
         />
       </div>
     </div>

@@ -1426,7 +1426,6 @@ export default function TSNoteCard({
           score={score}
           isOpen={showConceptScorePopup}
           onClose={handleConceptScoreClose}
-          onActionClick={handleConceptScoreAction}
         />
       )}
     </div>

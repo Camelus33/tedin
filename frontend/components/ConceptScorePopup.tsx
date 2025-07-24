@@ -20,200 +20,95 @@ interface ConceptScorePopupProps {
   score: ConceptUnderstandingScore;
   isOpen: boolean;
   onClose: () => void;
-  onActionClick: (action: string) => void;
 }
+
+const breakdownItems = [
+  { key: 'thoughtExpansion', label: '생각추가', maxScore: 20 },
+  { key: 'memoEvolution', label: '메모진화', maxScore: 20 },
+  { key: 'knowledgeConnection', label: '지식연결', maxScore: 20 },
+  { key: 'flashcardCreation', label: '플래시카드', maxScore: 20 },
+  { key: 'tagUtilization', label: '태그활용', maxScore: 10 },
+  { key: 'userRating', label: '평점', maxScore: 10 },
+];
+
+const cyberGradients = [
+  'from-cyan-400 via-blue-500 to-purple-600',
+  'from-pink-500 via-fuchsia-500 to-cyan-400',
+  'from-green-400 via-cyan-500 to-blue-600',
+  'from-yellow-400 via-orange-500 to-pink-500',
+  'from-purple-400 via-blue-500 to-cyan-400',
+  'from-fuchsia-400 via-pink-500 to-purple-600',
+];
 
 const ConceptScorePopup: React.FC<ConceptScorePopupProps> = ({
   score,
   isOpen,
-  onClose,
-  onActionClick
+  onClose
 }) => {
   if (!isOpen) return null;
 
-  const breakdownItems = [
-    {
-      key: 'thoughtExpansion',
-      label: '생각추가',
-      maxScore: 20,
-      description: '4단계 생각 추가 완성도',
-      action: 'add_thought'
-    },
-    {
-      key: 'memoEvolution',
-      label: '메모진화',
-      maxScore: 20,
-      description: '메모 발전 단계 완성도',
-      action: 'evolve_memo'
-    },
-    {
-      key: 'knowledgeConnection',
-      label: '지식연결',
-      maxScore: 20,
-      description: '다른 지식과의 연결',
-      action: 'add_connection'
-    },
-    {
-      key: 'flashcardCreation',
-      label: '플래시카드',
-      maxScore: 20,
-      description: '플래시카드 생성 및 활용',
-      action: 'create_flashcard'
-    },
-    {
-      key: 'tagUtilization',
-      label: '태그활용',
-      maxScore: 10,
-      description: '태그 활용도',
-      action: 'add_tag'
-    },
-    {
-      key: 'userRating',
-      label: '사용자평점',
-      maxScore: 10,
-      description: '자신의 이해도 평가',
-      action: 'update_rating'
-    }
-  ];
-
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'expert': return 'text-blue-600 bg-blue-100';
-      case 'advanced': return 'text-green-600 bg-green-100';
-      case 'intermediate': return 'text-orange-600 bg-orange-100';
-      default: return 'text-red-600 bg-red-100';
-    }
-  };
-
-  const getLevelText = (level: string) => {
-    switch (level) {
-      case 'expert': return '전문가';
-      case 'advanced': return '고급';
-      case 'intermediate': return '중급';
-      default: return '초급';
-    }
-  };
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        {/* 헤더 */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">개념이해도 분석</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X size={20} />
-          </button>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="relative bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 border border-cyan-500/30 shadow-2xl rounded-2xl max-w-xs w-full p-4 sm:p-6 flex flex-col items-center min-h-[220px]">
+        {/* 닫기 버튼 */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-gray-800/70 hover:bg-cyan-600/80 transition-colors"
+        >
+          <X size={16} className="text-cyan-200" />
+        </button>
 
         {/* 전체 점수 */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">전체 점수</span>
-            <span className={cn(
-              'px-2 py-1 rounded-full text-xs font-medium',
-              getLevelColor(score.level)
-            )}>
-              {getLevelText(score.level)}
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-3xl font-bold text-gray-900">{score.totalScore}</span>
-            <span className="text-gray-500">/ 100점</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${score.totalScore}%` }}
-            />
+        <div className="mb-4 flex flex-col items-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center shadow-lg">
+            <span className="text-3xl font-extrabold text-white drop-shadow-glow-cyan">{score.totalScore}</span>
           </div>
         </div>
 
-        {/* 세부 점수 */}
-        <div className="space-y-3 mb-6">
-          <h4 className="text-sm font-medium text-gray-700 mb-3">세부 점수</h4>
-          {breakdownItems.map((item) => {
+        {/* 세부 점수 바 차트 */}
+        <div className="w-full flex flex-col gap-2">
+          {breakdownItems.map((item, idx) => {
             const itemScore = score.breakdown[item.key as keyof typeof score.breakdown];
             const percentage = (itemScore / item.maxScore) * 100;
-            
             return (
-              <div key={item.key} className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                  <span className="text-sm text-gray-600">{itemScore}/{item.maxScore}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
+              <div key={item.key} className="flex items-center gap-2">
+                <span className="w-14 text-xs text-cyan-200 font-semibold tracking-tight text-shadow-cyber text-right">
+                  {item.label}
+                </span>
+                <div className="flex-1 h-3 rounded-full bg-gray-800/80 overflow-hidden relative">
                   <div
                     className={cn(
-                      'h-1.5 rounded-full transition-all duration-300',
-                      percentage >= 80 ? 'bg-green-500' :
-                      percentage >= 60 ? 'bg-blue-500' :
-                      percentage >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                      'absolute left-0 top-0 h-full rounded-full transition-all duration-500',
+                      `bg-gradient-to-r ${cyberGradients[idx % cyberGradients.length]}`
                     )}
-                    style={{ width: `${percentage}%` }}
+                    style={{ width: `${percentage}%`, boxShadow: '0 0 8px 2px rgba(0,255,255,0.25)' }}
                   />
                 </div>
-                <p className="text-xs text-gray-500">{item.description}</p>
-                {itemScore < item.maxScore * 0.8 && (
-                  <button
-                    onClick={() => onActionClick(item.action)}
-                    className="text-xs text-blue-600 hover:text-blue-800 underline"
-                  >
-                    개선하기
-                  </button>
-                )}
+                <span className="w-7 text-xs text-cyan-100 font-bold text-shadow-cyber text-right">
+                  {itemScore}
+                </span>
               </div>
             );
           })}
-        </div>
-
-        {/* 개선 제안 */}
-        {score.recommendations.length > 0 && (
-          <div className="mb-6">
-            <h4 className="text-sm font-medium text-gray-700 mb-3">개선 제안</h4>
-            <ul className="space-y-2">
-              {score.recommendations.map((recommendation, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-blue-500 mt-0.5">•</span>
-                  <span className="text-sm text-gray-600">{recommendation}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* 퀵 액션 버튼들 */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => onActionClick('add_thought')}
-            className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
-          >
-            생각 추가
-          </button>
-          <button
-            onClick={() => onActionClick('evolve_memo')}
-            className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full hover:bg-green-200 transition-colors"
-          >
-            메모 발전
-          </button>
-          <button
-            onClick={() => onActionClick('add_connection')}
-            className="px-3 py-1 text-xs bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200 transition-colors"
-          >
-            지식 연결
-          </button>
-          <button
-            onClick={() => onActionClick('create_flashcard')}
-            className="px-3 py-1 text-xs bg-orange-100 text-orange-700 rounded-full hover:bg-orange-200 transition-colors"
-          >
-            플래시카드
-          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default ConceptScorePopup; 
+export default ConceptScorePopup;
+
+/* tailwind.config.js에 아래와 같은 커스텀 드롭섀도우 추가 권장
+module.exports = {
+  theme: {
+    extend: {
+      dropShadow: {
+        'glow-cyan': '0 0 8px #22d3ee, 0 0 16px #818cf8',
+      },
+      textShadow: {
+        'cyber': '0 0 4px #22d3ee, 0 0 8px #818cf8',
+      }
+    }
+  }
+}
+*/ 
