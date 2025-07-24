@@ -1233,11 +1233,13 @@ export default function TSNoteCard({
       {(() => {
         // --- DEBUG LOG START ---
         const shouldRenderActions = showActions && !minimalDisplay;
+        const shouldRenderConceptScore = score && !minimalDisplay;
+        
         if (shouldRenderActions) {
           return (
             <div className="flex items-center justify-end space-x-2 sm:space-x-2 mt-auto pt-2 border-t border-gray-700/50">
               {/* 개념이해도 점수 아이콘 */}
-              {score && (
+              {shouldRenderConceptScore && (
                 <ConceptScoreIcon
                   score={score.totalScore}
                   level={score.level}
@@ -1295,6 +1297,20 @@ export default function TSNoteCard({
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
+          );
+        }
+        
+        // minimalDisplay 모드에서도 개념이해도점수 표시
+        if (minimalDisplay && score) {
+          return (
+            <div className="flex items-center justify-end mt-auto pt-2">
+              <ConceptScoreIcon
+                score={score.totalScore}
+                level={score.level}
+                onClick={handleConceptScoreClick}
+                className="flex-shrink-0 scale-75"
+              />
             </div>
           );
         }
