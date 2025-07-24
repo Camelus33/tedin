@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habitus33 - 브랜치별 파일 커밋 히스토리</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .branch-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .branch-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: #f8f9fa;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .branch-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .branch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin: 20px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .file-timeline {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+        }
+        .timeline-item:hover {
+            background-color: #e9ecef;
+        }
+        .timeline-date {
+            min-width: 100px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .timeline-commit {
+            min-width: 80px;
+            font-family: monospace;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .timeline-files {
+            flex: 1;
+            color: #212529;
+        }
+        .file-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin: 2px;
+            background: #e9ecef;
+            color: #495057;
+        }
+        .file-frontend { background-color: #d4edda; color: #155724; }
+        .file-backend { background-color: #f8d7da; color: #721c24; }
+        .file-docs { background-color: #d1ecf1; color: #0c5460; }
+        .file-config { background-color: #fff3cd; color: #856404; }
+        .file-task { background-color: #e2e3e5; color: #383d41; }
+        .commit-type {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .type-feat { background-color: #d4edda; color: #155724; }
+        .type-fix { background-color: #f8d7da; color: #721c24; }
+        .type-docs { background-color: #d1ecf1; color: #0c5460; }
+        .type-other { background-color: #e2e3e5; color: #383d41; }
+        .branch-info {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .branch-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌿 Habitus33 브랜치별 파일 커밋 히스토리</h1>
+        <h2 style="text-align: center; color: #666; margin-bottom: 30px;">최근 2주간 브랜치별 파일 변경 내역</h2>
+        
+        <div class="branch-selector">
+            <button class="branch-btn active" onclick="showBranch('main')">main</button>
+            <button class="branch-btn" onclick="showBranch('feature/multi-language')">feature/multi-language</button>
+            <button class="branch-btn" onclick="showBranch('ontology-command')">ontology-command</button>
+            <button class="branch-btn" onclick="showBranch('all')">전체</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-commits">0</div>
+                <div class="stat-label">총 커밋 수</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-files">0</div>
+                <div class="stat-label">변경된 파일 수</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="active-branches">0</div>
+                <div class="stat-label">활성 브랜치</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="latest-commit">-</div>
+                <div class="stat-label">최근 커밋</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="commitChart"></canvas>
+        </div>
+
+        <div class="file-timeline">
+            <h3>📁 파일 변경 타임라인</h3>
+            <div id="timeline-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // 브랜치별 커밋 데이터
+        const branchData = {
+            'main': [
+                {
+                    date: '2025-07-22',
+                    commits: [
+                        {
+                            hash: '7e8d589',
+                            message: 'feat: 인라인 쓰레드 작성시점 표시 및 JSON-LD 포함',
+                            type: 'feat',
+                            files: [
+                                { name: 'backend/src/utils/jsonLdBuilder.ts', category: 'backend' },
+                                { name: 'frontend/components/share/InlineThreadsViewer.tsx', category: 'frontend' }
+                            ]
+                        },
+                        {
+                            hash: '975dc75',
+                            message: 'fix: Remove duplicate Toaster component to resolve toast message duplication issue',
+                            type: 'fix',
+                            files: [
+                                { name: 'docs/IR_EMAIL_DRAFT.md', category: 'docs' },
+                                { name: 'docs/famous_investors_habitus33_usage_scenarios.md', category: 'docs' },
+                                { name: 'docs/investor_ontology_benefits.md', category: 'docs' },
+                                { name: 'frontend/app/layout.tsx', category: 'frontend' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    date: '2025-07-18',
+                    commits: [
+                        {
+                            hash: 'e638f05',
+                            message: 'feat(ir): 투자자 중심 IR 섹션 완전 변환',
+                            type: 'feat',
+                            files: [
+                                { name: '.taskmaster/tasks/task_013.txt', category: 'task' },
+                                { name: 'frontend/app/globals.css', category: 'frontend' },
+                                { name: 'frontend/app/marketing/investor/page.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/BenefitsSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/BusinessModelSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/CompetitorAnalysisSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/FinancialsSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/GrowthStrategySection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/IntroSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/MarketNeedSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/MarketSizeSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/ProblemSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/SolutionSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/UserScenarioSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/ir/WhyNowSection.tsx', category: 'frontend' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    date: '2025-07-15',
+                    commits: [
+                        {
+                            hash: '7eb793e',
+                            message: 'feat: marketing investor page text refinement and path update',
+                            type: 'feat',
+                            files: [
+                                { name: '.taskmaster/tasks/task_010.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_011.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_012.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/tasks.json', category: 'task' },
+                                { name: 'frontend/app/marketing/investor/page.tsx', category: 'frontend' }
+                            ]
+                        },
+                        {
+                            hash: 'd3a7e2b',
+                            message: 'fix: Resolve React Hook conditional call error in onboarding page',
+                            type: 'fix',
+                            files: [
+                                { name: 'frontend/app/onboarding/page.tsx', category: 'frontend' }
+                            ]
+                        },
+                        {
+                            hash: 'dd15d82',
+                            message: 'docs: Update onboarding page text based on user feedback',
+                            type: 'docs',
+                            files: [
+                                { name: '.taskmaster/tasks/task_006.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_009.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/tasks.json', category: 'task' },
+                                { name: 'Dockerfile', category: 'config' },
+                                { name: 'MetaCog_IR_Proposal_v3.md', category: 'docs' },
+                                { name: 'backend/src/mocks/sparql-http-client.js', category: 'backend' },
+                                { name: 'docker-compose.yml', category: 'config' },
+                                { name: 'frontend/app/onboarding/page.tsx', category: 'frontend' },
+                                { name: 'frontend/components/amfa/AMFACards.tsx', category: 'frontend' },
+                                { name: 'frontend/components/common/Header.tsx', category: 'frontend' },
+                                { name: 'package-lock.json', category: 'config' },
+                                { name: 'package.json', category: 'config' }
+                            ]
+                        },
+                        {
+                            hash: '5a19488',
+                            message: 'feat: 랜딩 페이지 문구 업데이트 (고객 프로필에 맞춰 재조정)',
+                            type: 'feat',
+                            files: [
+                                { name: 'frontend/components/landing/animations/FadingContextAnimation.tsx', category: 'frontend' },
+                                { name: 'frontend/components/landing/sections/CoreFeaturesFreeSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/landing/sections/FinalCtaSection.tsx', category: 'frontend' },
+                                { name: 'frontend/components/landing/sections/HeroSection.tsx', category: 'frontend' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    date: '2025-07-11',
+                    commits: [
+                        {
+                            hash: '8abb8c2',
+                            message: 'feat: Update core value to \'Metacognitive Reasoning\' and add knowledge flow doc',
+                            type: 'feat',
+                            files: [
+                                { name: 'docs/habitus33_knowledge_flow.md', category: 'docs' },
+                                { name: 'frontend/app/layout.tsx', category: 'frontend' },
+                                { name: 'frontend/app/page.tsx', category: 'frontend' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    date: '2025-07-10',
+                    commits: [
+                        {
+                            hash: 'f29bf00',
+                            message: '문구 수정',
+                            type: 'other',
+                            files: [
+                                { name: 'frontend/components/ai/AILinkCommand.tsx', category: 'frontend' }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            'ontology-command': [
+                {
+                    date: '2025-07-10',
+                    commits: [
+                        {
+                            hash: '739d3f3',
+                            message: '로컬 변경사항 백업: main에서 ontology-command 브랜치로 분리',
+                            type: 'other',
+                            files: [
+                                { name: '.cursor/rules/code-size-guidelines.mdc', category: 'config' },
+                                { name: '.taskmaster/state.json', category: 'config' },
+                                { name: '.taskmaster/tasks/task_001.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_001_knowledge-graph.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_002.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_002_knowledge-graph.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_003.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_004.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_005.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_006.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_007.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/task_008.txt', category: 'task' },
+                                { name: '.taskmaster/tasks/tasks.json', category: 'task' },
+                                { name: 'backend/README.md', category: 'docs' },
+                                { name: 'backend/analysis/atlas-schema.json', category: 'backend' },
+                                { name: 'backend/analysis/local-schema.json', category: 'backend' },
+                                { name: 'backend/analysis/schema-comparison.json', category: 'backend' },
+                                { name: 'backend/analysis/sync-report.json', category: 'backend' },
+                                { name: 'backend/babel.config.cjs', category: 'config' },
+                                { name: 'backend/backups/local-backup-1752104292952.json', category: 'backend' }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            'feature/multi-language': []
+        };
+
+        let currentBranch = 'main';
+        let chart = null;
+
+        function showBranch(branchName) {
+            currentBranch = branchName;
+            
+            // 버튼 상태 업데이트
+            document.querySelectorAll('.branch-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateChart();
+            updateTimeline();
+            updateStats();
+        }
+
+        function updateChart() {
+            const ctx = document.getElementById('commitChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            let data = [];
+            if (currentBranch === 'all') {
+                // 모든 브랜치 데이터 합치기
+                const allDates = new Set();
+                Object.values(branchData).forEach(branchCommits => {
+                    branchCommits.forEach(day => {
+                        allDates.add(day.date);
+                    });
+                });
+                
+                data = Array.from(allDates).sort().map(date => {
+                    let count = 0;
+                    Object.values(branchData).forEach(branchCommits => {
+                        const dayData = branchCommits.find(d => d.date === date);
+                        if (dayData) {
+                            count += dayData.commits.length;
+                        }
+                    });
+                    return { date, count };
+                });
+            } else {
+                data = branchData[currentBranch] || [];
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(day => day.date),
+                    datasets: [{
+                        label: '커밋 수',
+                        data: data.map(day => day.count),
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 2,
+                        borderRadius: 5,
+                        hoverBackgroundColor: 'rgba(102, 126, 234, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `커밋 수: ${context.parsed.y}개`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return value + '개';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTimeline() {
+            const container = document.getElementById('timeline-container');
+            container.innerHTML = '';
+
+            let data = [];
+            if (currentBranch === 'all') {
+                // 모든 브랜치 데이터 합치기
+                Object.entries(branchData).forEach(([branch, branchCommits]) => {
+                    branchCommits.forEach(day => {
+                        day.commits.forEach(commit => {
+                            data.push({
+                                ...commit,
+                                branch,
+                                date: day.date
+                            });
+                        });
+                    });
+                });
+                data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            } else {
+                data = (branchData[currentBranch] || []).flatMap(day => 
+                    day.commits.map(commit => ({
+                        ...commit,
+                        branch: currentBranch,
+                        date: day.date
+                    }))
+                );
+            }
+
+            data.forEach(commit => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                
+                const fileTags = commit.files.map(file => 
+                    `<span class="file-tag file-${file.category}">${file.name}</span>`
+                ).join(' ');
+                
+                timelineItem.innerHTML = `
+                    <div class="timeline-date">${commit.date}</div>
+                    <div class="timeline-commit">${commit.hash}</div>
+                    <div class="timeline-files">
+                        <div style="margin-bottom: 5px;"><strong>${commit.message}</strong></div>
+                        <div>${fileTags}</div>
+                    </div>
+                    <span class="commit-type type-${commit.type}">${commit.type.toUpperCase()}</span>
+                `;
+                
+                container.appendChild(timelineItem);
+            });
+        }
+
+        function updateStats() {
+            let totalCommits = 0;
+            let totalFiles = 0;
+            let activeBranches = 0;
+            let latestCommit = '-';
+
+            if (currentBranch === 'all') {
+                Object.values(branchData).forEach(branchCommits => {
+                    branchCommits.forEach(day => {
+                        totalCommits += day.commits.length;
+                        day.commits.forEach(commit => {
+                            totalFiles += commit.files.length;
+                        });
+                    });
+                });
+                activeBranches = Object.keys(branchData).filter(branch => 
+                    branchData[branch].length > 0
+                ).length;
+                
+                // 최신 커밋 날짜 찾기
+                let latestDate = '';
+                Object.values(branchData).forEach(branchCommits => {
+                    branchCommits.forEach(day => {
+                        if (day.date > latestDate) {
+                            latestDate = day.date;
+                        }
+                    });
+                });
+                latestCommit = latestDate;
+            } else {
+                const branchCommits = branchData[currentBranch] || [];
+                branchCommits.forEach(day => {
+                    totalCommits += day.commits.length;
+                    day.commits.forEach(commit => {
+                        totalFiles += commit.files.length;
+                    });
+                });
+                activeBranches = branchCommits.length > 0 ? 1 : 0;
+                latestCommit = branchCommits[0]?.date || '-';
+            }
+
+            document.getElementById('total-commits').textContent = totalCommits;
+            document.getElementById('total-files').textContent = totalFiles;
+            document.getElementById('active-branches').textContent = activeBranches;
+            document.getElementById('latest-commit').textContent = latestCommit;
+        }
+
+        // 초기 로드
+        updateChart();
+        updateTimeline();
+        updateStats();
+    </script>
+</body>
+</html> 
