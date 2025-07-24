@@ -40,8 +40,8 @@ const ConceptScoreIcon: React.FC<ConceptScoreIconProps> = ({
       onClick={onClick}
       title={`개념이해도: ${score}점 (${level})`}
     >
-      <span className="text-sm">{icon}</span>
-      <span className="text-xs font-medium">{score}</span>
+      <span className={`text-sm ${color} !important`}>{icon}</span>
+      <span className={`text-xs font-medium ${color} !important`}>{score}</span>
       
       {/* 미니 진행바 */}
       <div className="w-8 h-1 bg-gray-200 rounded-full overflow-hidden">
