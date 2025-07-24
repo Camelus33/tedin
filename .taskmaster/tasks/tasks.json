@@ -448,111 +448,498 @@
   "pdf-scroll-feature": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Project Setup and Dependency Installation",
-        "description": "Set up the React/Next.js project environment with Tailwind CSS, ensuring compatibility with existing TSNoteCard component and react-pdf library.",
-        "details": "1.  Verify Node.js and npm are installed (>=18.x and >=8.x respectively).\n2.  Initialize a new Next.js project or navigate to the existing project directory.\n3.  Install Tailwind CSS and its dependencies: `npm install -D tailwindcss postcss autoprefixer`\n4.  Configure Tailwind CSS by running `npx tailwindcss init -p` and updating `tailwind.config.js` with necessary configurations.\n5.  Install `react-pdf` library: `npm install react-pdf`\n6.  Verify that the TSNoteCard component is correctly set up and styled.\n7.  Address any compatibility issues between Tailwind CSS and existing styles.\n8.  Create necessary folders and files for components and utilities.",
-        "testStrategy": "1.  Run the development server (`npm run dev`) and ensure the application compiles without errors.\n2.  Verify that Tailwind CSS styles are applied correctly.\n3.  Check that the TSNoteCard component renders as expected.\n4.  Ensure `react-pdf` is installed correctly and can be imported.",
+        "id": 25,
+        "title": "Initialize Backend Project",
+        "description": "Set up the Node.js and Express backend project with TypeScript, including initial configurations for Prisma and necessary middleware.",
+        "details": "1. Initialize a new Node.js project using `npm init -y`.\n2. Install Express, TypeScript, and required typings: `npm install express typescript @types/express @types/node --save-dev`.\n3. Configure TypeScript with `tsc --init` and adjust `tsconfig.json` for desired settings (e.g., `target`: \"es2018\", `module`: \"commonjs\", `outDir`: \"./dist\", `esModuleInterop`: true, `strict`: true).\n4. Install Prisma CLI as a development dependency: `npm install prisma --save-dev`.\n5. Initialize Prisma with `npx prisma init --datasource-provider postgresql`.\n6. Install `cors` for handling Cross-Origin Resource Sharing: `npm install cors`.\n7. Create a basic Express server in `src/index.ts`.\n8. Add scripts to `package.json` for building and running the server (e.g., `\"build\": \"tsc\", \"start\": \"node dist/index.js\", \"dev\": \"nodemon src/index.ts\")`.\n9. Install `nodemon` as a development dependency for automatic server restarts during development: `npm install -D nodemon ts-node` and configure it.",
+        "testStrategy": "Verify the server starts without errors and responds to a basic health check endpoint.",
         "priority": "high",
         "dependencies": [],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 2,
-        "title": "Implement View Mode State Management",
-        "description": "Implement the view mode state management using React's useState hook, including the 'grid' and 'more' modes.",
-        "details": "1.  In the main dashboard component, declare a state variable `viewMode` using `useState('grid')`.\n2.  Create a function `setViewMode` to update the `viewMode` state.\n3.  Pass the `viewMode` state and `setViewMode` function to the relevant components.\n4.  Implement logic to switch between 'grid' and 'more' modes based on user interaction (e.g., button click).\n5.  Ensure the initial state is set to 'grid'.",
-        "testStrategy": "1.  Verify that the `viewMode` state is initialized correctly.\n2.  Test the functionality to switch between 'grid' and 'more' modes.\n3.  Ensure that the UI updates correctly when the `viewMode` changes.\n4.  Check for any unexpected side effects when updating the state.",
+        "id": 26,
+        "title": "Define Database Schema with Prisma",
+        "description": "Define the PostgreSQL database schema using Prisma, including the `notes`, `concept_scores`, and `score_calculations` tables.",
+        "details": "1.  Modify the `schema.prisma` file to define the `notes`, `concept_scores`, and `score_calculations` tables.\n2.  Include fields like `id`, `concept_score` in the `notes` table. The `concept_scores` table should include fields for `noteId`, `score`, `timestamp`, and individual scores for each of the 6 areas (생각추가, 메모진화, 지식연결, 플래시카드, 태그활용, 사용자평점). The `score_calculations` table should include fields for `version`, `calculation_logic`, and `timestamp`.\n3.  Run `npx prisma migrate dev --name init` to create the initial migration and apply the schema to the PostgreSQL database.\n4.  Use Prisma Client to interact with the database in the application code. Install Prisma Client with `npm install @prisma/client`.",
+        "testStrategy": "Inspect the PostgreSQL database to ensure that the tables are created with the correct schema. Verify Prisma Client can connect to the database and perform basic CRUD operations.",
         "priority": "high",
         "dependencies": [
-          1
+          25
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 3,
-        "title": "Implement Memo Card Loading and '더보기' Functionality",
-        "description": "Modify the dashboard to initially load only the recent 3 memo cards in 'grid' mode and implement the '더보기' (more) button functionality to load all memo cards.",
-        "details": "1.  Fetch the initial 3 memo cards and store them in a state variable `recentMemos`.\n2.  Display `recentMemos` in a 3-column grid layout when `viewMode` is 'grid'.\n3.  Implement an API call to fetch all memo cards when the '더보기' button is clicked.\n4.  Store all memo cards in a state variable `allMemos`.\n5.  Update the UI to display `allMemos` in a 6-column grid layout when `viewMode` is 'more'.\n6.  Implement error handling for the API call.",
-        "testStrategy": "1.  Verify that only 3 memo cards are loaded initially in 'grid' mode.\n2.  Test the '더보기' button to ensure all memo cards are loaded and displayed in 'more' mode.\n3.  Check for correct grid layout in both 'grid' and 'more' modes.\n4.  Test error handling for API call failures.",
+        "id": 27,
+        "title": "Implement GET Concept Score API",
+        "description": "Implement the GET `/api/notes/:noteId/concept-score` endpoint to retrieve the concept score for a given note.",
+        "details": "1.  Create a new route in Express for `/api/notes/:noteId/concept-score`.\n2.  Use Prisma Client to query the `notes` table and retrieve the `concept_score` for the specified `noteId`.\n3.  Return the score as a JSON response.\n4.  Implement error handling to return appropriate HTTP status codes for invalid `noteId` or database errors.",
+        "testStrategy": "Use `curl` or Postman to send a GET request to `/api/notes/:noteId/concept-score` with a valid `noteId`. Verify the response contains the correct concept score. Test with an invalid `noteId` and ensure an appropriate error response is returned.",
         "priority": "high",
         "dependencies": [
-          2
+          26
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 4,
-        "title": "Implement UI Components for Grid and More Views",
-        "description": "Implement the UI components for both Grid and More views, ensuring the correct layout and styling.",
-        "details": "1.  Create a `GridView` component to display memo cards in a 3-column grid layout.\n2.  Create a `MoreView` component to display memo cards in a 6-column grid layout.\n3.  Use Tailwind CSS to style the components, ensuring responsiveness.\n4.  Implement smaller card sizes in `MoreView`.\n5.  Ensure the `TSNoteCard` component is reused in both views.",
-        "testStrategy": "1.  Verify that the `GridView` component displays memo cards in a 3-column grid.\n2.  Verify that the `MoreView` component displays memo cards in a 6-column grid.\n3.  Check for correct styling and responsiveness in both views.\n4.  Ensure that the `TSNoteCard` component is rendered correctly in both views.",
+        "id": 28,
+        "title": "Implement POST Update Score API",
+        "description": "Implement the POST `/api/notes/:noteId/update-score` endpoint to trigger a score update for a given note.",
+        "details": "1.  Create a new route in Express for `/api/notes/:noteId/update-score`.\n2.  This endpoint should receive data necessary for score recalculation (e.g., updates to 생각추가, 메모진화, etc.).\n3.  Call the real-time score calculation engine (implemented in task 29) to update the score.\n4.  Update the `concept_score` field in the `notes` table using Prisma Client.\n5.  Create a new entry in the `concept_scores` table to track the score history.\n6.  Return a success message as a JSON response.",
+        "testStrategy": "Use `curl` or Postman to send a POST request to `/api/notes/:noteId/update-score` with relevant data. Verify the `concept_score` in the `notes` table is updated, a new entry is created in the `concept_scores` table, and a success message is returned.",
+        "priority": "high",
+        "dependencies": [
+          26
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Express route for /api/notes/:noteId/update-score",
+            "description": "Create a new route in Express for the `/api/notes/:noteId/update-score` endpoint to handle POST requests.",
+            "dependencies": [],
+            "details": "Define the route handler function to receive the noteId and request body.",
+            "status": "pending",
+            "testStrategy": "Use Postman or curl to send a POST request to the endpoint and verify that the route is accessible."
+          },
+          {
+            "id": 2,
+            "title": "Parse and validate request data",
+            "description": "Extract and validate the data required for score recalculation from the request body.",
+            "dependencies": [],
+            "details": "Implement data validation to ensure the required fields (e.g., 생각추가, 메모진화) are present and in the correct format.",
+            "status": "pending",
+            "testStrategy": "Send POST requests with missing or invalid data and verify that appropriate error responses are returned."
+          },
+          {
+            "id": 3,
+            "title": "Call real-time score calculation engine",
+            "description": "Invoke the real-time score calculation engine (Task 29) with the validated data to update the score.",
+            "dependencies": [],
+            "details": "Pass the necessary parameters to the score calculation engine and handle any potential errors during the calculation process.",
+            "status": "pending",
+            "testStrategy": "Mock the score calculation engine and verify that it is called with the correct parameters."
+          },
+          {
+            "id": 4,
+            "title": "Update notes and concept_scores tables",
+            "description": "Update the `concept_score` field in the `notes` table and create a new entry in the `concept_scores` table using Prisma Client.",
+            "dependencies": [],
+            "details": "Use Prisma Client to perform the database updates. Ensure that the updates are atomic and handle potential database errors.",
+            "status": "pending",
+            "testStrategy": "Verify that the `concept_score` in the `notes` table is updated correctly and a new entry is created in the `concept_scores` table with the correct values."
+          },
+          {
+            "id": 5,
+            "title": "Return success message",
+            "description": "Return a success message as a JSON response to the client.",
+            "dependencies": [],
+            "details": "Construct a JSON response indicating the successful update of the concept score.",
+            "status": "pending",
+            "testStrategy": "Verify that the response contains a success message and an appropriate HTTP status code (e.g., 200 OK)."
+          }
+        ]
+      },
+      {
+        "id": 29,
+        "title": "Develop Real-time Score Calculation Engine",
+        "description": "Develop the real-time score calculation engine, implementing the scoring algorithms for each of the six areas (생각추가, 메모진화, 지식연결, 플래시카드, 태그활용, 사용자평점).",
+        "details": "1.  Create a function that takes relevant data as input (e.g., data related to 생각추가, 메모진화, etc.).\n2.  Implement the scoring logic for each of the six areas based on the provided formulas:\n    *   생각추가: 4단계 완성도 + 텍스트 길이 (max 20)\n    *   메모진화: 4단계 완성 + 진화 속도 (max 20)\n    *   지식연결: 연결 개수 + 다양성 + 품질 (max 20)\n    *   플래시카드: 생성 + 복습 + 난이도 (max 20)\n    *   태그 활용: 개수 + 품질 + 다양성 (max 10)\n    *   사용자 평점: 평점 존재 + 높음 + 업데이트 (max 10)\n3.  Combine the scores from each area to calculate the final concept score.\n4.  Consider using a configuration table (`score_calculations`) to manage different versions of the calculation logic.",
+        "testStrategy": "Write unit tests to verify the scoring logic for each of the six areas. Ensure the scores are calculated correctly based on different input values. Test the overall score calculation with various combinations of input data.",
+        "priority": "high",
+        "dependencies": [
+          26
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Data Input Structure",
+            "description": "Define the structure and format of the input data required for the score calculation function. This includes specifying the data types and units for each input parameter related to 생각추가, 메모진화, 지식연결, 플래시카드, 태그활용, and 사용자평점.",
+            "dependencies": [],
+            "details": "Research and document the specific data points needed for each scoring area. For example, for '생각추가', define how '4단계 완성도' and '텍스트 길이' will be represented. Consider using a JSON schema or similar data definition language.",
+            "status": "pending",
+            "testStrategy": "Create sample input data sets that conform to the defined structure. Verify that the data can be parsed and processed correctly by the scoring engine."
+          },
+          {
+            "id": 2,
+            "title": "Implement Scoring Logic for Individual Areas",
+            "description": "Implement the scoring algorithms for each of the six areas (생각추가, 메모진화, 지식연결, 플래시카드, 태그활용, 사용자평점) based on the provided formulas. Each area should have its own dedicated function or module.",
+            "dependencies": [],
+            "details": "Translate the formulas into code. For example, for '생각추가', implement the logic to calculate the score based on '4단계 완성도' and '텍스트 길이', ensuring the maximum score is 20. Handle edge cases and invalid input gracefully.",
+            "status": "pending",
+            "testStrategy": "Write unit tests for each scoring area to verify the score is calculated correctly for different input values. Test boundary conditions and edge cases."
+          },
+          {
+            "id": 3,
+            "title": "Create Score Combination Function",
+            "description": "Develop a function that combines the individual scores from each of the six areas to calculate the final concept score. This function should aggregate the scores and potentially apply weighting factors if needed.",
+            "dependencies": [
+              "29.2"
+            ],
+            "details": "Implement the logic to sum the scores from each area. Consider adding the ability to configure weights for each area in the `score_calculations` table. Ensure the final score is within a reasonable range.",
+            "status": "pending",
+            "testStrategy": "Test the score combination function with various combinations of input scores from the individual areas. Verify that the final score is calculated correctly and that the weighting factors are applied as expected."
+          },
+          {
+            "id": 4,
+            "title": "Implement Configuration Table Access",
+            "description": "Implement the logic to access and utilize the `score_calculations` configuration table. This table should allow for managing different versions of the calculation logic and potentially weighting factors for each area.",
+            "dependencies": [],
+            "details": "Establish a connection to the database or data source where the `score_calculations` table is stored. Implement functions to retrieve the appropriate configuration based on a version identifier or other criteria. Cache the configuration data for performance.",
+            "status": "pending",
+            "testStrategy": "Create different versions of the `score_calculations` table with varying calculation logic and weighting factors. Verify that the scoring engine uses the correct configuration based on the specified version."
+          },
+          {
+            "id": 5,
+            "title": "Integrate and Test Real-time Score Calculation",
+            "description": "Integrate all the components of the score calculation engine and test the end-to-end functionality. This includes retrieving data, calculating individual area scores, combining the scores, and utilizing the configuration table.",
+            "dependencies": [
+              "29.1",
+              "29.2",
+              "29.3",
+              "29.4"
+            ],
+            "details": "Connect the score calculation engine to the relevant data sources. Implement the API endpoint to trigger the score calculation. Monitor performance and identify any bottlenecks.",
+            "status": "pending",
+            "testStrategy": "Perform end-to-end testing of the score calculation engine with realistic data sets. Verify that the scores are calculated correctly and that the performance is acceptable. Monitor the system for errors and performance issues."
+          }
+        ]
+      },
+      {
+        "id": 30,
+        "title": "Initialize Frontend Project",
+        "description": "Set up the React and TypeScript frontend project using Create React App, including Tailwind CSS for styling.",
+        "details": "1.  Create a new React project with TypeScript using `npx create-react-app habitus-frontend --template typescript`.\n2.  Install Tailwind CSS and its dependencies: `npm install -D tailwindcss postcss autoprefixer && npx tailwindcss init -p`.\n3.  Configure Tailwind CSS by adding the directives to `./src/index.css` and configuring the `tailwind.config.js` file.\n4.  Install Axios for making HTTP requests: `npm install axios`.",
+        "testStrategy": "Verify the React application starts without errors and displays a basic UI. Ensure Tailwind CSS styles are applied correctly.",
+        "priority": "high",
+        "dependencies": [
+          25
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 31,
+        "title": "Implement Concept Score Icon",
+        "description": "Develop the UI component to display the concept score icon in the upper right corner of the memo card.",
+        "details": "1.  Create a new React component for the concept score icon.\n2.  Fetch the concept score from the backend API (`/api/notes/:noteId/concept-score`) using Axios.\n3.  Display the score using one of the specified icons (💡🧠🎯⭐) based on the score range.\n4.  Implement color coding (red -> orange -> green -> blue) based on the score value using Tailwind CSS classes.",
+        "testStrategy": "Verify the concept score icon is displayed correctly on the memo card. Ensure the icon and color coding change based on the score value. Test with different `noteId` values.",
+        "priority": "high",
+        "dependencies": [
+          30,
+          27
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create React Component for Concept Score Icon",
+            "description": "Develop a new React component to display the concept score icon.",
+            "dependencies": [],
+            "details": "Create a functional React component that will fetch and display the concept score icon. This component will be placed in the upper right corner of the memo card.",
+            "status": "pending",
+            "testStrategy": "Verify the component renders without errors and is positioned correctly on the memo card."
+          },
+          {
+            "id": 2,
+            "title": "Fetch Concept Score from API",
+            "description": "Implement the logic to fetch the concept score from the backend API.",
+            "dependencies": [],
+            "details": "Use Axios to make a GET request to `/api/notes/:noteId/concept-score`. Handle potential errors and store the retrieved score in the component's state.",
+            "status": "pending",
+            "testStrategy": "Test with different `noteId` values to ensure the correct score is fetched. Verify error handling for invalid `noteId` values."
+          },
+          {
+            "id": 3,
+            "title": "Determine Icon Based on Score Range",
+            "description": "Implement the logic to select the appropriate icon based on the concept score range.",
+            "dependencies": [],
+            "details": "Create a function that takes the concept score as input and returns the corresponding icon (💡🧠🎯⭐) based on predefined score ranges.",
+            "status": "pending",
+            "testStrategy": "Test with various score values to ensure the correct icon is selected for each range."
+          },
+          {
+            "id": 4,
+            "title": "Implement Color Coding with Tailwind CSS",
+            "description": "Apply color coding to the icon based on the score value using Tailwind CSS classes.",
+            "dependencies": [],
+            "details": "Create a function that takes the concept score as input and returns the appropriate Tailwind CSS class for the color (red -> orange -> green -> blue). Apply this class to the icon element.",
+            "status": "pending",
+            "testStrategy": "Test with various score values to ensure the correct color is applied to the icon for each range."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Component into Memo Card",
+            "description": "Integrate the concept score icon component into the memo card UI.",
+            "dependencies": [],
+            "details": "Import the concept score icon component into the memo card component and render it in the upper right corner. Pass the `noteId` as a prop to the concept score icon component.",
+            "status": "pending",
+            "testStrategy": "Verify the concept score icon is displayed correctly on the memo card with the correct icon and color based on the note's score. Test with different `noteId` values."
+          }
+        ]
+      },
+      {
+        "id": 32,
+        "title": "Implement Detailed Score Popup",
+        "description": "Implement the detailed score popup that appears when the concept score icon is clicked, displaying the individual scores for each of the six areas.",
+        "details": "1.  Create a new React component for the score popup.\n2.  Fetch the detailed scores for each of the six areas from the backend API or calculate them on the frontend if necessary.\n3.  Display the scores in a clear and organized manner within the popup.\n4.  Use Tailwind CSS to style the popup and ensure it is visually appealing.",
+        "testStrategy": "Verify the score popup appears when the concept score icon is clicked. Ensure the individual scores for each area are displayed correctly. Test with different score values and ensure the popup content updates accordingly.",
         "priority": "medium",
         "dependencies": [
-          3
+          31,
+          27,
+          29
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create React Component for Score Popup",
+            "description": "Develop a new React component to serve as the foundation for the detailed score popup.",
+            "dependencies": [],
+            "details": "Create a functional or class-based React component. Define the basic structure and styling placeholders. Ensure the component can be rendered and displayed on the screen.",
+            "status": "pending",
+            "testStrategy": "Verify the component renders without errors. Check that the basic structure is in place and that styling placeholders are visible."
+          },
+          {
+            "id": 2,
+            "title": "Fetch/Calculate Detailed Scores",
+            "description": "Implement the logic to retrieve or calculate the detailed scores for each of the six areas.",
+            "dependencies": [],
+            "details": "Determine whether to fetch the scores from the backend API (Task 27) or calculate them on the frontend. Implement the necessary API calls or calculation logic. Handle potential errors during data retrieval or calculation.",
+            "status": "pending",
+            "testStrategy": "Check that the correct scores are fetched from the API or calculated accurately. Verify error handling for API failures or invalid data."
+          },
+          {
+            "id": 3,
+            "title": "Display Scores in Popup",
+            "description": "Organize and display the fetched/calculated scores within the popup component.",
+            "dependencies": [],
+            "details": "Structure the score data in a clear and understandable format. Use appropriate UI elements (e.g., tables, charts, lists) to display the scores for each area. Ensure the display is responsive and adapts to different screen sizes.",
+            "status": "pending",
+            "testStrategy": "Verify that all six area scores are displayed correctly. Check the formatting and layout for clarity and readability. Test responsiveness on different devices."
+          },
+          {
+            "id": 4,
+            "title": "Style Popup with Tailwind CSS",
+            "description": "Apply Tailwind CSS classes to style the popup and ensure it is visually appealing and consistent with the application's design.",
+            "dependencies": [],
+            "details": "Use Tailwind CSS classes to style the popup container, headings, labels, and score values. Ensure the popup has a consistent look and feel with the rest of the UI. Pay attention to typography, spacing, and color palette.",
+            "status": "pending",
+            "testStrategy": "Verify that the popup styling matches the design specifications. Check for consistency with other UI elements. Ensure the popup is visually appealing and easy to read."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Popup with Concept Score Icon",
+            "description": "Connect the score popup to the concept score icon, so that clicking the icon triggers the popup to appear.",
+            "dependencies": [],
+            "details": "Implement the event handler for the concept score icon click. Use React state management to control the visibility of the popup. Ensure the popup appears in the correct position relative to the icon.",
+            "status": "pending",
+            "testStrategy": "Verify that the popup appears when the concept score icon is clicked. Check that the popup closes when clicking outside of it or on a close button (if implemented). Ensure the popup position is correct."
+          }
+        ]
       },
       {
-        "id": 5,
-        "title": "Implement Hover Animation",
-        "description": "Add hover animation to the memo cards in the 'more' view using Tailwind CSS.",
-        "details": "1.  Add the `hover:scale-110` class to the `TSNoteCard` component in the `MoreView`.\n2.  Add the `transition-all duration-300 ease-out` class to the `TSNoteCard` component to ensure a smooth animation.\n3.  Test the hover animation to ensure it scales the card up smoothly.",
-        "testStrategy": "1.  Verify that the memo cards scale up on hover in the `MoreView`.\n2.  Check that the animation is smooth and lasts for 300ms.\n3.  Ensure that the animation does not cause any layout shifts.",
+        "id": 33,
+        "title": "Implement Quick Action Buttons",
+        "description": "Implement the quick action buttons within the score popup, allowing users to take actions related to improving their concept understanding.",
+        "details": "1.  Add buttons to the score popup for actions like \"Add Thoughts,\" \"Evolve Memo,\" \"Connect Knowledge,\" \"Create Flashcard,\" \"Add Tag,\" and \"Rate.\"\n2.  Implement the functionality for each button, such as navigating to the appropriate page or triggering an API call.\n3.  Ensure the buttons are styled consistently with the rest of the UI using Tailwind CSS.",
+        "testStrategy": "Verify the quick action buttons are displayed correctly in the score popup. Ensure each button performs the correct action when clicked. Test with different user roles and permissions to ensure the buttons are enabled/disabled appropriately.",
         "priority": "medium",
         "dependencies": [
-          4
+          32,
+          28
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add Quick Action Buttons to Score Popup UI",
+            "description": "Add the specified quick action buttons (Add Thoughts, Evolve Memo, Connect Knowledge, Create Flashcard, Add Tag, Rate) to the score popup React component.",
+            "dependencies": [],
+            "details": "Modify the React component created in Task 32 to include the quick action buttons. Use Tailwind CSS for styling to ensure consistency with the existing UI.",
+            "status": "pending",
+            "testStrategy": "Verify the quick action buttons are displayed correctly in the score popup and are visually consistent with the rest of the UI."
+          },
+          {
+            "id": 2,
+            "title": "Implement 'Add Thoughts' Action",
+            "description": "Implement the functionality for the 'Add Thoughts' button. This likely involves navigating the user to a page where they can add thoughts related to the concept.",
+            "dependencies": [],
+            "details": "Determine the appropriate page or component for adding thoughts. Implement the navigation logic when the 'Add Thoughts' button is clicked.",
+            "status": "pending",
+            "testStrategy": "Click the 'Add Thoughts' button and verify that the user is navigated to the correct page or component for adding thoughts."
+          },
+          {
+            "id": 3,
+            "title": "Implement 'Evolve Memo', 'Connect Knowledge', 'Create Flashcard' Actions",
+            "description": "Implement the functionality for the 'Evolve Memo', 'Connect Knowledge', and 'Create Flashcard' buttons. These actions may involve navigating to different pages or triggering API calls.",
+            "dependencies": [],
+            "details": "Determine the appropriate actions for each button. Implement the navigation logic or API calls when the buttons are clicked.",
+            "status": "pending",
+            "testStrategy": "Click each button and verify that the correct action is performed (navigation or API call)."
+          },
+          {
+            "id": 4,
+            "title": "Implement 'Add Tag' and 'Rate' Actions",
+            "description": "Implement the functionality for the 'Add Tag' and 'Rate' buttons. These actions may involve triggering API calls to update the concept's tags or rating.",
+            "dependencies": [],
+            "details": "Implement the API calls to update the concept's tags and rating when the buttons are clicked. Handle success and error responses appropriately.",
+            "status": "pending",
+            "testStrategy": "Click each button and verify that the correct API call is made and the concept's tags or rating are updated accordingly."
+          },
+          {
+            "id": 5,
+            "title": "Test Quick Action Buttons with Different User Roles",
+            "description": "Test the quick action buttons with different user roles and permissions to ensure the buttons are enabled/disabled appropriately.",
+            "dependencies": [],
+            "details": "Create different user roles with varying permissions. Log in with each role and verify that the quick action buttons are enabled or disabled based on the user's permissions.",
+            "status": "pending",
+            "testStrategy": "Log in with different user roles and verify that the quick action buttons are enabled/disabled as expected based on the user's permissions."
+          }
+        ]
+      },
+      {
+        "id": 34,
+        "title": "Implement Score Calculation Caching",
+        "description": "Implement caching for the score calculation to improve performance and reduce the load on the database.",
+        "details": "1.  Use a caching library like `node-cache` or Redis to store the calculated concept scores.\n2.  Implement a cache invalidation strategy to ensure the cache is updated when the underlying data changes.\n3.  Consider using a time-to-live (TTL) value for the cache entries to prevent stale data.",
+        "testStrategy": "Measure the response time of the GET `/api/notes/:noteId/concept-score` endpoint with and without caching. Verify the response time is significantly faster with caching enabled. Ensure the cache is invalidated correctly when the underlying data changes.",
+        "priority": "medium",
+        "dependencies": [
+          29
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 6,
-        "title": "Implement Continuous Vertical Scrolling in PDF Viewer",
-        "description": "Modify PdfViewer.tsx to enable continuous vertical scrolling, stacking all pages vertically.",
-        "details": "1.  Modify the `PdfViewer.tsx` component to render all pages of the PDF in a vertical stack.\n2.  Remove the existing page navigation buttons.\n3.  Adjust the container height and styles to accommodate the continuous scroll.\n4.  Ensure the existing props interface is maintained.\n<info added on 2025-07-07T08:51:57.910Z>\nAnalysis of PdfViewer.tsx complete:\n\nCurrent Structure:\n- Renders a single Page component (based on state.pageNumber)\n- Page navigation via changePage function\n- Highlight overlay processes only the current page (using pageNumber prop)\n\nPlanned Changes:\n1. Render all pages from within Document using Array.from\n2. Stack each page vertically (using flex-col)\n3. Remove page navigation buttons\n4. Change scroll container height to auto to expand to content\n\nImplementation started.\n</info added on 2025-07-07T08:51:57.910Z>\n<info added on 2025-07-07T08:54:18.788Z>\nContinuous vertical scrolling implemented:\n\n✅ Completed tasks:\n1. Stacked all pages vertically (using Array.from)\n2. Removed page navigation buttons\n3. Tracked current page with IntersectionObserver\n4. Implemented lazy loading for performance optimization (rendering only visible pages)\n5. Adjusted container height to 80vh for more space\n6. Modified highlight overlay to work on all pages\n7. Updated user guidance messages\n\n🔧 Key changes:\n- Managed visible pages with visiblePages Set\n- Tracked each page's DOM element with pageRefs array\n- Detected scroll-based pages with IntersectionObserver\n- Displayed placeholder UI for unloaded pages\n\nNext steps: Testing and performance optimization (Task #7)\n</info added on 2025-07-07T08:54:18.788Z>",
-        "testStrategy": "1.  Verify that all pages are rendered in a vertical stack.\n2.  Check that the page navigation buttons are removed.\n3.  Ensure the container height and styles are adjusted correctly.\n4.  Test that the existing props interface is maintained.",
-        "priority": "high",
+        "id": 35,
+        "title": "Optimize Real-time Score Updates",
+        "description": "Optimize the real-time score updates to minimize the impact on performance and ensure a smooth user experience.",
+        "details": "1.  Use techniques like debouncing or throttling to limit the frequency of score updates.\n2.  Consider using a message queue (e.g., RabbitMQ or Kafka) to handle score updates asynchronously.\n3.  Optimize the database queries used in the score calculation engine.",
+        "testStrategy": "Simulate a high volume of score updates and measure the impact on performance. Verify the system can handle the load without significant degradation. Ensure the user experience remains smooth and responsive.",
+        "priority": "medium",
         "dependencies": [
-          1
+          28,
+          29
         ],
-        "status": "done",
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Debouncing/Throttling for Score Updates",
+            "description": "Implement debouncing or throttling techniques to limit the frequency of score updates sent to the client, reducing server load and improving UI responsiveness.",
+            "dependencies": [],
+            "details": "Research and implement either debouncing or throttling. Configure the optimal delay based on testing. Ensure that the final score is always reflected eventually.",
+            "status": "pending",
+            "testStrategy": "Simulate rapid score changes and verify that updates are sent at the configured rate. Measure the impact on server load and UI responsiveness."
+          },
+          {
+            "id": 2,
+            "title": "Evaluate and Implement Message Queue for Asynchronous Updates",
+            "description": "Evaluate the feasibility of using a message queue (e.g., RabbitMQ or Kafka) to handle score updates asynchronously, decoupling the score calculation engine from the UI and improving scalability.",
+            "dependencies": [],
+            "details": "Research RabbitMQ and Kafka. Set up a test environment with one of the message queues. Implement a simple producer/consumer to test asynchronous score updates.",
+            "status": "pending",
+            "testStrategy": "Simulate a high volume of score updates and measure the message queue's performance. Verify that all updates are processed correctly and eventually reflected in the UI."
+          },
+          {
+            "id": 3,
+            "title": "Optimize Database Queries in Score Calculation Engine",
+            "description": "Analyze and optimize the database queries used in the real-time score calculation engine to reduce query execution time and database load.",
+            "dependencies": [],
+            "details": "Profile the database queries used by the score calculation engine. Identify slow queries and optimize them using techniques like indexing, query rewriting, or caching.",
+            "status": "pending",
+            "testStrategy": "Measure the execution time of the optimized queries and compare them to the original queries. Verify that the optimization reduces database load and improves overall performance."
+          },
+          {
+            "id": 4,
+            "title": "Profile and Optimize Score Calculation Logic",
+            "description": "Profile the score calculation engine to identify performance bottlenecks within the scoring algorithms themselves and optimize the code for efficiency.",
+            "dependencies": [],
+            "details": "Use profiling tools to identify the most time-consuming parts of the score calculation logic. Optimize the code by using efficient algorithms, data structures, and coding techniques.",
+            "status": "pending",
+            "testStrategy": "Measure the execution time of the optimized score calculation logic and compare it to the original logic. Verify that the optimization reduces CPU usage and improves overall performance."
+          },
+          {
+            "id": 5,
+            "title": "Performance Testing and User Experience Validation",
+            "description": "Conduct performance testing to simulate a high volume of score updates and validate that the system can handle the load without significant degradation. Ensure the user experience remains smooth and responsive.",
+            "dependencies": [
+              "35.1",
+              "35.2",
+              "35.3",
+              "35.4"
+            ],
+            "details": "Simulate a realistic workload of score updates. Monitor system performance metrics such as CPU usage, memory usage, and response time. Gather user feedback on the smoothness and responsiveness of the UI.",
+            "status": "pending",
+            "testStrategy": "Use load testing tools to simulate a high volume of concurrent users and score updates. Measure the system's throughput, latency, and error rate. Conduct user testing to gather feedback on the user experience."
+          }
+        ]
+      },
+      {
+        "id": 36,
+        "title": "Implement Database Indexing",
+        "description": "Implement database indexing to improve the performance of queries related to concept scores.",
+        "details": "1.  Identify the columns used in queries related to concept scores (e.g., `noteId` in the `concept_scores` table).\n2.  Create indexes on these columns to speed up query execution.\n3.  Use the `EXPLAIN` command in PostgreSQL to analyze query performance and identify areas for improvement.",
+        "testStrategy": "Measure the response time of queries related to concept scores with and without indexing. Verify the response time is significantly faster with indexing enabled. Monitor the database performance to ensure the indexes are being used effectively.",
+        "priority": "medium",
+        "dependencies": [
+          26
+        ],
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 7,
-        "title": "Implement Lazy Loading with IntersectionObserver",
-        "description": "Implement lazy loading using IntersectionObserver to optimize performance for large PDFs.",
-        "details": "1.  Use `IntersectionObserver` to detect when a page enters the viewport.\n2.  Only render pages that are currently in or near the viewport.\n3.  Implement a placeholder for pages that are not yet rendered.\n4.  Optimize memory usage by unloading pages that are far from the viewport.\n<info added on 2025-07-07T08:54:46.741Z>\nImplemented basic IntersectionObserver and lazy loading in task 6.\n\nCurrent implementation:\n✅ Detect page visibility with IntersectionObserver\n✅ Render only visible pages with visiblePages Set\n✅ Display unloaded pages with placeholder UI\n\nAdditional optimizations required:\n1. Optimize pre-loading range by adjusting rootMargin\n2. Tune threshold value\n3. Monitor and optimize memory usage\n4. Test with large PDFs\n\nStart performance optimization tasks.\n</info added on 2025-07-07T08:54:46.741Z>\n<info added on 2025-07-07T08:55:57.291Z>\nPerformance optimization complete:\n\n✅ Implemented optimizations:\n1. Expanded pre-loading range by setting rootMargin to 200px\n2. Finely tuned threshold values: [0, 0.1, 0.25, 0.5, 0.75, 0.9]\n3. Added preloadRange logic to pre-load 2 pages before and after the current page\n4. Added performance monitoring logging in the development environment\n5. Accurately adjusted placeholder size to the actual PDF page size (595x842pt)\n6. Improved loading status and guidance messages in the placeholder\n\n🚀 Performance improvement effects:\n- Smooth scrolling experience (pre-loading)\n- Memory efficiency (rendering only necessary pages)\n- Visual consistency (accurate placeholder size)\n- Developer-friendly monitoring\n\nTask 7 complete, moving to Task 8\n</info added on 2025-07-07T08:55:57.291Z>",
-        "testStrategy": "1.  Verify that only pages in or near the viewport are rendered.\n2.  Check that placeholders are displayed for pages that are not yet rendered.\n3.  Monitor memory usage to ensure it is optimized.\n4.  Test scrolling performance with large PDFs (100+ pages).",
+        "id": 37,
+        "title": "Write Unit Tests for Score Calculation",
+        "description": "Write unit tests for the score calculation logic using Jest to ensure the algorithms are accurate and reliable.",
+        "details": "1.  Install Jest and its TypeScript typings: `npm install --save-dev jest @types/jest ts-jest`.\n2.  Configure Jest in `jest.config.js`.\n3.  Write unit tests for each of the six scoring areas, covering different input values and edge cases.\n4.  Use Jest's assertion library to verify the scores are calculated correctly.",
+        "testStrategy": "Run the Jest unit tests and verify all tests pass. Ensure the tests cover all critical aspects of the score calculation logic.",
         "priority": "high",
         "dependencies": [
-          6
+          29
         ],
-        "status": "done",
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 8,
-        "title": "Implement Scroll-Based Page Tracking and Control Bar Synchronization",
-        "description": "Implement scroll-based page tracking and synchronize it with the control bar, ensuring compatibility with existing highlight and text selection features.",
-        "details": "1.  Use the `IntersectionObserver` to track the currently visible page based on scroll position.\n2.  Update the control bar to reflect the current page number.\n3.  Ensure that the highlight overlay and text selection features continue to function correctly.\n4.  Maintain compatibility with existing zoom and rotation features.\n<info added on 2025-07-07T08:56:27.295Z>\nScroll-based page tracking and synchronization status check:\n\n✅ Implemented features:\n1. Automatic tracking of the current page based on scroll position using IntersectionObserver.\n2. Real-time synchronization of page information in the top control bar.\n3. Synchronization with external components via the onPageChange callback.\n4. Highlight overlay works on all pages.\n\nTo be checked and improved:\n1. Verify that the text selection function works correctly on all pages.\n2. Verify that the correct page number is passed when creating highlights.\n3. Verify that highlight display is accurate when switching pages.\n\nStart compatibility testing and improvements.\n</info added on 2025-07-07T08:56:27.295Z>\n<info added on 2025-07-07T08:57:59.724Z>\nScroll-based page tracking and compatibility improvements complete:\n\n✅ Completed improvements:\n1. Improved logic for accurate page number detection during text selection\n   - Accurately locate the page container containing the selected text through DOM traversal\n   - Accurate page number transfer via data-page-number attribute\n\n2. Added developer-friendly debugging features\n   - Detailed logging of page tracking status\n   - Logging when zoom changes\n   - Display list of visible pages\n\n3. Added keyboard shortcut support\n   - +/- : Zoom in/out\n   - R : Rotate 90 degrees\n   - H : Toggle highlight mode\n\n4. User experience improvements\n   - Added keyboard shortcut guide message\n   - Shortcuts only work when the PDF document area is in focus\n\n🔧 Compatibility check:\n- Highlight creation works on the correct page\n- Text selection works correctly on all pages\n- Zoom/rotate functions are compatible with continuous scrolling\n- Full maintenance of existing props interface\n\nTask 8 complete\n</info added on 2025-07-07T08:57:59.724Z>",
-        "testStrategy": "1.  Verify that the control bar updates correctly as the user scrolls.\n2.  Check that the highlight overlay and text selection features continue to function correctly.\n3.  Ensure compatibility with existing zoom and rotation features.\n4.  Test with various PDF documents to ensure consistent behavior.",
+        "id": 38,
+        "title": "Write Integration Tests for API Endpoints",
+        "description": "Write integration tests for the API endpoints using Jest and Supertest to ensure the endpoints are functioning correctly and interacting with the database as expected.",
+        "details": "1.  Install Supertest: `npm install supertest --save-dev`.\n2.  Write integration tests for the GET `/api/notes/:noteId/concept-score` and POST `/api/notes/:noteId/update-score` endpoints.\n3.  Use Supertest to send HTTP requests to the endpoints and verify the responses.\n4.  Ensure the tests cover different scenarios, such as valid and invalid input values, and database errors.",
+        "testStrategy": "Run the Jest integration tests and verify all tests pass. Ensure the tests cover all critical aspects of the API endpoints.",
         "priority": "high",
         "dependencies": [
-          7
+          27,
+          28
         ],
-        "status": "done",
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 39,
+        "title": "Write E2E Tests for UI Flow",
+        "description": "Write end-to-end (E2E) tests for the UI flow using Cypress or Playwright to ensure the user interface is functioning correctly and the user experience is smooth.",
+        "details": "1.  Install Cypress or Playwright: `npm install cypress --save-dev` or `npm install playwright --save-dev`.\n2.  Write E2E tests to simulate user interactions with the concept score icon, score popup, and quick action buttons.\n3.  Verify the UI elements are displayed correctly and the user can navigate through the flow without errors.",
+        "testStrategy": "Run the Cypress or Playwright E2E tests and verify all tests pass. Ensure the tests cover all critical aspects of the UI flow.",
+        "priority": "medium",
+        "dependencies": [
+          31,
+          32,
+          33
+        ],
+        "status": "pending",
         "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-07-07T08:48:57.524Z",
-      "updated": "2025-07-07T08:58:06.018Z",
+      "updated": "2025-07-24T11:58:33.188Z",
       "description": "Tasks for pdf-scroll-feature context"
     }
   }

@@ -12,7 +12,9 @@ import {
   addInlineThread,
   updateInlineThread,
   deleteInlineThread,
-  createPdfNote
+  createPdfNote,
+  getNoteConceptScore,
+  updateNoteConceptScore
 } from '../controllers/noteController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
@@ -205,5 +207,11 @@ router.put(
 
 // 인라인메모 쓰레드 삭제
 router.delete('/:noteId/inline-threads/:threadId', deleteInlineThread);
+
+// Get concept understanding score for a note
+router.get('/:noteId/concept-score', getNoteConceptScore);
+
+// Update concept understanding score for a note
+router.post('/:noteId/update-score', updateNoteConceptScore);
 
 export default router; 

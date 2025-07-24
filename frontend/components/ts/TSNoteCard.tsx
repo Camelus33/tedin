@@ -5,6 +5,9 @@ import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, Photo
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import api, { inlineThreadApi } from '@/lib/api'; // Import the central api instance
 import AiCoachPopover from '../common/AiCoachPopover';
+import ConceptScoreIcon from '../ConceptScoreIcon';
+import ConceptScorePopup from '../ConceptScorePopup';
+import { useConceptScore } from '@/hooks/useConceptScore';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -343,6 +346,10 @@ export default function TSNoteCard({
   const [editingThreadId, setEditingThreadId] = useState<string | null>(null);
   const [editingThreadContent, setEditingThreadContent] = useState('');
   const [isSubmittingThread, setIsSubmittingThread] = useState(false); // 중복 요청 방지용 상태
+  
+  // 개념이해도 점수 관련 상태
+  const [showConceptScorePopup, setShowConceptScorePopup] = useState(false);
+  const { score, loading: scoreLoading, error: scoreError, fetchScore, handleAction } = useConceptScore(note._id);
   
   // React Strict Mode 대응을 위한 ref들
   const submissionRef = useRef<Set<string>>(new Set()); // 컴포넌트별 요청 추적
@@ -1116,6 +1123,32 @@ export default function TSNoteCard({
     }
   };
 
+  // 개념이해도 점수 관련 핸들러들
+  const handleConceptScoreClick = () => {
+    setShowConceptScorePopup(true);
+  };
+
+  const handleConceptScoreClose = () => {
+    setShowConceptScorePopup(false);
+  };
+
+  const handleConceptScoreAction = async (action: string) => {
+    try {
+      await handleAction(action);
+      // 점수 업데이트 후 팝업 닫기
+      setShowConceptScorePopup(false);
+    } catch (error) {
+      console.error('개념이해도 점수 액션 실행 실패:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 점수 조회
+  useEffect(() => {
+    if (note._id) {
+      fetchScore();
+    }
+  }, [note._id, fetchScore]);
+
   return (
     <div
       className={cn(
@@ -1219,6 +1252,16 @@ export default function TSNoteCard({
         if (shouldRenderActions) {
           return (
             <div className="flex items-center justify-end space-x-2 sm:space-x-2 mt-auto pt-2 border-t border-gray-700/50">
+              {/* 개념이해도 점수 아이콘 */}
+              {score && (
+                <ConceptScoreIcon
+                  score={score.totalScore}
+                  level={score.level}
+                  onClick={handleConceptScoreClick}
+                  className="flex-shrink-0"
+                />
+              )}
+              
               {/* AI 코멘트 Popover */}
               <AiCoachPopover
                 memoText={note.content}
@@ -1375,6 +1418,16 @@ export default function TSNoteCard({
             </span>
           )}
         </>
+      )}
+
+      {/* 개념이해도 점수 팝업 */}
+      {score && (
+        <ConceptScorePopup
+          score={score}
+          isOpen={showConceptScorePopup}
+          onClose={handleConceptScoreClose}
+          onActionClick={handleConceptScoreAction}
+        />
       )}
     </div>
   );

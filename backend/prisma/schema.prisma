@@ -42,4 +42,37 @@ model Payment {
   user      User     @relation(fields: [userId], references: [id])
 
   @@map("payments")
+}
+
+model Note {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  bookId        String?
+  content       String
+  tags          String[]
+  rating        Int?
+  conceptScore  Int?     // 최신 개념이해도 점수
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("notes")
+}
+
+model ConceptScore {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  noteId        String   @db.ObjectId
+  totalScore    Int
+  breakdown     Json     // 6개 영역별 점수 상세
+  calculatedAt  DateTime @default(now())
+
+  @@map("concept_scores")
+}
+
+model ScoreCalculation {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  version       String
+  formula       Json     // 계산식/가중치 등 버전별 저장
+  createdAt     DateTime @default(now())
+
+  @@map("score_calculations")
 } 

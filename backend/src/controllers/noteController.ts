@@ -5,6 +5,11 @@ import InlineThread from '../models/InlineThread';
 import User from '../models/User';
 import mongoose from 'mongoose';
 import { updateFromNote, getBeliefNetwork } from '../services/BeliefNetworkService';
+import { PrismaClient } from '@prisma/client';
+import ConceptScoreService from '../services/ConceptScoreService';
+
+const prisma = new PrismaClient();
+const conceptScoreService = ConceptScoreService.getInstance();
 
 // 사용자의 모든 노트 조회
 export const getUserNotes = async (req: Request, res: Response) => {
@@ -522,75 +527,187 @@ export const createPdfNote = async (req: Request, res: Response) => {
       tags, 
       pageNumber, 
       highlightedText, 
-      highlightData,
-      selfRating 
+      selfRating, 
+      highlightData 
     } = req.body;
 
-    // 책이 존재하고 사용자가 소유하는지 확인
+    // 책이 존재하는지 확인
     const book = await Book.findOne({ _id: bookId, userId });
     if (!book) {
       return res.status(404).json({ message: '해당 책을 찾을 수 없습니다.' });
     }
 
-    // 로컬 PDF가 등록된 책인지 확인
-    if (!book.hasLocalPdf) {
-      return res.status(400).json({ message: '로컬 PDF가 등록되지 않은 책입니다.' });
-    }
-
-    // PDF 메모 데이터 생성
-    const pdfNoteData = {
+    const newNote = new Note({
       userId,
       bookId,
       type,
       content,
       tags: tags || [],
-      isPdfMemo: true,
       pageNumber,
       highlightedText,
-      ...(highlightData && { highlightData }),
-      ...(selfRating && { selfRating }),
-    };
-
-    const newPdfNote = new Note(pdfNoteData);
-    const savedPdfNote = await newPdfNote.save();
-
-    // 개발 환경에서 PDF 메모 생성 로깅
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[PDF 메모 생성] 성공:', {
-        noteId: savedPdfNote._id,
-        bookId: bookId,
-        pageNumber: pageNumber,
-        type: type,
-        contentLength: content.length,
-        highlightedTextLength: highlightedText?.length || 0,
-        hasHighlightData: !!highlightData,
-      });
-    }
-    
-    res.status(201).json({
-      message: 'PDF 메모가 성공적으로 저장되었습니다.',
-      note: savedPdfNote
+      selfRating,
+      highlightData,
     });
+
+    const savedNote = await newNote.save();
+    
+    res.status(201).json(savedNote);
   } catch (error) {
     console.error('PDF 메모 생성 중 오류 발생:', error);
-    
-    // MongoDB validation 에러 처리
-    if (error instanceof mongoose.Error.ValidationError) {
-      const validationErrors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ 
-        message: '입력 데이터가 올바르지 않습니다.',
-        errors: validationErrors
-      });
-    }
-    
-    // MongoDB cast 에러 처리 (잘못된 ObjectId 등)
-    if (error instanceof mongoose.Error.CastError) {
-      return res.status(400).json({ 
-        message: '잘못된 데이터 형식입니다.',
-        field: error.path
-      });
-    }
-    
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
-}; 
+};
+
+// Get concept understanding score for a note
+export const getNoteConceptScore = async (req: Request, res: Response) => {
+  try {
+    const { noteId } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    // ObjectId 형식 검증
+    if (!mongoose.Types.ObjectId.isValid(noteId)) {
+      return res.status(400).json({ message: '유효하지 않은 노트 ID입니다.' });
+    }
+
+    // 노트 존재 여부 확인
+    const note = await Note.findOne({ _id: noteId, userId });
+    if (!note) {
+      return res.status(404).json({ message: '해당 노트를 찾을 수 없습니다.' });
+    }
+
+    // ConceptScoreService를 사용하여 점수 계산
+    const calculationResult = await conceptScoreService.calculateConceptScore(noteId);
+
+    res.status(200).json({
+      noteId,
+      conceptUnderstandingScore: calculationResult.score,
+      lastUpdated: calculationResult.calculatedAt,
+      calculationVersion: calculationResult.calculationVersion,
+      performanceMetrics: calculationResult.performanceMetrics
+    });
+
+  } catch (error) {
+    console.error('개념이해도 점수 조회 중 오류 발생:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+// Update concept understanding score for a note
+export const updateNoteConceptScore = async (req: Request, res: Response) => {
+  try {
+    const { noteId } = req.params;
+    const userId = req.user?.id;
+    const { action, data } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    // ObjectId 형식 검증
+    if (!mongoose.Types.ObjectId.isValid(noteId)) {
+      return res.status(400).json({ message: '유효하지 않은 노트 ID입니다.' });
+    }
+
+    // 노트 존재 여부 확인
+    const note = await Note.findOne({ _id: noteId, userId });
+    if (!note) {
+      return res.status(404).json({ message: '해당 노트를 찾을 수 없습니다.' });
+    }
+
+    // 액션 유효성 검증
+    const validActions = ['add_thought', 'evolve_memo', 'add_connection', 'create_flashcard', 'add_tag', 'update_rating'];
+    if (!validActions.includes(action)) {
+      return res.status(400).json({ message: '유효하지 않은 액션입니다.' });
+    }
+
+    // 노트 업데이트 (액션에 따라)
+    await updateNoteBasedOnAction(noteId, action, data);
+
+    // 캐시 무효화
+    conceptScoreService.invalidateCache(noteId);
+
+    // 새로운 점수 계산
+    const calculationResult = await conceptScoreService.calculateConceptScore(noteId);
+
+    // 새로운 개념이해도 점수 저장
+    const newConceptScore = await prisma.conceptScore.create({
+      data: {
+        noteId: noteId,
+        totalScore: calculationResult.score.totalScore,
+        breakdown: calculationResult.score.breakdown,
+        calculatedAt: new Date()
+      }
+    });
+
+    // 노트의 conceptScore 필드 업데이트
+    await Note.findByIdAndUpdate(noteId, {
+      conceptScore: calculationResult.score.totalScore
+    });
+
+    res.status(200).json({
+      message: '개념이해도 점수가 성공적으로 업데이트되었습니다.',
+      noteId,
+      conceptScore: calculationResult.score,
+      lastUpdated: newConceptScore.calculatedAt,
+      calculationVersion: calculationResult.calculationVersion,
+      performanceMetrics: calculationResult.performanceMetrics
+    });
+
+  } catch (error) {
+    console.error('개념이해도 점수 업데이트 중 오류 발생:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+// 액션에 따른 노트 업데이트
+async function updateNoteBasedOnAction(noteId: string, action: string, data: any) {
+  const updateData: any = {};
+
+  switch (action) {
+    case 'add_thought':
+      if (data.importanceReason) updateData.importanceReason = data.importanceReason;
+      if (data.momentContext) updateData.momentContext = data.momentContext;
+      if (data.relatedKnowledge) updateData.relatedKnowledge = data.relatedKnowledge;
+      if (data.mentalImage) updateData.mentalImage = data.mentalImage;
+      break;
+
+    case 'evolve_memo':
+      if (data.evolutionStage) {
+        updateData[data.evolutionStage] = data.content;
+      }
+      break;
+
+    case 'add_connection':
+      if (data.relatedLinks) {
+        updateData.$push = { relatedLinks: data.relatedLinks };
+      }
+      break;
+
+    case 'create_flashcard':
+      if (data.flashcards) {
+        updateData.$push = { flashcards: data.flashcards };
+      }
+      break;
+
+    case 'add_tag':
+      if (data.tags) {
+        updateData.$addToSet = { tags: { $each: data.tags } };
+      }
+      break;
+
+    case 'update_rating':
+      if (data.rating) {
+        updateData.rating = data.rating;
+        updateData.ratingUpdatedAt = new Date();
+      }
+      break;
+  }
+
+  if (Object.keys(updateData).length > 0) {
+    await Note.findByIdAndUpdate(noteId, updateData);
+  }
+} 
