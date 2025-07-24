@@ -45,7 +45,7 @@ export const useConceptScore = (noteId: string) => {
     setError(null);
 
     try {
-      const response = await apiClient.get(`/api/notes/${noteId}/concept-score`);
+      const response = await apiClient.get(`/notes/${noteId}/concept-score`);
       
       setScore(response.data.conceptUnderstandingScore);
       setLastUpdated(response.data.lastUpdated);
@@ -70,7 +70,7 @@ export const useConceptScore = (noteId: string) => {
         data
       };
 
-      const response = await apiClient.post(`/api/notes/${noteId}/update-score`, requestData);
+      const response = await apiClient.post(`/notes/${noteId}/update-score`, requestData);
       
       // 업데이트된 점수로 상태 갱신
       setScore(response.data.conceptScore);
