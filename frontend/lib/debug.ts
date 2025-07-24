@@ -149,8 +149,12 @@ export const apiDebug = {
         body: responseBody
       });
 
-      // 원본 response 객체 반환 (handleResponse에서 다시 파싱할 수 있도록)
-      return response;
+      // 새로운 Response 객체 생성하여 반환 (스트림이 소비되지 않도록)
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers
+      });
     } catch (error: any) {
       // 오류 로깅
       debugLogger.error(`${apiName} 오류`, error);
