@@ -455,7 +455,7 @@
         "testStrategy": "Verify the server starts without errors and responds to a basic health check endpoint.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -468,7 +468,7 @@
         "dependencies": [
           25
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -481,7 +481,7 @@
         "dependencies": [
           26
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -494,7 +494,7 @@
         "dependencies": [
           26
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -502,7 +502,7 @@
             "description": "Create a new route in Express for the `/api/notes/:noteId/update-score` endpoint to handle POST requests.",
             "dependencies": [],
             "details": "Define the route handler function to receive the noteId and request body.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use Postman or curl to send a POST request to the endpoint and verify that the route is accessible."
           },
           {
@@ -511,7 +511,7 @@
             "description": "Extract and validate the data required for score recalculation from the request body.",
             "dependencies": [],
             "details": "Implement data validation to ensure the required fields (e.g., 생각추가, 메모진화) are present and in the correct format.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Send POST requests with missing or invalid data and verify that appropriate error responses are returned."
           },
           {
@@ -520,7 +520,7 @@
             "description": "Invoke the real-time score calculation engine (Task 29) with the validated data to update the score.",
             "dependencies": [],
             "details": "Pass the necessary parameters to the score calculation engine and handle any potential errors during the calculation process.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Mock the score calculation engine and verify that it is called with the correct parameters."
           },
           {
@@ -529,7 +529,7 @@
             "description": "Update the `concept_score` field in the `notes` table and create a new entry in the `concept_scores` table using Prisma Client.",
             "dependencies": [],
             "details": "Use Prisma Client to perform the database updates. Ensure that the updates are atomic and handle potential database errors.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify that the `concept_score` in the `notes` table is updated correctly and a new entry is created in the `concept_scores` table with the correct values."
           },
           {
@@ -538,7 +538,7 @@
             "description": "Return a success message as a JSON response to the client.",
             "dependencies": [],
             "details": "Construct a JSON response indicating the successful update of the concept score.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify that the response contains a success message and an appropriate HTTP status code (e.g., 200 OK)."
           }
         ]
@@ -553,7 +553,7 @@
         "dependencies": [
           26
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -561,7 +561,7 @@
             "description": "Define the structure and format of the input data required for the score calculation function. This includes specifying the data types and units for each input parameter related to 생각추가, 메모진화, 지식연결, 플래시카드, 태그활용, and 사용자평점.",
             "dependencies": [],
             "details": "Research and document the specific data points needed for each scoring area. For example, for '생각추가', define how '4단계 완성도' and '텍스트 길이' will be represented. Consider using a JSON schema or similar data definition language.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Create sample input data sets that conform to the defined structure. Verify that the data can be parsed and processed correctly by the scoring engine."
           },
           {
@@ -570,7 +570,7 @@
             "description": "Implement the scoring algorithms for each of the six areas (생각추가, 메모진화, 지식연결, 플래시카드, 태그활용, 사용자평점) based on the provided formulas. Each area should have its own dedicated function or module.",
             "dependencies": [],
             "details": "Translate the formulas into code. For example, for '생각추가', implement the logic to calculate the score based on '4단계 완성도' and '텍스트 길이', ensuring the maximum score is 20. Handle edge cases and invalid input gracefully.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Write unit tests for each scoring area to verify the score is calculated correctly for different input values. Test boundary conditions and edge cases."
           },
           {
@@ -581,7 +581,7 @@
               "29.2"
             ],
             "details": "Implement the logic to sum the scores from each area. Consider adding the ability to configure weights for each area in the `score_calculations` table. Ensure the final score is within a reasonable range.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test the score combination function with various combinations of input scores from the individual areas. Verify that the final score is calculated correctly and that the weighting factors are applied as expected."
           },
           {
@@ -590,7 +590,7 @@
             "description": "Implement the logic to access and utilize the `score_calculations` configuration table. This table should allow for managing different versions of the calculation logic and potentially weighting factors for each area.",
             "dependencies": [],
             "details": "Establish a connection to the database or data source where the `score_calculations` table is stored. Implement functions to retrieve the appropriate configuration based on a version identifier or other criteria. Cache the configuration data for performance.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Create different versions of the `score_calculations` table with varying calculation logic and weighting factors. Verify that the scoring engine uses the correct configuration based on the specified version."
           },
           {
@@ -604,7 +604,7 @@
               "29.4"
             ],
             "details": "Connect the score calculation engine to the relevant data sources. Implement the API endpoint to trigger the score calculation. Monitor performance and identify any bottlenecks.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Perform end-to-end testing of the score calculation engine with realistic data sets. Verify that the scores are calculated correctly and that the performance is acceptable. Monitor the system for errors and performance issues."
           }
         ]
@@ -619,7 +619,7 @@
         "dependencies": [
           25
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -633,7 +633,7 @@
           30,
           27
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -641,7 +641,7 @@
             "description": "Develop a new React component to display the concept score icon.",
             "dependencies": [],
             "details": "Create a functional React component that will fetch and display the concept score icon. This component will be placed in the upper right corner of the memo card.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify the component renders without errors and is positioned correctly on the memo card."
           },
           {
@@ -650,7 +650,7 @@
             "description": "Implement the logic to fetch the concept score from the backend API.",
             "dependencies": [],
             "details": "Use Axios to make a GET request to `/api/notes/:noteId/concept-score`. Handle potential errors and store the retrieved score in the component's state.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test with different `noteId` values to ensure the correct score is fetched. Verify error handling for invalid `noteId` values."
           },
           {
@@ -659,7 +659,7 @@
             "description": "Implement the logic to select the appropriate icon based on the concept score range.",
             "dependencies": [],
             "details": "Create a function that takes the concept score as input and returns the corresponding icon (💡🧠🎯⭐) based on predefined score ranges.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test with various score values to ensure the correct icon is selected for each range."
           },
           {
@@ -668,7 +668,7 @@
             "description": "Apply color coding to the icon based on the score value using Tailwind CSS classes.",
             "dependencies": [],
             "details": "Create a function that takes the concept score as input and returns the appropriate Tailwind CSS class for the color (red -> orange -> green -> blue). Apply this class to the icon element.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test with various score values to ensure the correct color is applied to the icon for each range."
           },
           {
@@ -677,7 +677,7 @@
             "description": "Integrate the concept score icon component into the memo card UI.",
             "dependencies": [],
             "details": "Import the concept score icon component into the memo card component and render it in the upper right corner. Pass the `noteId` as a prop to the concept score icon component.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify the concept score icon is displayed correctly on the memo card with the correct icon and color based on the note's score. Test with different `noteId` values."
           }
         ]
@@ -694,7 +694,7 @@
           27,
           29
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -702,7 +702,7 @@
             "description": "Develop a new React component to serve as the foundation for the detailed score popup.",
             "dependencies": [],
             "details": "Create a functional or class-based React component. Define the basic structure and styling placeholders. Ensure the component can be rendered and displayed on the screen.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify the component renders without errors. Check that the basic structure is in place and that styling placeholders are visible."
           },
           {
@@ -711,7 +711,7 @@
             "description": "Implement the logic to retrieve or calculate the detailed scores for each of the six areas.",
             "dependencies": [],
             "details": "Determine whether to fetch the scores from the backend API (Task 27) or calculate them on the frontend. Implement the necessary API calls or calculation logic. Handle potential errors during data retrieval or calculation.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Check that the correct scores are fetched from the API or calculated accurately. Verify error handling for API failures or invalid data."
           },
           {
@@ -720,7 +720,7 @@
             "description": "Organize and display the fetched/calculated scores within the popup component.",
             "dependencies": [],
             "details": "Structure the score data in a clear and understandable format. Use appropriate UI elements (e.g., tables, charts, lists) to display the scores for each area. Ensure the display is responsive and adapts to different screen sizes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify that all six area scores are displayed correctly. Check the formatting and layout for clarity and readability. Test responsiveness on different devices."
           },
           {
@@ -729,7 +729,7 @@
             "description": "Apply Tailwind CSS classes to style the popup and ensure it is visually appealing and consistent with the application's design.",
             "dependencies": [],
             "details": "Use Tailwind CSS classes to style the popup container, headings, labels, and score values. Ensure the popup has a consistent look and feel with the rest of the UI. Pay attention to typography, spacing, and color palette.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify that the popup styling matches the design specifications. Check for consistency with other UI elements. Ensure the popup is visually appealing and easy to read."
           },
           {
@@ -738,7 +738,7 @@
             "description": "Connect the score popup to the concept score icon, so that clicking the icon triggers the popup to appear.",
             "dependencies": [],
             "details": "Implement the event handler for the concept score icon click. Use React state management to control the visibility of the popup. Ensure the popup appears in the correct position relative to the icon.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify that the popup appears when the concept score icon is clicked. Check that the popup closes when clicking outside of it or on a close button (if implemented). Ensure the popup position is correct."
           }
         ]
@@ -754,7 +754,7 @@
           32,
           28
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -762,7 +762,7 @@
             "description": "Add the specified quick action buttons (Add Thoughts, Evolve Memo, Connect Knowledge, Create Flashcard, Add Tag, Rate) to the score popup React component.",
             "dependencies": [],
             "details": "Modify the React component created in Task 32 to include the quick action buttons. Use Tailwind CSS for styling to ensure consistency with the existing UI.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify the quick action buttons are displayed correctly in the score popup and are visually consistent with the rest of the UI."
           },
           {
@@ -771,7 +771,7 @@
             "description": "Implement the functionality for the 'Add Thoughts' button. This likely involves navigating the user to a page where they can add thoughts related to the concept.",
             "dependencies": [],
             "details": "Determine the appropriate page or component for adding thoughts. Implement the navigation logic when the 'Add Thoughts' button is clicked.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Click the 'Add Thoughts' button and verify that the user is navigated to the correct page or component for adding thoughts."
           },
           {
@@ -780,7 +780,7 @@
             "description": "Implement the functionality for the 'Evolve Memo', 'Connect Knowledge', and 'Create Flashcard' buttons. These actions may involve navigating to different pages or triggering API calls.",
             "dependencies": [],
             "details": "Determine the appropriate actions for each button. Implement the navigation logic or API calls when the buttons are clicked.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Click each button and verify that the correct action is performed (navigation or API call)."
           },
           {
@@ -789,7 +789,7 @@
             "description": "Implement the functionality for the 'Add Tag' and 'Rate' buttons. These actions may involve triggering API calls to update the concept's tags or rating.",
             "dependencies": [],
             "details": "Implement the API calls to update the concept's tags and rating when the buttons are clicked. Handle success and error responses appropriately.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Click each button and verify that the correct API call is made and the concept's tags or rating are updated accordingly."
           },
           {
@@ -798,7 +798,7 @@
             "description": "Test the quick action buttons with different user roles and permissions to ensure the buttons are enabled/disabled appropriately.",
             "dependencies": [],
             "details": "Create different user roles with varying permissions. Log in with each role and verify that the quick action buttons are enabled or disabled based on the user's permissions.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Log in with different user roles and verify that the quick action buttons are enabled/disabled as expected based on the user's permissions."
           }
         ]
@@ -813,7 +813,7 @@
         "dependencies": [
           29
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -827,7 +827,7 @@
           28,
           29
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -835,7 +835,7 @@
             "description": "Implement debouncing or throttling techniques to limit the frequency of score updates sent to the client, reducing server load and improving UI responsiveness.",
             "dependencies": [],
             "details": "Research and implement either debouncing or throttling. Configure the optimal delay based on testing. Ensure that the final score is always reflected eventually.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Simulate rapid score changes and verify that updates are sent at the configured rate. Measure the impact on server load and UI responsiveness."
           },
           {
@@ -844,7 +844,7 @@
             "description": "Evaluate the feasibility of using a message queue (e.g., RabbitMQ or Kafka) to handle score updates asynchronously, decoupling the score calculation engine from the UI and improving scalability.",
             "dependencies": [],
             "details": "Research RabbitMQ and Kafka. Set up a test environment with one of the message queues. Implement a simple producer/consumer to test asynchronous score updates.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Simulate a high volume of score updates and measure the message queue's performance. Verify that all updates are processed correctly and eventually reflected in the UI."
           },
           {
@@ -853,7 +853,7 @@
             "description": "Analyze and optimize the database queries used in the real-time score calculation engine to reduce query execution time and database load.",
             "dependencies": [],
             "details": "Profile the database queries used by the score calculation engine. Identify slow queries and optimize them using techniques like indexing, query rewriting, or caching.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Measure the execution time of the optimized queries and compare them to the original queries. Verify that the optimization reduces database load and improves overall performance."
           },
           {
@@ -862,7 +862,7 @@
             "description": "Profile the score calculation engine to identify performance bottlenecks within the scoring algorithms themselves and optimize the code for efficiency.",
             "dependencies": [],
             "details": "Use profiling tools to identify the most time-consuming parts of the score calculation logic. Optimize the code by using efficient algorithms, data structures, and coding techniques.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Measure the execution time of the optimized score calculation logic and compare it to the original logic. Verify that the optimization reduces CPU usage and improves overall performance."
           },
           {
@@ -876,7 +876,7 @@
               "35.4"
             ],
             "details": "Simulate a realistic workload of score updates. Monitor system performance metrics such as CPU usage, memory usage, and response time. Gather user feedback on the smoothness and responsiveness of the UI.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use load testing tools to simulate a high volume of concurrent users and score updates. Measure the system's throughput, latency, and error rate. Conduct user testing to gather feedback on the user experience."
           }
         ]
@@ -891,7 +891,7 @@
         "dependencies": [
           26
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -904,7 +904,7 @@
         "dependencies": [
           29
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -918,7 +918,7 @@
           27,
           28
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       },
       {
@@ -933,14 +933,404 @@
           32,
           33
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-07-07T08:48:57.524Z",
-      "updated": "2025-07-24T11:58:33.188Z",
+      "updated": "2025-07-24T21:47:57.985Z",
       "description": "Tasks for pdf-scroll-feature context"
+    }
+  },
+  "seo-optimization": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Next.js 14 Project with TypeScript and Tailwind CSS",
+        "description": "Set up the Next.js 14 project with TypeScript and Tailwind CSS, ensuring the environment is correctly configured for SEO.",
+        "details": "1. Verify Node.js version (>=18). 2. Initialize a new Next.js project using `create-next-app`. 3. Configure TypeScript. 4. Install and configure Tailwind CSS. 5. Set up Vercel deployment. Use `npx create-next-app@latest --typescript --tailwind` to create the project. Update `tailwind.config.js` and `globals.css` as needed. Test deployment to Vercel to confirm setup.",
+        "testStrategy": "Deploy a basic page to Vercel and verify that it renders correctly with Tailwind CSS styling. Check for TypeScript errors during the build process.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement Unique Title Tags",
+        "description": "Implement unique and optimized title tags for all pages on the Habitus33 platform.",
+        "details": "1. Use Next.js's `<Head>` component to dynamically set title tags. 2. Ensure each page has a unique title. 3. Include relevant keywords in the title, but keep it concise (under 60 characters). 4. Implement a default title for pages without specific titles. Example: `<Head><title>{title || 'Habitus33: Your Destination'}</title></Head>`. Test with different page types to ensure titles are unique and relevant.",
+        "testStrategy": "Manually inspect the title tags of various pages using browser developer tools. Verify that the titles are unique, relevant, and within the recommended length.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Optimize Meta Descriptions",
+        "description": "Optimize meta descriptions for all pages to improve click-through rates from search engine results pages (SERPs).",
+        "details": "1. Use the `<Head>` component to dynamically set meta descriptions. 2. Write compelling and concise descriptions (under 160 characters). 3. Include relevant keywords and a call to action. 4. Implement a default meta description. Example: `<Head><meta name=\"description\" content={description || 'Discover Habitus33: Your Destination'} /></Head>`. Test with different page types.",
+        "testStrategy": "Manually inspect the meta descriptions of various pages using browser developer tools. Verify that the descriptions are compelling, relevant, and within the recommended length.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Open Graph Tags",
+        "description": "Implement Open Graph tags for social media sharing to ensure proper display of content on social platforms.",
+        "details": "1. Use the `<Head>` component to add Open Graph meta tags. 2. Include `og:title`, `og:description`, `og:image`, and `og:url` tags. 3. Dynamically set these tags based on the page content. 4. Use `next-seo` library for easier management. Example: `<Head><meta property=\"og:title\" content={title} /><meta property=\"og:description\" content={description} /><meta property=\"og:image\" content={imageUrl} /></Head>`. Test by sharing pages on social media.",
+        "testStrategy": "Share various pages on social media platforms (e.g., Facebook, LinkedIn) and verify that the shared content displays correctly with the appropriate title, description, and image.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Twitter Card Tags",
+        "description": "Implement Twitter Card tags to enhance the appearance of shared content on Twitter.",
+        "details": "1. Use the `<Head>` component to add Twitter Card meta tags. 2. Include `twitter:card`, `twitter:title`, `twitter:description`, and `twitter:image` tags. 3. Dynamically set these tags based on the page content. Example: `<Head><meta name=\"twitter:card\" content=\"summary_large_image\" /><meta name=\"twitter:title\" content={title} /><meta name=\"twitter:description\" content={description} /><meta name=\"twitter:image\" content={imageUrl} /></Head>`. Test by sharing pages on Twitter.",
+        "testStrategy": "Share various pages on Twitter and verify that the Twitter Cards display correctly with the appropriate title, description, and image.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Add Structured Data (Schema.org) Markup",
+        "description": "Add structured data (Schema.org) markup to relevant pages to provide search engines with more context about the content.",
+        "details": "1. Identify relevant Schema.org types for different page types (e.g., `WebPage`, `Article`, `Product`). 2. Add JSON-LD markup to the `<head>` section of each page. 3. Use dynamic data to populate the schema. 4. Example: `<script type=\"application/ld+json\">{...}</script>`. Use Google's Rich Results Test to validate the markup.",
+        "testStrategy": "Use Google's Rich Results Test to validate the structured data markup on various pages. Verify that the markup is correctly implemented and that no errors are reported.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Generate and Submit Sitemap (sitemap.xml)",
+        "description": "Generate a sitemap.xml file and submit it to Google Search Console to help search engines crawl and index the website.",
+        "details": "1. Use the `next-sitemap` package to automatically generate the sitemap. 2. Configure the package to include all relevant pages. 3. Exclude any pages that should not be indexed. 4. Add a script to `package.json` to generate the sitemap during the build process. 5. Submit the sitemap to Google Search Console. Example: `npx next-sitemap --config next-sitemap.config.js`. Configure `robots.txt` to point to the sitemap.",
+        "testStrategy": "Verify that the sitemap.xml file is generated correctly and that it includes all relevant pages. Submit the sitemap to Google Search Console and monitor for any errors.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Optimize robots.txt",
+        "description": "Optimize the robots.txt file to control which pages search engines can crawl and index.",
+        "details": "1. Create a `robots.txt` file in the `public` directory. 2. Allow crawling of all important pages. 3. Disallow crawling of any sensitive or duplicate content. 4. Link to the sitemap. Example: `User-agent: *\nAllow: /\nSitemap: https://www.example.com/sitemap.xml`. Test by checking the `robots.txt` file in a browser.",
+        "testStrategy": "Verify that the robots.txt file is correctly configured and that it allows crawling of all important pages while disallowing crawling of any sensitive or duplicate content. Use Google Search Console to test the robots.txt file.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Optimize Page Loading Speed",
+        "description": "Optimize page loading speed to improve user experience and search engine rankings.",
+        "details": "1. Use Next.js's built-in performance optimizations (e.g., image optimization, code splitting). 2. Implement lazy loading for images and other non-critical resources. 3. Minify CSS and JavaScript files. 4. Use a CDN to deliver static assets. 5. Optimize images using `next/image`. Use Lighthouse to measure performance.",
+        "testStrategy": "Use Google PageSpeed Insights or Lighthouse to measure the page loading speed of various pages. Identify and address any performance bottlenecks.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Verify Mobile Responsiveness",
+        "description": "Ensure the website is fully responsive and mobile-friendly to provide a good user experience on all devices.",
+        "details": "1. Use Tailwind CSS's responsive utilities to create a responsive layout. 2. Test the website on various devices and screen sizes. 3. Use Google's Mobile-Friendly Test to check for any mobile usability issues. 4. Ensure viewport meta tag is properly set. Example: `<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">`.",
+        "testStrategy": "Use Google's Mobile-Friendly Test to verify that the website is mobile-friendly. Manually test the website on various devices and screen sizes to ensure that it is responsive and provides a good user experience.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Verify HTTPS Security Certificate",
+        "description": "Verify that the website has a valid HTTPS security certificate to ensure secure communication between the website and its users.",
+        "details": "1. Check that the website is served over HTTPS. 2. Verify that the SSL certificate is valid and up-to-date. 3. Use a tool like SSL Labs' SSL Server Test to check the SSL configuration. 4. Vercel automatically provides HTTPS. Check Vercel dashboard.",
+        "testStrategy": "Verify that the website is served over HTTPS and that the SSL certificate is valid and up-to-date. Use a tool like SSL Labs' SSL Server Test to check the SSL configuration.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Conduct Keyword Research and Analysis",
+        "description": "Conduct keyword research and analysis to identify relevant keywords for the Habitus33 platform.",
+        "details": "1. Use tools like Google Keyword Planner, Ahrefs, or SEMrush to identify relevant keywords. 2. Analyze the search volume and competition for each keyword. 3. Create a list of target keywords for different pages. 4. Focus on long-tail keywords. Document keywords in a spreadsheet.",
+        "testStrategy": "Review the keyword research and analysis to ensure that the identified keywords are relevant and have sufficient search volume. Verify that the keywords are being used effectively in the website's content and meta tags.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Optimize Heading Tags (H1, H2, H3)",
+        "description": "Optimize heading tags (H1, H2, H3) to improve the structure and readability of the content.",
+        "details": "1. Use heading tags to create a clear hierarchy of content. 2. Include relevant keywords in the heading tags. 3. Use only one H1 tag per page. 4. Ensure heading tags are properly nested. Example: `<h1>Main Heading</h1><h2>Subheading</h2><h3>Sub-subheading</h3>`. Check heading structure using browser developer tools.",
+        "testStrategy": "Manually inspect the heading tags on various pages to ensure that they are properly structured and that they include relevant keywords.",
+        "priority": "medium",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Set up Google Search Console",
+        "description": "Set up Google Search Console to monitor the website's performance in Google Search.",
+        "details": "1. Create a Google Search Console account. 2. Verify ownership of the website. 3. Submit the sitemap. 4. Monitor search traffic, crawl errors, and other important metrics. 5. Connect to Google Analytics 4. Follow Google Search Console setup guide.",
+        "testStrategy": "Verify that Google Search Console is correctly set up and that the website is being crawled and indexed by Google. Monitor the search traffic and crawl errors to identify any issues.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Set up Google Analytics 4",
+        "description": "Set up Google Analytics 4 to track website traffic and user behavior.",
+        "details": "1. Create a Google Analytics 4 property. 2. Add the Google Analytics 4 tracking code to the website. 3. Configure events and conversions. 4. Monitor website traffic and user behavior. 5. Use `next-ga4` library for easier integration. Follow Google Analytics 4 setup guide.",
+        "testStrategy": "Verify that Google Analytics 4 is correctly set up and that website traffic and user behavior are being tracked. Monitor the data to identify any trends or issues.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Create and Configure robots.txt File",
+        "description": "Create and configure a robots.txt file to ensure search engine crawlers can properly index the site, controlling which pages are crawled.",
+        "details": "1. Create a `robots.txt` file in the `public` directory.\n2. Define rules to allow or disallow specific user agents from accessing certain parts of the site.  Prioritize allowing access to important content and disallowing access to sensitive areas like admin panels or duplicate content.\n3. Include a link to the sitemap file to help search engines discover all indexable pages. Example: `Sitemap: https://www.example.com/sitemap.xml`.\n4. Consider using directives like `Crawl-delay` to manage server load, if necessary.\n5. Validate the `robots.txt` file using online tools to ensure correct syntax and functionality.\n6. Test the robots.txt file by checking its accessibility in a browser and using Google Search Console's robots.txt tester.",
+        "testStrategy": "1. Verify that the `robots.txt` file is accessible at the root of the domain (e.g., `https://www.example.com/robots.txt`).\n2. Use Google Search Console's robots.txt Tester to check for any syntax errors or blocked URLs.\n3. Manually inspect the file to ensure that important pages are allowed and sensitive pages are disallowed.\n4. Monitor crawl errors in Google Search Console to identify any issues with the robots.txt configuration.",
+        "status": "done",
+        "dependencies": [
+          1,
+          8,
+          14
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create robots.txt File",
+            "description": "Create a `robots.txt` file in the `public` directory.",
+            "dependencies": [],
+            "details": "Create an empty `robots.txt` file in the project's `public` directory. This will serve as the base for defining crawler access rules.",
+            "status": "done",
+            "testStrategy": "Verify the file exists in the `public` directory."
+          },
+          {
+            "id": 2,
+            "title": "Define User-Agent Rules",
+            "description": "Define rules to allow or disallow specific user agents from accessing certain parts of the site. Prioritize allowing access to important content and disallowing access to sensitive areas like admin panels or duplicate content.",
+            "dependencies": [],
+            "details": "Implement `Allow` and `Disallow` directives for different user agents (e.g., Googlebot, Bingbot). Block access to `/admin` and other sensitive directories. Allow access to essential content.",
+            "status": "done",
+            "testStrategy": "Use Google Search Console's robots.txt Tester to verify that the rules are correctly blocking and allowing access to the intended URLs."
+          },
+          {
+            "id": 3,
+            "title": "Include Sitemap Link",
+            "description": "Include a link to the sitemap file to help search engines discover all indexable pages. Example: `Sitemap: https://www.example.com/sitemap.xml`.",
+            "dependencies": [],
+            "details": "Add a `Sitemap` directive to the `robots.txt` file, pointing to the dynamically generated `sitemap.xml` file (Task 17).",
+            "status": "done",
+            "testStrategy": "Verify that the `Sitemap` directive is present and points to the correct URL of the sitemap file."
+          },
+          {
+            "id": 4,
+            "title": "Consider Crawl-delay Directive",
+            "description": "Consider using directives like `Crawl-delay` to manage server load, if necessary.",
+            "dependencies": [],
+            "details": "Assess server load and, if necessary, implement a `Crawl-delay` directive to limit the crawling rate of search engine bots.",
+            "status": "done",
+            "testStrategy": "Monitor server load and adjust the `Crawl-delay` value as needed. Consult search engine documentation for recommended values."
+          },
+          {
+            "id": 5,
+            "title": "Validate and Test robots.txt",
+            "description": "Validate the `robots.txt` file using online tools to ensure correct syntax and functionality. Test the robots.txt file by checking its accessibility in a browser and using Google Search Console's robots.txt tester.",
+            "dependencies": [],
+            "details": "Use online robots.txt validators and Google Search Console's robots.txt Tester to check for syntax errors and ensure the file is functioning as intended. Verify accessibility via a browser.",
+            "status": "done",
+            "testStrategy": "Confirm that the `robots.txt` file is accessible in a browser. Use Google Search Console's robots.txt Tester to verify syntax and blocked/allowed URLs."
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Generate Dynamic sitemap.xml File",
+        "description": "Generate a dynamic sitemap.xml file to ensure search engines can efficiently crawl all pages of the site. Configure the system to automatically generate and update the sitemap.",
+        "details": "1. Implement dynamic sitemap generation using `next-sitemap` or similar package, ensuring it reflects the current site structure.\n2. Configure the sitemap generation process to include all relevant pages, dynamically fetching routes.\n3. Exclude any pages that should not be indexed, such as admin panels or user-specific content.\n4. Set up a scheduled task or build process hook to automatically regenerate the sitemap whenever content changes.\n5. Ensure the sitemap is accessible at `/sitemap.xml`.\n6. Verify that the `robots.txt` file correctly references the sitemap location.",
+        "testStrategy": "1. Verify that the `sitemap.xml` file is generated correctly and accessible at `/sitemap.xml`.\n2. Check that all relevant pages are included in the sitemap, and excluded pages are not.\n3. Use online sitemap validators to ensure the sitemap is valid and error-free.\n4. Submit the sitemap to Google Search Console and monitor for any errors or warnings.\n5. Confirm that the sitemap link in `robots.txt` is correct and functional.",
+        "status": "done",
+        "dependencies": [
+          7,
+          16
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Dynamic Sitemap Generation",
+            "description": "Implement dynamic sitemap generation using `next-sitemap` or a similar package, ensuring it accurately reflects the current site structure and dynamically fetches routes.",
+            "dependencies": [],
+            "details": "Install and configure `next-sitemap` or an alternative package. Implement logic to dynamically fetch all relevant routes for inclusion in the sitemap. Configure the sitemap generation script in `package.json`.",
+            "status": "done",
+            "testStrategy": "Verify that the sitemap.xml file is generated correctly and accessible at `/sitemap.xml`. Check that all relevant pages are included in the sitemap."
+          },
+          {
+            "id": 2,
+            "title": "Configure Sitemap Content and Exclusions",
+            "description": "Configure the sitemap generation process to include all relevant pages and exclude any pages that should not be indexed, such as admin panels or user-specific content.",
+            "dependencies": [],
+            "details": "Define rules and patterns to identify and exclude specific routes from the sitemap generation process. Ensure that only publicly accessible and indexable pages are included.",
+            "status": "done",
+            "testStrategy": "Check that all relevant pages are included in the sitemap, and excluded pages are not. Use online sitemap validators to ensure the sitemap is valid and error-free."
+          },
+          {
+            "id": 3,
+            "title": "Automate Sitemap Regeneration",
+            "description": "Set up a scheduled task or build process hook to automatically regenerate the sitemap whenever content changes or on a regular basis.",
+            "dependencies": [],
+            "details": "Implement a mechanism to trigger sitemap regeneration upon content updates (e.g., using a webhook or CMS event) or schedule it to run periodically (e.g., daily or weekly). Integrate the sitemap generation into the build process.",
+            "status": "done",
+            "testStrategy": "Verify that the sitemap is automatically regenerated after content changes. Check the timestamp of the sitemap file to confirm that it is being updated."
+          },
+          {
+            "id": 4,
+            "title": "Verify Sitemap Accessibility and robots.txt Integration",
+            "description": "Ensure the sitemap is accessible at `/sitemap.xml` and that the `robots.txt` file correctly references the sitemap location.",
+            "dependencies": [],
+            "details": "Configure the server to serve the generated sitemap file at the `/sitemap.xml` endpoint. Update the `robots.txt` file to include a `Sitemap:` directive pointing to the sitemap URL.",
+            "status": "done",
+            "testStrategy": "Verify that the `sitemap.xml` file is accessible at `/sitemap.xml`. Check that the `robots.txt` file correctly references the sitemap location."
+          },
+          {
+            "id": 5,
+            "title": "Submit Sitemap to Search Engines",
+            "description": "Submit the generated sitemap to Google Search Console and other relevant search engine webmaster tools.",
+            "dependencies": [],
+            "details": "Log in to Google Search Console and submit the sitemap URL. Monitor the sitemap submission status for any errors or warnings. Submit to other search engines like Bing Webmaster Tools.",
+            "status": "done",
+            "testStrategy": "Verify that the sitemap is successfully submitted to Google Search Console and other search engines. Monitor for any crawl errors or indexing issues."
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Create manifest.json File (PWA)",
+        "description": "Generate a manifest.json file for Progressive Web App (PWA) functionality, enabling PWA installation.",
+        "details": "1. Create a `manifest.json` file in the `public` directory.\n2. Define the following properties in the `manifest.json` file:\n   - `short_name`: A short name for the app (12 characters or less).\n   - `name`: The full name of the app.\n   - `icons`: An array of icon objects, each specifying the `src`, `sizes`, and `type` of the icon.\n   - `start_url`: The URL that should be loaded when the app is launched.\n   - `display`: The display mode for the app (e.g., `standalone`, `fullscreen`, `minimal-ui`, `browser`).\n   - `background_color`: The background color for the app.\n   - `theme_color`: The theme color for the app.\n   - `description`: A brief description of the app.\n   - `screenshots`: (Optional) An array of screenshot objects, each specifying the `src`, `sizes`, and `type` of the screenshot.\n3. Link the `manifest.json` file in the `<head>` of the `_document.js` or `_document.tsx` file using a `<link>` tag:\n   ```html\n   <link rel=\"manifest\" href=\"/manifest.json\" />\n   ```\n4. Configure the app to be installable as a PWA. This typically involves setting up a service worker (covered in a separate task).\n5. Ensure all icon paths are correct and the icons are available in the specified sizes.",
+        "testStrategy": "1. Verify that the `manifest.json` file is accessible at `/manifest.json`.\n2. Check that all required properties are defined in the `manifest.json` file and have valid values.\n3. Inspect the `<link>` tag in the `<head>` of the document to ensure that it correctly links to the `manifest.json` file.\n4. Use browser developer tools (Application -> Manifest) to verify that the manifest is correctly parsed and that the app is installable.\n5. Test the PWA installation process on different devices and browsers to ensure that it works as expected.\n6. Validate the manifest file using an online validator to ensure it conforms to the PWA specification.",
+        "status": "done",
+        "dependencies": [
+          1
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create manifest.json file in the public directory",
+            "description": "Create a `manifest.json` file in the `public` directory of the Next.js project.",
+            "dependencies": [],
+            "details": "Create a new file named `manifest.json` inside the `public` directory. This file will contain the metadata for the PWA.",
+            "status": "done",
+            "testStrategy": "Verify that the `manifest.json` file exists in the `public` directory."
+          },
+          {
+            "id": 2,
+            "title": "Define manifest.json properties",
+            "description": "Define the required properties in the `manifest.json` file, including `short_name`, `name`, `icons`, `start_url`, `display`, `background_color`, `theme_color`, and `description`.",
+            "dependencies": [
+              "18.1"
+            ],
+            "details": "Add the following properties to the `manifest.json` file: `short_name`, `name`, `icons`, `start_url`, `display`, `background_color`, `theme_color`, and `description`. Ensure the `short_name` is 12 characters or less. Populate the `icons` array with appropriate icon objects, specifying `src`, `sizes`, and `type` for each icon.",
+            "status": "done",
+            "testStrategy": "Verify that all required properties are defined in the `manifest.json` file and have valid values. Check the icon paths and sizes."
+          },
+          {
+            "id": 3,
+            "title": "Link manifest.json in _document.js or _document.tsx",
+            "description": "Add a `<link>` tag to the `<head>` of the `_document.js` or `_document.tsx` file to link to the `manifest.json` file.",
+            "dependencies": [
+              "18.2"
+            ],
+            "details": "Insert the following `<link>` tag within the `<head>` section of the `_document.js` or `_document.tsx` file: `<link rel=\"manifest\" href=\"/manifest.json\" />`.",
+            "status": "done",
+            "testStrategy": "Inspect the `<head>` of the rendered page to ensure that the `<link>` tag correctly links to the `manifest.json` file."
+          },
+          {
+            "id": 4,
+            "title": "Verify icon paths and availability",
+            "description": "Ensure all icon paths specified in the `manifest.json` file are correct and that the icons are available in the specified sizes within the `public` directory.",
+            "dependencies": [
+              "18.2"
+            ],
+            "details": "Check that the `src` attributes in the `icons` array of the `manifest.json` file point to valid image files in the `public` directory. Verify that the image files exist in the sizes specified in the `sizes` attribute.",
+            "status": "done",
+            "testStrategy": "Manually verify that each icon specified in the `manifest.json` file is accessible and displays correctly in the browser's developer tools."
+          },
+          {
+            "id": 5,
+            "title": "Validate manifest.json file",
+            "description": "Validate the `manifest.json` file using an online validator or browser developer tools to ensure it is correctly formatted and contains no errors.",
+            "dependencies": [
+              "18.2"
+            ],
+            "details": "Use an online manifest validator (e.g., web app manifest validator) or the browser's developer tools (Application -> Manifest) to validate the `manifest.json` file. Correct any errors or warnings reported by the validator.",
+            "status": "done",
+            "testStrategy": "Use an online validator and the browser's developer tools to confirm that the `manifest.json` file is valid and error-free."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-24T21:49:12.889Z",
+      "updated": "2025-07-24T22:06:22.043Z",
+      "description": "Tasks for seo-optimization context"
     }
   }
 }

@@ -804,8 +804,8 @@ export default function TSNoteCard({
       <div className="mt-4 pt-3 border-t border-gray-700/50">
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-xs font-semibold text-gray-400">
-            메모 진화 내용:
-          </h4>
+          메모 진화 내용:
+        </h4>
           <button
             onClick={() => setShowMemoEvolution(!showMemoEvolution)}
             className="text-xs text-cyan-500 hover:text-cyan-400 transition-colors duration-200 flex items-center"
@@ -826,7 +826,7 @@ export default function TSNoteCard({
         <div className={`transition-all duration-300 overflow-hidden ${
           showMemoEvolution ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}>
-          {details}
+        {details}
         </div>
       </div>
     );
