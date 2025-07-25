@@ -117,21 +117,49 @@ export class ConceptScoreService {
   }
 
   /**
-   * 생각추가 점수 계산 (20점 만점)
+   * 생각추가 점수 계산 (20점 만점) - 인라인메모쓰레드 기반
    */
   private calculateThoughtExpansionScore(note: any): number {
     let score = 0;
 
-    // 4단계 완성도 (16점)
-    if (note.importanceReason) score += 4;
-    if (note.momentContext) score += 4;
-    if (note.relatedKnowledge) score += 4;
-    if (note.mentalImage) score += 4;
+    // 인라인메모쓰레드 데이터 확인
+    const inlineThreads = note.inlineThreads || [];
+    
+    if (inlineThreads.length === 0) {
+      return 0; // 인라인메모쓰레드가 없으면 0점
+    }
 
-    // 텍스트 길이 보너스 (4점)
-    const stages = [note.importanceReason, note.momentContext, note.relatedKnowledge, note.mentalImage];
-    const longStages = stages.filter(stage => stage && stage.length >= 100).length;
-    score += Math.min(longStages, 4);
+    // 1. 쓰레드 개수 점수 (8점)
+    // 1개: 2점, 2개: 4점, 3개: 6점, 4개 이상: 8점
+    const threadCount = inlineThreads.length;
+    score += Math.min(threadCount * 2, 8);
+
+    // 2. 쓰레드 내용 품질 점수 (8점)
+    // 각 쓰레드의 내용 길이와 품질을 평가
+    let qualityScore = 0;
+    inlineThreads.forEach((thread: any) => {
+      const content = thread.content || '';
+      const contentLength = content.length;
+      
+      if (contentLength >= 100) {
+        qualityScore += 2; // 100자 이상: 2점
+      } else if (contentLength >= 50) {
+        qualityScore += 1; // 50자 이상: 1점
+      }
+    });
+    score += Math.min(qualityScore, 8);
+
+    // 3. 쓰레드 다양성 점수 (4점)
+    // 서로 다른 내용의 쓰레드가 있는지 평가
+    const uniqueContents = new Set(inlineThreads.map((thread: any) => 
+      (thread.content || '').trim().toLowerCase()
+    ));
+    
+    if (uniqueContents.size >= 3) {
+      score += 4; // 3개 이상의 고유한 내용
+    } else if (uniqueContents.size >= 2) {
+      score += 2; // 2개의 고유한 내용
+    }
 
     return Math.min(score, 20);
   }
