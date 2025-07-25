@@ -701,8 +701,8 @@ async function updateNoteBasedOnAction(noteId: string, action: string, data: any
 
     case 'update_rating':
       if (data.rating) {
-        updateData.rating = data.rating;
-        updateData.ratingUpdatedAt = new Date();
+        updateData.selfRating = data.rating;
+        // updatedAt은 Mongoose에서 자동으로 업데이트됨
       }
       break;
   }

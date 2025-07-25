@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import mongoose from 'mongoose';
 import Note from '../models/Note';
 
 const prisma = new PrismaClient();
@@ -98,7 +99,7 @@ export class ConceptScoreService {
       thoughtExpansion: this.calculateThoughtExpansionScore(note),
       memoEvolution: this.calculateMemoEvolutionScore(note),
       knowledgeConnection: this.calculateKnowledgeConnectionScore(note),
-      flashcardCreation: this.calculateFlashcardCreationScore(note),
+      flashcardCreation: await this.calculateFlashcardCreationScore(note),
       tagUtilization: this.calculateTagUtilizationScore(note),
       userRating: this.calculateUserRatingScore(note)
     };
@@ -193,22 +194,30 @@ export class ConceptScoreService {
   /**
    * 플래시카드 점수 계산 (20점 만점)
    */
-  private calculateFlashcardCreationScore(note: any): number {
+  private async calculateFlashcardCreationScore(note: any): Promise<number> {
     let score = 0;
 
-    if (note.flashcards && note.flashcards.length > 0) {
-      // 플래시카드 생성 (8점)
-      score += 8;
+    try {
+      // Flashcard 컬렉션에서 해당 노트의 플래시카드 조회
+      const Flashcard = mongoose.model('Flashcard');
+      const flashcards = await Flashcard.find({ memoId: note._id });
 
-      // 복습 횟수 (8점)
-      const totalReviews = note.flashcards.reduce((sum: number, card: any) => 
-        sum + (card.reviewCount || 0), 0);
-      score += Math.min(totalReviews * 2, 8);
+      if (flashcards && flashcards.length > 0) {
+        // 플래시카드 생성 (8점)
+        score += 8;
 
-      // 난이도 조정 (4점)
-      if (note.flashcards.some((card: any) => card.difficulty)) {
-        score += 4;
+        // 복습 횟수 (8점) - repetitions 필드 사용
+        const totalReviews = flashcards.reduce((sum: number, card: any) => 
+          sum + (card.srsState?.repetitions || 0), 0);
+        score += Math.min(totalReviews * 2, 8);
+
+        // 난이도 조정 (4점) - ease 필드 사용
+        if (flashcards.some((card: any) => card.srsState?.ease)) {
+          score += 4;
+        }
       }
+    } catch (error) {
+      console.error('플래시카드 점수 계산 중 오류:', error);
     }
 
     return Math.min(score, 20);
@@ -246,17 +255,18 @@ export class ConceptScoreService {
   private calculateUserRatingScore(note: any): number {
     let score = 0;
 
-    if (note.rating) {
+    // selfRating 필드 사용 (Mongoose 모델과 일치)
+    if (note.selfRating) {
       // 평점 존재 (5점)
       score += 5;
 
       // 평점 높음 (3점)
-      if (note.rating >= 4) {
+      if (note.selfRating >= 4) {
         score += 3;
       }
 
-      // 평점 업데이트 (2점)
-      if (note.ratingUpdatedAt) {
+      // 평점 업데이트 (2점) - updatedAt 필드 사용
+      if (note.updatedAt) {
         score += 2;
       }
     }
