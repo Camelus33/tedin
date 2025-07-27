@@ -268,14 +268,14 @@ export function AILinkCommand() {
               Ontology Command
             </DialogTitle>
             <DialogDescription>
-              달성하고 싶은 목표를 구체적으로 알려주세요, 특정 메모 내용 언급시 온톨로지 성능이 향상됩니다.
+              작성한 모든 메모를 바탕으로 답변합니다. 원하는 목표를 구체적으로 알려주세요.
             </DialogDescription>
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
             <Textarea
               id="goal"
-              placeholder="예) 내 지식 공백을 분석해 줘 / 나에게 보이지 않는 메모, 책 등 숨겨진 모든 연결을 찾아 줘"
+              placeholder="예) 지난 일주일동안 작성한 메모에서 내가 주로 사용한 단어는 무엇인가?"
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               className="flex-grow mb-4"

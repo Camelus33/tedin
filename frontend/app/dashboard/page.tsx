@@ -571,7 +571,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    읽기기반 IQ 향상 게임
+                    짧은 읽기를 통해 집중력을 빠르게 회복하는 게임입니다.
                   </p>
                   <div className="text-indigo-400 font-medium">시작하기 →</div>
                 </div>
@@ -586,7 +586,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo Myverse</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    계속 잃어버리는 내용을 게임으로 만드세요.
+                    반복해서 잊어버리는 내용을 게임으로 외우세요.
                   </p>
                   <div className="text-cyan-400 font-medium">체험하기 →</div>
                 </div>
