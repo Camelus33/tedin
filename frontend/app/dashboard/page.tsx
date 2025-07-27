@@ -571,7 +571,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    남다른 읽기 통찰력을 키우세요.
+                    읽기기반 IQ 향상 게임
                   </p>
                   <div className="text-indigo-400 font-medium">시작하기 →</div>
                 </div>
@@ -586,7 +586,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo Myverse</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    중요한 생각이 떠오르면 바로 외우세요.
+                    계속 잃어버리는 내용을 게임으로 만드세요.
                   </p>
                   <div className="text-cyan-400 font-medium">체험하기 →</div>
                 </div>
@@ -601,9 +601,9 @@ export default function DashboardPage() {
               <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
                 <div className="flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-medium text-white mb-2">인지 프로필 분석</h3>
+                    <h3 className="text-lg font-medium text-white mb-2">종합 인지력 분석</h3>
                     <p className="text-gray-300">
-                      학습 패턴과 인지 능력을 분석하여 개인화된 인사이트를 확인하세요.
+                    사용자의 모든 앱내 활동을 국제 표준으로 측정합니다.
                   </p>
                 </div>
                   <div className="text-indigo-400 font-medium">분석 보기 →</div>

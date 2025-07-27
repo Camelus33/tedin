@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChatGPTIcon, GeminiIcon, ClaudeIcon } from '../icons/AiModelIcons';
 import Button from './Button';
 import clsx from 'clsx';
@@ -20,11 +21,12 @@ interface AiCoachPopoverProps {
 
 /**
  * 작은 팝오버 안에 ChatGPT / Gemini / Claude 세 개 아이콘 버튼을 배치.
- * 외부 라이브러리 없이 단순 absolute 포지셔닝으로 구현해 의존성 최소화.
+ * Portal을 사용하여 DOM 최상위에 렌더링하여 컨테이너 제약을 해결.
  */
 const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, className, onCopySuccess }) => {
   const [open, setOpen] = useState(false);
   const [showAbove, setShowAbove] = useState(false);
+  const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
   const popoverRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +53,14 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
       const shouldShowAbove = spaceBelow < popoverHeight && buttonRect.top > popoverHeight;
       
       setShowAbove(shouldShowAbove);
+      
+      // 팝업 위치 계산
+      const left = buttonRect.left + (buttonRect.width / 2);
+      const top = shouldShowAbove 
+        ? buttonRect.top - 10 // 위쪽에 표시
+        : buttonRect.bottom + 10; // 아래쪽에 표시
+      
+      setPopoverPosition({ top, left });
     }
   }, [open]);
 
@@ -125,6 +135,68 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
     setOpen(false);
   };
 
+  // Portal을 사용하여 팝업 렌더링
+  const renderPopover = () => {
+    if (!open) return null;
+
+    return createPortal(
+      <div
+        ref={popoverRef}
+        className="fixed z-[9999] w-auto lg:w-52 max-w-[90vw] lg:max-w-none rounded-md border-2 border-gray-600 bg-gray-800 shadow-lg p-2 lg:p-3 flex flex-col items-center"
+        style={{
+          top: `${popoverPosition.top}px`,
+          left: `${popoverPosition.left}px`,
+          transform: 'translateX(-50%)',
+        }}
+      >
+        <div className="flex items-center justify-around w-full gap-1 lg:gap-0">
+          <button
+            onClick={() => handleSelect('chatgpt')}
+            aria-label="ChatGPT"
+            title="ChatGPT"
+            className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
+          >
+            <ChatGPTIcon className="w-5 h-5 lg:w-6 lg:h-6" />
+          </button>
+          <button
+            onClick={() => handleSelect('gemini')}
+            aria-label="Gemini"
+            title="Gemini"
+            className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
+          >
+            <GeminiIcon className="w-5 h-5 lg:w-6 lg:h-6" />
+          </button>
+          <button
+            onClick={() => handleSelect('claude')}
+            aria-label="Claude"
+            title="Claude"
+            className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
+          >
+            <ClaudeIcon className="w-5 h-5 lg:w-6 lg:h-6" />
+          </button>
+          <button
+            onClick={() => handleSelect('perplexity')}
+            aria-label="Perplexity"
+            title="Perplexity"
+            className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
+          >
+            <Image
+              src="/images/perplexity-color.svg"
+              alt="Perplexity AI"
+              width={20}
+              height={20}
+              className="lg:w-6 lg:h-6"
+            />
+          </button>
+        </div>
+        <p className="mt-2 lg:mt-4 text-xs text-gray-400 text-center px-1 lg:px-2">
+          모델 선택 시 클립보드 자동 복사
+        </p>
+      </div>,
+      document.body
+    );
+  };
+
   return (
     <div className={clsx('relative inline-block', className)}>
       <div ref={buttonRef}>
@@ -143,60 +215,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
         </Button>
       </div>
 
-      {open && (
-        <div
-          ref={popoverRef}
-          className={`absolute z-50 w-auto lg:w-52 max-w-[90vw] lg:max-w-none rounded-md border-2 border-gray-600 bg-gray-800 shadow-lg p-2 lg:p-3 flex flex-col items-center ${
-            showAbove 
-              ? 'bottom-full mb-2 left-1/2 transform -translate-x-1/2 lg:right-0 lg:left-auto lg:transform-none lg:translate-x-0' 
-              : 'top-full mt-2 left-1/2 transform -translate-x-1/2 lg:right-0 lg:left-auto lg:transform-none lg:translate-x-0'
-          }`}
-        >
-          <div className="flex items-center justify-around w-full gap-1 lg:gap-0">
-            <button
-              onClick={() => handleSelect('chatgpt')}
-              aria-label="ChatGPT"
-              title="ChatGPT"
-              className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
-            >
-              <ChatGPTIcon className="w-5 h-5 lg:w-6 lg:h-6" />
-            </button>
-            <button
-              onClick={() => handleSelect('gemini')}
-              aria-label="Gemini"
-              title="Gemini"
-              className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
-            >
-              <GeminiIcon className="w-5 h-5 lg:w-6 lg:h-6" />
-            </button>
-            <button
-              onClick={() => handleSelect('claude')}
-              aria-label="Claude"
-              title="Claude"
-              className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
-            >
-              <ClaudeIcon className="w-5 h-5 lg:w-6 lg:h-6" />
-            </button>
-            <button
-              onClick={() => handleSelect('perplexity')}
-              aria-label="Perplexity"
-              title="Perplexity"
-              className="p-2 lg:p-2 rounded hover:bg-gray-700/60 transition-colors min-w-[44px] min-h-[44px] lg:min-w-auto lg:min-h-auto flex items-center justify-center"
-            >
-              <Image
-                src="/images/perplexity-color.svg"
-                alt="Perplexity AI"
-                width={20}
-                height={20}
-                className="lg:w-6 lg:h-6"
-              />
-            </button>
-          </div>
-          <p className="mt-2 lg:mt-4 text-xs text-gray-400 text-center px-1 lg:px-2">
-            모델 선택 시 클립보드 자동 복사
-          </p>
-        </div>
-      )}
+      {renderPopover()}
     </div>
   );
 };
