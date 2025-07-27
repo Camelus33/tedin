@@ -1153,10 +1153,10 @@ export default function TSNoteCard({
 
   // 컴포넌트 마운트 시 점수 조회 - 조건부 호출
   useEffect(() => {
-    if (note._id && note._id !== 'temp' && !note.isTemporary) {
+    if (note._id && note._id !== 'temp' && !note.isTemporary && !minimalDisplay) {
       fetchScore();
     }
-  }, [note._id, fetchScore]);
+  }, [note._id, fetchScore, minimalDisplay]);
 
   return (
     <div
@@ -1446,7 +1446,7 @@ export default function TSNoteCard({
       )}
 
       {/* 개념이해도 점수 팝업 */}
-      {score && (
+      {score && !minimalDisplay && (
         <ConceptScorePopup
           score={score}
           isOpen={showConceptScorePopup}
