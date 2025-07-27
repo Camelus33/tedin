@@ -15,7 +15,7 @@ interface IconProps {
 // ChatGPT 아이콘 (OpenAI 공식 브랜드 아이콘)
 export const ChatGPTIcon: React.FC<IconProps> = ({ className }) => (
   <svg
-    fill="currentColor"
+    fill="#10A37F"
     fillRule="evenodd"
     height="1em"
     style={{ flex: 'none', lineHeight: 1 }}
