@@ -6,8 +6,7 @@ import './dashboard/styles/dashboard.css';
 import Footer from '@/components/common/Footer';
 import CartUIManager from '@/components/cart/CartUIManager';
 
-import { AILinkCommand } from '@/components/ai/AILinkCommand'; // AI-Link 컴포넌트 임포트
-import { usePathname } from 'next/navigation';
+import { AILinkCommandWrapper } from '@/components/ai/AILinkCommandWrapper'; // AI-Link 래퍼 컴포넌트 임포트
 
 // Noto Serif KR 폰트 설정
 const notoSerifKr = Noto_Serif_KR({
@@ -21,28 +20,6 @@ export const metadata = {
   title: 'Habitus33 - Seamless, Memo to Your Goal',
   description: 'Habitus33 is a seamless memo to Goal tool that allows you to create',
 };
-
-// AILinkCommand를 표시할 페이지 목록
-const AILINK_ALLOWED_PATHS = [
-  '/dashboard',
-  '/books',
-];
-
-// 현재 경로가 AILinkCommand를 표시해야 하는지 확인하는 함수
-function useShouldShowAILink() {
-  const pathname = usePathname();
-  
-  // 대시보드 페이지
-  if (pathname === '/dashboard') return true;
-  
-  // /books 페이지
-  if (pathname === '/books') return true;
-  
-  // 책 상세 페이지 (/books/[id])
-  if (pathname.startsWith('/books/') && pathname !== '/books') return true;
-  
-  return false;
-}
 
 export default function RootLayout({
   children,
@@ -81,13 +58,4 @@ export default function RootLayout({
       </body>
     </html>
   )
-}
-
-// AILinkCommand를 조건부로 렌더링하는 래퍼 컴포넌트
-function AILinkCommandWrapper() {
-  const shouldShow = useShouldShowAILink();
-  
-  if (!shouldShow) return null;
-  
-  return <AILinkCommand />;
 } 
