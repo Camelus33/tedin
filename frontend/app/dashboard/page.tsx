@@ -495,6 +495,7 @@ export default function DashboardPage() {
                           after:pointer-events-none after:transform after:rotate-45 after:translate-x-1 after:-translate-y-1
                           [&>div]:!rounded-none
                           [&_p]:!text-gray-800 [&_p]:!font-semibold
+                          ${viewMode === 'grid' ? '[&_p]:!text-lg [&_p]:!leading-relaxed' : '[&_p]:!text-sm [&_p]:!leading-snug [&_p]:!line-clamp-2'}
                           [&_.text-gray-300]:!text-gray-700
                           [&_.text-white]:!text-gray-800
                           [&_.text-gray-400]:!text-gray-600
