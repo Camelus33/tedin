@@ -1,29 +1,50 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Database, Link as LinkIcon, Award } from 'lucide-react';
+import { Database, Link as LinkIcon, Award, BookOpen, FileText, Zap } from 'lucide-react';
 
 const steps = [
   {
     icon: Database,
-    title: "1. 지식 베이스 구축",
-    description: "당신의 메모, 문서, 기록이 모여 관점을 담은 '지식 베이스'가 됩니다. 당신처럼 생각하는 AI 두뇌가 탄생합니다.",
+    title: "1. 생각 추가",
+    description: "1줄메모 바로 아래 시간 진화형태로 생각을 추가합니다. 생각의 흐름과 발전 과정을 추적하여 깊이 있는 이해를 시작합니다.",
     color: "text-blue-600",
     bg: "bg-blue-100",
   },
   {
     icon: LinkIcon,
-    title: "2. AI-Link 생성",
-    description: "작업을 요청하면 목표와 지식 베이스가 결합한 만능 설계도 'AI-Link'가 즉시 생성됩니다.",
+    title: "2. 메모 진화",
+    description: "중요성 인식부터 맥락 기록, 지식 연결, 심상 형성까지 4단계로 메모가 진화합니다.",
     color: "text-indigo-600",
     bg: "bg-indigo-100",
   },
   {
     icon: Award,
-    title: "3. 맞춤 결과물 도출",
-    description: "AI-Link 하나로 텍스트, 이미지, 영상 AI를 조종하세요. 차원이 다른 결과물을 얻게 됩니다.",
+    title: "3. 지식 연결",
+    description: "링크 추가를 통해 관련된 지식을 하나의 메모카드에서 등록 관리합니다. 개념 간 관계를 시각적으로 확인하고 지식 네트워크를 구축하세요.",
     color: "text-purple-600",
     bg: "bg-purple-100",
+  },
+  {
+    icon: BookOpen,
+    title: "4. 플래시카드",
+    description: "직접 만드는 복습용 문제카드로 장기기억을 체계적으로 훈련합니다. 중요한 개념을 질문과 답변 형태로 만들어 암기 효과를 극대화하세요.",
+    color: "text-green-600",
+    bg: "bg-green-100",
+  },
+  {
+    icon: FileText,
+    title: "5. 단권화",
+    description: "분산된 지식을 하나의 통합된 문서로 정리합니다. 핵심 내용을 체계적으로 구조화합니다.",
+    color: "text-orange-600",
+    bg: "bg-orange-100",
+  },
+  {
+    icon: Zap,
+    title: "6. AI-Link 생성",
+    description: "모든 학습 과정이 하나의 지식 캡슐로 모여 AI가 이해할 수 있는 형태로 변환됩니다. 이 캡슐을 AI에 입력하면 매번 같은 맥락을 설명할 필요 없이 재사용할 수 있습니다.",
+    color: "text-red-600",
+    bg: "bg-red-100",
   }
 ];
 
@@ -52,10 +73,10 @@ export default function HowItWorksSection() {
           className="mb-16 md:mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold font-serif tracking-tight text-gray-900 mb-5">
-            AI 행동 설계, 3단계 프로세스
+            학습 가속기, 6단계 지식 발전 과정
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            당신의 생각과 AI의 능력이 만나, 최고의 결과물을 만드는 과정입니다.
+            생각 추가부터 AI-Link 생성까지, 지식을 체계적으로 발전시켜 학습 효율을 3배 향상시킵니다.
           </p>
         </motion.div>
         

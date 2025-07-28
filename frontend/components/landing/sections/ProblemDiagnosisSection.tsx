@@ -19,16 +19,16 @@ export default function ProblemDiagnosisSection() {
           className="text-center"
         >
           <h2 className="text-3xl sm:text-4xl font-bold font-serif text-gray-900 tracking-tight text-center">
-            그 AI, 혹시 <span className="text-indigo-600">'단기 기억상실증'</span>에 걸렸나요?
+            배운 지식이 흩어져서 <span className="text-indigo-600">학습이 느리신가요?</span>
           </h2>
           <div className="mt-8 text-lg text-gray-600 space-y-8 max-w-3xl mx-auto">
             <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
-              <p className="font-semibold text-gray-800">어제 했던 설명, 오늘 또 하고 있진 않나요?</p>
+              <p className="font-semibold text-gray-800">새로운 개념을 배울 때마다 기존 지식을 잊어버리고 있진 않나요?</p>
               <blockquote className="mt-2 pl-4 border-l-4 border-gray-300 italic text-gray-500">
-                "나는 OOO을 연구하는 학생이고, 이 논문의 핵심은 OOO이야. 이걸 바탕으로..."
+                "이 개념은 어디에 연결되는 거지? 왜 배운 지식이 실제 문제 해결에 도움이 안 될까?"
               </blockquote>
               <p className="mt-4">
-                이처럼 AI는 당신과의 중요한 대화조차 <span className="font-semibold text-indigo-600">기억하지 못하는 '단기 기억상실증'</span>을 겪고 있습니다. 당신의 시간과 에너지가 매번 같은 설명에 낭비됩니다.
+                이처럼 학습자들은 <span className="font-semibold text-indigo-600">지식의 연결 부재</span>로 인해 학습 효율성이 떨어집니다. 새로운 지식을 배울 때마다 기존 지식을 잊어버리고, 암기한 지식이 1주일 후면 70% 사라지는 현실입니다.
               </p>
             </div>
           </div>

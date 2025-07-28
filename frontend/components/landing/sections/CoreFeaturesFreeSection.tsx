@@ -144,22 +144,22 @@ const UniqueResultViz = () => {
 const benefits = [
   {
     icon: DollarSign,
-    title: "API 호출 1/3 감소",
-    description: "매번 같은 맥락을 반복하던 API 호출이 1/3로 줄어듭니다. 핵심 로직에 더 많은 예산을 집중하세요.",
+    title: "학습 효율 3배 향상",
+    description: "구조화된 지식으로 새로운 개념을 3배 빠르게 이해합니다. 온톨로지 기반 학습으로 효율성을 극대화하세요.",
     color: "text-green-600",
     viz: ApiCostViz,
   },
   {
     icon: Clock,
-    title: "업무 시간 53% 단축",
-    description: "자료 검색, 요약, 초안 작성에 걸리던 시간이 절반 이상 줄어듭니다. 창의적인 아이디어에 시간을 더 쓰세요.",
+    title: "지식 연결력 증진",
+    description: "개념 간 관계를 파악하여 창의적 문제 해결 능력이 향상됩니다. 지식 네트워크로 사고력을 확장하세요.",
     color: "text-blue-600",
     viz: TimeSaveViz,
   },
   {
     icon: Award,
-    title: "'AI 복붙'과 다른 결과물",
-    description: "AI가 만든 획일적인 결과물이 아닌, 당신의 관점이 담긴 제안서는 모두를 설득합니다.",
+    title: "기억력 체계적 강화",
+    description: "과학적 암기 훈련으로 장기기억력이 체계적으로 강화됩니다. 플래시카드와 간격 반복으로 기억을 공고화하세요.",
     color: "text-purple-600",
     viz: UniqueResultViz,
   }
@@ -180,7 +180,7 @@ export default function CoreFeaturesFreeSection() {
             어떻게 달라질까요?
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            'AI 행동 설계'는 <span className="font-semibold text-indigo-600">시간과 비용, 그리고 결과물의 수준</span>을 바꾸는 가장 강력한 전략입니다.
+            학습 가속기는 <span className="font-semibold text-indigo-600">학습 효율, 지식 연결, 기억력 강화</span>를 동시에 달성하는 혁신적인 방법입니다.
           </p>
         </motion.div>
         

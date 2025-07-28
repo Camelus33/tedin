@@ -46,18 +46,18 @@ export default function HeroSection() {
             {/* Text Content */}
             <div className="max-w-xl text-left">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
-                AI에게 설명하지 말고,<br />
-                <span className="text-indigo-600">행동을 설계하세요.</span>
+                지식을 연결하고,<br />
+                <span className="text-indigo-600">학습을 가속화하세요.</span>
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-gray-600">
-                반복적인 프롬프트는 이제 그만. 당신의 지식과 맥락으로 <span className="font-semibold text-indigo-600">'AI 행동 설계도'</span>를 만들고, AI를 <span className="font-semibold text-indigo-600">'마음껏 조종하세요'</span>.
+                온톨로지 기반 <span className="font-semibold text-indigo-600">학습 가속기</span>로 당신의 지식이 <span className="font-semibold text-indigo-600">3배 빨리 성장합니다</span>. 단순한 암기가 아닌, <span className="font-semibold text-indigo-600">지식의 연결과 발전</span>을 경험하세요.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                 <Link
                   href="/auth/register"
                   className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150 ease-in-out w-full sm:w-auto"
                 >
-                  나만의 AI 조수 설계하기
+                  나만의 학습 가속기 시작하기
                 </Link>
               </div>
             </div>
