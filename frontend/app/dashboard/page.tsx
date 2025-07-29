@@ -571,7 +571,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    짧은 읽기를 통해 집중력을 빠르게 회복하는 게임입니다.
+                    최고의 집중력 회복 게임, 단 3분만 투자하세요.
                   </p>
                   <div className="text-indigo-400 font-medium">시작하기 →</div>
                 </div>
@@ -586,7 +586,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo Myverse</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    반복해서 잊어버리는 내용을 게임으로 외우세요.
+                    잊기 쉬운 내용을 Zengo로 별도 관리하세요.
                   </p>
                   <div className="text-cyan-400 font-medium">체험하기 →</div>
                 </div>
@@ -601,9 +601,9 @@ export default function DashboardPage() {
               <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
                 <div className="flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-medium text-white mb-2">종합 인지력 분석</h3>
+                    <h3 className="text-lg font-medium text-white mb-2">인지력 분석</h3>
                     <p className="text-gray-300">
-                    사용자의 모든 앱내 활동을 국제 표준으로 측정합니다.
+                    사용자의 지식 활동을 온톨로지 기반으로 AI가 분석합니다.
                   </p>
                 </div>
                   <div className="text-indigo-400 font-medium">분석 보기 →</div>

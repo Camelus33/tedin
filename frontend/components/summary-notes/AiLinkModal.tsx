@@ -221,14 +221,13 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
         <DialogHeader>
           <DialogTitle className={`flex items-center justify-center space-x-2 ${cyberTheme.primary} text-lg`}>
             <RocketIcon className="h-5 w-5" />
-            <span>당신의 AI-Link, 이렇게 사용해보세요</span>
+            <span>AI-Link</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-4 text-left">
             <p className="text-center pb-2">AI-Link 복사, 붙여넣고, 이렇게 요청해보세요:</p>
             <ol className="list-decimal list-inside bg-gray-900/50 p-3 rounded-md space-y-1">
-              <li>Perplexity, Gemini에서 이 링크를 참고하여 '딥 리서치' 해줘</li>
-              <li>Midjourney, Sora에서 이 링크에 담긴 컨셉으로 생성해줘</li>
-              <li>NotebookLM에서 이 링크에 담긴 내용을 참고하여 답변해줘</li>
+              <li>ChatGPT agent에서 이 링크를 참고하여 보고서 작성</li>
+              <li>NotebookLM에서 이 링크 내용으로 음성 오버뷰</li>
             </ol>
           </DialogDescription>
         </DialogHeader>
@@ -261,9 +260,9 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             ) : (
               <div className="text-center space-y-4">
                 <p className="text-gray-300 px-2">
-                  NotebookLM, Gemini, Perplexity, Midjourney, Sora, 
+                  NotebookLM, ChatGPT agent 입력
                   <span className="block font-semibold text-cyan-400 mt-1">
-                    딥 리서치, 글쓰기, 이미지/영상, 음악생성 답변품질 UP!
+                    약점 진단 및 숨겨진 개념간 연결 찾기 !
                   </span>
                 </p>
                 <Button
@@ -295,7 +294,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
                 <details className="group">
                   <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-300 transition-colors flex items-center">
                     <FileTextIcon className="w-4 h-4 mr-2" />
-                    전체 AI-Link 데이터 보기 (JSON)
+                    AI-Link 데이터 (JSON)
                   </summary>
                   <div className="relative mt-2 p-4 rounded-md bg-gray-900/70 border border-gray-700 max-h-64 overflow-y-auto">
                     <Button size="icon" variant="ghost" onClick={handleCopyAiData} className="absolute top-2 right-2 h-7 w-7">

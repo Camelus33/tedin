@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: 'Habitus33 | Atomic Memo, Success Habit!',
   description: 'Atomic Memo. Achieve anything!',
   // Add other relevant metadata: keywords, open graph tags, etc.
-  keywords: ['Habitus33','AI-Link', '프롬프트 프리', 'AI 메모장', '생산성 향상', 'AI 연결', '지식그래프', 'AI 보고서', '온톨로지', '대학생 필수앱', '독서앱', '시험공부앱', '수험생', '연구자', '대학원생', '직장인', '엔지니어'],
+  keywords: ['Habitus33','AI-Link', '프롬프트 프리', 'AI 메모장', '생산성 향상', 'AI 연결', '지식그래프', 'AI 보고서', '온톨로지', '대학생 필수앱', '성인학습자', '시험공부앱', '수험생', '연구자', '대학원생', '직장인', '엔지니어'],
   openGraph: {
     title: 'Habitus33 | Atomic Memo, Success Habit!',
     description: 'Atomic Memo. Achieve anything!',
