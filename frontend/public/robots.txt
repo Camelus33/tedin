@@ -1,4 +1,6 @@
 # Habitus33 - robots.txt
+# AI 시대를 위한 새로운 생각의 습관을 만드는 플랫폼
+
 # Allow all crawlers to access the main site
 User-agent: *
 Allow: /
@@ -26,9 +28,25 @@ Allow: /privacy-policy/
 Allow: /terms-of-service/
 Allow: /marketing/
 Allow: /ir/
+Allow: /onboarding/
+Allow: /zengo/
+Allow: /ts/
 
 # Sitemap location
 Sitemap: https://habitus33.vercel.app/api/sitemap
 
 # Crawl delay (optional - adjust based on server capacity)
-Crawl-delay: 1 
+Crawl-delay: 1
+
+# Additional directives for better SEO
+# Allow search engines to access static assets
+Allow: /images/
+Allow: /sounds/
+Allow: /animations/
+Allow: /public/
+
+# Block access to development and debug files
+Disallow: /.env
+Disallow: /.git/
+Disallow: /node_modules/
+Disallow: /debug/ 
