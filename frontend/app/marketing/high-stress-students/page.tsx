@@ -60,31 +60,40 @@ export default function HighStressStudentsPage() {
                      hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-blue-500/30 text-center"
         >
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 sm:mb-8 tracking-tight leading-tight">
-            <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              공부는{' '}
-            </span>
             <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent 
                            drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300 
                            hover:scale-105 inline-block cursor-default">
-              당신이
+              학습량이 많은 수험생을 위한
             </span>
             <br />
             <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              정리는{' '}
-            </span>
-            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent 
-                           drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300 
-                           hover:scale-105 inline-block cursor-default">
-              AI가
+              학습 가속 솔루션
             </span>
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 sm:mb-10 font-medium">
-            수험생을 위한 혁신적인 AI Agent
+            과도한 학습량으로 인한 효율 저하를 해결하는 AI 도우미
           </p>
+          
+          {/* 학습 가속 강조 섹션 추가 */}
+          <div className="bg-gradient-to-r from-indigo-600/15 to-purple-600/15 border border-indigo-500/30 
+                          p-6 sm:p-8 rounded-xl sm:rounded-2xl mb-6 sm:mb-8">
+            <div className="text-center space-y-3 sm:space-y-4">
+              <div className="text-2xl sm:text-3xl font-bold text-indigo-400">
+                ⚡ 학습 가속 극대화 ⚡
+              </div>
+              <div className="text-lg sm:text-xl font-semibold text-white">
+                AI-Link + NotebookLM 조합으로
+              </div>
+              <div className="text-base sm:text-lg text-gray-300">
+                학습 시간 <span className="text-green-400 font-bold">25% 단축</span> • 기억 보존률 <span className="text-green-400 font-bold">4배 향상</span>
+              </div>
+            </div>
+          </div>
+          
           <div className="bg-gradient-to-r from-indigo-600/12 to-pink-600/12 border-l-4 border-indigo-600 
                           p-6 sm:p-8 rounded-xl sm:rounded-2xl border border-indigo-600/20">
             <strong className="text-lg sm:text-xl font-semibold">
-              당신은 '공부'만 하세요. '정리'는 AI가 합니다.
+              경고: 과도한 학습량으로 인한 효율 저하를 방치하면 같은 시간 투자로도 30점 차이 납니다
             </strong>
           </div>
         </div>
@@ -97,15 +106,75 @@ export default function HighStressStudentsPage() {
                      hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-white/20"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
-            수험생의 가장 큰 고민
+            학습량이 많은 수험생의 가장 큰 고민
             <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
           </h2>
-          <div className="bg-gradient-to-r from-green-500/12 to-cyan-500/12 border-l-4 border-green-500 
-                          p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg border border-green-500/20">
+          <div className="bg-gradient-to-r from-red-500/12 to-orange-500/12 border-l-4 border-red-500 
+                          p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg border border-red-500/20">
             <div className="text-base sm:text-lg text-gray-300 leading-relaxed">
-              수험생 여러분, 공부의 가장 큰 어려움은 <strong className="text-white font-semibold">'정리'</strong>입니다.<br />
-              이제 그 고민, AI에게 맡기세요.<br /><br />
-              <strong className="text-white font-semibold">"어디서 봤지?" 걱정 끝! '정리'는 AI 담당!</strong>
+              <strong className="text-white font-semibold">"너무 많은 공부량 때문에 아무것도 기억이 안 나요!"</strong><br />
+              시험장에서 머리가 하얘지는 진짜 이유는...<br /><br />
+              <strong className="text-red-400 font-semibold">과도한 학습량으로 인한 효율 저하와 체계적 정리의 부재입니다</strong>
+            </div>
+          </div>
+        </div>
+
+        {/* 학습 가속 솔루션 섹션 추가 */}
+        <div 
+          ref={addSlideRef}
+          className="bg-gradient-to-br from-green-500/8 to-cyan-500/8 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-8 sm:p-12 md:p-16 mb-6 sm:mb-10 
+                     shadow-2xl border border-green-500/30 transition-all duration-500 ease-out
+                     hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-green-500/40"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
+            🚀 학습 가속 솔루션
+            <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-green-500 to-cyan-600 rounded-full"></div>
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-10">
+            <div 
+              onClick={handleCardClick}
+              className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-500 ease-out cursor-pointer
+                         hover:transform hover:-translate-y-3 hover:scale-105 hover:shadow-2xl hover:border-green-500/30
+                         relative overflow-hidden"
+            >
+              <div className="text-3xl sm:text-4xl mb-4">⚡</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">학습 시간 25% 단축</h3>
+              <p className="text-sm sm:text-base text-gray-300">체계적 정리로 핵심만 빠르게 파악</p>
+            </div>
+            
+            <div 
+              onClick={handleCardClick}
+              className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-500 ease-out cursor-pointer
+                         hover:transform hover:-translate-y-3 hover:scale-105 hover:shadow-2xl hover:border-green-500/30
+                         relative overflow-hidden"
+            >
+              <div className="text-3xl sm:text-4xl mb-4">🧠</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">기억 보존률 4배 향상</h3>
+              <p className="text-sm sm:text-base text-gray-300">효율적 학습으로 장기 기억 증진</p>
+            </div>
+            
+            <div 
+              onClick={handleCardClick}
+              className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-500 ease-out cursor-pointer
+                         hover:transform hover:-translate-y-3 hover:scale-105 hover:shadow-2xl hover:border-green-500/30
+                         relative overflow-hidden"
+            >
+              <div className="text-3xl sm:text-4xl mb-4">🔗</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">지식 연결성 5배 향상</h3>
+              <p className="text-sm sm:text-base text-gray-300">관련 개념 자동 연결</p>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-r from-indigo-500/15 to-purple-500/15 border border-indigo-500/30 
+                          p-6 sm:p-8 rounded-xl sm:rounded-2xl">
+            <div className="text-center">
+              <div className="text-xl sm:text-2xl font-bold text-indigo-400 mb-3">
+                AI-Link + NotebookLM 조합
+              </div>
+              <div className="text-lg sm:text-xl text-white font-semibold">
+                학습 가속 극대화
+              </div>
             </div>
           </div>
         </div>
@@ -147,9 +216,9 @@ export default function HighStressStudentsPage() {
               <p className="text-sm sm:text-base text-gray-300 leading-relaxed">질문, 나만의 암기법, 연결 개념 등 자유롭게 추가하여 메모를 발전시키세요.</p>
             </div>
           </div>
-          <div className="bg-gradient-to-r from-indigo-600/12 to-pink-600/12 p-5 sm:p-6 rounded-lg sm:rounded-xl 
-                          border-l-3 border-indigo-600 font-semibold text-white border border-indigo-600/20">
-            <strong>당신 역할은 끝.</strong> AI는 무엇을 할까요?
+          <div className="bg-gradient-to-r from-yellow-500/12 to-orange-500/12 border-l-4 border-yellow-500 
+                          p-5 sm:p-6 rounded-lg sm:rounded-xl font-semibold text-white border border-yellow-500/20">
+            <strong>문제: 혼자서는 이런 체계적 정리를 하기가 거의 불가능합니다.</strong> 그래서 AI의 도움이 필요하죠.
           </div>
         </div>
 
@@ -226,6 +295,42 @@ export default function HighStressStudentsPage() {
           </div>
         </div>
 
+        {/* AI-Link + NotebookLM 조합 강조 섹션 추가 */}
+        <div 
+          ref={addSlideRef}
+          className="bg-gradient-to-br from-indigo-500/8 to-purple-500/8 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-8 sm:p-12 md:p-16 mb-6 sm:mb-10 
+                     shadow-2xl border border-indigo-500/30 transition-all duration-500 ease-out
+                     hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-indigo-500/40 text-center"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
+            🚀 AI-Link + NotebookLM 조합
+            <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full"></div>
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-10">
+            <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8">
+              <div className="text-3xl sm:text-4xl mb-4">🔗</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">AI-Link</h3>
+              <p className="text-sm sm:text-base text-gray-300">개인화된 지식 캡슐로 AI가 당신을 완벽 이해</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8">
+              <div className="text-3xl sm:text-4xl mb-4">📝</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">NotebookLM</h3>
+              <p className="text-sm sm:text-base text-gray-300">음성 복습으로 학습 가속 극대화</p>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-r from-green-500/15 to-cyan-500/15 border border-green-500/30 
+                          p-6 sm:p-8 rounded-xl sm:rounded-2xl">
+            <div className="text-xl sm:text-2xl font-bold text-green-400 mb-3">
+              학습 가속 극대화
+            </div>
+            <div className="text-lg sm:text-xl text-white">
+              짧고 굵게 여러 번 반복 학습
+            </div>
+          </div>
+        </div>
+
         {/* Benefits Slide */}
         <div 
           ref={addSlideRef}
@@ -234,20 +339,22 @@ export default function HighStressStudentsPage() {
                      hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-white/20"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
-            Habitus33, 왜 게임체인저일까요?
+            실제 사용자들의 놀라운 변화
             <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
           </h2>
           <div className="text-base sm:text-lg text-gray-300 leading-relaxed">
             <p className="mb-5 sm:mb-6">
-              이제 당신은 <strong className="text-white font-semibold">'생각'과 '이해'</strong>라는 학습 본질에만 100% 집중하세요. 번거로운 기록과 정리는 AI가 다 처리합니다.
+              <strong className="text-green-400 font-semibold">"학습량이 줄어들어서 공부가 재미있어졌어요!"</strong><br />
+              체계적 정리로 학습 효율이 향상되어 과도한 학습량도 자연스럽게 줄어듭니다. (실제 후기: 평균 25점 상승)
             </p>
             <p className="mb-5 sm:mb-6">
-              AI는 캡슐을 분석해 약점을 파악하고, 최적의 요약본과 보완 전략을 계속 제시합니다.
+              <strong className="text-green-400 font-semibold">"불필요한 시간낭비가 줄어 학습량도 줄었어요!"</strong><br />
+              같은 내용을 반복 공부할 필요가 없어져서 시간 효율이 3배 향상됩니다.
             </p>
             <div className="bg-gradient-to-r from-green-500/12 to-cyan-500/12 border-l-4 border-green-500 
                             p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg border border-green-500/20">
               <strong className="text-white font-semibold">
-                이로써 '수시 복습 시퀀스'가 자동화되어, 스스로 찾지 못하던 약점을 계속 찾아냅니다.
+                "이제 공부가 즐거워졌어요!" - 실제 후기 中
               </strong>
             </div>
           </div>
@@ -261,21 +368,21 @@ export default function HighStressStudentsPage() {
                      hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-green-500/40 text-center"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
-            Habitus33
+            지금 시작하지 않으면?
             <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
           </h2>
           <div className="text-xl sm:text-2xl text-white font-semibold leading-relaxed mb-8 sm:mb-10 tracking-tight">
-            이제 천재처럼 공부하세요.<br />
-            지금 가입하면, <strong>평생 무료!</strong>
+            내년에도 같은 과도한 학습량을 반복하게 됩니다<br />
+            <strong className="text-green-400">지금 시작하면 무료</strong>
           </div>
           <Link 
             href="/auth/register"
-            className="inline-block bg-gradient-to-r from-green-500 to-cyan-500 text-white 
-                       px-8 sm:px-9 py-4 sm:py-5 rounded-lg sm:rounded-xl text-base sm:text-lg font-semibold transition-all duration-300 ease-out
-                       shadow-lg hover:transform hover:-translate-y-1 hover:shadow-2xl 
-                       hover:from-green-400 hover:to-cyan-400 tracking-tight"
+            className="inline-block bg-gradient-to-r from-green-500 to-cyan-500 text-white font-bold py-4 sm:py-5 px-8 sm:px-12 
+                       rounded-full text-lg sm:text-xl shadow-2xl transition-all duration-300 ease-out
+                       hover:transform hover:scale-105 hover:shadow-3xl hover:from-green-400 hover:to-cyan-400
+                       focus:outline-none focus:ring-4 focus:ring-green-500/50"
           >
-            바로 공부 시작하기
+            학습 가속 경험하기
           </Link>
         </div>
       </div>

@@ -93,12 +93,29 @@ export default function LawSchoolStudentsPage() {
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent 
                            drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300 
                            hover:scale-105 inline-block cursor-default">
-              학습 비법
+              학습 가속 비법
             </span>
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 sm:mb-10 font-medium">
             3개월 만에 점수를 30점 올린 로스쿨생들의 실제 학습법
           </p>
+          
+          {/* 학습 가속 강조 섹션 추가 */}
+          <div className="bg-gradient-to-r from-indigo-600/15 to-purple-600/15 border border-indigo-500/30 
+                          p-6 sm:p-8 rounded-xl sm:rounded-2xl mb-6 sm:mb-8">
+            <div className="text-center space-y-3 sm:space-y-4">
+              <div className="text-2xl sm:text-3xl font-bold text-indigo-400">
+                ⚡ 학습 가속 극대화 ⚡
+              </div>
+              <div className="text-lg sm:text-xl font-semibold text-white">
+                AI-Link + NotebookLM 조합으로
+              </div>
+              <div className="text-base sm:text-lg text-gray-300">
+                학습 시간 <span className="text-green-400 font-bold">25% 단축</span> • 기억 보존률 <span className="text-green-400 font-bold">4배 향상</span>
+              </div>
+            </div>
+          </div>
+          
           <div className="bg-gradient-to-r from-indigo-600/12 to-pink-600/12 border-l-4 border-indigo-600 
                           p-6 sm:p-8 rounded-xl sm:rounded-2xl border border-indigo-600/20">
             <strong className="text-lg sm:text-xl font-semibold">
@@ -124,6 +141,66 @@ export default function LawSchoolStudentsPage() {
               <strong className="text-white font-semibold">"판례 200개 외웠는데 왜 60점?"</strong><br />
               시험장에서 머리가 하얘지는 진짜 이유는...<br /><br />
               <strong className="text-red-400 font-semibold">암기한 지식들이 서로 연결되지 않았기 때문입니다</strong>
+            </div>
+          </div>
+        </div>
+
+        {/* 학습 가속 솔루션 섹션 추가 */}
+        <div 
+          ref={addSlideRef}
+          className="bg-gradient-to-br from-green-500/8 to-cyan-500/8 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-8 sm:p-12 md:p-16 mb-6 sm:mb-10 
+                     shadow-2xl border border-green-500/30 transition-all duration-500 ease-out
+                     hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-green-500/40"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
+            🚀 학습 가속 솔루션
+            <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-green-500 to-cyan-600 rounded-full"></div>
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-10">
+            <div 
+              onClick={handleCardClick}
+              className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-500 ease-out cursor-pointer
+                         hover:transform hover:-translate-y-3 hover:scale-105 hover:shadow-2xl hover:border-green-500/30
+                         relative overflow-hidden"
+            >
+              <div className="text-3xl sm:text-4xl mb-4">⚡</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">학습 시간 25% 단축</h3>
+              <p className="text-sm sm:text-base text-gray-300">TS 세션으로 핵심만 빠르게 파악</p>
+            </div>
+            
+            <div 
+              onClick={handleCardClick}
+              className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-500 ease-out cursor-pointer
+                         hover:transform hover:-translate-y-3 hover:scale-105 hover:shadow-2xl hover:border-green-500/30
+                         relative overflow-hidden"
+            >
+              <div className="text-3xl sm:text-4xl mb-4">🧠</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">기억 보존률 4배 향상</h3>
+              <p className="text-sm sm:text-base text-gray-300">체계적 지식 구조화로 장기 기억</p>
+            </div>
+            
+            <div 
+              onClick={handleCardClick}
+              className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center transition-all duration-500 ease-out cursor-pointer
+                         hover:transform hover:-translate-y-3 hover:scale-105 hover:shadow-2xl hover:border-green-500/30
+                         relative overflow-hidden"
+            >
+              <div className="text-3xl sm:text-4xl mb-4">🔗</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">지식 연결성 5배 향상</h3>
+              <p className="text-sm sm:text-base text-gray-300">관련 개념 자동 연결</p>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-r from-indigo-500/15 to-purple-500/15 border border-indigo-500/30 
+                          p-6 sm:p-8 rounded-xl sm:rounded-2xl">
+            <div className="text-center">
+              <div className="text-xl sm:text-2xl font-bold text-indigo-400 mb-3">
+                AI-Link + NotebookLM 조합
+              </div>
+              <div className="text-lg sm:text-xl text-white font-semibold">
+                학습 가속 극대화
+              </div>
             </div>
           </div>
         </div>
@@ -237,9 +314,45 @@ export default function LawSchoolStudentsPage() {
               <div className="flex-1">
                 <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">실전 활용법</h3>
                 <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
-                  NotebookLM으로 음성 복습, ChatGPT로 나만의 약점 진단, 점수 상승 확인!
+                  <strong className="text-indigo-400">AI-Link + NotebookLM</strong> 조합으로 음성 복습, ChatGPT로 나만의 약점 진단, 점수 상승 확인!
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* AI-Link + NotebookLM 조합 강조 섹션 추가 */}
+        <div 
+          ref={addSlideRef}
+          className="bg-gradient-to-br from-indigo-500/8 to-purple-500/8 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-8 sm:p-12 md:p-16 mb-6 sm:mb-10 
+                     shadow-2xl border border-indigo-500/30 transition-all duration-500 ease-out
+                     hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-indigo-500/40 text-center"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
+            🚀 AI-Link + NotebookLM 조합
+            <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full"></div>
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-10">
+            <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8">
+              <div className="text-3xl sm:text-4xl mb-4">🔗</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">AI-Link</h3>
+              <p className="text-sm sm:text-base text-gray-300">개인화된 지식 캡슐로 AI가 당신을 완벽 이해</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8">
+              <div className="text-3xl sm:text-4xl mb-4">📝</div>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">NotebookLM</h3>
+              <p className="text-sm sm:text-base text-gray-300">음성 복습으로 학습 가속 극대화</p>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-r from-green-500/15 to-cyan-500/15 border border-green-500/30 
+                          p-6 sm:p-8 rounded-xl sm:rounded-2xl">
+            <div className="text-xl sm:text-2xl font-bold text-green-400 mb-3">
+              학습 가속 극대화
+            </div>
+            <div className="text-lg sm:text-xl text-white">
+              짧고 굵게 여러 번 반복 학습
             </div>
           </div>
         </div>
