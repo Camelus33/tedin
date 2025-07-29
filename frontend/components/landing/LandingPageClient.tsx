@@ -12,7 +12,7 @@ import AppLogo from '@/components/common/AppLogo';
 import HeroSection from './sections/HeroSection';
 import ProblemDiagnosisSection from './sections/ProblemDiagnosisSection';
 import HowItWorksSection from './sections/HowItWorksSection';
-import CoreFeaturesFreeSection from './sections/CoreFeaturesFreeSection';
+
 import TestimonialsSection from './sections/TestimonialsSection';
 import FinalCtaSection from './sections/FinalCtaSection';
 import Header from '@/components/common/Header';
@@ -45,7 +45,6 @@ export default function LandingPageClient() {
         <HeroSection />
         <ProblemDiagnosisSection />
         <HowItWorksSection />
-        <CoreFeaturesFreeSection />
         <TestimonialsSection />
         <FinalCtaSection />
       </main>

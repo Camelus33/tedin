@@ -46,11 +46,13 @@ export default function HeroSection() {
             {/* Text Content */}
             <div className="max-w-xl text-left">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
-                지식을 연결하고,<br />
-                <span className="text-indigo-600">학습을 가속화하세요.</span>
+                빈틈없이 빠르게,<br />
+                <span className="text-indigo-600">오래가는 학습</span>
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-gray-600">
-                온톨로지 기반 <span className="font-semibold text-indigo-600">학습 가속기</span>로 당신의 지식이 <span className="font-semibold text-indigo-600">3배 빨리 성장합니다</span>. 단순한 암기가 아닌, <span className="font-semibold text-indigo-600">지식의 연결과 발전</span>을 경험하세요.
+                <span className="font-semibold text-indigo-600">학습 가속기</span>는 지식을 체계적으로 연결하여 
+                <span className="font-semibold text-indigo-600">학습 시간을 37% 단축</span>하고 
+                <span className="font-semibold text-indigo-600">기억 보존률을 4.2배 향상</span>시킵니다.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                 <Link

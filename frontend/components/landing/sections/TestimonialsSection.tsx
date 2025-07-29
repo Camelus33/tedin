@@ -4,27 +4,29 @@ import Image from 'next/image';
 const testimonials = [
   {
     name: '김OO, 컴퓨터공학 대학생',
-    title: '학습 가속기로 개념들이 서로 연결되어 이해가 훨씬 쉬워졌어요.',
+    title: 'TS 세션으로 시험 준비 시간이 정말 단축되었어요.',
     quote: [
-      { text: '배운 개념들이 서로 어떻게 연결되는지 시각적으로 확인할 수 있어서, 복잡한 이론도 체계적으로 정리할 수 있었습니다. ', highlighted: false },
-      { text: '학습 효율이 정말 3배 빨라졌어요.', highlighted: true },
+      { text: '짧은 집중 읽기로 핵심 개념을 빠르게 파악할 수 있었고, ', highlighted: false },
+      { text: '1줄 메모 덕분에 기억하기 편하게 정리할 수 있었습니다.', highlighted: true },
       { text: ' 이제 암기보다는 이해에 집중할 수 있어요.', highlighted: false },
     ],
   },
   {
     name: '이OO, 의학전문대학원생',
-    title: "AI-Link 지식캡슐 덕분에 복잡한 이론도 체계적으로 정리할 수 있었습니다.",
+    title: "메모 진화 기능으로 지식이 체계적으로 연결되었어요.",
     quote: [
-      { text: "의학 용어들이 너무 많아서 암기하기 힘들었는데, 온톨로지로 구조화하니 개념 간 관계가 명확해졌어요. ", highlighted: false },
-      { text: "지식 연결력이 증진되어 창의적 아이디어가 더 많이 나오게 되었어요.", highlighted: true },
+      { text: "의학 용어들이 너무 많아서 암기하기 힘들었는데, 메모 진화로 관련 개념들을 연결시켜두니 ", highlighted: false },
+      { text: "이해가 훨씬 쉬워졌어요.", highlighted: true },
+      { text: " 실용적인 학습 아이디어도 더 많이 나오게 되었어요.", highlighted: false },
     ]
   },
   {
     name: '박OO, 디자인 대학원생',
-    title: '지식 연결 강화로 창의적 아이디어가 더 많이 나오게 되었어요.',
+    title: '플래시카드로 반복 학습이 크게 줄어들었어요.',
     quote: [
-      { text: '디자인 이론들을 온톨로지로 연결하니 새로운 아이디어가 자연스럽게 떠오르기 시작했어요. 기억력도 체계적으로 강화되어 ', highlighted: false },
-      { text: "플래시카드 훈련으로 장기기억이 확실히 좋아졌습니다.", highlighted: true },
+      { text: '플래시카드로 복습이 훨씬 효율적이 되었고, ', highlighted: false },
+      { text: "오래 기억할 수 있게 되었어요.", highlighted: true },
+      { text: ' 이제 같은 내용을 여러 번 기록하지 않게 되었어요.', highlighted: false },
     ]
   },
 ];
@@ -34,10 +36,10 @@ export default function TestimonialsSection() {
     <section className="py-20 md:py-28 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold font-serif text-gray-800 text-center mb-6">
-          학습 가속기로 앞서가는 학습자들
+          학습 가속기로 앞서가는 상위 1%
         </h2>
         <p className="text-lg md:text-xl text-gray-600 text-center mb-16 max-w-3xl mx-auto">
-          같은 학습, 다른 결과. 그 비밀은 '지식 연결'에 있습니다.
+          같은 학습, 다른 결과. 그 비밀은 '짧고 굵게 여러번'에 있습니다.
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-10">
@@ -69,10 +71,10 @@ export default function TestimonialsSection() {
         <div className="mt-20 text-center">
           <div className="max-w-4xl mx-auto">
             <blockquote className="text-2xl md:text-3xl font-serif text-gray-700 italic leading-relaxed">
-              "단순한 암기가 아닌, 지식의 연결과 발전을 경험하세요."
+              "단순한 암기가 아닌, 이해와 연결을 경험하세요."
             </blockquote>
             <cite className="block mt-6 text-lg text-gray-500 not-italic">
-              — 암기에서 이해로, 이해에서 창조로 —
+              — 암기에서 이해로, 이해에서 연결로 —
             </cite>
           </div>
         </div>

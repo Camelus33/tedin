@@ -8,10 +8,12 @@ export default function FinalCtaSection() {
       <div className="container mx-auto px-4 text-center max-w-3xl">
         <Zap className="w-12 h-12 mx-auto mb-6 text-indigo-400" />
         <h2 className="text-4xl md:text-5xl font-bold font-serif mb-6 leading-tight">
-          지금 당신의 학습을 가속화하세요
+          빈틈없이 빠르게,<br />
+          오래가는 학습을 시작하세요
         </h2>
         <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-          지식의 새로운 성장을 경험하세요.
+          학습 시간 37% 단축, 기억 보존률 4.2배 향상.<br />
+          지금 무료로 체험해보세요.
         </p>
 
         <Link
