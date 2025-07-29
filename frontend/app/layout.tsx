@@ -17,7 +17,7 @@ const notoSerifKr = Noto_Serif_KR({
 });
 
 export const metadata = {
-  title: 'Habitus33 - Prompt Free, 지식 캡슐화로 AI와 자연스럽게 소통하세요',
+  title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
   description: 'AI-Link 기술로 복잡한 맥락을 지식 캡슐에 담아 프롬프트 없이도 AI가 당신을 깊이 이해하게 만드는 혁신적인 학습 도구입니다.',
   keywords: 'AI, 학습, 메모, 지식관리, 프롬프트프리, AI-Link, AMFA, 학습가속기, 지식캡슐화',
   authors: [{ name: 'Habitus33 Team' }],
@@ -37,7 +37,7 @@ export const metadata = {
     locale: 'ko_KR',
     url: 'https://habitus33.vercel.app',
     siteName: 'Habitus33',
-    title: 'Habitus33 - Prompt Free, 지식 캡슐화로 AI와 자연스럽게 소통하세요',
+    title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
     description: 'AI-Link 기술로 복잡한 맥락을 지식 캡슐에 담아 프롬프트 없이도 AI가 당신을 깊이 이해하게 만드는 혁신적인 학습 도구입니다.',
     images: [
       {
@@ -50,7 +50,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Habitus33 - Prompt Free, 지식 캡슐화로 AI와 자연스럽게 소통하세요',
+    title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
     description: 'AI-Link 기술로 복잡한 맥락을 지식 캡슐에 담아 프롬프트 없이도 AI가 당신을 깊이 이해하게 만드는 혁신적인 학습 도구입니다.',
     images: ['/hero-image.png'],
     creator: '@habitus33',

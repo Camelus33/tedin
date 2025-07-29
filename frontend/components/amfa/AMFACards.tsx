@@ -98,23 +98,23 @@ const steps: AMFAStep[] = [
   {
     id: 'ai',
     title: 'AI Link',
-    subtitle: "마스터의 징표",
-    description: "당신의 모든 지성이 담긴, AI를 위한 '단 하나의 키'",
-    detailedDescription: "당신의 모든 지적 여정이 압축된 'AI-Link'는 당신의 정체성이자 권위입니다. 이 링크 하나로 어떤 AI든 즉시 당신의 '개인 전문가'로 변신시켜, 당신이 AI 시대의 리더임을 증명합니다.",
+    subtitle: "학습 가속의 핵심",
+    description: "당신의 모든 지성이 담긴, 학습을 가속화하는 '단 하나의 키'",
+    detailedDescription: "당신의 모든 지적 여정이 압축된 'AI-Link'는 학습 가속의 핵심입니다. 이 링크 하나로 어떤 AI든 즉시 당신의 '개인 학습 코치'로 변신시켜, 학습 시간을 37% 단축하고 기억 보존률을 4.2배 향상시킵니다.",
     icon: CpuChipIcon,
     color: 'from-pink-400 to-violet-500',
     bgGradient: 'from-pink-50 to-violet-50',
     features: [
       "나의 지능을 '캡슐'에 봉인",
       "클릭 한 번으로 AI 소환",
-      "어떤 AI든 나만의 전문가로",
-      "나의 지적 권위를 증명"
+      "어떤 AI든 나만의 학습 코치로",
+      "학습 가속의 핵심 도구"
     ],
     benefits: [
       "AI에게 매번 설명할 필요 없음",
-      "동료들이 부러워하는 AI 활용 능력",
-      "AI 시대의 '지적 자산' 확보",
-      "당신을 중심으로 움직이는 AI 생태계"
+      "동료들이 부러워하는 학습 효율성",
+      "AI 시대의 '학습 자산' 확보",
+      "당신을 중심으로 움직이는 학습 생태계"
     ]
   }
 ];

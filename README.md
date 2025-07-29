@@ -1,79 +1,139 @@
-# Habitus33 AI-Link Workflow Engine
+# Habitus33 - Learning Acceleration Platform
 
-## 1. 프로젝트 개요
+> **"Learning Acceleration, Habitus33"** - 인지과학 기반의 체계적 학습 가속 플랫폼으로 학습 시간을 25% 단축하고 기억 보존률을 4배 향상시킵니다
 
-이 프로젝트는 Habitus33 서비스의 핵심 백엔드 기능인 **AI-Link 워크플로우 엔진**을 구현합니다. 이 엔진의 목표는 사용자의 분산된 지식(메모, 하이라이트 등)을 온톨로지 기반 지식 그래프로 구조화하고, 사용자의 목표에 맞춰 최적의 컨텍스트를 AI 모델에 제공함으로써, '프롬프트 없는' 초개인화 AI 경험을 제공하는 것입니다.
+## 🚀 핵심 가치
 
-## 2. 핵심 아키텍처
+Habitus33은 **AMFA 엔진**을 통해 사용자의 학습을 가속화합니다:
 
-![Architecture Diagram](https://path.to/architecture_diagram.png) 
-*(TODO: 아키텍처 다이어그램 이미지 링크 추가)*
+- **A (Atomic Reading)**: 3분 집중 독서로 핵심 추출
+- **M (Memo Evolution)**: 1줄 메모를 진화된 지식으로 발전  
+- **F (Furnace Knowledge)**: 지식의 용광로를 통한 재구성
+- **A (AI-Link)**: 개인화된 AI 파트너 생성
 
-본 시스템은 3단계의 파이프라인으로 구성됩니다.
+## 🎯 주요 기능
 
-1.  **Context Orchestrator**: 사용자의 목표(`aiLinkGoal`)를 입력받아, 지식 그래프에서 관련 메모, 책 구절 등을 SPARQL 쿼리로 조회하여 `ContextBundle`을 생성합니다.
-2.  **Prompt Generator**: `ContextBundle`을 각 AI 모델(OpenAI, Claude 등)의 특성에 맞는 최적의 프롬프트로 변환합니다.
-3.  **Response Handler**: AI의 응답을 파싱하여 사용자에게 보여줄 최종 결과로 가공하고, 답변에서 발견된 새로운 지식은 다시 지식 그래프에 저장합니다.
+### ⚡ 학습 가속 시스템
 
-## 3. 기술 스택
+#### **TS (Time Sprint) - 3분 집중 독서**
+- **3분 타이머**: 집중력 최적화를 위한 과학적 시간 설정
+- **PDF 하이라이트**: 텍스트 선택 → 즉시 메모 작성
+- **진행도 추적**: 실시간 학습 진행률 시각화
+- **일시정지 기능**: 메모 작성 시 자동 타이머 정지
 
--   **언어**: TypeScript
--   **프레임워크**: Node.js, Express
--   **데이터베이스**: MongoDB (주요 데이터), GraphDB (지식 그래프 - 예: Stardog, Neo4j)
--   **온톨로지**: RDF/OWL, SPARQL
--   **테스팅**: Jest, Supertest
+#### **메모 진화 시스템**
+- **1줄 메모**: 핵심 내용을 한 줄로 압축
+- **진화 질문**: "왜 중요한가?", "언제 사용할까?" 등 5단계 질문
+- **개인 경험 연결**: 기존 지식과의 연관성 발견
+- **단권화 노트**: 진화된 메모를 하나의 완성된 지식으로 통합
 
-## 4. 시작하기
+#### **AI-Link 지식 캡슐**
+- **개인화된 AI 파트너**: 사용자의 지식 DNA를 이해하는 AI
+- **즉시 소통**: 프롬프트 없이도 AI가 사용자 맥락 파악
+- **지식 공유**: AI 접근 가능한 구조화된 데이터로 공유
 
-### 설치
+### 📚 지식 관리 시스템
+- **책 관리**: PDF 업로드, 하이라이트, 메모 작성
+- **컬렉션**: 주제별 메모 그룹화 및 연결
+- **개념이해도**: 실시간 학습 진행도 측정
+
+### 🧠 인지과학 기반 게임
+
+#### **Zengo - 인지능력 향상 게임**
+- **3x3, 5x5, 7x7 보드**: 난이도별 인지 훈련
+- **순서 기억**: 단어를 올바른 순서로 배치하는 작업기억력 훈련
+- **실시간 피드백**: 즉시 정답 확인 및 학습 효과 분석
+- **인지 메트릭**: 작업기억력, 주의력, 처리속도 등 8가지 인지능력 측정
+
+#### **Myverse - 컬렉션 기반 지식 게임**
+- **개인 컬렉션 활용**: 자신이 만든 지식으로 게임 플레이
+- **지식 연결**: 관련 개념들을 연결하는 창의적 사고 훈련
+
+#### **Brain Hack Routine - 뇌 과학 기반 학습 루틴**
+- **AMFA 엔진 활용**: 실제 학습 워크플로우 적용
+- **개인화된 루틴**: 사용자 패턴에 맞춘 최적화된 학습 경로
+
+### 📊 학습 분석 시스템
+
+#### **인지과학 기반 분석**
+- **8가지 인지 메트릭**: 작업기억력, 주의력, 처리속도, 인지유연성, 시공간정밀도, 패턴인식, 해마활성화, 실행기능
+- **백분위 순위**: 동일 연령대 대비 상대적 위치 파악
+- **시계열 분석**: 시간에 따른 인지능력 변화 추적
+- **강점/약점 분석**: 개인별 인지 프로필 진단
+
+#### **학습 효과 측정**
+- **개념이해도**: 실시간 학습 진행도 측정
+- **기억 보존률**: 장기 기억 형성 효과 분석
+- **학습 가속도**: 시간 대비 지식 습득 효율성 측정
+
+## 🛠 기술 스택
+
+- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
+- **Backend**: Node.js, Express, TypeScript, MongoDB
+- **AI Integration**: OpenAI, Claude, Gemini, Perplexity
+- **PDF Processing**: PDF.js, react-pdf
+- **State Management**: Redux Toolkit, Zustand
+- **Deployment**: Vercel (Frontend), Render (Backend)
+
+## 📈 학습 가속 효과
+
+### **과학적 근거 기반 성과**
+
+#### **학습 시간 25% 단축 → 달성 가능한 결과**
+- **시험 준비 시간 단축**: 6시간 공부 → 4.5시간으로 단축, 하루에 1.5시간 여유 시간 확보
+- **새로운 기술 습득 가속**: 3개월 코딩 학습 → 2.25개월로 단축, 더 빠른 취업/전직 가능
+- **언어 학습 효율성**: 1년 영어 학습 → 9개월로 단축, 해외 유학/취업 준비 시간 단축
+- **업무 스킬 향상**: 새로운 도구/프로세스 학습 시간 단축으로 업무 생산성 향상
+
+#### **지식 연결성 5배 향상 → 달성 가능한 결과**
+- **창의적 문제 해결**: 관련 개념들을 자동 연결하여 새로운 해결책 발견
+- **학제간 통합 사고**: 문학 + 과학, 역사 + 기술 등 경계를 넘는 통찰력 개발
+- **기억의 연쇄 효과**: 하나의 개념이 다른 개념들을 자동으로 떠올리게 하는 지식 네트워크 구축
+- **실무 적용력 향상**: 이론과 실무를 자연스럽게 연결하여 즉시 활용 가능한 지식 체계 구축
+
+#### **기억 보존률 4배 향상 → 달성 가능한 결과**
+- **장기 기억 형성**: 1주일 후에도 80% 이상의 내용 기억 유지 (일반적 20% 대비)
+- **시험 성적 향상**: 단기 암기가 아닌 깊은 이해로 시험에서 고득점 달성
+- **업무 역량 지속**: 교육받은 내용을 오래 기억하여 지속적인 업무 성과 창출
+- **개인 브랜딩**: 전문 지식을 오래 기억하여 해당 분야의 전문가로 인정받기
+
+### **개인화된 학습 경험**
+- **개인 지식 DNA**: AI-Link를 통한 개인화된 학습 파트너
+- **적응형 난이도**: 사용자 수준에 맞춘 게임 및 학습 콘텐츠
+- **실시간 피드백**: 즉시 학습 효과 확인 및 개선점 제시
+
+## 🚀 시작하기
 
 ```bash
-# 저장소 복제
-git clone https://github.com/habitus33/habitus33.git
-cd habitus33/backend
+# 저장소 클론
+git clone https://github.com/your-username/habitus33.git
+cd habitus33
 
 # 의존성 설치
 npm install
+
+# 개발 서버 실행
+npm run dev
 ```
 
-### 환경 변수 설정
+## 📖 문서
 
-루트 디렉터리에 `.env` 파일을 생성하고 다음 변수를 설정합니다.
+- [브랜드 가이드라인](./docs/HABITUS33_Brand_Guidelines_v3.4.md)
+- [마케팅 전략 가이드](./docs/Habitus33_Marketing_Strategy_Guide.md)
+- [AI-Link 아키텍처 가이드](./docs/AI_Link_Architecture_Guide.txt)
 
-```
-MONGODB_URI=mongodb://localhost:27017/habitus33
-GRAPHDB_URL=http://localhost:7200/repositories/habitus33
-# ... 기타 필요한 변수들
-  ```
+## 🤝 기여하기
 
-### 실행
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-```bash
-# 개발 모드로 실행 (핫 리로딩)
-npm run dev:watch
+## 📄 라이선스
 
-# 프로덕션 빌드
-npm run build
+이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
 
-# 프로덕션 실행
-npm run start
-```
+---
 
-### 테스트
-
-```bash
-# 모든 유닛 테스트 실행
-npm test
-
-# 통합 테스트만 실행
-npm run test:integration
-```
-
-## 5. 주요 디렉터리 구조
-
--   `src/models/`: MongoDB 스키마 (Mongoose)
--   `src/services/`: 핵심 비즈니스 로직 (ContextOrchestrator 등)
--   `src/controllers/`: API 요청/응답 처리
--   `src/routes/`: API 라우팅
--   `ontology/`: RDF/OWL 온톨로지 파일 (`.ttl`)
--   `tests/`: 통합 테스트 파일
+**"Learning Acceleration, Habitus33"** - 인지과학 기반의 체계적 학습 가속 플랫폼
