@@ -179,7 +179,7 @@ export default function TSResultPage() {
             
             {/* Achievement Title */}
             <div className="text-center mb-1 mt-4 sm:mt-4">
-              <h1 className="text-lg sm:text-2xl tracking-wider font-bold text-gray-800 uppercase">YOUR WAVE</h1>
+              <h1 className="text-lg sm:text-2xl tracking-wider font-bold text-gray-800 uppercase">SPEED</h1>
             </div>
             
             {/* Achievement Label based on performance */}

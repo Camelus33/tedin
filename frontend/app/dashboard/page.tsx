@@ -571,7 +571,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    최고의 집중력 회복 게임, 단 3분만 투자하세요.
+                    간단한 집중력 회복 게임, 단 3분만 투자하세요.
                   </p>
                   <div className="text-indigo-400 font-medium">시작하기 →</div>
                 </div>
@@ -603,7 +603,7 @@ export default function DashboardPage() {
                 <div>
                     <h3 className="text-lg font-medium text-white mb-2">인지력 분석</h3>
                     <p className="text-gray-300">
-                    사용자의 지식 활동을 온톨로지 기반으로 AI가 분석합니다.
+                    사용자의 지식 활동을 온톨로지 기반으로 AI가 측정합니다.
                   </p>
                 </div>
                   <div className="text-indigo-400 font-medium">분석 보기 →</div>

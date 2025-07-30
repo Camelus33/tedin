@@ -100,22 +100,22 @@ export interface TSSessionDetails {
 // 목적별 4단계 질문/가이드/placeholder 매핑
 const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder: string }>> = {
   exam_prep: [
-    { question: '어떤 부분이 중요하나 느껴졌나요?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
-    { question: '처음 봤을 때, 어떤 느낌이 들었나요?', placeholder: '(예: 용어가 생소함, 공식 유도 과정)' },
-    { question: '기존의 어떤 지식이 연상되나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
-    { question: '표현할 수 방법은 무엇인가요?', placeholder: '(예: 마인드맵, 차트, 표)' },
+    { question: '밑줄친 이유가 무엇인가?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
+    { question: '메모 작성 당시 느낌은 어떠했나요?', placeholder: '(예: 용어가 생소함, 어려움. 이해안됨)' },
+    { question: '머리 속에서 무엇과 연결되었나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
+    { question: '한 장의 그림으로 표현해본다면?', placeholder: '(예: 마인드맵, 차트, 표)' },
   ],
   practical_knowledge: [
     { question: '어떻게 내 업무와 연결되나요?', placeholder: '(예: 특정 문제 해결, 프로세스 개선)' },
-    { question: '이 것을 몰라 불편했던 경험이 있나요?', placeholder: '(예: 버그 해결 중, 보고서 작성 시)' },
-    { question: '이 메모는 어떤 나의 경험/지식과 연상시키나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
-    { question: '이 것의 핵심을 한 문장으로 설명해 본다면?', placeholder: '(예: \'이 건 우리가 알고 있는 피라미드와 비슷해요\')' },
+    { question: '이 것이 필요했던 상황이 있나요?', placeholder: '(예: 버그 해결 중, 보고서 작성 시)' },
+    { question: '어떤 나의 경험/지식과 연상시키나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
+    { question: '핵심을 한 문장으로 설명해 본다면?', placeholder: '(예: \'이 건 우리가 알고 있는 피라미드와 비슷해요\')' },
   ],
   humanities_self_reflection: [
-    { question: '이 메모, 어떤 감정/생각을 불러일으켰나요?', placeholder: '(예: 특정 감정, 떠오른 질문)' },
-    { question: '메모를 적던 당시 상황은 무엇을 떠올리게 하나요?', placeholder: '(예: 특정 장소, 인물, 경험)' },
-    { question: '이 메모, 어떤 다른 지식을 연상시키나요?', placeholder: '(예: 책, 영화, 역사적 사건)' },
-    { question: '이 메모의 내용을 한 폭의 그림이나 장면으로 묘사한다면?', placeholder: '(예: \'노을 지는 바다를 혼자 보는 모습\')' },
+    { question: '어떤 감정/생각을 불러일으켰나요?', placeholder: '(예: 특정 감정, 떠오른 질문)' },
+    { question: '메모를 적던 당시 상황은 어떠했나요?', placeholder: '(예: 특정 장소, 인물, 경험)' },
+    { question: '어떤 다른 지식을 연상시키나요?', placeholder: '(예: 책, 영화, 역사적 사건)' },
+    { question: '내용을 한 폭의 그림이나 장면으로 묘사한다면?', placeholder: '(예: \'노을 지는 바다를 혼자 보는 모습\')' },
   ],
   reading_pleasure: [
     { question: '이 메모, 어떤 점이 가장 흥미로웠나요?', placeholder: '(예: 반전, 문체, 대사의 맛)' },
@@ -622,7 +622,7 @@ export default function TSNoteCard({
           data-no-toggle
         >
           <span className="text-xs font-medium text-gray-400 group-hover:text-cyan-400 transition-colors">
-            생각 진화 ({threads.length}/5)
+            생각 추가 ({threads.length}/5)
           </span>
           <ChevronRightIcon className={`h-4 w-4 text-gray-500 group-hover:text-cyan-400 transition-all duration-200 ${showInlineThreads ? 'rotate-90' : ''}`} />
         </button>
@@ -795,7 +795,7 @@ export default function TSNoteCard({
     if (details.length === 0) {
       return (
         <div className="mt-4 pt-3 border-t border-gray-700/50">
-           <p className="text-xs text-gray-500 italic">아직 작성된 메모 진화가 없군요. 조금 남겨 두시겠어요?</p>
+           <p className="text-xs text-gray-500 italic">아직 작성된 기억 강화가 없군요. 조금 남겨 두시겠어요?</p>
         </div>
       );
     }
@@ -804,7 +804,7 @@ export default function TSNoteCard({
       <div className="mt-4 pt-3 border-t border-gray-700/50">
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-xs font-semibold text-gray-400">
-          메모 진화 내용:
+          기억 강화 내용:
         </h4>
           <button
             onClick={() => setShowMemoEvolution(!showMemoEvolution)}
@@ -1305,7 +1305,7 @@ export default function TSNoteCard({
                     className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText} text-xs sm:text-sm`}
                   >
                     <SparklesIcon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 ${cyberTheme.primaryText}`} /> 
-                    메모 진화
+                    기억 강화
                   </DropdownMenuItem>
                   
                   {/* 기존의 인라인 편집 시작/종료 메뉴는 제거 (중복 방지) */}
@@ -1345,7 +1345,7 @@ export default function TSNoteCard({
         <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-1 lg:p-4 rounded-lg z-20 flex flex-col animate-fadeIn">
           {/* 헤더 - 최소화 */}
           <div className="flex justify-between items-center mb-1 lg:mb-2 px-2 lg:px-0 flex-shrink-0">
-            <h3 className="text-sm lg:text-lg font-semibold text-cyan-400 truncate mr-2">메모 진화: {tabList.find(t => t.key === activeTabKey)?.label}</h3>
+            <h3 className="text-sm lg:text-lg font-semibold text-cyan-400 truncate mr-2">기억 강화: {tabList.find(t => t.key === activeTabKey)?.label}</h3>
             <Button variant="ghost" size="icon" onClick={toggleEvolutionOverlay} className="text-gray-400 hover:text-white flex-shrink-0 w-8 h-8 lg:w-auto lg:h-auto p-1">
               <XMarkIcon className="h-4 w-4 lg:h-5 lg:w-5"/>
             </Button>

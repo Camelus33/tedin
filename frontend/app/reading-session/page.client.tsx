@@ -312,7 +312,7 @@ export default function ReadingSessionPage() {
         {/* Session Controls */}
         {!isSessionActive ? (
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4">독서 세션 시작</h2>
+            <h2 className="text-xl font-bold mb-4">TS 세션 시작</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 시작 페이지
@@ -331,7 +331,7 @@ export default function ReadingSessionPage() {
               fullWidth
               onClick={handleStartSession}
             >
-              독서 시작하기
+              시작하기
             </Button>
             <p className="text-center text-sm text-gray-500 mt-2">
               독서를 시작하면 타이머가 작동합니다

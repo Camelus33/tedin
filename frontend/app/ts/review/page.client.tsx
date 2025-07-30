@@ -265,7 +265,7 @@ export default function TSReviewPage() {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-1.5 ${cyberTheme.textMuted}`}>1줄 메모 성격 선택</label>
+            <label className={`block text-sm font-medium mb-1.5 ${cyberTheme.textMuted}`}>1줄 메모 성격</label>
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'thought', label: '생각' },
@@ -315,8 +315,8 @@ export default function TSReviewPage() {
           </div>
 
           <div>
-            <label className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>셀프 칭찬</label>
-            <p className={`text-xs mb-2 ${cyberTheme.textMuted}`}>스스로에게 후한 점수를 주세요.</p>
+            <label className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>셀프 평가</label>
+            <p className={`text-xs mb-2 ${cyberTheme.textMuted}`}>얼마나 집중하셨나요?</p>
             <div className="flex space-x-1 justify-center">
               {[1, 2, 3, 4, 5].map((rating) => (
                 <button
@@ -341,7 +341,7 @@ export default function TSReviewPage() {
               className="w-full !py-2.5 sm:!py-3 !text-sm sm:!text-base flex items-center justify-center !bg-gradient-to-r !from-cyan-500 !to-blue-600 hover:!from-cyan-600 hover:!to-blue-700 disabled:!opacity-50 disabled:!cursor-not-allowed text-white font-medium rounded-lg shadow-md transition-all"
             >
               <CheckCircleIcon className="h-5 w-5 mr-2" />
-              완료 & 결과 보기
+              결과 보기
             </Button>
           </div>
         </form>

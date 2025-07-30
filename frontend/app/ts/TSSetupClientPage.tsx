@@ -306,7 +306,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           <div>
             <h1 className={`text-xl sm:text-2xl font-bold mb-2 ${cyberTheme.primary} flex items-center gap-2`}> 
               <Cog6ToothIcon className="h-6 w-6" />
-              Setting
+              TS Setting
             </h1>
             <p className={`${cyberTheme.textMuted} text-sm mb-4`}>
               여정에 앞서 읽을 범위를 정하고, 시작하세요.
@@ -399,7 +399,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           <div className="space-y-2">
             <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>추가 설정</h2>
             <div className="flex items-center justify-between py-1">
-              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>읽기 몰입 팁</label>
+              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>읽기 집중력 훈련</label>
               <button
                 id="warmup-toggle"
                 type="button"
@@ -409,7 +409,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                 disabled={!selectedBookId} // 책이 선택되지 않으면 비활성화
                 className={`${enableWarmup ? cyberTheme.buttonPrimaryBg : 'bg-gray-600'} relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50`}
               >
-                <span className="sr-only">읽기 몰입 팁 여부</span>
+                <span className="sr-only">훈련 여부</span>
                 <span aria-hidden="true" className={`${enableWarmup ? 'translate-x-5' : 'translate-x-0'} pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}></span>
               </button>
             </div>
@@ -431,7 +431,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                  <span className={`text-lg font-semibold ${cyberTheme.secondary} w-10 text-center`}>{focusDuration}</span>
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                최소 3분, 최대 17분까지 조정해 보세요. 3분 몰입을 추천합니다.
+                최소 3분, 최대 17분까지 조정해 보세요. 자기만의 최적시간을 찾아보세요.
               </p>
             </div>
           </div>

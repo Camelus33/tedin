@@ -149,7 +149,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
                   Summary & Insight
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
-                  자신의 남다른 생각과 의견을 공유해 보세요.
+                  메모카드 속 내용을 종합하여 자신의 생각을 정리해 보세요.
                 </p>
               </header>
               {/* JSON(BlockNote) vs Markdown 분기 렌더링 */}
@@ -188,7 +188,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
                 <div className="mt-6 pl-12 space-y-6">
                   {note.sessionDetails && (
                     <section className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-gray-800 flex items-center"><Paperclip className="h-4 w-4 mr-2 text-gray-500" />메타 정보</h3>
+                      <h3 className="font-semibold text-gray-800 flex items-center"><Paperclip className="h-4 w-4 mr-2 text-gray-500" />카드 정보</h3>
                       <ul className="mt-2 text-sm text-gray-700 space-y-1">
                         {note.sessionDetails?.createdAt && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>기록 시점:</strong> <ClientTimeDisplay createdAt={note.sessionDetails.createdAt} clientCreatedAt={note.clientCreatedAt} /></li>}
                         {note.sessionDetails?.durationSeconds !== undefined && <li><Calendar className="inline h-4 w-4 mr-1"/><strong>읽은 시간:</strong> {formatSessionDuration(note.sessionDetails.durationSeconds)}</li>}
@@ -203,7 +203,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
 
                   {(note.importanceReason || note.momentContext || note.relatedKnowledge || note.mentalImage) && (
                     <section>
-                      <h3 className="font-semibold text-gray-800 flex items-center"><Microscope className="h-4 w-4 mr-2 text-gray-500" />메모 진화</h3>
+                      <h3 className="font-semibold text-gray-800 flex items-center"><Microscope className="h-4 w-4 mr-2 text-gray-500" />기억 강화</h3>
                       <ul className="mt-2 text-sm text-gray-700 space-y-4">
                         {note.importanceReason && <li><strong className="text-indigo-600 block mb-1">작성 이유:</strong> <ExpandableText text={note.importanceReason} /></li>}
                         {note.momentContext && <li><strong className="text-indigo-600 block mb-1">당시 상황:</strong> <ExpandableText text={note.momentContext} /></li>}

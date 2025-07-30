@@ -129,7 +129,7 @@ export default function CreateSummaryNotePage() {
       const uniqueBookIds = [...new Set(orderedNotes.map(note => note.bookId).filter(Boolean))];
 
       const summaryNoteData = {
-        title: title.trim() || '나의 단권화 노트', // 제목이 비어있으면 기본값 사용
+        title: title.trim() || '오늘의 단권화 노트', // 제목이 비어있으면 기본값 사용
         description: description.trim(),
         orderedNoteIds: noteIdsToSave,
         bookIds: uniqueBookIds,
@@ -208,7 +208,7 @@ export default function CreateSummaryNotePage() {
       <div className="max-w-3xl mx-auto bg-gray-800/70 backdrop-blur-md rounded-xl shadow-2xl p-6 md:p-8">
         <header className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-cyan-400">단권화 노트 만들기</h1>
-          <p className="text-gray-400 mt-2">지식 카트에서 선택한 1줄 메모들을 하나의 노트로 통합합니다.</p>
+          <p className="text-gray-400 mt-2">지식 카트에서 선택한 메모카드들을 하나의 노트로 통합합니다.</p>
         </header>
 
         {error && (
@@ -245,7 +245,7 @@ export default function CreateSummaryNotePage() {
 
         {/* 선택된 노트 목록 (TSNoteCard 사용) */}
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-300 mb-4 border-b border-gray-700 pb-2">포함된 1줄 메모 ({orderedNotes.length}개)</h2>
+          <h2 className="text-2xl font-semibold text-gray-300 mb-4 border-b border-gray-700 pb-2">포함된 메모카드 ({orderedNotes.length}개)</h2>
           {orderedNotes.length > 0 ? (
             <div className="space-y-4">
               {orderedNotes.map((note) => (
@@ -259,7 +259,7 @@ export default function CreateSummaryNotePage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 italic">표시할 메모가 안 보이네요! (오류 또는 빈 카트)</p>
+            <p className="text-gray-500 italic">표시할 메모카드가 안 보이네요! (오류 또는 빈 카트)</p>
           )}
         </section>
 
