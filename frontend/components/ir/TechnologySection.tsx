@@ -7,13 +7,13 @@ import { FiArrowRight } from 'react-icons/fi';
 const techData = [
   {
     image: '/images/ir/temporal-knowledge-ontology-engine.png',
-    title: 'The Data Moat: 시맨틱 타임라인 지식 그래프',
-    description: "사용자의 모든 디지털 발자취를 시간과 맥락에 따라 연결하여, 파편화된 정보를 '고품질 지식 그래프'로 변환합니다. 이 데이터는 시간이 지날수록 강력해지며, 돈으로는 살 수 없는 우리만의 독점적 자산이 됩니다. 경쟁사는 이 깊이를 따라올 수 없습니다.",
+    title: 'The Learning Moat: 시간진화형 학습 온톨로지',
+    description: "학습자의 모든 학습 활동을 시간순으로 구조화하여, 단순한 정보가 아닌 '학습 진화 과정'을 기록합니다. 이 데이터는 학습할수록 더 정확해지며, 개인만의 독특한 학습 패턴을 만들어냅니다. 경쟁사는 이 깊이를 따라올 수 없습니다.",
   },
   {
     image: '/images/ir/4-step-knowledge-distillation-protocol.png',
-    title: 'The Unfair Advantage: 4단계 지식 증류 프로토콜',
-    description: "단순히 정보를 요약하는 것을 넘어, '정제-구조화-생성-전송'의 4단계 프로토콜을 통해 사용자의 암묵지를 AI가 이해할 수 있는 형식지로 변환합니다. 이 독점적인 프로세스는 우리의 기술적 해자(Moat)를 만듭니다.",
+    title: 'The Acceleration Engine: 4단계 학습 가속 프로토콜',
+    description: "단순히 내용을 요약하는 것을 넘어, '포착-구조화-최적화-가속'의 4단계 프로토콜을 통해 복잡한 학습 내용을 AI가 즉시 추론할 수 있는 형태로 변환합니다. 이 독점적인 프로세스는 학습 효율을 획기적으로 향상시킵니다.",
   },
   // {
   //   image: '/images/ir/creative-persona-engine.png',
@@ -61,7 +61,7 @@ const TechnologySection = () => {
             Our Technological <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Moat</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            우리의 해자는 단일 기술이 아닌, 세 가지 핵심 엔진이 유기적으로 결합된 '지능 증강 시스템'입니다. 하나를 모방하더라도, 전체 시스템이 만들어내는 시너지는 결코 따라올 수 없습니다.
+            우리의 해자는 단일 기술이 아닌, 두 가지 핵심 엔진이 유기적으로 결합된 '학습 가속 시스템'입니다. 하나를 모방하더라도, 전체 시스템이 만들어내는 학습 효율성은 결코 따라올 수 없습니다.
           </p>
         </motion.div>
 

@@ -53,7 +53,7 @@ const IntroSection = () => {
           className="absolute top-[-25vh] left-0 right-0 mx-auto"
         >
           <p className="text-sm font-semibold tracking-wider text-gray-400">
-            Habitus33 - The AI Context Company
+            Habitus33 - The Learning Acceleration Platform
           </p>
         </motion.div>
         
@@ -64,10 +64,10 @@ const IntroSection = () => {
           className="text-6xl md:text-8xl font-black uppercase"
           style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
         >
-          <span className="text-gray-200">AI 운영 비용</span>
+          <span className="text-gray-200">모든 학습을</span>
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">
-            55% 절감
+            정복하세요
           </span>
         </motion.h1>
 
@@ -77,7 +77,7 @@ const IntroSection = () => {
           transition={{ duration: 1, delay: 1 }}
           className="mt-6 text-lg md:text-xl text-gray-300 font-medium max-w-2xl mx-auto"
         >
-          AI-Link가 당신의 컨텍스트를 주입하여, 불필요한 API 호출과 토큰 낭비를 줄여줍니다.
+          빈틈없이 빠르고 오래가는 학습 - 인지과학 기반 학습 가속기
         </motion.p>
       </div>
     </section>

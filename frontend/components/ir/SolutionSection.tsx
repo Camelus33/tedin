@@ -8,23 +8,23 @@ import AMFAAnimation from './AMFAAnimation';
 const steps = [
   {
     icon: FiBox,
-    title: "1. Capture & Refine: 가치있는 지식 포착",
-    description: "개인의 모든 디지털 활동에서 핵심 아이디어와 유의미한 데이터만 정확히 포착하고 정제하여 노이즈를 제거합니다."
+    title: "1. Capture & Structure: 학습 맥락 포착",
+    description: "개인의 모든 학습 활동에서 핵심 개념과 이해 과정을 정확히 포착하고, 시간순으로 구조화하여 학습 진화 과정을 기록합니다."
   },
   {
     icon: FiGitMerge,
-    title: "2. Structure & Contextualize: 맥락적 지식망 구축",
-    description: "정제된 지식들을 연결하고 시간과 인과관계에 따라 구조화하여, AI가 사용자의 사고 흐름을 이해할 수 있는 '지식 그래프'를 생성합니다."
+    title: "2. Evolve & Connect: 시간진화형 온톨로지 구축",
+    description: "학습한 내용을 시간순으로 연결하고, 개념 간의 관계를 파악하여 AI가 학습자의 지식 진화 과정을 이해할 수 있는 '시간진화형 온톨로지'를 생성합니다."
   },
   {
     icon: FiCpu,
-    title: "3. Generate & Encapsulate: AI-Link 생성",
-    description: "거대한 지식 그래프를 AI가 즉시 이해하고 활용할 수 있도록, 최적화된 고농축 데이터 캡슐인 'AI-Link'로 변환합니다."
+    title: "3. Optimize & Encapsulate: AI-Link 생성",
+    description: "복잡한 학습 맥락을 AI가 즉시 추론하고 활용할 수 있도록, 최적화된 고농축 데이터 캡슐인 'AI-Link'로 변환합니다."
   },
   {
     icon: FiZap,
-    title: "4. Transmit & Augment: AI 지능 증강",
-    description: "AI-Link를 통해 AI에게 '기억'과 '맥락'을 주입합니다. AI는 비로소 사용자의 의도를 완벽히 이해하고, 비용 효율적인 초개인화 결과물을 생성합니다."
+    title: "4. Accelerate & Review: 학습 가속 및 복습",
+    description: "AI-Link를 통해 AI가 학습자의 맥락을 완벽히 이해하므로, NotebookLM의 동영상 오버뷰 이용시 강력한 복습 효과를 얻을 수 있습니다."
   }
 ];
 
@@ -57,13 +57,13 @@ const SolutionSection = () => {
         <div className="relative pt-16">
           <div className="text-left mb-16" style={{ height: '100vh' }}>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-              The Solution: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">AI's External Brain</span>
+              The Solution: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Learning Acceleration Engine</span>
             </h2>
             <h3 className="text-2xl sm:text-3xl font-semibold text-indigo-300 mb-6">
-              AI-Link: AI에게 기억력과 지능을 부여하다
+              AI-Link: 학습 맥락을 AI에게 기억시키다
             </h3>
             <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
-              AI-Link는 AI의 근본적인 한계인 '컨텍스트 부족' 문제를 해결하는 독보적인 솔루션입니다. 사용자의 고유한 지식과 경험을 AI에게 '기억'시켜, 불필요한 API 호출과 토큰 낭비를 원천적으로 차단합니다. 그 결과, AI 운영 비용을 획기적으로 절감하고 진정한 초개인화 결과물을 얻을 수 있습니다.
+              AI-Link는 성인 학습자의 근본적인 한계인 '맥락 부족' 문제를 해결하는 독보적인 솔루션입니다. 학습자의 고유한 지식 진화 과정을 AI에게 '기억'시켜, 맥락추론이 가능한 강력한 학습 가속기를 제공합니다. 그 결과, 학습 시간을 획기적으로 단축하고 진정한 개인화된 복습 경험을 얻을 수 있습니다.
             </p>
           </div>
 

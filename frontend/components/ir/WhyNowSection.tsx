@@ -52,23 +52,23 @@ const WhyNowSection = () => {
   const trends = [
     {
       icon: <FiTrendingUp size={48} className="text-cyan-300" />,
-      title: "Wave 1: The Gold Rush",
-      subtitle: "AI 도입 경쟁 시대 (2022-2024)",
-      description: "모든 기업이 너도나도 AI를 도입하며 무한한 가능성에 베팅했습니다. 시장은 '누가 더 빨리 도입하는가'에만 집중했습니다.",
+      title: "Wave 1: 평생학습의 부상",
+      subtitle: "성인 학습자 증가 시대 (2020-2024)",
+      description: "기술 변화와 경쟁 압박으로 인해 성인 학습자들이 꾸준히 증가했습니다. OECD 국가에서 성인 학습 참여율이 20% 증가하며, 평생학습의 필요성이 절실해졌습니다.",
       delay: 0,
     },
     {
       icon: <FiTarget size={48} className="text-cyan-300" />,
-      title: "Wave 2: The Reckoning",
-      subtitle: "비용과 ROI의 심판 (2025~)",
-      description: "이제 기업들은 막대한 AI 운영 비용과 불확실한 ROI라는 현실의 벽에 부딪혔습니다. 시장의 관심은 '어떻게 하면 비용을 통제할 것인가'로 이동했습니다.",
+      title: "Wave 2: 학습 효율성의 한계",
+      subtitle: "전통적 학습 방법의 한계 (2025~)",
+      description: "이제 성인 학습자들은 시간 부족과 인지적 한계라는 현실의 벽에 부딪혔습니다. 시장의 관심은 '어떻게 하면 효율적으로 학습할 것인가'로 이동했습니다.",
       delay: 0.2,
     },
     {
       icon: <FiZap size={48} className="text-cyan-300" />,
       title: "The Opportunity",
-      subtitle: "AI 최적화 시장의 개화",
-      description: "'AI 비용 최적화'는 이제 선택이 아닌 생존의 문제입니다. 이 거대한 시장의 니즈가 폭발하는 지금, 근본적인 해결책인 AI-Link에게는 전례 없는 기회가 열렸습니다.",
+      subtitle: "학습 가속 시장의 개화",
+      description: "'학습 효율성 개선'은 이제 선택이 아닌 필수입니다. 이 거대한 시장의 니즈가 폭발하는 지금, 근본적인 해결책인 AI-Link에게는 전례 없는 기회가 열렸습니다.",
       delay: 0.4,
     },
   ];
@@ -83,10 +83,10 @@ const WhyNowSection = () => {
           variants={sectionVariants}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            The Market Inflection Point is <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Now</span>
+            The Learning Market Inflection Point is <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Now</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            AI 시장은 '묻지마 도입'의 시대를 지나 '비용 최적화'의 시대로 넘어가고 있습니다. 
+            학습 시장은 '무작정 공부'의 시대를 지나 '효율적 학습'의 시대로 넘어가고 있습니다. 
             <br/>
             이 거대한 패러다임 전환이 우리에게는 전례 없는 기회입니다.
           </p>

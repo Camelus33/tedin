@@ -7,35 +7,35 @@ import AppLogo from '@/components/common/AppLogo';
 const competitorGroups = [
   {
     icon: <FileText className="w-8 h-8 text-slate-400" />,
-    name: 'The Siloed Way: 정보의 무덤',
-    examples: 'Notion, Evernote',
-    approach: '정보를 깔끔하게 저장하지만, 연결되지 않은 채 각자의 서랍 속에서 잠자게 만듭니다.',
-    limitation: '검색하지 않으면 존재조차 잊히는 수동적 데이터로, 지식 자산이 아닌 비용을 발생시킵니다.',
+    name: 'The Passive Way: 수동적 학습 도구',
+    examples: 'Anki, Quizlet',
+    approach: '단순 반복만 가능. 새로운 학습 내용을 자동으로 포착하지 못함.',
+    limitation: '학습자가 직접 카드 관리. 맥락 없이 단편적 기억만 형성.',
   },
   {
     icon: <Hand className="w-8 h-8 text-blue-400" />,
-    name: 'The Manual Way: 소수 전문가의 길',
-    examples: 'Obsidian, Roam',
-    approach: '사용자가 직접 모든 지식을 연결하고 구조화해야 하는 높은 수준의 규율을 요구합니다.',
-    limitation: '뛰어난 소수를 제외한 99%의 사용자는 결국 지쳐서 포기하게 만드는 높은 진입 장벽이 존재합니다.',
+    name: 'The Manual Way: 수동 학습 관리',
+    examples: 'Notion, Obsidian',
+    approach: '모든 것을 직접 정리해야 함. 높은 학습 관리 능력 요구.',
+    limitation: '복잡한 시스템에 지쳐 포기. 99%는 결국 실패.',
   },
   {
     icon: <Zap className="w-8 h-8 text-purple-400" />,
-    name: 'The Volatile Way: 똑똑한 단기기억상실',
+    name: 'The Isolated Way: 맥락 없는 AI 학습',
     examples: 'ChatGPT, Gemini',
-    approach: '매번의 대화가 독립적이며, 과거의 맥락을 기억하지 못하는 일회성 상호작용에 그칩니다.',
-    limitation: '사용자 메모리를 점점 지원하지만, 소중한 도메인 지식을 무료로 모두 넘겨 줘야 합니다.',
+    approach: '매번 독립적인 질문. 학습 이력과 맥락을 기억하지 못함.',
+    limitation: '개인 학습 진화 과정 활용 불가. 시간진화형 온톨로지 없음.',
   },
 ];
 
 const positioningData = {
     axisLabels: {
         x: ['Manual', 'Automatic'],
-        y: ['Stateless', 'Stateful'],
+        y: ['Isolated', 'Contextual'],
     },
     competitors: [
-        { name: 'Notion, Evernote', x: 20, y: 75, color: 'text-slate-300' },
-        { name: 'Obsidian, Roam', x: 25, y: 25, color: 'text-blue-300' },
+        { name: 'Anki, Quizlet', x: 20, y: 75, color: 'text-slate-300' },
+        { name: 'Notion, Obsidian', x: 25, y: 25, color: 'text-blue-300' },
         { name: 'ChatGPT, Gemini', x: 80, y: 75, color: 'text-purple-300' },
     ],
     habitus: {
@@ -68,10 +68,10 @@ const CompetitorAnalysisSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            Why We Win: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">A New Game, New Rules</span>
+            Why We Win: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">A New Learning Paradigm</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-4xl mx-auto leading-relaxed">
-            기존의 툴들은 '정보 저장'이라는 낡은 경기장에서 경쟁합니다. 우리는 '지식 자산화'라는 새로운 경기장을 창조하며, 이 게임의 규칙은 우리가 만듭니다.
+            기존 도구들은 '단순 반복'의 한계에 갇혀 있습니다. 우리는 '학습 가속'이라는 새로운 패러다임을 창조합니다.
           </p>
         </motion.div>
 

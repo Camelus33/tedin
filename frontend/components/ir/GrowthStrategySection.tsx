@@ -7,12 +7,12 @@ const strategiesData = {
   beachhead: {
     id: 'beachhead',
     icon: <Target className="w-7 h-7" />,
-    phase: "Phase 1: Conquer the Beachhead",
-    logic: "가장 절박하게 '지식 연결'의 고통을 느끼는 최상위 1% 학습자(의대/법대생, 연구자, 엔지니어)를 집중 공략합니다. 수동 방식의 한계에 부딪힌 이들에게 '자동화된 지식 자산 구축'이라는 압도적인 가치를 제공하여, 대체 불가능한 초기 팬덤과 전문가 수준의 지식 그래프를 확보합니다.",
+    phase: "Phase 1: Conquer the Learning Beachhead",
+    logic: "시간에 쫓기는 성인 학습자(직장인, 대학원생)를 집중 공략. 학습 가속으로 50% 시간 단축을 증명하여 충성 사용자층 확보.",
     tactics: [
-      "최상위 학습자 커뮤니티(Reddit, 포럼) 대상 타겟 마케팅",
-      "핵심 분야 교육 인플루언서와의 전략적 파트너십",
-      "초기 파워유저를 위한 '지식 아키텍트' 인증 및 보상 프로그램",
+      "성인 학습자 커뮤니티 타겟 마케팅",
+      "학습 효율성 인플루언서 파트너십",
+      "'학습 가속기' 인증 프로그램",
     ],
     color: "text-sky-400",
     ringColor: "ring-sky-400/50",
@@ -21,12 +21,12 @@ const strategiesData = {
   networkEffects: {
     id: 'networkEffects',
     icon: <Network className="w-7 h-7" />,
-    phase: "Phase 2: Ignite the AI-Link Flywheel",
-    logic: "초기 사용자들이 구축한 고품질 '지식 캡슐(AI-Link)'을 마켓에서 공유/판매하게 합니다. 신규 사용자는 전문가의 지식을 즉시 활용하여 학습 곡선을 단축시키고, 이는 다시 새로운 지식 캡슐의 생성으로 이어지는 강력한 선순환(Flywheel)을 만듭니다.",
+    phase: "Phase 2: Ignite the Learning Acceleration Flywheel",
+    logic: "AI-Link 기반 학습 캡슐을 마켓에서 거래. 전문가 학습 패턴을 즉시 적용하여 학습 곡선 단축. 새로운 캡슐 생성으로 선순환 구축.",
     tactics: [
-      "AI-Link 마켓플레이스: 지식 캡슐을 거래하는 생태계의 중심",
-      "지식 크리에이터 보상: 기여도에 따른 수익 공유 및 인센티브",
-      "원클릭 지식 포크(Fork): 다른 사람의 지식을 내 것으로 가져와 발전시키는 기능",
+      "학습 가속 마켓플레이스 구축",
+      "학습 크리에이터 수익 공유",
+      "원클릭 학습 패턴 적용",
     ],
     color: "text-lime-400",
     ringColor: "ring-lime-400/50",
@@ -35,12 +35,12 @@ const strategiesData = {
   marketDomination: {
     id: 'marketDomination',
     icon: <Globe className="w-7 h-7" />,
-    phase: "Phase 3: Become the Knowledge Layer",
-    logic: "개인을 넘어 팀과 기업의 '집단 지성'을 관리하는 핵심 인프라로 확장합니다. 궁극적으로 모든 AI 에이전트가 Habitus33의 지식 그래프에 연결되어 작동하는, AI 시대의 필수불가결한 '개인/조직 맞춤형 컨텍스트 레이어'가 되는 것을 목표로 합니다.",
+    phase: "Phase 3: Become the Learning Acceleration Layer",
+    logic: "교육기관과 기업의 집단 학습 효율성 관리. 모든 AI 학습 도구가 Habitus33 엔진에 연결되는 필수 인프라로 확장.",
     tactics: [
-      "B2B/Enterprise 플랜: 팀과 조직을 위한 보안 및 관리 기능 제공",
-      "조직 지식그래프: 기업의 암묵지를 시각화하고 전사적으로 공유",
-      "개방형 API: 써드파티 AI 서비스가 우리 지식 레이어 위에 구축되도록 허용"
+      "B2B/Enterprise 학습 효율성 관리",
+      "조직 학습 데이터 시각화",
+      "개방형 API로 생태계 확장"
     ],
     color: "text-indigo-400",
     ringColor: "ring-indigo-400",
@@ -83,10 +83,10 @@ const GrowthStrategySection = () => {
       <div className="container mx-auto px-4">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            Growth Strategy: <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500">The AI-Link Flywheel</span>
+            Growth Strategy: <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500">The Learning Acceleration Flywheel</span>
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            단순히 사용자를 늘리는 것이 아니라, AI-Link를 중심으로 지식 생태계의 가치를 기하급수적으로 성장시키는 플라이휠을 만듭니다.
+            학습 가속을 중심으로 교육 생태계의 가치를 기하급수적으로 성장시키는 플라이휠을 만듭니다.
           </p>
         </motion.div>
 

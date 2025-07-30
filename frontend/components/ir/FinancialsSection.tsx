@@ -5,39 +5,39 @@ import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { DollarSign, Users, Target, TrendingUp, Briefcase, Brain, Cpu, Rocket, Calendar, BarChart3, Repeat, ShoppingCart, Building } from 'lucide-react';
 
 const kpiData = [
-  { icon: <Repeat className="w-8 h-8 text-sky-400" />, label: "Phase 1: 슈퍼-러너 유지율", value: "95%", note: "미래 시장을 지배할 초기 팬덤의 충성도" },
-  { icon: <ShoppingCart className="w-8 h-8 text-lime-400" />, label: "Phase 2: 마켓플레이스 GMV", value: "$1M+", note: "네트워크 효과를 증명하는 거래액" },
-  { icon: <Building className="w-8 h-8 text-indigo-400" />, label: "Phase 3: Enterprise ACV", value: "$100K+", note: "지식 인프라로서의 시장 지배력" }
+  { icon: <Repeat className="w-8 h-8 text-sky-400" />, label: "Phase 1: 학습 가속 효과", value: "50%↑", note: "학습 시간 단축으로 증명된 핵심 가치" },
+  { icon: <ShoppingCart className="w-8 h-8 text-lime-400" />, label: "Phase 2: 학습 캡슐 거래", value: "$500K+", note: "AI-Link 기반 학습 패턴 마켓플레이스" },
+  { icon: <Building className="w-8 h-8 text-indigo-400" />, label: "Phase 3: 교육기관 계약", value: "$50K+", note: "학습 효율성 관리 솔루션" }
 ];
 
 const projectionData = [
-  { year: 'Year 1', proSubscriptions: 1.2, marketplace: 0, enterprise: 0 },
-  { year: 'Year 2', proSubscriptions: 3.6, marketplace: 0.5, enterprise: 0 },
-  { year: 'Year 3', proSubscriptions: 7, marketplace: 4, enterprise: 2 },
-  { year: 'Year 4', proSubscriptions: 12, marketplace: 15, enterprise: 10 },
-  { year: 'Year 5', proSubscriptions: 20, marketplace: 30, enterprise: 50 },
+  { year: 'Year 1', proSubscriptions: 0.8, marketplace: 0, enterprise: 0 },
+  { year: 'Year 2', proSubscriptions: 2.5, marketplace: 0.3, enterprise: 0 },
+  { year: 'Year 3', proSubscriptions: 5, marketplace: 2.5, enterprise: 1.2 },
+  { year: 'Year 4', proSubscriptions: 8, marketplace: 8, enterprise: 5 },
+  { year: 'Year 5', proSubscriptions: 12, marketplace: 15, enterprise: 20 },
 ];
 
 const useOfFundsSeedData = [
-    { name: '제품 개발 (Beachhead)', value: 50, icon: <Brain className="w-5 h-5 mr-2" />, details: '슈퍼-러너를 위한 압도적 기능 완성' },
-    { name: '초기 커뮤니티 확보', value: 30, icon: <Rocket className="w-5 h-5 mr-2" />, details: '핵심 타겟 커뮤니티 마케팅 및 온보딩' },
-    { name: '핵심 팀 구성', value: 20, icon: <Users className="w-5 h-5 mr-2" />, details: '제품 및 성장을 위한 필수 인력' },
+    { name: '학습 가속 엔진 개발', value: 50, icon: <Brain className="w-5 h-5 mr-2" />, details: 'AI-Link 기반 학습 가속 핵심 기능 완성' },
+    { name: '성인 학습자 커뮤니티', value: 30, icon: <Rocket className="w-5 h-5 mr-2" />, details: '타겟 커뮤니티 마케팅 및 온보딩' },
+    { name: '핵심 팀 구성', value: 20, icon: <Users className="w-5 h-5 mr-2" />, details: '학습 가속 전문 인력 확보' },
 ];
 
 const useOfFundsPreAData = [
-    { name: 'AI-Link 마켓플레이스 개발', value: 40, icon: <ShoppingCart className="w-5 h-5 mr-2" />, details: '지식 거래 생태계의 핵심 엔진 구축' },
-    { name: '네트워크 효과 마케팅', value: 35, icon: <TrendingUp className="w-5 h-5 mr-2" />, details: '플라이휠 가속화를 위한 마케팅 캠페인' },
-    { name: 'B2B/Enterprise 준비', value: 15, icon: <Building className="w-5 h-5 mr-2" />, details: '기업 고객을 위한 보안 및 관리 기능 개발' },
-    { name: '운영 및 인프라', value: 10, icon: <Cpu className="w-5 h-5 mr-2" />, details: '안정적 서비스 운영을 위한 서버 확장' },
+    { name: '학습 캡슐 마켓플레이스', value: 40, icon: <ShoppingCart className="w-5 h-5 mr-2" />, details: 'AI-Link 기반 학습 패턴 거래 시스템' },
+    { name: '학습 가속 마케팅', value: 35, icon: <TrendingUp className="w-5 h-5 mr-2" />, details: '학습 효율성 개선 효과 마케팅' },
+    { name: 'B2B/Enterprise 준비', value: 15, icon: <Building className="w-5 h-5 mr-2" />, details: '교육기관용 학습 효율성 관리 기능' },
+    { name: '운영 및 인프라', value: 10, icon: <Cpu className="w-5 h-5 mr-2" />, details: '안정적 학습 가속 서비스 운영' },
 ];
 
 const COLORS_SEED = ['#2dd4bf', '#0ea5e9', '#8b5cf6'];
 const COLORS_PREA = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
 
 const milestonesData = [
-  { period: "Seed 후 12개월", target: "Phase 1 달성: 슈퍼-러너 500명 확보", kpi: "리텐션 95%, ARR 1.2억" },
-  { period: "Pre-A 후 12개월", target: "Phase 2 점화: AI-Link 마켓 베타 오픈", kpi: "GMV 100만 달러, ARR 12억" },
-  { period: "Pre-A 후 24개월", target: "Phase 3 진입: 첫 Enterprise 계약 체결", kpi: "Series A 준비 완료" },
+  { period: "Seed 후 12개월", target: "Phase 1 달성: 학습 가속 효과 증명", kpi: "학습 시간 50% 단축, ARR 8천만원" },
+  { period: "Pre-A 후 12개월", target: "Phase 2 점화: 학습 캡슐 마켓 베타", kpi: "GMV 50만 달러, ARR 8억원" },
+  { period: "Pre-A 후 24개월", target: "Phase 3 진입: 첫 교육기관 계약", kpi: "Series A 준비 완료" },
 ];
 
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
@@ -69,10 +69,10 @@ const FinancialsSection = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">
-            Financials: <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">The Flywheel's Economic Engine</span>
+            Financials: <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">The Learning Acceleration Engine</span>
           </h2>
           <p className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-16">
-            우리의 재무 모델은 3단계 성장 전략과 맞물려, 각 단계마다 새로운 수익 엔진을 장착하며 기하급수적으로 성장합니다. 이는 단순한 사용자 증가가 아닌, 생태계 가치 폭발의 결과입니다.
+            우리의 재무 모델은 3단계 학습 가속 전략과 맞물려, 각 단계마다 새로운 학습 효율성 엔진을 장착하며 기하급수적으로 성장합니다. 이는 단순한 사용자 증가가 아닌, 학습 가치 폭발의 결과입니다.
           </p>
         </motion.div>
 
@@ -129,8 +129,8 @@ const FinancialsSection = () => {
                     <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(148, 163, 184, 0.1)'}} />
                     <Legend wrapperStyle={{ color: '#e2e8f0', paddingTop: '40px' }} formatter={(value) => <span style={{color: '#a0aec0'}}>{value}</span>} />
                     <Area type="monotone" dataKey="proSubscriptions" name="Pro 구독료" stackId="1" stroke="#38bdf8" fill="url(#colorPro)" />
-                    <Area type="monotone" dataKey="marketplace" name="마켓플레이스 수수료" stackId="1" stroke="#a3e635" fill="url(#colorMarketplace)" />
-                    <Area type="monotone" dataKey="enterprise" name="Enterprise 계약" stackId="1" stroke="#8b5cf6" fill="url(#colorEnterprise)" />
+                    <Area type="monotone" dataKey="marketplace" name="학습 캡슐 수수료" stackId="1" stroke="#a3e635" fill="url(#colorMarketplace)" />
+                    <Area type="monotone" dataKey="enterprise" name="교육기관 계약" stackId="1" stroke="#8b5cf6" fill="url(#colorEnterprise)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -171,7 +171,7 @@ const FinancialsSection = () => {
           >
             <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full flex flex-col">
               <h3 className="text-2xl font-bold mb-2 text-center">시드 라운드 자금 사용 계획 (3억원)</h3>
-              <p className="text-gray-400 text-center mb-6">Phase 1: Beachhead 점령</p>
+              <p className="text-gray-400 text-center mb-6">Phase 1: 학습 가속 엔진 구축</p>
               <div className="flex-grow h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart 
@@ -220,7 +220,7 @@ const FinancialsSection = () => {
           >
             <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full flex flex-col">
               <h3 className="text-2xl font-bold mb-2 text-center">Pre-A 라운드 자금 사용 계획 (10억원)</h3>
-              <p className="text-gray-400 text-center mb-6">Phase 2: Flywheel 점화</p>
+              <p className="text-gray-400 text-center mb-6">Phase 2: 학습 가속 플라이휠 점화</p>
                <div className="flex-grow h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                    <BarChart 
