@@ -795,7 +795,7 @@ export default function TSNoteCard({
     if (details.length === 0) {
       return (
         <div className="mt-4 pt-3 border-t border-gray-700/50">
-           <p className="text-xs text-gray-500 italic">아직 작성된 기억 강화가 없군요. 조금 남겨 두시겠어요?</p>
+           <p className="text-xs text-gray-500 italic">1줄만 남겨 주시겠어요? 4배나 더 오래 갑니다.</p>
         </div>
       );
     }
@@ -1206,7 +1206,7 @@ export default function TSNoteCard({
             </span>
         </div>
         
-        {/* 메모 진화 요약 - 독립적으로 표시 */}
+        {/* 기억 강화 요약 - 독립적으로 표시 */}
         {renderMemoEvolutionSummary()}
 
       </div>
@@ -1299,7 +1299,7 @@ export default function TSNoteCard({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
-                  {/* "메모 진화" 메뉴 항목 조건 변경: 항상 표시하되 모드에 따라 텍스트만 다르게 */}
+                  {/* "기억 강화" 메뉴 항목 조건 변경: 항상 표시하되 모드에 따라 텍스트만 다르게 */}
                   <DropdownMenuItem 
                     onClick={toggleEvolutionOverlay} 
                     className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText} text-xs sm:text-sm`}

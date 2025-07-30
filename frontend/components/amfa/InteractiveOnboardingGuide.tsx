@@ -37,61 +37,61 @@ export default function InteractiveOnboardingGuide({ onComplete }: InteractiveOn
   const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 4단계 여정 데이터
+  // 4단계 여정 데이터 - 학습 가속 중심
   const journeySteps: StepData[] = [
     {
       id: 'droplet',
       title: 'Atomic Memo',
-      subtitle: '물방울',
+      subtitle: '3분 집중',
       icon: BookOpenIcon,
       color: 'text-cyan-400',
       bgGradient: 'from-cyan-500/20 to-blue-500/20',
-      description: '첫 번째 지식의 물방울을 떨어뜨려 보세요',
-      actionText: '1줄 메모',
+      description: '과학적으로 검증된 3분 집중으로 핵심을 추출하세요',
+      actionText: '3분 집중 시작',
       visualElement: <DropletAnimation />
     },
     {
       id: 'wave',
       title: 'Memo Evolve',
-      subtitle: '파도',
+      subtitle: '메모 진화',
       icon: LightBulbIcon,
       color: 'text-blue-400',
       bgGradient: 'from-blue-500/20 to-indigo-500/20',
-      description: '생각이 파문을 그리며 확산됩니다',
-      actionText: '메모 진화',
+      description: '4단계 진화로 기억 보존률을 4배 향상시키세요',
+      actionText: '메모 진화하기',
       visualElement: <WaveAnimation />
     },
     {
       id: 'vortex',
       title: 'Furnace Knowledge',
-      subtitle: '소용돌이',
+      subtitle: '지식 통합',
       icon: FireIcon,
       color: 'text-purple-400',
       bgGradient: 'from-purple-500/20 to-violet-500/20',
-      description: '지식들이 하나로 모여 단련됩니다',
-      actionText: '단권화 노트',
+      description: '여러 메모를 통합된 지식 체계로 재구성하세요',
+      actionText: '지식 통합하기',
       visualElement: <VortexAnimation />
     },
     {
       id: 'crystal',
       title: 'AI-Link',
-      subtitle: '결정체',
+      subtitle: 'AI 파트너',
       icon: CpuChipIcon,
       color: 'text-violet-400',
       bgGradient: 'from-violet-500/20 to-purple-500/20',
-      description: '완성된 지식 캡슐로 AI와 대화하세요',
-      actionText: 'AI-Link',
+      description: '프롬프트 없이 AI와 소통하는 개인화된 학습 파트너',
+      actionText: 'AI 파트너 생성',
       visualElement: <CrystalAnimation />
     },
     {
       id: 'comparison',
-      title: '차이를 경험해보세요',
-      subtitle: '비교',
+      title: '학습 가속 효과를 경험해보세요',
+      subtitle: '성과 비교',
       icon: CpuChipIcon,
       color: 'text-emerald-400',
       bgGradient: 'from-emerald-500/20 to-green-500/20',
-      description: '일반 AI와 당신의 AI-Link 답변을 직접 비교해보세요',
-      actionText: '내 서재로 이동',
+      description: '일반 학습과 Habitus33의 학습 가속 효과를 직접 비교해보세요',
+      actionText: '학습 시작하기',
       visualElement: <ComparisonSlider />
     }
   ];
@@ -149,13 +149,13 @@ export default function InteractiveOnboardingGuide({ onComplete }: InteractiveOn
               transition={{ delay: 0.2 }}
               className="text-6xl mb-4"
             >
-              💧
+              ⚡
             </motion.div>
             <h2 className="text-3xl md:text-4xl font-bold text-cyan-400">
-              당신의 첫 지식 한 방울을
+              학습 가속의 첫 단계를
             </h2>
             <h2 className="text-3xl md:text-4xl font-bold text-purple-400">
-              떨어뜨려 볼까요?
+              경험해보세요
             </h2>
           </div>
 
@@ -873,20 +873,20 @@ function ComparisonSlider() {
   const [currentView, setCurrentView] = useState<'normal' | 'ailink'>('normal');
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   
-  const normalAI = {
-    title: "일반 AI",
-    response: "프로젝트 관리는 계획, 실행, 모니터링, 종료의 4단계로 구성됩니다. 각 단계별로 적절한 도구와 방법론을 사용하여 효과적으로 관리할 수 있습니다. 일반적인 방법론으로는 워터폴, 애자일, 스크럼 등이 있으며...",
+  const normalLearning = {
+    title: "일반 학습",
+    response: "학습은 시간을 투자하고 반복하는 것이 중요합니다. 하루에 몇 시간씩 공부하고, 정기적으로 복습하는 것이 효과적입니다. 노트를 작성하고 중요한 내용을 암기하는 전통적인 방법을 사용하세요...",
     color: "from-gray-500 to-gray-700",
     bgColor: "bg-gray-600",
-    icon: "🤖"
+    icon: "📚"
   };
   
-  const aiLink = {
-    title: "당신의 AI-Link",
-    response: "지난주 스크럼 회고에서 언급하신 '소통 부족' 이슈를 해결하기 위해, 당신이 읽으신 '팀 토폴로지' 책의 콘웨이 법칙을 적용해보면 좋겠습니다. 특히 4장에서 다룬 '팀 인터페이스' 개념을 활용해서...",
+  const habitusLearning = {
+    title: "Habitus33 학습",
+    response: "3분 집중으로 핵심을 추출하고, 4단계 진화로 기억을 강화하세요. 지식 카트로 체계화하고 AI 파트너와 함께 학습하면 시간은 25% 단축되고 기억은 4배 향상됩니다. 당신의 학습 패턴을 분석한 맞춤형 가이드를 제공합니다...",
     color: "from-violet-500 to-purple-700",
     bgColor: "bg-violet-600",
-    icon: "✨"
+    icon: "⚡"
   };
 
   // 자동 전환 효과
@@ -930,7 +930,7 @@ function ComparisonSlider() {
 
       {/* Side-by-Side 비교 컨테이너 */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        {/* 일반 AI 답변 */}
+        {/* 일반 학습 */}
         <motion.div
           className={`relative p-4 rounded-xl border-2 transition-all duration-500 cursor-pointer ${
             currentView === 'normal' 
@@ -947,17 +947,17 @@ function ComparisonSlider() {
           {/* 헤더 */}
           <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-lg">
-              {normalAI.icon}
+              {normalLearning.icon}
             </div>
             <div>
-              <h3 className="text-white font-semibold text-sm">{normalAI.title}</h3>
-              <p className="text-gray-400 text-xs">일반적인 답변</p>
+              <h3 className="text-white font-semibold text-sm">{normalLearning.title}</h3>
+              <p className="text-gray-400 text-xs">전통적인 학습 방법</p>
             </div>
           </div>
           
           {/* 답변 내용 */}
           <div className="text-gray-300 text-sm leading-relaxed">
-            {normalAI.response}
+            {normalLearning.response}
           </div>
 
           {/* 활성 표시 */}
@@ -971,7 +971,7 @@ function ComparisonSlider() {
           )}
         </motion.div>
 
-        {/* AI-Link 답변 */}
+        {/* Habitus33 학습 */}
         <motion.div
           className={`relative p-4 rounded-xl border-2 transition-all duration-500 cursor-pointer ${
             currentView === 'ailink' 
@@ -988,17 +988,17 @@ function ComparisonSlider() {
           {/* 헤더 */}
           <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 bg-violet-600 rounded-full flex items-center justify-center text-lg">
-              {aiLink.icon}
+              {habitusLearning.icon}
             </div>
             <div>
-              <h3 className="text-white font-semibold text-sm">{aiLink.title}</h3>
-              <p className="text-violet-300 text-xs">맥락을 아는 답변</p>
+              <h3 className="text-white font-semibold text-sm">{habitusLearning.title}</h3>
+              <p className="text-violet-300 text-xs">학습 가속 방법</p>
             </div>
           </div>
           
           {/* 답변 내용 */}
           <div className="text-violet-100 text-sm leading-relaxed">
-            {aiLink.response}
+            {habitusLearning.response}
           </div>
 
           {/* 활성 표시 */}
@@ -1037,12 +1037,12 @@ function ComparisonSlider() {
           transition={{ delay: 1 }}
         >
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-violet-400 font-semibold text-sm">핵심 차이점</span>
+            <span className="text-violet-400 font-semibold text-sm">학습 가속 효과</span>
           </div>
           <p className="text-violet-200 text-xs leading-relaxed">
-            AI-Link는 당신의 독서 기록, 프로젝트 경험, 개인적 맥락을 이해하고 
+            Habitus33은 과학적으로 검증된 방법으로 
             <br />
-            <strong className="text-violet-300">구체적이고 실행 가능한 조언</strong>을 제공합니다
+            <strong className="text-violet-300">학습 시간 25% 단축, 기억 보존률 4배 향상</strong>을 달성합니다
           </p>
         </motion.div>
       </div>

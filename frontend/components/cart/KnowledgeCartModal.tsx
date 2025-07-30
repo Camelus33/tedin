@@ -102,7 +102,7 @@ const KnowledgeCartModal: React.FC<KnowledgeCartModalProps> = ({ isOpen, onClose
         {/* 카트 아이템 목록: 아이템이 있을 경우와 없을 경우를 구분하여 표시 */}
         <div className="p-5 overflow-y-auto flex-grow">
           {cartItems.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">카트에 담긴 1줄 메모가 없습니다.</p>
+            <p className="text-gray-400 text-center py-8">카트에 담긴 메모카드가 없습니다.</p>
           ) : (
             <ul className="space-y-3">
               {cartItems.map((item) => (
@@ -148,7 +148,7 @@ const KnowledgeCartModal: React.FC<KnowledgeCartModalProps> = ({ isOpen, onClose
               variant="default"
               onClick={handleCreateSummaryNote}
               className="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold flex items-center gap-2 transition-colors"
-              aria-label="선택된 메모로 단권화 노트 만들기"
+              aria-label="선택된 메모카드로 단권화 노트 만들기"
             >
               <DocumentPlusIcon className="h-5 w-5" />
               단권화 노트 만들기 ({cartItems.length}개)

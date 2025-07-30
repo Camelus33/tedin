@@ -56,86 +56,86 @@ export default function AMFADeepDive() {
     router.push('/books');
   };
 
-  // 각 단계별 상세 정보
+  // 각 단계별 상세 정보 - 학습 가속 중심
   const stepDetails = {
     'atomic': {
       title: 'Atomic Memo',
-      subtitle: 'The Drop Moment',
+      subtitle: '3분 집중으로 핵심 추출',
       icon: BookOpenIcon,
       color: 'text-cyan-400',
-      description: '물 한방울이 만드는 첫 번째 기적',
-      detailedDescription: '고요한 지식의 바다에 떨어지는 첫 번째 물방울. 1줄 메모로 작지만 완벽한 원형의 파문이 시작됩니다.',
+      description: '과학적으로 검증된 3분 집중 독서로 학습 가속의 시작',
+      detailedDescription: '3분이라는 과학적으로 검증된 시간으로 최적의 집중력을 유지하며 핵심 내용을 빠르게 추출합니다. 이 작은 습관이 학습 시간을 25% 단축하는 여정의 시작입니다.',
       features: [
-        '3분 집중 독서',
-        '1줄 메모로 핵심 압축',
-        '부담 없는 시작점',
-        '매일 지속 가능한 루틴'
+        '3분 과학적 집중 시간',
+        '핵심 내용 빠른 추출',
+        '집중력 최적화 시스템',
+        '학습 효율성 극대화'
       ],
       benefits: [
-        '완벽한 집중력 경험',
-        '작은 성취감의 축적',
-        '지속 가능한 학습 습관',
-        '부담 없는 시작의 기쁨'
+        '학습 시간 25% 단축',
+        '집중력 향상으로 깊이 있는 이해',
+        '부담 없는 학습 시작',
+        '지속 가능한 학습 습관 형성'
       ]
     },
     'memo': {
       title: 'Memo Evolve',
-      subtitle: 'The First Ripple',
+      subtitle: '1줄 메모를 진화된 지식으로',
       icon: LightBulbIcon,
       color: 'text-blue-400',
-      description: '생각이 젋은 지혜의 바다로 나아가는 여행',
-      detailedDescription: '작은 파문이 동심원을 그리며 지식의 바다로 확산되는 과정. 5단계 질문을 통해 개인의 경험과 만나며 새로운 섬들을 발견합니다.',
+      description: '4단계 진화로 깊이 있는 지식으로 발전',
+      detailedDescription: '단순한 1줄 메모를 4단계 진화 과정을 통해 깊이 있는 지식으로 발전시킵니다. 생각추가, 메모진화, 지식연결, 플래시카드를 통해 기억 보존률을 4배 향상시킵니다.',
       features: [
-        '5단계 진화 질문',
-        '개인 경험과의 연결',
-        '생각의 자연스러운 확산',
-        '통찰의 순간들 포착'
+        '4단계 체계적 진화',
+        '생각추가로 깊이 있는 사고',
+        '지식연결로 네트워크 구축',
+        '플래시카드로 장기 기억 형성'
       ],
       benefits: [
-        '깊이 있는 사고력 개발',
-        '개인화된 지식 체계',
-        '창의적 연결의 발견',
-        '진정한 이해의 경험'
+        '기억 보존률 4배 향상',
+        '깊이 있는 개념 이해',
+        '지식 연결성 5배 향상',
+        '체계적인 학습 구조화'
       ]
     },
     'furnace': {
       title: 'Furnace Knowledge',
-      subtitle: 'The Deep Current',
+      subtitle: '지식의 용광로를 통한 재구성',
       icon: FireIcon,
       color: 'text-purple-400',
-      description: '생각을 연결하여 깊은 통찰로 단련되다',
-      detailedDescription: '표면의 파도를 넘어 깊은 심해 해류로 잠수하는 여정. 압력과 어둠 속에서 지식이 단단한 보석으로 변화합니다.',
+      description: '여러 메모를 통합된 지식 체계로 재구성',
+      detailedDescription: '여러 개의 1줄 메모를 하나의 완성된 지식 체계로 통합합니다. 지식 카트에 담고 논리적 순서로 정렬하여, 분산된 지식을 통합된 학습 체계로 재구성합니다.',
       features: [
-        '지식의 체계적 융합',
-        '개인만의 통찰 노트',
-        '깊이 있는 내재화',
-        '실용적 지혜로 변환'
+        '지식 카트로 수집',
+        '논리적 순서 정렬',
+        '통합된 지식 체계 구축',
+        '학습 가속을 위한 구조화'
       ],
       benefits: [
-        '체화된 지식 획득',
-        '실전 적용 가능한 통찰',
-        '개인만의 지식 체계',
-        '진짜 내 것이 된 학습'
+        '지식 연결성 5배 향상',
+        '체계적인 학습 구조',
+        '복잡한 개념의 명확한 이해',
+        '효율적인 지식 관리'
       ]
     },
     'ai': {
       title: 'AI Link',
-      subtitle: 'The Infinite Wave',
+      subtitle: '개인화된 AI 파트너',
       icon: CpuChipIcon,
       color: 'text-violet-400',
-      description: '자신만의 도메인 컨텍스트로 무한한 파도를 만드세요',
-      detailedDescription: '개인의 한계를 넘어 광활한 지식 대양으로의 모험. 예상치 못한 해류를 타고 새로운 대륙을 발견하는 기쁨을 경험합니다.',
+      description: '프롬프트 없이 AI와 소통하는 개인화된 학습 파트너',
+      detailedDescription: '온톨로지 구조화를 통해 AI가 당신의 맥락을 완벽하게 이해하게 만들고, 프롬프트 없이도 개인화된 학습 가이드를 제공합니다. 복잡한 설명 없이도 AI가 당신의 학습 맥락을 파악합니다.',
       features: [
-        '고맥락 AI 답변',
-        '예상치 못한 연결 발견',
-        '무한한 지식 확장',
-        '새로운 관점의 획득'
+        '온톨로지 구조화',
+        '프롬프트 없는 소통',
+        '개인화된 학습 가이드',
+        '학습 가속의 핵심 도구'
       ],
       benefits: [
-        '개인 한계를 넘어선 학습',
-        '창발적 통찰의 경험',
-        '지식의 자유로운 항해',
-        '경이로운 발견의 기쁨'
+        'AI에게 매번 설명할 필요 없음',
+        '개인화된 학습 추천',
+        '효율적인 학습 가이드',
+        '지속적인 학습 가속'
       ]
     }
   };
@@ -165,17 +165,17 @@ export default function AMFADeepDive() {
           {/* 섹션 헤더 */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-cyan-400 mb-6">
-              AMFA 4단계 여정
+              학습 가속을 위한 AMFA 4단계
             </h2>
             <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-8">
-              1줄 메모로 시작해 지식 캡슐을 완성하는 나만의 학습 여정을 시작하세요
+              과학적으로 검증된 방법으로 학습 시간을 25% 단축하고 기억 보존률을 4배 향상시키는 여정을 시작하세요
             </p>
             
             {/* 진행 표시 */}
             <div className="flex items-center justify-center space-x-2">
               <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
               <span className="text-sm text-purple-400 font-medium tracking-wider">
-                1줄 메모 → 메모 진화 → 맥락 완성 → 지식 캡슐
+                3분 집중 → 메모 진화 → 지식 통합 → AI 파트너
               </span>
               <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
             </div>
@@ -198,22 +198,22 @@ export default function AMFADeepDive() {
                   <div className="flex justify-center">
                     <BoltIcon className="h-12 w-12 text-yellow-400" />
                   </div>
-                  <h4 className="font-semibold text-cyan-400 text-lg">3분 1줄이면 충분</h4>
-                  <p className="text-base">어떤 바쁜 일상에서도 찾을 수 있는 시간, 3분으로 시작하세요</p>
+                  <h4 className="font-semibold text-cyan-400 text-lg">학습 시간 25% 단축</h4>
+                  <p className="text-base">과학적으로 검증된 3분 집중으로 효율적인 학습을 시작하세요</p>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-center">
                     <SparklesIcon className="h-12 w-12 text-green-400" />
                   </div>
-                  <h4 className="font-semibold text-purple-400 text-lg">나만의 속도로</h4>
-                  <p className="text-base">다른 사람과 비교하지 않고, 나만의 파도를 만드세요</p>
+                  <h4 className="font-semibold text-purple-400 text-lg">기억 보존률 4배 향상</h4>
+                  <p className="text-base">인지과학 기반의 체계적 방법으로 장기 기억을 형성합니다</p>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-center">
                     <CheckCircleIcon className="h-12 w-12 text-blue-400" />
                   </div>
-                  <h4 className="font-semibold text-blue-400 text-lg">작은 성공의 경험</h4>
-                  <p className="text-base">매일 작은 성취를 쌓아가며 "나도 할 수 있다"는 자신감을 키워요</p>
+                  <h4 className="font-semibold text-blue-400 text-lg">지식 연결성 5배 향상</h4>
+                  <p className="text-base">체계적인 지식 구조화로 깊이 있는 이해를 달성합니다</p>
                 </div>
               </div>
             </div>

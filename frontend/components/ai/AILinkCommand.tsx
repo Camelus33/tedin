@@ -275,7 +275,7 @@ export function AILinkCommand() {
           <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
             <Textarea
               id="goal"
-              placeholder="예) 지난 일주일동안 작성한 메모에서 내가 주로 사용한 단어는 무엇인가?"
+              placeholder="예) 지난 일주일동안 작성한 메모에서 나의 관심사는 무엇인가?"
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               className="flex-grow mb-4"
