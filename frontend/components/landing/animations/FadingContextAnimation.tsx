@@ -74,12 +74,12 @@ export default function FadingContextAnimation() {
 
         <div className="pl-14 pt-2 space-y-2">
           <ContextLine text="새로운 개념을 배우면..." delay={0} isFading={true} />
-          <ContextLine text="기존 지식을 잊어버림..." delay={0.2} isFading={true} />
-          <ContextLine text="개념 간 연결이 끊어짐..." delay={0.4} isFading={true} />
+          <ContextLine text="메모가 체계적으로 발전되지 않음..." delay={0.2} isFading={true} />
+          <ContextLine text="같은 내용을 반복 학습하게 됨..." delay={0.4} isFading={true} />
         </div>
       </div>
        <p className="text-center text-xs text-gray-400 mt-4">
-        지식이 연결되지 않으면 학습 효율이 떨어집니다.
+        학습 과정의 부산물이 발전되지 않으면 학습 시간이 늘어납니다.
       </p>
     </div>
   )

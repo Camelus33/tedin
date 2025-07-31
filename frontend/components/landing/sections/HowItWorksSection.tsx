@@ -6,36 +6,36 @@ import { Clock, FileText, Link as LinkIcon, BookOpen, TrendingUp } from 'lucide-
 const steps = [
   {
     icon: Clock,
-    title: "TS 세션",
-    description: "타이머를 이용한 집중 읽기",
+    title: "집중 읽기",
+    description: "타이머로 핵심만 빠르게",
     color: "text-blue-600",
     bg: "bg-blue-100",
   },
   {
     icon: FileText,
-    title: "1줄 메모",
-    description: "중요한 내용만 1줄로 요약",
+    title: "한 줄 정리",
+    description: "중요한 내용만 간단히",
     color: "text-indigo-600",
     bg: "bg-indigo-100",
   },
   {
     icon: LinkIcon,
     title: "지식 연결",
-    description: "생각과 지식을 모두 연결",
+    description: "관련 내용끼리 묶어서",
     color: "text-purple-600",
     bg: "bg-purple-100",
   },
   {
     icon: BookOpen,
-    title: "플래시카드",
-    description: "복습용 문제 카드 작성",
+    title: "문제 카드",
+    description: "복습용 카드 만들기",
     color: "text-green-600",
     bg: "bg-green-100",
   },
   {
     icon: TrendingUp,
-    title: "개념이해도",
-    description: "이해정도를 자동 측정",
+    title: "효과 측정",
+    description: "이해정도 자동측정",
     color: "text-orange-600",
     bg: "bg-orange-100",
   }
@@ -69,7 +69,7 @@ export default function HowItWorksSection() {
             어떻게 작동하나요?
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            학습 가속기는 5단계로 지식을 체계화하여 빠르고 오래가는 학습을 만듭니다.
+            Habitus33은 학습을 단순-구조화하여 시간을 줄입니다.
           </p>
         </motion.div>
         
@@ -131,24 +131,24 @@ export default function HowItWorksSection() {
                   <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
                     <TrendingUp className="w-8 h-8 text-green-600" />
                   </div>
-                  <h4 className="text-lg font-bold text-gray-800 mb-2">학습 시간 37% 단축</h4>
-                  <p className="text-sm text-gray-600">TS 세션과 1줄 메모로 핵심만 빠르게 파악</p>
+                  <h4 className="text-lg font-bold text-gray-800 mb-2">학습 시간 절반 단축</h4>
+                  <p className="text-sm text-gray-600">집중 읽기로 핵심만 빠르게 파악</p>
                 </div>
                 
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
                     <LinkIcon className="w-8 h-8 text-blue-600" />
                   </div>
-                  <h4 className="text-lg font-bold text-gray-800 mb-2">지식 연결성 4.2배 향상</h4>
-                  <p className="text-sm text-gray-600">메모 진화로 관련 개념들을 자동 연결</p>
+                  <h4 className="text-lg font-bold text-gray-800 mb-2">지식 연결성 평균 3배 확장</h4>
+                  <p className="text-sm text-gray-600">관련 내용끼리 묶어서 기억 강화</p>
                 </div>
                 
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
                     <BookOpen className="w-8 h-8 text-purple-600" />
                   </div>
-                  <h4 className="text-lg font-bold text-gray-800 mb-2">기억 보존률 4.2배 증가</h4>
-                  <p className="text-sm text-gray-600">플래시카드와 간격 반복으로 장기 기억 강화</p>
+                  <h4 className="text-lg font-bold text-gray-800 mb-2">기억 보존률 75% 증가</h4>
+                  <p className="text-sm text-gray-600">문제 카드로 복습하고 효과 확인</p>
                 </div>
               </div>
             </div>

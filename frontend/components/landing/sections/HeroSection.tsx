@@ -46,20 +46,15 @@ export default function HeroSection() {
             {/* Text Content */}
             <div className="max-w-xl text-left">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-gray-900 tracking-tight leading-tight">
-                빈틈없이 빠르게,<br />
-                <span className="text-indigo-600">오래가는 학습</span>
+                모든 학습을<br />
+                <span className="text-indigo-600">반으로 줄이세요</span>
               </h1>
-              <p className="mt-6 text-lg sm:text-xl text-gray-600">
-                <span className="font-semibold text-indigo-600">학습 가속기</span>는 지식을 체계적으로 연결하여 
-                <span className="font-semibold text-indigo-600">학습 시간을 37% 단축</span>하고 
-                <span className="font-semibold text-indigo-600">기억 보존률을 4.2배 향상</span>시킵니다.
-              </p>
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
                 <Link
                   href="/auth/register"
                   className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150 ease-in-out w-full sm:w-auto"
                 >
-                  나만의 학습 가속기 시작하기
+                  나만의 학습 단축기 시작하기
                 </Link>
               </div>
             </div>
