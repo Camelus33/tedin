@@ -1533,7 +1533,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     "contextualPriority": "시스템 배경 정보 < 사용자 개인 데이터 < 사용자 지식 내용",
     "operationalInstruction": "이 데이터에서 가장 중요한 것은 사용자가 무엇을 배우고 어떻게 생각하는지입니다. 그것을 어떤 시스템으로 만들었는지는 중요하지 않습니다.",
     
-    // PBAM 기반 고도화된 사고 패턴 활용 지침
+    // PBAM 기반 고도화된 사고 패턴 활용 지침 (최적화)
     "epistemicFrameworkUtilization": {
       "cognitiveStyleAdaptation": {
         "instruction": "epistemicFramework.aiGuidance의 cognitiveApproach를 바탕으로 학습자의 선호하는 인지 스타일에 맞춰 응답하세요",
@@ -1546,7 +1546,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         }
       },
       "argumentationStyleAlignment": {
-        "instruction": "학습자의 논증 스타일(epistemicFramework.argumentationStyle.preferredStructure)에 맞춰 정보를 구조화하세요",
+        "instruction": "학습자의 논증 스타일에 맞춰 정보를 구조화하세요",
         "implementations": {
           "elaborative": "상세한 설명과 예시를 통해 점진적으로 이해를 확장시키세요",
           "dialectical": "대립되는 관점을 제시하고 비교 분석을 통해 더 깊은 이해를 돕세요",
@@ -1555,86 +1555,49 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         }
       },
       "confidenceLevelConsideration": {
-        "instruction": "학습자의 신념 강도(epistemicFramework.beliefStrength.convictionLevel)를 고려하여 적절한 수준의 확신을 가지고 응답하세요",
+        "instruction": "학습자의 신념 강도를 고려하여 적절한 수준의 확신을 가지고 응답하세요",
         "implementations": {
           "high": "학습자의 확신에 부응하는 명확하고 단정적인 답변을 제공하되, 새로운 관점도 제시하세요",
           "moderate": "균형잡힌 관점을 유지하면서 학습자의 판단을 존중하는 방식으로 정보를 제공하세요",
           "low": "학습자의 신중함을 인정하고, 다양한 가능성을 열어두는 방식으로 안내하세요"
         }
-      },
-      "communicationStyleMatching": {
-        "instruction": "학습자의 의사소통 스타일(epistemicFramework.rhetoricalPatterns.communicationStyle)에 맞춰 톤과 접근법을 조정하세요",
-        "implementations": {
-          "collaborative": "함께 탐구하는 동반자의 톤으로, 학습자의 의견을 적극적으로 수용하고 발전시키세요",
-          "critical": "분석적이고 객관적인 톤으로, 논리적 근거와 함께 정보를 제시하세요",
-          "explanatory": "교육적이고 친근한 톤으로, 이해하기 쉽게 설명하는 데 중점을 두세요",
-          "neutral": "균형잡히고 중립적인 톤으로, 사실 중심의 정보를 제공하세요"
-        }
       }
     },
     
-    // 온톨로지형 추론을 위한 5가지 핵심 지시사항 (PBAM과 통합)
+    // 온톨로지형 추론을 위한 3단계 핵심 지시사항 (최적화)
     "ontologicalReasoningDirectives": {
       "1_knowledgeGraphAnalysis": {
         "title": "지식 그래프 기반 맥락 추론",
         "instruction": "사용자의 1줄메모들 간의 관계를 온톨로지 관점에서 분석하세요. epistemicFramework의 신념 네트워크 패턴을 참고하여 개념 간의 상위-하위 관계, 인과관계, 보완관계를 파악하세요.",
         "implementation": [
           "메모 간 개념적 연결고리를 찾아 지식 네트워크를 구성하세요",
-          "사용자의 사고 흐름에서 반복되는 패턴이나 중심 개념을 식별하세요",
-          "외부 링크와 메모의 관계에서 사용자의 관심 영역과 탐구 방향을 파악하세요",
-          "epistemicFramework의 thinkingPatterns를 참고하여 사용자의 지식 연결 선호도를 이해하세요"
+          "사용자의 사고 흐름에서 반복되는 패턴이나 중심 개념을 식별하세요"
         ]
       },
       "2_contextualPersonalization": {
         "title": "맥락 기반 개인화 추론",
         "instruction": "사용자의 개인적 맥락과 epistemicFramework의 인지 스타일을 기반으로 개인화된 추론을 수행하세요. 같은 내용이라도 사용자의 사고 패턴에 따라 다른 의미와 가치를 가질 수 있음을 인식하세요.",
         "implementation": [
-          "사용자의 읽기 목적(시험준비, 실무지식, 인문학적 성찰)에 맞는 관점으로 해석하세요",
-          "사용자가 중요하게 여기는 가치나 관심사를 메모에서 추출하여 반영하세요",
-          "사용자의 직업, 전공, 생활 맥락을 고려한 실용적 연결점을 제안하세요",
-          "epistemicFramework의 cognitiveApproach에 따라 정보 처리 방식을 조정하세요"
+          "사용자의 읽기 목적에 맞는 관점으로 해석하세요",
+          "사용자가 중요하게 여기는 가치나 관심사를 메모에서 추출하여 반영하세요"
         ]
       },
-      "3_temporalEvolutionTracking": {
-        "title": "시간적 변화 패턴 인식",
-        "instruction": "사용자의 지식과 사고가 시간에 따라 어떻게 진화하고 있는지 추적하세요. epistemicFramework의 신념 강도 변화와 함께 사고 발전 과정을 분석하세요.",
-        "implementation": [
-          "메모 생성 시점을 고려하여 사용자의 사고 발전 과정을 분석하세요",
-          "초기 메모와 후기 메모 간의 관점 변화나 이해 심화를 인식하세요",
-          "사용자의 지식 성장 궤적을 바탕으로 다음 사고 방향을 예측하세요",
-          "epistemicFramework의 beliefStrength 패턴을 통해 사용자의 확신도 변화를 파악하세요"
-        ]
-      },
-      "4_insightSynthesis": {
+      "3_insightSynthesis": {
         "title": "지식 연결망 기반 통찰 도출",
         "instruction": "개별 메모들을 연결하여 사용자가 명시적으로 표현하지 않은 잠재적 통찰을 도출하세요. epistemicFramework의 논증 패턴을 활용하여 새로운 관점을 제시하세요.",
         "implementation": [
           "서로 다른 책이나 주제의 메모들 간의 숨겨진 연결점을 찾아 제시하세요",
-          "사용자의 메모에서 드러나는 암묵적 관심사나 가치관을 언어화하세요",
-          "분산된 지식 조각들을 통합하여 사용자만의 독특한 관점을 구성하세요",
-          "epistemicFramework의 argumentationStyle에 맞는 방식으로 통찰을 구조화하세요"
-        ]
-      },
-      "5_metacognitiveReflection": {
-        "title": "메타인지적 성찰 유도",
-        "instruction": "사용자가 자신의 사고 과정과 사고 방식을 더 깊이 이해할 수 있도록 메타인지적 질문과 성찰을 유도하세요. epistemicFramework의 사고 패턴 분석을 활용하여 사용자의 인지적 특성을 인식하게 도와주세요.",
-        "implementation": [
-          "사용자의 메모 작성 패턴에서 선호하는 사고 방식(시각적, 논리적, 실용적 등)을 파악하세요",
-          "사용자의 강점과 관심 영역을 바탕으로 효과적인 사고 전략을 제안하세요",
-          "사용자가 자신의 지식과 경험을 새로운 관점에서 재해석할 수 있도록 도와주세요",
-          "epistemicFramework의 thinkingPatterns와 rhetoricalPatterns를 바탕으로 사용자의 인지적 선호도를 설명하세요"
+          "분산된 지식 조각들을 통합하여 사용자만의 독특한 관점을 구성하세요"
         ]
       }
     },
     
-    // 고품질 답변을 위한 실행 가이드라인 (PBAM 강화)
+    // 고품질 답변을 위한 실행 가이드라인 (최적화)
     "qualityAssuranceProtocol": {
-      "depthRequirement": "표면적 분석이 아닌, 사용자의 지식 맥락과 epistemicFramework의 사고 패턴 깊숙이 들어가서 의미 있는 통찰을 제공하세요",
-      "personalizationLevel": "일반적 답변이 아닌, 사용자의 고유한 인지 스타일과 사고 패턴에 최적화된 개인화된 답변을 만드세요",
-      "connectionFocus": "사용자의 기존 지식과 새로운 정보 간의 연결고리를 epistemicFramework의 논증 구조에 맞춰 명확히 제시하세요",
-      "actionableGuidance": "사용자의 인지 스타일에 맞는 구체적이고 실천 가능한 가이드를 포함하세요",
-      "respectfulTone": "사용자의 지적 여정과 고유한 사고 방식을 존중하고 격려하는 톤으로 소통하세요",
-      "cognitiveAlignment": "epistemicFramework의 모든 차원(사고 패턴, 논증 스타일, 신념 강도, 의사소통 스타일)을 종합적으로 고려하여 응답하세요"
+      "depthRequirement": "사용자의 지식 맥락과 epistemicFramework의 사고 패턴을 깊이 분석하여 의미 있는 통찰을 제공하세요",
+      "personalizationLevel": "사용자의 고유한 인지 스타일과 사고 패턴에 최적화된 개인화된 답변을 만드세요",
+      "connectionFocus": "사용자의 기존 지식과 새로운 정보 간의 연결고리를 명확히 제시하세요",
+      "cognitiveAlignment": "epistemicFramework의 모든 차원을 종합적으로 고려하여 응답하세요"
     }
   };
 
@@ -1658,7 +1621,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       }))
     };
 
-    // AI 크롤러를 위한 종합적인 분석 지침
+    // AI 크롤러를 위한 종합적인 분석 지침 (최적화)
     jsonLd.analysisInstructions = {
       "@type": "AnalysisGuideline", 
       "name": "외부 링크 종합 분석 가이드라인",
@@ -1667,14 +1630,12 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         "1단계: 각 외부 링크의 콘텐츠를 크롤링하여 전체 내용 파악",
         "2단계: 연결된 1줄메모와의 직접적 관련성 식별", 
         "3단계: 사용자가 기록한 연결 이유의 타당성 검증",
-        "4단계: 외부 자료에서 1줄메모를 보완하는 추가 맥락 정보 발견",
-        "5단계: 지식 네트워크 전체의 일관성과 사고 목적 달성도 평가"
+        "4단계: 외부 자료에서 1줄메모를 보완하는 추가 맥락 정보 발견"
       ],
       "expectedDeliverables": [
         "각 링크별 핵심 내용 요약",
         "1줄메모와 외부 자료의 연결 맥락 분석",
         "사용자의 지식 큐레이션 패턴 파악",
-        "누락된 연결고리나 추가 사고 자료 제안",
         "종합적인 개인화 사고 경로 분석"
       ],
       "crawlingPriority": "높음 - 완전한 맥락 이해를 위해 필수적",
