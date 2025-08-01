@@ -643,7 +643,7 @@ export default function TSNoteCard({
 
         {/* 쓰레드 목록 */}
         {showInlineThreads && (
-          <div className="mt-2 ml-4 space-y-2">
+          <div className="ml-4 space-y-2">
             {threads.map((thread) => (
               <div key={thread._id} className="border-l-2 border-gray-600 pl-3 py-1">
                 {editingThreadId === thread._id ? (
@@ -843,7 +843,7 @@ export default function TSNoteCard({
 
         {/* 펼친 상태 내용 */}
         {showMemoEvolution && (
-          <div className="mt-2 p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
             {details}
           </div>
         )}
@@ -1260,7 +1260,7 @@ export default function TSNoteCard({
 
         {/* 펼친 상태 내용 */}
         {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
-          <div className="mt-2 p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
             <ul className="space-y-1">
               {note.relatedLinks.map((link, idx) => (
                 <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
@@ -1284,7 +1284,7 @@ export default function TSNoteCard({
       </div>
 
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
-        <div className="mt-3 pt-2 border-t border-gray-700/50 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        <div className="pt-2 border-t border-gray-700/50 flex flex-wrap items-center gap-x-2 gap-y-1.5">
           <TagIcon className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" title="태그" />
           {note.tags.map((tag, index) => (
             <span
