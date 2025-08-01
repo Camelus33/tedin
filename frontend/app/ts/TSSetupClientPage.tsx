@@ -309,7 +309,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
               TS Setting
             </h1>
             <p className={`${cyberTheme.textMuted} text-sm mb-4`}>
-              여정에 앞서 읽을 범위를 정하고, 시작하세요.
+              읽을 범위를 정하세요.
             </p>
           </div>
 
@@ -350,7 +350,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           </div>
 
           <div className="space-y-2">
-            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>어디부터 어디까지 읽을까요? (페이지 범위)</h2>
+            <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>어디부터 어디까지 읽을까요?</h2>
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <div className="flex-1 w-full">
                 <label htmlFor="start-page" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>시작</label>
@@ -399,7 +399,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
           <div className="space-y-2">
             <h2 className={`text-sm font-medium ${cyberTheme.textLight}`}>추가 설정</h2>
             <div className="flex items-center justify-between py-1">
-              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>읽기 집중력 훈련</label>
+              <label htmlFor="warmup-toggle" className={`text-xs ${cyberTheme.textMuted} flex-grow mr-2`}>읽기 강화 훈련</label>
               <button
                 id="warmup-toggle"
                 type="button"
@@ -414,7 +414,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
               </button>
             </div>
             <div className="py-1">
-              <label htmlFor="focus-duration" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>읽는 시간 설정 (분)</label>
+              <label htmlFor="focus-duration" className={`block text-xs font-medium mb-1 ${cyberTheme.textMuted}`}>읽는 시간 설정</label>
               <div className="flex items-center gap-2 mt-1">
                  <input
                     type="range"
@@ -431,7 +431,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                  <span className={`text-lg font-semibold ${cyberTheme.secondary} w-10 text-center`}>{focusDuration}</span>
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                최소 3분, 최대 17분까지 조정해 보세요. 자기만의 최적시간을 찾아보세요.
+                최소 3분 ~ 최대 17분. 자기만의 집중시간을 찾아보세요.
               </p>
             </div>
           </div>

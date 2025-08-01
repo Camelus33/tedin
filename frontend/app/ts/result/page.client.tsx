@@ -154,13 +154,13 @@ export default function TSResultPage() {
             {/* App Logo */}
             <div className="text-center mb-6">
               <div className="inline-block px-4 py-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-full shadow-md">
-                <span className="text-sm font-semibold tracking-wider text-white">Habitus33</span>
+                <span className="text-sm font-semibold tracking-wider text-white">My Reading</span>
               </div>
             </div>
             
             {/* Achievement Title */}
             <div className="text-center mb-4">
-              <h1 className="text-2xl sm:text-3xl tracking-wider font-bold text-gray-800 uppercase">SPEED</h1>
+              <h1 className="text-2xl sm:text-3xl tracking-wider font-bold text-gray-800 uppercase">Speed</h1>
             </div>
             
             {/* Achievement Level Badge */}
@@ -236,19 +236,19 @@ export default function TSResultPage() {
                 <p className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
                   {sessionResult.actualEndPage - sessionResult.startPage}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-600">페이지</p>
+                <p className="text-xs sm:text-sm text-gray-600">page</p>
               </div>
               <div className="text-center bg-gray-50 rounded-xl py-4 px-2 border border-gray-200">
                 <p className="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
                   {Math.floor(sessionResult.durationSec / 60)}:{(sessionResult.durationSec % 60).toString().padStart(2, '0')}
                 </p>
-                <p className="text-xs sm:text-sm text-gray-600">분</p>
+                <p className="text-xs sm:text-sm text-gray-600">min</p>
               </div>
               <div className="text-center bg-gray-50 rounded-xl py-4 px-2 border border-gray-200">
                 <p className="text-lg sm:text-xl font-bold text-gray-800 mb-1">
                   <ClientDateDisplay createdAt={sessionResult?.createdAt} fallbackText="--/--" />
                 </p>
-                <p className="text-xs sm:text-sm text-gray-600">날짜</p>
+                <p className="text-xs sm:text-sm text-gray-600">date</p>
               </div>
             </div>
             

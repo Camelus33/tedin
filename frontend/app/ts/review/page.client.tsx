@@ -296,7 +296,7 @@ export default function TSReviewPage() {
               rows={3}
               value={reviewData.memo}
               onChange={handleChange}
-              placeholder="인상깊은 문장 혹은 떠오른 생각을 있으셨나요?"
+              placeholder="인상깊은 문장이 있으셨나요?"
               className={`w-full p-2 sm:p-3 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder} text-sm`}
             />
           </div>
@@ -316,7 +316,7 @@ export default function TSReviewPage() {
 
           <div>
             <label className={`block text-sm font-medium mb-1 ${cyberTheme.textMuted}`}>셀프 평가</label>
-            <p className={`text-xs mb-2 ${cyberTheme.textMuted}`}>얼마나 집중하셨나요?</p>
+            <p className={`text-xs mb-2 ${cyberTheme.textMuted}`}>얼마나 몰입하셨나요?</p>
             <div className="flex space-x-1 justify-center">
               {[1, 2, 3, 4, 5].map((rating) => (
                 <button

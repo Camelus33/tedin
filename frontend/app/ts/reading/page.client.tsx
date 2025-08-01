@@ -66,6 +66,9 @@ export default function TSReadingPage() {
   const [error, setError] = useState<string>('');
   const [startTime, setStartTime] = useState<number | null>(null);
   
+  // Screen Wake Lock 상태
+  const [wakeLock, setWakeLock] = useState<any | null>(null);
+  
   // PDF 뷰어 상태
   const [showPdfViewer, setShowPdfViewer] = useState<boolean>(false);
   const [currentPdfPage, setCurrentPdfPage] = useState<number>(1);
@@ -80,6 +83,40 @@ export default function TSReadingPage() {
   // PDF 하이라이트 상태
   const [highlights, setHighlights] = useState<any[]>([]);
   const [selectedCoordinates, setSelectedCoordinates] = useState<DOMRect | null>(null);
+
+  // Screen Wake Lock 요청 함수
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        const wakeLockSentinel = await navigator.wakeLock.request('screen');
+        setWakeLock(wakeLockSentinel);
+        console.log('[Wake Lock] 화면 켜짐 유지 활성화');
+        
+        // Wake Lock 해제 이벤트 리스너
+        wakeLockSentinel.addEventListener('release', () => {
+          console.log('[Wake Lock] 화면 켜짐 유지 해제됨');
+          setWakeLock(null);
+        });
+      } else {
+        console.warn('[Wake Lock] 이 브라우저는 Screen Wake Lock API를 지원하지 않습니다.');
+      }
+    } catch (err) {
+      console.warn('[Wake Lock] 화면 켜짐 유지 권한이 거부되었거나 지원되지 않습니다:', err);
+    }
+  };
+
+  // Screen Wake Lock 해제 함수
+  const releaseWakeLock = async () => {
+    if (wakeLock) {
+      try {
+        await wakeLock.release();
+        setWakeLock(null);
+        console.log('[Wake Lock] 화면 켜짐 유지 수동 해제');
+      } catch (err) {
+        console.warn('[Wake Lock] 화면 켜짐 유지 해제 중 오류:', err);
+      }
+    }
+  };
 
   // Format seconds into MM:SS
   const formatTime = (seconds: number) => {
@@ -151,6 +188,22 @@ export default function TSReadingPage() {
 
     fetchSessionData();
   }, [sessionId]);
+
+  // Screen Wake Lock 관리
+  useEffect(() => {
+    // 타이머가 활성화되고 일시정지되지 않았을 때만 Wake Lock 요청
+    if (!isLoading && !isPaused && !isPausedForMemo && timeRemaining > 0 && sessionData) {
+      requestWakeLock();
+    } else {
+      // 타이머가 비활성화되면 Wake Lock 해제
+      releaseWakeLock();
+    }
+
+    // 컴포넌트 언마운트 시 Wake Lock 해제
+    return () => {
+      releaseWakeLock();
+    };
+  }, [isLoading, isPaused, isPausedForMemo, timeRemaining, sessionData]);
 
   // Timer logic
   useEffect(() => {
@@ -283,7 +336,7 @@ export default function TSReadingPage() {
             variant="outline"
             className={`w-full !border-red-500/50 !text-red-400 hover:!bg-red-900/30`}
           >
-            TS 설정으로 돌아가기
+            TS 설정으로
           </Button>
         </div>
       </div>
@@ -413,7 +466,7 @@ export default function TSReadingPage() {
             className={`w-full sm:w-auto !px-6 !py-3 !rounded-xl !font-medium flex items-center justify-center transition-all !border-red-500/50 ${cyberTheme.cardBg} !text-red-400 hover:!bg-red-900/30 hover:!border-red-600/50 ${isMemoModalOpen ? '!opacity-50 !cursor-not-allowed' : ''}`}
           >
             <StopIcon className="h-5 w-5 mr-2" />
-            끝 (수동 종료)
+            즉시 종료
           </Button>
         </div>
       </div>
@@ -447,10 +500,10 @@ function BreathingText() {
       }}
     >
       <div className="text-3xl sm:text-4xl font-bold leading-relaxed">
-        코로 깊게 호흡하세요.
+        코로 호흡하세요.
       </div>
       <div className="text-2xl sm:text-3xl font-medium mt-2">
-        기억도 깊어집니다.
+        기억이 강화됩니다.
       </div>
     </motion.div>
   );

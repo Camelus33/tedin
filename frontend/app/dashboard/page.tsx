@@ -338,7 +338,7 @@ export default function DashboardPage() {
               onClick={handleNewReading}
               className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              📖 TS 세션 시작
+              📖 TS 리딩 시작
             </button>
             <button
               onClick={handleNewMemo}
@@ -571,7 +571,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    단 1분 투자로 집중력을 회복하세요.
+                    단 1분, 곧바로 집중력을 회복합니다.
                   </p>
                   <div className="text-indigo-400 font-medium">시작하기 →</div>
                 </div>
