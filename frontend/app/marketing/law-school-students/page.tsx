@@ -93,7 +93,7 @@ export default function LawSchoolStudentsPage() {
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent 
                            drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300 
                            hover:scale-105 inline-block cursor-default">
-              학습 가속 비법
+              학습 시간 단축 비법
             </span>
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 sm:mb-10 font-medium">
@@ -105,7 +105,7 @@ export default function LawSchoolStudentsPage() {
                           p-6 sm:p-8 rounded-xl sm:rounded-2xl mb-6 sm:mb-8">
             <div className="text-center space-y-3 sm:space-y-4">
               <div className="text-2xl sm:text-3xl font-bold text-indigo-400">
-                ⚡ 학습 가속 극대화 ⚡
+                ⚡ 학습 시간 단축 극대화 ⚡
               </div>
               <div className="text-lg sm:text-xl font-semibold text-white">
                 AI-Link + NotebookLM 조합으로
@@ -153,7 +153,7 @@ export default function LawSchoolStudentsPage() {
                      hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-green-500/40"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
-            🚀 학습 가속 솔루션
+            🚀 학습 시간 단축 솔루션
             <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-green-500 to-cyan-600 rounded-full"></div>
           </h2>
           
@@ -199,7 +199,7 @@ export default function LawSchoolStudentsPage() {
                 AI-Link + NotebookLM 조합
               </div>
               <div className="text-lg sm:text-xl text-white font-semibold">
-                학습 가속 극대화
+                학습 시간 단축 극대화
               </div>
             </div>
           </div>
@@ -260,7 +260,7 @@ export default function LawSchoolStudentsPage() {
             <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
           </h2>
           <div className="text-base sm:text-lg text-gray-300 mb-6 sm:mb-8 leading-relaxed">
-            당신의 학습 여정을 구조화하여 '슈퍼 지식 캡슐'을 만듭니다.
+            당신의 학습 여정을 구조화하여 '슈퍼 지식캡슐'을 만듭니다.
           </div>
           
           <div className="bg-gradient-to-br from-blue-500/8 to-indigo-600/8 border border-blue-500/20 
@@ -294,9 +294,9 @@ export default function LawSchoolStudentsPage() {
                 💊
               </div>
               <div className="flex-1">
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">나만의 지식 캡슐 생성</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">나만의 지식캡슐 생성</h3>
                 <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
-                  복잡한 법학 지식을 '한 알의 캡슐'처럼 입력, 나를 이해하는 진짜 AI 조수가 됩니다.
+                  복잡한 법학 지식을 '한 알의 지식캡슐'처럼 입력, 나를 이해하는 진짜 AI 조수가 됩니다.
                 </p>
               </div>
             </div>
@@ -337,19 +337,19 @@ export default function LawSchoolStudentsPage() {
             <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8">
               <div className="text-3xl sm:text-4xl mb-4">🔗</div>
               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">AI-Link</h3>
-              <p className="text-sm sm:text-base text-gray-300">개인화된 지식 캡슐로 AI가 당신을 완벽 이해</p>
+              <p className="text-sm sm:text-base text-gray-300">개인화된 지식캡슐로 AI가 당신을 완벽 이해</p>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8">
               <div className="text-3xl sm:text-4xl mb-4">📝</div>
               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">NotebookLM</h3>
-              <p className="text-sm sm:text-base text-gray-300">음성 복습으로 학습 가속 극대화</p>
+              <p className="text-sm sm:text-base text-gray-300">음성 복습으로 학습 시간 단축 극대화</p>
             </div>
           </div>
           
           <div className="bg-gradient-to-r from-green-500/15 to-cyan-500/15 border border-green-500/30 
                           p-6 sm:p-8 rounded-xl sm:rounded-2xl">
             <div className="text-xl sm:text-2xl font-bold text-green-400 mb-3">
-              학습 가속 극대화
+              학습 시간 단축 극대화
             </div>
             <div className="text-lg sm:text-xl text-white">
               짧고 굵게 여러 번 반복 학습

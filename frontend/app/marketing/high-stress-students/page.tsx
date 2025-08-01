@@ -67,7 +67,7 @@ export default function HighStressStudentsPage() {
             </span>
             <br />
             <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              학습 가속 솔루션
+              학습 시간 단축 솔루션
             </span>
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 sm:mb-10 font-medium">
@@ -79,7 +79,7 @@ export default function HighStressStudentsPage() {
                           p-6 sm:p-8 rounded-xl sm:rounded-2xl mb-6 sm:mb-8">
             <div className="text-center space-y-3 sm:space-y-4">
               <div className="text-2xl sm:text-3xl font-bold text-indigo-400">
-                ⚡ 학습 가속 극대화 ⚡
+                ⚡ 학습 시간 단축 극대화 ⚡
               </div>
               <div className="text-lg sm:text-xl font-semibold text-white">
                 AI-Link + NotebookLM 조합으로
@@ -127,7 +127,7 @@ export default function HighStressStudentsPage() {
                      hover:transform hover:-translate-y-2 hover:shadow-3xl hover:border-green-500/40"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 sm:mb-8 relative inline-block tracking-tight">
-            🚀 학습 가속 솔루션
+            🚀 학습 시간 단축 솔루션
             <div className="absolute bottom-[-10px] left-0 w-full h-1 bg-gradient-to-r from-green-500 to-cyan-600 rounded-full"></div>
           </h2>
           
@@ -173,7 +173,7 @@ export default function HighStressStudentsPage() {
                 AI-Link + NotebookLM 조합
               </div>
               <div className="text-lg sm:text-xl text-white font-semibold">
-                학습 가속 극대화
+                학습 시간 단축 극대화
               </div>
             </div>
           </div>
@@ -268,9 +268,9 @@ export default function HighStressStudentsPage() {
                 📦
               </div>
               <div className="flex-1">
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">'도메인 컨텍스트 캡슐' 자동 응축</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">'도메인 컨텍스트 지식캡슐' 자동 응축</h3>
                 <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
-                  꼬리표 붙은 메모들은 '도메인 컨텍스트 캡슐' 형태로, '학습 여정'에 완벽히 대응시킵니다. 학습 내용은 한눈에 파악!
+                  꼬리표 붙은 메모들은 '도메인 컨텍스트 지식캡슐' 형태로, '학습 여정'에 완벽히 대응시킵니다. 학습 내용은 한눈에 파악!
                 </p>
               </div>
             </div>
@@ -288,7 +288,7 @@ export default function HighStressStudentsPage() {
               <div className="flex-1">
                 <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">NotebookLM 입력 & 음성 오버뷰</h3>
                 <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
-                  구축된 '도메인 컨텍스트 캡슐'을 NotebookLM에 입력하고, '음성 오버뷰'로 재생해 보세요. 언제 어디서든 들으며 복습하세요.
+                  구축된 '도메인 컨텍스트 지식캡슐'을 NotebookLM에 입력하고, '음성 오버뷰'로 재생해 보세요. 언제 어디서든 들으며 복습하세요.
                 </p>
               </div>
             </div>
@@ -311,19 +311,19 @@ export default function HighStressStudentsPage() {
             <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8">
               <div className="text-3xl sm:text-4xl mb-4">🔗</div>
               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">AI-Link</h3>
-              <p className="text-sm sm:text-base text-gray-300">개인화된 지식 캡슐로 AI가 당신을 완벽 이해</p>
+              <p className="text-sm sm:text-base text-gray-300">개인화된 지식캡슐로 AI가 당신을 완벽 이해</p>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-6 sm:p-8">
               <div className="text-3xl sm:text-4xl mb-4">📝</div>
               <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">NotebookLM</h3>
-              <p className="text-sm sm:text-base text-gray-300">음성 복습으로 학습 가속 극대화</p>
+              <p className="text-sm sm:text-base text-gray-300">음성 복습으로 학습 시간 단축 극대화</p>
             </div>
           </div>
           
           <div className="bg-gradient-to-r from-green-500/15 to-cyan-500/15 border border-green-500/30 
                           p-6 sm:p-8 rounded-xl sm:rounded-2xl">
             <div className="text-xl sm:text-2xl font-bold text-green-400 mb-3">
-              학습 가속 극대화
+              학습 시간 단축 극대화
             </div>
             <div className="text-lg sm:text-xl text-white">
               짧고 굵게 여러 번 반복 학습
@@ -382,7 +382,7 @@ export default function HighStressStudentsPage() {
                        hover:transform hover:scale-105 hover:shadow-3xl hover:from-green-400 hover:to-cyan-400
                        focus:outline-none focus:ring-4 focus:ring-green-500/50"
           >
-            학습 가속 경험하기
+            학습 시간 단축 경험하기
           </Link>
         </div>
       </div>
