@@ -612,7 +612,7 @@ export default function TSNoteCard({
     const hasThreads = threads.length > 0;
 
     return (
-      <div className="mt-3">
+      <div>
         {/* 접힌 상태 헤더 */}
         <div className="flex items-center justify-between px-3 py-2 bg-gray-800/30 rounded-md border border-gray-700/50">
           <div className="flex items-center gap-2">
@@ -815,7 +815,7 @@ export default function TSNoteCard({
     }
 
     return (
-      <div className="mt-3">
+      <div>
         {/* 접힌 상태 헤더 */}
         <div className="flex items-center justify-between px-3 py-2 bg-gray-800/30 rounded-md border border-gray-700/50">
           <div className="flex items-center gap-2">
@@ -1230,7 +1230,7 @@ export default function TSNoteCard({
 
       </div>
       
-      <div className={cn("mt-3", {
+      <div className={cn("", {
         "invisible": isInlineEditing || !note.relatedLinks || note.relatedLinks?.length === 0 || minimalDisplay || isOpen || isPageEditing
       })}>
         {/* 접힌 상태 헤더 */}
