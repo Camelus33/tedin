@@ -84,12 +84,12 @@ export default function AMFADeepDive() {
       icon: LightBulbIcon,
       color: 'text-blue-400',
       description: '4단계 진화로 깊이 있는 지식으로 발전',
-      detailedDescription: '단순한 1줄 메모를 4단계 진화 과정을 통해 깊이 있는 지식으로 발전시킵니다. 생각추가, 메모진화, 지식연결, 플래시카드를 통해 기억 보존률을 4배 향상시킵니다.',
+      detailedDescription: '단순한 1줄 메모를 4단계 진화 과정을 통해 깊이 있는 지식으로 발전시킵니다. 생각추가, 메모진화, 지식연결, 복습 카드를 통해 기억 보존률을 4배 향상시킵니다.',
       features: [
         '4단계 체계적 진화',
         '생각추가로 깊이 있는 사고',
         '지식연결로 네트워크 구축',
-        '플래시카드로 장기 기억 형성'
+        '복습 카드로 장기 기억 형성'
       ],
       benefits: [
         '기억 보존률 4배 향상',

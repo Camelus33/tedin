@@ -574,7 +574,7 @@ export default function EditSummaryNotePage() {
                 note={noteForFlashcardModal} // Pass the full note object, changed from noteContext
                 onCreated={(createdCard) => {
                   console.log('Flashcard created/updated:', createdCard);
-                  showSuccess(`플래시카드가 성공적으로 ${createdCard.question.includes(noteForFlashcardModal.content.substring(0,10)) ? '생성' : '수정'}되었습니다!`); // Basic feedback
+                  showSuccess(`복습 카드가 성공적으로 ${createdCard.question.includes(noteForFlashcardModal.content.substring(0,10)) ? '생성' : '수정'}되었습니다!`); // Basic feedback
                   setShowFlashcardModal(false);
                   setNoteForFlashcardModal(null);
                 }}

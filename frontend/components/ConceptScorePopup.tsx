@@ -26,7 +26,7 @@ const breakdownItems = [
   { key: 'thoughtExpansion', label: '생각추가', maxScore: 20 },
   { key: 'memoEvolution', label: '메모진화', maxScore: 20 },
   { key: 'knowledgeConnection', label: '지식연결', maxScore: 20 },
-  { key: 'flashcardCreation', label: '플래시카드', maxScore: 20 },
+  { key: 'flashcardCreation', label: '복습 카드', maxScore: 20 },
   { key: 'tagUtilization', label: '태그활용', maxScore: 10 },
   { key: 'userRating', label: '평점', maxScore: 10 },
 ];

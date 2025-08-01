@@ -47,7 +47,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
         setFlashcards(Array.isArray(data) ? data : data.flashcards || []);
         setShowAnswerFor({});
       })
-      .catch((e) => setError(e.message || '플래시카드 불러오기 실패'))
+              .catch((e) => setError(e.message || '복습 카드 불러오기 실패'))
       .finally(() => setLoading(false));
   };
 
@@ -69,7 +69,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('정말로 이 플래시카드를 삭제하시겠습니까?')) return;
+    if (!window.confirm('정말로 이 복습 카드를 삭제하시겠습니까?')) return;
     try {
       await flashcardApi.delete(id);
       fetchDeck();
@@ -78,13 +78,13 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
     }
   };
 
-  if (loading) return <div className={`text-center py-10 ${cyberTheme.textMuted}`}>플래시카드 불러오는 중...</div>;
+      if (loading) return <div className={`text-center py-10 ${cyberTheme.textMuted}`}>복습 카드 불러오는 중...</div>;
   if (error) return <div className={`text-center py-10 ${cyberTheme.errorText}`}>{error}</div>;
   
   return (
     <div className="space-y-6 mt-6">
       {flashcards.length === 0 && (
-        <div className={`text-center py-10 ${cyberTheme.textMuted}`}>플래시카드가 없습니다.</div>
+        <div className={`text-center py-10 ${cyberTheme.textMuted}`}>복습 카드가 없습니다.</div>
       )}
 
       {flashcards.map((card) => (
