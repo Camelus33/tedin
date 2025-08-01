@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import AppLogo from './AppLogo'; // Assuming AppLogo is in the same directory
+import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -27,6 +28,49 @@ export default function Footer() {
               <p><span className="text-gray-400">Name:</span> <span className="text-gray-100 font-medium ml-1">Tedin Inc.</span></p>
               <p><span className="text-gray-400">Reg. No.:</span> <span className="text-gray-100 font-medium ml-1">348-88-02077</span></p>
               <p><span className="text-gray-400">Contact:</span> <a href="mailto:habitus.tedin@gmail.com" className="text-indigo-400 hover:text-indigo-300 hover:underline ml-1">habitus.tedin@gmail.com</a></p>
+              
+              {/* Social Media Links */}
+              <div className="pt-2">
+                <p className="text-gray-400 text-xs mb-2">Follow us:</p>
+                <div className="flex space-x-3">
+                  <a 
+                    href="https://www.facebook.com/profile.php?id=61577199601552" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-blue-500 transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <FaFacebook size={18} />
+                  </a>
+                  <a 
+                    href="https://www.instagram.com/habitus33_tedin/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-pink-500 transition-colors"
+                    aria-label="Instagram"
+                  >
+                    <FaInstagram size={18} />
+                  </a>
+                  <a 
+                    href="https://www.linkedin.com/in/habitus33/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-blue-600 transition-colors"
+                    aria-label="LinkedIn"
+                  >
+                    <FaLinkedin size={18} />
+                  </a>
+                  <a 
+                    href="https://www.youtube.com/@habitus33-Atomic" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-red-500 transition-colors"
+                    aria-label="YouTube"
+                  >
+                    <FaYoutube size={18} />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
