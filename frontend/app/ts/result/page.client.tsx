@@ -93,17 +93,6 @@ export default function TSResultPage() {
     return { level: 'Reader', color: 'from-green-500 to-blue-500' };
   };
 
-  // Handle share action
-  const handleShare = async () => {
-    try {
-      const shareUrl = `${window.location.origin}/share/${sessionId}`;
-      await navigator.clipboard.writeText(shareUrl);
-      alert('공유 링크가 클립보드에 복사되었습니다!');
-    } catch (err) {
-      alert('링크 복사에 실패했습니다. 수동으로 URL을 복사해주세요.');
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
@@ -278,19 +267,6 @@ export default function TSResultPage() {
                   <p className="text-sm text-gray-700 italic line-clamp-3">"{sessionResult.memo}"</p>
                 </div>
               )}
-            </div>
-            
-            {/* Share Button - Enhanced */}
-            <div className="mb-6">
-              <button 
-                onClick={handleShare}
-                className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r ${achievement.color} hover:opacity-90 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span className="text-sm sm:text-base">공유하기</span>
-              </button>
             </div>
             
             {/* Certificate Footer - Simplified */}
