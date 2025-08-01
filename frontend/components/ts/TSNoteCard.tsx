@@ -612,7 +612,7 @@ export default function TSNoteCard({
     const hasThreads = threads.length > 0;
 
     return (
-      <div>
+      <>
         {/* 빽빽한 텍스트 형태 */}
         <button
           onClick={(e) => {
@@ -755,7 +755,7 @@ export default function TSNoteCard({
             )}
           </div>
         )}
-      </div>
+      </>
     );
   };
 
@@ -799,7 +799,7 @@ export default function TSNoteCard({
     }
 
     return (
-      <div>
+      <>
         {/* 빽빽한 텍스트 형태 */}
         <button
           onClick={() => setShowMemoEvolution(!showMemoEvolution)}
@@ -815,7 +815,7 @@ export default function TSNoteCard({
             {details}
           </div>
         )}
-      </div>
+      </>
     );
   };
 
