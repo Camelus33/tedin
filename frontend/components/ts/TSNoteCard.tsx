@@ -347,8 +347,9 @@ export default function TSNoteCard({
   const [editingThreadContent, setEditingThreadContent] = useState('');
   const [isSubmittingThread, setIsSubmittingThread] = useState(false); // 중복 요청 방지용 상태
   
-  // 메모진화 접기/펼치기 상태
+  // 섹션별 접기/펼치기 상태 관리
   const [showMemoEvolution, setShowMemoEvolution] = useState(false);
+  const [showRelatedLinks, setShowRelatedLinks] = useState(false);
   
   // 개념이해도 점수 관련 상태
   const [showConceptScorePopup, setShowConceptScorePopup] = useState(false);
@@ -611,21 +612,34 @@ export default function TSNoteCard({
     const hasThreads = threads.length > 0;
 
     return (
-      <div className="mt-3">
-        {/* 쓰레드 토글 버튼 - 새로운 스타일 */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleInlineThreads();
-          }}
-          className="group inline-flex items-center gap-x-2 px-3 py-1.5 rounded-full bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700/50 hover:border-cyan-500/30 transition-all duration-200 cursor-pointer"
-          data-no-toggle
-        >
-          <span className="text-xs font-medium text-gray-400 group-hover:text-cyan-400 transition-colors">
-            생각 추가 ({threads.length}/5)
-          </span>
-          <ChevronRightIcon className={`h-4 w-4 text-gray-500 group-hover:text-cyan-400 transition-all duration-200 ${showInlineThreads ? 'rotate-90' : ''}`} />
-        </button>
+      <div className="mt-3 pt-2 border-t border-gray-700/50">
+        {/* 접힌 상태 헤더 */}
+        <div className="flex items-center justify-between h-10 px-3 bg-gray-800/30 rounded-md border border-gray-700/50">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleInlineThreads();
+              }}
+              className="flex items-center gap-2 text-xs font-medium text-gray-300 hover:text-cyan-400 transition-colors"
+              data-no-toggle
+            >
+              {showInlineThreads ? (
+                <ChevronDownIcon className="h-3 w-3" />
+              ) : (
+                <ChevronRightIcon className="h-3 w-3" />
+              )}
+              생각추가 ({threads.length}/5)
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            {hasThreads && (
+              <span className="text-xs text-gray-500">
+                최근 {Math.min(threads.length, 2)}개
+              </span>
+            )}
+          </div>
+        </div>
 
         {/* 쓰레드 목록 */}
         {showInlineThreads && (
@@ -801,33 +815,38 @@ export default function TSNoteCard({
     }
 
     return (
-      <div className="mt-4 pt-3 border-t border-gray-700/50">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-xs font-semibold text-gray-400">
-          기억 강화 내용:
-        </h4>
-          <button
-            onClick={() => setShowMemoEvolution(!showMemoEvolution)}
-            className="text-xs text-cyan-500 hover:text-cyan-400 transition-colors duration-200 flex items-center"
-          >
-            {showMemoEvolution ? (
-              <>
-                <ChevronUpIcon className="h-3 w-3 mr-1" />
-                접기
-              </>
-            ) : (
-              <>
-                <ChevronDownIcon className="h-3 w-3 mr-1" />
-                펼치기
-              </>
+      <div className="mt-3 pt-2 border-t border-gray-700/50">
+        {/* 접힌 상태 헤더 */}
+        <div className="flex items-center justify-between h-10 px-3 bg-gray-800/30 rounded-md border border-gray-700/50">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowMemoEvolution(!showMemoEvolution)}
+              className="flex items-center gap-2 text-xs font-medium text-gray-300 hover:text-cyan-400 transition-colors"
+              data-no-toggle
+            >
+              {showMemoEvolution ? (
+                <ChevronDownIcon className="h-3 w-3" />
+              ) : (
+                <ChevronRightIcon className="h-3 w-3" />
+              )}
+              기억강화 ({details.length}/4)
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            {details.length > 0 && (
+              <span className="text-xs text-gray-500">
+                {details.length}개 항목
+              </span>
             )}
-          </button>
+          </div>
         </div>
-        <div className={`transition-all duration-300 overflow-hidden ${
-          showMemoEvolution ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}>
-        {details}
-        </div>
+
+        {/* 펼친 상태 내용 */}
+        {showMemoEvolution && (
+          <div className="mt-2 p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
+            {details}
+          </div>
+        )}
       </div>
     );
   };
@@ -1214,28 +1233,54 @@ export default function TSNoteCard({
       <div className={cn("mt-3 pt-2 border-t border-gray-700/50", {
         "invisible": isInlineEditing || !note.relatedLinks || note.relatedLinks?.length === 0 || minimalDisplay || isOpen || isPageEditing
       })}>
-        <h4 className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center">
-          <LinkIcon className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 text-gray-500" />
-          지식 연결
-        </h4>
-        <ul className="space-y-1">
-          {note.relatedLinks?.map((link, idx) => (
-            <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
-              <ArrowTopRightOnSquareIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-500" />
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="line-clamp-1 min-w-0"
-                title={link.url}
-                onClick={(e) => e.stopPropagation()}
-                data-no-toggle
-              >
-                {link.reason || getDomainFromUrl(link.url)}
-              </a>
-            </li>
-          ))}
-        </ul>
+        {/* 접힌 상태 헤더 */}
+        <div className="flex items-center justify-between h-10 px-3 bg-gray-800/30 rounded-md border border-gray-700/50">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowRelatedLinks(!showRelatedLinks)}
+              className="flex items-center gap-2 text-xs font-medium text-gray-300 hover:text-cyan-400 transition-colors"
+              data-no-toggle
+            >
+              {showRelatedLinks ? (
+                <ChevronDownIcon className="h-3 w-3" />
+              ) : (
+                <ChevronRightIcon className="h-3 w-3" />
+              )}
+              지식연결 ({note.relatedLinks?.length || 0}/5)
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            {note.relatedLinks && note.relatedLinks.length > 0 && (
+              <span className="text-xs text-gray-500">
+                {note.relatedLinks.length}개 링크
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* 펼친 상태 내용 */}
+        {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
+          <div className="mt-2 p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
+            <ul className="space-y-1">
+              {note.relatedLinks.map((link, idx) => (
+                <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
+                  <ArrowTopRightOnSquareIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-500" />
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="line-clamp-1 min-w-0"
+                    title={link.url}
+                    onClick={(e) => e.stopPropagation()}
+                    data-no-toggle
+                  >
+                    {link.reason || getDomainFromUrl(link.url)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
