@@ -226,8 +226,8 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
           <DialogDescription className="text-gray-400 pt-4 text-left">
             <p className="text-center pb-2">AI-Link 복사, 붙여넣고, 이렇게 요청해보세요:</p>
             <ol className="list-decimal list-inside bg-gray-900/50 p-3 rounded-md space-y-1">
-              <li>ChatGPT agent에서 이 링크를 참고하여 보고서 작성</li>
-              <li>NotebookLM에서 이 링크 내용으로 음성 오버뷰</li>
+              <li>ChatGPT agent에 입력하고 답변 요청</li>
+              <li>NotebookLM에 입력하고 음성 오버뷰 생성</li>
             </ol>
           </DialogDescription>
         </DialogHeader>
@@ -260,9 +260,9 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             ) : (
               <div className="text-center space-y-4">
                 <p className="text-gray-300 px-2">
-                  NotebookLM, ChatGPT agent 입력
+                  NotebookLM, ChatGPT Agent에 입력
                   <span className="block font-semibold text-cyan-400 mt-1">
-                    약점 진단 및 숨겨진 개념간 연결 찾기 !
+                    고품질 답변 경험 제공
                   </span>
                 </p>
                 <Button
