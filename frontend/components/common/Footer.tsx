@@ -16,7 +16,6 @@ export default function Footer() {
               <AppLogo className="w-12 h-12 text-white flex-shrink-0 group-hover:opacity-90 transition-opacity" />
               <div className="flex items-end space-x-1.5">
                 <span className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors leading-none">habitus33</span>
-                <span className="text-xs font-normal text-cyan-400 pb-0.5">Atomic Memo</span>
               </div>
             </Link>
           </div>
@@ -26,10 +25,8 @@ export default function Footer() {
             <h3 className="font-semibold text-gray-100 uppercase tracking-wider text-xs">Company</h3>
             <div className="space-y-1.5">
               <p><span className="text-gray-400">Name:</span> <span className="text-gray-100 font-medium ml-1">Tedin Inc.</span></p>
-              <p><span className="text-gray-400">CEO:</span> <span className="text-gray-100 font-medium ml-1">Jinny B. Suh</span></p>
               <p><span className="text-gray-400">Reg. No.:</span> <span className="text-gray-100 font-medium ml-1">348-88-02077</span></p>
-              <p><span className="text-gray-400">Type:</span> <span className="text-gray-100 font-medium ml-1">IT Services</span></p>
-              <p><span className="text-gray-400">Contact:</span> <a href="mailto:jinny@tedin.kr" className="text-indigo-400 hover:text-indigo-300 hover:underline ml-1">jinny@tedin.kr</a></p>
+              <p><span className="text-gray-400">Contact:</span> <a href="mailto:habitus.tedin@gmail.com" className="text-indigo-400 hover:text-indigo-300 hover:underline ml-1">habitus.tedin@gmail.com</a></p>
             </div>
           </div>
 
@@ -54,13 +51,10 @@ export default function Footer() {
                   Terms of Service
                 </Link>
                 <Link href="/ir" className="hover:text-gray-100 hover:underline transition-colors">
-                  Investor Relations
+                  IR
                 </Link>
                 <Link href="/marketing/law-school-students" className="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors font-medium">
                   Marketing
-                </Link>
-                <Link href="#faq" className="hover:text-gray-100 hover:underline transition-colors">
-                   FAQ
                 </Link>
              </div>
            </div>
