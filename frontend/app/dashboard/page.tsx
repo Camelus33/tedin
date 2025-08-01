@@ -152,11 +152,11 @@ export default function DashboardPage() {
       const allSummaryNotes = Array.isArray(summaryNotesResponse) ? summaryNotesResponse : (summaryNotesResponse?.data || []);
       console.log('🔍 [DEBUG] 16. All summary notes after fallback:', allSummaryNotes);
       
-      // 클라이언트 사이드에서 최신 3개만 선택
+      // 클라이언트 사이드에서 최신 4개만 선택
       const recentSummaryNotes = allSummaryNotes
         .sort((a: SummaryNote, b: SummaryNote) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-        .slice(0, 3);
-      console.log('🔍 [DEBUG] 17. Recent 3 summary notes:', recentSummaryNotes);
+        .slice(0, 4);
+      console.log('🔍 [DEBUG] 17. Recent 4 summary notes:', recentSummaryNotes);
       setSummaryNotes(recentSummaryNotes);
       console.log('🔍 [DEBUG] 18. Set summaryNotes state to:', recentSummaryNotes);
 
@@ -326,23 +326,23 @@ export default function DashboardPage() {
 
         {/* 상태 메시지 */}
         <div className="mb-8">
-          <h1 className="text-2xl font-medium text-white">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
             <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 현재 <span className="text-indigo-300">{memoCount}개</span>의 메모카드를 작성하셨습니다.
           </h1>
         </div>
 
         {/* 새로 만들기 버튼 */}
         <div className="mb-8">
-          <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
             <button
               onClick={handleNewReading}
-              className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-500/30"
+              className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-500/30 text-sm sm:text-base min-h-[44px]"
             >
               📖 TS 세션 시작
             </button>
             <button
               onClick={handleNewMemo}
-              className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-cyan-500/25 border border-cyan-500/30"
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-cyan-500/25 border border-cyan-500/30 text-sm sm:text-base min-h-[44px]"
             >
               ✍️ 새 메모 작성
             </button>
@@ -351,14 +351,14 @@ export default function DashboardPage() {
 
         {/* 최근 메모 카드 섹션 */}
         <div className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-medium text-white">최근 메모 카드</h2>
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
+            <h2 className="text-lg sm:text-xl font-medium text-white">최근 메모 카드</h2>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
               {/* 보기 전환 버튼 */}
               <div className="flex items-center bg-gray-800/50 backdrop-blur-md rounded-lg p-1 border border-indigo-500/30">
                 <button
                   onClick={() => setViewMode('grid')}
-                                      className={`p-2 rounded-md transition-colors ${
+                                      className={`p-2 rounded-md transition-colors min-h-[44px] ${
                       viewMode === 'grid'
                         ? 'bg-indigo-600 text-white shadow-sm'
                         : 'text-cyan-300 hover:text-cyan-100'
@@ -368,7 +368,7 @@ export default function DashboardPage() {
                 </button>
                   <button
                   onClick={() => setViewMode('list')}
-                                      className={`p-2 rounded-md transition-colors ${
+                                      className={`p-2 rounded-md transition-colors min-h-[44px] ${
                       viewMode === 'list'
                         ? 'bg-indigo-600 text-white shadow-sm'
                         : 'text-cyan-300 hover:text-cyan-100'
@@ -382,14 +382,14 @@ export default function DashboardPage() {
               <div className="relative" ref={sortMenuRef}>
                 <button
                   onClick={() => setSortMenuOpen(!sortMenuOpen)}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm text-cyan-300 hover:text-cyan-100 border border-indigo-500/30 rounded-md hover:border-indigo-400/50 transition-colors bg-gray-800/30 backdrop-blur-md"
+                  className="flex items-center space-x-2 px-3 py-2 text-sm text-cyan-300 hover:text-cyan-100 border border-indigo-500/30 rounded-md hover:border-indigo-400/50 transition-colors bg-gray-800/30 backdrop-blur-md min-h-[44px]"
                 >
                   <span>최신 항목</span>
                   <FiChevronDown className="w-4 h-4" />
                 </button>
 
                 {sortMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-gray-900/95 backdrop-blur-md rounded-md shadow-xl py-1 z-50 border border-indigo-500/30">
+                  <div className="absolute right-0 sm:left-0 mt-2 w-40 bg-gray-900/95 backdrop-blur-md rounded-md shadow-xl py-1 z-50 border border-indigo-500/30">
                     <button
                       onClick={() => {
                         setSortBy('latest');
@@ -415,7 +415,7 @@ export default function DashboardPage() {
               {/* 나의 도서관 버튼 */}
               <Link
                 href="/books"
-                className="text-sm text-cyan-400 hover:text-cyan-200 transition-colors flex items-center space-x-1 border border-cyan-500/30 px-3 py-2 rounded-md hover:border-cyan-400/50 bg-gray-800/30 backdrop-blur-md"
+                className="text-sm text-cyan-400 hover:text-cyan-200 transition-colors flex items-center space-x-1 border border-cyan-500/30 px-3 py-2 rounded-md hover:border-cyan-400/50 bg-gray-800/30 backdrop-blur-md min-h-[44px]"
               >
                 <span>나의 도서관</span>
                 <span>→</span>
@@ -526,7 +526,7 @@ export default function DashboardPage() {
         <div className="space-y-12">
           {/* 최근 단권화 노트 섹션 */}
           <div>
-            <h2 className="text-xl font-medium text-white mb-6">최근 단권화 노트</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">최근 단권화 노트</h2>
             {(() => {
               return summaryNotes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -560,7 +560,7 @@ export default function DashboardPage() {
           
           {/* Zengo & Zengo Myverse 섹션 */}
           <div>
-            <h2 className="text-xl font-medium text-white mb-6">두뇌 훈련</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">두뇌 훈련</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Link href="/zengo" className="group">
                 <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
@@ -596,7 +596,7 @@ export default function DashboardPage() {
 
           {/* 인지 분석 섹션 */}
           <div>
-            <h2 className="text-xl font-medium text-white mb-6">인지 분석</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">인지 분석</h2>
             <Link href="/analytics" className="group">
               <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
                 <div className="flex items-center justify-between">
