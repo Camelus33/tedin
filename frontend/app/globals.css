@@ -219,4 +219,34 @@ body {
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: #0891b2 transparent; /* cyan-600 */
+}
+
+/* TSNoteCard 전용 커스텀 스크롤바 */
+.tsnote-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tsnote-scrollbar::-webkit-scrollbar-track {
+  background: rgba(55, 65, 81, 0.3);
+  border-radius: 3px;
+}
+
+.tsnote-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.6);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.tsnote-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+.tsnote-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox 스크롤바 스타일 */
+.tsnote-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(107, 114, 128, 0.6) rgba(55, 65, 81, 0.3);
 } 

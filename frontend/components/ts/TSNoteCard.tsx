@@ -638,7 +638,7 @@ export default function TSNoteCard({
                     <textarea
                       value={editingThreadContent}
                       onChange={(e) => setEditingThreadContent(e.target.value)}
-                      className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none"
+                      className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
                       rows={2}
                       placeholder="쓰레드 내용을 입력하세요..."
                     />
@@ -705,7 +705,7 @@ export default function TSNoteCard({
                 <textarea
                   value={newThreadContent}
                   onChange={(e) => setNewThreadContent(e.target.value)}
-                  className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none"
+                  className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
                   rows={2}
                   placeholder="새 인라인메모를 입력하세요..."
                   autoFocus
@@ -1359,7 +1359,7 @@ export default function TSNoteCard({
               value={fields[activeTabKey]}
               onChange={(e) => handleFieldChange(activeTabKey, e.target.value)}
               placeholder={prompts[tabKeys.indexOf(activeTabKey)]?.placeholder}
-              className="w-full flex-1 p-2 sm:p-3 lg:p-2 text-sm lg:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none custom-scrollbar"
+              className="w-full flex-1 p-2 sm:p-3 lg:p-2 text-sm lg:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
               style={{ minHeight: 'calc(100% - 20px)' }}
             />
           </div>
