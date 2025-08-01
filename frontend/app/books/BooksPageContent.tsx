@@ -48,6 +48,15 @@ const cyberTheme = {
   tabActiveBg: 'bg-cyan-600',
   tabInactiveBg: 'bg-gray-700',
   tabText: 'text-white',
+  // 개선된 디자인 요소들
+  cardHover: 'hover:scale-105 hover:shadow-2xl hover:border-cyan-400/50',
+  cardActive: 'active:scale-95',
+  cardTransition: 'transition-all duration-300 ease-out',
+  buttonHover: 'hover:shadow-lg hover:shadow-cyan-500/25',
+  inputHover: 'hover:border-gray-500',
+  progressGlow: 'shadow-lg shadow-cyan-500/20',
+  tabHover: 'hover:bg-gray-600/70 hover:text-cyan-300',
+  searchFocus: 'focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400',
 };
 
 // Book Type
@@ -352,22 +361,22 @@ export default function BooksPageContent() {
     <div className={`min-h-screen ${cyberTheme.gradient} p-4 md:p-6 ${cyberTheme.textLight}`}>
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-            <h1 className={`text-xl sm:text-2xl md:text-3xl font-bold ${cyberTheme.primary}`}>나의 도서관</h1>
-            <button onClick={handleAddBook} aria-label="새 책 등록" className={`flex items-center gap-2 px-4 py-2 rounded-lg ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-medium transition-colors w-full sm:w-auto mt-3 sm:mt-0`}>
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold ${cyberTheme.primary} tracking-tight`}>나의 도서관</h1>
+            <button onClick={handleAddBook} aria-label="새 책 등록" className={`flex items-center gap-2 px-6 py-3 rounded-xl ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} ${cyberTheme.buttonHover} text-white font-semibold ${cyberTheme.cardTransition} w-full sm:w-auto mt-4 sm:mt-0 shadow-lg`}>
               <AiOutlinePlus className="h-5 w-5" /><span>NEW</span>
             </button>
           </div>
-          <p className={`text-sm ${cyberTheme.textMuted}`}>자료, 메모, 노트북, 단권화 노트, AI - Link 관리</p>
+          <p className={`text-base ${cyberTheme.textMuted} leading-relaxed`}>자료, 메모, 노트북, 단권화 노트, AI - Link 관리</p>
         </div>
-        <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 ${cyberTheme.bgSecondary} rounded-lg`}>
+        <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-6 ${cyberTheme.bgSecondary} rounded-xl shadow-lg border ${cyberTheme.inputBorder}/30`}>
           <div className="relative w-full sm:w-auto flex-grow">
-            <AiOutlineSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${cyberTheme.textMuted}`} />
-            <input type="text" placeholder={activeTab === 'summaryNotes' ? "필요한 내용을 찾아보세요" : "원하시는 책을 찾아보세요"} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-10 pr-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} focus:outline-none ${cyberTheme.inputFocusRing} ${cyberTheme.inputFocusBorder}`} />
+            <AiOutlineSearch className={`absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 ${cyberTheme.textMuted}`} />
+            <input type="text" placeholder={activeTab === 'summaryNotes' ? "필요한 내용을 찾아보세요" : "원하시는 책을 찾아보세요"} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-full pl-12 pr-4 py-3 rounded-xl border ${cyberTheme.inputBorder} ${cyberTheme.inputBg} ${cyberTheme.textLight} ${cyberTheme.inputHover} ${cyberTheme.searchFocus} focus:outline-none ${cyberTheme.cardTransition} text-base`} />
           </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
              <div className="relative">
-                 <button ref={sortButtonRef} onClick={() => setShowSortOptions(!showSortOptions)} aria-label="정렬 기준 변경" className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg border ${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textLight} transition-colors`}>
+                 <button ref={sortButtonRef} onClick={() => setShowSortOptions(!showSortOptions)} aria-label="정렬 기준 변경" className={`flex items-center gap-2 px-4 py-3 rounded-xl border ${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.buttonHover} ${cyberTheme.textLight} ${cyberTheme.cardTransition} shadow-md`}>
                      <AiOutlineFilter className="h-5 w-5" /><span className="hidden sm:inline">{sortOptions.find(opt => opt.key === sortBy)?.label || '정렬'}</span><span className="sm:hidden">정렬</span>
                  </button>
                  {showSortOptions && (
@@ -383,35 +392,39 @@ export default function BooksPageContent() {
           </div>
         </div>
 
-        <div className="mb-6 flex border-b border-gray-700">
+        <div className="mb-8 flex border-b border-gray-700/50">
           <button
             onClick={() => setActiveTab('books')}
-            className={`px-3 sm:px-6 py-2.5 rounded-t-lg font-semibold transition-all duration-200 ease-in-out border-b-2
+            className={`px-4 sm:px-8 py-3 rounded-t-xl font-semibold ${cyberTheme.cardTransition} border-b-2
               ${activeTab === 'books' 
-                ? `${cyberTheme.tabActiveBg} ${cyberTheme.tabText} border-cyan-300 shadow-md` 
-                : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-cyan-300 border-transparent hover:bg-gray-700/70`}
+                ? `${cyberTheme.tabActiveBg} ${cyberTheme.tabText} border-cyan-400 shadow-lg ${cyberTheme.progressGlow}` 
+                : `${cyberTheme.tabInactiveBg} text-gray-400 ${cyberTheme.tabHover} border-transparent`}
             `}
           >
-            <FiBook className="inline mr-1 sm:mr-2 mb-0.5" /><span className="text-sm sm:text-base">등록 자료</span>
+            <FiBook className="inline mr-2 mb-0.5" /><span className="text-base sm:text-lg">등록 자료</span>
           </button>
           <button
             onClick={() => setActiveTab('summaryNotes')}
-            className={`px-3 sm:px-6 py-2.5 rounded-t-lg font-semibold transition-all duration-200 ease-in-out border-b-2
+            className={`px-4 sm:px-8 py-3 rounded-t-xl font-semibold ${cyberTheme.cardTransition} border-b-2
               ${activeTab === 'summaryNotes' 
-                ? `bg-purple-600 ${cyberTheme.tabText} border-purple-400 shadow-md` 
-                : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-purple-300 border-transparent hover:bg-gray-700/70`}
+                ? `bg-purple-600 ${cyberTheme.tabText} border-purple-400 shadow-lg ${cyberTheme.progressGlow}` 
+                : `${cyberTheme.tabInactiveBg} text-gray-400 hover:text-purple-300 hover:bg-gray-700/70 border-transparent`}
             `}
           >
-            <AiOutlineHighlight className="inline mr-1 sm:mr-2 mb-0.5" /><span className="text-sm sm:text-base">단권화 노트</span>
+            <AiOutlineHighlight className="inline mr-2 mb-0.5" /><span className="text-base sm:text-lg">단권화 노트</span>
           </button>
         </div>
 
         {activeTab === 'books' && (
           <>
             {filteredBooks.length === 0 && !isLoading ? (
-              <div className={`text-center py-10 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-lg`}>새 자료를 등록하고 시작해볼까요?</div>
+              <div className={`text-center py-16 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-xl shadow-lg border ${cyberTheme.inputBorder}/30`}>
+                <FiBook className="mx-auto text-6xl mb-4 opacity-40" />
+                <p className="text-lg font-medium mb-2">새 자료를 등록하고 시작해볼까요?</p>
+                <p className="text-sm opacity-70">첫 번째 책을 등록하면 여기에 표시됩니다</p>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
                 {filteredBooks.map((book) => {
                   const progress = calculateProgress(book.currentPage, book.totalPages);
                   let imageSrc: string | null = null;
@@ -422,20 +435,20 @@ export default function BooksPageContent() {
                   }
 
                   return (
-                    <div key={book._id} onClick={() => handleViewBookDetails(book._id)} className={`relative ${cyberTheme.cardBg} rounded-lg shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-cyan-500/30 border ${cyberTheme.inputBorder}`}>
+                    <div key={book._id} onClick={() => handleViewBookDetails(book._id)} className={`relative ${cyberTheme.cardBg} rounded-xl shadow-lg overflow-hidden cursor-pointer ${cyberTheme.cardTransition} ${cyberTheme.cardHover} ${cyberTheme.cardActive} border ${cyberTheme.inputBorder} hover:border-cyan-400/50`}>
                       <button onClick={(e) => toggleMenu(book._id, e)} aria-label="기억 관리 메뉴" className={`toggle-menu-button absolute top-2 right-2 p-1.5 rounded-full ${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} ${cyberTheme.textMuted} z-10`}><FiMoreVertical className="h-5 w-5" /></button>
                       {showMenu === book._id && (
                         <div className={`action-menu absolute top-10 right-2 mt-1 w-32 sm:w-36 ${cyberTheme.menuBg} rounded-md shadow-lg z-20 border ${cyberTheme.inputBorder}`}>
                            <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineEdit className="h-3 w-3 sm:h-4 sm:w-4" /> 수정</Link>
                         </div>
                       )}
-                      <div className={`w-full h-32 md:h-40 ${cyberTheme.inputBg} flex items-center justify-center ${cyberTheme.textMuted}`}>
+                      <div className={`w-full h-36 md:h-44 ${cyberTheme.inputBg} flex items-center justify-center ${cyberTheme.textMuted} relative overflow-hidden`}>
                         {imageSrc ? (
                           <Image 
                             src={imageSrc} 
                             alt={book.title} 
                             width={100} height={150} 
-                            className="object-cover w-full h-full" 
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" 
                             onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                               console.error(`Failed to load image (onError event): ${imageSrc}`, e.currentTarget);
                               (e.currentTarget as HTMLImageElement).style.display = 'none'; 
@@ -449,32 +462,33 @@ export default function BooksPageContent() {
                             }}
                           />
                         ) : (
-                          <FiBook className="h-12 w-12 placeholder-icon" /> 
+                          <FiBook className="h-16 w-16 placeholder-icon opacity-60" /> 
                         )}
                       </div>
-                      <div className="p-4">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h2 className={`font-bold text-base md:text-lg truncate ${cyberTheme.textLight}`} title={book.title}>{book.title}</h2>
+                      <div className="p-5">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h2 className={`font-bold text-lg md:text-xl truncate ${cyberTheme.textLight} leading-tight`} title={book.title}>{book.title}</h2>
                           {book.bookType === 'NOTEBOOK' && (
-                            <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-0.5 rounded-full border border-purple-500/30 flex-shrink-0">
+                            <span className="bg-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full border border-purple-500/30 flex-shrink-0 font-medium">
                               노트북
                             </span>
                           )}
                         </div>
-                        <p className={`text-xs md:text-sm ${cyberTheme.textMuted} mb-3 truncate`} title={book.author}>{book.author}</p>
+                        <p className={`text-sm md:text-base ${cyberTheme.textMuted} mb-4 truncate leading-relaxed`} title={book.author}>{book.author}</p>
                         
                         {/* 책인 경우만 진행률 표시 */}
                         {book.bookType !== 'NOTEBOOK' && (
-                          <div className="mb-2">
-                            <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-1.5`}>
-                              <div className={`h-1.5 rounded-full ${cyberTheme.progressFg}`} style={{ width: `${progress}%` }}></div>
+                          <div className="mb-3">
+                            <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-2 relative overflow-hidden`}>
+                              <div className={`h-2 rounded-full ${cyberTheme.progressFg} ${cyberTheme.progressGlow} transition-all duration-500`} style={{ width: `${progress}%` }}></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
                             </div>
-                            <p className={`text-xs mt-1 ${cyberTheme.textMuted}`}>성장: {progress}% ({book.currentPage}/{book.totalPages}p)</p>
+                            <p className={`text-sm mt-2 ${cyberTheme.textMuted} font-medium`}>성장: {progress}% ({book.currentPage}/{book.totalPages}p)</p>
                           </div>
                         )}
                         
-                        <div className={`flex items-center text-xs ${cyberTheme.textMuted}`}>
-                          <FiClock className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
+                        <div className={`flex items-center text-sm ${cyberTheme.textMuted}`}>
+                          <FiClock className="h-4 w-4 mr-2" />
                           <span className="truncate">
                             {book.bookType === 'NOTEBOOK' ? '생성: ' : '최근: '}
                             {book.bookType === 'NOTEBOOK' 
@@ -506,10 +520,11 @@ export default function BooksPageContent() {
               </div>
             )}
             {!summaryNotesLoading && !summaryNotesError && summaryNotes.length === 0 && (
-              <div className={`text-center py-10 ${cyberTheme.textMuted}`}>
-                <AiOutlineFileText className="mx-auto text-4xl mb-3" />
-                <p className="mb-4">아직 정리된 생각이 없네요. 첫 노트를 만들어볼까요?</p>
-                <Button onClick={() => router.push('/summary-notes/create')} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white`}>
+              <div className={`text-center py-16 ${cyberTheme.textMuted} ${cyberTheme.cardBg} rounded-xl shadow-lg border ${cyberTheme.inputBorder}/30`}>
+                <AiOutlineFileText className="mx-auto text-6xl mb-4 opacity-40" />
+                <p className="text-lg font-medium mb-2">아직 정리된 생각이 없네요</p>
+                <p className="text-sm opacity-70 mb-6">첫 번째 단권화 노트를 만들어볼까요?</p>
+                <Button onClick={() => router.push('/summary-notes/create')} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} ${cyberTheme.buttonHover} text-white px-6 py-3 rounded-xl shadow-lg`}>
                   <AiOutlinePlus className="mr-2" /> 새 단권화 노트
                 </Button>
               </div>
@@ -519,16 +534,24 @@ export default function BooksPageContent() {
                 {filteredSummaryNotes.map(note => (
                   <div 
                     key={note._id} 
-                    className={`p-5 rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:shadow-purple-500/30 border ${cyberTheme.borderSecondary}/30 ${cyberTheme.cardBg}`}
+                    className={`p-6 rounded-xl shadow-lg ${cyberTheme.cardTransition} ${cyberTheme.cardHover} border ${cyberTheme.borderSecondary}/30 ${cyberTheme.cardBg} hover:shadow-purple-500/30`}
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className={`text-lg sm:text-xl font-semibold ${cyberTheme.secondary} mb-1.5 hover:text-purple-300 truncate`} title={note.title}>
-                          <Link href={`/summary-notes/${note._id}/edit`}>{note.title}</Link>
+                        <h3 className={`text-xl sm:text-2xl font-semibold ${cyberTheme.secondary} mb-3 hover:text-purple-300 truncate leading-tight`} title={note.title}>
+                          <Link href={`/summary-notes/${note._id}/edit`} className="hover:underline">{note.title}</Link>
                         </h3>
-                        <p className={`text-sm ${cyberTheme.textMuted} mb-1 line-clamp-2`}>{note.description || '어떤 내용인지 간단한 설명을 추가해보세요.'}</p>
-                        <p className={`text-xs ${cyberTheme.textMuted}`}>연결: {note.orderedNoteIds.length}개</p>
-                        <p className={`text-xs ${cyberTheme.textMuted}`}>수정: <ClientDateDisplay createdAt={note.updatedAt} /></p>
+                        <p className={`text-base ${cyberTheme.textMuted} mb-3 line-clamp-2 leading-relaxed`}>{note.description || '어떤 내용인지 간단한 설명을 추가해보세요.'}</p>
+                        <div className="flex items-center gap-4 text-sm ${cyberTheme.textMuted}">
+                          <span className="flex items-center gap-1">
+                            <AiOutlineHighlight className="h-4 w-4" />
+                            연결: {note.orderedNoteIds.length}개
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <FiClock className="h-4 w-4" />
+                            수정: <ClientDateDisplay createdAt={note.updatedAt} />
+                          </span>
+                        </div>
                       </div>
                       <div className="flex space-x-2 flex-shrink-0 ml-4">
                         <DropdownMenu>
