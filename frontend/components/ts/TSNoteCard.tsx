@@ -613,33 +613,17 @@ export default function TSNoteCard({
 
     return (
       <div>
-        {/* 접힌 상태 헤더 */}
-        <div className="flex items-center justify-between px-3 py-2 bg-gray-800/30 rounded-md border border-gray-700/50">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleInlineThreads();
-              }}
-              className="flex items-center gap-2 text-xs font-medium text-gray-300 hover:text-cyan-400 transition-colors"
-              data-no-toggle
-            >
-              {showInlineThreads ? (
-                <ChevronDownIcon className="h-3 w-3" />
-              ) : (
-                <ChevronRightIcon className="h-3 w-3" />
-              )}
-              생각추가 ({threads.length}/5)
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            {hasThreads && (
-              <span className="text-xs text-gray-500">
-                최근 {Math.min(threads.length, 2)}개
-              </span>
-            )}
-          </div>
-        </div>
+        {/* 빽빽한 텍스트 형태 */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleInlineThreads();
+          }}
+          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors"
+          data-no-toggle
+        >
+          {showInlineThreads ? '▼' : '▶'}생각추가({threads.length}/5)
+        </button>
 
         {/* 쓰레드 목록 */}
         {showInlineThreads && (
@@ -816,30 +800,14 @@ export default function TSNoteCard({
 
     return (
       <div>
-        {/* 접힌 상태 헤더 */}
-        <div className="flex items-center justify-between px-3 py-2 bg-gray-800/30 rounded-md border border-gray-700/50">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowMemoEvolution(!showMemoEvolution)}
-              className="flex items-center gap-2 text-xs font-medium text-gray-300 hover:text-cyan-400 transition-colors"
-              data-no-toggle
-            >
-              {showMemoEvolution ? (
-                <ChevronDownIcon className="h-3 w-3" />
-              ) : (
-                <ChevronRightIcon className="h-3 w-3" />
-              )}
-              기억강화 ({details.length}/4)
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            {details.length > 0 && (
-              <span className="text-xs text-gray-500">
-                {details.length}개 항목
-              </span>
-            )}
-          </div>
-        </div>
+        {/* 빽빽한 텍스트 형태 */}
+        <button
+          onClick={() => setShowMemoEvolution(!showMemoEvolution)}
+          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors"
+          data-no-toggle
+        >
+          {showMemoEvolution ? '▼' : '▶'}기억강화({details.length}/4)
+        </button>
 
         {/* 펼친 상태 내용 */}
         {showMemoEvolution && (
@@ -1233,30 +1201,14 @@ export default function TSNoteCard({
       <div className={cn("", {
         "invisible": isInlineEditing || !note.relatedLinks || note.relatedLinks?.length === 0 || minimalDisplay || isOpen || isPageEditing
       })}>
-        {/* 접힌 상태 헤더 */}
-        <div className="flex items-center justify-between px-3 py-2 bg-gray-800/30 rounded-md border border-gray-700/50">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowRelatedLinks(!showRelatedLinks)}
-              className="flex items-center gap-2 text-xs font-medium text-gray-300 hover:text-cyan-400 transition-colors"
-              data-no-toggle
-            >
-              {showRelatedLinks ? (
-                <ChevronDownIcon className="h-3 w-3" />
-              ) : (
-                <ChevronRightIcon className="h-3 w-3" />
-              )}
-              지식연결 ({note.relatedLinks?.length || 0}/5)
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            {note.relatedLinks && note.relatedLinks.length > 0 && (
-              <span className="text-xs text-gray-500">
-                {note.relatedLinks.length}개 링크
-              </span>
-            )}
-          </div>
-        </div>
+        {/* 빽빽한 텍스트 형태 */}
+        <button
+          onClick={() => setShowRelatedLinks(!showRelatedLinks)}
+          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors"
+          data-no-toggle
+        >
+          {showRelatedLinks ? '▼' : '▶'}지식연결({note.relatedLinks?.length || 0}/5)
+        </button>
 
         {/* 펼친 상태 내용 */}
         {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
