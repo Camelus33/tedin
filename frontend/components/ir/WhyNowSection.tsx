@@ -67,8 +67,8 @@ const WhyNowSection = () => {
     {
       icon: <FiZap size={48} className="text-cyan-300" />,
       title: "The Opportunity",
-      subtitle: "학습 가속 시장의 개화",
-      description: "'학습 효율성 개선'은 이제 선택이 아닌 필수입니다. 이 거대한 시장의 니즈가 폭발하는 지금, 근본적인 해결책인 AI-Link에게는 전례 없는 기회가 열렸습니다.",
+      subtitle: "지식캡슐 학습 시간 단축 시장의 개화",
+      description: "'지식캡슐 학습 시간 단축'은 이제 선택이 아닌 필수입니다. 이 거대한 시장의 니즈가 폭발하는 지금, 근본적인 해결책인 AI-Link 지식캡슐에게는 전례 없는 기회가 열렸습니다.",
       delay: 0.4,
     },
   ];

@@ -169,7 +169,7 @@ const MarketSizeSection = () => {
       suffix: '억 달러',
       cagr: 30.0,
       description:
-        "AI 기반 학습 가속 솔루션으로 해결할 수 있는 시장입니다. Habitus33의 AI-Link 기술이 제공하는 독특한 가치로 초기에 장악할 수 있는 핵심 시장입니다.",
+        "AI 기반 지식캡슐 학습 시간 단축 솔루션으로 해결할 수 있는 시장입니다. Habitus33의 AI-Link 기술이 제공하는 독특한 가치로 초기에 장악할 수 있는 핵심 시장입니다.",
       source: 'Technavio (2024)',
       delay: 0.6,
     },

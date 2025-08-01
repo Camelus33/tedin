@@ -83,9 +83,9 @@ const MarketNeedSection = () => {
     },
     {
       icon: <FiBook size={28} className="text-indigo-300" />,
-      title: '의미 기반 학습 강점',
+      title: '의미 연결 학습 강점',
       value: '70%↑',
-      description: '성인은 경험과 지식을 활용한 의미 기반 학습에서 우수합니다.',
+      description: '성인은 경험과 지식을 활용한 의미 연결 학습에서 우수합니다.',
       source: 'Adult Learning Theory Research, 2023',
       delay: 0.3,
     },
@@ -105,13 +105,13 @@ const MarketNeedSection = () => {
             학습의 역설:
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
-              성인의 인지적 특성과 학습 니즈
+              성인 학습자의 니즈
             </span>
           </h2>
           <p className="text-xl text-slate-300 max-w-4xl mx-auto">
             성인은 청소년에 비해 단기기억 용량이 제한적이지만, 
-            경험과 지식을 활용한 의미 기반 학습에서는 오히려 우수합니다. 
-            하지만 시간 부족과 효율성 문제로 인해 학습의 궁극적 목표를 달성하기 어려운 상황입니다.
+            경험과 지식을 활용한 의미연결 학습에서는 오히려 우수합니다. 
+            하지만 시간 부족 문제로 인해 학습 목표를 달성하기 어려운 상황입니다.
           </p>
         </motion.div>
 

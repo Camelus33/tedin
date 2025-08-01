@@ -40,7 +40,7 @@ const pricingTiers = [
     audience: 'For knowledge creators & consumers',
     price: '25%',
     frequency: ' platform fee',
-    description: '검증된 고품질 지식 캡슐을 거래하며 당신의 전문성을 수익으로 전환하세요.',
+          description: '검증된 고품질 지식캡슐을 거래하며 당신의 전문성을 수익으로 전환하세요.',
     features: [
       'Publish insights as AI-Links',
       'Access domain-specific knowledge',

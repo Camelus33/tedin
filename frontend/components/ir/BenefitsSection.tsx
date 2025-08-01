@@ -84,7 +84,7 @@ const BenefitsSection = () => {
             학습 효율성, <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">데이터로 증명된 개선 효과</span>
           </motion.h2>
           <motion.p variants={itemVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            AI-Link는 성인 학습자의 인지적 한계를 극복하고, 학습 시간을 획기적으로 단축하면서도 기억 보존률을 크게 향상시키는 가장 확실한 방법입니다.
+            성인 학습자의 인지적 한계를 극복하고, 학습 시간을 획기적으로 단축하면서도 기억 보존률을 크게 향상시키는 가장 확실한 방법입니다.
           </motion.p>
         </motion.div>
 

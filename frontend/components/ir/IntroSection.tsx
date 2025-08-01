@@ -67,7 +67,7 @@ const IntroSection = () => {
           <span className="text-gray-200">모든 학습을</span>
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">
-            정복하세요
+            반으로 줄이세요
           </span>
         </motion.h1>
 
@@ -77,7 +77,7 @@ const IntroSection = () => {
           transition={{ duration: 1, delay: 1 }}
           className="mt-6 text-lg md:text-xl text-gray-300 font-medium max-w-2xl mx-auto"
         >
-          빈틈없이 빠르고 오래가는 학습 - 인지과학 기반 학습 가속기
+          집중 촉진 & 기억 강화 - 지식캡슐 기반 학습 단축기
         </motion.p>
       </div>
     </section>

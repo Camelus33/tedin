@@ -92,7 +92,7 @@ const ProblemSection = () => {
             The Root Cause: <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400">Why Learning is Inefficient</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            성인 학습자는 시간 투자 대비 학습 효과가 점점 더 떨어집니다. 전통적인 학습 방법의 한계가 명확해지고 있습니다.
+            이제 학습자에게 전통적인 학습법은 큰 부담입니다. 
           </motion.p>
         </motion.div>
 

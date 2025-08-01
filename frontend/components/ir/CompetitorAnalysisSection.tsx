@@ -24,7 +24,7 @@ const competitorGroups = [
     name: 'The Isolated Way: 맥락 없는 AI 학습',
     examples: 'ChatGPT, Gemini',
     approach: '매번 독립적인 질문. 학습 이력과 맥락을 기억하지 못함.',
-    limitation: '개인 학습 진화 과정 활용 불가. 시간진화형 온톨로지 없음.',
+    limitation: '개인 학습 진화 과정 활용 불가. 시간진화형 지식캡슐 없음.',
   },
 ];
 

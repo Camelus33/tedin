@@ -19,7 +19,7 @@ const steps = [
   {
     icon: FiCpu,
     title: "3. Optimize & Encapsulate: AI-Link 생성",
-    description: "복잡한 학습 맥락을 AI가 즉시 추론하고 활용할 수 있도록, 최적화된 고농축 데이터 캡슐인 'AI-Link'로 변환합니다."
+    description: "복잡한 학습 맥락을 AI가 즉시 추론하고 활용할 수 있도록, 최적화된 고농축 데이터 지식캡슐인 'AI-Link'로 변환합니다."
   },
   {
     icon: FiZap,

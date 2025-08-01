@@ -8,12 +8,12 @@ const techData = [
   {
     image: '/images/ir/temporal-knowledge-ontology-engine.png',
     title: 'The Learning Moat: 시간진화형 학습 온톨로지',
-    description: "학습자의 모든 학습 활동을 시간순으로 구조화하여, 단순한 정보가 아닌 '학습 진화 과정'을 기록합니다. 이 데이터는 학습할수록 더 정확해지며, 개인만의 독특한 학습 패턴을 만들어냅니다. 경쟁사는 이 깊이를 따라올 수 없습니다.",
+    description: "학습자의 모든 학습 활동을 시간순으로 구조화하여, 단순한 정보가 아닌 '학습 진화 과정'을 지식캡슐로 기록합니다. 이 데이터는 학습할수록 더 정확해지며, 개인만의 독특한 학습 패턴을 만들어냅니다. 경쟁사는 이 깊이를 따라올 수 없습니다.",
   },
   {
     image: '/images/ir/4-step-knowledge-distillation-protocol.png',
     title: 'The Acceleration Engine: 4단계 학습 가속 프로토콜',
-    description: "단순히 내용을 요약하는 것을 넘어, '포착-구조화-최적화-가속'의 4단계 프로토콜을 통해 복잡한 학습 내용을 AI가 즉시 추론할 수 있는 형태로 변환합니다. 이 독점적인 프로세스는 학습 효율을 획기적으로 향상시킵니다.",
+    description: "단순히 내용을 요약하는 것을 넘어, '포착-구조화-최적화-단축'의 4단계 프로토콜을 통해 복잡한 학습 내용을 AI가 즉시 추론할 수 있는 지식캡슐 형태로 변환합니다. 이 독점적인 프로세스는 학습 효율을 획기적으로 향상시킵니다.",
   },
   // {
   //   image: '/images/ir/creative-persona-engine.png',

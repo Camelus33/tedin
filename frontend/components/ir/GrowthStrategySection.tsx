@@ -22,10 +22,10 @@ const strategiesData = {
     id: 'networkEffects',
     icon: <Network className="w-7 h-7" />,
     phase: "Phase 2: Ignite the Learning Acceleration Flywheel",
-    logic: "AI-Link 기반 학습 캡슐을 마켓에서 거래. 전문가 학습 패턴을 즉시 적용하여 학습 곡선 단축. 새로운 캡슐 생성으로 선순환 구축.",
+    logic: "AI-Link 기반 지식캡슐을 마켓에서 거래. 전문가 학습 패턴을 즉시 적용하여 학습 곡선 단축. 새로운 지식캡슐 생성으로 선순환 구축.",
     tactics: [
-      "학습 가속 마켓플레이스 구축",
-      "학습 크리에이터 수익 공유",
+      "지식캡슐 마켓플레이스 구축",
+      "지식캡슐 크리에이터 수익 공유",
       "원클릭 학습 패턴 적용",
     ],
     color: "text-lime-400",

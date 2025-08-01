@@ -25,10 +25,10 @@ const useOfFundsSeedData = [
 ];
 
 const useOfFundsPreAData = [
-    { name: '학습 캡슐 마켓플레이스', value: 40, icon: <ShoppingCart className="w-5 h-5 mr-2" />, details: 'AI-Link 기반 학습 패턴 거래 시스템' },
-    { name: '학습 가속 마케팅', value: 35, icon: <TrendingUp className="w-5 h-5 mr-2" />, details: '학습 효율성 개선 효과 마케팅' },
+    { name: '지식캡슐 마켓플레이스', value: 40, icon: <ShoppingCart className="w-5 h-5 mr-2" />, details: 'AI-Link 기반 지식캡슐 거래 시스템' },
+    { name: '지식캡슐 마케팅', value: 35, icon: <TrendingUp className="w-5 h-5 mr-2" />, details: '지식캡슐 학습 시간 단축 효과 마케팅' },
     { name: 'B2B/Enterprise 준비', value: 15, icon: <Building className="w-5 h-5 mr-2" />, details: '교육기관용 학습 효율성 관리 기능' },
-    { name: '운영 및 인프라', value: 10, icon: <Cpu className="w-5 h-5 mr-2" />, details: '안정적 학습 가속 서비스 운영' },
+    { name: '운영 및 인프라', value: 10, icon: <Cpu className="w-5 h-5 mr-2" />, details: '안정적 지식캡슐 서비스 운영' },
 ];
 
 const COLORS_SEED = ['#2dd4bf', '#0ea5e9', '#8b5cf6'];
@@ -36,7 +36,7 @@ const COLORS_PREA = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
 
 const milestonesData = [
   { period: "Seed 후 12개월", target: "Phase 1 달성: 학습 가속 효과 증명", kpi: "학습 시간 50% 단축, ARR 8천만원" },
-  { period: "Pre-A 후 12개월", target: "Phase 2 점화: 학습 캡슐 마켓 베타", kpi: "GMV 50만 달러, ARR 8억원" },
+      { period: "Pre-A 후 12개월", target: "Phase 2 점화: 지식캡슐 마켓 베타", kpi: "GMV 50만 달러, ARR 8억원" },
   { period: "Pre-A 후 24개월", target: "Phase 3 진입: 첫 교육기관 계약", kpi: "Series A 준비 완료" },
 ];
 
