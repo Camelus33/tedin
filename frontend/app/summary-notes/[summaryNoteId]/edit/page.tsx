@@ -45,7 +45,67 @@ interface SummaryNoteData {
   userMarkdownContent?: string;
   createdAt?: string;
   updatedAt?: string;
+  diagramImageUrl?: string; // Added for diagram image URL
+  diagramData?: { // Added for diagram data
+    nodes: any[];
+    connections: any[];
+  };
 }
+
+// Diagram relationship types
+export type RelationshipType = 'cause-effect' | 'before-after' | 'foundation-extension' | 'contains' | 'contrast';
+
+interface RelationshipConfig {
+  label: string;
+  icon: string;
+  color: string;
+  description: string;
+}
+
+const RELATIONSHIP_CONFIGS: Record<RelationshipType, RelationshipConfig> = {
+  'cause-effect': {
+    label: '원인-결과',
+    icon: '→',
+    color: 'text-red-400',
+    description: 'A가 B의 원인이 됨'
+  },
+  'before-after': {
+    label: '전-후',
+    icon: '⏭️',
+    color: 'text-blue-400',
+    description: '시간적 순서 관계'
+  },
+  'foundation-extension': {
+    label: '기반-확장',
+    icon: '↑',
+    color: 'text-green-400',
+    description: 'A가 B의 기반이 됨'
+  },
+  'contains': {
+    label: '포함',
+    icon: '⊃',
+    color: 'text-purple-400',
+    description: 'A가 B를 포함함'
+  },
+  'contrast': {
+    label: '대조',
+    icon: '↔',
+    color: 'text-yellow-400',
+    description: 'A와 B의 차이점'
+  }
+};
+
+// Memo icon colors
+const MEMO_ICON_COLORS = [
+  'bg-blue-600',
+  'bg-green-600', 
+  'bg-purple-600',
+  'bg-orange-600',
+  'bg-red-600',
+  'bg-teal-600',
+  'bg-pink-600',
+  'bg-indigo-600'
+];
 
 // Ensure FetchedNoteDetails inherits bookId from TSNote
 interface FetchedNoteDetails extends TSNote { 
@@ -125,6 +185,20 @@ export default function EditSummaryNotePage() {
   // State for AI Link Modal
   const [isAiLinkModalOpen, setIsAiLinkModalOpen] = useState(false);
   
+  // Diagram state
+  const [selectedRelationship, setSelectedRelationship] = useState<RelationshipType | null>(null);
+  const [isDrawingMode, setIsDrawingMode] = useState(false);
+  const [draggedMemo, setDraggedMemo] = useState<FetchedNoteDetails | null>(null);
+  const [canvasNodes, setCanvasNodes] = useState<any[]>([]);
+  const [canvasConnections, setCanvasConnections] = useState<any[]>([]);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionStart, setConnectionStart] = useState<string | null>(null);
+  const [memoIconColors, setMemoIconColors] = useState<Record<string, string>>({});
+  const [diagramImageUrl, setDiagramImageUrl] = useState<string | null>(null);
+  const [selectedNodeMarkdown, setSelectedNodeMarkdown] = useState<string>('');
+  const [nodeMarkdownContent, setNodeMarkdownContent] = useState<Record<string, string>>({});
+  
   // 데이터 가져오기 및 저장 로직 (기존 코드 유지)
   useEffect(() => {
     if (!summaryNoteId) return;
@@ -145,6 +219,11 @@ export default function EditSummaryNotePage() {
         setTitle(summaryData.title);
         setDescription(summaryData.description);
         setUserMarkdownContent(summaryData.userMarkdownContent || '');
+        setDiagramImageUrl(summaryData.diagramImageUrl || null);
+        if (summaryData.diagramData) {
+          setCanvasNodes(summaryData.diagramData.nodes || []);
+          setCanvasConnections(summaryData.diagramData.connections || []);
+        }
 
         if (summaryData.orderedNoteIds && summaryData.orderedNoteIds.length > 0) {
           const notesDetailsRes = await api.post('/notes/batch', { noteIds: summaryData.orderedNoteIds });
@@ -350,19 +429,157 @@ export default function EditSummaryNotePage() {
   };
 
   const handleDeleteRelatedLinkInModal = async (linkIndexToDelete: number) => {
-    if (!selectedNoteForLinkModal || !selectedNoteForLinkModal.relatedLinks) return;
+    if (!selectedNoteForLinkModal) return;
+    
+    const updatedLinks = (selectedNoteForLinkModal.relatedLinks || []).filter((_, index) => index !== linkIndexToDelete);
+    
+    try {
+      await api.put(`/notes/${selectedNoteForLinkModal._id}`, {
+        relatedLinks: updatedLinks
+      });
+      
+      // Update local state
+      setFetchedNotes(prev => prev.map(note => 
+        note._id === selectedNoteForLinkModal._id 
+          ? { ...note, relatedLinks: updatedLinks }
+          : note
+      ));
+      
+      showSuccess('연결된 지식이 삭제되었습니다.');
+      setShowLinkModal(false);
+      setSelectedNoteForLinkModal(null);
+    } catch (err) {
+      console.error('Failed to delete related link:', err);
+      showError('연결된 지식 삭제가 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
+    }
+  };
 
-    const updatedRelatedLinks = selectedNoteForLinkModal.relatedLinks.filter((_, index) => index !== linkIndexToDelete);
+  // SVG 다이어그램 생성 함수
+  const generateDiagramSVG = () => {
+    if (canvasNodes.length === 0) return null;
+    
+    const width = 800;
+    const height = 600;
+    const padding = 50;
+    
+    // 노드 위치 정규화
+    const minX = Math.min(...canvasNodes.map(n => n.position.x));
+    const maxX = Math.max(...canvasNodes.map(n => n.position.x));
+    const minY = Math.min(...canvasNodes.map(n => n.position.y));
+    const maxY = Math.max(...canvasNodes.map(n => n.position.y));
+    
+    const scaleX = (width - 2 * padding) / (maxX - minX || 1);
+    const scaleY = (height - 2 * padding) / (maxY - minY || 1);
+    const scale = Math.min(scaleX, scaleY, 1);
+    
+    const normalizePosition = (pos: any) => ({
+      x: padding + (pos.x - minX) * scale,
+      y: padding + (pos.y - minY) * scale
+    });
+    
+    const nodeElements = canvasNodes.map(node => {
+      const pos = normalizePosition(node.position);
+      const color = node.color.replace('bg-', '').replace('-600', '');
+      const fillColorMap: Record<string, string> = {
+        'blue': '#2563eb',
+        'green': '#16a34a',
+        'purple': '#9333ea',
+        'orange': '#ea580c',
+        'red': '#dc2626',
+        'teal': '#0d9488',
+        'pink': '#db2777',
+        'indigo': '#4f46e5'
+      };
+      const fillColor = fillColorMap[color] || '#2563eb';
+      
+      return `
+        <circle cx="${pos.x}" cy="${pos.y}" r="25" fill="${fillColor}" stroke="#1f2937" stroke-width="2"/>
+        <text x="${pos.x}" y="${pos.y + 5}" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">${node.order}</text>
+      `;
+    }).join('');
+    
+    const connectionElements = canvasConnections.map(connection => {
+      const sourceNode = canvasNodes.find(n => n.id === connection.source);
+      const targetNode = canvasNodes.find(n => n.id === connection.target);
+      
+      if (!sourceNode || !targetNode) return '';
+      
+      const sourcePos = normalizePosition(sourceNode.position);
+      const targetPos = normalizePosition(targetNode.position);
+      const config = RELATIONSHIP_CONFIGS[connection.type as RelationshipType];
+      const strokeColor = config.color.replace('text-', '').replace('-400', '');
+      const colorMap = {
+        'red': '#ef4444',
+        'blue': '#3b82f6',
+        'green': '#22c55e',
+        'purple': '#a855f7',
+        'yellow': '#eab308'
+      };
+      
+      return `
+        <defs>
+          <marker id="arrow-${connection.id}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="${colorMap[strokeColor as keyof typeof colorMap] || '#ef4444'}"/>
+          </marker>
+        </defs>
+        <line x1="${sourcePos.x}" y1="${sourcePos.y}" x2="${targetPos.x}" y2="${targetPos.y}" 
+              stroke="${colorMap[strokeColor as keyof typeof colorMap] || '#ef4444'}" stroke-width="3" 
+              marker-end="url(#arrow-${connection.id})"/>
+      `;
+    }).join('');
+    
+    return `
+      <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+        <rect width="${width}" height="${height}" fill="#f8fafc"/>
+        ${nodeElements}
+        ${connectionElements}
+      </svg>
+    `;
+  };
 
-    setFetchedNotes(prevNotes =>
-      prevNotes.map(n =>
-        n._id === selectedNoteForLinkModal._id
-          ? { ...n, relatedLinks: updatedRelatedLinks }
-          : n
-      )
-    );
-    setChangedNoteIds(prev => new Set(prev).add(selectedNoteForLinkModal._id!));
-    showSuccess('링크가 삭제되었습니다. 저장 버튼을 눌러야 최종 반영됩니다.');
+  // 다이어그램을 이미지로 저장
+  const saveDiagramAsImage = async () => {
+    const svg = generateDiagramSVG();
+    if (!svg) {
+      showError('저장할 다이어그램이 없습니다.');
+      return;
+    }
+    
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    setDiagramImageUrl(url);
+    
+    try {
+      // SVG를 base64로 변환
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Data = reader.result as string;
+        const svgDataUrl = base64Data;
+        
+        // SummaryNote에 다이어그램 이미지 URL 저장
+        const updatedSummaryNoteData = {
+          title,
+          description,
+          orderedNoteIds: fetchedNotes.map(n => n._id),
+          userMarkdownContent,
+          diagramImageUrl: svgDataUrl,
+          diagramData: {
+            nodes: canvasNodes,
+            connections: canvasConnections
+          }
+        };
+        
+        await api.put(`/summary-notes/${summaryNoteId}`, updatedSummaryNoteData);
+        showSuccess('다이어그램이 저장되었습니다.');
+        
+        // 로컬 상태 업데이트
+        setSummaryNote(prev => prev ? { ...prev, ...updatedSummaryNoteData } : null);
+      };
+      reader.readAsDataURL(blob);
+    } catch (err) {
+      console.error('Failed to save diagram:', err);
+      showError('다이어그램 저장이 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
+    }
   };
 
   // Flashcard Modal Handlers
@@ -447,6 +664,11 @@ export default function EditSummaryNotePage() {
                 <Button onClick={handleEditToggle} className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg}`}>
                   <PencilIcon className="w-5 h-5 mr-2" /> 편집하기
                 </Button>
+                {canvasNodes.length > 0 && (
+                  <Button onClick={saveDiagramAsImage} className="bg-green-600 hover:bg-green-700 text-white">
+                    📊 다이어그램 저장
+                  </Button>
+                )}
               </>
             )}
             {/* Dropdown Menu for Delete */}
@@ -485,10 +707,10 @@ export default function EditSummaryNotePage() {
 
         <hr className="border-gray-700/50 mb-8" />
 
-        {/* Main Content Area: 2-Panel Layout */}
-        <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-300px)] md:h-[calc(100vh-280px)]"> {/* Adjust height as needed */}
+        {/* Main Content Area: 3-Panel Layout */}
+        <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-300px)] md:h-[calc(100vh-280px)]">
           {/* Left Panel: Notes List */}
-          <Panel minSize={30} className="overflow-y-auto pr-2 pb-6 h-full custom-scrollbar">
+          <Panel minSize={25} defaultSize={30} className="overflow-y-auto pr-2 pb-6 h-full custom-scrollbar">
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-300 mb-3">메모 카드 ({fetchedNotes.length})</h3>
               {fetchedNotes.length > 0 ? (
@@ -497,8 +719,15 @@ export default function EditSummaryNotePage() {
 
                   return (
                     <div key={note._id} className="p-2 relative group bg-gray-800/60 rounded-md">
+                      {/* Order Badge */}
+                      <div className="absolute -left-1 -top-1 z-20">
+                        <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
+                          {idx + 1}
+                        </div>
+                      </div>
+                      
                       {isEditing && (
-                        <div className="absolute -left-2 -top-2 z-10 flex space-x-1">
+                        <div className="absolute -left-2 -top-2 z-10 flex space-x-1 ml-8">
                           <button 
                             onClick={() => handleReorderNote(note._id, 'up')}
                             disabled={idx === 0}
@@ -545,24 +774,382 @@ export default function EditSummaryNotePage() {
             </div>
           </Panel>
           
-          {/* Resize Handle (thin divider, hidden on small screens) */}
-          <PanelResizeHandle className="hidden sm:block w-px bg-slate-600/40 hover:bg-cyan-600 active:bg-cyan-500 transition-colors duration-200 cursor-col-resize mx-1" />
+          {/* Resize Handle 1 */}
+          <PanelResizeHandle className="hidden sm:block w-[1px] bg-gray-600/30 hover:bg-cyan-500/50 active:bg-cyan-400 transition-colors duration-200 cursor-col-resize" />
+
+          {/* Center Panel: Diagram Canvas */}
+          <Panel minSize={30} defaultSize={40} className="overflow-hidden bg-gray-800/30 rounded-lg border border-gray-700/50">
+            <div className="h-full flex flex-col">
+              <div className="p-4 border-b border-gray-700/50">
+                <h2 className={`text-xl font-semibold ${cyberTheme.primary}`}>
+                  관계 다이어그램
+                </h2>
+                <p className="text-sm text-gray-400 mt-1">
+                  메모카드 간의 관계를 시각적으로 표현하세요
+                </p>
+                
+                {/* Relationship Selection Toolbar */}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="text-sm text-gray-300 mr-2">관계 선택:</span>
+                  {Object.entries(RELATIONSHIP_CONFIGS).map(([type, config]) => (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        setSelectedRelationship(selectedRelationship === type ? null : type as RelationshipType);
+                        setIsDrawingMode(selectedRelationship !== type);
+                      }}
+                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                        selectedRelationship === type
+                          ? `${config.color} bg-gray-700 border border-gray-500`
+                          : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
+                      }`}
+                      title={config.description}
+                    >
+                      <span className="mr-1">{config.icon}</span>
+                      {config.label}
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Drawing Mode Indicator */}
+                {isDrawingMode && selectedRelationship && (
+                  <div className="mt-2 p-2 bg-blue-900/30 border border-blue-500/50 rounded-md">
+                    <p className="text-sm text-blue-300">
+                      <span className="font-medium">그리기 모드:</span> {RELATIONSHIP_CONFIGS[selectedRelationship].label}
+                    </p>
+                    <p className="text-xs text-blue-400 mt-1">
+                      캔버스에서 관계를 그려보세요
+                    </p>
+                  </div>
+                )}
+                
+                {/* Connection Mode Indicator */}
+                {isConnecting && connectionStart && (
+                  <div className="mt-2 p-2 bg-red-900/30 border border-red-500/50 rounded-md">
+                    <p className="text-sm text-red-300">
+                      <span className="font-medium">연결 모드:</span> {RELATIONSHIP_CONFIGS[selectedRelationship!].label}
+                    </p>
+                    <p className="text-xs text-red-400 mt-1">
+                      연결할 노드를 클릭하세요
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex-grow p-4">
+                {/* Canvas with Icon Palette */}
+                <div className="h-full bg-gray-900/50 rounded-lg border-2 border-dashed border-gray-600 relative">
+                  {/* Icon Palette - Top Left */}
+                  <div className="absolute top-4 left-4 z-10 bg-gray-800/90 rounded-lg p-3 border border-gray-600 shadow-lg">
+                    <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                      <span className="text-blue-400">📋</span>
+                      메모 아이콘 ({fetchedNotes.length})
+                    </h4>
+                    <div className="flex flex-wrap gap-2 max-w-48">
+                      {fetchedNotes.map((note, idx) => {
+                        const defaultColor = MEMO_ICON_COLORS[idx % MEMO_ICON_COLORS.length];
+                        const currentColor = memoIconColors[note._id] || defaultColor;
+                        
+                        return (
+                          <div
+                            key={note._id}
+                            draggable
+                            onDragStart={(e) => {
+                              e.dataTransfer.setData('text/plain', JSON.stringify({
+                                id: note._id,
+                                content: note.content,
+                                order: idx + 1,
+                                color: currentColor
+                              }));
+                              // 드래그 시 시각적 피드백
+                              e.currentTarget.style.transform = 'scale(1.1)';
+                              e.currentTarget.style.opacity = '0.7';
+                            }}
+                            onDragEnd={(e) => {
+                              // 드래그 종료 시 원래 상태로 복원
+                              e.currentTarget.style.transform = '';
+                              e.currentTarget.style.opacity = '';
+                            }}
+                            className={`w-10 h-10 ${currentColor} rounded-full flex items-center justify-center text-white text-sm font-bold cursor-move hover:scale-110 transition-all shadow-md hover:shadow-lg border-2 border-transparent hover:border-white/30`}
+                            title={`${idx + 1}번: ${note.content.substring(0, 20)}...`}
+                            onClick={() => {
+                              // Color selection modal or dropdown
+                              const currentIndex = MEMO_ICON_COLORS.indexOf(currentColor);
+                              const nextColor = MEMO_ICON_COLORS[(currentIndex + 1) % MEMO_ICON_COLORS.length];
+                              setMemoIconColors(prev => ({
+                                ...prev,
+                                [note._id]: nextColor
+                              }));
+                            }}
+                          >
+                            {idx + 1}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-2 text-xs text-gray-400 space-y-1">
+                      <p>💡 아이콘을 드래그해서 캔버스에 배치하세요</p>
+                      <p>🎨 아이콘 클릭으로 색상 변경</p>
+                    </div>
+                  </div>
+                  
+                  {/* Canvas Area */}
+                  <div 
+                    className="h-full w-full transition-all duration-200"
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+                      e.currentTarget.style.border = '2px dashed rgba(59, 130, 246, 0.8)';
+                    }}
+                    onDragLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '';
+                      e.currentTarget.style.border = '';
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.style.backgroundColor = '';
+                      e.currentTarget.style.border = '';
+                      
+                      try {
+                        const droppedData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                        const newNode = {
+                          id: droppedData.id,
+                          content: droppedData.content,
+                          order: droppedData.order,
+                          color: droppedData.color || 'bg-blue-600',
+                          position: {
+                            x: e.clientX - e.currentTarget.getBoundingClientRect().left,
+                            y: e.clientY - e.currentTarget.getBoundingClientRect().top
+                          }
+                        };
+                        
+                        setCanvasNodes(prev => [...prev, newNode]);
+                      } catch (error) {
+                        console.error('Failed to parse dropped data:', error);
+                      }
+                    }}
+                  >
+                    {/* Existing Nodes */}
+                    {canvasNodes.map((node) => (
+                      <div
+                        key={node.id}
+                        className={`absolute ${node.color} text-white rounded-full p-3 text-sm font-medium shadow-lg cursor-move ${
+                          selectedNode === node.id ? 'ring-2 ring-yellow-400' : ''
+                        } ${connectionStart === node.id ? 'ring-2 ring-red-400' : ''}`}
+                        style={{
+                          left: node.position.x,
+                          top: node.position.y,
+                          transform: 'translate(-50%, -50%)',
+                          width: '60px',
+                          height: '60px'
+                        }}
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData('text/plain', JSON.stringify(node));
+                        }}
+                        onClick={() => {
+                          if (isConnecting && connectionStart && connectionStart !== node.id) {
+                            // Create connection
+                            const newConnection = {
+                              id: `${connectionStart}-${node.id}`,
+                              source: connectionStart,
+                              target: node.id,
+                              type: selectedRelationship || 'cause-effect'
+                            };
+                            setCanvasConnections(prev => [...prev, newConnection]);
+                            setIsConnecting(false);
+                            setConnectionStart(null);
+                          } else if (selectedRelationship) {
+                            // Start connection
+                            setIsConnecting(true);
+                            setConnectionStart(node.id);
+                            setSelectedNode(node.id);
+                          } else {
+                            // Just select node
+                            setSelectedNode(selectedNode === node.id ? null : node.id);
+                            
+                            // Load node's markdown content
+                            if (selectedNode !== node.id) {
+                              const nodeContent = nodeMarkdownContent[node.id] || '';
+                              setSelectedNodeMarkdown(nodeContent);
+                            }
+                          }
+                        }}
+                      >
+                        <div className="flex items-center justify-center h-full relative">
+                          <span className="text-lg font-bold">
+                            {node.order}
+                          </span>
+                          {/* Markdown content indicator */}
+                          {nodeMarkdownContent[node.id] && nodeMarkdownContent[node.id].trim() && (
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-white"></div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Connections */}
+                    {canvasConnections.map((connection) => {
+                      const sourceNode = canvasNodes.find(n => n.id === connection.source);
+                      const targetNode = canvasNodes.find(n => n.id === connection.target);
+                      const config = RELATIONSHIP_CONFIGS[connection.type as RelationshipType];
+                      
+                      if (!sourceNode || !targetNode) return null;
+                      
+                      const startX = sourceNode.position.x;
+                      const startY = sourceNode.position.y;
+                      const endX = targetNode.position.x;
+                      const endY = targetNode.position.y;
+                      
+                      return (
+                        <svg
+                          key={connection.id}
+                          className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                          style={{ zIndex: 1 }}
+                        >
+                          <defs>
+                            <marker
+                              id={`arrow-${connection.type}`}
+                              markerWidth="10"
+                              markerHeight="10"
+                              refX="9"
+                              refY="3"
+                              orient="auto"
+                              markerUnits="strokeWidth"
+                            >
+                              <path
+                                d="M0,0 L0,6 L9,3 z"
+                                fill={config.color.replace('text-', '')}
+                              />
+                            </marker>
+                          </defs>
+                          <line
+                            x1={startX}
+                            y1={startY}
+                            x2={endX}
+                            y2={endY}
+                            stroke={config.color.replace('text-', '')}
+                            strokeWidth="2"
+                            markerEnd={`url(#arrow-${connection.type})`}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              // Remove connection
+                              setCanvasConnections(prev => 
+                                prev.filter(c => c.id !== connection.id)
+                              );
+                            }}
+                          />
+                        </svg>
+                      );
+                    })}
+                    
+                    <div className="text-center text-gray-400 pt-20">
+                      <div className="text-4xl mb-2">📊</div>
+                      <p className="text-sm">다이어그램 캔버스</p>
+                      <p className="text-xs mt-1">좌측 상단의 아이콘을 드래그해서 캔버스에 배치하세요</p>
+                      {selectedRelationship && (
+                        <div className="mt-4 p-2 bg-gray-800/50 rounded max-w-xs mx-auto">
+                          <p className="text-xs text-gray-300">
+                            선택된 관계: {RELATIONSHIP_CONFIGS[selectedRelationship].label}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Panel>
+
+          {/* Resize Handle 2 */}
+          <PanelResizeHandle className="hidden sm:block w-[1px] bg-gray-600/30 hover:bg-cyan-500/50 active:bg-cyan-400 transition-colors duration-200 cursor-col-resize" />
 
           {/* Right Panel: Markdown Editor */}
-          <Panel defaultSize={50} minSize={25} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
+          <Panel minSize={25} defaultSize={30} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
              <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
-                Deep Dive
+              {selectedNode ? (
+                <div className="flex items-center gap-3">
+                  <span>📝 노트 편집</span>
+                  <span className="text-sm text-gray-400">
+                    (노드 {canvasNodes.find(n => n.id === selectedNode)?.order}번)
+                  </span>
+                  <Button
+                    onClick={() => {
+                      setSelectedNode(null);
+                      setSelectedNodeMarkdown('');
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-gray-200"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              ) : (
+                'Deep Dive'
+              )}
               </h2>
             <div className="flex-grow h-full">
               <DynamicBlockNoteEditor
-                initialContent={userMarkdownContent}
-                onChange={(content) => setUserMarkdownContent(content)}
+                initialContent={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
+                onChange={(content) => {
+                  if (selectedNode) {
+                    // Update node's markdown content
+                    setNodeMarkdownContent(prev => ({
+                      ...prev,
+                      [selectedNode]: content
+                    }));
+                    setSelectedNodeMarkdown(content);
+                  } else {
+                    // Update main markdown content
+                    setUserMarkdownContent(content);
+                  }
+                }}
                 editable={isEditing}
                 className="h-full"
               />
             </div>
           </Panel>
         </PanelGroup>
+
+        {/* Saved Diagram Display */}
+        {(diagramImageUrl || summaryNote?.diagramImageUrl) && (
+          <div className="mt-8 p-6 bg-gray-800/30 rounded-lg border border-gray-700/50">
+            <h3 className={`text-xl font-semibold mb-4 ${cyberTheme.primary}`}>
+              📊 저장된 다이어그램
+            </h3>
+            <div className="flex justify-center">
+              <img 
+                src={diagramImageUrl || summaryNote?.diagramImageUrl} 
+                alt="관계 다이어그램" 
+                className="max-w-full h-auto rounded-lg shadow-lg border border-gray-600"
+                style={{ maxHeight: '400px' }}
+              />
+            </div>
+            <div className="mt-4 flex justify-center gap-2">
+              <Button 
+                onClick={() => {
+                  const imageUrl = diagramImageUrl || summaryNote?.diagramImageUrl;
+                  if (imageUrl) {
+                    const link = document.createElement('a');
+                    link.href = imageUrl;
+                    link.download = `diagram-${summaryNoteId}.svg`;
+                    link.click();
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                📥 다운로드
+              </Button>
+              <Button 
+                onClick={() => setDiagramImageUrl(null)}
+                variant="outline"
+                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              >
+                ❌ 숨기기
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Modals (Flashcard, Related Links) */}
         {showFlashcardModal && noteForFlashcardModal && (
@@ -658,7 +1245,6 @@ export default function EditSummaryNotePage() {
                                   // Fallback for safety if the above logic fails (e.g. due to non-unique links)
                                   // This part of the logic may need refinement if links don't have unique IDs
                                   // and direct index from filtered list is not reliable.
-                                  // For now, we rely on the fact that we rebuild the array.
                                   // Consider adding temporary unique IDs to links in UI state if this becomes an issue.
                                   const indexInFiltered = (selectedNoteForLinkModal.relatedLinks || [])
                                       .filter(rl => rl.type === activeRelatedLinkTypeTab)

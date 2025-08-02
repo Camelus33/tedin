@@ -1336,11 +1336,126 @@
         ],
         "priority": "medium",
         "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Diagram Canvas Feature in 단권화 노트",
+        "description": "Implement a diagram canvas feature in the 단권화 노트, featuring a 3-panel layout (memo cards, canvas, markdown editor), intuitive relationship representation, and screenshot saving. The implementation will involve displaying memo cards with sequential numbering and corresponding icons, arranging all icons on the top-left of the canvas panel, allowing users to drag icons onto the canvas and connect them with 5 relationship links, and saving a screenshot of the completed diagram to a fixed location on the 단권화 노트 page.",
+        "status": "pending",
+        "dependencies": [
+          2,
+          4
+        ],
+        "priority": "medium",
+        "details": "1.  **Layout Implementation:**\n    *   Create a 3-panel layout using a suitable UI framework (e.g., React with a grid system or flexbox). The panels should be resizable.\n    *   Left Panel: Memo cards with sequential numbering and corresponding icons based on the knowledge cart order. \n    *   Center Panel: Diagram canvas for relationship visualization. Use a library like react-flow or similar for interactive diagram creation. Initialize the canvas. All icons should be arranged on the top-left of this panel.\n    *   Right Panel: Markdown editor for detailed notes. Integrate a markdown editor component (e.g., react-markdown or similar).\n2.  **Relationship Representation:**\n    *   Define the 5 relationship types: cause-effect, before-after, base-extension, inclusion, contrast.\n    *   Implement visual cues for each relationship type on the diagram canvas (e.g., different arrow styles, colors, or icons).\n    *   Allow users to create and connect nodes on the canvas by dragging icons, specifying the relationship type for each connection. Users should be able to modify and delete these connections.\n3.  **Memo Card Integration:**\n    *   Assign sequential numbering to memo cards based on their order in the knowledge cart and associate them with corresponding icons.\n4.  **Markdown Editor Integration:**\n    *   Link the markdown editor to the selected node on the canvas. When a node is selected, display its associated markdown content in the editor.\n    *   Implement two-way data binding between the node content and the markdown editor. Changes in the editor should update the node content, and vice versa.\n5.  **Screenshot Saving:**\n    *   Add a button to save the diagram as a screenshot.\n    *   Use a library like html-to-image or dom-to-image to capture the canvas content as an image.\n    *   Save the screenshot to a fixed location on the 단권화 노트 page, outside the markdown editor.\n6.  **Accessibility Considerations:**\n    *   Ensure the diagram canvas is accessible to users with disabilities by providing keyboard navigation and screen reader support.\n    *   Use ARIA attributes to describe the relationships between nodes and the purpose of each element on the canvas.\n7.  **Error Handling:**\n    *   Implement error handling for cases where the diagram cannot be saved or when data cannot be loaded.\n    *   Display informative error messages to the user.\n8.  **Performance Optimization:**\n    *   Optimize the rendering of the diagram canvas to handle large diagrams with many nodes and connections.\n    *   Use virtualization techniques to render only the visible portion of the canvas.\n",
+        "testStrategy": "1.  **Layout Verification:**\n    *   Verify that the 3-panel layout is rendered correctly with the memo card panel on the left, the diagram canvas in the center, and the markdown editor on the right.\n    *   Check that the panels are resizable and that the content within each panel is displayed correctly.\n    *   Verify that memo cards in the left panel are sequentially numbered and have corresponding icons.\n    *   Confirm that all icons are arranged on the top-left of the canvas panel.\n2.  **Relationship Representation Verification:**\n    *   Verify that the 5 relationship types are visually represented on the diagram canvas with distinct cues (e.g., different arrow styles, colors, or icons).\n    *   Test the creation and connection of nodes on the canvas by dragging icons, ensuring that the relationship type can be specified for each connection. Verify the ability to modify and delete connections.\n3.  **Memo Card Integration Verification:**\n    *   Verify that memo cards are sequentially numbered based on their order in the knowledge cart and associated with corresponding icons.\n4.  **Markdown Editor Integration Verification:**\n    *   Verify that the markdown editor is linked to the selected node on the canvas and that the content of the node is displayed in the editor.\n    *   Test the two-way data binding between the node content and the markdown editor, ensuring that changes in the editor update the node content, and vice versa.\n5.  **Screenshot Saving Verification:**\n    *   Verify that the diagram can be saved as a screenshot by clicking the save button.\n    *   Check that the screenshot is saved to the specified fixed location on the 단권화 노트 page.\n6.  **Accessibility Testing:**\n    *   Use a screen reader to verify that the diagram canvas is accessible to users with disabilities.\n    *   Check that keyboard navigation is supported and that ARIA attributes are used to describe the relationships between nodes and the purpose of each element on the canvas.\n7.  **Error Handling Testing:**\n    *   Simulate error conditions (e.g., failed save operation, data loading error) and verify that informative error messages are displayed to the user.\n8.  **Performance Testing:**\n    *   Create a large diagram with many nodes and connections and verify that the rendering of the canvas is optimized and that the application remains responsive.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement 3-Panel Layout and Basic Components",
+            "description": "Create the 3-panel layout (memo cards, canvas, markdown editor) using React and a suitable UI framework. Implement basic rendering of memo cards with sequential numbering in the left panel. Initialize the diagram canvas in the center panel using a library like react-flow. Integrate a basic markdown editor component in the right panel.",
+            "status": "done",
+            "dependencies": [],
+            "details": "Create a 3-panel layout using a suitable UI framework (e.g., React with a grid system or flexbox). The panels should be resizable. Left Panel: Memo cards with sequential numbering. Fetch memo data and render each memo as a card with its number. Center Panel: Diagram canvas for relationship visualization. Use a library like react-flow or similar for interactive diagram creation. Initialize the canvas. Right Panel: Markdown editor for detailed notes. Integrate a markdown editor component (e.g., react-markdown or similar).",
+            "testStrategy": "Verify that the 3-panel layout is rendered correctly with the memo card panel on the left, the diagram canvas in the center, and the markdown editor on the right. Check that the panels are resizable and that the content within each panel is displayed correctly."
+          },
+          {
+            "id": 2,
+            "title": "Implement Relationship Representation on Canvas",
+            "description": "Define the 5 relationship types (cause-effect, before-after, base-extension, inclusion, contrast) and implement visual cues for each type on the diagram canvas. Allow users to create and connect nodes, specifying the relationship type for each connection.",
+            "status": "done",
+            "dependencies": [],
+            "details": "Define the 5 relationship types: cause-effect, before-after, base-extension, inclusion, contrast. Implement visual cues for each relationship type on the diagram canvas (e.g., different arrow styles, colors, or icons). Allow users to create and connect nodes on the canvas, specifying the relationship type for each connection.",
+            "testStrategy": "Verify that the relationship types are correctly represented on the canvas with distinct visual cues. Check that users can create and connect nodes, specifying the relationship type for each connection."
+          },
+          {
+            "id": 3,
+            "title": "Implement Memo Card Drag-and-Drop to Canvas",
+            "description": "Enable drag-and-drop functionality from the memo card panel to the diagram canvas to create nodes. When a memo card is dragged onto the canvas, create a corresponding node with the memo content.",
+            "status": "done",
+            "dependencies": [],
+            "details": "Enable drag-and-drop functionality from the memo card panel to the diagram canvas to create nodes. When a memo card is dragged onto the canvas, create a corresponding node with the memo content.",
+            "testStrategy": "Verify that memo cards can be dragged from the memo card panel to the diagram canvas. Check that a corresponding node is created on the canvas with the memo content when a card is dropped."
+          },
+          {
+            "id": 4,
+            "title": "Implement Markdown Editor Integration and Two-Way Data Binding",
+            "description": "Link the markdown editor to the selected node on the canvas. When a node is selected, display its associated markdown content in the editor. Implement two-way data binding between the node content and the markdown editor.",
+            "status": "done",
+            "dependencies": [],
+            "details": "Link the markdown editor to the selected node on the canvas. When a node is selected, display its associated markdown content in the editor. Implement two-way data binding between the node content and the markdown editor. Changes in the editor should update the node content, and vice versa.",
+            "testStrategy": "Verify that the markdown editor displays the content of the selected node on the canvas. Check that changes in the editor update the node content, and vice versa."
+          },
+          {
+            "id": 5,
+            "title": "Implement Screenshot Saving Functionality",
+            "description": "Add a button to save the diagram as a screenshot. Use a library like html-to-image or dom-to-image to capture the canvas content as an image. Allow users to download the image as a PNG or JPG file.",
+            "status": "in-progress",
+            "dependencies": [],
+            "details": "Add a button to save the diagram as a screenshot. Use a library like html-to-image or dom-to-image to capture the canvas content as an image. Allow users to download the image as a PNG or JPG file.",
+            "testStrategy": "Verify that clicking the save button captures the canvas content as an image. Check that users can download the image as a PNG or JPG file."
+          },
+          {
+            "id": 6,
+            "title": "Assign Sequential Numbering and Icons to Memo Cards",
+            "description": "Assign sequential numbering to memo cards based on their order in the knowledge cart and associate them with corresponding icons.",
+            "status": "done",
+            "dependencies": [],
+            "details": "Fetch memo data and assign sequential numbers based on the order in the knowledge cart. Associate each number with a corresponding icon. Display the number and icon on the memo card.",
+            "testStrategy": "Verify that memo cards are sequentially numbered based on their order in the knowledge cart. Check that each number is associated with a corresponding icon and that both are displayed on the memo card."
+          },
+          {
+            "id": 7,
+            "title": "Arrange Icons on Canvas Panel",
+            "description": "Arrange all icons on the top-left of the canvas panel.",
+            "status": "done",
+            "dependencies": [
+              1
+            ],
+            "details": "Position all icons used for relationship representation on the top-left corner of the diagram canvas. Ensure they are visually distinct and easily accessible.",
+            "testStrategy": "Verify that all icons are positioned on the top-left corner of the canvas panel. Check that they are visually distinct and easily accessible."
+          },
+          {
+            "id": 8,
+            "title": "Implement Drag and Connect Functionality with Relationship Links",
+            "description": "Allow users to drag icons onto the canvas and connect them with 5 relationship links. Implement functionality to modify and delete these connections.",
+            "status": "done",
+            "dependencies": [
+              2,
+              7
+            ],
+            "details": "Enable users to drag icons representing memos from the memo card panel or the icon list on the canvas onto the diagram canvas. Allow them to connect these icons using the 5 defined relationship links (cause-effect, before-after, base-extension, inclusion, contrast). Implement functionality to modify the type of relationship and delete existing connections.",
+            "testStrategy": "Verify that users can drag icons onto the canvas. Check that they can connect icons using the 5 relationship links. Ensure that they can modify the type of relationship and delete existing connections."
+          },
+          {
+            "id": 9,
+            "title": "Save Screenshot to Fixed Location",
+            "description": "Save the screenshot of the completed diagram to a fixed location on the 단권화 노트 page, outside the markdown editor.",
+            "status": "done",
+            "dependencies": [
+              5
+            ],
+            "details": "Modify the screenshot saving functionality to save the captured image to a predefined, fixed location on the 단권화 노트 page. This location should be outside of the markdown editor panel.",
+            "testStrategy": "Verify that the screenshot is saved to the correct fixed location on the 단권화 노트 page. Ensure that the saved image is accessible and displays the complete diagram."
+          },
+          {
+            "id": 10,
+            "title": "Replace Memo Card Drag with Icon Drag from Canvas Top-Left",
+            "description": "Replace the memo card drag-and-drop functionality with the ability to drag memo icons from the top-left of the canvas onto the canvas to create nodes.",
+            "status": "done",
+            "dependencies": [
+              3,
+              7
+            ],
+            "details": "Instead of dragging memo cards, users should drag the sequentially numbered memo icons from the top-left of the canvas panel onto the canvas to create nodes. Remove the existing memo card drag-and-drop functionality.\n<info added on 2025-08-02T07:30:09.735Z>\n현재 구현 상태 확인:\n\n1. 메모카드 자체에는 드래그 기능이 없음 - ✅ 완료\n2. 아이콘 팔레트에서만 드래그 가능 - ✅ 완료  \n3. 순번 표시 - ✅ 완료\n4. 색상 선택 기능 - ✅ 완료\n\n현재 구현이 이미 사용자 요구사항을 만족하고 있습니다:\n- 메모카드들은 단순히 표시만 되고 드래그 기능이 없음\n- 캔버스 상단의 아이콘 팔레트에서만 드래그 가능\n- 각 아이콘에 순번이 표시됨\n- 아이콘 클릭으로 색상 변경 가능\n\n추가 개선사항:\n- 아이콘 팔레트의 UI를 더 명확하게 개선\n- 드래그 시 시각적 피드백 강화\n</info added on 2025-08-02T07:30:09.735Z>",
+            "testStrategy": "Verify that users can drag memo icons from the top-left of the canvas onto the canvas to create nodes. Ensure that the original memo card drag-and-drop functionality is removed."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-07-27T03:22:40.035Z",
-      "updated": "2025-07-27T03:33:06.749Z",
+      "updated": "2025-08-02T07:30:42.945Z",
       "description": "메모카드 시간대별 보기모드 개발 작업"
     }
   }
