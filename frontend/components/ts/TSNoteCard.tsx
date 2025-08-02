@@ -1149,7 +1149,7 @@ export default function TSNoteCard({
   return (
     <div
       className={cn(
-        "relative bg-gray-900/20 backdrop-blur-md p-1.5 sm:p-2 md:p-4 rounded-lg shadow-lg transition-transform duration-300 group",
+        "relative bg-gray-900/20 backdrop-blur-md p-1 sm:p-2 md:p-4 rounded-lg shadow-lg transition-transform duration-300 group",
         isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500" : "",
         minimalDisplay ? "max-h-44 overflow-hidden group-hover:max-h-none" : "",
         className
@@ -1164,7 +1164,7 @@ export default function TSNoteCard({
         </>
       )}
 
-      <div className="flex-grow mb-1.5 sm:mb-2 space-y-1">
+      <div className="flex-grow mb-1 sm:mb-2 space-y-0.5 sm:space-y-1">
         <p
           className={cn(
             // 기본 글꼴 크기와 굵기: minimalDisplay 에 따라 다르게 설정
@@ -1174,7 +1174,7 @@ export default function TSNoteCard({
             "whitespace-pre-wrap break-words break-all",
             isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
             // 인라인 편집 중이 아닐 때만 왼쪽 border 적용 (또는 isPageEditing && !isInlineEditing 조건 추가)
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-2 sm:border-l-4 border-cyan-600 pl-1.5 sm:pl-2 md:pl-3 py-1' : 'py-1',
+            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-2 sm:border-l-4 border-cyan-600 pl-1 sm:pl-2 md:pl-3 py-1' : 'py-1',
             minimalDisplay ? 'pb-5' : '', // 하단 오버레이(책 제목/날짜) 공간 확보
             // 호버 효과 추가
             !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'hover:text-cyan-100 transition-colors duration-200' : ''
@@ -1184,17 +1184,17 @@ export default function TSNoteCard({
         </p>
 
         {/* 책 제목(출처) 표시 - 생각추가 위로 이동 */}
-        <div className={cn("mt-1 sm:mt-1.5 text-xs text-gray-400 flex items-center min-w-0", {
+        <div className={cn("mt-0.5 sm:mt-1.5 text-xs text-gray-400 flex items-center min-w-0", {
           "invisible": isInlineEditing || !bookTitle || minimalDisplay || isOpen || isPageEditing
         })}>
-            <SolidBookOpenIcon className="h-3 w-3 mr-1 sm:mr-1.5 text-gray-500 flex-shrink-0" />
+            <SolidBookOpenIcon className="h-3 w-3 mr-0.5 sm:mr-1.5 text-gray-500 flex-shrink-0" />
             <span className="truncate" title={`출처: ${displayBookTitle}`}>
               출처: {displayBookTitle}
             </span>
         </div>
 
         {/* 메뉴 버튼들을 가로로 배치 */}
-        <div className="flex flex-wrap gap-x-3 gap-y-1">
+        <div className="flex flex-wrap gap-x-2 sm:gap-x-3 gap-y-0.5 sm:gap-y-1">
           <div className="flex items-center">
             {renderInlineThreads()}
           </div>
@@ -1222,7 +1222,7 @@ export default function TSNoteCard({
 
         {/* 펼친 상태 내용 */}
         {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
-          <div className="p-1.5 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="p-1 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
             <ul className="space-y-1">
               {note.relatedLinks.map((link, idx) => (
                 <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
@@ -1246,12 +1246,12 @@ export default function TSNoteCard({
       </div>
 
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
-        <div className="border-t border-gray-700/50 flex flex-wrap items-center justify-start gap-x-1.5 sm:gap-x-2 gap-y-1.5 py-1.5 sm:py-2">
+        <div className="border-t border-gray-700/50 flex flex-wrap items-center justify-start gap-x-1 sm:gap-x-2 gap-y-1 sm:gap-y-1.5 py-1 sm:py-2">
           <TagIcon className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" title="태그" />
           {note.tags.map((tag, index) => (
             <span
               key={index}
-              className={`px-1.5 sm:px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center justify-center max-w-[100px] xs:max-w-[120px] sm:max-w-[150px]`}
+              className={`px-1 sm:px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center justify-center max-w-[100px] xs:max-w-[120px] sm:max-w-[150px]`}
               onClick={(e) => e.stopPropagation()}
               data-no-toggle
               title={tag}
@@ -1269,7 +1269,7 @@ export default function TSNoteCard({
         
         if (shouldRenderActions) {
           return (
-            <div className="flex items-center justify-end space-x-1 sm:space-x-2 mt-auto pt-2 border-t border-gray-700/50">
+            <div className="flex items-center justify-end space-x-1 sm:space-x-2 mt-auto pt-1.5 sm:pt-2 border-t border-gray-700/50">
               {/* 개념이해도 점수 아이콘 */}
               {shouldRenderConceptScore && (
                 <ConceptScoreIcon
