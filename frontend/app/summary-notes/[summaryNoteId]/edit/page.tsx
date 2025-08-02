@@ -811,6 +811,18 @@ export default function EditSummaryNotePage() {
                   ))}
                 </div>
                 
+                {/* Connection Instructions */}
+                {selectedRelationship && canvasNodes.length >= 2 && (
+                  <div className="mt-3 p-3 bg-green-900/30 border border-green-500/50 rounded-md">
+                    <h4 className="text-sm font-medium text-green-300 mb-1">🔗 연결 방법</h4>
+                    <p className="text-xs text-green-400">
+                      <strong>1단계:</strong> {RELATIONSHIP_CONFIGS[selectedRelationship].label} 관계를 선택했습니다<br/>
+                      <strong>2단계:</strong> 연결할 첫 번째 노드를 클릭하세요<br/>
+                      <strong>3단계:</strong> 연결할 두 번째 노드를 클릭하세요
+                    </p>
+                  </div>
+                )}
+                
                 {/* Drawing Mode Indicator */}
                 {isDrawingMode && selectedRelationship && (
                   <div className="mt-2 p-2 bg-blue-900/30 border border-blue-500/50 rounded-md">
@@ -837,7 +849,7 @@ export default function EditSummaryNotePage() {
               </div>
               <div className="flex-grow p-4">
                 {/* Canvas with Icon Palette */}
-                <div className="h-full bg-gray-900/50 rounded-lg border-2 border-dashed border-gray-600 relative">
+                <div className="h-full bg-gray-900/30 rounded-lg border border-gray-700/50 relative">
                   {/* Icon Palette - Top Left */}
                   <div className="absolute top-4 left-4 z-10 bg-gray-800/90 rounded-lg p-3 border border-gray-600 shadow-lg">
                     <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
@@ -869,7 +881,7 @@ export default function EditSummaryNotePage() {
                               e.currentTarget.style.transform = '';
                               e.currentTarget.style.opacity = '';
                             }}
-                            className={`w-10 h-10 ${currentColor} rounded-full flex items-center justify-center text-white text-sm font-bold cursor-move hover:scale-110 transition-all shadow-md hover:shadow-lg border-2 border-transparent hover:border-white/30`}
+                            className={`w-8 h-8 ${currentColor} rounded-full flex items-center justify-center text-white text-xs font-bold cursor-move hover:scale-110 transition-all shadow-md hover:shadow-lg border-2 border-transparent hover:border-white/30`}
                             title={`${idx + 1}번: ${note.content.substring(0, 20)}...`}
                             onClick={() => {
                               // Color selection modal or dropdown
@@ -927,20 +939,44 @@ export default function EditSummaryNotePage() {
                         console.error('Failed to parse dropped data:', error);
                       }
                     }}
+                    onKeyDown={(e) => {
+                      // Delete key to remove selected node
+                      if (e.key === 'Delete' && selectedNode) {
+                        setCanvasNodes(prev => prev.filter(node => node.id !== selectedNode));
+                        setCanvasConnections(prev => prev.filter(conn => 
+                          conn.source !== selectedNode && conn.target !== selectedNode
+                        ));
+                        setSelectedNode(null);
+                        setSelectedNodeMarkdown('');
+                      }
+                    }}
+                    tabIndex={0}
                   >
+                    {/* Connection Guide */}
+                    {canvasNodes.length >= 2 && !selectedRelationship && (
+                      <div className="absolute top-4 right-4 z-10 bg-blue-900/30 border border-blue-500/50 rounded-lg p-3 max-w-48">
+                        <h4 className="text-sm font-medium text-blue-300 mb-2">🔗 연결 방법</h4>
+                        <p className="text-xs text-blue-400">
+                          1. 상단에서 관계 타입 선택<br/>
+                          2. 첫 번째 노드 클릭<br/>
+                          3. 두 번째 노드 클릭
+                        </p>
+                      </div>
+                    )}
+                    
                     {/* Existing Nodes */}
                     {canvasNodes.map((node) => (
                       <div
                         key={node.id}
-                        className={`absolute ${node.color} text-white rounded-full p-3 text-sm font-medium shadow-lg cursor-move ${
+                        className={`absolute ${node.color} text-white rounded-full p-2 text-sm font-medium shadow-lg cursor-move ${
                           selectedNode === node.id ? 'ring-2 ring-yellow-400' : ''
                         } ${connectionStart === node.id ? 'ring-2 ring-red-400' : ''}`}
                         style={{
                           left: node.position.x,
                           top: node.position.y,
                           transform: 'translate(-50%, -50%)',
-                          width: '60px',
-                          height: '60px'
+                          width: '40px',
+                          height: '40px'
                         }}
                         draggable
                         onDragStart={(e) => {
@@ -974,14 +1010,28 @@ export default function EditSummaryNotePage() {
                             }
                           }
                         }}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          if (confirm(`노드 ${node.order}번을 삭제하시겠습니까?`)) {
+                            setCanvasNodes(prev => prev.filter(n => n.id !== node.id));
+                            setCanvasConnections(prev => prev.filter(conn => 
+                              conn.source !== node.id && conn.target !== node.id
+                            ));
+                            if (selectedNode === node.id) {
+                              setSelectedNode(null);
+                              setSelectedNodeMarkdown('');
+                            }
+                          }
+                        }}
+                        title={`노드 ${node.order}번 (우클릭으로 삭제)`}
                       >
                         <div className="flex items-center justify-center h-full relative">
-                          <span className="text-lg font-bold">
+                          <span className="text-sm font-bold">
                             {node.order}
                           </span>
                           {/* Markdown content indicator */}
                           {nodeMarkdownContent[node.id] && nodeMarkdownContent[node.id].trim() && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-white"></div>
+                            <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white"></div>
                           )}
                         </div>
                       </div>
@@ -1042,18 +1092,21 @@ export default function EditSummaryNotePage() {
                       );
                     })}
                     
-                    <div className="text-center text-gray-400 pt-20">
-                      <div className="text-4xl mb-2">📊</div>
-                      <p className="text-sm">다이어그램 캔버스</p>
-                      <p className="text-xs mt-1">좌측 상단의 아이콘을 드래그해서 캔버스에 배치하세요</p>
-                      {selectedRelationship && (
-                        <div className="mt-4 p-2 bg-gray-800/50 rounded max-w-xs mx-auto">
-                          <p className="text-xs text-gray-300">
-                            선택된 관계: {RELATIONSHIP_CONFIGS[selectedRelationship].label}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                    {/* Empty Canvas Message */}
+                    {canvasNodes.length === 0 && (
+                      <div className="text-center text-gray-400 pt-20">
+                        <div className="text-4xl mb-2">📊</div>
+                        <p className="text-sm">다이어그램 캔버스</p>
+                        <p className="text-xs mt-1">좌측 상단의 아이콘을 드래그해서 캔버스에 배치하세요</p>
+                        {selectedRelationship && (
+                          <div className="mt-4 p-2 bg-gray-800/50 rounded max-w-xs mx-auto">
+                            <p className="text-xs text-gray-300">
+                              선택된 관계: {RELATIONSHIP_CONFIGS[selectedRelationship].label}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
