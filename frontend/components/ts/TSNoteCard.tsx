@@ -1181,10 +1181,7 @@ export default function TSNoteCard({
           {note.content}
         </p>
 
-        {/* 책 제목(출처) 표시 조건을 수정 */}
-        {/* 인라인메모 쓰레드 - 1줄 메모 바로 아래에 배치 */}
-        {renderInlineThreads()}
-
+        {/* 책 제목(출처) 표시 - 생각추가 위로 이동 */}
         <div className={cn("mt-1 sm:mt-1.5 text-xs text-gray-400 flex items-center min-w-0", {
           "invisible": isInlineEditing || !bookTitle || minimalDisplay || isOpen || isPageEditing
         })}>
@@ -1193,6 +1190,9 @@ export default function TSNoteCard({
               출처: {displayBookTitle}
             </span>
         </div>
+
+        {/* 인라인메모 쓰레드 - 책 제목 아래에 배치 */}
+        {renderInlineThreads()}
         
         {/* 기억 강화 요약 - 간격 줄임 */}
         {renderMemoEvolutionSummary()}
