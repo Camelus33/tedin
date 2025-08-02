@@ -987,7 +987,7 @@ export default function EditSummaryNotePage() {
                         className={`px-2 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center min-w-[70px] ${
                           selectedRelationship === type
                             ? `${config.color} bg-gray-700 border-2 border-gray-500 shadow-lg`
-                            : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700 border border-transparent'
+                            : `text-gray-400 hover:${config.color} hover:bg-gray-700 border border-transparent`
                         }`}
                         title={config.description}
                       >
