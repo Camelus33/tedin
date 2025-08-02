@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import SummaryNote, { ISummaryNote } from '../models/SummaryNote';
+import SummaryNote, { ISummaryNote, RelationshipType } from '../models/SummaryNote';
 import Note from '../models/Note'; // Assuming Note model is in the same directory
 import mongoose from 'mongoose';
 import PublicShare from '../models/PublicShare';
@@ -108,12 +108,78 @@ export const getSummaryNoteById = async (req: Request, res: Response) => {
 };
 
 /**
+ * @function validateDiagramData
+ * @description 다이어그램 데이터의 유효성을 검증합니다.
+ * @param {any} diagramData - 검증할 다이어그램 데이터
+ * @param {Types.ObjectId[]} orderedNoteIds - 유효한 메모카드 ID 목록
+ * @returns {{isValid: boolean, error?: string}} 검증 결과
+ */
+const validateDiagramData = (diagramData: any, orderedNoteIds: mongoose.Types.ObjectId[]) => {
+  if (!diagramData || typeof diagramData !== 'object') {
+    return { isValid: false, error: '다이어그램 데이터가 올바르지 않습니다.' };
+  }
+
+  // 노드 데이터 검증
+  if (!Array.isArray(diagramData.nodes)) {
+    return { isValid: false, error: '노드 데이터가 배열 형태가 아닙니다.' };
+  }
+
+  // 노드 ID 중복 검사
+  const nodeIds = diagramData.nodes.map((n: any) => n.noteId?.toString());
+  if (new Set(nodeIds).size !== nodeIds.length) {
+    return { isValid: false, error: '중복된 노드가 있습니다.' };
+  }
+
+  // 노드가 실제 메모카드에 존재하는지 검사
+  const validNoteIds = new Set(orderedNoteIds.map(id => id.toString()));
+  for (const node of diagramData.nodes) {
+    if (!node.noteId || !validNoteIds.has(node.noteId.toString())) {
+      return { isValid: false, error: '존재하지 않는 메모카드를 참조하는 노드가 있습니다.' };
+    }
+    if (!node.content || typeof node.content !== 'string') {
+      return { isValid: false, error: '노드 내용이 올바르지 않습니다.' };
+    }
+    if (!node.order || typeof node.order !== 'number') {
+      return { isValid: false, error: '노드 순서가 올바르지 않습니다.' };
+    }
+    if (!node.color || typeof node.color !== 'string') {
+      return { isValid: false, error: '노드 색상이 올바르지 않습니다.' };
+    }
+    if (!node.position || typeof node.position.x !== 'number' || typeof node.position.y !== 'number') {
+      return { isValid: false, error: '노드 위치가 올바르지 않습니다.' };
+    }
+  }
+
+  // 연결 데이터 검증
+  if (!Array.isArray(diagramData.connections)) {
+    return { isValid: false, error: '연결 데이터가 배열 형태가 아닙니다.' };
+  }
+
+  // 연결의 source/target이 실제 노드에 존재하는지 검사
+  const validNodeIds = new Set(nodeIds);
+  for (const conn of diagramData.connections) {
+    if (!conn.id || typeof conn.id !== 'string') {
+      return { isValid: false, error: '연결 ID가 올바르지 않습니다.' };
+    }
+    if (!conn.sourceNoteId || !validNodeIds.has(conn.sourceNoteId.toString())) {
+      return { isValid: false, error: '존재하지 않는 노드를 참조하는 연결이 있습니다.' };
+    }
+    if (!conn.targetNoteId || !validNodeIds.has(conn.targetNoteId.toString())) {
+      return { isValid: false, error: '존재하지 않는 노드를 참조하는 연결이 있습니다.' };
+    }
+    if (!conn.relationshipType || !Object.values(RelationshipType).includes(conn.relationshipType)) {
+      return { isValid: false, error: '올바르지 않은 관계 타입입니다.' };
+    }
+  }
+
+  return { isValid: true };
+};
+
+/**
  * @function updateSummaryNote
  * @description ID를 사용하여 특정 단권화 노트를 업데이트합니다.
- * 요청 파라미터로부터 summaryNoteId를 받고, 요청 본문으로부터 업데이트할 필드(title, description, orderedNoteIds, tags, userMarkdownContent)를 받습니다.
- * 해당 단권화 노트가 요청한 사용자의 소유인지 확인하는 로직이 포함됩니다.
- * bookIds는 일반적으로 생성 시점에 결정되므로 여기서는 업데이트 대상에서 제외합니다.
- * @param {Request} req - Express 요청 객체. params에 summaryNoteId, body에 업데이트할 필드 포함.
+ * 해당 단권화 노트가 요청한 사용자의 소유인지 확인합니다.
+ * @param {Request} req - Express 요청 객체. params에 summaryNoteId 포함, body에 업데이트할 필드들 포함.
  * @param {Response} res - Express 응답 객체.
  * @returns {Promise<void>} 성공 시 200 상태 코드와 업데이트된 단권화 노트 객체를 JSON으로 반환합니다.
  *                        노트를 찾지 못하거나 권한이 없을 경우 적절한 상태 코드를 반환합니다.
@@ -121,7 +187,7 @@ export const getSummaryNoteById = async (req: Request, res: Response) => {
 export const updateSummaryNote = async (req: Request, res: Response) => {
   try {
     const { summaryNoteId } = req.params;
-    const { title, description, orderedNoteIds, tags, userMarkdownContent } = req.body;
+    const { title, description, orderedNoteIds, tags, userMarkdownContent, diagram } = req.body;
     const userId = (req as any).user?.id;
 
     if (!mongoose.Types.ObjectId.isValid(summaryNoteId)) {
@@ -138,13 +204,35 @@ export const updateSummaryNote = async (req: Request, res: Response) => {
       return res.status(403).json({ message: 'User not authorized to update this summary note' });
     }
 
-    // Fields to update
+    // 기본 필드 업데이트
     if (title !== undefined) summaryNote.title = title;
     if (description !== undefined) summaryNote.description = description;
     if (orderedNoteIds !== undefined) summaryNote.orderedNoteIds = orderedNoteIds;
     if (tags !== undefined) summaryNote.tags = tags;
     if (userMarkdownContent !== undefined) summaryNote.userMarkdownContent = userMarkdownContent;
     // bookIds are typically not updated here, they are set at creation based on notes.
+
+    // 다이어그램 데이터 업데이트
+    if (diagram !== undefined) {
+      // 다이어그램 데이터 검증
+      if (diagram.data) {
+        const validationResult = validateDiagramData(diagram.data, summaryNote.orderedNoteIds);
+        if (!validationResult.isValid) {
+          return res.status(400).json({ 
+            message: validationResult.error 
+          });
+        }
+      }
+
+      // 다이어그램 업데이트
+      summaryNote.diagram = {
+        ...summaryNote.diagram,
+        ...diagram,
+        lastModified: new Date()
+      };
+
+      console.log(`[Diagram Update] SummaryNote ${summaryNoteId} diagram updated by user ${userId}`);
+    }
 
     await summaryNote.save();
     res.status(200).json(summaryNote);

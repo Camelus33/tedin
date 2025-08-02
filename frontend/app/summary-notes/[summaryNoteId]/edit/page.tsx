@@ -34,6 +34,29 @@ import {
 } from 'react-resizable-panels';
 
 // Types
+interface DiagramNode {
+  noteId: string;           // 메모카드 ID
+  content: string;          // 메모카드 내용
+  order: number;            // 메모카드 순서
+  color: string;            // 노드 색상
+  position: {
+    x: number;
+    y: number;
+  };
+}
+
+interface DiagramConnection {
+  id: string;               // 고유 연결 ID
+  sourceNoteId: string;     // 시작 메모카드 ID
+  targetNoteId: string;     // 도착 메모카드 ID
+  relationshipType: RelationshipType; // 5가지 관계 타입
+}
+
+interface DiagramData {
+  nodes: DiagramNode[];
+  connections: DiagramConnection[];
+}
+
 interface SummaryNoteData {
   _id: string;
   title: string;
@@ -45,10 +68,12 @@ interface SummaryNoteData {
   userMarkdownContent?: string;
   createdAt?: string;
   updatedAt?: string;
-  diagramImageUrl?: string; // Added for diagram image URL
-  diagramData?: { // Added for diagram data
-    nodes: any[];
-    connections: any[];
+  
+  // 다이어그램 데이터 (1:1 대응)
+  diagram?: {
+    imageUrl?: string;           // SVG 이미지 URL/base64
+    data?: DiagramData;          // 다이어그램 데이터
+    lastModified?: string;       // 마지막 수정 시간
   };
 }
 
@@ -220,8 +245,8 @@ export default function EditSummaryNotePage() {
   const [selectedRelationship, setSelectedRelationship] = useState<RelationshipType | null>(null);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [draggedMemo, setDraggedMemo] = useState<FetchedNoteDetails | null>(null);
-  const [canvasNodes, setCanvasNodes] = useState<any[]>([]);
-  const [canvasConnections, setCanvasConnections] = useState<any[]>([]);
+  const [canvasNodes, setCanvasNodes] = useState<DiagramNode[]>([]);
+  const [canvasConnections, setCanvasConnections] = useState<DiagramConnection[]>([]);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionStart, setConnectionStart] = useState<string | null>(null);
@@ -250,10 +275,74 @@ export default function EditSummaryNotePage() {
         setTitle(summaryData.title);
         setDescription(summaryData.description);
         setUserMarkdownContent(summaryData.userMarkdownContent || '');
-        setDiagramImageUrl(summaryData.diagramImageUrl || null);
-        if (summaryData.diagramData) {
-          setCanvasNodes(summaryData.diagramData.nodes || []);
-          setCanvasConnections(summaryData.diagramData.connections || []);
+        
+        // 다이어그램 데이터 로드 및 검증
+        if (summaryData.diagram) {
+          console.log('[Diagram Load] Loading diagram data:', {
+            hasImageUrl: !!summaryData.diagram.imageUrl,
+            hasData: !!summaryData.diagram.data,
+            nodeCount: summaryData.diagram.data?.nodes?.length || 0,
+            connectionCount: summaryData.diagram.data?.connections?.length || 0
+          });
+          
+          // 다이어그램 이미지 URL 설정
+          setDiagramImageUrl(summaryData.diagram.imageUrl || null);
+          
+          // 다이어그램 데이터 검증 및 로드
+          if (summaryData.diagram.data) {
+            const diagramData = summaryData.diagram.data;
+            
+            // 노드 데이터 검증
+            if (Array.isArray(diagramData.nodes)) {
+              const validNodes = diagramData.nodes.filter(node => 
+                node.noteId && 
+                node.content && 
+                typeof node.order === 'number' &&
+                node.color &&
+                node.position &&
+                typeof node.position.x === 'number' &&
+                typeof node.position.y === 'number'
+              );
+              
+              if (validNodes.length !== diagramData.nodes.length) {
+                console.warn('[Diagram Load] Some nodes were invalid and filtered out');
+              }
+              
+              setCanvasNodes(validNodes);
+            } else {
+              console.warn('[Diagram Load] Invalid nodes data, using empty array');
+              setCanvasNodes([]);
+            }
+            
+            // 연결 데이터 검증
+            if (Array.isArray(diagramData.connections)) {
+              const validConnections = diagramData.connections.filter(conn => 
+                conn.id &&
+                conn.sourceNoteId &&
+                conn.targetNoteId &&
+                conn.relationshipType &&
+                ['cause-effect', 'before-after', 'foundation-extension', 'contains', 'contrast'].includes(conn.relationshipType)
+              );
+              
+              if (validConnections.length !== diagramData.connections.length) {
+                console.warn('[Diagram Load] Some connections were invalid and filtered out');
+              }
+              
+              setCanvasConnections(validConnections);
+            } else {
+              console.warn('[Diagram Load] Invalid connections data, using empty array');
+              setCanvasConnections([]);
+            }
+          } else {
+            // 다이어그램 데이터가 없는 경우 기본값 설정
+            setCanvasNodes([]);
+            setCanvasConnections([]);
+          }
+        } else {
+          // 다이어그램이 없는 경우 기본값 설정
+          setDiagramImageUrl(null);
+          setCanvasNodes([]);
+          setCanvasConnections([]);
         }
 
         if (summaryData.orderedNoteIds && summaryData.orderedNoteIds.length > 0) {
@@ -374,12 +463,30 @@ export default function EditSummaryNotePage() {
         description,
         orderedNoteIds: fetchedNotes.map(n => n._id),
         userMarkdownContent,
+        diagram: {
+          imageUrl: diagramImageUrl || undefined,
+          data: {
+            nodes: canvasNodes,
+            connections: canvasConnections
+          },
+          lastModified: new Date().toISOString()
+        }
       };
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
       setChangedNoteIds(new Set());
       showSuccess('서머리 노트가 성공적으로 저장되었습니다.');
-      setSummaryNote(prev => prev ? { ...prev, ...updatedSummaryNoteData, userMarkdownContent } : null);
+      setSummaryNote(prev => prev ? { 
+        ...prev, 
+        diagram: {
+          imageUrl: diagramImageUrl || undefined,
+          data: {
+            nodes: canvasNodes,
+            connections: canvasConnections
+          },
+          lastModified: new Date().toISOString()
+        }
+      } : null);
       return true;
     } catch (err: any) {
       console.error('Failed to save summary note:', err);
@@ -530,14 +637,14 @@ export default function EditSummaryNotePage() {
     }).join('');
     
     const connectionElements = canvasConnections.map(connection => {
-      const sourceNode = canvasNodes.find(n => n.id === connection.source);
-      const targetNode = canvasNodes.find(n => n.id === connection.target);
+      const sourceNode = canvasNodes.find(n => n.noteId === connection.sourceNoteId);
+      const targetNode = canvasNodes.find(n => n.noteId === connection.targetNoteId);
       
       if (!sourceNode || !targetNode) return '';
       
       const sourcePos = normalizePosition(sourceNode.position);
       const targetPos = normalizePosition(targetNode.position);
-      const config = RELATIONSHIP_CONFIGS[connection.type as RelationshipType];
+      const config = RELATIONSHIP_CONFIGS[connection.relationshipType as RelationshipType];
       const strokeColor = config.strokeColor;
       
       // Calculate optimal connection points on circle boundaries
@@ -587,6 +694,12 @@ export default function EditSummaryNotePage() {
       return;
     }
     
+    // 다이어그램 데이터 검증
+    if (canvasNodes.length === 0) {
+      showError('캔버스에 노드가 없습니다. 먼저 메모 아이콘을 캔버스에 배치해 주세요.');
+      return;
+    }
+    
     const blob = new Blob([svg], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(blob);
     setDiagramImageUrl(url);
@@ -598,28 +711,61 @@ export default function EditSummaryNotePage() {
         const base64Data = reader.result as string;
         const svgDataUrl = base64Data;
         
-        // SummaryNote에 다이어그램 이미지 URL 저장
+        // 다이어그램 데이터 구조 검증
+        const diagramData: DiagramData = {
+          nodes: canvasNodes.map(node => ({
+            noteId: node.noteId,
+            content: node.content,
+            order: node.order,
+            color: node.color,
+            position: {
+              x: node.position.x,
+              y: node.position.y
+            }
+          })),
+          connections: canvasConnections.map(conn => ({
+            id: conn.id,
+            sourceNoteId: conn.sourceNoteId,
+            targetNoteId: conn.targetNoteId,
+            relationshipType: conn.relationshipType
+          }))
+        };
+        
+        // SummaryNote에 다이어그램 데이터 저장
         const updatedSummaryNoteData = {
           title,
           description,
           orderedNoteIds: fetchedNotes.map(n => n._id),
           userMarkdownContent,
-          diagramImageUrl: svgDataUrl,
-          diagramData: {
-            nodes: canvasNodes,
-            connections: canvasConnections
+          diagram: {
+            imageUrl: svgDataUrl,
+            data: diagramData,
+            lastModified: new Date().toISOString()
           }
         };
+        
+        console.log('[Diagram Save] Saving diagram data:', {
+          nodeCount: diagramData.nodes.length,
+          connectionCount: diagramData.connections.length,
+          summaryNoteId
+        });
         
         await api.put(`/summary-notes/${summaryNoteId}`, updatedSummaryNoteData);
         showSuccess('다이어그램이 저장되었습니다.');
         
         // 로컬 상태 업데이트
-        setSummaryNote(prev => prev ? { ...prev, ...updatedSummaryNoteData } : null);
+        setSummaryNote(prev => prev ? { 
+          ...prev, 
+          diagram: {
+            imageUrl: svgDataUrl,
+            data: diagramData,
+            lastModified: new Date().toISOString()
+          }
+        } : null);
       };
       reader.readAsDataURL(blob);
     } catch (err) {
-      console.error('Failed to save diagram:', err);
+      console.error('[Diagram Save Error]', err);
       showError('다이어그램 저장이 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
     }
   };
@@ -960,7 +1106,7 @@ export default function EditSummaryNotePage() {
                       try {
                         const droppedData = JSON.parse(e.dataTransfer.getData('text/plain'));
                         const newNode = {
-                          id: droppedData.id,
+                          noteId: droppedData.id,
                           content: droppedData.content,
                           order: droppedData.order,
                           color: droppedData.color || 'bg-blue-600',
@@ -978,9 +1124,9 @@ export default function EditSummaryNotePage() {
                     onKeyDown={(e) => {
                       // Delete key to remove selected node
                       if (e.key === 'Delete' && selectedNode) {
-                        setCanvasNodes(prev => prev.filter(node => node.id !== selectedNode));
+                        setCanvasNodes(prev => prev.filter(node => node.noteId !== selectedNode));
                         setCanvasConnections(prev => prev.filter(conn => 
-                          conn.source !== selectedNode && conn.target !== selectedNode
+                          conn.sourceNoteId !== selectedNode && conn.targetNoteId !== selectedNode
                         ));
                         setSelectedNode(null);
                         setSelectedNodeMarkdown('');
@@ -1003,10 +1149,10 @@ export default function EditSummaryNotePage() {
                     {/* Existing Nodes */}
                     {canvasNodes.map((node) => (
                       <div
-                        key={node.id}
+                        key={node.noteId}
                         className={`absolute ${node.color} text-white rounded-full p-2 text-sm font-medium shadow-lg cursor-move ${
-                          selectedNode === node.id ? 'ring-2 ring-yellow-400' : ''
-                        } ${connectionStart === node.id ? 'ring-2 ring-red-400' : ''}`}
+                          selectedNode === node.noteId ? 'ring-2 ring-yellow-400' : ''
+                        } ${connectionStart === node.noteId ? 'ring-2 ring-red-400' : ''}`}
                         style={{
                           left: node.position.x,
                           top: node.position.y,
@@ -1031,7 +1177,7 @@ export default function EditSummaryNotePage() {
                               const newY = e.clientY - canvasRect.top;
                               
                               setCanvasNodes(prev => prev.map(n => 
-                                n.id === node.id 
+                                n.noteId === node.noteId 
                                   ? { ...n, position: { x: newX, y: newY } }
                                   : n
                               ));
@@ -1049,13 +1195,13 @@ export default function EditSummaryNotePage() {
                           // 드래그 후 클릭 이벤트 방지
                           if (e.detail === 0) return;
                           
-                          if (isConnecting && connectionStart && connectionStart !== node.id) {
+                          if (isConnecting && connectionStart && connectionStart !== node.noteId) {
                             // Create connection
                             const newConnection = {
-                              id: `${connectionStart}-${node.id}`,
-                              source: connectionStart,
-                              target: node.id,
-                              type: selectedRelationship || 'cause-effect'
+                              id: `${connectionStart}-${node.noteId}`,
+                              sourceNoteId: connectionStart,
+                              targetNoteId: node.noteId,
+                              relationshipType: selectedRelationship || 'cause-effect'
                             };
                             setCanvasConnections(prev => [...prev, newConnection]);
                             setIsConnecting(false);
@@ -1063,15 +1209,15 @@ export default function EditSummaryNotePage() {
                           } else if (selectedRelationship) {
                             // Start connection
                             setIsConnecting(true);
-                            setConnectionStart(node.id);
-                            setSelectedNode(node.id);
+                            setConnectionStart(node.noteId);
+                            setSelectedNode(node.noteId);
                           } else {
                             // Just select node
-                            setSelectedNode(selectedNode === node.id ? null : node.id);
+                            setSelectedNode(selectedNode === node.noteId ? null : node.noteId);
                             
                             // Load node's markdown content
-                            if (selectedNode !== node.id) {
-                              const nodeContent = nodeMarkdownContent[node.id] || '';
+                            if (selectedNode !== node.noteId) {
+                              const nodeContent = nodeMarkdownContent[node.noteId] || '';
                               setSelectedNodeMarkdown(nodeContent);
                             }
                           }
@@ -1079,11 +1225,11 @@ export default function EditSummaryNotePage() {
                         onContextMenu={(e) => {
                           e.preventDefault();
                           if (confirm(`노드 ${node.order}번을 삭제하시겠습니까?`)) {
-                            setCanvasNodes(prev => prev.filter(n => n.id !== node.id));
+                            setCanvasNodes(prev => prev.filter(n => n.noteId !== node.noteId));
                             setCanvasConnections(prev => prev.filter(conn => 
-                              conn.source !== node.id && conn.target !== node.id
+                              conn.sourceNoteId !== node.noteId && conn.targetNoteId !== node.noteId
                             ));
-                            if (selectedNode === node.id) {
+                            if (selectedNode === node.noteId) {
                               setSelectedNode(null);
                               setSelectedNodeMarkdown('');
                             }
@@ -1096,7 +1242,7 @@ export default function EditSummaryNotePage() {
                             {node.order}
                           </span>
                           {/* Markdown content indicator */}
-                          {nodeMarkdownContent[node.id] && nodeMarkdownContent[node.id].trim() && (
+                          {nodeMarkdownContent[node.noteId] && nodeMarkdownContent[node.noteId].trim() && (
                             <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white"></div>
                           )}
                         </div>
@@ -1105,9 +1251,9 @@ export default function EditSummaryNotePage() {
                     
                     {/* Connections */}
                     {canvasConnections.map((connection) => {
-                      const sourceNode = canvasNodes.find(n => n.id === connection.source);
-                      const targetNode = canvasNodes.find(n => n.id === connection.target);
-                      const config = RELATIONSHIP_CONFIGS[connection.type as RelationshipType];
+                      const sourceNode = canvasNodes.find(n => n.noteId === connection.sourceNoteId);
+                      const targetNode = canvasNodes.find(n => n.noteId === connection.targetNoteId);
+                      const config = RELATIONSHIP_CONFIGS[connection.relationshipType as RelationshipType];
                       
                       if (!sourceNode || !targetNode) return null;
                       
@@ -1135,7 +1281,7 @@ export default function EditSummaryNotePage() {
                         >
                           <defs>
                             <marker
-                              id={`arrow-${connection.type}`}
+                              id={`arrow-${connection.relationshipType}`}
                               markerWidth="10"
                               markerHeight="10"
                               refX="9"
@@ -1156,7 +1302,7 @@ export default function EditSummaryNotePage() {
                             y2={endY}
                             stroke={config.strokeColor}
                             strokeWidth="2"
-                            markerEnd={`url(#arrow-${connection.type})`}
+                            markerEnd={`url(#arrow-${connection.relationshipType})`}
                             className="cursor-pointer"
                             onClick={() => {
                               // Remove connection
@@ -1206,7 +1352,7 @@ export default function EditSummaryNotePage() {
                     {canvasNodes.length === 0 && (
                       <div className="text-center text-gray-400 pt-20">
                         <div className="text-4xl mb-2"></div>
-                        <p className="text-sm">connect cards</p>
+                        <p className="text-sm"></p>
                         <p className="text-xs mt-1"></p>
                         {selectedRelationship && (
                           <div className="mt-4 p-2 bg-gray-800/50 rounded max-w-xs mx-auto">
@@ -1233,7 +1379,7 @@ export default function EditSummaryNotePage() {
                 <div className="flex items-center justify-center gap-3">
                   <span>Deep Dive</span>
                   <span className="text-sm text-gray-400">
-                    (노드 {canvasNodes.find(n => n.id === selectedNode)?.order}번)
+                    (노드 {canvasNodes.find(n => n.noteId === selectedNode)?.order}번)
                   </span>
                   <Button
                     onClick={() => {
@@ -1275,14 +1421,14 @@ export default function EditSummaryNotePage() {
         </PanelGroup>
 
         {/* Saved Diagram Display */}
-        {(diagramImageUrl || summaryNote?.diagramImageUrl) && (
+        {(diagramImageUrl || summaryNote?.diagram?.imageUrl) && (
           <div className="mt-8 p-6 bg-gray-800/30 rounded-lg border border-gray-700/50">
             <h3 className={`text-xl font-semibold mb-4 ${cyberTheme.primary}`}>
               📊 저장된 다이어그램
             </h3>
             <div className="flex justify-center">
               <img 
-                src={diagramImageUrl || summaryNote?.diagramImageUrl} 
+                src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
                 alt="관계 다이어그램" 
                 className="max-w-full h-auto rounded-lg shadow-lg border border-gray-600"
                 style={{ maxHeight: '400px' }}
@@ -1291,7 +1437,7 @@ export default function EditSummaryNotePage() {
             <div className="mt-4 flex justify-center gap-2">
               <Button 
                 onClick={() => {
-                  const imageUrl = diagramImageUrl || summaryNote?.diagramImageUrl;
+                  const imageUrl = diagramImageUrl || summaryNote?.diagram?.imageUrl;
                   if (imageUrl) {
                     const link = document.createElement('a');
                     link.href = imageUrl;

@@ -1,5 +1,68 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
+// 관계 타입 정의
+export enum RelationshipType {
+  CAUSE_EFFECT = 'cause-effect',
+  BEFORE_AFTER = 'before-after', 
+  FOUNDATION_EXTENSION = 'foundation-extension',
+  CONTAINS = 'contains',
+  CONTRAST = 'contrast'
+}
+
+// 다이어그램 노드 서브스키마
+const DiagramNodeSchema = new Schema({
+  noteId: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'Note', 
+    required: true 
+  },
+  content: { 
+    type: String, 
+    required: true 
+  },
+  order: { 
+    type: Number, 
+    required: true 
+  },
+  color: { 
+    type: String, 
+    required: true 
+  },
+  position: {
+    x: { type: Number, required: true },
+    y: { type: Number, required: true }
+  }
+}, { _id: false });
+
+// 다이어그램 연결 서브스키마
+const DiagramConnectionSchema = new Schema({
+  id: { 
+    type: String, 
+    required: true 
+  },
+  sourceNoteId: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'Note', 
+    required: true 
+  },
+  targetNoteId: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'Note', 
+    required: true 
+  },
+  relationshipType: { 
+    type: String, 
+    enum: Object.values(RelationshipType),
+    required: true 
+  }
+}, { _id: false });
+
+// 다이어그램 데이터 서브스키마
+const DiagramDataSchema = new Schema({
+  nodes: [DiagramNodeSchema],
+  connections: [DiagramConnectionSchema]
+}, { _id: false });
+
 /**
  * @interface ISummaryNote
  * @description 단권화 노트(SummaryNote)의 데이터 구조를 정의하는 인터페이스입니다.
@@ -48,6 +111,28 @@ export interface ISummaryNote extends Document {
    * @property {string} [userMarkdownContent] - 사용자가 단권화 노트에 대해 작성한 마크다운 내용입니다.
    */
   userMarkdownContent?: string;
+  /**
+   * @property {Object} [diagram] - 다이어그램 관련 데이터입니다. 메모카드 간의 관계를 시각화한 정보를 포함합니다.
+   */
+  diagram?: {
+    imageUrl?: string;           // SVG 이미지 URL/base64
+    data?: {
+      nodes: Array<{
+        noteId: Types.ObjectId;
+        content: string;
+        order: number;
+        color: string;
+        position: { x: number; y: number };
+      }>;
+      connections: Array<{
+        id: string;
+        sourceNoteId: Types.ObjectId;
+        targetNoteId: Types.ObjectId;
+        relationshipType: RelationshipType;
+      }>;
+    };
+    lastModified?: Date;         // 마지막 수정 시간
+  };
 }
 
 /**
@@ -64,6 +149,18 @@ const SummaryNoteSchema: Schema = new Schema({
   tags: [{ type: String, index: true }],
   visualPromptKeywords: [{ type: String }],
   userMarkdownContent: { type: String, default: '' },
+  
+  // 다이어그램 필드 (1:1 대응)
+  diagram: {
+    imageUrl: { 
+      type: String 
+    },
+    data: DiagramDataSchema,
+    lastModified: { 
+      type: Date, 
+      default: Date.now 
+    }
+  }
 }, { 
   /**
    * timestamps 옵션: true로 설정 시, createdAt 및 updatedAt 필드를 자동으로 생성하고 관리합니다.
@@ -73,6 +170,11 @@ const SummaryNoteSchema: Schema = new Schema({
 
 // 스키마 인덱스 설정: userId 필드에 대한 인덱스와 title, tags 필드에 대한 텍스트 인덱스를 생성하여 검색 성능을 향상시킵니다.
 SummaryNoteSchema.index({ userId: 1, title: 'text', tags: 'text' }); 
+
+// 다이어그램 관련 인덱스 추가
+SummaryNoteSchema.index({ 'diagram.data.nodes.noteId': 1 });
+SummaryNoteSchema.index({ 'diagram.data.connections.sourceNoteId': 1 });
+SummaryNoteSchema.index({ 'diagram.data.connections.targetNoteId': 1 });
 
 /**
  * @model SummaryNote

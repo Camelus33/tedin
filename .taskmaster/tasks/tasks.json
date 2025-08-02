@@ -1341,7 +1341,7 @@
         "id": 7,
         "title": "Implement Diagram Canvas Feature in 단권화 노트",
         "description": "Implement a diagram canvas feature in the 단권화 노트, featuring a 3-panel layout (memo cards, canvas, markdown editor), intuitive relationship representation, and screenshot saving. The implementation will involve displaying memo cards with sequential numbering and corresponding icons, arranging all icons on the top-left of the canvas panel, allowing users to drag icons onto the canvas and connect them with 5 relationship links, and saving a screenshot of the completed diagram to a fixed location on the 단권화 노트 page.",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           2,
           4
@@ -1390,7 +1390,7 @@
             "id": 5,
             "title": "Implement Screenshot Saving Functionality",
             "description": "Add a button to save the diagram as a screenshot. Use a library like html-to-image or dom-to-image to capture the canvas content as an image. Allow users to download the image as a PNG or JPG file.",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [],
             "details": "Add a button to save the diagram as a screenshot. Use a library like html-to-image or dom-to-image to capture the canvas content as an image. Allow users to download the image as a PNG or JPG file.",
             "testStrategy": "Verify that clicking the save button captures the canvas content as an image. Check that users can download the image as a PNG or JPG file."
@@ -1451,11 +1451,149 @@
             "testStrategy": "Verify that users can drag memo icons from the top-left of the canvas onto the canvas to create nodes. Ensure that the original memo card drag-and-drop functionality is removed."
           }
         ]
+      },
+      {
+        "id": 8,
+        "title": "Add Diagram Field to Backend SummaryNote Schema",
+        "description": "Extend the backend SummaryNote schema to include a diagram field and related subschemas for storing diagram data, enabling the persistence of visual representations within notes.",
+        "details": "1.  Define the schema for the diagram field, including subschemas for nodes, edges, and other relevant diagram components. Consider using a JSON-based format for storing the diagram data.\n2.  Integrate the new diagram schema into the existing SummaryNoteSchema.\n3.  Ensure that the diagram field is optional to maintain backward compatibility with existing notes.\n4.  Implement validation logic to ensure that the diagram data conforms to the defined schema.\n5.  Update the data access layer to support saving and retrieving diagram data from the database.\n6.  Consider the performance implications of storing large diagram datasets and implement appropriate optimization strategies.",
+        "testStrategy": "1.  Create new SummaryNote objects with diagram data and verify that the data is saved correctly to the database.\n2.  Retrieve SummaryNote objects with diagram data and verify that the data is loaded correctly.\n3.  Update existing SummaryNote objects to include diagram data and verify that the updates are saved correctly.\n4.  Test the validation logic to ensure that invalid diagram data is rejected.\n5.  Measure the performance of saving and retrieving SummaryNote objects with diagram data and identify any performance bottlenecks.\n6.  Verify that the diagram field is optional and that existing notes without diagram data can still be loaded and saved correctly.",
+        "status": "done",
+        "dependencies": [
+          7
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Diagram Update Logic in Backend Controller",
+        "description": "Add diagram update logic to the backend controller, including processing the diagram field in the updateSummaryNote function and implementing a diagram data validation function.",
+        "details": "1.  Modify the `updateSummaryNote` function in the backend controller to handle the `diagram` field.\n2.  Implement logic to extract the diagram data from the request body.\n3.  Implement a diagram data validation function to ensure that the diagram data conforms to the defined schema (defined in Task 8).\n4.  If the diagram data is valid, update the `diagram` field in the SummaryNote object.\n5.  If the diagram data is invalid, return an error response to the client.\n6.  Ensure that the existing functionality of the `updateSummaryNote` function is not affected by the changes.\n7.  Add logging to track diagram updates and validation results.",
+        "testStrategy": "1.  Create a new SummaryNote object with diagram data.\n2.  Update the SummaryNote object with valid diagram data and verify that the data is updated correctly in the database.\n3.  Update the SummaryNote object with invalid diagram data and verify that an error response is returned to the client.\n4.  Verify that the existing functionality of the `updateSummaryNote` function is not affected by the changes.\n5.  Check the logs to ensure that diagram updates and validation results are being tracked correctly.",
+        "status": "done",
+        "dependencies": [
+          8
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Update Frontend Type Definitions for Diagram Field",
+        "description": "Update frontend type definitions to include the diagram field and related types in the SummaryNoteData interface, ensuring type safety for diagram data.",
+        "details": "1.  Modify the `SummaryNoteData` interface in the frontend to include the `diagram` field.\n2.  Define the type for the `diagram` field based on the backend schema defined in Task 8. This should include types for nodes, edges, and any other relevant diagram components.\n3.  Ensure that the `diagram` field is optional to maintain compatibility with existing notes that may not have diagram data.\n4.  Update any components or services that use the `SummaryNoteData` interface to handle the new `diagram` field.\n5.  Implement type checking and validation to ensure that the diagram data conforms to the defined schema.\n6.  Update the frontend data models to reflect the changes in the backend schema.",
+        "testStrategy": "1.  Verify that the `SummaryNoteData` interface includes the `diagram` field with the correct type.\n2.  Create a new SummaryNote object with diagram data in the frontend and verify that it conforms to the updated type definitions.\n3.  Update an existing SummaryNote object with diagram data and verify that the frontend correctly handles the new `diagram` field.\n4.  Test the application with different diagram data scenarios to ensure that the type checking and validation are working correctly.\n5.  Ensure that the frontend components that use the `SummaryNoteData` interface are functioning correctly with the new `diagram` field.",
+        "status": "done",
+        "dependencies": [
+          7,
+          8
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Refactor Frontend Diagram Saving Logic",
+        "description": "Modify the frontend diagram saving logic to ensure diagram data is transmitted in the correct structure via the saveDiagramAsImage function, while maintaining compatibility with existing code.",
+        "details": "1.  Update the `saveDiagramAsImage` function to correctly format the `diagramData` before sending it to the backend.\n2.  Ensure that the diagram data structure matches the backend schema defined in Task 8 and used in Task 9.\n3.  Implement a transformation or mapping function to convert the current diagram data structure to the required format.\n4.  Add versioning or conditional logic to maintain compatibility with older versions of the frontend that may not have the new diagram structure.\n5.  Thoroughly test the updated `saveDiagramAsImage` function with different diagram configurations to ensure correct data transmission.\n6.  Consider adding logging or debugging statements to help identify any issues during data transformation or transmission.\n7.  Review and update any related documentation to reflect the changes in the diagram data structure and saving logic.",
+        "testStrategy": "1.  Create various diagrams with different nodes, edges, and relationships.\n2.  Use the `saveDiagramAsImage` function to save each diagram.\n3.  Verify that the data sent to the backend is in the correct format by inspecting the network requests.\n4.  Check that the saved diagrams can be correctly loaded and displayed in the 단권화 노트.\n5.  Test the saving logic with older versions of the frontend to ensure compatibility is maintained.\n6.  Monitor the logs for any errors or warnings during the saving process.\n7.  Implement automated tests to verify the data transformation and transmission logic.",
+        "status": "done",
+        "dependencies": [
+          7,
+          10
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Modify Frontend Diagram Loading Logic",
+        "description": "Modify the frontend diagram loading logic to correctly restore saved diagramData upon page load, ensuring compatibility with existing data structures.",
+        "details": "1.  Update the diagram loading logic to retrieve diagramData from the appropriate storage (e.g., local storage or backend).\n2.  Implement a transformation function to convert the stored diagramData into the format expected by the diagram canvas component.\n3.  Handle cases where diagramData is missing or invalid, providing a default diagram or displaying an error message.\n4.  Ensure that the loading logic is compatible with different versions of diagramData, potentially using versioning or conditional logic.\n5.  Integrate the loading logic into the page load sequence, ensuring that the diagram is loaded as soon as possible after the page is ready.\n6.  Optimize the loading process to minimize performance impact, especially for large diagrams.",
+        "testStrategy": "1.  Create diagrams with different nodes, edges, and relationships, and save them using the updated saving logic (Task 11).\n2.  Reload the page and verify that the saved diagrams are correctly restored on the canvas.\n3.  Test with different browsers and devices to ensure cross-browser compatibility.\n4.  Simulate scenarios where diagramData is missing or invalid and verify that the loading logic handles these cases gracefully.\n5.  Measure the loading time for different diagram sizes and optimize the loading process as needed.\n6.  Verify that the restored diagrams are fully interactive and that all features (e.g., node dragging, edge creation) work as expected.",
+        "status": "done",
+        "dependencies": [
+          7,
+          11
+        ],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Integration Testing and Validation - Diagram Save/Load Functionality",
+        "description": "Perform integration testing and validation to ensure the diagram saving/loading functionality works correctly and is compatible with existing features.",
+        "status": "done",
+        "dependencies": [
+          7,
+          11,
+          12
+        ],
+        "priority": "medium",
+        "details": "1. Create comprehensive test cases covering various scenarios, including different diagram sizes, complexities, and data types.\n2. Verify that diagrams can be saved correctly using the updated saving logic (Task 11).\n3. Verify that saved diagrams can be loaded correctly using the modified loading logic (Task 12).\n4. Check for data integrity during the save and load processes, ensuring no data loss or corruption.\n5. Test compatibility with existing features, such as memo cards and markdown editor, to ensure no conflicts arise.\n6. Perform cross-browser testing to ensure consistent behavior across different browsers.\n7. Conduct performance testing to ensure that the saving and loading operations do not introduce significant delays or performance bottlenecks.\n8. Implement error handling to gracefully handle cases where saving or loading fails, providing informative error messages to the user.\n\nBased on the recent backend and frontend updates, the following validations are now included:\n- Backend schema validation for SummaryNote with diagram field, DiagramNode, and DiagramConnection subschemas.\n- Backend controller validation for updateSummaryNote function with diagram field processing and data validation using validateDiagramData function.\n- Frontend type definition validation for SummaryNoteData interface with diagram field and related types.\n- Frontend saving logic validation with improved saveDiagramAsImage function and data validation.\n- Frontend loading logic validation with improved fetchSummaryNoteDetails function and data filtering.",
+        "testStrategy": "1. Create a suite of integration tests that cover the save and load functionality.\n2. Use a testing framework (e.g., Jest, Mocha) to automate the tests.\n3. Assert that the saved diagram data matches the original diagram data after loading.\n4. Verify that the diagram is rendered correctly on the canvas after loading.\n5. Test with different browsers and devices to ensure cross-browser compatibility.\n6. Monitor performance metrics, such as save and load times, to identify potential performance issues.\n7. Simulate error conditions, such as network failures or invalid data, to verify error handling.\n8. Verify the correct handling of the new diagram field in the SummaryNote schema during save and load operations.\n9. Ensure the updated saveDiagramAsImage function correctly formats and transmits diagram data.\n10. Validate the fetchSummaryNoteDetails function correctly loads and processes diagram data, maintaining compatibility with existing data.\n11. Confirm that the backend controller's updateSummaryNote function correctly processes the diagram field and validates diagram data.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Backend Schema Validation",
+            "description": "",
+            "status": "completed",
+            "dependencies": [],
+            "details": "- SummaryNote schema updated with diagram field\n- DiagramNode, DiagramConnection subschemas defined\n- RelationshipType enum defined\n- Indexes configured",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Backend Controller Validation",
+            "description": "",
+            "status": "completed",
+            "dependencies": [],
+            "details": "- updateSummaryNote function updated to handle diagram field\n- validateDiagramData function implemented for data validation\n- Error handling and logging added",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Frontend Type Definition Validation",
+            "description": "",
+            "status": "completed",
+            "dependencies": [],
+            "details": "- SummaryNoteData interface updated with diagram field\n- DiagramNode, DiagramConnection, DiagramData types defined\n- Type safety ensured",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Frontend Save Logic Validation",
+            "description": "",
+            "status": "completed",
+            "dependencies": [],
+            "details": "- saveDiagramAsImage function improved\n- Data validation and error handling enhanced\n- Data transmitted in a structure matching the backend schema",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Frontend Load Logic Validation",
+            "description": "",
+            "status": "completed",
+            "dependencies": [],
+            "details": "- Diagram data loading logic improved in fetchSummaryNoteDetails function\n- Data validation and filtering added\n- Compatibility with existing data ensured",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Execute and validate actual tests",
+            "description": "",
+            "status": "done",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-07-27T03:22:40.035Z",
-      "updated": "2025-08-02T07:30:42.945Z",
+      "updated": "2025-08-02T10:49:17.924Z",
       "description": "메모카드 시간대별 보기모드 개발 작업"
     }
   }
