@@ -976,7 +976,7 @@ export default function EditSummaryNotePage() {
                   <div className="flex items-center">
                     <span className="text-sm font-medium text-gray-300 mr-3">관계 선택:</span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1">
                     {Object.entries(RELATIONSHIP_CONFIGS).map(([type, config]) => (
                       <button
                         key={type}
@@ -984,14 +984,14 @@ export default function EditSummaryNotePage() {
                           setSelectedRelationship(selectedRelationship === type ? null : type as RelationshipType);
                           setIsDrawingMode(selectedRelationship !== type);
                         }}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center min-w-[80px] ${
+                        className={`px-2 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center min-w-[70px] ${
                           selectedRelationship === type
                             ? `${config.color} bg-gray-700 border-2 border-gray-500 shadow-lg`
                             : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700 border border-transparent'
                         }`}
                         title={config.description}
                       >
-                        <span className="mr-1.5 text-base">{config.icon}</span>
+                        <span className="mr-1 text-sm">{config.icon}</span>
                         <span className="leading-none">{config.label}</span>
                       </button>
                     ))}
