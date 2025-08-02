@@ -1177,7 +1177,7 @@ export default function TSNoteCard({
             !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-2 sm:border-l-4 border-cyan-600 pl-1.5 sm:pl-2 md:pl-3 py-1' : 'py-1',
             minimalDisplay ? 'pb-5' : '', // 하단 오버레이(책 제목/날짜) 공간 확보
             // 호버 효과 추가
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'hover:text-cyan-100 transition-colors duration-200' : ''
+            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'hover:text-yellow-300 transition-colors duration-200' : ''
           )}
         >
           {note.content}
