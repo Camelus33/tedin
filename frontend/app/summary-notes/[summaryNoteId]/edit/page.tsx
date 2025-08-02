@@ -113,6 +113,31 @@ const MEMO_ICON_COLORS = [
   'bg-indigo-600'
 ];
 
+// Calculate optimal connection points on circle boundaries
+const calculateOptimalConnectionPoints = (
+  sourcePos: { x: number; y: number },
+  targetPos: { x: number; y: number },
+  radius: number
+) => {
+  const dx = targetPos.x - sourcePos.x;
+  const dy = targetPos.y - sourcePos.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  
+  if (distance === 0) return null; // Same position
+  
+  // Calculate unit vector from source to target
+  const unitX = dx / distance;
+  const unitY = dy / distance;
+  
+  // Calculate connection points on circle boundaries
+  const startX = sourcePos.x + unitX * radius;
+  const startY = sourcePos.y + unitY * radius;
+  const endX = targetPos.x - unitX * radius;
+  const endY = targetPos.y - unitY * radius;
+  
+  return { startX, startY, endX, endY };
+};
+
 // Ensure FetchedNoteDetails inherits bookId from TSNote
 interface FetchedNoteDetails extends TSNote { 
   originSession?: string; 
@@ -515,13 +540,25 @@ export default function EditSummaryNotePage() {
       const config = RELATIONSHIP_CONFIGS[connection.type as RelationshipType];
       const strokeColor = config.strokeColor;
       
+      // Calculate optimal connection points on circle boundaries
+      const nodeRadius = 25; // SVG에서 사용하는 반지름
+      const connectionPoints = calculateOptimalConnectionPoints(
+        sourcePos,
+        targetPos,
+        nodeRadius
+      );
+      
+      if (!connectionPoints) return '';
+      
+      const { startX, startY, endX, endY } = connectionPoints;
+      
       return `
         <defs>
           <marker id="arrow-${connection.id}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" fill="${strokeColor}"/>
           </marker>
         </defs>
-        <line x1="${sourcePos.x}" y1="${sourcePos.y}" x2="${targetPos.x}" y2="${targetPos.y}" 
+        <line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" 
               stroke="${strokeColor}" stroke-width="3" 
               marker-end="url(#arrow-${connection.id})"/>
       `;
@@ -1044,10 +1081,17 @@ export default function EditSummaryNotePage() {
                       
                       if (!sourceNode || !targetNode) return null;
                       
-                      const startX = sourceNode.position.x;
-                      const startY = sourceNode.position.y;
-                      const endX = targetNode.position.x;
-                      const endY = targetNode.position.y;
+                      // Calculate optimal connection points on circle boundaries
+                      const nodeRadius = 20; // 40px diameter / 2
+                      const connectionPoints = calculateOptimalConnectionPoints(
+                        sourceNode.position,
+                        targetNode.position,
+                        nodeRadius
+                      );
+                      
+                      if (!connectionPoints) return null;
+                      
+                      const { startX, startY, endX, endY } = connectionPoints;
                       
                       return (
                         <svg
