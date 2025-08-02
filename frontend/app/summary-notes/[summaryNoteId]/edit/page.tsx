@@ -820,7 +820,7 @@ export default function EditSummaryNotePage() {
           <PanelResizeHandle className="hidden sm:block w-[1px] bg-gray-600/30 hover:bg-cyan-500/50 active:bg-cyan-400 transition-colors duration-200 cursor-col-resize" />
 
           {/* Center Panel: Diagram Canvas */}
-          <Panel minSize={30} defaultSize={40} className="overflow-hidden bg-gray-800/30 rounded-lg border border-gray-700/50">
+          <Panel minSize={30} defaultSize={40} className="overflow-hidden bg-gray-800/30">
             <div className="h-full flex flex-col">
               <div className="p-4 border-b border-gray-700/50">
                 <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Ontology Canvas</h3>
