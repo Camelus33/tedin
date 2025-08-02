@@ -628,7 +628,7 @@ export default function TSNoteCard({
 
         {/* 쓰레드 목록 */}
         {showInlineThreads && (
-          <div className="ml-2 sm:ml-4 space-y-2">
+          <div className="mt-2 space-y-2">
             {threads.map((thread) => (
               <div key={thread._id} className="border-l-2 border-gray-600 pl-2 sm:pl-3 py-1">
                 {editingThreadId === thread._id ? (
