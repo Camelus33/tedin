@@ -552,6 +552,10 @@ export default function EditSummaryNotePage() {
       
       const { startX, startY, endX, endY } = connectionPoints;
       
+      // Calculate midpoint for relationship indicator
+      const midX = (startX + endX) / 2;
+      const midY = (startY + endY) / 2;
+      
       return `
         <defs>
           <marker id="arrow-${connection.id}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -561,6 +565,8 @@ export default function EditSummaryNotePage() {
         <line x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" 
               stroke="${strokeColor}" stroke-width="3" 
               marker-end="url(#arrow-${connection.id})"/>
+        <circle cx="${midX}" cy="${midY}" r="10" fill="${strokeColor}" stroke="#1f2937" stroke-width="1"/>
+        <text x="${midX}" y="${midY + 3}" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">${config.icon}</text>
       `;
     }).join('');
     
@@ -1093,6 +1099,10 @@ export default function EditSummaryNotePage() {
                       
                       const { startX, startY, endX, endY } = connectionPoints;
                       
+                      // Calculate midpoint for relationship indicator
+                      const midX = (startX + endX) / 2;
+                      const midY = (startY + endY) / 2;
+                      
                       return (
                         <svg
                           key={connection.id}
@@ -1131,6 +1141,39 @@ export default function EditSummaryNotePage() {
                               );
                             }}
                           />
+                          {/* Relationship indicator at midpoint */}
+                          <circle
+                            cx={midX}
+                            cy={midY}
+                            r="8"
+                            fill={config.strokeColor}
+                            stroke="#1f2937"
+                            strokeWidth="1"
+                            className="cursor-pointer"
+                            onClick={() => {
+                              // Remove connection
+                              setCanvasConnections(prev => 
+                                prev.filter(c => c.id !== connection.id)
+                              );
+                            }}
+                          />
+                          <text
+                            x={midX}
+                            y={midY + 2}
+                            textAnchor="middle"
+                            fill="white"
+                            fontSize="10"
+                            fontWeight="bold"
+                            className="cursor-pointer"
+                            onClick={() => {
+                              // Remove connection
+                              setCanvasConnections(prev => 
+                                prev.filter(c => c.id !== connection.id)
+                              );
+                            }}
+                          >
+                            {config.icon}
+                          </text>
                         </svg>
                       );
                     })}
