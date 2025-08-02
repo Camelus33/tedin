@@ -887,13 +887,13 @@ export default function EditSummaryNotePage() {
               <div className="flex-grow p-4">
                 {/* Canvas with Icon Palette */}
                 <div className="h-full bg-gray-900/30 rounded-lg border border-gray-700/50 relative">
-                  {/* Icon Palette - Bottom Left */}
-                  <div className="absolute bottom-4 left-4 z-10 bg-gray-800/90 rounded-lg p-2 border border-gray-600 shadow-lg max-h-32 overflow-y-auto">
+                  {/* Icon Palette - Top Left */}
+                  <div className="absolute top-4 left-4 z-10 bg-gray-800/90 rounded-lg p-2 border border-gray-600 shadow-lg max-h-32 overflow-hidden">
                     <h4 className="text-xs font-medium text-gray-300 mb-1 flex items-center gap-1">
                       <span className="text-blue-400">📋</span>
                       메모 아이콘 ({fetchedNotes.length})
                     </h4>
-                    <div className="flex flex-wrap gap-1 max-w-40">
+                    <div className="flex flex-wrap gap-1 max-w-56">
                       {fetchedNotes.map((note, idx) => {
                         const defaultColor = MEMO_ICON_COLORS[idx % MEMO_ICON_COLORS.length];
                         const currentColor = memoIconColors[note._id] || defaultColor;
@@ -1204,10 +1204,10 @@ export default function EditSummaryNotePage() {
                     
                     {/* Empty Canvas Message */}
                     {canvasNodes.length === 0 && (
-                      <div className="text-center text-gray-400 pt-32">
-                        <div className="text-4xl mb-2">📊</div>
-                        <p className="text-sm">Ontology Canvas</p>
-                        <p className="text-xs mt-1">아이콘을 드래그해서 캔버스에 배치하세요</p>
+                      <div className="text-center text-gray-400 pt-20">
+                        <div className="text-4xl mb-2"></div>
+                        <p className="text-sm">connect cards</p>
+                        <p className="text-xs mt-1"></p>
                         {selectedRelationship && (
                           <div className="mt-4 p-2 bg-gray-800/50 rounded max-w-xs mx-auto">
                             <p className="text-xs text-gray-300">
