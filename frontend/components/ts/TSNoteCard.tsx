@@ -623,7 +623,7 @@ export default function TSNoteCard({
           className="text-xs text-gray-300 hover:text-blue-400 transition-colors break-words"
           data-no-toggle
         >
-          {showInlineThreads ? '▼' : '▶'}
+          {showInlineThreads ? '▼' : `▶생각추가(${threads.length}/5)`}
         </button>
 
         {/* 쓰레드 목록 */}
@@ -807,7 +807,7 @@ export default function TSNoteCard({
           className="text-xs text-gray-300 hover:text-purple-400 transition-colors break-words"
           data-no-toggle
         >
-          {showMemoEvolution ? '▼' : '▶'}
+          {showMemoEvolution ? '▼' : `▶기억강화(${details.length}/4)`}
         </button>
 
         {/* 펼친 상태 내용 */}
@@ -1209,7 +1209,7 @@ export default function TSNoteCard({
               className="text-xs text-gray-300 hover:text-green-400 transition-colors break-words"
               data-no-toggle
             >
-              {showRelatedLinks ? '▼' : '▶'}
+              {showRelatedLinks ? '▼' : `▶지식연결(${note.relatedLinks?.length || 0}/5)`}
             </button>
           </div>
         </div>
