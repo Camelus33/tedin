@@ -613,7 +613,7 @@ export default function TSNoteCard({
     const hasThreads = threads.length > 0;
 
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col items-start">
         {/* 빽빽한 텍스트 형태 */}
         <button
           onClick={(e) => {
