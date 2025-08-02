@@ -579,27 +579,28 @@ export default function TSNoteCard({
       data-no-toggle
       className={`absolute bottom-2 left-2 z-30 p-1.5 rounded-full bg-gray-700/70 hover:bg-cyan-600/90
                   text-gray-300 hover:text-white transition-all duration-200
-                  focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                  focus:outline-none focus:ring-2 focus:ring-cyan-500
+                  sm:p-1.5`}
       aria-label="TS 세션 정보"
     >
-      <AiOutlineInfoCircle className="h-4 w-4" />
+      <AiOutlineInfoCircle className="h-3 w-3 sm:h-4 sm:w-4" />
     </button>
   );
 
   const renderSessionInfoPopover = () => (
     <div 
       className={`transition-opacity duration-200 ease-in-out ${showSessionDetailsPopover ? 'opacity-100' : 'opacity-0 pointer-events-none'}
-                 absolute bottom-10 left-2 w-auto max-w-[280px] sm:max-w-xs bg-gray-900/90 backdrop-blur-md p-3 rounded-lg
+                 absolute bottom-10 left-2 w-auto max-w-[200px] xs:max-w-[240px] sm:max-w-xs bg-gray-900/90 backdrop-blur-md p-2 sm:p-3 rounded-lg
                  text-xs text-gray-200 z-20 shadow-xl border border-gray-700/50`}
     >
-      <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1`}>TS 세션</h4>
-      {sessionDetails?.createdAtISO && <p className="mt-1 truncate" title={`기록일: ${displaySessionCreatedAt}`}>기록일: {displaySessionCreatedAt}</p>}
-      {sessionDetails?.durationSeconds !== undefined && <p className="truncate" title={`읽은 시간: ${displaySessionDuration}`}>읽은 시간: {displaySessionDuration}</p>}
+      <h4 className={`font-semibold mb-1.5 text-cyan-400 border-b border-cyan-400/30 pb-1 text-xs sm:text-sm`}>TS 세션</h4>
+      {sessionDetails?.createdAtISO && <p className="mt-1 truncate text-xs" title={`기록일: ${displaySessionCreatedAt}`}>기록일: {displaySessionCreatedAt}</p>}
+      {sessionDetails?.durationSeconds !== undefined && <p className="truncate text-xs" title={`읽은 시간: ${displaySessionDuration}`}>읽은 시간: {displaySessionDuration}</p>}
       {sessionDetails && (sessionDetails.startPage !== undefined || sessionDetails.actualEndPage !== undefined) && (
-        <p className="truncate" title={`페이지: ${displaySessionPageProgress}`}>페이지: {displaySessionPageProgress}</p>
+        <p className="truncate text-xs" title={`페이지: ${displaySessionPageProgress}`}>페이지: {displaySessionPageProgress}</p>
       )}
-      {sessionDetails?.ppm !== undefined && <p className="truncate" title={`읽은 속도: ${displayPPM}`}>읽은 속도: {displayPPM}</p>}
-      {(!sessionDetails || Object.keys(sessionDetails).length === 0) && <p className="text-gray-400 italic">세션 정보가 없습니다.</p>}
+      {sessionDetails?.ppm !== undefined && <p className="truncate text-xs" title={`읽은 속도: ${displayPPM}`}>읽은 속도: {displayPPM}</p>}
+      {(!sessionDetails || Object.keys(sessionDetails).length === 0) && <p className="text-gray-400 italic text-xs">세션 정보가 없습니다.</p>}
     </div>
   );
   
@@ -619,7 +620,7 @@ export default function TSNoteCard({
             e.stopPropagation();
             toggleInlineThreads();
           }}
-          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors"
+          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors break-words"
           data-no-toggle
         >
           {showInlineThreads ? '▼' : '▶'}생각추가({threads.length}/5)
@@ -627,20 +628,20 @@ export default function TSNoteCard({
 
         {/* 쓰레드 목록 */}
         {showInlineThreads && (
-          <div className="ml-4 space-y-2">
+          <div className="ml-2 sm:ml-4 space-y-2">
             {threads.map((thread) => (
-              <div key={thread._id} className="border-l-2 border-gray-600 pl-3 py-1">
+              <div key={thread._id} className="border-l-2 border-gray-600 pl-2 sm:pl-3 py-1">
                 {editingThreadId === thread._id ? (
                   // 편집 모드
                   <div className="space-y-2">
                     <textarea
                       value={editingThreadContent}
                       onChange={(e) => setEditingThreadContent(e.target.value)}
-                      className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
+                      className="w-full p-2 text-xs sm:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
                       rows={2}
                       placeholder="쓰레드 내용을 입력하세요..."
                     />
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-1 sm:space-x-2">
                       <button
                         onClick={handleSaveEditThread}
                         className="px-2 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700 transition-colors"
@@ -658,14 +659,14 @@ export default function TSNoteCard({
                 ) : (
                   // 표시 모드
                   <div className="group">
-                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap break-words">
+                    <p className="text-xs sm:text-sm text-gray-300 leading-relaxed whitespace-pre-wrap break-words">
                       {thread.content}
                     </p>
                     <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 truncate">
                         {thread.authorName || '익명'} • {formatUserTime(thread.clientCreatedAt, thread.createdAt)}
                       </span>
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1 flex-shrink-0 ml-1">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -699,16 +700,16 @@ export default function TSNoteCard({
 
             {/* 새 쓰레드 추가 */}
             {isAddingThread ? (
-              <div className="border-l-2 border-cyan-500 pl-3 py-1">
+              <div className="border-l-2 border-cyan-500 pl-2 sm:pl-3 py-1">
                 <textarea
                   value={newThreadContent}
                   onChange={(e) => setNewThreadContent(e.target.value)}
-                  className="w-full p-2 text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
+                  className="w-full p-2 text-xs sm:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
                   rows={2}
-                  placeholder="새 인라인메모를 입력하세요..."
+                  placeholder="생각을 추가하세요..."
                   autoFocus
                 />
-                <div className="flex space-x-2 mt-2">
+                <div className="flex space-x-1 sm:space-x-2 mt-2">
                   <button
                     onClick={handleAddThread}
                     disabled={isSubmittingThread}
@@ -740,7 +741,7 @@ export default function TSNoteCard({
                   }
                 }}
                 disabled={isSubmittingThread}
-                className={`flex items-center text-xs transition-colors duration-200 ml-4 ${
+                className={`flex items-center text-xs transition-colors duration-200 ml-2 sm:ml-4 ${
                   isSubmittingThread 
                     ? 'text-gray-500 cursor-not-allowed' 
                     : 'text-gray-400 hover:text-cyan-400'
@@ -769,8 +770,8 @@ export default function TSNoteCard({
     if (!enableOverlayEvolutionMode && isPageEditing && isInlineEditing) return null;
 
     const evolutionFieldsToShow: { key: MemoEvolutionFieldKey; label: string }[] = [
-      { key: 'importanceReason', label: '작성한 이유' },
-      { key: 'momentContext', label: '작성한 당시 상황' },
+      { key: 'importanceReason', label: '작성 이유' },
+      { key: 'momentContext', label: '작성 당시 상황' },
       { key: 'relatedKnowledge', label: '연상되는 지식' },
       { key: 'mentalImage', label: '떠오른 장면' },
     ];
@@ -782,7 +783,7 @@ export default function TSNoteCard({
           return (
             <div key={field.key} className="mt-2.5">
               <p className="text-xs font-medium text-cyan-600 mb-0.5">{field.label}:</p>
-              <p className="text-sm text-gray-300 whitespace-pre-wrap break-words">{value}</p>
+              <p className="text-xs sm:text-sm text-gray-300 whitespace-pre-wrap break-words">{value}</p>
             </div>
           );
         }
@@ -793,7 +794,7 @@ export default function TSNoteCard({
     if (details.length === 0) {
       return (
         <div className="mt-4 pt-3 border-t border-gray-700/50">
-           <p className="text-xs text-gray-500 italic">1줄만 남겨 주시겠어요? 4배나 더 오래 갑니다.</p>
+           <p className="text-xs text-gray-500 italic">1줄만 남겨도 기억은 4배 강해집니다.</p>
         </div>
       );
     }
@@ -803,7 +804,7 @@ export default function TSNoteCard({
         {/* 빽빽한 텍스트 형태 */}
         <button
           onClick={() => setShowMemoEvolution(!showMemoEvolution)}
-          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors"
+          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors break-words"
           data-no-toggle
         >
           {showMemoEvolution ? '▼' : '▶'}기억강화({details.length}/4)
@@ -811,7 +812,7 @@ export default function TSNoteCard({
 
         {/* 펼친 상태 내용 */}
         {showMemoEvolution && (
-          <div className="p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="p-2 sm:p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
             {details}
           </div>
         )}
@@ -1148,7 +1149,7 @@ export default function TSNoteCard({
   return (
     <div
       className={cn(
-        "relative bg-gray-900/20 backdrop-blur-md p-2 sm:p-4 rounded-lg shadow-lg transition-transform duration-300 group",
+        "relative bg-gray-900/20 backdrop-blur-md p-1.5 sm:p-2 md:p-4 rounded-lg shadow-lg transition-transform duration-300 group",
         isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500" : "",
         minimalDisplay ? "max-h-44 overflow-hidden group-hover:max-h-none" : "",
         className
@@ -1163,17 +1164,17 @@ export default function TSNoteCard({
         </>
       )}
 
-      <div className="flex-grow mb-2">
+      <div className="flex-grow mb-1.5 sm:mb-2">
         <p
           className={cn(
             // 기본 글꼴 크기와 굵기: minimalDisplay 에 따라 다르게 설정
             minimalDisplay ?
               "text-xs sm:text-sm leading-snug font-normal" :
-              "text-base sm:text-lg leading-relaxed font-medium",
+              "text-sm sm:text-base md:text-lg leading-relaxed font-medium",
             "whitespace-pre-wrap break-words break-all",
             isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
             // 인라인 편집 중이 아닐 때만 왼쪽 border 적용 (또는 isPageEditing && !isInlineEditing 조건 추가)
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-4 border-cyan-600 pl-2 sm:pl-3 py-1' : 'py-1',
+            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-2 sm:border-l-4 border-cyan-600 pl-1.5 sm:pl-2 md:pl-3 py-1' : 'py-1',
             minimalDisplay ? 'pb-5' : '' // 하단 오버레이(책 제목/날짜) 공간 확보
           )}
         >
@@ -1184,7 +1185,7 @@ export default function TSNoteCard({
         {/* 인라인메모 쓰레드 - 1줄 메모 바로 아래에 배치 */}
         {renderInlineThreads()}
 
-        <div className={cn("mt-2 text-xs text-gray-400 flex items-center min-w-0", {
+        <div className={cn("mt-1.5 sm:mt-2 text-xs text-gray-400 flex items-center min-w-0", {
           "invisible": isInlineEditing || !bookTitle || minimalDisplay || isOpen || isPageEditing
         })}>
             <SolidBookOpenIcon className="h-3 w-3 mr-1 sm:mr-1.5 text-gray-500 flex-shrink-0" />
@@ -1204,7 +1205,7 @@ export default function TSNoteCard({
         {/* 빽빽한 텍스트 형태 */}
         <button
           onClick={() => setShowRelatedLinks(!showRelatedLinks)}
-          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors"
+          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors break-words"
           data-no-toggle
         >
           {showRelatedLinks ? '▼' : '▶'}지식연결({note.relatedLinks?.length || 0}/5)
@@ -1212,7 +1213,7 @@ export default function TSNoteCard({
 
         {/* 펼친 상태 내용 */}
         {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
-          <div className="p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="p-2 sm:p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
             <ul className="space-y-1">
               {note.relatedLinks.map((link, idx) => (
                 <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
@@ -1221,7 +1222,7 @@ export default function TSNoteCard({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="line-clamp-1 min-w-0"
+                    className="line-clamp-1 min-w-0 text-xs break-all"
                     title={link.url}
                     onClick={(e) => e.stopPropagation()}
                     data-no-toggle
@@ -1236,12 +1237,12 @@ export default function TSNoteCard({
       </div>
 
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
-        <div className="pt-2 border-t border-gray-700/50 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        <div className="pt-2 border-t border-gray-700/50 flex flex-wrap items-center gap-x-1.5 sm:gap-x-2 gap-y-1.5">
           <TagIcon className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" title="태그" />
           {note.tags.map((tag, index) => (
             <span
               key={index}
-              className={`px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center max-w-[150px]`}
+              className={`px-1.5 sm:px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center max-w-[100px] xs:max-w-[120px] sm:max-w-[150px]`}
               onClick={(e) => e.stopPropagation()}
               data-no-toggle
               title={tag}
@@ -1259,14 +1260,14 @@ export default function TSNoteCard({
         
         if (shouldRenderActions) {
           return (
-            <div className="flex items-center justify-end space-x-2 sm:space-x-2 mt-auto pt-2 border-t border-gray-700/50">
+            <div className="flex items-center justify-end space-x-1 sm:space-x-2 mt-auto pt-2 border-t border-gray-700/50">
               {/* 개념이해도 점수 아이콘 */}
               {shouldRenderConceptScore && (
                 <ConceptScoreIcon
                   score={score.totalScore}
                   level={score.level}
                   onClick={handleConceptScoreClick}
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 scale-75 sm:scale-100"
                 />
               )}
               
@@ -1282,7 +1283,7 @@ export default function TSNoteCard({
                   size="icon"
                   onClick={(e) => { e.stopPropagation(); onAddToCart(note._id, note.bookId); }}
                   title={isAddedToCart ? "제거" : "담기"}
-                  className={`h-9 w-9 sm:h-8 sm:w-8 ${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
+                  className={`h-7 w-7 sm:h-8 sm:w-8 ${isAddedToCart ? 'border-green-500 text-green-500 hover:bg-green-500/10' : cyberTheme.buttonOutlineBorder + ' ' + cyberTheme.buttonOutlineText + ' ' + cyberTheme.buttonOutlineHoverBg }`}
                   data-no-toggle
                 >
                   <ShoppingCartIcon className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${isAddedToCart ? 'text-green-500' : ''}`} />
@@ -1291,30 +1292,35 @@ export default function TSNoteCard({
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="px-1.5 sm:px-2 h-9 w-9 sm:h-8 sm:w-8" data-no-toggle onClick={(e) => e.stopPropagation()}>
-                    <EllipsisVerticalIcon className={`h-4 w-4 text-gray-400 hover:${cyberTheme.primaryText}`} />
+                  <Button variant="ghost" size="sm" className="px-1 sm:px-2 h-7 w-7 sm:h-8 sm:w-8" data-no-toggle onClick={(e) => e.stopPropagation()}>
+                    <EllipsisVerticalIcon className={`h-3 w-3 sm:h-4 sm:w-4 text-gray-400 hover:${cyberTheme.primaryText}`} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder}`}>
+                <DropdownMenuContent align="end" className={`${cyberTheme.menuBg} border-${cyberTheme.menuBorder} min-w-[120px] sm:min-w-[140px]`}>
                   {/* "기억 강화" 메뉴 항목 조건 변경: 항상 표시하되 모드에 따라 텍스트만 다르게 */}
                   <DropdownMenuItem 
                     onClick={toggleEvolutionOverlay} 
                     className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText} text-xs sm:text-sm`}
                   >
-                    <SparklesIcon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 ${cyberTheme.primaryText}`} /> 
-                    기억 강화
+                    <SparklesIcon className={`h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 ${cyberTheme.primaryText}`} /> 
+                    <span className="hidden sm:inline">기억 강화</span>
+                    <span className="sm:hidden">강화</span>
                   </DropdownMenuItem>
                   
                   {/* 기존의 인라인 편집 시작/종료 메뉴는 제거 (중복 방지) */}
                   
                   {onFlashcardConvert && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText} text-xs sm:text-sm`}>
-                      <GiCutDiamond className={`h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 ${cyberTheme.primaryText}`} /> 복습 카드
+                      <GiCutDiamond className={`h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 ${cyberTheme.primaryText}`} /> 
+                      <span className="hidden sm:inline">복습 카드</span>
+                      <span className="sm:hidden">복습</span>
                     </DropdownMenuItem>
                   )}
                   {onRelatedLinks && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRelatedLinks(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText} text-xs sm:text-sm`}>
-                      <LinkIcon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 ${cyberTheme.primaryText}`} /> 지식 연결
+                      <LinkIcon className={`h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 ${cyberTheme.primaryText}`} /> 
+                      <span className="hidden sm:inline">지식 연결</span>
+                      <span className="sm:hidden">연결</span>
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -1339,38 +1345,38 @@ export default function TSNoteCard({
       })()}
 
       {isOpen && !minimalDisplay && (
-        <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-1 lg:p-4 rounded-lg z-20 flex flex-col animate-fadeIn">
+        <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm p-1 sm:p-2 lg:p-4 rounded-lg z-20 flex flex-col animate-fadeIn">
           {/* 헤더 - 최소화 */}
-          <div className="flex justify-between items-center mb-1 lg:mb-2 px-2 lg:px-0 flex-shrink-0">
-            <h3 className="text-sm lg:text-lg font-semibold text-cyan-400 truncate mr-2">기억 강화: {tabList.find(t => t.key === activeTabKey)?.label}</h3>
-            <Button variant="ghost" size="icon" onClick={toggleEvolutionOverlay} className="text-gray-400 hover:text-white flex-shrink-0 w-8 h-8 lg:w-auto lg:h-auto p-1">
-              <XMarkIcon className="h-4 w-4 lg:h-5 lg:w-5"/>
+          <div className="flex justify-between items-center mb-1 lg:mb-2 px-1 sm:px-2 lg:px-0 flex-shrink-0">
+            <h3 className="text-xs sm:text-sm lg:text-lg font-semibold text-cyan-400 truncate mr-1 sm:mr-2">기억 강화: {tabList.find(t => t.key === activeTabKey)?.label}</h3>
+            <Button variant="ghost" size="icon" onClick={toggleEvolutionOverlay} className="text-gray-400 hover:text-white flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 lg:w-auto lg:h-auto p-1">
+              <XMarkIcon className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5"/>
             </Button>
           </div>
           
           {/* 메인 작업 영역 - 최대화 */}
-          <div className="flex-1 flex flex-col px-2 lg:px-0 overflow-hidden">
+          <div className="flex-1 flex flex-col px-1 sm:px-2 lg:px-0 overflow-hidden">
             <p className="text-xs lg:text-sm text-gray-300 mb-1 lg:mb-1 flex-shrink-0">{prompts[tabKeys.indexOf(activeTabKey)]?.question}</p>
             <textarea
               ref={evolutionTextareaRef}
               value={fields[activeTabKey]}
               onChange={(e) => handleFieldChange(activeTabKey, e.target.value)}
               placeholder={prompts[tabKeys.indexOf(activeTabKey)]?.placeholder}
-              className="w-full flex-1 p-2 sm:p-3 lg:p-2 text-sm lg:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
+              className="w-full flex-1 p-1.5 sm:p-2 lg:p-2 text-xs sm:text-sm lg:text-sm bg-gray-700 border border-gray-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-white resize-none tsnote-scrollbar"
               style={{ minHeight: 'calc(100% - 20px)' }}
             />
           </div>
 
           {/* 컨트롤 영역 - 최소화 */}
-          <div className="flex-shrink-0 mt-2 lg:mt-3 px-2 lg:px-0">
+          <div className="flex-shrink-0 mt-1.5 sm:mt-2 lg:mt-3 px-1 sm:px-2 lg:px-0">
             {/* 탭 인디케이터 */}
-            <div className="flex justify-center mb-2 lg:mb-2">
-              <div className="flex space-x-1.5">
+            <div className="flex justify-center mb-1.5 sm:mb-2 lg:mb-2">
+              <div className="flex space-x-1 sm:space-x-1.5">
                 {tabList.map((tab, index) => (
                   <button
                     key={tab.key}
                     onClick={() => setActiveTabKey(tab.key as MemoEvolutionFieldKey)}
-                    className={`w-2 h-2 lg:w-2.5 lg:h-2.5 rounded-full transition-all duration-200 ${activeTabKey === tab.key ? 'bg-cyan-500 scale-125' : 'bg-gray-600 hover:bg-gray-500'}`}
+                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 lg:w-2.5 lg:h-2.5 rounded-full transition-all duration-200 ${activeTabKey === tab.key ? 'bg-cyan-500 scale-125' : 'bg-gray-600 hover:bg-gray-500'}`}
                     title={tab.label}
                   />
                 ))}
@@ -1378,32 +1384,33 @@ export default function TSNoteCard({
             </div>
             
             {/* 버튼 그룹 - 컴팩트 */}
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex justify-between items-center gap-1 sm:gap-2">
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={handlePrevStep} 
                 disabled={isSavingEvolution || tabKeys.indexOf(activeTabKey) === 0}
-                className="text-gray-300 border-gray-600 hover:bg-gray-700 px-3 py-1.5 text-xs lg:text-sm h-8 lg:h-auto"
+                className="text-gray-300 border-gray-600 hover:bg-gray-700 px-2 sm:px-3 py-1 sm:py-1.5 text-xs lg:text-sm h-6 sm:h-8 lg:h-auto"
                 title="이전 단계"
               >
-                <ChevronLeftIcon className="h-3 w-3 lg:h-4 lg:w-4 mr-1" />
-                이전
+                <ChevronLeftIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 mr-0.5 sm:mr-1" />
+                <span className="hidden sm:inline">이전</span>
               </Button>
               
               <Button 
                 size="sm" 
                 onClick={handleSaveEvolution} 
-                className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-1.5 text-xs lg:text-sm h-8 lg:h-auto"
+                className="bg-cyan-600 hover:bg-cyan-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 text-xs lg:text-sm h-6 sm:h-8 lg:h-auto"
                 disabled={isSavingEvolution}
               >
                 {isSavingEvolution ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-1 h-3 w-3 lg:h-4 lg:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    저장 중
+                    <span className="hidden sm:inline">저장 중</span>
+                    <span className="sm:hidden">저장</span>
                   </>
                 ) : (
                   "완료"
@@ -1415,11 +1422,11 @@ export default function TSNoteCard({
                 size="sm" 
                 onClick={handleNextStep} 
                 disabled={isSavingEvolution || tabKeys.indexOf(activeTabKey) === tabKeys.length - 1}
-                className="text-gray-300 border-gray-600 hover:bg-gray-700 px-3 py-1.5 text-xs lg:text-sm h-8 lg:h-auto"
+                className="text-gray-300 border-gray-600 hover:bg-gray-700 px-2 sm:px-3 py-1 sm:py-1.5 text-xs lg:text-sm h-6 sm:h-8 lg:h-auto"
                 title="다음 단계"
               >
-                다음
-                <ChevronRightIcon className="h-3 w-3 lg:h-4 lg:w-4 ml-1" />
+                <span className="hidden sm:inline">다음</span>
+                <ChevronRightIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-4 lg:w-4 ml-0.5 sm:ml-1" />
               </Button>
             </div>
           </div>
@@ -1430,12 +1437,12 @@ export default function TSNoteCard({
       {minimalDisplay && (
         <>
           {bookTitle && (
-            <span className="absolute bottom-1 left-2 text-[10px] text-gray-600 truncate max-w-[80%] pointer-events-none">
+            <span className="absolute bottom-1 left-1.5 sm:left-2 text-[8px] sm:text-[10px] text-gray-600 truncate max-w-[75%] sm:max-w-[80%] pointer-events-none">
               {bookTitle}
             </span>
           )}
           {(note.createdAt || note.clientCreatedAt) && (
-            <span className="absolute bottom-1 right-2 text-[10px] text-gray-600 pointer-events-none">
+            <span className="absolute bottom-1 right-1.5 sm:right-2 text-[8px] sm:text-[10px] text-gray-600 pointer-events-none">
               {formatNoteCreatedAt(note)}
             </span>
           )}
