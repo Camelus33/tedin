@@ -17,13 +17,13 @@ const ConceptScoreIcon: React.FC<ConceptScoreIconProps> = ({
   // 점수에 따른 아이콘과 색상 결정
   const getIconAndColor = (score: number, level: string) => {
     if (score >= 80) {
-      return { icon: '⭐', color: 'text-blue-600', bgColor: 'bg-blue-100' };
+      return { icon: '⭐', color: 'text-blue-300', bgColor: 'bg-blue-900/30' };
     } else if (score >= 60) {
-      return { icon: '🎯', color: 'text-green-600', bgColor: 'bg-green-100' };
+      return { icon: '🎯', color: 'text-green-300', bgColor: 'bg-green-900/30' };
     } else if (score >= 40) {
-      return { icon: '🧠', color: 'text-orange-600', bgColor: 'bg-orange-100' };
+      return { icon: '🧠', color: 'text-orange-300', bgColor: 'bg-orange-900/30' };
     } else {
-      return { icon: '💡', color: 'text-red-600', bgColor: 'bg-red-100' };
+      return { icon: '💡', color: 'text-red-300', bgColor: 'bg-red-900/30' };
     }
   };
 
