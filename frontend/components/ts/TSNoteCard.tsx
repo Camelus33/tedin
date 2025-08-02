@@ -1164,7 +1164,7 @@ export default function TSNoteCard({
         </>
       )}
 
-      <div className="flex-grow mb-1.5 sm:mb-2">
+      <div className="flex-grow mb-1.5 sm:mb-2 space-y-1">
         <p
           className={cn(
             // 기본 글꼴 크기와 굵기: minimalDisplay 에 따라 다르게 설정
