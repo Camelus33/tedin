@@ -762,18 +762,18 @@ export default function EditSummaryNotePage() {
                   return (
                     <div key={note._id} className="p-2 relative group bg-gray-800/60 rounded-md">
                       {/* Order Badge */}
-                      <div className="absolute -left-1 -top-1 z-20">
-                        <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
+                      <div className="absolute left-1 top-1 z-20">
+                        <div className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
                           {idx + 1}
                         </div>
                       </div>
                       
                       {isEditing && (
-                        <div className="absolute -left-2 -top-2 z-10 flex space-x-1 ml-8">
+                        <div className="absolute left-0 top-0 z-10 flex space-x-1 ml-6">
                           <button 
                             onClick={() => handleReorderNote(note._id, 'up')}
                             disabled={idx === 0}
-                            className={`w-6 h-6 rounded-full flex items-center justify-center ${idx === 0 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                            className={`w-5 h-5 rounded-full flex items-center justify-center ${idx === 0 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
                             title="위로 이동"
                           >
                             ↑
@@ -781,7 +781,7 @@ export default function EditSummaryNotePage() {
                           <button 
                             onClick={() => handleReorderNote(note._id, 'down')}
                             disabled={idx === fetchedNotes.length - 1}
-                            className={`w-6 h-6 rounded-full flex items-center justify-center ${idx === fetchedNotes.length - 1 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                            className={`w-5 h-5 rounded-full flex items-center justify-center ${idx === fetchedNotes.length - 1 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
                             title="아래로 이동"
                           >
                             ↓
