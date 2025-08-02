@@ -1191,25 +1191,30 @@ export default function TSNoteCard({
             </span>
         </div>
 
-        {/* 인라인메모 쓰레드 - 책 제목 아래에 배치 */}
-        {renderInlineThreads()}
-        
-        {/* 기억 강화 요약 - 간격 줄임 */}
-        {renderMemoEvolutionSummary()}
+        {/* 메뉴 버튼들을 가로로 배치 */}
+        <div className="flex flex-wrap gap-x-3 gap-y-1">
+          <div className="flex items-center">
+            {renderInlineThreads()}
+          </div>
+          <div className="flex items-center">
+            {renderMemoEvolutionSummary()}
+          </div>
+          <div className="flex items-center">
+            <button
+              onClick={() => setShowRelatedLinks(!showRelatedLinks)}
+              className="text-xs text-gray-300 hover:text-cyan-400 transition-colors break-words"
+              data-no-toggle
+            >
+              {showRelatedLinks ? '▼' : '▶'}지식연결({note.relatedLinks?.length || 0}/5)
+            </button>
+          </div>
+        </div>
 
       </div>
       
       <div className={cn("", {
         "invisible": isInlineEditing || !note.relatedLinks || note.relatedLinks?.length === 0 || minimalDisplay || isOpen || isPageEditing
       })}>
-        {/* 빽빽한 텍스트 형태 */}
-        <button
-          onClick={() => setShowRelatedLinks(!showRelatedLinks)}
-          className="text-xs text-gray-300 hover:text-cyan-400 transition-colors break-words"
-          data-no-toggle
-        >
-          {showRelatedLinks ? '▼' : '▶'}지식연결({note.relatedLinks?.length || 0}/5)
-        </button>
 
         {/* 펼친 상태 내용 */}
         {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
