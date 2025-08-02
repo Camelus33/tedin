@@ -1193,26 +1193,26 @@ export default function TSNoteCard({
             </span>
         </div>
 
-        {/* 메뉴 버튼들을 가로로 배치 - minimalDisplay 모드에서는 숨김 */}
-        {!minimalDisplay && (
-          <div className="flex flex-wrap gap-x-3 gap-y-1">
-            <div className="flex items-center">
-              {renderInlineThreads()}
-            </div>
-            <div className="flex items-center">
-              {renderMemoEvolutionSummary()}
-            </div>
-            <div className="flex items-center">
-              <button
-                onClick={() => setShowRelatedLinks(!showRelatedLinks)}
-                className="text-xs text-gray-300 hover:text-green-400 transition-colors break-words"
-                data-no-toggle
-              >
-                {showRelatedLinks ? '▼' : '▶'}지식연결({note.relatedLinks?.length || 0}/5)
-              </button>
-            </div>
+        {/* 메뉴 버튼들을 가로로 배치 */}
+        <div className="flex flex-wrap gap-x-3 gap-y-1">
+          <div className="flex items-center">
+            {renderInlineThreads()}
           </div>
-        )}
+          <div className="flex items-center">
+            {renderMemoEvolutionSummary()}
+          </div>
+          <div className={cn("flex items-center", {
+            "invisible": minimalDisplay || isOpen
+          })}>
+            <button
+              onClick={() => setShowRelatedLinks(!showRelatedLinks)}
+              className="text-xs text-gray-300 hover:text-green-400 transition-colors break-words"
+              data-no-toggle
+            >
+              {showRelatedLinks ? '▼' : '▶'}지식연결({note.relatedLinks?.length || 0}/5)
+            </button>
+          </div>
+        </div>
 
       </div>
       
