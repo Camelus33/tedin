@@ -793,7 +793,7 @@ export default function TSNoteCard({
 
     if (details.length === 0) {
       return (
-        <div className="mt-4 pt-3 border-t border-gray-700/50">
+        <div className="mt-2 pt-2 border-t border-gray-700/50">
            <p className="text-xs text-gray-500 italic">1줄만 남겨도 기억은 4배 강해집니다.</p>
         </div>
       );
@@ -812,7 +812,7 @@ export default function TSNoteCard({
 
         {/* 펼친 상태 내용 */}
         {showMemoEvolution && (
-          <div className="p-2 sm:p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="p-1.5 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
             {details}
           </div>
         )}
@@ -1185,7 +1185,7 @@ export default function TSNoteCard({
         {/* 인라인메모 쓰레드 - 1줄 메모 바로 아래에 배치 */}
         {renderInlineThreads()}
 
-        <div className={cn("mt-1.5 sm:mt-2 text-xs text-gray-400 flex items-center min-w-0", {
+        <div className={cn("mt-1 sm:mt-1.5 text-xs text-gray-400 flex items-center min-w-0", {
           "invisible": isInlineEditing || !bookTitle || minimalDisplay || isOpen || isPageEditing
         })}>
             <SolidBookOpenIcon className="h-3 w-3 mr-1 sm:mr-1.5 text-gray-500 flex-shrink-0" />
@@ -1194,7 +1194,7 @@ export default function TSNoteCard({
             </span>
         </div>
         
-        {/* 기억 강화 요약 - 독립적으로 표시 */}
+        {/* 기억 강화 요약 - 간격 줄임 */}
         {renderMemoEvolutionSummary()}
 
       </div>
@@ -1213,7 +1213,7 @@ export default function TSNoteCard({
 
         {/* 펼친 상태 내용 */}
         {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
-          <div className="p-2 sm:p-3 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="p-1.5 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
             <ul className="space-y-1">
               {note.relatedLinks.map((link, idx) => (
                 <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
@@ -1267,7 +1267,7 @@ export default function TSNoteCard({
                   score={score.totalScore}
                   level={score.level}
                   onClick={handleConceptScoreClick}
-                  className="flex-shrink-0 scale-75 sm:scale-100"
+                  className="flex-shrink-0"
                 />
               )}
               
