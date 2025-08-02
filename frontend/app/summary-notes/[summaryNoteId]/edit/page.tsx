@@ -972,26 +972,30 @@ export default function EditSummaryNotePage() {
               
               <div className="p-4 border-b border-gray-700/50">
                 {/* Relationship Selection Toolbar */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="text-sm text-gray-300 mr-2">관계 선택:</span>
-                  {Object.entries(RELATIONSHIP_CONFIGS).map(([type, config]) => (
-                    <button
-                      key={type}
-                      onClick={() => {
-                        setSelectedRelationship(selectedRelationship === type ? null : type as RelationshipType);
-                        setIsDrawingMode(selectedRelationship !== type);
-                      }}
-                      className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                        selectedRelationship === type
-                          ? `${config.color} bg-gray-700 border border-gray-500`
-                          : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                      }`}
-                      title={config.description}
-                    >
-                      <span className="mr-1">{config.icon}</span>
-                      {config.label}
-                    </button>
-                  ))}
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-center">
+                    <span className="text-sm font-medium text-gray-300 mr-3">관계 선택:</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                    {Object.entries(RELATIONSHIP_CONFIGS).map(([type, config]) => (
+                      <button
+                        key={type}
+                        onClick={() => {
+                          setSelectedRelationship(selectedRelationship === type ? null : type as RelationshipType);
+                          setIsDrawingMode(selectedRelationship !== type);
+                        }}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center min-w-[80px] ${
+                          selectedRelationship === type
+                            ? `${config.color} bg-gray-700 border-2 border-gray-500 shadow-lg`
+                            : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700 border border-transparent'
+                        }`}
+                        title={config.description}
+                      >
+                        <span className="mr-1.5 text-base">{config.icon}</span>
+                        <span className="leading-none">{config.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 
                 {/* Connection Instructions */}
