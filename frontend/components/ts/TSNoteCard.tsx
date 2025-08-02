@@ -1237,12 +1237,12 @@ export default function TSNoteCard({
       </div>
 
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
-        <div className="pt-2 border-t border-gray-700/50 flex flex-wrap items-center gap-x-1.5 sm:gap-x-2 gap-y-1.5">
+        <div className="pt-2 border-t border-gray-700/50 flex flex-wrap items-center justify-start gap-x-1.5 sm:gap-x-2 gap-y-1.5">
           <TagIcon className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" title="태그" />
           {note.tags.map((tag, index) => (
             <span
               key={index}
-              className={`px-1.5 sm:px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center max-w-[100px] xs:max-w-[120px] sm:max-w-[150px]`}
+              className={`px-1.5 sm:px-2 py-0.5 text-xs rounded-full ${cyberTheme.tagBg} ${cyberTheme.tagText} flex items-center justify-center max-w-[100px] xs:max-w-[120px] sm:max-w-[150px]`}
               onClick={(e) => e.stopPropagation()}
               data-no-toggle
               title={tag}
