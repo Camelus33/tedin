@@ -116,7 +116,7 @@ export default function RootLayout({
                 "name": "Habitus33",
                 "logo": {
                   "@type": "ImageObject",
-                  "url": "https://habitus33.vercel.app/images/mascot/seal-svgrepo-com.svg"
+                  "url": "https://habitus33.vercel.app/images/mascot/habitus-logo-seal.png"
                 }
               },
               "aggregateRating": {
@@ -144,7 +144,7 @@ export default function RootLayout({
               "@type": "Organization",
               "name": "Habitus33",
               "url": "https://habitus33.vercel.app",
-              "logo": "https://habitus33.vercel.app/images/mascot/seal-svgrepo-com.svg",
+              "logo": "https://habitus33.vercel.app/images/mascot/habitus-logo-seal.png",
               "description": "AI 시대를 위한 새로운 생각의 습관을 만드는 플랫폼",
               "foundingDate": "2024",
               "sameAs": [
