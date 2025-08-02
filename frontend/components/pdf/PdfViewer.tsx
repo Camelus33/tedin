@@ -556,8 +556,8 @@ function PdfViewerComponent({
           ref={documentRef}
           className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x"
           style={{ 
-            height: '80vh', 
-            maxHeight: '800px', 
+            height: '90vh', 
+            maxHeight: '1200px', 
             width: `${viewerWidth}px`,
             minWidth: `${MIN_WIDTH}px`,
             maxWidth: 'calc(100vw - 50px)', // 화면 너비에서 여백 제외
