@@ -754,7 +754,7 @@ export default function EditSummaryNotePage() {
           {/* Left Panel: Notes List */}
           <Panel minSize={25} defaultSize={30} className="overflow-y-auto pr-2 pb-6 h-full custom-scrollbar">
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-300 mb-3">메모 카드 ({fetchedNotes.length})</h3>
+              <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Memo Card</h3>
               {fetchedNotes.length > 0 ? (
                 fetchedNotes.map((note, idx) => {
                   const noteBookTitle = bookInfoMap.get(note.bookId)?.title;
@@ -823,12 +823,7 @@ export default function EditSummaryNotePage() {
           <Panel minSize={30} defaultSize={40} className="overflow-hidden bg-gray-800/30 rounded-lg border border-gray-700/50">
             <div className="h-full flex flex-col">
               <div className="p-4 border-b border-gray-700/50">
-                <h2 className={`text-xl font-semibold ${cyberTheme.primary}`}>
-                  관계 다이어그램
-                </h2>
-                <p className="text-sm text-gray-400 mt-1">
-                  메모카드 간의 관계를 시각적으로 표현하세요
-                </p>
+                <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Ontology Canvas</h3>
                 
                 {/* Relationship Selection Toolbar */}
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -1234,10 +1229,10 @@ export default function EditSummaryNotePage() {
 
           {/* Right Panel: Markdown Editor */}
           <Panel minSize={25} defaultSize={30} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
-             <h2 className={`text-2xl font-semibold mb-6 ${cyberTheme.secondary}`}>
+             <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">
               {selectedNode ? (
-                <div className="flex items-center gap-3">
-                  <span>📝 노트 편집</span>
+                <div className="flex items-center justify-center gap-3">
+                  <span>Deep Dive</span>
                   <span className="text-sm text-gray-400">
                     (노드 {canvasNodes.find(n => n.id === selectedNode)?.order}번)
                   </span>
@@ -1256,7 +1251,7 @@ export default function EditSummaryNotePage() {
               ) : (
                 'Deep Dive'
               )}
-              </h2>
+              </h3>
             <div className="flex-grow h-full">
               <DynamicBlockNoteEditor
                 initialContent={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
