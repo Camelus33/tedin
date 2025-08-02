@@ -207,8 +207,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
             e.stopPropagation();
             setOpen((prev) => !prev);
           }}
-          className="h-7 w-7 sm:h-9 sm:w-9 flex-shrink-0 border border-gray-600 bg-transparent hover:bg-gray-700/60 focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded-md flex items-center justify-center transition-colors"
-          style={{ minWidth: 'auto', width: 'auto' }} // 모바일 스타일 오버라이드
+          className="w-7 h-7 sm:w-9 sm:h-9 aspect-square flex-shrink-0 border border-gray-600 bg-transparent hover:bg-gray-700/60 focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded-md flex items-center justify-center transition-colors"
         >
           {/* 'AI' 텍스트로 변경 */}
           <span className="text-xs sm:text-sm font-bold text-cyan-400">AI</span>
