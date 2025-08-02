@@ -854,7 +854,7 @@ export default function EditSummaryNotePage() {
                 </Button>
                 {canvasNodes.length > 0 && (
                   <Button onClick={saveDiagramAsImage} className="bg-green-600 hover:bg-green-700 text-white">
-                    📊 다이어그램 저장
+                    벡터 그래프 저장
                   </Button>
                 )}
               </>
