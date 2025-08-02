@@ -200,19 +200,19 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
   return (
     <div className={clsx('relative', className)}>
       <div ref={buttonRef}>
-        <Button
-          variant="outline"
-          size={"icon" as any}
+        <button
+          type="button"
           aria-label="AI 코멘트 열기"
           onClick={(e) => {
             e.stopPropagation();
             setOpen((prev) => !prev);
           }}
-          className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0" // 고정 크기로 설정
+          className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 border border-gray-600 bg-transparent hover:bg-gray-700/60 focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded-md flex items-center justify-center transition-colors"
+          style={{ minWidth: 'auto', width: 'auto' }} // 모바일 스타일 오버라이드
         >
           {/* 'AI' 텍스트로 변경 */}
           <span className="text-xs sm:text-sm font-bold text-cyan-400">AI</span>
-        </Button>
+        </button>
       </div>
 
       {renderPopover()}
