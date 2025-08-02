@@ -1022,9 +1022,39 @@ export default function EditSummaryNotePage() {
                         }}
                         draggable
                         onDragStart={(e) => {
-                          e.dataTransfer.setData('text/plain', JSON.stringify(node));
+                          // 드래그 시작 시 시각적 피드백
+                          e.currentTarget.style.opacity = '0.7';
+                          e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                          // 불필요한 데이터 전송 제거
+                          e.dataTransfer.effectAllowed = 'move';
                         }}
-                        onClick={() => {
+                        onDrag={(e) => {
+                          // 드래그 중 위치 업데이트
+                          if (e.clientX !== 0 && e.clientY !== 0) {
+                            const canvasRect = e.currentTarget.parentElement?.getBoundingClientRect();
+                            if (canvasRect) {
+                              const newX = e.clientX - canvasRect.left;
+                              const newY = e.clientY - canvasRect.top;
+                              
+                              setCanvasNodes(prev => prev.map(n => 
+                                n.id === node.id 
+                                  ? { ...n, position: { x: newX, y: newY } }
+                                  : n
+                              ));
+                            }
+                          }
+                        }}
+                        onDragEnd={(e) => {
+                          // 드래그 종료 시 원래 상태로 복원
+                          e.currentTarget.style.opacity = '';
+                          e.currentTarget.style.transform = 'translate(-50%, -50%)';
+                          // 드래그 후 클릭 이벤트 방지
+                          e.preventDefault();
+                        }}
+                        onClick={(e) => {
+                          // 드래그 후 클릭 이벤트 방지
+                          if (e.detail === 0) return;
+                          
                           if (isConnecting && connectionStart && connectionStart !== node.id) {
                             // Create connection
                             const newConnection = {
@@ -1065,7 +1095,7 @@ export default function EditSummaryNotePage() {
                             }
                           }
                         }}
-                        title={`노드 ${node.order}번 (우클릭으로 삭제)`}
+                        title={`노드 ${node.order}번 (드래그로 이동, 우클릭으로 삭제)`}
                       >
                         <div className="flex items-center justify-center h-full relative">
                           <span className="text-sm font-bold">
