@@ -1149,7 +1149,7 @@ export default function TSNoteCard({
   return (
     <div
       className={cn(
-        "relative bg-gray-900/20 backdrop-blur-md p-0.5 sm:p-2 md:p-4 rounded-lg shadow-lg transition-transform duration-300 group",
+        "relative bg-gray-900/20 backdrop-blur-md p-1.5 sm:p-2 md:p-4 rounded-lg shadow-lg transition-transform duration-300 group",
         isOpen && enableOverlayEvolutionMode ? "ring-2 ring-cyan-500" : "",
         minimalDisplay ? "max-h-44 overflow-hidden group-hover:max-h-none" : "",
         className
@@ -1174,7 +1174,7 @@ export default function TSNoteCard({
             "whitespace-pre-wrap break-words break-all",
             isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
             // 인라인 편집 중이 아닐 때만 왼쪽 border 적용 (또는 isPageEditing && !isInlineEditing 조건 추가)
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l sm:border-l-4 border-cyan-600 pl-0 sm:pl-2 md:pl-3 py-1' : 'py-1',
+            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-2 sm:border-l-4 border-cyan-600 pl-1.5 sm:pl-2 md:pl-3 py-1' : 'py-1',
             minimalDisplay ? 'pb-5' : '', // 하단 오버레이(책 제목/날짜) 공간 확보
             // 호버 효과 추가
             !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'hover:text-cyan-100 transition-colors duration-200' : ''
@@ -1193,8 +1193,8 @@ export default function TSNoteCard({
             </span>
         </div>
 
-        {/* 메뉴 버튼들을 가로로 배치 */}
-        <div className="flex flex-wrap gap-x-2 sm:gap-x-3 gap-y-0.5 sm:gap-y-1">
+        {/* 메뉴 버튼들을 가로로 배치 (모바일에서는 세로로) */}
+        <div className="flex flex-col sm:flex-row flex-wrap gap-y-0.5 sm:gap-x-3 sm:gap-y-1">
           <div className="flex items-center">
             {renderInlineThreads()}
           </div>
