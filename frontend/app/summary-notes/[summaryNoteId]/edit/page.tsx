@@ -59,6 +59,7 @@ interface RelationshipConfig {
   label: string;
   icon: string;
   color: string;
+  strokeColor: string; // Added for SVG stroke color
   description: string;
 }
 
@@ -67,30 +68,35 @@ const RELATIONSHIP_CONFIGS: Record<RelationshipType, RelationshipConfig> = {
     label: '원인-결과',
     icon: '→',
     color: 'text-red-400',
+    strokeColor: '#f87171', // red-400
     description: 'A가 B의 원인이 됨'
   },
   'before-after': {
     label: '전-후',
     icon: '⏭️',
     color: 'text-blue-400',
+    strokeColor: '#60a5fa', // blue-400
     description: '시간적 순서 관계'
   },
   'foundation-extension': {
     label: '기반-확장',
     icon: '↑',
     color: 'text-green-400',
+    strokeColor: '#4ade80', // green-400
     description: 'A가 B의 기반이 됨'
   },
   'contains': {
     label: '포함',
     icon: '⊃',
     color: 'text-purple-400',
+    strokeColor: '#a78bfa', // purple-400
     description: 'A가 B를 포함함'
   },
   'contrast': {
     label: '대조',
     icon: '↔',
     color: 'text-yellow-400',
+    strokeColor: '#facc15', // yellow-400
     description: 'A와 B의 차이점'
   }
 };
@@ -507,23 +513,16 @@ export default function EditSummaryNotePage() {
       const sourcePos = normalizePosition(sourceNode.position);
       const targetPos = normalizePosition(targetNode.position);
       const config = RELATIONSHIP_CONFIGS[connection.type as RelationshipType];
-      const strokeColor = config.color.replace('text-', '').replace('-400', '');
-      const colorMap = {
-        'red': '#ef4444',
-        'blue': '#3b82f6',
-        'green': '#22c55e',
-        'purple': '#a855f7',
-        'yellow': '#eab308'
-      };
+      const strokeColor = config.strokeColor;
       
       return `
         <defs>
           <marker id="arrow-${connection.id}" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="${colorMap[strokeColor as keyof typeof colorMap] || '#ef4444'}"/>
+            <polygon points="0 0, 10 3.5, 0 7" fill="${strokeColor}"/>
           </marker>
         </defs>
         <line x1="${sourcePos.x}" y1="${sourcePos.y}" x2="${targetPos.x}" y2="${targetPos.y}" 
-              stroke="${colorMap[strokeColor as keyof typeof colorMap] || '#ef4444'}" stroke-width="3" 
+              stroke="${strokeColor}" stroke-width="3" 
               marker-end="url(#arrow-${connection.id})"/>
       `;
     }).join('');
@@ -1068,7 +1067,7 @@ export default function EditSummaryNotePage() {
                             >
                               <path
                                 d="M0,0 L0,6 L9,3 z"
-                                fill={config.color.replace('text-', '')}
+                                fill={config.strokeColor}
                               />
                             </marker>
                           </defs>
@@ -1077,7 +1076,7 @@ export default function EditSummaryNotePage() {
                             y1={startY}
                             x2={endX}
                             y2={endY}
-                            stroke={config.color.replace('text-', '')}
+                            stroke={config.strokeColor}
                             strokeWidth="2"
                             markerEnd={`url(#arrow-${connection.type})`}
                             className="cursor-pointer"
