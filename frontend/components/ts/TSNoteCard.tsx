@@ -1237,7 +1237,7 @@ export default function TSNoteCard({
       </div>
 
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
-        <div className="pt-2 border-t border-gray-700/50 flex flex-wrap items-center justify-start gap-x-1.5 sm:gap-x-2 gap-y-1.5">
+        <div className="border-t border-gray-700/50 flex flex-wrap items-center justify-start gap-x-1.5 sm:gap-x-2 gap-y-1.5 py-1.5 sm:py-2">
           <TagIcon className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" title="태그" />
           {note.tags.map((tag, index) => (
             <span
