@@ -219,6 +219,8 @@ class PublicShareService {
       readingPurpose: summaryNote.readingPurpose || 'general_knowledge',
       totalReadingTimeISO,
       allTags,
+      // 다이어그램 데이터 포함
+      diagram: summaryNote.diagram || null,
     };
 
     const jsonLdData = await buildJsonLd(dataForBuilder as any);

@@ -89,6 +89,27 @@ interface SummaryNoteData {
   readingPurpose?: string; // Pass reading purpose for context
   totalReadingTimeISO?: string; // 총 독서 시간 (ISO 8601 형식)
   allTags?: string[]; // 모든 노트의 태그 집합
+  
+  // 다이어그램 데이터 추가
+  diagram?: {
+    imageUrl?: string;           // SVG 이미지 URL/base64
+    data?: {
+      nodes: Array<{
+        noteId: string;
+        content: string;
+        order: number;
+        color: string;
+        position: { x: number; y: number };
+      }>;
+      connections: Array<{
+        id: string;
+        sourceNoteId: string;
+        targetNoteId: string;
+        relationshipType: 'cause-effect' | 'before-after' | 'foundation-extension' | 'contains' | 'contrast';
+      }>;
+    };
+    lastModified?: string;       // 마지막 수정 시간
+  };
 }
 
 // Mapping of reading purposes to question sets for memo evolution
@@ -758,6 +779,7 @@ const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePerson
 **1. 문서의 핵심 내용:**
 • 주요 주제: ${mainTopics}
 • 포함된 1줄메모 수: ${summaryNoteData.notes?.length || 0}개
+• 사용자 정의 관계 수: ${summaryNoteData.diagram?.data?.connections?.length || 0}개
 
 **2. 소유자의 사고 및 창작 성향:**
 ${personaSummary}
@@ -767,6 +789,7 @@ ${thinkingPatternSummary}
 **3. AI 에이전트 활용 가이드:**
 • **지식 분석:** 'hasPart' 배열의 각 'NoteDigitalDocument'는 사용자의 핵심 생각 단위입니다. 'cognitiveProvenance'과 'mainEntity'를 분석하여 사고의 맥락을 파악하세요.
 • **사고 패턴 이해:** 'epistemicFramework'는 사용자가 어떻게 생각하고 논증하는지의 패턴을 담고 있습니다. 이를 바탕으로 사용자의 인지 스타일에 맞는 상호작용을 설계하세요.
+• **관계 패턴 분석:** 'memoRelationships'는 사용자가 직접 설정한 메모카드 간의 논리적 관계를 담고 있습니다. 이를 통해 사용자의 사고 연결 방식과 선호하는 지식 구조를 파악하세요.
 • **실행 가능한 액션:** 'potentialAction' 배열에는 이 지식을 바탕으로 즉시 실행할 수 있는 제안(예: 이미지 생성, 보고서 작성)들이 포함되어 있습니다. 사용자에게 이 액션들을 제안하세요.
 • **외부 정보 연결:** 'supplementaryMaterial'과 'relatedResource'에 포함된 URL들을 크롤링하여 더 깊은 맥락을 파악하세요. 'analysisInstructions'는 크롤링 가이드라인을 제공합니다.
 • **사용자 이해:** 'knowledgePersonality'와 'creativePersona' 객체는 사용자의 성향을 깊이 이해하고 더 개인화된 상호작용을 설계하는 데 사용됩니다.
@@ -1392,6 +1415,123 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     return notePart;
   }) ?? [];
 
+  // --- 메모카드 간 관계 데이터 추가 ---
+  const buildMemoRelationships = (summaryNoteData: SummaryNoteData): any => {
+    if (!summaryNoteData.diagram?.data?.connections || summaryNoteData.diagram.data.connections.length === 0) {
+      return null;
+    }
+
+    const connections = summaryNoteData.diagram.data.connections;
+    const nodes = summaryNoteData.diagram.data.nodes;
+    
+    // 관계 타입별 시맨틱 매핑
+    const relationshipSemantics = {
+      'cause-effect': {
+        label: '원인-결과',
+        description: 'A가 B의 원인이 됨',
+        semanticType: 'causal',
+        rdfType: 'h33o:CausalRelation'
+      },
+      'before-after': {
+        label: '전-후',
+        description: '시간적 순서 관계',
+        semanticType: 'temporal',
+        rdfType: 'h33o:TemporalRelation'
+      },
+      'foundation-extension': {
+        label: '기반-확장',
+        description: 'A가 B의 기반이 됨',
+        semanticType: 'hierarchical',
+        rdfType: 'h33o:FoundationRelation'
+      },
+      'contains': {
+        label: '포함',
+        description: 'A가 B를 포함함',
+        semanticType: 'compositional',
+        rdfType: 'h33o:ContainsRelation'
+      },
+      'contrast': {
+        label: '대조',
+        description: 'A와 B의 차이점',
+        semanticType: 'comparative',
+        rdfType: 'h33o:ContrastRelation'
+      }
+    };
+
+    const relationshipEntities = connections.map((connection, index) => {
+      const sourceNode = nodes.find(n => n.noteId === connection.sourceNoteId);
+      const targetNode = nodes.find(n => n.noteId === connection.targetNoteId);
+      const relationshipInfo = relationshipSemantics[connection.relationshipType];
+
+      if (!sourceNode || !targetNode) {
+        return null;
+      }
+
+      return {
+        "@type": "Relationship",
+        "@id": `h33r:relationship:${connection.id}`,
+        "name": `${sourceNode.content.substring(0, 30)}... ${relationshipInfo.label} ${targetNode.content.substring(0, 30)}...`,
+        "description": `사용자가 설정한 메모카드 간 관계: ${relationshipInfo.description}`,
+        "relationshipType": relationshipInfo.rdfType,
+        "semanticClassification": relationshipInfo.semanticType,
+        "source": {
+          "@id": `h33r:note:${connection.sourceNoteId}`,
+          "@type": "Note",
+          "text": sourceNode.content,
+          "identifier": `atomic-note-${sourceNode.order}`
+        },
+        "target": {
+          "@id": `h33r:note:${connection.targetNoteId}`,
+          "@type": "Note", 
+          "text": targetNode.content,
+          "identifier": `atomic-note-${targetNode.order}`
+        },
+        "userDefined": true,
+        "creationMethod": "manual_diagram_connection",
+        "educationalPurpose": "사용자가 직접 설정한 지식 간의 논리적 연결",
+        "cognitiveValue": "개인화된 지식 네트워크 구축을 통한 지식 내재화 강화",
+        "analysisGuidance": {
+          "instruction": `이 관계를 분석하여 사용자가 왜 이 두 메모를 연결했는지 이해하세요`,
+          "expectedInsight": "사용자의 사고 패턴과 지식 연결 방식 파악",
+          "relationshipContext": relationshipInfo.description
+        }
+      };
+    }).filter(Boolean);
+
+    if (relationshipEntities.length === 0) {
+      return null;
+    }
+
+    return {
+      "@type": "KnowledgeGraph",
+      "name": "사용자 정의 메모카드 관계 네트워크",
+      "description": "사용자가 직접 설정한 메모카드 간의 논리적 관계를 나타내는 지식 그래프",
+      "totalRelationships": relationshipEntities.length,
+      "relationshipTypes": Object.keys(relationshipSemantics),
+      "relationships": relationshipEntities,
+      "graphStructure": {
+        "nodeCount": nodes.length,
+        "edgeCount": connections.length,
+        "density": connections.length / (nodes.length * (nodes.length - 1)),
+        "connectivityPattern": "사용자 정의 연결 패턴"
+      },
+      "cognitiveAnalysis": {
+        "relationshipPatterns": connections.reduce((acc, conn) => {
+          acc[conn.relationshipType] = (acc[conn.relationshipType] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>),
+        "dominantRelationshipType": Object.entries(connections.reduce((acc, conn) => {
+          acc[conn.relationshipType] = (acc[conn.relationshipType] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>)).sort((a, b) => b[1] - a[1])[0]?.[0] || 'unknown',
+        "userThinkingStyle": "사용자가 선호하는 지식 연결 방식 분석"
+      }
+    };
+  };
+
+  // 메모카드 간 관계 데이터 생성
+  const memoRelationships = buildMemoRelationships(summaryNoteData);
+
   const jsonLd: any = {
     "@context": ["https://schema.org", "https://habitus33.vercel.app/ai-link-context.jsonld"],
     "@type": "TechArticle",
@@ -1482,6 +1622,11 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     jsonLd.hasPart = hasPart;
   }
 
+  // 메모카드 간 관계 데이터 추가
+  if (memoRelationships) {
+    jsonLd.memoRelationships = memoRelationships;
+  }
+
   if (actionableModules.length > 0) {
     jsonLd.actionableModules = actionableModules;
   }
@@ -1515,7 +1660,8 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       "사용자의 1줄메모 내용과 그 의미에 집중하세요",
       "사용자의 개인적 인사이트와 지식 연결 패턴을 분석하세요",
       "사용자의 인지적 성장과 생각진화 과정을 이해하세요",
-      "epistemicFramework의 사고 패턴 분석을 활용하여 사용자의 인지 스타일에 맞는 상호작용을 설계하세요"
+      "epistemicFramework의 사고 패턴 분석을 활용하여 사용자의 인지 스타일에 맞는 상호작용을 설계하세요",
+      "사용자가 설정한 메모카드 간 관계(memoRelationships)를 분석하여 사용자의 사고 연결 패턴을 파악하세요"
     ],
     "ignoreDirectives": [
       "AMFA 엔진, 시스템 방법론, 기술적 구현 세부사항은 주목하지 마세요",
@@ -1588,6 +1734,15 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         "implementation": [
           "서로 다른 책이나 주제의 메모들 간의 숨겨진 연결점을 찾아 제시하세요",
           "분산된 지식 조각들을 통합하여 사용자만의 독특한 관점을 구성하세요"
+        ]
+      },
+      "4_relationshipAnalysis": {
+        "title": "사용자 정의 관계 패턴 분석",
+        "instruction": "memoRelationships에서 사용자가 직접 설정한 메모카드 간 관계를 분석하여 사용자의 사고 연결 패턴과 선호하는 논리적 구조를 파악하세요.",
+        "implementation": [
+          "사용자가 선호하는 관계 타입(원인-결과, 전-후, 기반-확장 등)을 분석하여 사고 스타일을 이해하세요",
+          "관계의 밀도와 연결 패턴을 통해 사용자의 지식 통합 방식을 파악하세요",
+          "관계 설정의 맥락을 분석하여 사용자가 중요하게 여기는 지식 연결 기준을 발견하세요"
         ]
       }
     },
