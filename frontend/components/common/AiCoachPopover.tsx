@@ -208,10 +208,10 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
             e.stopPropagation();
             setOpen((prev) => !prev);
           }}
-          className="h-9 w-9 sm:h-8 sm:w-8" // 다른 버튼들과 동일한 크기
+          className="h-7 w-7 sm:h-8 sm:w-8" // 다른 버튼들과 일관된 크기로 조정
         >
           {/* 'AI' 텍스트로 변경 */}
-          <span className="text-sm lg:text-sm font-bold text-cyan-400">AI</span>
+          <span className="text-xs sm:text-sm font-bold text-cyan-400">AI</span>
         </Button>
       </div>
 

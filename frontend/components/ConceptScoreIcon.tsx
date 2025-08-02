@@ -32,7 +32,7 @@ const ConceptScoreIcon: React.FC<ConceptScoreIconProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center gap-1 px-2 py-1 rounded-full cursor-pointer transition-all duration-200 hover:scale-105',
+        'flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full cursor-pointer transition-all duration-200 hover:scale-105',
         bgColor,
         color,
         className
@@ -40,11 +40,11 @@ const ConceptScoreIcon: React.FC<ConceptScoreIconProps> = ({
       onClick={onClick}
       title={`개념이해도: ${score}점 (${level})`}
     >
-      <span className={`text-sm ${color} !important`}>{icon}</span>
+      <span className={`text-xs sm:text-sm ${color} !important`}>{icon}</span>
       <span className={`text-xs font-medium ${color} !important`}>{score}</span>
       
       {/* 미니 진행바 */}
-      <div className="w-8 h-1 bg-gray-200 rounded-full overflow-hidden">
+      <div className="w-6 sm:w-8 h-0.5 sm:h-1 bg-gray-200 rounded-full overflow-hidden">
         <div 
           className="h-full bg-current rounded-full transition-all duration-300"
           style={{ width: `${score}%` }}
