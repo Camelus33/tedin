@@ -800,7 +800,7 @@ export default function TSNoteCard({
     }
 
     return (
-      <>
+      <div className="flex flex-col items-start">
         {/* 빽빽한 텍스트 형태 */}
         <button
           onClick={() => setShowMemoEvolution(!showMemoEvolution)}
@@ -812,11 +812,11 @@ export default function TSNoteCard({
 
         {/* 펼친 상태 내용 */}
         {showMemoEvolution && (
-          <div className="p-1.5 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="mt-2 p-1.5 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
             {details}
           </div>
         )}
-      </>
+      </div>
     );
   };
 
