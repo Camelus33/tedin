@@ -756,7 +756,7 @@ export default function TSNoteCard({
             )}
           </div>
         )}
-      </>
+      </div>
     );
   };
 
