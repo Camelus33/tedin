@@ -198,7 +198,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
   };
 
   return (
-    <div className={clsx('relative inline-block', className)}>
+    <div className={clsx('relative', className)}>
       <div ref={buttonRef}>
         <Button
           variant="outline"
@@ -208,7 +208,7 @@ const AiCoachPopover: React.FC<AiCoachPopoverProps> = ({ memoText, onSelect, cla
             e.stopPropagation();
             setOpen((prev) => !prev);
           }}
-          className="h-7 w-7 sm:h-8 sm:w-8" // 다른 버튼들과 일관된 크기로 조정
+          className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0" // 고정 크기로 설정
         >
           {/* 'AI' 텍스트로 변경 */}
           <span className="text-xs sm:text-sm font-bold text-cyan-400">AI</span>
