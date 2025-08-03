@@ -15,9 +15,12 @@ import {
 interface RichTextEditorProps {
   initialContent?: string;
   onChange?: (content: string) => void;
+  onSave?: (content: string) => Promise<void>;
   editable?: boolean;
   className?: string;
   placeholder?: string;
+  autoSave?: boolean;
+  autoSaveDelay?: number;
 }
 
 // cyberTheme 정의 (기존 파일과 동일)
@@ -253,15 +256,21 @@ const restoreSelection = (range: Range | null) => {
 export default function RichTextEditor({
   initialContent = '',
   onChange,
+  onSave,
   editable = true,
   className = '',
-  placeholder = '입력을 시작하세요...'
+  placeholder = '입력을 시작하세요...',
+  autoSave = false,
+  autoSaveDelay = 1000
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [hasContent, setHasContent] = useState(false);
   // IME(한글 등) 조합 상태 관리
   const [isComposing, setIsComposing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   // 커서 위치 저장
   const savedRangeRef = useRef<Range | null>(null);
 
@@ -341,7 +350,28 @@ export default function RichTextEditor({
     const content = editorRef.current.innerHTML;
     setHasContent(content.trim().length > 0);
     onChange(content);
-  }, [onChange, isComposing]);
+
+    // 자동저장 기능
+    if (autoSave && onSave) {
+      // 이전 타이머 클리어
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+
+      // 새로운 타이머 설정
+      saveTimeoutRef.current = setTimeout(async () => {
+        try {
+          setIsSaving(true);
+          await onSave(content);
+          setLastSaved(new Date());
+        } catch (error) {
+          console.error('Auto save failed:', error);
+        } finally {
+          setIsSaving(false);
+        }
+      }, autoSaveDelay);
+    }
+  }, [onChange, isComposing, autoSave, onSave, autoSaveDelay]);
 
   // 포커스 핸들러
   const handleFocus = () => setIsFocused(true);
@@ -802,6 +832,23 @@ export default function RichTextEditor({
         {!hasContent && !isFocused && (
           <div className="absolute top-4 left-4 text-gray-500 pointer-events-none">
             {placeholder}
+          </div>
+        )}
+
+        {/* 자동저장 상태 표시 */}
+        {autoSave && (
+          <div className="absolute bottom-4 right-4 text-xs">
+            {isSaving ? (
+              <div className="flex items-center text-cyan-400">
+                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-cyan-400 mr-1"></div>
+                저장 중...
+              </div>
+            ) : lastSaved ? (
+              <div className="flex items-center text-green-400">
+                <span className="mr-1">✓</span>
+                저장됨
+              </div>
+            ) : null}
           </div>
         )}
       </div>

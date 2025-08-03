@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AiLinkModal } from '@/components/summary-notes/AiLinkModal';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
+import { useAutoSave } from '@/hooks/useAutoSave';
 
 
 // 리치 텍스트 에디터 및 리사이저블 패널 추가
@@ -436,38 +437,14 @@ export default function EditSummaryNotePage() {
     }
   };
 
-  const handleSaveSummaryNote = async () => {
-    if (!summaryNote) return false;
+  // 자동저장을 위한 제목/설명 저장 함수
+  const handleAutoSaveTitleDescription = async (data: { title: string; description: string }) => {
+    if (!summaryNote) return;
     
-    // 제목이나 설명이 변경된 경우에는 메모가 없어도 저장 허용
-    const hasTitleOrDescriptionChanges = 
-      title !== summaryNote.title || 
-      description !== summaryNote.description ||
-      userMarkdownContent !== (summaryNote.userMarkdownContent || '');
-    
-    // 메모가 없고 제목/설명도 변경되지 않은 경우에만 저장 차단
-    if (fetchedNotes.length === 0 && !hasTitleOrDescriptionChanges) {
-      showError('메모가 없는 서머리 노트는 저장할 수 없습니다. 메모를 추가하거나 제목/설명을 변경해 주세요.');
-      return false;
-    }
-
-    setLoading(true);
     try {
-      if (changedNoteIds.size > 0) {
-        const updatePromises = Array.from(changedNoteIds).map(noteId => {
-          const noteToUpdate = fetchedNotes.find(n => n._id === noteId);
-          if (noteToUpdate) {
-            const { _id, userId, bookId, originSession, sessionDetails, ...updatableFields } = noteToUpdate;
-            return api.put(`/notes/${noteId}`, updatableFields);
-          }
-          return Promise.resolve();
-        });
-        await Promise.all(updatePromises);
-      }
-
       const updatedSummaryNoteData = {
-        title,
-        description,
+        title: data.title,
+        description: data.description,
         orderedNoteIds: fetchedNotes.map(n => n._id),
         userMarkdownContent,
         diagram: {
@@ -481,10 +458,10 @@ export default function EditSummaryNotePage() {
       };
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
-      setChangedNoteIds(new Set());
-      showSuccess('서머리 노트가 성공적으로 저장되었습니다.');
       setSummaryNote(prev => prev ? { 
         ...prev, 
+        title: data.title,
+        description: data.description,
         diagram: {
           imageUrl: diagramImageUrl || undefined,
           data: {
@@ -494,21 +471,66 @@ export default function EditSummaryNotePage() {
           lastModified: new Date().toISOString()
         }
       } : null);
-      return true;
     } catch (err: any) {
-      console.error('Failed to save summary note:', err);
-      showError('서머리 노트 저장이 지금은 어려워요. 조금 있다 다시 해볼래요?');
-      return false;
-    } finally {
-      setLoading(false);
+      console.error('Failed to auto save title/description:', err);
+      throw err;
     }
   };
 
-  const handleSaveAndToggleMode = async () => {
-    const success = await handleSaveSummaryNote();
-    if (success) {
-      // setIsEditing(false); // 더 이상 필요하지 않음 - 항상 편집 가능한 상태
+  // 리치텍스트 에디터 자동저장 함수
+  const handleAutoSaveRichText = async (content: string) => {
+    if (!summaryNote) return;
+    
+    try {
+      const updatedSummaryNoteData = {
+        title,
+        description,
+        orderedNoteIds: fetchedNotes.map(n => n._id),
+        userMarkdownContent: content,
+        diagram: {
+          imageUrl: diagramImageUrl || undefined,
+          data: {
+            nodes: canvasNodes,
+            connections: canvasConnections
+          },
+          lastModified: new Date().toISOString()
+        }
+      };
+      await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
+      
+      setSummaryNote(prev => prev ? { 
+        ...prev, 
+        userMarkdownContent: content,
+        diagram: {
+          imageUrl: diagramImageUrl || undefined,
+          data: {
+            nodes: canvasNodes,
+            connections: canvasConnections
+          },
+          lastModified: new Date().toISOString()
+        }
+      } : null);
+    } catch (err: any) {
+      console.error('Failed to auto save rich text:', err);
+      throw err;
     }
+  };
+
+  // 자동저장 훅 적용 (제목과 설명만)
+  const { isSaving: isAutoSaving, lastSaved } = useAutoSave(
+    { title, description },
+    {
+      delay: 1000, // 1초 지연
+      onSave: handleAutoSaveTitleDescription,
+      onError: (error) => {
+        console.error('Auto save error:', error);
+      }
+    }
+  );
+
+  // 저장-취소 버튼 제거로 인해 더 이상 필요하지 않음
+  const handleSaveAndToggleMode = async () => {
+    // 자동저장으로 대체되어 더 이상 필요하지 않음
   };
   
   const handleDeleteSummaryNote = async () => {
@@ -819,12 +841,19 @@ export default function EditSummaryNotePage() {
             />
           </div>
           <div className="flex space-x-2 mt-4 sm:mt-0 flex-shrink-0">
-            <Button onClick={handleSaveAndToggleMode} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}>
-              <ArrowPathIcon className="w-5 h-5 mr-2" /> 저장
-            </Button>
-            <Button onClick={handleCancel} variant="outline" className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} border-gray-600 hover:border-gray-500`}>
-              취소
-            </Button>
+            {/* 자동저장 상태 표시 */}
+            {isAutoSaving && (
+              <div className="flex items-center text-sm text-cyan-400">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400 mr-2"></div>
+                저장 중...
+              </div>
+            )}
+            {lastSaved && !isAutoSaving && (
+              <div className="flex items-center text-sm text-green-400">
+                <span className="mr-1">✓</span>
+                저장됨
+              </div>
+            )}
             <Button onClick={() => setIsAiLinkModalOpen(true)} className={`${cyberTheme.buttonPrimaryBg}`}>
               <RocketIcon className="w-5 h-5 mr-2" /> AI 링크 생성
             </Button>
@@ -1385,6 +1414,9 @@ export default function EditSummaryNotePage() {
                     setUserMarkdownContent(content);
                   }
                 }}
+                onSave={handleAutoSaveRichText}
+                autoSave={true}
+                autoSaveDelay={1000}
                 editable={isEditing}
                 className="h-full"
                 placeholder="선택한 메모카드를 벡터공간에 배치하고, 인사이트를 도출하는 공간입니다. 온톨로지기반 고품질 분석 보고서를 작성할 수 있어요."
