@@ -256,6 +256,8 @@ export default function EditSummaryNotePage() {
   const [diagramImageUrl, setDiagramImageUrl] = useState<string | null>(null);
   const [selectedNodeMarkdown, setSelectedNodeMarkdown] = useState<string>('');
   const [nodeMarkdownContent, setNodeMarkdownContent] = useState<Record<string, string>>({});
+  // 캔버스에 사용된 메모 ID들을 추적하는 상태 추가
+  const [usedMemoIds, setUsedMemoIds] = useState<Set<string>>(new Set());
   
   // 데이터 가져오기 및 저장 로직 (기존 코드 유지)
   useEffect(() => {
@@ -311,9 +313,13 @@ export default function EditSummaryNotePage() {
               }
               
               setCanvasNodes(validNodes);
+              // 캔버스에 있는 노드들의 메모 ID를 usedMemoIds에 추가
+              const usedIds = new Set(validNodes.map(node => node.noteId));
+              setUsedMemoIds(usedIds);
             } else {
               console.warn('[VectorGraph Load] Invalid nodes data, using empty array');
               setCanvasNodes([]);
+              setUsedMemoIds(new Set());
             }
             
             // 연결 데이터 검증
@@ -339,12 +345,14 @@ export default function EditSummaryNotePage() {
             // 벡터그래프 데이터가 없는 경우 기본값 설정
             setCanvasNodes([]);
             setCanvasConnections([]);
+            setUsedMemoIds(new Set());
           }
         } else {
           // 벡터그래프가 없는 경우 기본값 설정
           setDiagramImageUrl(null);
           setCanvasNodes([]);
           setCanvasConnections([]);
+          setUsedMemoIds(new Set());
         }
 
         if (summaryData.orderedNoteIds && summaryData.orderedNoteIds.length > 0) {
@@ -987,10 +995,12 @@ export default function EditSummaryNotePage() {
                   <div className="absolute top-4 left-4 z-10 bg-gray-800/90 rounded-lg p-2 border border-gray-600 shadow-lg max-h-32 overflow-hidden">
                     <h4 className="text-xs font-medium text-gray-300 mb-1 flex items-center gap-1">
                       <span className="text-blue-400">📋</span>
-                      메모 아이콘 ({fetchedNotes.length})
+                      메모 아이콘 ({fetchedNotes.filter(note => !usedMemoIds.has(note._id)).length}/{fetchedNotes.length})
                     </h4>
                     <div className="flex flex-wrap gap-1 max-w-56">
-                      {fetchedNotes.map((note, idx) => {
+                      {fetchedNotes
+                        .filter(note => !usedMemoIds.has(note._id)) // 사용되지 않은 메모만 표시
+                        .map((note, idx) => {
                         const defaultColor = MEMO_ICON_COLORS[idx % MEMO_ICON_COLORS.length];
                         const currentColor = memoIconColors[note._id] || defaultColor;
                         
@@ -1080,6 +1090,8 @@ export default function EditSummaryNotePage() {
                         };
                         
                         setCanvasNodes(prev => [...prev, newNode]);
+                        // 사용된 메모 ID를 usedMemoIds에 추가
+                        setUsedMemoIds(prev => new Set([...prev, droppedData.id]));
                       } catch (error) {
                         console.error('Failed to parse dropped data:', error);
                       }
@@ -1091,6 +1103,12 @@ export default function EditSummaryNotePage() {
                         setCanvasConnections(prev => prev.filter(conn => 
                           conn.sourceNoteId !== selectedNode && conn.targetNoteId !== selectedNode
                         ));
+                        // usedMemoIds에서도 해당 메모 ID 제거
+                        setUsedMemoIds(prev => {
+                          const newSet = new Set(prev);
+                          newSet.delete(selectedNode);
+                          return newSet;
+                        });
                         setSelectedNode(null);
                         setSelectedNodeMarkdown('');
                       }
@@ -1192,6 +1210,12 @@ export default function EditSummaryNotePage() {
                             setCanvasConnections(prev => prev.filter(conn => 
                               conn.sourceNoteId !== node.noteId && conn.targetNoteId !== node.noteId
                             ));
+                            // usedMemoIds에서도 해당 메모 ID 제거
+                            setUsedMemoIds(prev => {
+                              const newSet = new Set(prev);
+                              newSet.delete(node.noteId);
+                              return newSet;
+                            });
                             if (selectedNode === node.noteId) {
                               setSelectedNode(null);
                               setSelectedNodeMarkdown('');
