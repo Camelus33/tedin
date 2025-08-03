@@ -591,7 +591,7 @@ export default function EditSummaryNotePage() {
     
     const width = 800;
     const height = 600;
-    const padding = 50;
+    const padding = 80; // 패딩 증가
     
     // 노드 위치 정규화
     const minX = Math.min(...canvasNodes.map(n => n.position.x));
@@ -599,9 +599,13 @@ export default function EditSummaryNotePage() {
     const minY = Math.min(...canvasNodes.map(n => n.position.y));
     const maxY = Math.max(...canvasNodes.map(n => n.position.y));
     
-    const scaleX = (width - 2 * padding) / (maxX - minX || 1);
-    const scaleY = (height - 2 * padding) / (maxY - minY || 1);
-    const scale = Math.min(scaleX, scaleY, 1);
+    // 노드가 하나뿐이거나 모든 노드가 같은 위치에 있는 경우 처리
+    const rangeX = maxX - minX || 100; // 최소 범위 보장
+    const rangeY = maxY - minY || 100; // 최소 범위 보장
+    
+    const scaleX = (width - 2 * padding) / rangeX;
+    const scaleY = (height - 2 * padding) / rangeY;
+    const scale = Math.min(scaleX, scaleY); // 1 제한 제거
     
     const normalizePosition = (pos: any) => ({
       x: padding + (pos.x - minX) * scale,
