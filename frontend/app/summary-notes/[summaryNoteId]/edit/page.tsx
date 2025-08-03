@@ -25,8 +25,8 @@ import { AiLinkModal } from '@/components/summary-notes/AiLinkModal';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 
-// BlockNote 에디터 및 리사이저블 패널 추가
-import DynamicBlockNoteEditor from '@/components/editor/DynamicBlockNoteEditor';
+// 리치 텍스트 에디터 및 리사이저블 패널 추가
+import RichTextEditor from '@/components/editor/RichTextEditor';
 import {
   Panel,
   PanelGroup,
@@ -1427,9 +1427,9 @@ export default function EditSummaryNotePage() {
               )}
               </h3>
             <div className="flex-grow h-full">
-              <DynamicBlockNoteEditor
+              <RichTextEditor
                 initialContent={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
-                onChange={(content) => {
+                onChange={(content: string) => {
                   if (selectedNode) {
                     // Update node's markdown content
                     setNodeMarkdownContent(prev => ({
@@ -1444,6 +1444,7 @@ export default function EditSummaryNotePage() {
                 }}
                 editable={isEditing}
                 className="h-full"
+                placeholder="선택한 메모카드를 벡터공간에 배치하고, 인사이트를 도출하는 공간입니다. 온톨로지기반 고품질 분석 보고서를 작성할 수 있어요."
               />
             </div>
           </Panel>
