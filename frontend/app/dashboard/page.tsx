@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import { apiClient } from '@/lib/apiClient';
-import { FiSettings, FiGrid, FiList, FiChevronDown, FiBook, FiTarget, FiFileText } from 'react-icons/fi';
+import { FiGrid, FiList, FiChevronDown, FiBook, FiTarget, FiFileText } from 'react-icons/fi';
 import AppLogo from '@/components/common/AppLogo';
 import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
@@ -253,17 +253,8 @@ export default function DashboardPage() {
               </Link>
               </div>
 
-            {/* 우측: 설정 버튼과 사용자 프로필 */}
+            {/* 우측: 사용자 프로필 */}
             <div className="flex items-center space-x-4">
-              {/* 설정 버튼 */}
-              <button
-                onClick={() => router.push('/profile')}
-                className="flex items-center space-x-2 px-3 py-2 text-sm text-cyan-300 hover:text-cyan-100 hover:bg-indigo-800/30 rounded-md transition-colors border border-cyan-500/30 hover:border-cyan-400/50"
-              >
-                <FiSettings className="w-4 h-4" />
-                <span>설정</span>
-              </button>
-
               {/* 사용자 프로필 메뉴 */}
               <div className="relative" ref={profileMenuRef}>
                 <button
