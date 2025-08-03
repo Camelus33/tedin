@@ -520,7 +520,7 @@ export default function EditSummaryNotePage() {
   const { isSaving: isAutoSaving, lastSaved } = useAutoSave(
     { title, description },
     {
-      delay: 1000, // 1초 지연
+      delay: 3000, // 3초 지연 (업계 표준)
       onSave: handleAutoSaveTitleDescription,
       onError: (error) => {
         console.error('Auto save error:', error);
@@ -532,7 +532,7 @@ export default function EditSummaryNotePage() {
   const { isSaving: isTextAutoSaving, lastSaved: textLastSaved } = useAutoSave(
     { userMarkdownContent },
     {
-      delay: 1000, // 1초 지연
+      delay: 3000, // 3초 지연 (업계 표준)
       onSave: handleAutoSaveRichText,
       onError: (error) => {
         console.error('Text auto save error:', error);
