@@ -1589,12 +1589,482 @@
             "testStrategy": ""
           }
         ]
+      },
+      {
+        "id": 14,
+        "title": "Create Detailed Specification for Markdown Editor Implementation",
+        "description": "Analyze the provided screenshot of an advanced Markdown editor and create a detailed specification for a pure document editor implementation in Habitus33, focusing on core editing features.",
+        "details": "1.  Analyze the screenshot to identify key features of the Markdown editor, including:\n    *   Complete block-based system (headings, paragraphs, lists)\n    *   Rich inline formatting (bold, italic, underline, strikethrough)\n    *   Alignment options (left, center, right)\n    *   Undo/redo functionality\n    *   Intuitive toolbar UI\n    *   Placeholder text\n    *   Dark theme support\n2.  Define the scope of the document editor, explicitly excluding AI features and focusing on core document editing capabilities.\n3.  Create a detailed specification document outlining the functional and non-functional requirements for each feature.\n4.  Specify the data structures and algorithms required to implement the block-based system and inline formatting.\n5.  Design the toolbar UI, including the layout, icons, and interactions for each feature.\n6.  Define the implementation approach for undo/redo functionality, considering memory usage and performance.\n7.  Outline the steps required to implement dark theme support, including color palettes and UI adjustments.\n8.  Document any limitations or constraints of the implementation, such as browser compatibility or performance considerations.",
+        "testStrategy": "1.  Verify that all specified features are implemented according to the specification document.\n2.  Create a suite of test cases covering various scenarios, including:\n    *   Creating and editing documents with different block types and inline formatting.\n    *   Testing alignment options and undo/redo functionality.\n    *   Verifying the correct behavior of the toolbar UI.\n    *   Testing placeholder text and dark theme support.\n3.  Perform cross-browser testing to ensure compatibility with different browsers and devices.\n4.  Conduct performance testing to ensure that the editor is responsive and efficient, even with large documents.\n5.  Perform usability testing to gather feedback on the intuitiveness and ease of use of the editor.",
+        "status": "pending",
+        "dependencies": [
+          7
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Analyze Screenshot and Existing BlockNote Component",
+            "description": "Thoroughly analyze the provided Markdown editor screenshot and the existing BlockNote component in Habitus33 to identify key features, functionalities, and potential areas for extension and integration. Focus on block-based system, inline formatting, toolbar UI, and dark theme support.",
+            "dependencies": [],
+            "details": "1. Deconstruct the screenshot into individual UI elements and functional components. 2. Evaluate the current BlockNote component's architecture and capabilities. 3. Identify gaps between the desired Markdown editor features and the existing BlockNote component. 4. Plan for component extension or modification.\n<info added on 2025-08-03T05:45:43.990Z>\n기존 BlockNote 컴포넌트 분석 완료:\n\n**현재 구조:**\n- BlockNoteEditor.tsx: 메인 에디터 컴포넌트 (203줄)\n- DynamicBlockNoteEditor.tsx: 동적 로딩 래퍼 (26줄)\n- BlockNoteViewer.tsx: 읽기 전용 뷰어 (47줄)\n- BlockNoteEditor.css: 스타일링 (245줄)\n\n**현재 API:**\n- Props: initialContent, onChange, editable, className\n- useCreateBlockNote({ defaultStyles: true })\n- JSON 기반 콘텐츠 저장\n- 다크 테마 기본 지원\n\n**확장 가능성:**\n- BlockNote는 고급 기능들을 지원하므로 설정만 추가하면 됨\n- 툴바 UI는 별도 컴포넌트로 구현 가능\n- 기존 구조를 최대한 유지하면서 기능 확장 가능\n</info added on 2025-08-03T05:45:43.990Z>",
+            "status": "pending",
+            "testStrategy": "Verify the accuracy of the feature identification and the feasibility of extending the BlockNote component."
+          },
+          {
+            "id": 2,
+            "title": "Design New Toolbar UI Component",
+            "description": "Design a new, intuitive toolbar UI component tailored for the Markdown editor. This includes defining the layout, selecting appropriate icons, and specifying the interactions for each feature (e.g., bold, italic, headings, alignment).",
+            "dependencies": [],
+            "details": "1. Create wireframes and mockups of the toolbar UI. 2. Select appropriate icons for each feature. 3. Define the event handlers and interactions for each toolbar button. 4. Consider responsiveness and accessibility.\n<info added on 2025-08-03T05:47:49.850Z>\n**고급 툴바 UI 컴포넌트 설계 완료:**\n\n**구현된 기능:**\n1. **고급 툴바**: 실행 취소/다시 실행, 블록 타입 선택, 인라인 서식 (굵게, 기울임, 밑줄, 취소선), 목록, 정렬, 서식 지우기\n2. **커스텀 스타일링**: 스크린샷과 유사한 다크 테마 툴바\n3. **반응형 디자인**: 모바일에서도 적절히 작동\n4. **Heroicons 사용**: 일관된 아이콘 시스템\n\n**파일 생성:**\n- AdvancedBlockNoteEditor.tsx: 메인 고급 편집기 컴포넌트\n- AdvancedBlockNoteEditor.css: 고급 스타일링\n- DynamicAdvancedBlockNoteEditor.tsx: 동적 로딩 래퍼\n\n**다음 단계:** BlockNote API 호환성 문제 해결 및 실제 기능 테스트\n</info added on 2025-08-03T05:47:49.850Z>",
+            "status": "pending",
+            "testStrategy": "Validate the usability and accessibility of the toolbar UI through user testing and accessibility audits."
+          },
+          {
+            "id": 3,
+            "title": "Implement Advanced Formatting Features",
+            "description": "Implement the core Markdown formatting features, including bold, italic, underline, strikethrough, headings, lists, and alignment options. This involves defining the data structures and algorithms required to represent and manipulate the formatted text.",
+            "dependencies": [],
+            "details": "1. Define the data structures for representing inline formatting. 2. Implement the algorithms for applying and removing formatting. 3. Integrate the formatting features with the toolbar UI. 4. Implement alignment options (left, center, right).\n<info added on 2025-08-03T05:50:15.869Z>\nBlockNote API 호환성 문제 발견:\n\n**문제점:**\n1. `onUpdate` 메서드가 존재하지 않음\n2. `strikethrough` 스타일이 지원되지 않음\n3. `level` 및 `textAlignment` 속성 접근 오류\n4. `removeStyles()` 메서드 인수 문제\n\n**해결 방안:**\n1. 기본 BlockNote 기능만 사용하여 안정성 확보\n2. 복잡한 API 호출 대신 기본 기능 중심으로 구현\n3. 에러 핸들링 강화\n4. 실제 테스트를 통한 기능 검증 필요\n\n**다음 단계:** 기본 기능만으로 작동하는 버전으로 단순화\n</info added on 2025-08-03T05:50:15.869Z>",
+            "status": "pending",
+            "testStrategy": "Verify that all formatting features are implemented correctly and that the formatted text is displayed as expected."
+          },
+          {
+            "id": 4,
+            "title": "Apply Styling and Theme",
+            "description": "Implement the styling and theming for the Markdown editor, including the default light theme and the dark theme. This involves defining color palettes, UI adjustments, and ensuring consistency across all components.",
+            "dependencies": [],
+            "details": "1. Define the color palettes for the light and dark themes. 2. Apply the styling to all UI components. 3. Implement a mechanism for switching between themes. 4. Ensure that the styling is consistent across all browsers and devices.",
+            "status": "pending",
+            "testStrategy": "Verify that the styling is applied correctly and that the themes are visually appealing and consistent."
+          },
+          {
+            "id": 5,
+            "title": "Implement Undo/Redo Functionality and Placeholder Text",
+            "description": "Implement undo/redo functionality for all editing operations, considering memory usage and performance. Also, implement placeholder text to guide users when the editor is empty.",
+            "dependencies": [],
+            "details": "1. Design the undo/redo stack data structure. 2. Implement the undo and redo operations for each editing action. 3. Optimize the memory usage of the undo/redo stack. 4. Implement placeholder text that appears when the editor is empty.",
+            "status": "pending",
+            "testStrategy": "Verify that the undo/redo functionality works correctly for all editing operations and that the placeholder text is displayed as expected."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-07-27T03:22:40.035Z",
-      "updated": "2025-08-02T10:49:17.924Z",
+      "updated": "2025-08-03T05:45:20.230Z",
       "description": "메모카드 시간대별 보기모드 개발 작업"
+    }
+  },
+  "advanced-editor": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Analyze Existing BlockNote API and Methods",
+        "description": "Analyze existing BlockNote API and methods to understand its capabilities and identify the best approach for implementing the required features, considering current limitations and desired enhancements.",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "details": "1.  **Review BlockNote Documentation:** Thoroughly examine the BlockNote v0.33.0 documentation to understand its architecture, available components, and API methods, with a focus on advanced features like `formattingToolbar`, `slashMenu`, `history`, `alignment`, and `customBlocks`.\n2.  **Explore Existing Codebase:** Analyze the current Habitus33 codebase where BlockNote is used to identify existing patterns and best practices, noting the current configurations such as `useCreateBlockNote({ defaultStyles: true })` and supported block types (heading, paragraph, bulletListItem, numberedListItem).\n3.  **Identify Key Methods:** Focus on methods related to block manipulation, text formatting (including inline styles), event handling, and those enabling features like undo/redo and text alignment.\n4.  **Evaluate Customizability:** Assess the extent to which BlockNote can be customized to meet the specific requirements of the advanced markdown editor, particularly in addressing missing features like inline formatting (bold, italic, underline, strikethrough), alignment options, advanced block types (code blocks, quotes, checklists), and custom toolbar configurations.\n5.  **Research BlockNote Plugins:** Investigate available BlockNote plugins or extensions that could simplify the implementation of certain features or provide additional functionality.\n6.  **Document Findings:** Create a document summarizing the findings, including a list of key methods, their usage, potential challenges, and a gap analysis of missing features compared to BlockNote's capabilities.",
+        "testStrategy": "Verify that the analysis document covers all relevant aspects of the BlockNote API, identifies potential implementation challenges, and includes a detailed gap analysis of missing features and how they can be addressed using BlockNote's advanced functionalities.",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Design New Editor Component",
+        "description": "Design the new editor component using React and TypeScript, leveraging BlockNote for block-based editing and Tailwind CSS for styling. The component includes a toolbar with undo/redo buttons, block type dropdown, inline formatting buttons, list formatting buttons, alignment buttons, and a clear formatting button.",
+        "status": "done",
+        "dependencies": [
+          1
+        ],
+        "priority": "high",
+        "details": "1. **Create React Component:** Create a new React component named `AdvancedMarkdownEditor` using TypeScript with a toolbar layout matching the provided screenshots.\n2. **Integrate BlockNote:** Integrate BlockNote v0.33.0 into the component to handle block-based editing, utilizing its advanced features.\n3. **Define Block Types:** Define the supported block types (Normal, Heading, Bullet List, Numbered List) using BlockNote's API.\n4. **Implement Styling:** Use Tailwind CSS to style the editor component and ensure it matches the design specifications, including dark theme support, responsive design, and smooth animations.\n5. **Implement Dark Theme Support:** Use Tailwind CSS's dark mode feature to provide a dark theme for the editor.\n6. **Implement Placeholder Text:** Add placeholder text to the editor to guide users when the editor is empty.\n7. **Implement Toolbar Functionality:** Implement undo/redo buttons, block type dropdown, inline formatting buttons (bold, italic, underline, strikethrough), list formatting buttons (bulleted, numbered), alignment buttons (left, center, right), and a clear formatting button.\n8. **Utilize Heroicons:** Use Heroicons for intuitive icons in the toolbar.\n\n```typescript\n// Example of defining a custom block type\nimport { BlockNoteEditor } from \"@blocknote/core\";\n\nconst editor = BlockNoteEditor.create({\n    blockTypes: [\n        {\n            name: \"Heading\",\n            // ...\n        }\n    ]\n});\n```",
+        "testStrategy": "Verify that the editor component is created successfully, BlockNote is integrated correctly, and the styling matches the design specifications. Test dark theme functionality, responsive design, and toolbar functionality, including undo/redo, block type selection, inline formatting, list formatting, alignment, and clear formatting. Ensure icons are displayed correctly and animations are smooth.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "",
+            "description": "Create AdvancedMarkdownEditor.tsx with the specified toolbar layout.",
+            "status": "completed",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "",
+            "description": "Create AdvancedMarkdownEditor.css with dark theme support, responsive design, and smooth animations.",
+            "status": "completed",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "",
+            "description": "Replace the existing editor with the new advanced markdown editor component.",
+            "status": "done",
+            "dependencies": [],
+            "details": "",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement Editor Toolbar UI",
+        "description": "Implement the editor toolbar with undo/redo buttons, block type dropdown, inline formatting buttons, list formatting buttons, alignment buttons, and a clear formatting button.",
+        "details": "1.  **Create Toolbar Component:** Create a separate React component for the editor toolbar.\n2.  **Add Undo/Redo Buttons:** Implement undo/redo functionality using BlockNote's built-in history management.\n3.  **Implement Block Type Dropdown:** Create a dropdown menu to allow users to select the block type.\n4.  **Implement Inline Formatting Buttons:** Add buttons for bold, italic, underline, and strikethrough formatting using BlockNote's text formatting API.\n5.  **Implement List Formatting Buttons:** Add buttons for bulleted and numbered lists using BlockNote's list API.\n6.  **Implement Alignment Buttons:** Add buttons for left, center, and right alignment using Tailwind CSS classes.\n7.  **Implement Clear Formatting Button:** Add a button to remove all formatting from the selected text.\n8.  **Use Heroicons:** Use Heroicons for the toolbar icons.\n\n```typescript\n// Example of implementing bold formatting\nconst handleBoldClick = () => {\n    editor.commands.toggleBold();\n};\n```",
+        "testStrategy": "Verify that all toolbar buttons are functional and that the corresponding formatting is applied correctly. Test undo/redo functionality and icon display.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Add Advanced Formatting Features",
+        "description": "Add advanced formatting features such as bold, italic, underline, strikethrough, and alignment to the editor.",
+        "details": "1.  **Implement Bold Formatting:** Use BlockNote's `toggleBold` command to toggle bold formatting.\n2.  **Implement Italic Formatting:** Use BlockNote's `toggleItalic` command to toggle italic formatting.\n3.  **Implement Underline Formatting:** Use BlockNote's `toggleUnderline` command to toggle underline formatting.\n4.  **Implement Strikethrough Formatting:** Use BlockNote's `toggleStrikethrough` command to toggle strikethrough formatting.\n5.  **Implement Alignment:** Use Tailwind CSS classes to apply left, center, and right alignment to the selected block.\n\n```typescript\n// Example of implementing underline formatting\nconst handleUnderlineClick = () => {\n    editor.commands.toggleUnderline();\n};\n```",
+        "testStrategy": "Verify that all advanced formatting features are working correctly and that the formatting is applied to the selected text.",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Replace Existing Editor",
+        "description": "Replace the existing editor with the new advanced markdown editor component in the Habitus33 summary note page.",
+        "details": "1.  **Identify Existing Editor:** Locate the existing editor component in the Habitus33 codebase.\n2.  **Remove Existing Editor:** Remove the existing editor component from the summary note page.\n3.  **Integrate New Editor:** Integrate the new `AdvancedMarkdownEditor` component into the summary note page.\n4.  **Test Integration:** Test the integration to ensure that the new editor is working correctly and that there are no conflicts with other components.",
+        "testStrategy": "Verify that the new editor is integrated correctly and that it is working as expected in the Habitus33 summary note page. Ensure that there are no conflicts with other components.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          4
+        ],
+        "status": "in-progress",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Undo/Redo Functionality",
+        "description": "Implement undo/redo functionality using BlockNote's built-in history management.",
+        "details": "1.  **Use BlockNote's History API:** Use BlockNote's `history` API to implement undo/redo functionality.\n2.  **Add Keyboard Shortcuts:** Add keyboard shortcuts for undo (Ctrl+Z) and redo (Ctrl+Shift+Z).\n\n```typescript\n// Example of implementing undo functionality\nconst handleUndoClick = () => {\n    editor.history.undo();\n};\n```",
+        "testStrategy": "Verify that undo/redo functionality is working correctly and that the keyboard shortcuts are working as expected.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement UI/UX Enhancements",
+        "description": "Ensure that the new editor supports dark theme and that the UI is responsive and intuitive.",
+        "details": "1.  **Test Dark Theme:** Verify that the editor supports dark theme and that the colors are consistent with the overall design.\n2.  **Test Responsiveness:** Verify that the editor is responsive and that it works correctly on different screen sizes.\n3.  **Test UI/UX:** Verify that the UI is intuitive and that users can easily perform common tasks.\n4.  **Add Animations:** Add subtle animations to improve the user experience.",
+        "testStrategy": "Verify that the editor supports dark theme, is responsive, and has an intuitive UI. Ensure that the animations are smooth and do not negatively impact performance.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Test and Optimize",
+        "description": "Test the new editor thoroughly and optimize its performance to ensure that it meets the success criteria.",
+        "details": "1.  **Functional Testing:** Test all features of the editor to ensure that they are working correctly.\n2.  **Performance Testing:** Test the editor's performance to ensure that it is not causing any performance issues.\n3.  **Compatibility Testing:** Test the editor on different browsers and devices to ensure that it is compatible.\n4.  **Data Compatibility Testing:** Test that existing data is compatible with the new editor.\n5.  **Optimize Performance:** Optimize the editor's performance by reducing the number of DOM updates and using efficient algorithms.",
+        "testStrategy": "Verify that the editor meets the success criteria by performing functional, performance, and compatibility testing. Ensure that existing data is compatible with the new editor and that there are no performance issues.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Advanced WYSIWYG Markdown Editor",
+        "description": "Implement an advanced, fully WYSIWYG markdown editor, replacing the existing block-based editor while maintaining API compatibility. This includes advanced inline formatting, alignment features, undo/redo functionality, and placeholder text support.",
+        "details": "1.  **Replace Existing Editor Component:** Remove the current markdown editor component and integrate the new WYSIWYG editor.\n2.  **Implement Advanced Inline Formatting:** Integrate features for bold, italic, underline, strikethrough, and other advanced formatting options.\n3.  **Implement Alignment Functionality:** Add support for text alignment (left, center, right, justify) using appropriate styling or editor commands.\n4.  **Integrate Undo/Redo Functionality:** Utilize the editor's built-in history management or implement a custom solution for undo/redo operations.\n5.  **Add Placeholder Text Support:** Implement placeholder text that appears when the editor is empty, providing guidance to the user.\n6.  **Maintain API Compatibility:** Ensure that the new editor's API is compatible with the existing API to minimize disruption to other components.\n7.  **Implement Data Conversion:** Implement a mechanism to convert existing markdown data to the format expected by the new editor.\n8.  **Address dark theme and responsiveness:** Ensure the new editor is compatible with the existing dark theme and is responsive on different screen sizes.",
+        "testStrategy": "1.  **Verify Core Formatting Features:** Test bold, italic, underline, strikethrough, and other formatting options to ensure they function correctly.\n2.  **Verify Alignment Functionality:** Test text alignment options (left, center, right, justify) to ensure they are applied correctly.\n3.  **Test Undo/Redo Functionality:** Verify that undo/redo operations work as expected for all editing actions.\n4.  **Verify Placeholder Text:** Ensure that placeholder text is displayed correctly when the editor is empty and disappears when text is entered.\n5.  **Verify API Compatibility:** Test the new editor's API to ensure that it is compatible with the existing API and that no functionality is broken.\n6.  **Verify Data Conversion:** Test that existing markdown data is converted correctly to the new editor's format.\n7.  **Verify Dark Theme and Responsiveness:** Ensure the new editor is compatible with the existing dark theme and is responsive on different screen sizes.\n8.  **Test for performance regressions:** Ensure that the new editor does not introduce any performance regressions.",
+        "status": "pending",
+        "dependencies": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Evaluate and Select WYSIWYG Editor Framework",
+            "description": "Research and evaluate different WYSIWYG editor frameworks (e.g., Draft.js, Quill, ProseMirror, TipTap) based on features, API compatibility with BlockNote, customizability, and community support. Select the most suitable framework for integration.",
+            "dependencies": [],
+            "details": "1. Identify key requirements for the editor framework, including markdown support, extensibility, and API compatibility. 2. Create a comparison matrix of potential frameworks. 3. Conduct proof-of-concept implementations with top contenders. 4. Document the selection process and rationale.",
+            "status": "pending",
+            "testStrategy": "Verify that the selected framework meets all the specified requirements and integrates smoothly with the existing BlockNote environment."
+          },
+          {
+            "id": 2,
+            "title": "Implement Core Editor Integration and Data Conversion",
+            "description": "Integrate the selected WYSIWYG editor framework into the existing application, replacing the current block-based editor. Implement data conversion mechanisms to handle existing markdown data and ensure seamless transition.",
+            "dependencies": [],
+            "details": "1. Remove the existing markdown editor component. 2. Integrate the new WYSIWYG editor component. 3. Implement a data conversion function to transform existing markdown data into the format expected by the new editor. 4. Ensure that the editor's API is compatible with the existing API to minimize disruption to other components.",
+            "status": "pending",
+            "testStrategy": "Verify that the new editor is successfully integrated and that existing markdown data is correctly converted and displayed. Ensure API compatibility with other components."
+          },
+          {
+            "id": 3,
+            "title": "Implement Advanced Formatting and Alignment Features",
+            "description": "Implement advanced inline formatting options (bold, italic, underline, strikethrough, etc.) and text alignment functionality (left, center, right, justify) within the WYSIWYG editor.",
+            "dependencies": [],
+            "details": "1. Utilize the editor framework's API to implement inline formatting options. 2. Add UI elements (toolbar buttons, context menus) for formatting options. 3. Implement text alignment functionality using appropriate styling or editor commands. 4. Ensure that formatting and alignment options are applied correctly and consistently.",
+            "status": "pending",
+            "testStrategy": "Verify that all formatting and alignment options are functional and that the corresponding styles are applied correctly. Test with various text inputs and scenarios."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Undo/Redo Functionality and Placeholder Text Support",
+            "description": "Integrate undo/redo functionality using the editor's built-in history management or a custom solution. Implement placeholder text that appears when the editor is empty, providing guidance to the user.",
+            "dependencies": [],
+            "details": "1. Utilize the editor's built-in history management or implement a custom solution for undo/redo operations. 2. Add keyboard shortcuts for undo (Ctrl+Z) and redo (Ctrl+Shift+Z). 3. Implement placeholder text that appears when the editor is empty. 4. Ensure that undo/redo functionality works correctly and that the placeholder text is displayed appropriately.",
+            "status": "pending",
+            "testStrategy": "Verify that undo/redo functionality is working correctly and that the keyboard shortcuts are working as expected. Verify that the placeholder text is displayed correctly when the editor is empty."
+          },
+          {
+            "id": 5,
+            "title": "Address Dark Theme and Responsiveness",
+            "description": "Ensure that the new editor is compatible with the existing dark theme and is responsive on different screen sizes.",
+            "dependencies": [],
+            "details": "1. Test the editor in dark theme to ensure that the colors are consistent with the overall design. 2. Verify that the editor is responsive and that it works correctly on different screen sizes. 3. Adjust the editor's styling and layout as needed to ensure compatibility with dark theme and responsiveness.",
+            "status": "pending",
+            "testStrategy": "Verify that the editor supports dark theme and is responsive on different screen sizes. Test with various screen resolutions and devices."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-03T05:51:19.974Z",
+      "updated": "2025-08-03T06:04:47.429Z",
+      "description": "Tasks for advanced-editor context"
+    }
+  },
+  "rich-text-editor": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Project Repository",
+        "description": "Set up the project repository with necessary configurations and dependencies.",
+        "details": "1. Initialize a new Git repository.\n2. Set up a React project using Create React App or Next.js (latest version).\n3. Install necessary dependencies: `npm install react react-dom styled-components`. Consider using `immer` for immutable state updates.\n4. Configure TypeScript for static typing: `npm install --save-dev typescript @types/node @types/react @types/react-dom @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint prettier eslint-config-prettier eslint-plugin-prettier`.\n5. Set up a basic folder structure: `src/components`, `src/styles`, `src/utils`.",
+        "testStrategy": "Verify the project setup by running the development server and checking for any initial errors in the console.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement Basic Editor Component",
+        "description": "Create the main editor component with contentEditable and basic styling.",
+        "details": "1. Create a new component file, e.g., `RichTextEditor.tsx`.\n2. Implement the contentEditable div with basic styling (min-height: 400px, scrollable, focus border).\n3. Use React's `useState` hook to manage the editor's content.\n4. Implement `onChange` handler to update the state when the content changes.\n5. Apply initial styling based on the design guidelines (background, text, border colors).",
+        "testStrategy": "Manually type text into the editor and verify that the content is displayed correctly and the styling is applied.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement Toolbar Component",
+        "description": "Implement the toolbar component with basic structure and styling.",
+        "details": "1. Create a new component file, e.g., `EditorToolbar.tsx`.\n2. Implement the toolbar layout with placeholders for buttons (undo/redo, block type, inline styles, lists, alignment, clear formatting).\n3. Apply styling based on the design guidelines (background color, button hover, active button styles).\n4. Use styled-components for styling.",
+        "testStrategy": "Verify that the toolbar is displayed correctly and the styling is applied. Check the hover and active states of the buttons.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Inline Formatting",
+        "description": "Implement inline formatting options (bold, italic, underline, strikethrough).",
+        "details": "1. Implement button click handlers for each inline formatting option.\n2. Use `document.execCommand` API to apply the formatting to the selected text.\n3. Update the toolbar button states based on the current selection.\n4. Example: `document.execCommand('bold', false, null)` for bolding.",
+        "testStrategy": "Select text in the editor and click the inline formatting buttons. Verify that the selected text is formatted correctly.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Block Formatting",
+        "description": "Implement block formatting options (headings, paragraph).",
+        "details": "1. Implement a dropdown menu for selecting the block type.\n2. Use `document.execCommand` API to apply the heading formatting (H1, H2, H3).\n3. For paragraph, change the element type to `<p>`.\n4. Update the editor content based on the selected block type.",
+        "testStrategy": "Select text in the editor and select a block type from the dropdown menu. Verify that the selected text is formatted correctly.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement List Formatting",
+        "description": "Implement list formatting options (bulleted list, numbered list).",
+        "details": "1. Implement button click handlers for bulleted and numbered lists.\n2. Use `document.execCommand` API to create lists (`insertUnorderedList`, `insertOrderedList`).\n3. Handle nested lists correctly.",
+        "testStrategy": "Select text in the editor and click the list formatting buttons. Verify that the selected text is formatted correctly.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Text Alignment",
+        "description": "Implement text alignment options (left, center, right).",
+        "details": "1. Implement button click handlers for each alignment option.\n2. Use `document.execCommand` API to apply the alignment styles (`justifyLeft`, `justifyCenter`, `justifyRight`).\n3. Apply CSS styles to the selected text or block to achieve the desired alignment.",
+        "testStrategy": "Select text in the editor and click the alignment buttons. Verify that the selected text is aligned correctly.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Undo/Redo",
+        "description": "Implement undo/redo functionality.",
+        "details": "1. Use a stack to store the editor's content history.\n2. Implement button click handlers for undo and redo.\n3. On undo, pop the previous state from the stack and update the editor content.\n4. On redo, push the next state from the stack and update the editor content.",
+        "testStrategy": "Type text in the editor and click the undo/redo buttons. Verify that the editor content is updated correctly.",
+        "priority": "medium",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Keyboard Shortcuts",
+        "description": "Implement keyboard shortcuts for common formatting options.",
+        "details": "1. Use the `keydown` event listener to capture keyboard shortcuts.\n2. Implement shortcuts for bold (Ctrl/Cmd + B), italic (Ctrl/Cmd + I), underline (Ctrl/Cmd + U), etc.\n3. Prevent default browser behavior for the shortcuts.",
+        "testStrategy": "Use the keyboard shortcuts to apply formatting to the selected text. Verify that the text is formatted correctly.",
+        "priority": "medium",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement Placeholder Text",
+        "description": "Implement placeholder text when the editor is empty.",
+        "details": "1. Use a conditional rendering to display the placeholder text when the editor content is empty.\n2. Hide the placeholder text when the user starts typing.",
+        "testStrategy": "Verify that the placeholder text is displayed when the editor is empty and hidden when the user starts typing.",
+        "priority": "low",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Dark Theme",
+        "description": "Implement dark theme support.",
+        "details": "1. Use CSS variables to define the colors for the dark theme.\n2. Use a theme context to manage the current theme.\n3. Update the editor and toolbar styles based on the current theme.",
+        "testStrategy": "Switch between light and dark themes and verify that the editor and toolbar styles are updated correctly.",
+        "priority": "low",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Responsive Design",
+        "description": "Implement responsive design for mobile devices.",
+        "details": "1. Use media queries to adjust the editor and toolbar styles for different screen sizes.\n2. Implement toolbar collapsing/expanding for smaller screens.",
+        "testStrategy": "Test the editor on different mobile devices and screen sizes. Verify that the editor and toolbar are displayed correctly.",
+        "priority": "low",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Integrate with Existing API",
+        "description": "Integrate the new editor with the existing API (`userMarkdownContent`, `onChange`, `editable`).",
+        "details": "1. Update the `DynamicBlockNoteEditor` component to use the new rich text editor.\n2. Pass the `userMarkdownContent`, `onChange`, and `editable` props to the new editor.\n3. Update the parent component to handle the HTML-based data from the new editor.",
+        "testStrategy": "Verify that the new editor is integrated correctly with the existing API and that the data is being passed correctly.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement Data Conversion",
+        "description": "Implement data conversion between JSON and HTML formats.",
+        "details": "1. Implement a function to convert the existing JSON-based data to HTML.\n2. Implement a function to convert the HTML-based data from the new editor to JSON (if needed).\n3. Use a library like `html-to-react` or `cheerio` for parsing and converting HTML.",
+        "testStrategy": "Verify that the data is converted correctly between JSON and HTML formats.",
+        "priority": "medium",
+        "dependencies": [
+          13
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Test and Fix Bugs",
+        "description": "Test the new editor and fix any bugs.",
+        "details": "1. Perform thorough testing of all features and functionalities.\n2. Fix any bugs that are found.\n3. Ensure that the editor meets the success criteria (90% UI similarity, all formatting functions working, API compatibility, no performance degradation, mobile responsive).",
+        "testStrategy": "Perform manual and automated testing to ensure that the editor is working correctly and meets the success criteria.",
+        "priority": "high",
+        "dependencies": [
+          13,
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-03T06:06:27.263Z",
+      "updated": "2025-08-03T06:12:29.610Z",
+      "description": "Tasks for rich-text-editor context"
     }
   }
 }

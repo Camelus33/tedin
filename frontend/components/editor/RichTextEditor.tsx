@@ -377,7 +377,28 @@ export default function RichTextEditor({
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
 
-  // 서식 명령 실행 (커서 위치 보존)
+  // 자동저장 전용 함수 분리
+  const handleAutoSave = useCallback(async (content: string) => {
+    if (!onSave) return;
+    
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        setIsSaving(true);
+        await onSave(content);
+        setLastSaved(new Date());
+      } catch (error) {
+        console.error('Auto save failed:', error);
+      } finally {
+        setIsSaving(false);
+      }
+    }, autoSaveDelay);
+  }, [onSave, autoSaveDelay]);
+
+  // 서식 명령 실행 (커서 위치 보존) - 개선된 버전
   const execCommand = (command: string, value?: string) => {
     if (!editorRef.current) return;
 
@@ -392,68 +413,45 @@ export default function RichTextEditor({
       restoreSelection(savedRangeRef.current);
     }
     
-    // handleInput 호출하지 않고 직접 처리
-    const content = editorRef.current.innerHTML;
-    setHasContent(content.trim().length > 0);
-    onChange?.(content);
+    // 약간의 지연 후 처리 (DOM 업데이트 완료 대기)
+    setTimeout(() => {
+      const content = editorRef.current?.innerHTML || '';
+      setHasContent(content.trim().length > 0);
+      onChange?.(content);
+      
+      // 자동저장이 활성화되어 있으면 별도로 처리
+      if (autoSave && onSave) {
+        handleAutoSave(content);
+      }
+    }, 0);
   };
 
-  // 엔터 키 처리 - Range 기반 완전 개선 버전
+  // 엔터 키 처리 - 간단하고 확실한 버전
   const handleEnter = () => {
     if (!editorRef.current) return;
 
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-    const container = range.commonAncestorContainer;
+    // 현재 커서 위치 저장
+    const savedRange = saveSelection();
     
-    // 현재 블록 요소 찾기
-    let currentBlock = container.nodeType === Node.TEXT_NODE ? container.parentElement : container as Element;
-    while (currentBlock && !['P', 'H1', 'H2', 'H3', 'LI'].includes(currentBlock.tagName)) {
-      currentBlock = currentBlock.parentElement;
-    }
-
-    if (!currentBlock) return;
-
-    // 절대 오프셋 계산
-    const absoluteOffset = getAbsoluteOffset(container, range.startOffset, editorRef.current);
+    // 브라우저 기본 엔터 동작 실행
+    document.execCommand('insertParagraph', false);
     
-    // 현재 블록의 텍스트 내용 가져오기
-    const currentText = currentBlock.textContent || '';
-    const beforeText = currentText.substring(0, absoluteOffset);
-    const afterText = currentText.substring(absoluteOffset);
-
-    // 현재 블록의 내용을 커서 앞부분으로 설정
-    currentBlock.textContent = beforeText || '\u00A0';
-
-    // 새 단락 생성
-    const newParagraph = document.createElement('p');
-    newParagraph.textContent = afterText || '\u00A0';
-
-    // 현재 블록 뒤에 새 단락 삽입
-    if (currentBlock.parentNode) {
-      currentBlock.parentNode.insertBefore(newParagraph, currentBlock.nextSibling);
-    }
-
-    // 절대 오프셋을 사용하여 새 커서 위치 계산
-    const newRange = restoreRangeFromOffset(editorRef.current, absoluteOffset);
-    if (newRange) {
-      selection.removeAllRanges();
-      selection.addRange(newRange);
+    // 커서 위치 복원
+    if (savedRange) {
+      restoreSelection(savedRange);
     }
     
-    // DOM 정규화 (커서 위치 보존)
-    if (editorRef.current) {
-      const savedRange = saveSelection();
-      normalizeDOM(editorRef.current);
-      cleanupEmptyElements(editorRef.current);
-      if (savedRange) {
-        restoreSelection(savedRange);
+    // 약간의 지연 후 처리
+    setTimeout(() => {
+      const content = editorRef.current?.innerHTML || '';
+      setHasContent(content.trim().length > 0);
+      onChange?.(content);
+      
+      // 자동저장이 활성화되어 있으면 별도로 처리
+      if (autoSave && onSave) {
+        handleAutoSave(content);
       }
-    }
-    
-    handleInput();
+    }, 0);
   };
 
   // 정렬 기능 개선
@@ -493,7 +491,17 @@ export default function RichTextEditor({
         break;
     }
     
-    handleInput();
+    // 약간의 지연 후 처리 (DOM 업데이트 완료 대기)
+    setTimeout(() => {
+      const content = editorRef.current?.innerHTML || '';
+      setHasContent(content.trim().length > 0);
+      onChange?.(content);
+      
+      // 자동저장이 활성화되어 있으면 별도로 처리
+      if (autoSave && onSave) {
+        handleAutoSave(content);
+      }
+    }, 0);
   };
 
   // Backspace 키 처리
@@ -639,7 +647,7 @@ export default function RichTextEditor({
           break;
       }
     }
-  }, [editable, execCommand]);
+  }, [editable, execCommand, handleEnter, handleBackspace, handleArrowKeys]);
 
   // 툴바 버튼 컴포넌트
   const ToolbarButton = ({
