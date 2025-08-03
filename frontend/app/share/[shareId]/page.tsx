@@ -61,7 +61,7 @@ const ErrorDisplay = ({ message, reason }: { message: string, reason: string }) 
   </div>
 );
 
-const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), { ssr: false });
+// RichTextEditor import 제거 - 일반 텍스트 영역으로 대체
 
 export default async function SharePage({ params }: { params: { shareId: string } }) {
   const data = await getShareData(params.shareId);
@@ -152,20 +152,12 @@ export default async function SharePage({ params }: { params: { shareId: string 
                   메모카드 속 내용을 종합하여 자신의 생각을 정리해 보세요.
                 </p>
               </header>
-              {/* JSON(BlockNote) vs Markdown 분기 렌더링 */}
-              {userMarkdownContent.trim().startsWith('[') ? (
-                <RichTextEditor 
-                  initialContent={userMarkdownContent} 
-                  editable={false}
-                  className="bg-white rounded border border-purple-200" 
-                />
-              ) : (
-                <div className="prose prose-gray max-w-none bg-white p-4 rounded border border-purple-200">
-                  <pre className="whitespace-pre-wrap font-sans text-lg text-gray-800 leading-loose">
-                    {userMarkdownContent}
-                  </pre>
-                </div>
-              )}
+              {/* 일반 텍스트 영역으로 통일 */}
+              <div className="prose prose-gray max-w-none bg-white p-4 rounded border border-purple-200">
+                <pre className="whitespace-pre-wrap font-sans text-lg text-gray-800 leading-loose">
+                  {userMarkdownContent}
+                </pre>
+              </div>
             </section>
           )}
 

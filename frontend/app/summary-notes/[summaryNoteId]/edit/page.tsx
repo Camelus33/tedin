@@ -27,7 +27,7 @@ import { useAutoSave } from '@/hooks/useAutoSave';
 
 
 // 리치 텍스트 에디터 및 리사이저블 패널 추가
-import RichTextEditor from '@/components/editor/RichTextEditor';
+// RichTextEditor import 제거 - 일반 텍스트 영역으로 대체
 import {
   Panel,
   PanelGroup,
@@ -516,7 +516,7 @@ export default function EditSummaryNotePage() {
     }
   };
 
-  // 자동저장 훅 적용 (제목과 설명만)
+  // 자동저장 훅 적용 (제목과 설명)
   const { isSaving: isAutoSaving, lastSaved } = useAutoSave(
     { title, description },
     {
@@ -524,6 +524,18 @@ export default function EditSummaryNotePage() {
       onSave: handleAutoSaveTitleDescription,
       onError: (error) => {
         console.error('Auto save error:', error);
+      }
+    }
+  );
+
+  // 텍스트 영역 자동저장 훅 적용
+  const { isSaving: isTextAutoSaving, lastSaved: textLastSaved } = useAutoSave(
+    { userMarkdownContent },
+    {
+      delay: 1000, // 1초 지연
+      onSave: handleAutoSaveRichText,
+      onError: (error) => {
+        console.error('Text auto save error:', error);
       }
     }
   );
@@ -1398,10 +1410,11 @@ export default function EditSummaryNotePage() {
                 'Deep Dive'
               )}
               </h3>
-            <div className="flex-grow h-full">
-              <RichTextEditor
-                initialContent={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
-                onChange={(content: string) => {
+            <div className="flex-grow h-full relative">
+              <Textarea
+                value={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
+                onChange={(e) => {
+                  const content = e.target.value;
                   if (selectedNode) {
                     // Update node's markdown content
                     setNodeMarkdownContent(prev => ({
@@ -1414,13 +1427,30 @@ export default function EditSummaryNotePage() {
                     setUserMarkdownContent(content);
                   }
                 }}
-                onSave={handleAutoSaveRichText}
-                autoSave={true}
-                autoSaveDelay={1000}
-                editable={isEditing}
-                className="h-full"
                 placeholder="선택한 메모카드를 벡터공간에 배치하고, 인사이트를 도출하는 공간입니다. 온톨로지기반 고품질 분석 보고서를 작성할 수 있어요."
+                className="h-full min-h-[400px] p-4 bg-gray-800 text-gray-300 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 resize-none"
+                style={{
+                  backgroundColor: 'rgb(31, 41, 55)', // gray-800
+                  color: 'rgb(209, 213, 219)', // gray-300
+                }}
               />
+              
+              {/* 자동저장 상태 표시 */}
+              {!selectedNode && (
+                <div className="absolute bottom-4 right-4 text-xs">
+                  {isTextAutoSaving ? (
+                    <div className="flex items-center text-cyan-400">
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-cyan-400 mr-1"></div>
+                      저장 중...
+                    </div>
+                  ) : textLastSaved ? (
+                    <div className="flex items-center text-green-400">
+                      <span className="mr-1">✓</span>
+                      저장됨
+                    </div>
+                  ) : null}
+                </div>
+              )}
             </div>
           </Panel>
         </PanelGroup>
