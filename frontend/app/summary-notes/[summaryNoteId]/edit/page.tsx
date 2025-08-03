@@ -462,8 +462,8 @@ export default function EditSummaryNotePage() {
     }
   };
 
-  // 리치텍스트 에디터 자동저장 함수
-  const handleAutoSaveRichText = async (content: string) => {
+  // 텍스트 영역 수동저장 함수
+  const handleManualSaveText = async () => {
     if (!summaryNote) return;
     
     try {
@@ -471,41 +471,31 @@ export default function EditSummaryNotePage() {
         title,
         description,
         orderedNoteIds: fetchedNotes.map(n => n._id),
-        userMarkdownContent: content
-        // 다이어그램 데이터는 자동저장에서 제외 (검증 오류 방지)
+        userMarkdownContent
+        // 다이어그램 데이터는 수동저장에서 제외 (검증 오류 방지)
       };
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
       setSummaryNote(prev => prev ? { 
         ...prev, 
-        userMarkdownContent: content
+        userMarkdownContent
       } : null);
+      
+      showSuccess('텍스트가 저장되었습니다.');
     } catch (err: any) {
-      console.error('Failed to auto save rich text:', err);
-      throw err;
+      console.error('Failed to save text:', err);
+      showError('저장에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
-  // 자동저장 훅 적용 (제목과 설명)
+  // 자동저장 훅 적용 (제목과 설명만)
   const { isSaving: isAutoSaving, lastSaved } = useAutoSave(
     { title, description },
     {
-      delay: 10000, // 10초 지연
+      delay: 3000, // 3초 지연
       onSave: handleAutoSaveTitleDescription,
       onError: (error) => {
         console.error('Auto save error:', error);
-      }
-    }
-  );
-
-  // 텍스트 영역 자동저장 훅 적용
-  const { isSaving: isTextAutoSaving, lastSaved: textLastSaved } = useAutoSave(
-    { userMarkdownContent },
-    {
-      delay: 10000, // 10초 지연
-      onSave: handleAutoSaveRichText,
-      onError: (error) => {
-        console.error('Text auto save error:', error);
       }
     }
   );
@@ -1405,20 +1395,15 @@ export default function EditSummaryNotePage() {
                 }}
               />
               
-              {/* 자동저장 상태 표시 */}
+              {/* 수동 저장 버튼 */}
               {!selectedNode && (
-                <div className="absolute bottom-4 right-4 text-xs">
-                  {isTextAutoSaving ? (
-                    <div className="flex items-center text-cyan-400">
-                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-cyan-400 mr-1"></div>
-                      저장 중...
-                    </div>
-                  ) : textLastSaved ? (
-                    <div className="flex items-center text-green-400">
-                      <span className="mr-1">✓</span>
-                      저장됨
-                    </div>
-                  ) : null}
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    onClick={handleManualSaveText}
+                    className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2"
+                  >
+                    💾 저장
+                  </Button>
                 </div>
               )}
             </div>
