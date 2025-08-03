@@ -126,6 +126,8 @@ export default function RichTextEditor({
   const editorRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [hasContent, setHasContent] = useState(false);
+  // IME(한글 등) 조합 상태 관리
+  const [isComposing, setIsComposing] = useState(false);
 
   // 초기 콘텐츠 설정
   useEffect(() => {
@@ -198,7 +200,14 @@ export default function RichTextEditor({
           break;
       }
     }
-  }, [editable]);
+  }, [editable, execCommand]);
+
+  // IME 조합 이벤트 핸들러
+  const handleCompositionStart = () => setIsComposing(true);
+  const handleCompositionEnd = () => {
+    setIsComposing(false);
+    handleInput(); // 조합이 끝난 후에만 onChange 호출
+  };
 
   // 툴바 버튼 컴포넌트
   const ToolbarButton = ({ 
@@ -217,11 +226,11 @@ export default function RichTextEditor({
     <button
       onClick={() => command && execCommand(command, value)}
       title={title}
-      className={`p-2 rounded hover:bg-gray-600 transition-colors ${
+      className={`p-1.5 rounded hover:bg-gray-600 transition-colors ${
         isActive ? 'bg-cyan-600 text-white' : 'text-gray-300'
       }`}
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="w-3 h-3" />
     </button>
   );
 
@@ -240,7 +249,7 @@ export default function RichTextEditor({
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="px-3 py-2 rounded hover:bg-gray-600 transition-colors text-gray-300 text-sm"
+          className="px-3 py-1.5 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
         >
           {selectedType} ▼
         </button>
@@ -254,7 +263,7 @@ export default function RichTextEditor({
                   setSelectedType(type.label);
                   setIsOpen(false);
                 }}
-                className="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                className="block w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-gray-600"
               >
                 {type.label}
               </button>
@@ -268,7 +277,7 @@ export default function RichTextEditor({
   return (
     <div className={`rich-text-editor ${className} ${cyberTheme.bgSecondary} rounded-lg border ${cyberTheme.inputBorder}`}>
       {/* 툴바 */}
-      <div className={`p-2 border-b ${cyberTheme.inputBorder} bg-gray-700 flex items-center gap-1 flex-wrap`}>
+      <div className={`p-2 border-b ${cyberTheme.inputBorder} bg-gray-700 flex items-center gap-0.5 flex-wrap text-xs`}>
         {/* 실행 취소/다시 실행 */}
         <ToolbarButton 
           icon={ArrowUturnLeftIcon} 
@@ -281,12 +290,12 @@ export default function RichTextEditor({
           title="다시 실행 (Ctrl+Y)" 
         />
         
-        <div className="w-px h-6 bg-gray-600 mx-2"></div>
+        <div className="w-px h-4 bg-gray-600 mx-2"></div>
         
         {/* 블록 타입 드롭다운 */}
         <BlockTypeDropdown />
         
-        <div className="w-px h-6 bg-gray-600 mx-2"></div>
+        <div className="w-px h-4 bg-gray-600 mx-2"></div>
         
         {/* 인라인 서식 */}
         <ToolbarButton 
@@ -310,7 +319,7 @@ export default function RichTextEditor({
           title="취소선" 
         />
         
-        <div className="w-px h-6 bg-gray-600 mx-2"></div>
+        <div className="w-px h-4 bg-gray-600 mx-2"></div>
         
         {/* 목록 서식 */}
         <ToolbarButton 
@@ -324,32 +333,32 @@ export default function RichTextEditor({
           title="번호 매기기 목록" 
         />
         
-        <div className="w-px h-6 bg-gray-600 mx-2"></div>
+        <div className="w-px h-4 bg-gray-600 mx-2"></div>
         
         {/* 정렬 서식 - 텍스트로 대체 */}
         <button
           onClick={() => execCommand('justifyLeft')}
           title="왼쪽 정렬"
-          className="p-2 rounded hover:bg-gray-600 transition-colors text-gray-300 text-sm"
+          className="p-1.5 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
         >
           ←
         </button>
         <button
           onClick={() => execCommand('justifyCenter')}
           title="가운데 정렬"
-          className="p-2 rounded hover:bg-gray-600 transition-colors text-gray-300 text-sm"
+          className="p-1.5 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
         >
           ↔
         </button>
         <button
           onClick={() => execCommand('justifyRight')}
           title="오른쪽 정렬"
-          className="p-2 rounded hover:bg-gray-600 transition-colors text-gray-300 text-sm"
+          className="p-1.5 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
         >
           →
         </button>
         
-        <div className="w-px h-6 bg-gray-600 mx-2"></div>
+        <div className="w-px h-4 bg-gray-600 mx-2"></div>
         
         {/* 서식 지우기 */}
         <ToolbarButton 
@@ -364,16 +373,22 @@ export default function RichTextEditor({
         <div
           ref={editorRef}
           contentEditable={editable}
-          onInput={handleInput}
+          dir="ltr"
+          onInput={isComposing ? undefined : handleInput}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
+          onCompositionStart={handleCompositionStart}
+          onCompositionEnd={handleCompositionEnd}
           className={`min-h-[400px] p-4 ${cyberTheme.textLight} focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50 ${
             !hasContent && !isFocused ? 'text-gray-500' : ''
           }`}
           style={{
             backgroundColor: 'rgb(31, 41, 55)', // gray-800
             color: 'rgb(209, 213, 219)', // gray-300
+            direction: 'ltr',
+            writingMode: 'horizontal-tb',
+            textOrientation: 'mixed',
           }}
           data-placeholder={placeholder}
         />
