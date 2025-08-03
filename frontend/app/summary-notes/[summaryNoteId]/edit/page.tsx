@@ -1123,17 +1123,7 @@ export default function EditSummaryNotePage() {
                     }}
                     tabIndex={0}
                   >
-                    {/* Connection Guide */}
-                    {canvasNodes.length >= 2 && !selectedRelationship && (
-                      <div className="absolute top-4 right-4 z-10 bg-blue-900/30 border border-blue-500/50 rounded-lg p-3 max-w-48">
-                        <h4 className="text-sm font-medium text-blue-300 mb-2">🔗 연결 방법</h4>
-                        <p className="text-xs text-blue-400">
-                          1. 관계 타입 선택<br/>
-                          2. 첫 번째 노드 클릭<br/>
-                          3. 두 번째 노드 클릭
-                        </p>
-                      </div>
-                    )}
+
                     
                     {/* Existing Nodes */}
                     {canvasNodes.map((node) => (
