@@ -898,67 +898,71 @@ export default function EditSummaryNotePage() {
         {/* Main Content Area: 3-Panel Layout */}
         <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-300px)] md:h-[calc(100vh-280px)]">
           {/* Left Panel: Notes List */}
-          <Panel minSize={25} defaultSize={30} className="overflow-y-auto pr-2 pb-6 h-full summary-scrollbar">
-            <div className="space-y-4">
+          <Panel minSize={25} defaultSize={30} className="pr-2 pb-6 h-full">
+            <div className="h-full flex flex-col">
               <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Memo Card</h3>
-              {fetchedNotes.length > 0 ? (
-                fetchedNotes.map((note, idx) => {
-                  const noteBookTitle = bookInfoMap.get(note.bookId)?.title;
+              <div className="flex-1 overflow-y-auto summary-scrollbar">
+                <div className="space-y-4">
+                  {fetchedNotes.length > 0 ? (
+                    fetchedNotes.map((note, idx) => {
+                      const noteBookTitle = bookInfoMap.get(note.bookId)?.title;
 
-                  return (
-                    <div key={note._id} className="p-2 relative group bg-gray-800/60 rounded-md">
-                      {/* Order Badge */}
-                      <div className="absolute left-1 top-1 z-20">
-                        <div className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
-                          {idx + 1}
+                      return (
+                        <div key={note._id} className="p-2 relative group bg-gray-800/60 rounded-md">
+                          {/* Order Badge */}
+                          <div className="absolute left-1 top-1 z-20">
+                            <div className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
+                              {idx + 1}
+                            </div>
+                          </div>
+                          
+                          {isEditing && (
+                            <div className="absolute left-0 top-0 z-10 flex space-x-1 ml-6">
+                              <button 
+                                onClick={() => handleReorderNote(note._id, 'up')}
+                                disabled={idx === 0}
+                                className={`w-5 h-5 rounded-full flex items-center justify-center ${idx === 0 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                                title="위로 이동"
+                              >
+                                ↑
+                              </button>
+                              <button 
+                                onClick={() => handleReorderNote(note._id, 'down')}
+                                disabled={idx === fetchedNotes.length - 1}
+                                className={`w-5 h-5 rounded-full flex items-center justify-center ${idx === fetchedNotes.length - 1 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+                                title="아래로 이동"
+                              >
+                                ↓
+                              </button>
+                            </div>
+                          )}
+                          <TSNoteCard 
+                            note={note} 
+                            onUpdate={handleNoteUpdate}
+                            onFlashcardConvert={(note) => {
+                              setNoteForFlashcardModal(note);
+                              setShowFlashcardModal(true);
+                            }}
+                            onRelatedLinks={(note) => {
+                              setSelectedNoteForLinkModal(note);
+                              setShowLinkModal(true);
+                              if (note.relatedLinks && note.relatedLinks.length > 0) {
+                                setActiveRelatedLinkTypeTab(note.relatedLinks[0].type);
+                              }
+                            }}
+                            sessionDetails={note.sessionDetails}
+                            readingPurpose={currentBookReadingPurpose || 'humanities_self_reflection'}
+                            isPageEditing={false}
+                            bookTitle={noteBookTitle}
+                          />
                         </div>
-                      </div>
-                      
-                      {isEditing && (
-                        <div className="absolute left-0 top-0 z-10 flex space-x-1 ml-6">
-                          <button 
-                            onClick={() => handleReorderNote(note._id, 'up')}
-                            disabled={idx === 0}
-                            className={`w-5 h-5 rounded-full flex items-center justify-center ${idx === 0 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-                            title="위로 이동"
-                          >
-                            ↑
-                          </button>
-                          <button 
-                            onClick={() => handleReorderNote(note._id, 'down')}
-                            disabled={idx === fetchedNotes.length - 1}
-                            className={`w-5 h-5 rounded-full flex items-center justify-center ${idx === fetchedNotes.length - 1 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-                            title="아래로 이동"
-                          >
-                            ↓
-                          </button>
-                        </div>
-                      )}
-                      <TSNoteCard 
-                        note={note} 
-                        onUpdate={handleNoteUpdate}
-                        onFlashcardConvert={(note) => {
-                          setNoteForFlashcardModal(note);
-                          setShowFlashcardModal(true);
-                        }}
-                        onRelatedLinks={(note) => {
-                          setSelectedNoteForLinkModal(note);
-                          setShowLinkModal(true);
-                          if (note.relatedLinks && note.relatedLinks.length > 0) {
-                            setActiveRelatedLinkTypeTab(note.relatedLinks[0].type);
-                          }
-                        }}
-                        sessionDetails={note.sessionDetails}
-                        readingPurpose={currentBookReadingPurpose || 'humanities_self_reflection'}
-                        isPageEditing={false}
-                        bookTitle={noteBookTitle}
-                      />
-                    </div>
-                  );
-                })
-              ) : (
-                <p className={`${cyberTheme.textMuted}`}>포함된 1줄 메모카드가 없습니다.</p>
-              )}
+                      );
+                    })
+                  ) : (
+                    <p className={`${cyberTheme.textMuted}`}>포함된 1줄 메모카드가 없습니다.</p>
+                  )}
+                </div>
+              </div>
             </div>
           </Panel>
           
