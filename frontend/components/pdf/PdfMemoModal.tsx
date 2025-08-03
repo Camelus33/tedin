@@ -63,9 +63,11 @@ export default function PdfMemoModal({
   // 모달이 열릴 때 선택된 텍스트를 메모 필드에 자동 입력
   useEffect(() => {
     if (isOpen && selectedText) {
-      setMemoText(selectedText);
+      // 페이지 번호를 포함한 텍스트로 설정
+      const textWithPageNumber = `[p.${pageNumber}] ${selectedText}`;
+      setMemoText(textWithPageNumber);
     }
-  }, [isOpen, selectedText]);
+  }, [isOpen, selectedText, pageNumber]);
 
   // 모달 닫을 때 상태 초기화
   const handleClose = () => {
@@ -279,7 +281,7 @@ export default function PdfMemoModal({
                 value={memoText}
                 onChange={(e) => setMemoText(e.target.value)}
                 disabled={isLoading}
-                placeholder="하이라이트한 내용에 대한 메모를 작성해주세요..."
+                placeholder={`[p.${pageNumber}] 하이라이트한 내용에 대한 메모를 작성해주세요...`}
                 className={`w-full h-32 p-2 ${cyberTheme.inputBg} border ${cyberTheme.inputBorder} rounded-lg ${cyberTheme.textLight} placeholder-gray-400 ${cyberTheme.inputFocusBorder} focus:outline-none resize-none disabled:opacity-50`}
               />
             </div>
