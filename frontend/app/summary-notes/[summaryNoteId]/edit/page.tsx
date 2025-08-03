@@ -69,10 +69,10 @@ interface SummaryNoteData {
   createdAt?: string;
   updatedAt?: string;
   
-  // 다이어그램 데이터 (1:1 대응)
+  // 벡터그래프 데이터 (1:1 대응)
   diagram?: {
     imageUrl?: string;           // SVG 이미지 URL/base64
-    data?: DiagramData;          // 다이어그램 데이터
+    data?: DiagramData;          // 벡터그래프 데이터
     lastModified?: string;       // 마지막 수정 시간
   };
 }
@@ -90,21 +90,21 @@ interface RelationshipConfig {
 
 const RELATIONSHIP_CONFIGS: Record<RelationshipType, RelationshipConfig> = {
   'cause-effect': {
-    label: '원인-결과',
+    label: '인과',
     icon: '→',
     color: 'text-red-400',
     strokeColor: '#f87171', // red-400
     description: 'A가 B의 원인이 됨'
   },
   'before-after': {
-    label: '전-후',
+    label: '전후',
     icon: '⏭️',
     color: 'text-blue-400',
     strokeColor: '#60a5fa', // blue-400
     description: '시간적 순서 관계'
   },
   'foundation-extension': {
-    label: '기반-확장',
+    label: '확장',
     icon: '↑',
     color: 'text-green-400',
     strokeColor: '#4ade80', // green-400
@@ -276,19 +276,19 @@ export default function EditSummaryNotePage() {
         setDescription(summaryData.description);
         setUserMarkdownContent(summaryData.userMarkdownContent || '');
         
-        // 다이어그램 데이터 로드 및 검증
+        // 벡터그래프 데이터 로드 및 검증
         if (summaryData.diagram) {
-          console.log('[Diagram Load] Loading diagram data:', {
+          console.log('[VectorGraph Load] Loading vector graph data:', {
             hasImageUrl: !!summaryData.diagram.imageUrl,
             hasData: !!summaryData.diagram.data,
             nodeCount: summaryData.diagram.data?.nodes?.length || 0,
             connectionCount: summaryData.diagram.data?.connections?.length || 0
           });
           
-          // 다이어그램 이미지 URL 설정
+          // 벡터그래프 이미지 URL 설정
           setDiagramImageUrl(summaryData.diagram.imageUrl || null);
           
-          // 다이어그램 데이터 검증 및 로드
+          // 벡터그래프 데이터 검증 및 로드
           if (summaryData.diagram.data) {
             const diagramData = summaryData.diagram.data;
             
@@ -305,12 +305,12 @@ export default function EditSummaryNotePage() {
               );
               
               if (validNodes.length !== diagramData.nodes.length) {
-                console.warn('[Diagram Load] Some nodes were invalid and filtered out');
+                console.warn('[VectorGraph Load] Some nodes were invalid and filtered out');
               }
               
               setCanvasNodes(validNodes);
             } else {
-              console.warn('[Diagram Load] Invalid nodes data, using empty array');
+              console.warn('[VectorGraph Load] Invalid nodes data, using empty array');
               setCanvasNodes([]);
             }
             
@@ -325,21 +325,21 @@ export default function EditSummaryNotePage() {
               );
               
               if (validConnections.length !== diagramData.connections.length) {
-                console.warn('[Diagram Load] Some connections were invalid and filtered out');
+                console.warn('[VectorGraph Load] Some connections were invalid and filtered out');
               }
               
               setCanvasConnections(validConnections);
             } else {
-              console.warn('[Diagram Load] Invalid connections data, using empty array');
+              console.warn('[VectorGraph Load] Invalid connections data, using empty array');
               setCanvasConnections([]);
             }
           } else {
-            // 다이어그램 데이터가 없는 경우 기본값 설정
+            // 벡터그래프 데이터가 없는 경우 기본값 설정
             setCanvasNodes([]);
             setCanvasConnections([]);
           }
         } else {
-          // 다이어그램이 없는 경우 기본값 설정
+          // 벡터그래프가 없는 경우 기본값 설정
           setDiagramImageUrl(null);
           setCanvasNodes([]);
           setCanvasConnections([]);
@@ -686,15 +686,15 @@ export default function EditSummaryNotePage() {
     `;
   };
 
-  // 다이어그램을 이미지로 저장
+  // 벡터그래프를 이미지로 저장
   const saveDiagramAsImage = async () => {
     const svg = generateDiagramSVG();
     if (!svg) {
-      showError('저장할 다이어그램이 없습니다.');
+      showError('저장할 벡터그래프가 없습니다.');
       return;
     }
     
-    // 다이어그램 데이터 검증
+    // 벡터그래프 데이터 검증
     if (canvasNodes.length === 0) {
       showError('캔버스에 노드가 없습니다. 먼저 메모 아이콘을 캔버스에 배치해 주세요.');
       return;
@@ -711,7 +711,7 @@ export default function EditSummaryNotePage() {
         const base64Data = reader.result as string;
         const svgDataUrl = base64Data;
         
-        // 다이어그램 데이터 구조 검증
+        // 벡터그래프 데이터 구조 검증
         const diagramData: DiagramData = {
           nodes: canvasNodes.map(node => ({
             noteId: node.noteId,
@@ -731,7 +731,7 @@ export default function EditSummaryNotePage() {
           }))
         };
         
-        // SummaryNote에 다이어그램 데이터 저장
+        // SummaryNote에 벡터그래프 데이터 저장
         const updatedSummaryNoteData = {
           title,
           description,
@@ -744,14 +744,14 @@ export default function EditSummaryNotePage() {
           }
         };
         
-        console.log('[Diagram Save] Saving diagram data:', {
+        console.log('[VectorGraph Save] Saving vector graph data:', {
           nodeCount: diagramData.nodes.length,
           connectionCount: diagramData.connections.length,
           summaryNoteId
         });
         
         await api.put(`/summary-notes/${summaryNoteId}`, updatedSummaryNoteData);
-        showSuccess('다이어그램이 저장되었습니다.');
+        showSuccess('벡터그래프가 저장되었습니다.');
         
         // 로컬 상태 업데이트
         setSummaryNote(prev => prev ? { 
@@ -765,8 +765,8 @@ export default function EditSummaryNotePage() {
       };
       reader.readAsDataURL(blob);
     } catch (err) {
-      console.error('[Diagram Save Error]', err);
-      showError('다이어그램 저장이 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
+      console.error('[VectorGraph Save Error]', err);
+      showError('벡터그래프 저장이 지금은 어려워요. 잠시 후에 다시 시도해 볼까요?');
     }
   };
 
@@ -901,7 +901,7 @@ export default function EditSummaryNotePage() {
           <Panel minSize={25} defaultSize={30} className="pr-2 pb-6 h-full">
             <div className="h-full flex flex-col">
               <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Memo Card</h3>
-              <div className="flex-1 overflow-y-auto summary-scrollbar">
+              <div className="flex-1 overflow-y-auto summary-scrollbar" style={{ minHeight: '300px' }}>
                 <div className="space-y-4">
                   {fetchedNotes.length > 0 ? (
                     fetchedNotes.map((note, idx) => {
@@ -1432,12 +1432,12 @@ export default function EditSummaryNotePage() {
         {(diagramImageUrl || summaryNote?.diagram?.imageUrl) && (
           <div className="mt-8 p-6 bg-gray-800/30 rounded-lg border border-gray-700/50">
             <h3 className={`text-xl font-semibold mb-4 ${cyberTheme.primary}`}>
-              📊 저장된 다이어그램
+              📊 저장된 벡터그래프
             </h3>
             <div className="flex justify-center">
               <img 
                 src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
-                alt="관계 다이어그램" 
+                alt="관계 벡터그래프" 
                 className="max-w-full h-auto rounded-lg shadow-lg border border-gray-600"
                 style={{ maxHeight: '400px' }}
               />
