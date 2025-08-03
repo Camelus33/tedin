@@ -857,7 +857,7 @@ export default function EditSummaryNotePage() {
         <hr className="border-gray-700/50 mb-8" />
 
         {/* Main Content Area: 3-Panel Layout */}
-        <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-300px)] md:h-[calc(100vh-280px)] gap-2">
+        <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-150px)] md:h-[calc(100vh-150px)] gap-2">
           {/* Left Panel: Notes List */}
           <Panel minSize={25} defaultSize={30} className="h-full bg-gray-800/30 rounded-lg">
             <div className="h-full flex flex-col p-4">
