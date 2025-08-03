@@ -222,7 +222,7 @@ export default function EditSummaryNotePage() {
   const [fetchedNotes, setFetchedNotes] = useState<FetchedNoteDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [changedNoteIds, setChangedNoteIds] = useState<Set<string>>(new Set());
+  // changedNoteIds 상태 제거 - 더 이상 사용하지 않음
   const [currentBookReadingPurpose, setCurrentBookReadingPurpose] = useState<string | undefined>(undefined);
   const [bookInfoMap, setBookInfoMap] = useState<Map<string, BookInfo>>(new Map());
 
@@ -416,9 +416,7 @@ export default function EditSummaryNotePage() {
         note._id === (updatedFields._id || note._id) ? { ...note, ...updatedFields } : note
       )
     );
-    if (updatedFields._id) {
-      setChangedNoteIds(prev => new Set(prev).add(updatedFields._id!));
-    }
+    // changedNoteIds 제거로 인해 더 이상 필요하지 않음
   }, []);
 
   // 글쓰기 모드 토글 함수 제거 - 항상 편집 가능
@@ -545,7 +543,7 @@ export default function EditSummaryNotePage() {
           : n
       )
     );
-    setChangedNoteIds(prev => new Set(prev).add(selectedNoteForLinkModal._id!));
+    // changedNoteIds 제거로 인해 더 이상 필요하지 않음
 
     setCurrentLinkUrl('');
     setCurrentLinkReason('');
@@ -782,14 +780,8 @@ export default function EditSummaryNotePage() {
         <div className="mb-6">
           <Button
             onClick={() => {
-              // 저장되지 않은 변경사항이 있는지 확인
-              if (isEditing || changedNoteIds.size > 0) {
-                if (confirm('저장되지 않은 변경사항이 있습니다. 페이지를 나가시겠습니까?')) {
-                  router.push('/books');
-                }
-              } else {
-                router.push('/books');
-              }
+              // 페이지 이탈 확인 제거 - 자동저장으로 대체
+              router.push('/books');
             }}
             variant="ghost"
             size="sm"
