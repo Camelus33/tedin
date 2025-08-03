@@ -446,30 +446,15 @@ export default function EditSummaryNotePage() {
         title: data.title,
         description: data.description,
         orderedNoteIds: fetchedNotes.map(n => n._id),
-        userMarkdownContent,
-        diagram: {
-          imageUrl: diagramImageUrl || undefined,
-          data: {
-            nodes: canvasNodes,
-            connections: canvasConnections
-          },
-          lastModified: new Date().toISOString()
-        }
+        userMarkdownContent
+        // 다이어그램 데이터는 자동저장에서 제외 (검증 오류 방지)
       };
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
       setSummaryNote(prev => prev ? { 
         ...prev, 
         title: data.title,
-        description: data.description,
-        diagram: {
-          imageUrl: diagramImageUrl || undefined,
-          data: {
-            nodes: canvasNodes,
-            connections: canvasConnections
-          },
-          lastModified: new Date().toISOString()
-        }
+        description: data.description
       } : null);
     } catch (err: any) {
       console.error('Failed to auto save title/description:', err);
@@ -486,29 +471,14 @@ export default function EditSummaryNotePage() {
         title,
         description,
         orderedNoteIds: fetchedNotes.map(n => n._id),
-        userMarkdownContent: content,
-        diagram: {
-          imageUrl: diagramImageUrl || undefined,
-          data: {
-            nodes: canvasNodes,
-            connections: canvasConnections
-          },
-          lastModified: new Date().toISOString()
-        }
+        userMarkdownContent: content
+        // 다이어그램 데이터는 자동저장에서 제외 (검증 오류 방지)
       };
       await api.put(`/summary-notes/${summaryNote._id}`, updatedSummaryNoteData);
       
       setSummaryNote(prev => prev ? { 
         ...prev, 
-        userMarkdownContent: content,
-        diagram: {
-          imageUrl: diagramImageUrl || undefined,
-          data: {
-            nodes: canvasNodes,
-            connections: canvasConnections
-          },
-          lastModified: new Date().toISOString()
-        }
+        userMarkdownContent: content
       } : null);
     } catch (err: any) {
       console.error('Failed to auto save rich text:', err);
