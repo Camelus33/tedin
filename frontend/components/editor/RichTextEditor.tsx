@@ -35,6 +35,84 @@ const cyberTheme = {
   inputBorder: 'border-gray-600',
 };
 
+// 절대 오프셋 계산 함수
+const getAbsoluteOffset = (node: Node, offset: number, editorElement: HTMLElement): number => {
+  let absoluteOffset = 0;
+  let current: Node | null = node;
+  let currentOffset = offset;
+
+  while (current && current !== editorElement) {
+    if (current.nodeType === Node.TEXT_NODE) {
+      absoluteOffset += currentOffset;
+      break;
+    } else if (current.nodeType === Node.ELEMENT_NODE) {
+      // 이전 형제 노드들의 텍스트 길이 계산
+      let sibling = current.firstChild;
+      while (sibling && sibling !== current.firstChild) {
+        absoluteOffset += getTextLength(sibling);
+        sibling = sibling.nextSibling;
+      }
+      // 현재 노드의 오프셋만큼 텍스트 길이 계산
+      for (let i = 0; i < currentOffset; i++) {
+        if (current.childNodes[i]) {
+          absoluteOffset += getTextLength(current.childNodes[i]);
+        }
+      }
+      break;
+    }
+    current = current.parentNode;
+  }
+  
+  return absoluteOffset;
+};
+
+// 텍스트 길이 계산 함수
+const getTextLength = (node: Node): number => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent?.length || 0;
+  } else if (node.nodeType === Node.ELEMENT_NODE) {
+    let length = 0;
+    for (let i = 0; i < node.childNodes.length; i++) {
+      length += getTextLength(node.childNodes[i]);
+    }
+    return length;
+  }
+  return 0;
+};
+
+// 절대 오프셋에서 Range 복원 함수
+const restoreRangeFromOffset = (element: HTMLElement, absoluteOffset: number): Range | null => {
+  const range = document.createRange();
+  let currentOffset = 0;
+  
+  const walker = document.createTreeWalker(
+    element,
+    NodeFilter.SHOW_TEXT,
+    null
+  );
+  
+  let node;
+  while (node = walker.nextNode()) {
+    const textLength = node.textContent?.length || 0;
+    if (currentOffset + textLength >= absoluteOffset) {
+      range.setStart(node, absoluteOffset - currentOffset);
+      range.collapse(true);
+      return range;
+    }
+    currentOffset += textLength;
+  }
+  
+  // 마지막 텍스트 노드에 커서 설정
+  const lastTextNode = element.lastChild;
+  if (lastTextNode && lastTextNode.nodeType === Node.TEXT_NODE) {
+    range.setStart(lastTextNode, lastTextNode.textContent?.length || 0);
+    range.collapse(true);
+    return range;
+  }
+  
+  return null;
+};
+
 // DOM 정규화 함수 - 인접한 텍스트 노드들을 병합
 const normalizeDOM = (element: HTMLElement) => {
   const walker = document.createTreeWalker(
@@ -191,13 +269,16 @@ export default function RichTextEditor({
   useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
-      .rich-text-editor [contenteditable="true"] {
+      [contenteditable="true"] {
         direction: ltr !important;
         writing-mode: horizontal-tb !important;
         text-orientation: mixed !important;
         unicode-bidi: normal !important;
+        caret-color: rgb(34, 197, 94) !important;
+        word-wrap: break-word !important;
+        white-space: pre-wrap !important;
       }
-      .rich-text-editor [contenteditable="true"] * {
+      [contenteditable="true"] * {
         direction: ltr !important;
         writing-mode: horizontal-tb !important;
         text-orientation: mixed !important;
@@ -236,9 +317,26 @@ export default function RichTextEditor({
   const handleInput = useCallback(() => {
     if (!editorRef.current || !onChange || isComposing) return;
 
+    // 절대 오프셋으로 커서 위치 보존
+    const selection = window.getSelection();
+    let absoluteOffset = 0;
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      absoluteOffset = getAbsoluteOffset(range.startContainer, range.startOffset, editorRef.current);
+    }
+
     // DOM 정규화 수행
     normalizeDOM(editorRef.current);
     cleanupEmptyElements(editorRef.current);
+    
+    // 절대 오프셋으로 커서 위치 복원
+    if (absoluteOffset > 0) {
+      const newRange = restoreRangeFromOffset(editorRef.current, absoluteOffset);
+      if (newRange && selection) {
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      }
+    }
 
     const content = editorRef.current.innerHTML;
     setHasContent(content.trim().length > 0);
@@ -264,10 +362,13 @@ export default function RichTextEditor({
       restoreSelection(savedRangeRef.current);
     }
     
-    handleInput();
+    // handleInput 호출하지 않고 직접 처리
+    const content = editorRef.current.innerHTML;
+    setHasContent(content.trim().length > 0);
+    onChange?.(content);
   };
 
-  // 엔터 키 처리 - 개선된 버전
+  // 엔터 키 처리 - Range 기반 완전 개선 버전
   const handleEnter = () => {
     if (!editorRef.current) return;
 
@@ -285,36 +386,41 @@ export default function RichTextEditor({
 
     if (!currentBlock) return;
 
-    // 현재 커서 위치에서 텍스트를 분할
+    // 절대 오프셋 계산
+    const absoluteOffset = getAbsoluteOffset(container, range.startOffset, editorRef.current);
+    
+    // 현재 블록의 텍스트 내용 가져오기
     const currentText = currentBlock.textContent || '';
-    const cursorOffset = range.startOffset;
-    const beforeCursor = currentText.substring(0, cursorOffset);
-    const afterCursor = currentText.substring(cursorOffset);
+    const beforeText = currentText.substring(0, absoluteOffset);
+    const afterText = currentText.substring(absoluteOffset);
 
     // 현재 블록의 내용을 커서 앞부분으로 설정
-    currentBlock.textContent = beforeCursor;
+    currentBlock.textContent = beforeText || '\u00A0';
 
     // 새 단락 생성
     const newParagraph = document.createElement('p');
-    newParagraph.textContent = afterCursor || '\u00A0'; // 빈 내용일 경우 공백 문자 추가
+    newParagraph.textContent = afterText || '\u00A0';
 
     // 현재 블록 뒤에 새 단락 삽입
     if (currentBlock.parentNode) {
       currentBlock.parentNode.insertBefore(newParagraph, currentBlock.nextSibling);
     }
 
-    // 커서를 새 단락의 시작 위치로 이동
-    const newRange = document.createRange();
-    newRange.setStart(newParagraph.firstChild || newParagraph, 0);
-    newRange.collapse(true);
+    // 절대 오프셋을 사용하여 새 커서 위치 계산
+    const newRange = restoreRangeFromOffset(editorRef.current, absoluteOffset);
+    if (newRange) {
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    }
     
-    selection.removeAllRanges();
-    selection.addRange(newRange);
-    
-    // DOM 정규화
+    // DOM 정규화 (커서 위치 보존)
     if (editorRef.current) {
+      const savedRange = saveSelection();
       normalizeDOM(editorRef.current);
       cleanupEmptyElements(editorRef.current);
+      if (savedRange) {
+        restoreSelection(savedRange);
+      }
     }
     
     handleInput();
@@ -685,6 +791,9 @@ export default function RichTextEditor({
             direction: 'ltr',
             writingMode: 'horizontal-tb',
             textOrientation: 'mixed',
+            caretColor: 'rgb(34, 197, 94)', // green-500
+            wordWrap: 'break-word',
+            whiteSpace: 'pre-wrap',
           }}
           data-placeholder={placeholder}
         />
