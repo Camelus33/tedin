@@ -1000,8 +1000,12 @@ export default function EditSummaryNotePage() {
                     <div className="flex flex-wrap gap-1 max-w-56">
                       {fetchedNotes
                         .filter(note => !usedMemoIds.has(note._id)) // 사용되지 않은 메모만 표시
-                        .map((note, idx) => {
-                        const defaultColor = MEMO_ICON_COLORS[idx % MEMO_ICON_COLORS.length];
+                        .map((note) => {
+                        // 원본 배열에서의 실제 순서 계산
+                        const originalIndex = fetchedNotes.findIndex(n => n._id === note._id);
+                        const displayOrder = originalIndex + 1;
+                        
+                        const defaultColor = MEMO_ICON_COLORS[originalIndex % MEMO_ICON_COLORS.length];
                         const currentColor = memoIconColors[note._id] || defaultColor;
                         
                         return (
@@ -1012,7 +1016,7 @@ export default function EditSummaryNotePage() {
                               e.dataTransfer.setData('text/plain', JSON.stringify({
                                 id: note._id,
                                 content: note.content,
-                                order: idx + 1,
+                                order: displayOrder,
                                 color: currentColor
                               }));
                               // 드래그 시 시각적 피드백
@@ -1025,7 +1029,7 @@ export default function EditSummaryNotePage() {
                               e.currentTarget.style.opacity = '';
                             }}
                             className={`w-6 h-6 ${currentColor} rounded-full flex items-center justify-center text-white text-xs font-bold cursor-move hover:scale-110 transition-all shadow-md hover:shadow-lg border-2 border-transparent hover:border-white/30`}
-                            title={`${idx + 1}번: ${note.content.substring(0, 20)}...`}
+                            title={`${displayOrder}번: ${note.content.substring(0, 20)}...`}
                             onClick={() => {
                               // Color selection modal or dropdown
                               const currentIndex = MEMO_ICON_COLORS.indexOf(currentColor);
@@ -1036,7 +1040,7 @@ export default function EditSummaryNotePage() {
                               }));
                             }}
                           >
-                            {idx + 1}
+                            {displayOrder}
                           </div>
                         );
                       })}
