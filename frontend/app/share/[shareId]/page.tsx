@@ -61,7 +61,7 @@ const ErrorDisplay = ({ message, reason }: { message: string, reason: string }) 
   </div>
 );
 
-const BlockNoteViewer = dynamic(() => import('@/components/editor/BlockNoteViewer'), { ssr: false });
+const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), { ssr: false });
 
 export default async function SharePage({ params }: { params: { shareId: string } }) {
   const data = await getShareData(params.shareId);
@@ -154,7 +154,11 @@ export default async function SharePage({ params }: { params: { shareId: string 
               </header>
               {/* JSON(BlockNote) vs Markdown 분기 렌더링 */}
               {userMarkdownContent.trim().startsWith('[') ? (
-                <BlockNoteViewer content={userMarkdownContent} className="bg-white rounded border border-purple-200" />
+                <RichTextEditor 
+                  initialContent={userMarkdownContent} 
+                  editable={false}
+                  className="bg-white rounded border border-purple-200" 
+                />
               ) : (
                 <div className="prose prose-gray max-w-none bg-white p-4 rounded border border-purple-200">
                   <pre className="whitespace-pre-wrap font-sans text-lg text-gray-800 leading-loose">

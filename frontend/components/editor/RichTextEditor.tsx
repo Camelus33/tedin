@@ -35,6 +35,44 @@ const cyberTheme = {
   inputBorder: 'border-gray-600',
 };
 
+// DOM 정규화 함수 - 인접한 텍스트 노드들을 병합
+const normalizeDOM = (element: HTMLElement) => {
+  const walker = document.createTreeWalker(
+    element,
+    NodeFilter.SHOW_TEXT,
+    null
+  );
+
+  const textNodes: Text[] = [];
+  let node;
+  while (node = walker.nextNode()) {
+    textNodes.push(node as Text);
+  }
+
+  // 인접한 텍스트 노드들을 병합
+  for (let i = 0; i < textNodes.length - 1; i++) {
+    const currentNode = textNodes[i];
+    const nextNode = textNodes[i + 1];
+    
+    if (currentNode.parentNode === nextNode.parentNode) {
+      const currentText = currentNode.textContent || '';
+      const nextText = nextNode.textContent || '';
+      currentNode.textContent = currentText + nextText;
+      nextNode.parentNode?.removeChild(nextNode);
+    }
+  }
+};
+
+// 빈 요소 정리 함수
+const cleanupEmptyElements = (element: HTMLElement) => {
+  const emptyElements = element.querySelectorAll('p, div, span');
+  emptyElements.forEach(el => {
+    if (el.textContent?.trim() === '' && el.children.length === 0) {
+      el.remove();
+    }
+  });
+};
+
 // JSON을 HTML로 변환하는 함수
 const jsonToHtml = (jsonContent: string): string => {
   try {
@@ -198,6 +236,10 @@ export default function RichTextEditor({
   const handleInput = useCallback(() => {
     if (!editorRef.current || !onChange || isComposing) return;
 
+    // DOM 정규화 수행
+    normalizeDOM(editorRef.current);
+    cleanupEmptyElements(editorRef.current);
+
     const content = editorRef.current.innerHTML;
     setHasContent(content.trim().length > 0);
     onChange(content);
@@ -225,7 +267,7 @@ export default function RichTextEditor({
     handleInput();
   };
 
-  // 엔터 키 처리
+  // 엔터 키 처리 - 개선된 버전
   const handleEnter = () => {
     if (!editorRef.current) return;
 
@@ -243,10 +285,19 @@ export default function RichTextEditor({
 
     if (!currentBlock) return;
 
+    // 현재 커서 위치에서 텍스트를 분할
+    const currentText = currentBlock.textContent || '';
+    const cursorOffset = range.startOffset;
+    const beforeCursor = currentText.substring(0, cursorOffset);
+    const afterCursor = currentText.substring(cursorOffset);
+
+    // 현재 블록의 내용을 커서 앞부분으로 설정
+    currentBlock.textContent = beforeCursor;
+
     // 새 단락 생성
     const newParagraph = document.createElement('p');
-    newParagraph.innerHTML = '<br>';
-    
+    newParagraph.textContent = afterCursor || '\u00A0'; // 빈 내용일 경우 공백 문자 추가
+
     // 현재 블록 뒤에 새 단락 삽입
     if (currentBlock.parentNode) {
       currentBlock.parentNode.insertBefore(newParagraph, currentBlock.nextSibling);
@@ -254,11 +305,17 @@ export default function RichTextEditor({
 
     // 커서를 새 단락의 시작 위치로 이동
     const newRange = document.createRange();
-    newRange.setStart(newParagraph, 0);
+    newRange.setStart(newParagraph.firstChild || newParagraph, 0);
     newRange.collapse(true);
     
     selection.removeAllRanges();
     selection.addRange(newRange);
+    
+    // DOM 정규화
+    if (editorRef.current) {
+      normalizeDOM(editorRef.current);
+      cleanupEmptyElements(editorRef.current);
+    }
     
     handleInput();
   };
@@ -303,6 +360,98 @@ export default function RichTextEditor({
     handleInput();
   };
 
+  // Backspace 키 처리
+  const handleBackspace = (e: React.KeyboardEvent) => {
+    if (!editorRef.current) return;
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    
+    // 현재 블록 요소 찾기
+    let currentBlock = container.nodeType === Node.TEXT_NODE ? container.parentElement : container as Element;
+    while (currentBlock && !['P', 'H1', 'H2', 'H3', 'LI'].includes(currentBlock.tagName)) {
+      currentBlock = currentBlock.parentElement;
+    }
+
+    if (!currentBlock) return;
+
+    // 커서가 블록의 시작 위치에 있고, 이전 블록이 있는 경우
+    if (range.startOffset === 0 && currentBlock.previousElementSibling) {
+      const previousBlock = currentBlock.previousElementSibling;
+      const previousText = previousBlock.textContent || '';
+      const currentText = currentBlock.textContent || '';
+      
+      // 이전 블록에 현재 블록의 텍스트를 추가
+      previousBlock.textContent = previousText + currentText;
+      
+      // 현재 블록 삭제
+      currentBlock.remove();
+      
+      // 커서를 이전 블록의 끝으로 이동
+      const newRange = document.createRange();
+      newRange.setStart(previousBlock, previousBlock.childNodes.length);
+      newRange.collapse(true);
+      
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+      
+      e.preventDefault();
+      handleInput();
+      return;
+    }
+
+    // 일반적인 백스페이스 동작 (브라우저 기본 동작 허용)
+  };
+
+  // Arrow 키 처리
+  const handleArrowKeys = (e: React.KeyboardEvent) => {
+    if (!editorRef.current) return;
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    
+    // 현재 블록 요소 찾기
+    let currentBlock = container.nodeType === Node.TEXT_NODE ? container.parentElement : container as Element;
+    while (currentBlock && !['P', 'H1', 'H2', 'H3', 'LI'].includes(currentBlock.tagName)) {
+      currentBlock = currentBlock.parentElement;
+    }
+
+    if (!currentBlock) return;
+
+    // 위/아래 화살표 키 처리
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      const direction = e.key === 'ArrowUp' ? 'previous' : 'next';
+      const targetBlock = direction === 'previous' 
+        ? currentBlock.previousElementSibling 
+        : currentBlock.nextElementSibling;
+
+      if (targetBlock && ['P', 'H1', 'H2', 'H3', 'LI'].includes(targetBlock.tagName)) {
+        // 대상 블록으로 커서 이동
+        const newRange = document.createRange();
+        const targetOffset = direction === 'previous' 
+          ? (targetBlock.textContent?.length || 0) 
+          : 0;
+        
+        newRange.setStart(targetBlock.firstChild || targetBlock, targetOffset);
+        newRange.collapse(true);
+        
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+        
+        e.preventDefault();
+        return;
+      }
+    }
+
+    // 좌/우 화살표 키는 브라우저 기본 동작 허용
+  };
+
   // 키보드 단축키 처리
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!editable) return;
@@ -312,6 +461,16 @@ export default function RichTextEditor({
     if (e.key === 'Enter') {
       e.preventDefault();
       handleEnter();
+      return;
+    }
+    
+    if (e.key === 'Backspace') {
+      handleBackspace(e);
+      return;
+    }
+    
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      handleArrowKeys(e);
       return;
     }
     
