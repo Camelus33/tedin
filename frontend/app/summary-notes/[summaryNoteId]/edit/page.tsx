@@ -850,7 +850,7 @@ export default function EditSummaryNotePage() {
                   <RocketIcon className="w-5 h-5 mr-2" /> AI 링크 생성
                 </Button>
                 <Button onClick={handleEditToggle} className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg}`}>
-                  <PencilIcon className="w-5 h-5 mr-2" /> 편집하기
+                  <PencilIcon className="w-5 h-5 mr-2" /> 글쓰기 모드
                 </Button>
                 {canvasNodes.length > 0 && (
                   <Button onClick={saveDiagramAsImage} className="bg-green-600 hover:bg-green-700 text-white">
@@ -882,7 +882,7 @@ export default function EditSummaryNotePage() {
             <Textarea 
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
-              placeholder="선택한 메모카드의 공통주제를 뽑고, 깊이 이해하여 인사이트를 도출하는 공간입니다. 독서 및 학습일지, 각종 과제, 보고서를 작성할 수 있어요."
+              placeholder="선택한 메모카드를 벡터공간에 배치하고, 인사이트를 도출하는 공간입니다. 온톨로지기반 고품질 분석 보고서를 작성할 수 있어요."
               rows={3}
               className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
             />
@@ -1027,10 +1027,10 @@ export default function EditSummaryNotePage() {
                 )}
                 
                 {/* Connection Mode Indicator */}
-                {isConnecting && connectionStart && (
+                {isConnecting && connectionStart && selectedRelationship && (
                   <div className="mt-2 p-2 bg-red-900/30 border border-red-500/50 rounded-md">
                     <p className="text-sm text-red-300">
-                      <span className="font-medium">연결 모드:</span> {RELATIONSHIP_CONFIGS[selectedRelationship!].label}
+                      <span className="font-medium">연결 모드:</span> {RELATIONSHIP_CONFIGS[selectedRelationship]?.label || '알 수 없음'}
                     </p>
                     <p className="text-xs text-red-400 mt-1">
                       연결할 노드를 클릭하세요
@@ -1112,11 +1112,24 @@ export default function EditSummaryNotePage() {
                       e.currentTarget.style.border = '';
                       
                       try {
-                        const droppedData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                        const data = e.dataTransfer.getData('text/plain');
+                        if (!data || data.trim() === '') {
+                          console.warn('No data received from drag operation');
+                          return;
+                        }
+                        
+                        const droppedData = JSON.parse(data);
+                        
+                        // 데이터 유효성 검증
+                        if (!droppedData.id || !droppedData.content) {
+                          console.warn('Invalid dropped data structure');
+                          return;
+                        }
+                        
                         const newNode = {
                           noteId: droppedData.id,
                           content: droppedData.content,
-                          order: droppedData.order,
+                          order: droppedData.order || 1,
                           color: droppedData.color || 'bg-blue-600',
                           position: {
                             x: e.clientX - e.currentTarget.getBoundingClientRect().left,
