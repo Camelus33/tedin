@@ -438,9 +438,15 @@ export default function EditSummaryNotePage() {
   const handleSaveSummaryNote = async () => {
     if (!summaryNote) return false;
     
-    // 메모가 없는 경우 저장을 방지하고 알림 표시
-    if (fetchedNotes.length === 0) {
-      showError('메모가 없는 서머리 노트는 저장할 수 없습니다. 메모를 추가해 주세요.');
+    // 제목이나 설명이 변경된 경우에는 메모가 없어도 저장 허용
+    const hasTitleOrDescriptionChanges = 
+      title !== summaryNote.title || 
+      description !== summaryNote.description ||
+      userMarkdownContent !== (summaryNote.userMarkdownContent || '');
+    
+    // 메모가 없고 제목/설명도 변경되지 않은 경우에만 저장 차단
+    if (fetchedNotes.length === 0 && !hasTitleOrDescriptionChanges) {
+      showError('메모가 없는 서머리 노트는 저장할 수 없습니다. 메모를 추가하거나 제목/설명을 변경해 주세요.');
       return false;
     }
 
