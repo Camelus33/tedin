@@ -1303,16 +1303,18 @@ export default function EditSummaryNotePage() {
                           <defs>
                             <marker
                               id={`arrow-${connection.relationshipType}`}
-                              markerWidth="10"
-                              markerHeight="10"
-                              refX="9"
-                              refY="3"
+                              markerWidth="8"
+                              markerHeight="8"
+                              refX="7"
+                              refY="2.5"
                               orient="auto"
                               markerUnits="strokeWidth"
                             >
                               <path
-                                d="M0,0 L0,6 L9,3 z"
+                                d="M0,0 L0,5 L7,2.5 z"
                                 fill={config.strokeColor}
+                                stroke={config.strokeColor}
+                                strokeWidth="0.5"
                               />
                             </marker>
                           </defs>
@@ -1322,7 +1324,7 @@ export default function EditSummaryNotePage() {
                             x2={endX}
                             y2={endY}
                             stroke={config.strokeColor}
-                            strokeWidth="2"
+                            strokeWidth="1.5"
                             markerEnd={`url(#arrow-${connection.relationshipType})`}
                             className="cursor-pointer"
                             onClick={() => {
@@ -1336,10 +1338,10 @@ export default function EditSummaryNotePage() {
                           <circle
                             cx={midX}
                             cy={midY}
-                            r="8"
+                            r="6"
                             fill={config.strokeColor}
                             stroke="#1f2937"
-                            strokeWidth="1"
+                            strokeWidth="0.5"
                             className="cursor-pointer"
                             onClick={() => {
                               // Remove connection
@@ -1350,10 +1352,10 @@ export default function EditSummaryNotePage() {
                           />
                           <text
                             x={midX}
-                            y={midY + 2}
+                            y={midY + 1.5}
                             textAnchor="middle"
                             fill="white"
-                            fontSize="10"
+                            fontSize="8"
                             fontWeight="bold"
                             className="cursor-pointer"
                             onClick={() => {
