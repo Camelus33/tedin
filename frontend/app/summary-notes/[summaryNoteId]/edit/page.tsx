@@ -225,7 +225,8 @@ export default function EditSummaryNotePage() {
   const [currentBookReadingPurpose, setCurrentBookReadingPurpose] = useState<string | undefined>(undefined);
   const [bookInfoMap, setBookInfoMap] = useState<Map<string, BookInfo>>(new Map());
 
-  const [isEditing, setIsEditing] = useState(false);
+  // 글쓰기 모드 제거 - 항상 편집 가능한 상태로 변경
+  const isEditing = true;
 
   // State for Related Links Modal
   const [selectedNoteForLinkModal, setSelectedNoteForLinkModal] = useState<FetchedNoteDetails | null>(null);
@@ -419,12 +420,12 @@ export default function EditSummaryNotePage() {
     }
   }, []);
 
+  // 글쓰기 모드 토글 함수 제거 - 항상 편집 가능
   const handleEditToggle = () => {
-    setIsEditing(prev => !prev);
+    // 더 이상 필요하지 않음 - 항상 편집 가능한 상태
   };
   
   const handleCancel = () => {
-    setIsEditing(false);
     if (summaryNote) {
       setTitle(summaryNote.title);
       setDescription(summaryNote.description);
@@ -506,7 +507,7 @@ export default function EditSummaryNotePage() {
   const handleSaveAndToggleMode = async () => {
     const success = await handleSaveSummaryNote();
     if (success) {
-      setIsEditing(false); 
+      // setIsEditing(false); // 더 이상 필요하지 않음 - 항상 편집 가능한 상태
     }
   };
   
@@ -526,23 +527,9 @@ export default function EditSummaryNotePage() {
     }
   };
 
+  // 메모카드 순서 변경 기능 제거 - 불필요한 기능
   const handleReorderNote = (noteId: string, direction: 'up' | 'down') => {
-    setFetchedNotes(prevNotes => {
-      const index = prevNotes.findIndex(n => n._id === noteId);
-      if (index === -1) return prevNotes;
-      if (direction === 'up' && index === 0) return prevNotes;
-      if (direction === 'down' && index === prevNotes.length - 1) return prevNotes;
-
-      const newNotes = [...prevNotes];
-      const noteToMove = newNotes.splice(index, 1)[0];
-      const newIndex = direction === 'up' ? index - 1 : index + 1;
-      newNotes.splice(newIndex, 0, noteToMove);
-      
-      // Mark summary note as changed because orderedNoteIds will change
-      // (though individual notes within it haven't changed content)
-      // For simplicity, we can just let handleSaveSummaryNote always send the current order.
-      return newNotes;
-    });
+    // 더 이상 필요하지 않음 - 메모카드 순서는 자동으로 관리됨
   };
 
   // Related Links Modal Handlers
@@ -823,47 +810,28 @@ export default function EditSummaryNotePage() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-y-4 md:gap-y-5">
           <div className='flex-grow'>
-            {isEditing ? (
-              <Input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="제목"
-                className={`text-3xl font-bold ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} focus:ring-cyan-500 focus:border-cyan-500 w-full`}
-              />
-            ) : (
-              <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
-                <h1 className={`text-3xl md:text-4xl font-bold ${cyberTheme.primary} break-all`}>{title}</h1>
-                {displayDate && (
-                  <span className="text-sm italic text-gray-500 mt-2 sm:mt-0">{displayDate}</span>
-                )}
-              </div>
-            )}
+            <Input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="제목"
+              className={`text-3xl font-bold ${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} focus:ring-cyan-500 focus:border-cyan-500 w-full`}
+            />
           </div>
           <div className="flex space-x-2 mt-4 sm:mt-0 flex-shrink-0">
-            {isEditing ? (
-              <>
-                <Button onClick={handleSaveAndToggleMode} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}>
-                  <ArrowPathIcon className="w-5 h-5 mr-2" /> 저장
-                </Button>
-                <Button onClick={handleCancel} variant="outline" className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} border-gray-600 hover:border-gray-500`}>
-                  취소
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button onClick={() => setIsAiLinkModalOpen(true)} className={`${cyberTheme.buttonPrimaryBg}`}>
-                  <RocketIcon className="w-5 h-5 mr-2" /> AI 링크 생성
-                </Button>
-                <Button onClick={handleEditToggle} className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg}`}>
-                  <PencilIcon className="w-5 h-5 mr-2" /> 글쓰기 모드
-                </Button>
-                {canvasNodes.length > 0 && (
-                  <Button onClick={saveDiagramAsImage} className="bg-green-600 hover:bg-green-700 text-white">
-                    벡터 그래프 저장
-                  </Button>
-                )}
-              </>
+            <Button onClick={handleSaveAndToggleMode} className={`${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}>
+              <ArrowPathIcon className="w-5 h-5 mr-2" /> 저장
+            </Button>
+            <Button onClick={handleCancel} variant="outline" className={`${cyberTheme.buttonSecondaryBg} ${cyberTheme.buttonSecondaryHoverBg} border-gray-600 hover:border-gray-500`}>
+              취소
+            </Button>
+            <Button onClick={() => setIsAiLinkModalOpen(true)} className={`${cyberTheme.buttonPrimaryBg}`}>
+              <RocketIcon className="w-5 h-5 mr-2" /> AI 링크 생성
+            </Button>
+            {canvasNodes.length > 0 && (
+              <Button onClick={saveDiagramAsImage} className="bg-green-600 hover:bg-green-700 text-white">
+                벡터 그래프 저장
+              </Button>
             )}
             {/* Dropdown Menu for Delete */}
             <DropdownMenu>
@@ -883,20 +851,14 @@ export default function EditSummaryNotePage() {
         </div>
         
         {/* Description Section */}
-        <div className={isEditing ? `mb-6 md:mb-8 p-4 md:p-5 lg:p-6 rounded-lg shadow-xl border border-gray-700/50 bg-gray-800/70` : `mb-6 md:mb-8 py-2`}>
-          {isEditing ? (
-            <Textarea 
-              value={description} 
-              onChange={(e) => setDescription(e.target.value)} 
-              placeholder="선택한 메모카드를 벡터공간에 배치하고, 인사이트를 도출하는 공간입니다. 온톨로지기반 고품질 분석 보고서를 작성할 수 있어요."
-              rows={3}
-              className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
-            />
-          ) : (
-            <p className={`text-lg whitespace-pre-wrap ${description ? cyberTheme.textLight : cyberTheme.textMuted}`}>
-              {description || '설명이 없습니다.'}
-            </p>
-          )}
+        <div className="mb-6 md:mb-8 p-4 md:p-5 lg:p-6 rounded-lg shadow-xl border border-gray-700/50 bg-gray-800/70">
+          <Textarea 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)} 
+            placeholder="선택한 메모카드를 벡터공간에 배치하고, 인사이트를 도출하는 공간입니다. 온톨로지기반 고품질 분석 보고서를 작성할 수 있어요."
+            rows={3}
+            className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
+          />
         </div>
 
         <hr className="border-gray-700/50 mb-8" />
@@ -922,26 +884,7 @@ export default function EditSummaryNotePage() {
                             </div>
                           </div>
                           
-                          {isEditing && (
-                            <div className="absolute left-0 top-0 z-10 flex space-x-1 ml-6">
-                              <button 
-                                onClick={() => handleReorderNote(note._id, 'up')}
-                                disabled={idx === 0}
-                                className={`w-5 h-5 rounded-full flex items-center justify-center ${idx === 0 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-                                title="위로 이동"
-                              >
-                                ↑
-                              </button>
-                              <button 
-                                onClick={() => handleReorderNote(note._id, 'down')}
-                                disabled={idx === fetchedNotes.length - 1}
-                                className={`w-5 h-5 rounded-full flex items-center justify-center ${idx === fetchedNotes.length - 1 ? 'bg-gray-700 text-gray-500' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
-                                title="아래로 이동"
-                              >
-                                ↓
-                              </button>
-                            </div>
-                          )}
+                          {/* 메모카드 순서 변경 버튼 제거 - 불필요한 기능 */}
                           <TSNoteCard 
                             note={note} 
                             onUpdate={handleNoteUpdate}
