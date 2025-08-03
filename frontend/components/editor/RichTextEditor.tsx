@@ -116,6 +116,24 @@ const htmlToJson = (htmlContent: string): string => {
   return JSON.stringify(blocks);
 };
 
+// 커서 위치를 저장하고 복원하는 함수
+const saveSelection = () => {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) return null;
+  
+  return selection.getRangeAt(0).cloneRange();
+};
+
+const restoreSelection = (range: Range | null) => {
+  if (!range) return;
+  
+  const selection = window.getSelection();
+  if (selection) {
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+};
+
 export default function RichTextEditor({
   initialContent = '',
   onChange,
@@ -128,6 +146,8 @@ export default function RichTextEditor({
   const [hasContent, setHasContent] = useState(false);
   // IME(한글 등) 조합 상태 관리
   const [isComposing, setIsComposing] = useState(false);
+  // 커서 위치 저장
+  const savedRangeRef = useRef<Range | null>(null);
 
   // CSS 우선순위 문제 해결을 위한 스타일 주입
   useEffect(() => {
@@ -187,12 +207,99 @@ export default function RichTextEditor({
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
 
-  // 서식 명령 실행
+  // 서식 명령 실행 (커서 위치 보존)
   const execCommand = (command: string, value?: string) => {
     if (!editorRef.current) return;
 
+    // 현재 커서 위치 저장
+    savedRangeRef.current = saveSelection();
+    
     editorRef.current.focus();
     document.execCommand(command, false, value);
+    
+    // 커서 위치 복원
+    if (savedRangeRef.current) {
+      restoreSelection(savedRangeRef.current);
+    }
+    
+    handleInput();
+  };
+
+  // 엔터 키 처리
+  const handleEnter = () => {
+    if (!editorRef.current) return;
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    
+    // 현재 블록 요소 찾기
+    let currentBlock = container.nodeType === Node.TEXT_NODE ? container.parentElement : container as Element;
+    while (currentBlock && !['P', 'H1', 'H2', 'H3', 'LI'].includes(currentBlock.tagName)) {
+      currentBlock = currentBlock.parentElement;
+    }
+
+    if (!currentBlock) return;
+
+    // 새 단락 생성
+    const newParagraph = document.createElement('p');
+    newParagraph.innerHTML = '<br>';
+    
+    // 현재 블록 뒤에 새 단락 삽입
+    if (currentBlock.parentNode) {
+      currentBlock.parentNode.insertBefore(newParagraph, currentBlock.nextSibling);
+    }
+
+    // 커서를 새 단락의 시작 위치로 이동
+    const newRange = document.createRange();
+    newRange.setStart(newParagraph, 0);
+    newRange.collapse(true);
+    
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+    
+    handleInput();
+  };
+
+  // 정렬 기능 개선
+  const setAlignment = (alignment: 'left' | 'center' | 'right') => {
+    if (!editorRef.current) return;
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    
+    // 현재 블록 요소 찾기
+    let currentBlock = container.nodeType === Node.TEXT_NODE ? container.parentElement : container as Element;
+    while (currentBlock && !['P', 'H1', 'H2', 'H3', 'LI'].includes(currentBlock.tagName)) {
+      currentBlock = currentBlock.parentElement;
+    }
+
+    if (!currentBlock) return;
+
+    // HTMLElement로 캐스팅하여 style 속성에 접근
+    const htmlElement = currentBlock as HTMLElement;
+    
+    // 기존 정렬 스타일 제거
+    htmlElement.style.textAlign = '';
+    
+    // 새 정렬 적용
+    switch (alignment) {
+      case 'left':
+        htmlElement.style.textAlign = 'left';
+        break;
+      case 'center':
+        htmlElement.style.textAlign = 'center';
+        break;
+      case 'right':
+        htmlElement.style.textAlign = 'right';
+        break;
+    }
+    
     handleInput();
   };
 
@@ -201,6 +308,12 @@ export default function RichTextEditor({
     if (!editable) return;
 
     const isCtrl = e.ctrlKey || e.metaKey;
+    
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleEnter();
+      return;
+    }
     
     if (isCtrl) {
       switch (e.key.toLowerCase()) {
@@ -359,23 +472,23 @@ export default function RichTextEditor({
 
         <div className="w-px h-4 bg-gray-600 mx-2"></div>
 
-        {/* 정렬 서식 - 텍스트로 대체 */}
+        {/* 정렬 서식 - 개선된 버전 */}
         <button
-          onClick={() => execCommand('justifyLeft')}
+          onClick={() => setAlignment('left')}
           title="왼쪽 정렬"
           className="p-1.5 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
         >
           ←
         </button>
         <button
-          onClick={() => execCommand('justifyCenter')}
+          onClick={() => setAlignment('center')}
           title="가운데 정렬"
           className="p-1.5 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
         >
           ↔
         </button>
         <button
-          onClick={() => execCommand('justifyRight')}
+          onClick={() => setAlignment('right')}
           title="오른쪽 정렬"
           className="p-1.5 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
         >
