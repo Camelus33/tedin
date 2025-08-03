@@ -916,7 +916,7 @@ export default function EditSummaryNotePage() {
             <div className="h-full flex flex-col p-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">Ontology Canvas</h3>
               
-              <div className="pb-2 border-b border-gray-700/50">
+              <div className="mb-3 pb-2 border-b border-gray-700/50">
                 {/* Relationship Selection Toolbar */}
                 <div className="space-y-2">
                   <div className="flex items-center">
@@ -980,7 +980,9 @@ export default function EditSummaryNotePage() {
                   </div>
                 )}
               </div>
-              <div className="flex-grow mt-4">
+              
+              {/* Canvas Container with Fixed Height */}
+              <div className="flex-1 min-h-0">
                 {/* Canvas with Icon Palette */}
                 <div className="h-full bg-gray-900/30 rounded-lg border border-gray-700/50 relative">
                   {/* Icon Palette - Top Left */}
