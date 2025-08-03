@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { 
-  ArrowUturnLeftIcon, 
+import {
+  ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
   BoldIcon,
   ItalicIcon,
@@ -40,7 +40,7 @@ const jsonToHtml = (jsonContent: string): string => {
   try {
     const blocks = JSON.parse(jsonContent);
     if (!Array.isArray(blocks)) return jsonContent;
-    
+
     return blocks.map((block: any) => {
       const content = block.content?.map((item: any) => {
         if (typeof item === 'string') return item;
@@ -54,7 +54,7 @@ const jsonToHtml = (jsonContent: string): string => {
         }
         return '';
       }).join('') || '';
-      
+
       switch (block.type) {
         case 'heading':
           const level = block.props?.level || 1;
@@ -80,20 +80,20 @@ const htmlToJson = (htmlContent: string): string => {
   // 간단한 HTML을 JSON으로 변환
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = htmlContent;
-  
+
   const blocks: any[] = [];
   const elements = tempDiv.children;
-  
+
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i];
     const tagName = element.tagName.toLowerCase();
     const content = element.textContent || '';
-    
+
     let block: any = {
       type: 'paragraph',
       content: [{ text: content }]
     };
-    
+
     switch (tagName) {
       case 'h1':
       case 'h2':
@@ -109,16 +109,16 @@ const htmlToJson = (htmlContent: string): string => {
         block.type = 'paragraph';
         break;
     }
-    
+
     blocks.push(block);
   }
-  
+
   return JSON.stringify(blocks);
 };
 
-export default function RichTextEditor({ 
-  initialContent = '', 
-  onChange, 
+export default function RichTextEditor({
+  initialContent = '',
+  onChange,
   editable = true,
   className = '',
   placeholder = '입력을 시작하세요...'
@@ -129,6 +129,30 @@ export default function RichTextEditor({
   // IME(한글 등) 조합 상태 관리
   const [isComposing, setIsComposing] = useState(false);
 
+  // CSS 우선순위 문제 해결을 위한 스타일 주입
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .rich-text-editor [contenteditable="true"] {
+        direction: ltr !important;
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
+        unicode-bidi: normal !important;
+      }
+      .rich-text-editor [contenteditable="true"] * {
+        direction: ltr !important;
+        writing-mode: horizontal-tb !important;
+        text-orientation: mixed !important;
+        unicode-bidi: normal !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // 초기 콘텐츠 설정
   useEffect(() => {
     if (editorRef.current && initialContent) {
@@ -137,20 +161,27 @@ export default function RichTextEditor({
       if (initialContent.trim().startsWith('[')) {
         htmlContent = jsonToHtml(initialContent);
       }
-      
+
       editorRef.current.innerHTML = htmlContent;
       setHasContent(htmlContent.trim().length > 0);
     }
   }, [initialContent]);
 
-  // 콘텐츠 변경 감지
+  // IME 조합 이벤트 핸들러
+  const handleCompositionStart = () => setIsComposing(true);
+  const handleCompositionEnd = () => {
+    setIsComposing(false);
+    handleInput(); // 조합이 끝난 후에만 onChange 호출
+  };
+
+  // 콘텐츠 변경 감지 (IME 조합 중에는 호출하지 않음)
   const handleInput = useCallback(() => {
-    if (!editorRef.current || !onChange) return;
-    
+    if (!editorRef.current || !onChange || isComposing) return;
+
     const content = editorRef.current.innerHTML;
     setHasContent(content.trim().length > 0);
     onChange(content);
-  }, [onChange]);
+  }, [onChange, isComposing]);
 
   // 포커스 핸들러
   const handleFocus = () => setIsFocused(true);
@@ -159,7 +190,7 @@ export default function RichTextEditor({
   // 서식 명령 실행
   const execCommand = (command: string, value?: string) => {
     if (!editorRef.current) return;
-    
+
     editorRef.current.focus();
     document.execCommand(command, false, value);
     handleInput();
@@ -202,20 +233,13 @@ export default function RichTextEditor({
     }
   }, [editable, execCommand]);
 
-  // IME 조합 이벤트 핸들러
-  const handleCompositionStart = () => setIsComposing(true);
-  const handleCompositionEnd = () => {
-    setIsComposing(false);
-    handleInput(); // 조합이 끝난 후에만 onChange 호출
-  };
-
   // 툴바 버튼 컴포넌트
-  const ToolbarButton = ({ 
-    icon: Icon, 
-    command, 
-    value, 
-    title, 
-    isActive = false 
+  const ToolbarButton = ({
+    icon: Icon,
+    command,
+    value,
+    title,
+    isActive = false
   }: {
     icon: React.ComponentType<any>;
     command?: string;
@@ -249,7 +273,7 @@ export default function RichTextEditor({
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="px-3 py-1.5 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
+          className="px-3 py-2 rounded hover:bg-gray-600 transition-colors text-gray-300 text-xs"
         >
           {selectedType} ▼
         </button>
@@ -279,62 +303,62 @@ export default function RichTextEditor({
       {/* 툴바 */}
       <div className={`p-2 border-b ${cyberTheme.inputBorder} bg-gray-700 flex items-center gap-0.5 flex-wrap text-xs`}>
         {/* 실행 취소/다시 실행 */}
-        <ToolbarButton 
-          icon={ArrowUturnLeftIcon} 
-          command="undo" 
-          title="실행 취소 (Ctrl+Z)" 
+        <ToolbarButton
+          icon={ArrowUturnLeftIcon}
+          command="undo"
+          title="실행 취소 (Ctrl+Z)"
         />
-        <ToolbarButton 
-          icon={ArrowUturnRightIcon} 
-          command="redo" 
-          title="다시 실행 (Ctrl+Y)" 
+        <ToolbarButton
+          icon={ArrowUturnRightIcon}
+          command="redo"
+          title="다시 실행 (Ctrl+Y)"
         />
-        
+
         <div className="w-px h-4 bg-gray-600 mx-2"></div>
-        
+
         {/* 블록 타입 드롭다운 */}
         <BlockTypeDropdown />
-        
+
         <div className="w-px h-4 bg-gray-600 mx-2"></div>
-        
+
         {/* 인라인 서식 */}
-        <ToolbarButton 
-          icon={BoldIcon} 
-          command="bold" 
-          title="굵게 (Ctrl+B)" 
+        <ToolbarButton
+          icon={BoldIcon}
+          command="bold"
+          title="굵게 (Ctrl+B)"
         />
-        <ToolbarButton 
-          icon={ItalicIcon} 
-          command="italic" 
-          title="기울임 (Ctrl+I)" 
+        <ToolbarButton
+          icon={ItalicIcon}
+          command="italic"
+          title="기울임 (Ctrl+I)"
         />
-        <ToolbarButton 
-          icon={UnderlineIcon} 
-          command="underline" 
-          title="밑줄 (Ctrl+U)" 
+        <ToolbarButton
+          icon={UnderlineIcon}
+          command="underline"
+          title="밑줄 (Ctrl+U)"
         />
-        <ToolbarButton 
-          icon={StrikethroughIcon} 
-          command="strikeThrough" 
-          title="취소선" 
+        <ToolbarButton
+          icon={StrikethroughIcon}
+          command="strikeThrough"
+          title="취소선"
         />
-        
+
         <div className="w-px h-4 bg-gray-600 mx-2"></div>
-        
+
         {/* 목록 서식 */}
-        <ToolbarButton 
-          icon={ListBulletIcon} 
-          command="insertUnorderedList" 
-          title="글머리 기호 목록" 
+        <ToolbarButton
+          icon={ListBulletIcon}
+          command="insertUnorderedList"
+          title="글머리 기호 목록"
         />
-        <ToolbarButton 
-          icon={ListBulletIcon} 
-          command="insertOrderedList" 
-          title="번호 매기기 목록" 
+        <ToolbarButton
+          icon={ListBulletIcon} // Replaced ListNumberedIcon with ListBulletIcon due to import error
+          command="insertOrderedList"
+          title="번호 매기기 목록"
         />
-        
+
         <div className="w-px h-4 bg-gray-600 mx-2"></div>
-        
+
         {/* 정렬 서식 - 텍스트로 대체 */}
         <button
           onClick={() => execCommand('justifyLeft')}
@@ -357,24 +381,24 @@ export default function RichTextEditor({
         >
           →
         </button>
-        
+
         <div className="w-px h-4 bg-gray-600 mx-2"></div>
-        
+
         {/* 서식 지우기 */}
-        <ToolbarButton 
-          icon={TrashIcon} 
-          command="removeFormat" 
-          title="서식 지우기" 
+        <ToolbarButton
+          icon={TrashIcon}
+          command="removeFormat"
+          title="서식 지우기"
         />
       </div>
-      
+
       {/* 편집기 영역 */}
       <div className="relative">
         <div
           ref={editorRef}
           contentEditable={editable}
           dir="ltr"
-          onInput={isComposing ? undefined : handleInput}
+          onInput={handleInput}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
@@ -392,7 +416,7 @@ export default function RichTextEditor({
           }}
           data-placeholder={placeholder}
         />
-        
+
         {/* 플레이스홀더 */}
         {!hasContent && !isFocused && (
           <div className="absolute top-4 left-4 text-gray-500 pointer-events-none">
