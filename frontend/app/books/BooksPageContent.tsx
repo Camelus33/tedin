@@ -458,7 +458,7 @@ export default function BooksPageContent() {
                 <p className="text-sm opacity-70">첫 번째 책을 등록하면 여기에 표시됩니다</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6">
                 {filteredBooks.map((book) => {
                   const progress = calculateProgress(book.currentPage, book.totalPages);
                   let imageSrc: string | null = null;
@@ -476,7 +476,7 @@ export default function BooksPageContent() {
                            <Link href={`/books/${book._id}/edit`} onClick={(e) => e.stopPropagation()} className={`block w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm ${cyberTheme.textLight} ${cyberTheme.menuItemHover} flex items-center gap-2`}><AiOutlineEdit className="h-3 w-3 sm:h-4 sm:w-4" /> 수정</Link>
                         </div>
                       )}
-                      <div className={`w-full h-36 md:h-44 ${cyberTheme.inputBg} flex items-center justify-center ${cyberTheme.textMuted} relative overflow-hidden`}>
+                      <div className={`w-full h-32 md:h-36 lg:h-40 ${cyberTheme.inputBg} flex items-center justify-center ${cyberTheme.textMuted} relative overflow-hidden`}>
                         {imageSrc ? (
                           <Image 
                             src={imageSrc} 
@@ -499,30 +499,30 @@ export default function BooksPageContent() {
                           <FiBook className="h-16 w-16 placeholder-icon opacity-60" /> 
                         )}
                       </div>
-                      <div className="p-5">
+                      <div className="p-3 md:p-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <h2 className={`font-bold text-lg md:text-xl truncate ${cyberTheme.textLight} leading-tight`} title={book.title}>{book.title}</h2>
+                          <h2 className={`font-bold text-base md:text-lg truncate ${cyberTheme.textLight} leading-tight`} title={book.title}>{book.title}</h2>
                           {book.bookType === 'NOTEBOOK' && (
-                            <span className="bg-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full border border-purple-500/30 flex-shrink-0 font-medium">
+                            <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-0.5 rounded-full border border-purple-500/30 flex-shrink-0 font-medium">
                               노트북
                             </span>
                           )}
                         </div>
-                        <p className={`text-sm md:text-base ${cyberTheme.textMuted} mb-4 truncate leading-relaxed`} title={book.author}>{book.author}</p>
+                        <p className={`text-sm md:text-base ${cyberTheme.textMuted} mb-3 truncate leading-relaxed`} title={book.author}>{book.author}</p>
                         
                         {/* 책인 경우만 진행률 표시 */}
                         {book.bookType !== 'NOTEBOOK' && (
-                          <div className="mb-3">
+                          <div className="mb-2">
                             <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-2 relative overflow-hidden`}>
                               <div className={`h-2 rounded-full ${cyberTheme.progressFg} ${cyberTheme.progressGlow} transition-all duration-500`} style={{ width: `${progress}%` }}></div>
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
                             </div>
-                            <p className={`text-sm mt-2 ${cyberTheme.textMuted} font-medium`}>성장: {progress}% ({book.currentPage}/{book.totalPages}p)</p>
+                            <p className={`text-xs mt-1 ${cyberTheme.textMuted} font-medium`}>성장: {progress}% ({book.currentPage}/{book.totalPages}p)</p>
                           </div>
                         )}
                         
-                        <div className={`flex items-center text-sm ${cyberTheme.textMuted}`}>
-                          <FiClock className="h-4 w-4 mr-2" />
+                        <div className={`flex items-center text-xs ${cyberTheme.textMuted}`}>
+                          <FiClock className="h-3 w-3 mr-1" />
                           <span className="truncate">
                             {book.bookType === 'NOTEBOOK' ? '생성: ' : '최근: '}
                             {book.bookType === 'NOTEBOOK' 
