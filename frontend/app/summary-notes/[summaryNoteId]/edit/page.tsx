@@ -916,9 +916,9 @@ export default function EditSummaryNotePage() {
             <div className="h-full flex flex-col p-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">Ontology Canvas</h3>
               
-              <div className="mb-3 pb-2 border-b border-gray-700/50 flex-shrink-0">
+              <div className="mb-2 pb-2 border-b border-gray-700/50">
                 {/* Relationship Selection Toolbar */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="flex items-center">
                     <span className="text-sm font-medium text-gray-300 mr-3">관계 선택:</span>
                   </div>
@@ -930,7 +930,7 @@ export default function EditSummaryNotePage() {
                           setSelectedRelationship(selectedRelationship === type ? null : type as RelationshipType);
                           setIsDrawingMode(selectedRelationship !== type);
                         }}
-                        className={`px-2 py-1.5 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center min-w-[70px] ${
+                        className={`px-2 py-1 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center min-w-[70px] ${
                           selectedRelationship === type
                             ? `${config.color} bg-gray-700 border-2 border-gray-500 shadow-lg`
                             : `text-gray-400 hover:${config.color} hover:bg-gray-700 border border-transparent`
@@ -944,45 +944,38 @@ export default function EditSummaryNotePage() {
                   </div>
                 </div>
                 
-                {/* Connection Instructions */}
+                {/* Connection Instructions - Compact */}
                 {selectedRelationship && canvasNodes.length >= 2 && (
-                  <div className="mt-2 p-2 bg-green-900/30 border border-green-500/50 rounded-md">
-                    <h4 className="text-sm font-medium text-green-300 mb-1">🔗 연결 방법</h4>
+                  <div className="mt-1 p-1 bg-green-900/30 border border-green-500/50 rounded-md">
                     <p className="text-xs text-green-400">
-                      <strong>1단계:</strong> {RELATIONSHIP_CONFIGS[selectedRelationship].label} 관계를 선택했습니다<br/>
-                      <strong>2단계:</strong> 연결할 첫 번째 노드를 클릭하세요<br/>
-                      <strong>3단계:</strong> 연결할 두 번째 노드를 클릭하세요
+                      <strong>1단계:</strong> {RELATIONSHIP_CONFIGS[selectedRelationship].label} 관계 선택됨<br/>
+                      <strong>2단계:</strong> 연결할 첫 번째 노드 클릭<br/>
+                      <strong>3단계:</strong> 연결할 두 번째 노드 클릭
                     </p>
                   </div>
                 )}
                 
-                {/* Drawing Mode Indicator */}
+                {/* Drawing Mode Indicator - Compact */}
                 {isDrawingMode && selectedRelationship && (
-                  <div className="mt-2 p-2 bg-blue-900/30 border border-blue-500/50 rounded-md">
-                    <p className="text-sm text-blue-300">
+                  <div className="mt-1 p-1 bg-blue-900/30 border border-blue-500/50 rounded-md">
+                    <p className="text-xs text-blue-300">
                       <span className="font-medium">그리기 모드:</span> {RELATIONSHIP_CONFIGS[selectedRelationship].label}
                     </p>
-                    <p className="text-xs text-blue-400 mt-1">
-                      캔버스에서 관계를 그려보세요
-                    </p>
                   </div>
                 )}
                 
-                {/* Connection Mode Indicator */}
+                {/* Connection Mode Indicator - Compact */}
                 {isConnecting && connectionStart && selectedRelationship && (
-                  <div className="mt-2 p-2 bg-red-900/30 border border-red-500/50 rounded-md">
-                    <p className="text-sm text-red-300">
+                  <div className="mt-1 p-1 bg-red-900/30 border border-red-500/50 rounded-md">
+                    <p className="text-xs text-red-300">
                       <span className="font-medium">연결 모드:</span> {RELATIONSHIP_CONFIGS[selectedRelationship]?.label || '알 수 없음'}
-                    </p>
-                    <p className="text-xs text-red-400 mt-1">
-                      연결할 노드를 클릭하세요
                     </p>
                   </div>
                 )}
               </div>
               
-              {/* Canvas Container with Fixed Height */}
-              <div className="flex-grow min-h-0 pt-4">
+              {/* Canvas Container - Optimized */}
+              <div className="flex-1 min-h-0">
                 {/* Canvas with Icon Palette */}
                 <div className="h-full bg-gray-900/30 rounded-lg border border-gray-700/50 relative">
                   {/* Icon Palette - Top Left */}
