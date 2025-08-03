@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { AiOutlinePlus, AiOutlineSearch, AiOutlineFilter, AiOutlineEdit, AiOutlineDelete, AiOutlineHighlight, AiOutlineBook, AiOutlineFileText } from "react-icons/ai";
-import { FiBook, FiClock, FiChevronRight, FiMoreVertical, FiList, FiCalendar, FiTrendingUp, FiActivity } from "react-icons/fi";
+import { FiBook, FiClock, FiChevronRight, FiMoreVertical, FiList, FiCalendar, FiTrendingUp, FiActivity, FiTarget } from "react-icons/fi";
 import api, { books as booksApi } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
 import { Button } from '@/components/ui/button';
@@ -73,6 +73,7 @@ interface Book {
   lastReadAt?: string;
   status?: string;
   completionPercentage?: number;
+  readingPurpose?: 'exam_prep' | 'practical_knowledge' | 'humanities_self_reflection' | 'reading_pleasure';
   createdAt: string;
 }
 
@@ -90,7 +91,7 @@ interface SummaryNote {
 }
 
 // Sort options type
-type SortByType = "title" | "date" | "progress";
+type SortByType = "title" | "date" | "progress" | "created" | "type" | "purpose";
 
 export default function BooksPageContent() {
   const router = useRouter();
@@ -225,6 +226,36 @@ export default function BooksPageContent() {
         const progressB = calculateProgress(b.currentPage, b.totalPages);
         return progressB - progressA;
       });
+    } else if (sortBy === "created") {
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA; // 최근 등록 순
+      });
+    } else if (sortBy === "type") {
+      sorted.sort((a, b) => {
+        // BOOK을 먼저, NOTEBOOK을 나중에
+        if (a.bookType === 'BOOK' && b.bookType === 'NOTEBOOK') return -1;
+        if (a.bookType === 'NOTEBOOK' && b.bookType === 'BOOK') return 1;
+        // 같은 타입 내에서는 제목순
+        return a.title.localeCompare(b.title);
+      });
+    } else if (sortBy === "purpose") {
+      sorted.sort((a, b) => {
+        const purposeOrder = {
+          'exam_prep': 1,
+          'practical_knowledge': 2,
+          'humanities_self_reflection': 3,
+          'reading_pleasure': 4
+        };
+        const purposeA = a.readingPurpose || 'reading_pleasure';
+        const purposeB = b.readingPurpose || 'reading_pleasure';
+        const orderA = purposeOrder[purposeA as keyof typeof purposeOrder] || 5;
+        const orderB = purposeOrder[purposeB as keyof typeof purposeOrder] || 5;
+        if (orderA !== orderB) return orderA - orderB;
+        // 같은 목적 내에서는 제목순
+        return a.title.localeCompare(b.title);
+      });
     }
     setFilteredBooks(sorted);
   }, [sortBy]);
@@ -355,6 +386,9 @@ export default function BooksPageContent() {
     { key: "date", label: "최근에 펼쳐본 순", icon: FiCalendar },
     { key: "progress", label: "성장 진행률 순", icon: FiTrendingUp },
     { key: "title", label: "가나다 순", icon: FiList },
+    { key: "created", label: "등록일 순", icon: FiClock },
+    { key: "type", label: "타입별 순", icon: FiBook },
+    { key: "purpose", label: "목적별 순", icon: FiTarget },
   ];
 
   return (
