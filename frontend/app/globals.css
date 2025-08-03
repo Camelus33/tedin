@@ -249,4 +249,34 @@ body {
 .tsnote-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(107, 114, 128, 0.6) rgba(55, 65, 81, 0.3);
+}
+
+/* Summary Note 전용 커스텀 스크롤바 */
+.summary-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.summary-scrollbar::-webkit-scrollbar-track {
+  background: rgba(55, 65, 81, 0.2);
+  border-radius: 3px;
+}
+
+.summary-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.4);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.summary-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.7);
+}
+
+.summary-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox 스크롤바 스타일 */
+.summary-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.4) rgba(55, 65, 81, 0.2);
 } 

@@ -898,7 +898,7 @@ export default function EditSummaryNotePage() {
         {/* Main Content Area: 3-Panel Layout */}
         <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-300px)] md:h-[calc(100vh-280px)]">
           {/* Left Panel: Notes List */}
-          <Panel minSize={25} defaultSize={30} className="overflow-y-auto pr-2 pb-6 h-full custom-scrollbar">
+          <Panel minSize={25} defaultSize={30} className="overflow-y-auto pr-2 pb-6 h-full summary-scrollbar">
             <div className="space-y-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Memo Card</h3>
               {fetchedNotes.length > 0 ? (
