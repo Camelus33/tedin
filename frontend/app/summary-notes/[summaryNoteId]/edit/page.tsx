@@ -848,7 +848,7 @@ export default function EditSummaryNotePage() {
           <Textarea 
             value={description} 
             onChange={(e) => setDescription(e.target.value)} 
-            placeholder="선택한 메모카드를 벡터공간에 배치하고, 인사이트를 도출하는 공간입니다. 온톨로지기반 고품질 분석 보고서를 작성할 수 있어요."
+            placeholder="메모카드들간의 관계를 표시하고, 이를 바탕으로 고품질 온톨로지형 분석 보고서를 작성해 보세요."
             rows={3}
             className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
           />
@@ -857,11 +857,11 @@ export default function EditSummaryNotePage() {
         <hr className="border-gray-700/50 mb-8" />
 
         {/* Main Content Area: 3-Panel Layout */}
-        <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-300px)] md:h-[calc(100vh-280px)]">
+        <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-300px)] md:h-[calc(100vh-280px)] gap-2">
           {/* Left Panel: Notes List */}
-          <Panel minSize={25} defaultSize={30} className="pr-2 pb-6 h-full">
-            <div className="h-full flex flex-col">
-              <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Memo Card</h3>
+          <Panel minSize={25} defaultSize={30} className="h-full bg-gray-800/30 rounded-lg">
+            <div className="h-full flex flex-col p-4">
+              <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">Memo Card</h3>
               <div className="flex-1 overflow-y-auto summary-scrollbar" style={{ minHeight: '300px' }}>
                 <div className="space-y-4">
                   {fetchedNotes.length > 0 ? (
@@ -912,13 +912,13 @@ export default function EditSummaryNotePage() {
           <PanelResizeHandle className="hidden sm:block w-[1px] bg-gray-600/30 hover:bg-cyan-500/50 active:bg-cyan-400 transition-colors duration-200 cursor-col-resize" />
 
           {/* Center Panel: Diagram Canvas */}
-          <Panel minSize={30} defaultSize={40} className="overflow-hidden bg-gray-800/30">
-            <div className="h-full flex flex-col">
-              <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Ontology Canvas</h3>
+          <Panel minSize={30} defaultSize={40} className="h-full bg-gray-800/30 rounded-lg">
+            <div className="h-full flex flex-col p-4">
+              <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">Ontology Canvas</h3>
               
-              <div className="p-4 border-b border-gray-700/50">
+              <div className="pb-2 border-b border-gray-700/50">
                 {/* Relationship Selection Toolbar */}
-                <div className="mt-4 space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-center">
                     <span className="text-sm font-medium text-gray-300 mr-3">관계 선택:</span>
                   </div>
@@ -946,7 +946,7 @@ export default function EditSummaryNotePage() {
                 
                 {/* Connection Instructions */}
                 {selectedRelationship && canvasNodes.length >= 2 && (
-                  <div className="mt-3 p-3 bg-green-900/30 border border-green-500/50 rounded-md">
+                  <div className="mt-2 p-2 bg-green-900/30 border border-green-500/50 rounded-md">
                     <h4 className="text-sm font-medium text-green-300 mb-1">🔗 연결 방법</h4>
                     <p className="text-xs text-green-400">
                       <strong>1단계:</strong> {RELATIONSHIP_CONFIGS[selectedRelationship].label} 관계를 선택했습니다<br/>
@@ -980,7 +980,7 @@ export default function EditSummaryNotePage() {
                   </div>
                 )}
               </div>
-              <div className="flex-grow p-4">
+              <div className="flex-grow mt-4">
                 {/* Canvas with Icon Palette */}
                 <div className="h-full bg-gray-900/30 rounded-lg border border-gray-700/50 relative">
                   {/* Icon Palette - Top Left */}
@@ -1338,54 +1338,57 @@ export default function EditSummaryNotePage() {
           <PanelResizeHandle className="hidden sm:block w-[1px] bg-gray-600/30 hover:bg-cyan-500/50 active:bg-cyan-400 transition-colors duration-200 cursor-col-resize" />
 
           {/* Right Panel: Markdown Editor */}
-          <Panel minSize={25} defaultSize={30} className="overflow-y-auto pl-2 md:pl-4 bg-opacity-50 bg-black/10 rounded-lg flex flex-col h-full">
-             <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">
-              {selectedNode ? (
-                <div className="flex items-center justify-center gap-3">
-                  <span>Deep Dive</span>
-                  <span className="text-sm text-gray-400">
-                    (노드 {canvasNodes.find(n => n.noteId === selectedNode)?.order}번)
-                  </span>
-                  <Button
-                    onClick={() => {
-                      setSelectedNode(null);
-                      setSelectedNodeMarkdown('');
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-400 hover:text-gray-200"
-                  >
-                    ✕
-                  </Button>
-                </div>
-              ) : (
-                'Deep Dive'
-              )}
+          <Panel minSize={25} defaultSize={30} className="h-full bg-gray-800/30 rounded-lg">
+            <div className="h-full flex flex-col p-4">
+              <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">
+                {selectedNode ? (
+                  <div className="flex items-center justify-center gap-3">
+                    <span>Analysis</span>
+                    <span className="text-sm text-gray-400">
+                      (노드 {canvasNodes.find(n => n.noteId === selectedNode)?.order}번)
+                    </span>
+                    <Button
+                      onClick={() => {
+                        setSelectedNode(null);
+                        setSelectedNodeMarkdown('');
+                      }}
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-400 hover:text-gray-200"
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                ) : (
+                  'Analysis'
+                )}
               </h3>
-            <div className="flex-grow h-full relative">
-              <Textarea
-                value={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
-                onChange={(e) => {
-                  const content = e.target.value;
-                  if (selectedNode) {
-                    // Update node's markdown content
-                    setNodeMarkdownContent(prev => ({
-                      ...prev,
-                      [selectedNode]: content
-                    }));
-                    setSelectedNodeMarkdown(content);
-                  } else {
-                    // Update main markdown content
-                    setUserMarkdownContent(content);
-                  }
-                }}
-                placeholder="선택한 메모카드를 벡터공간에 배치하고, 인사이트를 도출하는 공간입니다. 온톨로지기반 고품질 분석 보고서를 작성할 수 있어요."
-                className="h-full min-h-[400px] p-4 bg-gray-800 text-gray-300 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 resize-none"
-                style={{
-                  backgroundColor: 'rgb(31, 41, 55)', // gray-800
-                  color: 'rgb(209, 213, 219)', // gray-300
-                }}
-              />
+              
+              <div className="flex-grow h-full">
+                <Textarea
+                  value={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
+                  onChange={(e) => {
+                    const content = e.target.value;
+                    if (selectedNode) {
+                      // Update node's markdown content
+                      setNodeMarkdownContent(prev => ({
+                        ...prev,
+                        [selectedNode]: content
+                      }));
+                      setSelectedNodeMarkdown(content);
+                    } else {
+                      // Update main markdown content
+                      setUserMarkdownContent(content);
+                    }
+                  }}
+                  placeholder="선택한 메모카드를 벡터 그래프로 나타내고, 관계기반 분석 보고서를 작성하세요."
+                  className="h-full min-h-[400px] p-4 bg-gray-800 text-gray-300 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 resize-none"
+                  style={{
+                    backgroundColor: 'rgb(31, 41, 55)', // gray-800
+                    color: 'rgb(209, 213, 219)', // gray-300
+                  }}
+                />
+              </div>
               
               {/* 수동 저장 버튼 */}
               {!selectedNode && (
@@ -1394,7 +1397,7 @@ export default function EditSummaryNotePage() {
                     onClick={handleManualSaveText}
                     className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2"
                   >
-                    💾 저장
+                    저장
                   </Button>
                 </div>
               )}
@@ -1406,7 +1409,7 @@ export default function EditSummaryNotePage() {
         {(diagramImageUrl || summaryNote?.diagram?.imageUrl) && (
           <div className="mt-8 p-6 bg-gray-800/30 rounded-lg border border-gray-700/50">
             <h3 className={`text-xl font-semibold mb-4 ${cyberTheme.primary}`}>
-              📊 저장된 벡터그래프
+              저장된 벡터그래프
             </h3>
             <div className="flex justify-center">
               <img 
@@ -1429,7 +1432,7 @@ export default function EditSummaryNotePage() {
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                📥 다운로드
+                다운로드
               </Button>
               <Button 
                 onClick={() => setDiagramImageUrl(null)}
