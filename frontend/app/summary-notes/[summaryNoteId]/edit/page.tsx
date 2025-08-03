@@ -1311,9 +1311,9 @@ export default function EditSummaryNotePage() {
                     {/* Empty Canvas Message */}
                     {canvasNodes.length === 0 && (
                       <div className="text-center text-gray-400 pt-20">
-                        <div className="text-4xl mb-2"></div>
-                        <p className="text-sm"></p>
-                        <p className="text-xs mt-1"></p>
+                        <div className="text-4xl mb-2">🎨</div>
+                        <p className="text-sm">캔버스에 메모 아이콘을 끌어다 놓으세요.</p>
+                        <p className="text-xs mt-1">왼쪽 목록에서 아이콘을 드래그하여 시작하세요.</p>
                         {selectedRelationship && (
                           <div className="mt-4 p-2 bg-gray-800/50 rounded max-w-xs mx-auto">
                             <p className="text-xs text-gray-300">
