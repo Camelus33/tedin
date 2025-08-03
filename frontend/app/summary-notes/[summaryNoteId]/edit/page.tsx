@@ -860,7 +860,7 @@ export default function EditSummaryNotePage() {
           <Textarea 
             value={description} 
             onChange={(e) => setDescription(e.target.value)} 
-            placeholder="메모카드들간의 관계를 표시하고, 이를 바탕으로 고품질 온톨로지형 분석 보고서를 작성해 보세요."
+            placeholder="지식캡슐을 완성하세요. 메모들간의 관계를 벡터그래프로 표현해 AI - link안에 담아 보관하세요."
             rows={3}
             className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
           />
@@ -1128,7 +1128,7 @@ export default function EditSummaryNotePage() {
                       <div className="absolute top-4 right-4 z-10 bg-blue-900/30 border border-blue-500/50 rounded-lg p-3 max-w-48">
                         <h4 className="text-sm font-medium text-blue-300 mb-2">🔗 연결 방법</h4>
                         <p className="text-xs text-blue-400">
-                          1. 상단에서 관계 타입 선택<br/>
+                          1. 관계 타입 선택<br/>
                           2. 첫 번째 노드 클릭<br/>
                           3. 두 번째 노드 클릭
                         </p>
@@ -1413,7 +1413,7 @@ export default function EditSummaryNotePage() {
                       setUserMarkdownContent(content);
                     }
                   }}
-                  placeholder="선택한 메모카드를 벡터 그래프로 나타내고, 관계기반 분석 보고서를 작성하세요."
+                  placeholder="메모카드, 벡터그래프를 통해 알게된 내용을 정리하세요."
                   className="h-full min-h-[400px] p-4 bg-gray-800 text-gray-300 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 resize-none"
                   style={{
                     backgroundColor: 'rgb(31, 41, 55)', // gray-800
