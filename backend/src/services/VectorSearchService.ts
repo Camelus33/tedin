@@ -9,14 +9,29 @@ import { loggingService } from './LoggingService';
 export class VectorSearchService {
   private client: MongoClient;
   private db: Db;
-  private openai: OpenAI;
+  private openai: OpenAI | null = null;
 
   constructor() {
     const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/habitus33';
     this.client = new MongoClient(MONGODB_URI);
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    // Don't initialize OpenAI client immediately
+    // Will be initialized lazily when needed
+  }
+
+  /**
+   * Initialize OpenAI client lazily
+   */
+  private initializeOpenAI() {
+    if (!this.openai) {
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        throw new Error('OPENAI_API_KEY environment variable is required for vector search');
+      }
+      this.openai = new OpenAI({
+        apiKey,
+      });
+    }
+    return this.openai;
   }
 
   /**
@@ -38,10 +53,12 @@ export class VectorSearchService {
    */
   async generateEmbedding(text: string): Promise<number[]> {
     try {
+      const openai = this.initializeOpenAI();
+      
       // Truncate text if too long (OpenAI has token limits)
       const truncatedText = text.length > 8000 ? text.substring(0, 8000) : text;
 
-      const response = await this.openai.embeddings.create({
+      const response = await openai.embeddings.create({
         model: 'text-embedding-ada-002',
         input: truncatedText,
       });

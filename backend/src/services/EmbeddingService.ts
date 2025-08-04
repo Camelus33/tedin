@@ -6,12 +6,27 @@ import Note from '../models/Note';
  * Handles OpenAI embeddings generation and storage
  */
 export class EmbeddingService {
-  private openai: OpenAI;
+  private openai: OpenAI | null = null;
 
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    // Don't initialize OpenAI client immediately
+    // Will be initialized lazily when needed
+  }
+
+  /**
+   * Initialize OpenAI client lazily
+   */
+  private initializeOpenAI() {
+    if (!this.openai) {
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        throw new Error('OPENAI_API_KEY environment variable is required for embedding generation');
+      }
+      this.openai = new OpenAI({
+        apiKey,
+      });
+    }
+    return this.openai;
   }
 
   /**
@@ -19,10 +34,12 @@ export class EmbeddingService {
    */
   async generateEmbedding(text: string): Promise<number[]> {
     try {
+      const openai = this.initializeOpenAI();
+      
       // Truncate text if too long (OpenAI has token limits)
       const truncatedText = text.length > 8000 ? text.substring(0, 8000) : text;
 
-      const response = await this.openai.embeddings.create({
+      const response = await openai.embeddings.create({
         model: 'text-embedding-ada-002',
         input: truncatedText,
       });

@@ -15,6 +15,41 @@ console.log(`[App] __dirname: ${__dirname}`);
 // Load environment variables from .env file
 dotenv.config();
 
+// Validate required environment variables
+const validateEnvironmentVariables = () => {
+  const requiredVars = [
+    'MONGODB_URI',
+    'JWT_SECRET',
+    'FRONTEND_URL'
+  ];
+  
+  const optionalVars = [
+    'OPENAI_API_KEY',
+    'ANTHROPIC_API_KEY', 
+    'GOOGLE_API_KEY'
+  ];
+
+  const missingRequired = requiredVars.filter(varName => !process.env[varName]);
+  const availableOptional = optionalVars.filter(varName => process.env[varName]);
+
+  if (missingRequired.length > 0) {
+    console.error('❌ Missing required environment variables:', missingRequired);
+    console.error('Please set these environment variables before starting the application.');
+    process.exit(1);
+  }
+
+  console.log('✅ Required environment variables are set');
+  
+  if (availableOptional.length > 0) {
+    console.log('✅ Available optional API keys:', availableOptional);
+  } else {
+    console.log('⚠️ No optional API keys found. Some features may be limited.');
+  }
+};
+
+// Validate environment variables before proceeding
+validateEnvironmentVariables();
+
 // Import routes
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
