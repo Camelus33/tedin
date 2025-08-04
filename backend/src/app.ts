@@ -19,11 +19,11 @@ dotenv.config();
 const validateEnvironmentVariables = () => {
   const requiredVars = [
     'MONGODB_URI',
-    'JWT_SECRET',
-    'FRONTEND_URL'
+    'JWT_SECRET'
   ];
   
   const optionalVars = [
+    'FRONTEND_URL',
     'OPENAI_API_KEY',
     'ANTHROPIC_API_KEY', 
     'GOOGLE_API_KEY'
@@ -41,9 +41,9 @@ const validateEnvironmentVariables = () => {
   console.log('✅ Required environment variables are set');
   
   if (availableOptional.length > 0) {
-    console.log('✅ Available optional API keys:', availableOptional);
+    console.log('✅ Available optional environment variables:', availableOptional);
   } else {
-    console.log('⚠️ No optional API keys found. Some features may be limited.');
+    console.log('⚠️ No optional environment variables found. Some features may be limited.');
   }
 };
 
