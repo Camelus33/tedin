@@ -363,7 +363,9 @@ export class NaturalLanguageParserService {
       
       // 날짜 패턴들
       /\d{4}년\s*\d{1,2}월\s*\d{1,2}일/,
+      /\d{4}년\s*\d{1,2}월/,
       /\d{1,2}월\s*\d{1,2}일/,
+      /\d{1,2}월/,
       /\d{1,2}일/,
       /오늘/,
       /어제/,
