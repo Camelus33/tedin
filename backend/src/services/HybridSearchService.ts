@@ -58,7 +58,22 @@ export class HybridSearchService {
       // Build keyword search pipeline
       const pipeline: any[] = [];
 
-      // Add match stage for filters
+      // Add text search stage FIRST (required for Atlas Search)
+      pipeline.push({
+        $search: {
+          index: 'notes_text_index',
+          text: {
+            query,
+            path: ['content', 'tags'],
+            fuzzy: {
+              maxEdits: 1,
+              prefixLength: 3,
+            },
+          },
+        },
+      });
+
+      // Add match stage for filters AFTER search
       const matchStage: any = {};
       if (filters.userId) {
         matchStage.userId = filters.userId;
@@ -108,21 +123,6 @@ export class HybridSearchService {
       if (Object.keys(matchStage).length > 0) {
         pipeline.push({ $match: matchStage });
       }
-
-      // Add text search stage
-      pipeline.push({
-        $search: {
-          index: 'notes_text_index',
-          text: {
-            query,
-            path: ['content', 'tags'],
-            fuzzy: {
-              maxEdits: 1,
-              prefixLength: 3,
-            },
-          },
-        },
-      });
 
       // Add projection stage
       pipeline.push({
@@ -189,7 +189,18 @@ export class HybridSearchService {
       // Build vector search pipeline
       const pipeline: any[] = [];
 
-      // Add match stage for filters
+      // Add vector search stage FIRST (required for Atlas Vector Search)
+      pipeline.push({
+        $vectorSearch: {
+          index: 'notes_vector_index',
+          path: 'embedding',
+          queryVector: queryEmbedding,
+          numCandidates: 100,
+          limit: filters.limit || this.MAX_RESULTS,
+        },
+      });
+
+      // Add match stage for filters AFTER search
       const matchStage: any = {};
       if (filters.userId) {
         matchStage.userId = filters.userId;
@@ -239,17 +250,6 @@ export class HybridSearchService {
       if (Object.keys(matchStage).length > 0) {
         pipeline.push({ $match: matchStage });
       }
-
-      // Add vector search stage
-      pipeline.push({
-        $vectorSearch: {
-          index: 'notes_vector_index',
-          path: 'embedding',
-          queryVector: queryEmbedding,
-          numCandidates: 100,
-          limit: filters.limit || this.MAX_RESULTS,
-        },
-      });
 
       // Add projection stage
       pipeline.push({

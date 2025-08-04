@@ -35,14 +35,6 @@ export class NaturalLanguageParserService {
       { regex: /(\d+)점\s*~?\s*(\d+)점/, type: 'comprehension', operator: 'range' },
     ];
 
-    // 이해도점수 패턴 매칭
-    for (const pattern of comprehensionPatterns) {
-      const match = normalized.match(pattern.regex);
-      if (match) {
-        return this.parseComprehensionMatch(match, pattern.operator, expression);
-      }
-    }
-    
     // 날짜 패턴들
     const datePatterns = [
       // 특정 날짜
@@ -90,6 +82,14 @@ export class NaturalLanguageParserService {
       { regex: /밤/, type: 'range' },
     ];
 
+    // 이해도점수 패턴 매칭 (가장 먼저)
+    for (const pattern of comprehensionPatterns) {
+      const match = normalized.match(pattern.regex);
+      if (match) {
+        return this.parseComprehensionMatch(match, pattern.operator, expression);
+      }
+    }
+    
     // 날짜 패턴 매칭
     for (const pattern of datePatterns) {
       const match = normalized.match(pattern.regex);
