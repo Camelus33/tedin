@@ -56,7 +56,15 @@ export class MemoSearchController {
         useCache,
       });
 
-      res.json(searchResults);
+      // Include natural language information in response
+      const response = {
+        ...searchResults,
+        naturalLanguageInfo: searchResults.dateTimeInfo,
+        originalQuery: searchResults.originalQuery,
+        searchQuery: searchResults.query,
+      };
+
+      res.json(response);
     } catch (error) {
       console.error('Hybrid search memos error:', error);
       res.status(500).json({ error: 'Internal server error' });

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MagnifyingGlassIcon, XMarkIcon, FunnelIcon, SparklesIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, XMarkIcon, FunnelIcon, SparklesIcon, ChatBubbleLeftRightIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { apiClient } from '@/lib/apiClient';
 import useAuth from '@/hooks/useAuth';
 import AIChatInterface from './AIChatInterface';
@@ -21,10 +21,27 @@ interface SearchResult {
   momentContext?: string;
   relatedKnowledge?: string;
   mentalImage?: string;
+  comprehensionScore?: number;
   score: number;
   keywordScore?: number;
   vectorScore?: number;
   combinedScore?: number;
+}
+
+interface SearchResponse {
+  results: SearchResult[];
+  total: number;
+  query: string;
+  originalQuery: string;
+  naturalLanguageInfo?: {
+    type: 'date' | 'time' | 'datetime' | 'range' | 'comprehension';
+    start?: Date;
+    end?: Date;
+    timeRange?: { start: string; end: string };
+    comprehensionScore?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
+    originalExpression: string;
+  };
+  searchQuery: string;
 }
 
 interface SearchFilters {
@@ -48,6 +65,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
   const { user } = useAuth();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     strategy: 'weighted',
@@ -63,7 +81,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
 
     setIsLoading(true);
     try {
-      const response = await apiClient.post('/memo-search/search', {
+      const response: SearchResponse = await apiClient.post('/memo-search/search', {
         query: query.trim(),
         userId: user.id,
         limit: 20,
@@ -74,9 +92,11 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
       });
 
       setResults(response.results || []);
+      setSearchResponse(response);
     } catch (error) {
       console.error('검색 오류:', error);
       setResults([]);
+      setSearchResponse(null);
     } finally {
       setIsLoading(false);
     }
@@ -256,6 +276,11 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-sm text-gray-400">
                     {results.length}개의 결과를 찾았습니다
+                    {searchResponse?.naturalLanguageInfo && (
+                      <span className="ml-2 text-indigo-400">
+                        • {searchResponse.naturalLanguageInfo.originalExpression} 필터 적용
+                      </span>
+                    )}
                   </div>
                   <Button
                     onClick={handleAIChatToggle}
@@ -265,6 +290,28 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                     AI와 대화하기
                   </Button>
                 </div>
+                
+                {/* 날짜/시간 정보 표시 */}
+                {searchResponse?.naturalLanguageInfo && (
+                  <Card className="bg-indigo-900/20 border-indigo-500/30">
+                    <CardContent className="p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <CalendarIcon className="h-4 w-4 text-indigo-400" />
+                        <span className="text-indigo-300 font-medium">
+                          {searchResponse.naturalLanguageInfo.originalExpression}
+                        </span>
+                        <span className="text-gray-400">•</span>
+                        <span className="text-gray-300">
+                          {searchResponse.naturalLanguageInfo.type === 'date' && '날짜 검색'}
+                          {searchResponse.naturalLanguageInfo.type === 'time' && '시간 검색'}
+                          {searchResponse.naturalLanguageInfo.type === 'range' && '기간 검색'}
+                          {searchResponse.naturalLanguageInfo.type === 'comprehension' && '이해도점수 검색'}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+                
                 {results.map((result) => (
                   <Card key={result._id} className="hover:bg-gray-800/50 transition-colors">
                     <CardContent className="p-4">
@@ -275,6 +322,14 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                             <span>{formatDate(result.createdAt)}</span>
                             <span>•</span>
                             <span>{result.type}</span>
+                            {result.comprehensionScore !== undefined && (
+                              <>
+                                <span>•</span>
+                                <span className="text-blue-400">
+                                  이해도: {result.comprehensionScore}점
+                                </span>
+                              </>
+                            )}
                             {result.tags && result.tags.length > 0 && (
                               <>
                                 <span>•</span>

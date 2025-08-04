@@ -3,6 +3,7 @@ import { embeddingService } from './EmbeddingService';
 import { loggingService } from './LoggingService';
 import { resultCombinerService } from './ResultCombinerService';
 import { cacheService } from './CacheService';
+import { NaturalLanguageParserService } from './NaturalLanguageParserService';
 
 /**
  * Hybrid Search Service
@@ -46,6 +47,8 @@ export class HybridSearchService {
       userId?: string;
       tags?: string[];
       dateRange?: { start: Date; end: Date };
+      timeRange?: { start: string; end: string };
+      comprehensionScore?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
       limit?: number;
     } = {}
   ) {
@@ -68,6 +71,38 @@ export class HybridSearchService {
           $gte: filters.dateRange.start,
           $lte: filters.dateRange.end,
         };
+      }
+      if (filters.timeRange) {
+        // 시간 필터링을 위한 추가 조건
+        matchStage.$expr = {
+          $and: [
+            {
+              $gte: [
+                { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+                filters.timeRange.start
+              ]
+            },
+            {
+              $lte: [
+                { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+                filters.timeRange.end
+              ]
+            }
+          ]
+        };
+      }
+      if (filters.comprehensionScore) {
+        // 이해도점수 필터링
+        const { min, max, operator } = filters.comprehensionScore;
+        if (operator === 'gte') {
+          matchStage.comprehensionScore = { $gte: min };
+        } else if (operator === 'lte') {
+          matchStage.comprehensionScore = { $lte: min };
+        } else if (operator === 'eq') {
+          matchStage.comprehensionScore = min;
+        } else if (operator === 'range' && max) {
+          matchStage.comprehensionScore = { $gte: min, $lte: max };
+        }
       }
 
       if (Object.keys(matchStage).length > 0) {
@@ -102,6 +137,7 @@ export class HybridSearchService {
           momentContext: 1,
           relatedKnowledge: 1,
           mentalImage: 1,
+          comprehensionScore: 1,
           score: { $meta: 'searchScore' },
         },
       });
@@ -139,6 +175,8 @@ export class HybridSearchService {
       userId?: string;
       tags?: string[];
       dateRange?: { start: Date; end: Date };
+      timeRange?: { start: string; end: string };
+      comprehensionScore?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
       limit?: number;
     } = {}
   ) {
@@ -164,6 +202,38 @@ export class HybridSearchService {
           $gte: filters.dateRange.start,
           $lte: filters.dateRange.end,
         };
+      }
+      if (filters.timeRange) {
+        // 시간 필터링을 위한 추가 조건
+        matchStage.$expr = {
+          $and: [
+            {
+              $gte: [
+                { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+                filters.timeRange.start
+              ]
+            },
+            {
+              $lte: [
+                { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+                filters.timeRange.end
+              ]
+            }
+          ]
+        };
+      }
+      if (filters.comprehensionScore) {
+        // 이해도점수 필터링
+        const { min, max, operator } = filters.comprehensionScore;
+        if (operator === 'gte') {
+          matchStage.comprehensionScore = { $gte: min };
+        } else if (operator === 'lte') {
+          matchStage.comprehensionScore = { $lte: min };
+        } else if (operator === 'eq') {
+          matchStage.comprehensionScore = min;
+        } else if (operator === 'range' && max) {
+          matchStage.comprehensionScore = { $gte: min, $lte: max };
+        }
       }
 
       if (Object.keys(matchStage).length > 0) {
@@ -194,6 +264,7 @@ export class HybridSearchService {
           momentContext: 1,
           relatedKnowledge: 1,
           mentalImage: 1,
+          comprehensionScore: 1,
           score: { $meta: 'vectorSearchScore' },
         },
       });
@@ -294,6 +365,8 @@ export class HybridSearchService {
       userId?: string;
       tags?: string[];
       dateRange?: { start: Date; end: Date };
+      timeRange?: { start: string; end: string };
+      comprehensionScore?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
       limit?: number;
     } = {},
     options: {
@@ -309,19 +382,49 @@ export class HybridSearchService {
     try {
       const startTime = Date.now();
       
+      // Extract natural language information from query
+      const { cleanQuery, naturalLanguageInfo } = NaturalLanguageParserService.extractNaturalLanguageInfo(query);
+      
+      // Update filters with extracted natural language information
+      const updatedFilters = { ...filters };
+      if (naturalLanguageInfo) {
+        if (naturalLanguageInfo.type === 'date' || naturalLanguageInfo.type === 'range') {
+          updatedFilters.dateRange = {
+            start: naturalLanguageInfo.start,
+            end: naturalLanguageInfo.end,
+          };
+        }
+        if (naturalLanguageInfo.type === 'time') {
+          updatedFilters.timeRange = naturalLanguageInfo.timeRange;
+        }
+        if (naturalLanguageInfo.type === 'comprehension') {
+          updatedFilters.comprehensionScore = naturalLanguageInfo.comprehensionScore;
+        }
+      }
+      
+      // Use clean query for search
+      const searchQuery = cleanQuery || query;
+      
       // Check cache first if enabled
       if (options.useCache !== false) {
-        const cachedResult = cacheService.getCachedSearchResult(query, filters);
+        const cachedResult = cacheService.getCachedSearchResult(searchQuery, updatedFilters);
         if (cachedResult) {
-          loggingService.info('Cache hit for hybrid search', { query });
+          loggingService.info('Cache hit for hybrid search', { query: searchQuery });
           return {
             ...cachedResult,
             fromCache: true,
+            dateTimeInfo: naturalLanguageInfo,
           };
         }
       }
 
-      loggingService.info('Starting hybrid search', { query, filters, options });
+      loggingService.info('Starting hybrid search', { 
+        originalQuery: query, 
+        searchQuery, 
+        filters: updatedFilters, 
+        dateTimeInfo: naturalLanguageInfo,
+        options 
+      });
 
       // Perform both searches in parallel with error handling
       let keywordResults: any[] = [];
@@ -329,8 +432,8 @@ export class HybridSearchService {
 
       try {
         [keywordResults, vectorResults] = await Promise.allSettled([
-          this.performKeywordSearch(query, filters),
-          this.performVectorSearch(query, filters),
+          this.performKeywordSearch(searchQuery, updatedFilters),
+          this.performVectorSearch(searchQuery, updatedFilters),
         ]).then(results => [
           results[0].status === 'fulfilled' ? results[0].value : [],
           results[1].status === 'fulfilled' ? results[1].value : [],
@@ -339,57 +442,92 @@ export class HybridSearchService {
         loggingService.error('Search execution failed', error);
         // Fallback to individual searches
         try {
-          keywordResults = await this.performKeywordSearch(query, filters);
+          keywordResults = await this.performKeywordSearch(searchQuery, updatedFilters);
         } catch (keywordError) {
           loggingService.error('Keyword search failed', keywordError);
         }
         
         try {
-          vectorResults = await this.performVectorSearch(query, filters);
+          vectorResults = await this.performVectorSearch(searchQuery, updatedFilters);
         } catch (vectorError) {
           loggingService.error('Vector search failed', vectorError);
         }
       }
 
-      // Use ResultCombinerService to combine results
-      const combinedResults = await resultCombinerService.combineResults(
-        keywordResults,
-        vectorResults,
-        options.strategy || 'weighted',
-        {
-          keywordWeight: options.keywordWeight || this.KEYWORD_WEIGHT,
-          vectorWeight: options.vectorWeight || this.VECTOR_WEIGHT,
-          rrfConstant: options.rrfConstant,
-          minScoreThreshold: options.minScoreThreshold || this.MIN_SCORE_THRESHOLD,
-          maxResults: filters.limit || this.MAX_RESULTS,
-        }
-      );
+      // Normalize scores
+      const normalizedKeywordResults = this.normalizeScores(keywordResults, 'keyword');
+      const normalizedVectorResults = this.normalizeScores(vectorResults, 'vector');
+
+      // Combine results based on strategy
+      let combinedResults: any[] = [];
+      
+      switch (options.strategy || 'weighted') {
+        case 'weighted':
+          combinedResults = this.combineResults(
+            normalizedKeywordResults,
+            normalizedVectorResults
+          );
+          break;
+          
+        case 'rrf':
+          const rrfResult = await resultCombinerService.combineResults(
+            normalizedKeywordResults,
+            normalizedVectorResults,
+            'rrf',
+            { rrfConstant: options.rrfConstant || 60 }
+          );
+          combinedResults = rrfResult.results;
+          break;
+          
+        case 'hybrid':
+          const hybridResult = await resultCombinerService.combineResults(
+            normalizedKeywordResults,
+            normalizedVectorResults,
+            'hybrid'
+          );
+          combinedResults = hybridResult.results;
+          break;
+          
+        default:
+          combinedResults = this.combineResults(
+            normalizedKeywordResults,
+            normalizedVectorResults
+          );
+      }
+
+      // Apply minimum score threshold
+      const minThreshold = options.minScoreThreshold || this.MIN_SCORE_THRESHOLD;
+      combinedResults = combinedResults.filter(result => result.combinedScore >= minThreshold);
+
+      // Limit results
+      const limit = updatedFilters.limit || this.MAX_RESULTS;
+      combinedResults = combinedResults.slice(0, limit);
 
       const duration = Date.now() - startTime;
-      loggingService.logPerformance('hybrid_search', duration, {
-        query,
-        keywordResults: keywordResults.length,
-        vectorResults: vectorResults.length,
-        combinedResults: combinedResults.results.length,
-        strategy: options.strategy || 'weighted',
+      loggingService.logPerformance('hybrid_search', duration, { 
+        query: searchQuery, 
+        results: combinedResults.length,
+        dateTimeInfo: naturalLanguageInfo 
       });
 
       const result = {
-        ...combinedResults,
-        query,
-        filters,
-        searchStats: {
+        results: combinedResults,
+        total: combinedResults.length,
+        query: searchQuery,
+        originalQuery: query,
+        dateTimeInfo: naturalLanguageInfo,
+        filters: updatedFilters,
+        strategy: options.strategy || 'weighted',
+        performance: {
+          duration,
           keywordResults: keywordResults.length,
           vectorResults: vectorResults.length,
-          combinedResults: combinedResults.results.length,
-          duration: `${duration}ms`,
-          strategy: options.strategy || 'weighted',
         },
       };
 
       // Cache the result if enabled
       if (options.useCache !== false) {
-        cacheService.cacheSearchResult(query, filters, result, options.cacheTTL);
+        cacheService.cacheSearchResult(searchQuery, updatedFilters, result, options.cacheTTL);
       }
 
       return result;
