@@ -6,8 +6,6 @@ import './dashboard/styles/dashboard.css';
 import Footer from '@/components/common/Footer';
 import CartUIManager from '@/components/cart/CartUIManager';
 
-import { AILinkCommandWrapper } from '@/components/ai/AILinkCommandWrapper'; // AI-Link 래퍼 컴포넌트 임포트
-
 // Noto Serif KR 폰트 설정
 const notoSerifKr = Noto_Serif_KR({
   subsets: ['latin'],
@@ -161,7 +159,6 @@ export default function RootLayout({
               {children}
             </div>
             <CartUIManager />
-            <AILinkCommandWrapper />
           </ReduxProvider>
           
           {/* 개발 환경에서만 디버그 패널 표시 */}

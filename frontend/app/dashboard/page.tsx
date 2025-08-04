@@ -10,6 +10,7 @@ import { FiGrid, FiList, FiChevronDown, FiBook, FiTarget, FiFileText } from 'rea
 import AppLogo from '@/components/common/AppLogo';
 import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
+import SearchUIManager from '@/components/search/SearchUIManager';
 
 // 타입 정의 - TSNote를 사용
 
@@ -604,6 +605,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+      <SearchUIManager />
     </div>
   );
 }

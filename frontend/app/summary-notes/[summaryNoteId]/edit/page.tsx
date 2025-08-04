@@ -24,6 +24,7 @@ import {
 import { AiLinkModal } from '@/components/summary-notes/AiLinkModal';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 import { useAutoSave } from '@/hooks/useAutoSave';
+import SearchUIManager from '@/components/search/SearchUIManager';
 
 
 // 리치 텍스트 에디터 및 리사이저블 패널 추가
@@ -1604,6 +1605,7 @@ export default function EditSummaryNotePage() {
           </div>
         )}
       </div>
+      <SearchUIManager />
     </div>
   );
 } 

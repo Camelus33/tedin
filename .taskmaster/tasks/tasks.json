@@ -1863,208 +1863,1501 @@
   "rich-text-editor": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Setup Project Repository",
-        "description": "Set up the project repository with necessary configurations and dependencies.",
-        "details": "1. Initialize a new Git repository.\n2. Set up a React project using Create React App or Next.js (latest version).\n3. Install necessary dependencies: `npm install react react-dom styled-components`. Consider using `immer` for immutable state updates.\n4. Configure TypeScript for static typing: `npm install --save-dev typescript @types/node @types/react @types/react-dom @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint prettier eslint-config-prettier eslint-plugin-prettier`.\n5. Set up a basic folder structure: `src/components`, `src/styles`, `src/utils`.",
-        "testStrategy": "Verify the project setup by running the development server and checking for any initial errors in the console.",
+        "id": 31,
+        "title": "Initialize Node.js Backend with Express",
+        "description": "Initialize the Node.js backend project with Express.js and necessary dependencies.",
+        "details": "Use `npm init -y` to create a `package.json` file. Install Express.js (`npm install express`), MongoDB driver (`npm install mongodb`), dotenv (`npm install dotenv`), and any other middleware (e.g., cors). Create a basic `app.js` or `index.js` file to set up the Express server.",
+        "testStrategy": "Run the server and check if it starts without errors. Create a simple endpoint to verify basic functionality.",
         "priority": "high",
         "dependencies": [],
         "status": "done",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Initialize npm project",
+            "description": "Run `npm init -y` to create a `package.json` file.",
+            "dependencies": [],
+            "details": "Navigate to the project directory in the terminal and execute the command `npm init -y`. This will create a `package.json` file with default settings.",
+            "status": "done",
+            "testStrategy": "Verify that a `package.json` file is created in the project directory."
+          },
+          {
+            "id": 2,
+            "title": "Install Express.js",
+            "description": "Install Express.js as a project dependency using npm.",
+            "dependencies": [],
+            "details": "Run `npm install express` to install the Express.js framework. This will add Express.js to the project's `node_modules` directory and update the `package.json` file with the dependency.",
+            "status": "done",
+            "testStrategy": "Check that Express.js is listed as a dependency in the `package.json` file."
+          },
+          {
+            "id": 3,
+            "title": "Install MongoDB driver and dotenv",
+            "description": "Install the MongoDB driver and dotenv package using npm.",
+            "dependencies": [],
+            "details": "Run `npm install mongodb dotenv` to install the MongoDB driver and dotenv package. These packages are required for connecting to the MongoDB database and managing environment variables.",
+            "status": "done",
+            "testStrategy": "Verify that both mongodb and dotenv are listed as dependencies in the `package.json` file."
+          },
+          {
+            "id": 4,
+            "title": "Install CORS middleware",
+            "description": "Install the CORS middleware to handle Cross-Origin Resource Sharing.",
+            "dependencies": [],
+            "details": "Run `npm install cors` to install the CORS middleware. This middleware is necessary to allow requests from different origins (e.g., a frontend running on a different port).",
+            "status": "done",
+            "testStrategy": "Check that CORS is listed as a dependency in the `package.json` file."
+          },
+          {
+            "id": 5,
+            "title": "Create and configure app.js",
+            "description": "Create an `app.js` file and set up a basic Express server.",
+            "dependencies": [],
+            "details": "Create a file named `app.js` (or `index.js`). Import Express, initialize the app, define a basic route (e.g., `/`), and start the server listening on a specific port (e.g., 3000).",
+            "status": "done",
+            "testStrategy": "Run the server using `node app.js` and check if it starts without errors. Access the defined route in a browser or using a tool like curl and verify that it returns the expected response."
+          }
+        ]
       },
       {
-        "id": 2,
-        "title": "Implement Basic Editor Component",
-        "description": "Create the main editor component with contentEditable and basic styling.",
-        "details": "1. Create a new component file, e.g., `RichTextEditor.tsx`.\n2. Implement the contentEditable div with basic styling (min-height: 400px, scrollable, focus border).\n3. Use React's `useState` hook to manage the editor's content.\n4. Implement `onChange` handler to update the state when the content changes.\n5. Apply initial styling based on the design guidelines (background, text, border colors).",
-        "testStrategy": "Manually type text into the editor and verify that the content is displayed correctly and the styling is applied.",
+        "id": 32,
+        "title": "Configure MongoDB Atlas Connection",
+        "description": "Configure MongoDB Atlas connection and set up the database connection.",
+        "details": "Install the MongoDB Node.js driver (`npm install mongodb`). Use environment variables (using `dotenv`) to store the MongoDB Atlas connection string. Create a module to handle the database connection and export it for use in other parts of the application. Consider using Mongoose (install via `npm install mongoose`) for schema management if the data structure is complex.",
+        "testStrategy": "Write a script to connect to the MongoDB Atlas database and verify the connection. Perform a simple query to ensure data can be retrieved.",
         "priority": "high",
         "dependencies": [
-          1
+          31
         ],
         "status": "done",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install MongoDB Driver and Mongoose",
+            "description": "Install the MongoDB Node.js driver and Mongoose using npm.",
+            "dependencies": [],
+            "details": "Run `npm install mongodb mongoose` to install the necessary packages.",
+            "status": "done",
+            "testStrategy": "Verify that the packages are installed correctly by checking the `node_modules` directory and package.json."
+          },
+          {
+            "id": 2,
+            "title": "Set up Environment Variables for MongoDB Atlas Connection String",
+            "description": "Configure environment variables to store the MongoDB Atlas connection string using the `dotenv` package.",
+            "dependencies": [],
+            "details": "Install `dotenv` (`npm install dotenv`). Create a `.env` file and store the connection string as `MONGODB_URI=your_mongodb_atlas_connection_string`. Load the environment variables in the application.",
+            "status": "done",
+            "testStrategy": "Create a test script to read the MONGODB_URI environment variable and verify its value."
+          },
+          {
+            "id": 3,
+            "title": "Create Database Connection Module",
+            "description": "Create a module to handle the database connection and export it for use in other parts of the application.",
+            "dependencies": [],
+            "details": "Create a file (e.g., `db.js`) to establish the MongoDB connection using the connection string from the environment variables. Export the connection object.",
+            "status": "done",
+            "testStrategy": "Attempt to connect to the database using the module and verify that the connection is successful."
+          },
+          {
+            "id": 4,
+            "title": "Define Mongoose Schema (If Applicable)",
+            "description": "Define Mongoose schema for data models if the data structure is complex.",
+            "dependencies": [],
+            "details": "Create Mongoose schemas for the data models, defining the structure and data types of the documents in the MongoDB collections.",
+            "status": "done",
+            "testStrategy": "Create a test script to define a sample schema and verify that it is correctly defined."
+          },
+          {
+            "id": 5,
+            "title": "Test MongoDB Atlas Connection",
+            "description": "Write a script to connect to the MongoDB Atlas database and verify the connection. Perform a simple query to ensure data can be retrieved.",
+            "dependencies": [],
+            "details": "Use the database connection module to connect to the MongoDB Atlas database. Execute a simple query (e.g., `db.collection('collection_name').findOne({})`) to retrieve data.",
+            "status": "done",
+            "testStrategy": "Verify that the connection is established successfully and that data can be retrieved from the database."
+          }
+        ]
       },
       {
-        "id": 3,
-        "title": "Implement Toolbar Component",
-        "description": "Implement the toolbar component with basic structure and styling.",
-        "details": "1. Create a new component file, e.g., `EditorToolbar.tsx`.\n2. Implement the toolbar layout with placeholders for buttons (undo/redo, block type, inline styles, lists, alignment, clear formatting).\n3. Apply styling based on the design guidelines (background color, button hover, active button styles).\n4. Use styled-components for styling.",
-        "testStrategy": "Verify that the toolbar is displayed correctly and the styling is applied. Check the hover and active states of the buttons.",
+        "id": 33,
+        "title": "Implement JWT Authentication",
+        "description": "Implement JWT authentication middleware for securing API endpoints.",
+        "details": "Install `jsonwebtoken` (`npm install jsonwebtoken`) and `bcrypt` (`npm install bcrypt`) for JWT and password hashing. Create middleware functions for user registration, login, and JWT verification. Store the JWT secret key in an environment variable. Ensure proper error handling and response codes.",
+        "testStrategy": "Create test users and attempt to register and log in. Verify that JWT tokens are correctly generated and that protected endpoints require a valid token.",
         "priority": "high",
         "dependencies": [
-          1
+          32
         ],
         "status": "done",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "User Registration Middleware",
+            "description": "Create middleware for user registration, including password hashing using bcrypt.",
+            "dependencies": [],
+            "details": "Implement a registration endpoint that receives user credentials, hashes the password using bcrypt, and stores the user in the database. Handle potential errors like duplicate usernames.",
+            "status": "done",
+            "testStrategy": "Create test users and attempt to register them. Verify that the user is created in the database with a hashed password."
+          },
+          {
+            "id": 2,
+            "title": "User Login Middleware",
+            "description": "Create middleware for user login, including password verification and JWT generation.",
+            "dependencies": [],
+            "details": "Implement a login endpoint that receives user credentials, verifies the password against the hashed password in the database, and generates a JWT upon successful authentication.",
+            "status": "done",
+            "testStrategy": "Create test users and attempt to log in with valid and invalid credentials. Verify that a JWT is generated upon successful login and that login fails with invalid credentials."
+          },
+          {
+            "id": 3,
+            "title": "JWT Verification Middleware",
+            "description": "Create middleware to verify JWT tokens and protect API endpoints.",
+            "dependencies": [],
+            "details": "Implement middleware that extracts the JWT from the request header, verifies its signature, and attaches the user information to the request object if the token is valid. Return appropriate error codes if the token is invalid or missing.",
+            "status": "done",
+            "testStrategy": "Attempt to access protected endpoints with and without a valid JWT. Verify that access is granted only with a valid JWT and that appropriate error codes are returned otherwise."
+          },
+          {
+            "id": 4,
+            "title": "Environment Variable Configuration",
+            "description": "Configure the JWT secret key as an environment variable.",
+            "dependencies": [],
+            "details": "Store the JWT secret key in an environment variable (e.g., JWT_SECRET). Ensure that the application reads the secret key from the environment variable during startup.",
+            "status": "done",
+            "testStrategy": "Verify that the application can read the JWT secret key from the environment variable and that the JWT tokens are generated using this secret key."
+          },
+          {
+            "id": 5,
+            "title": "Error Handling and Response Codes",
+            "description": "Implement proper error handling and response codes for all authentication-related operations.",
+            "dependencies": [],
+            "details": "Implement error handling for all authentication-related operations, including registration, login, and JWT verification. Return appropriate HTTP status codes (e.g., 400, 401, 403, 500) and error messages to the client.",
+            "status": "done",
+            "testStrategy": "Simulate various error scenarios (e.g., invalid credentials, missing tokens, expired tokens) and verify that the application returns appropriate HTTP status codes and error messages."
+          }
+        ]
       },
       {
-        "id": 4,
-        "title": "Implement Inline Formatting",
-        "description": "Implement inline formatting options (bold, italic, underline, strikethrough).",
-        "details": "1. Implement button click handlers for each inline formatting option.\n2. Use `document.execCommand` API to apply the formatting to the selected text.\n3. Update the toolbar button states based on the current selection.\n4. Example: `document.execCommand('bold', false, null)` for bolding.",
-        "testStrategy": "Select text in the editor and click the inline formatting buttons. Verify that the selected text is formatted correctly.",
-        "priority": "medium",
+        "id": 34,
+        "title": "Configure MongoDB Atlas Vector Search",
+        "description": "Set up MongoDB Atlas Vector Search for semantic search capabilities.",
+        "details": "Ensure MongoDB Atlas cluster is configured to support Vector Search. Create an Atlas Search index on the relevant collection. Use the MongoDB Node.js driver to interact with the Vector Search index. Refer to MongoDB documentation for specific index configuration and query syntax.",
+        "testStrategy": "Insert sample data with embeddings into the MongoDB collection. Perform vector searches using different query vectors and verify that the results are relevant.",
+        "priority": "high",
         "dependencies": [
-          2,
-          3
+          32
+        ],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Verify MongoDB Atlas Cluster Configuration for Vector Search",
+            "description": "Confirm that the MongoDB Atlas cluster is configured to support Vector Search. This may involve upgrading the cluster tier or enabling specific features.",
+            "dependencies": [],
+            "details": "Check the Atlas cluster configuration to ensure it meets the minimum requirements for Vector Search. Consult MongoDB Atlas documentation for compatible cluster tiers and required settings.",
+            "status": "pending",
+            "testStrategy": "Verify the cluster configuration in the Atlas UI or via the Atlas CLI to confirm Vector Search support."
+          },
+          {
+            "id": 2,
+            "title": "Create Atlas Search Index with Vector Search Configuration",
+            "description": "Define and create an Atlas Search index on the relevant MongoDB collection, specifically configuring it for Vector Search. This includes specifying the field containing the vector embeddings and the similarity metric.",
+            "dependencies": [],
+            "details": "Use the Atlas UI or the Atlas Search API to create the index. Define the index mapping to include the vector field and specify the appropriate similarity metric (e.g., cosine similarity).",
+            "status": "pending",
+            "testStrategy": "Inspect the created index in the Atlas UI to verify that the vector search configuration is correctly applied."
+          },
+          {
+            "id": 3,
+            "title": "Install and Configure MongoDB Node.js Driver",
+            "description": "Install the MongoDB Node.js driver and configure it to connect to the MongoDB Atlas cluster. This involves using the connection string and any necessary authentication credentials.",
+            "dependencies": [],
+            "details": "Use `npm install mongodb` to install the driver. Use the connection string stored in environment variables (configured in Task 32) to establish a connection to the Atlas cluster.",
+            "status": "pending",
+            "testStrategy": "Write a simple script to connect to the Atlas cluster using the Node.js driver and verify the connection."
+          },
+          {
+            "id": 4,
+            "title": "Implement Vector Search Query using MongoDB Node.js Driver",
+            "description": "Write code using the MongoDB Node.js driver to perform vector searches against the created Atlas Search index. This involves constructing the appropriate query syntax and handling the search results.",
+            "dependencies": [
+              "34.3"
+            ],
+            "details": "Use the `$vectorSearch` aggregation pipeline stage in the MongoDB query to perform the vector search. Construct the query with the query vector and the index name. Handle the returned results and extract the relevant documents.",
+            "status": "pending",
+            "testStrategy": "Insert sample data with embeddings into the MongoDB collection. Perform vector searches using different query vectors and verify that the results are relevant."
+          },
+          {
+            "id": 5,
+            "title": "Test and Optimize Vector Search Performance",
+            "description": "Test the performance of the vector search queries and optimize the index configuration or query syntax as needed to improve search speed and accuracy.",
+            "dependencies": [
+              "34.4"
+            ],
+            "details": "Measure the query execution time and analyze the search results. Adjust the index configuration (e.g., number of dimensions, similarity metric) or the query syntax to optimize performance.",
+            "status": "pending",
+            "testStrategy": "Run benchmark tests with different query vectors and measure the query execution time. Evaluate the relevance of the search results and adjust the index or query as needed."
+          }
+        ]
+      },
+      {
+        "id": 35,
+        "title": "Integrate OpenAI Embeddings API",
+        "description": "Integrate OpenAI Embeddings API for generating vector embeddings of the memo card data.",
+        "details": "Install the OpenAI Node.js library (`npm install openai`). Use the OpenAI Embeddings API to generate embeddings for the memo card text. Store the embeddings in the MongoDB collection along with the memo card data. Handle API key securely using environment variables. Consider using `node-rate-limiter` to avoid rate limits.",
+        "testStrategy": "Create a script to generate embeddings for sample memo card data using the OpenAI API. Verify that the embeddings are generated correctly and stored in the MongoDB collection.",
+        "priority": "high",
+        "dependencies": [
+          33,
+          34
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Securely Configure OpenAI API Key",
+            "description": "Set up environment variables to securely store and access the OpenAI API key.",
+            "dependencies": [],
+            "details": "Create a `.env` file or use a configuration management tool to store the OpenAI API key. Ensure the API key is not hardcoded in the application.",
+            "status": "pending",
+            "testStrategy": "Verify that the API key is accessible from the application using `process.env` and that it is not exposed in the codebase."
+          },
+          {
+            "id": 2,
+            "title": "Implement OpenAI Embeddings Generation",
+            "description": "Write a function to generate embeddings for memo card text using the OpenAI Embeddings API.",
+            "dependencies": [],
+            "details": "Use the OpenAI Node.js library to call the Embeddings API. Handle potential errors and rate limits. Implement retry logic if necessary.",
+            "status": "pending",
+            "testStrategy": "Create a script to generate embeddings for sample memo card data. Verify that the embeddings are generated correctly and that the API calls are successful."
+          },
+          {
+            "id": 3,
+            "title": "Implement Rate Limiting",
+            "description": "Integrate `node-rate-limiter` to prevent exceeding OpenAI API rate limits.",
+            "dependencies": [],
+            "details": "Install `node-rate-limiter`. Configure the rate limiter to match the OpenAI API rate limits. Implement error handling for rate limit exceeded errors.",
+            "status": "pending",
+            "testStrategy": "Simulate multiple requests to the OpenAI API and verify that the rate limiter is working correctly and that the application handles rate limit exceeded errors gracefully."
+          },
+          {
+            "id": 4,
+            "title": "Store Embeddings in MongoDB",
+            "description": "Modify the memo card data storage logic to include the generated embeddings in the MongoDB collection.",
+            "dependencies": [],
+            "details": "Update the MongoDB schema to include a field for storing the embeddings. Modify the data insertion logic to include the generated embeddings when saving memo card data.",
+            "status": "pending",
+            "testStrategy": "Insert sample memo card data with embeddings into the MongoDB collection. Verify that the embeddings are stored correctly and that the data can be retrieved successfully."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Embedding Generation into Memo Card Creation",
+            "description": "Automate the embedding generation process when a new memo card is created.",
+            "dependencies": [
+              "35.1",
+              "35.2",
+              "35.3",
+              "35.4"
+            ],
+            "details": "Modify the memo card creation workflow to automatically generate embeddings for the memo card text and store them in the database.",
+            "status": "pending",
+            "testStrategy": "Create a new memo card and verify that the embeddings are generated automatically and stored in the MongoDB collection along with the memo card data."
+          }
+        ]
       },
       {
-        "id": 5,
-        "title": "Implement Block Formatting",
-        "description": "Implement block formatting options (headings, paragraph).",
-        "details": "1. Implement a dropdown menu for selecting the block type.\n2. Use `document.execCommand` API to apply the heading formatting (H1, H2, H3).\n3. For paragraph, change the element type to `<p>`.\n4. Update the editor content based on the selected block type.",
-        "testStrategy": "Select text in the editor and select a block type from the dropdown menu. Verify that the selected text is formatted correctly.",
-        "priority": "medium",
+        "id": 36,
+        "title": "Implement Hybrid Search",
+        "description": "Implement a hybrid search functionality combining keyword and vector search.",
+        "details": "Use the MongoDB Atlas Search `$search` aggregation pipeline to combine keyword and vector search queries. Implement logic to adjust the weights of keyword and vector search results based on the query and data characteristics. Optimize the search query for performance.",
+        "testStrategy": "Perform hybrid searches using different combinations of keywords and vectors. Verify that the results are relevant and that the weights are adjusted correctly.",
+        "priority": "high",
         "dependencies": [
-          2,
-          3
+          34,
+          35
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Basic Keyword Search with MongoDB Atlas",
+            "description": "Implement a basic keyword search using the MongoDB Atlas Search `$search` aggregation pipeline. Configure the index and query to perform keyword searches on relevant fields.",
+            "dependencies": [],
+            "details": "Configure a MongoDB Atlas Search index for keyword search. Use the `$search` aggregation pipeline to perform keyword queries. Test with sample data to ensure basic keyword search functionality.",
+            "status": "pending",
+            "testStrategy": "Search for known keywords and verify that the expected documents are returned."
+          },
+          {
+            "id": 2,
+            "title": "Implement Basic Vector Search with MongoDB Atlas",
+            "description": "Implement a basic vector search using the MongoDB Atlas Search `$search` aggregation pipeline. Configure the index and query to perform vector searches on the embedding fields.",
+            "dependencies": [],
+            "details": "Configure a MongoDB Atlas Search index for vector search. Use the `$search` aggregation pipeline to perform vector queries. Test with sample data to ensure basic vector search functionality.",
+            "status": "pending",
+            "testStrategy": "Search using sample vectors and verify that the expected documents are returned based on vector similarity."
+          },
+          {
+            "id": 3,
+            "title": "Combine Keyword and Vector Search Queries",
+            "description": "Combine the keyword and vector search queries using the `$search` aggregation pipeline. Implement the initial combination of the two search types.",
+            "dependencies": [
+              "36.1",
+              "36.2"
+            ],
+            "details": "Use the `$search` aggregation pipeline to combine the keyword and vector search queries. Experiment with different combination methods (e.g., compound queries).",
+            "status": "pending",
+            "testStrategy": "Perform hybrid searches with various combinations of keywords and vectors. Verify that results from both search types are returned."
+          },
+          {
+            "id": 4,
+            "title": "Implement Weight Adjustment Logic",
+            "description": "Implement logic to adjust the weights of keyword and vector search results based on query and data characteristics.",
+            "dependencies": [
+              "36.3"
+            ],
+            "details": "Implement logic to dynamically adjust the weights of keyword and vector search results. Consider factors such as query type, data characteristics, and user preferences. Use configurable parameters for weight adjustment.",
+            "status": "pending",
+            "testStrategy": "Test different weight combinations and verify that the results are ranked according to the adjusted weights. Analyze the impact of weight adjustments on search relevance."
+          },
+          {
+            "id": 5,
+            "title": "Optimize Hybrid Search Query Performance",
+            "description": "Optimize the hybrid search query for performance. Analyze query execution plans and identify potential bottlenecks.",
+            "dependencies": [
+              "36.4"
+            ],
+            "details": "Analyze the query execution plan using MongoDB Atlas tools. Optimize the query for performance by using appropriate indexes and query operators. Consider caching strategies to improve response times.",
+            "status": "pending",
+            "testStrategy": "Measure the response time of hybrid search queries with different data volumes and query complexities. Identify and address any performance bottlenecks."
+          }
+        ]
       },
       {
-        "id": 6,
-        "title": "Implement List Formatting",
-        "description": "Implement list formatting options (bulleted list, numbered list).",
-        "details": "1. Implement button click handlers for bulleted and numbered lists.\n2. Use `document.execCommand` API to create lists (`insertUnorderedList`, `insertOrderedList`).\n3. Handle nested lists correctly.",
-        "testStrategy": "Select text in the editor and click the list formatting buttons. Verify that the selected text is formatted correctly.",
-        "priority": "medium",
+        "id": 37,
+        "title": "Develop Search API Endpoints",
+        "description": "Develop API endpoints for handling search queries and returning results.",
+        "details": "Create Express.js routes for handling search requests. Implement input validation and sanitization to prevent security vulnerabilities. Return search results in a JSON format. Implement pagination for handling large result sets.",
+        "testStrategy": "Send search requests to the API endpoints and verify that the results are returned correctly. Test different query parameters and pagination options.",
+        "priority": "high",
         "dependencies": [
-          2,
-          3
+          36
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define API Routes and Request Handling",
+            "description": "Define the Express.js routes for handling search requests, including specifying the HTTP methods (e.g., GET, POST) and URL paths.",
+            "dependencies": [],
+            "details": "Create route handlers for different search functionalities. Implement middleware for request logging and error handling.",
+            "status": "pending",
+            "testStrategy": "Send requests to the defined API routes and verify that the requests are handled correctly and that the appropriate responses are returned."
+          },
+          {
+            "id": 2,
+            "title": "Implement Input Validation and Sanitization",
+            "description": "Implement robust input validation and sanitization to prevent common security vulnerabilities such as SQL injection and cross-site scripting (XSS).",
+            "dependencies": [],
+            "details": "Use a validation library (e.g., express-validator) to validate request parameters and body. Sanitize user input to remove potentially harmful characters or code.",
+            "status": "pending",
+            "testStrategy": "Send malicious or invalid input to the API endpoints and verify that the input is properly validated and sanitized, and that appropriate error messages are returned."
+          },
+          {
+            "id": 3,
+            "title": "Implement Search Logic and Data Retrieval",
+            "description": "Implement the core search logic to query the database (MongoDB Atlas) based on the search parameters. Integrate with the hybrid search functionality.",
+            "dependencies": [],
+            "details": "Use the MongoDB Node.js driver to connect to the database and execute search queries. Construct the search query based on the validated input parameters. Integrate with the hybrid search implementation from Task 36.",
+            "status": "pending",
+            "testStrategy": "Send different search queries to the API endpoints and verify that the correct results are returned from the database. Test different combinations of keywords and vectors."
+          },
+          {
+            "id": 4,
+            "title": "Format Search Results as JSON",
+            "description": "Format the search results into a JSON format that is easy to consume by client applications.",
+            "dependencies": [
+              "37.3"
+            ],
+            "details": "Transform the data retrieved from the database into a JSON structure. Include relevant metadata such as the total number of results and the current page number.",
+            "status": "pending",
+            "testStrategy": "Send search requests to the API endpoints and verify that the results are returned in the correct JSON format. Verify that the JSON structure is consistent and well-formed."
+          },
+          {
+            "id": 5,
+            "title": "Implement Pagination",
+            "description": "Implement pagination to handle large result sets and improve performance.",
+            "dependencies": [
+              "37.3"
+            ],
+            "details": "Add parameters to the API endpoints for specifying the page number and page size. Implement logic to retrieve only the results for the requested page. Return pagination metadata in the JSON response.",
+            "status": "pending",
+            "testStrategy": "Send search requests with different page numbers and page sizes and verify that the correct results are returned for each page. Verify that the pagination metadata is accurate."
+          }
+        ]
       },
       {
-        "id": 7,
-        "title": "Implement Text Alignment",
-        "description": "Implement text alignment options (left, center, right).",
-        "details": "1. Implement button click handlers for each alignment option.\n2. Use `document.execCommand` API to apply the alignment styles (`justifyLeft`, `justifyCenter`, `justifyRight`).\n3. Apply CSS styles to the selected text or block to achieve the desired alignment.",
-        "testStrategy": "Select text in the editor and click the alignment buttons. Verify that the selected text is aligned correctly.",
+        "id": 38,
+        "title": "Implement AI Learning Diagnostics",
+        "description": "Implement AI-powered learning diagnostics based on memo card data.",
+        "details": "Fetch memo card data and embeddings. Use clustering algorithms (e.g., k-means from `ml-kmeans` - install via `npm install ml-kmeans`) to identify learning patterns. Analyze the clusters to identify strengths and weaknesses. Consider using anomaly detection techniques to identify unusual learning patterns.",
+        "testStrategy": "Run the learning diagnostics on sample memo card data. Verify that the learning patterns are identified correctly and that the strengths and weaknesses are accurately assessed.",
         "priority": "medium",
         "dependencies": [
-          2,
-          3
+          35
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Fetch Memo Card Data and Embeddings",
+            "description": "Retrieve memo card data and their corresponding embeddings from the database.",
+            "dependencies": [],
+            "details": "Implement a function to query the database and retrieve memo card data along with their pre-calculated embeddings. Ensure efficient data retrieval.",
+            "status": "pending",
+            "testStrategy": "Verify that the function retrieves the correct memo card data and embeddings for a sample set of memo cards."
+          },
+          {
+            "id": 2,
+            "title": "Implement Clustering Algorithm",
+            "description": "Implement the k-means clustering algorithm using the `ml-kmeans` library.",
+            "dependencies": [],
+            "details": "Install `ml-kmeans` using `npm install ml-kmeans`. Implement a function that takes memo card embeddings as input and performs k-means clustering to identify learning patterns. Determine the optimal number of clusters (k) using techniques like the elbow method or silhouette analysis.",
+            "status": "pending",
+            "testStrategy": "Run the clustering algorithm on a sample dataset of memo card embeddings and verify that the clusters are formed correctly. Evaluate the quality of the clusters using metrics like silhouette score."
+          },
+          {
+            "id": 3,
+            "title": "Analyze Clusters for Strengths and Weaknesses",
+            "description": "Analyze the clusters to identify strengths and weaknesses in learning.",
+            "dependencies": [
+              "38.2"
+            ],
+            "details": "For each cluster, analyze the memo card content and identify common themes or topics. Determine the overall performance of users within each cluster to identify strengths and weaknesses. Generate a report summarizing the findings.",
+            "status": "pending",
+            "testStrategy": "Manually review the clusters and the identified strengths and weaknesses to ensure they are accurate and meaningful."
+          },
+          {
+            "id": 4,
+            "title": "Implement Anomaly Detection (Optional)",
+            "description": "Implement anomaly detection techniques to identify unusual learning patterns.",
+            "dependencies": [
+              "38.1"
+            ],
+            "details": "Explore anomaly detection algorithms (e.g., Isolation Forest, One-Class SVM) to identify memo cards or users with unusual learning patterns. Integrate the anomaly detection algorithm into the learning diagnostics pipeline.",
+            "status": "pending",
+            "testStrategy": "Run the anomaly detection algorithm on a sample dataset and verify that it correctly identifies unusual learning patterns. Evaluate the performance of the algorithm using metrics like precision and recall."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Diagnostics into Learning Platform",
+            "description": "Integrate the AI learning diagnostics into the learning platform.",
+            "dependencies": [
+              "38.3",
+              "38.4"
+            ],
+            "details": "Create an API endpoint to expose the learning diagnostics functionality. Integrate the API endpoint into the learning platform's user interface. Display the learning diagnostics results to users in a clear and understandable format.",
+            "status": "pending",
+            "testStrategy": "Test the integration by running the learning diagnostics on sample user data and verifying that the results are displayed correctly in the learning platform."
+          }
+        ]
       },
       {
-        "id": 8,
-        "title": "Implement Undo/Redo",
-        "description": "Implement undo/redo functionality.",
-        "details": "1. Use a stack to store the editor's content history.\n2. Implement button click handlers for undo and redo.\n3. On undo, pop the previous state from the stack and update the editor content.\n4. On redo, push the next state from the stack and update the editor content.",
-        "testStrategy": "Type text in the editor and click the undo/redo buttons. Verify that the editor content is updated correctly.",
+        "id": 39,
+        "title": "Create Predictive Learning Plans",
+        "description": "Create predictive learning plans based on the AI diagnostics.",
+        "details": "Based on the identified learning patterns, generate personalized learning plans. Prioritize topics based on weaknesses and upcoming exams. Suggest specific memo cards for review. Consider using a rule-based system or a simple Markov model to generate the learning plans.",
+        "testStrategy": "Generate learning plans for different users and verify that the plans are personalized and relevant to their learning needs.",
         "priority": "medium",
         "dependencies": [
-          2
+          38
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Rule-Based Learning Plan Generation",
+            "description": "Develop a rule-based system to generate personalized learning plans based on identified weaknesses and upcoming exams.",
+            "dependencies": [],
+            "details": "Define rules for prioritizing topics, suggesting memo cards, and scheduling review sessions based on user performance data and exam dates.",
+            "status": "pending",
+            "testStrategy": "Test the rule-based system by generating learning plans for various user profiles and verifying that the plans address their specific weaknesses and exam schedules."
+          },
+          {
+            "id": 2,
+            "title": "Implement Markov Model Learning Plan Generation",
+            "description": "Develop a Markov model to generate personalized learning plans based on identified learning patterns.",
+            "dependencies": [],
+            "details": "Train a Markov model on user learning data to predict optimal learning paths and suggest relevant memo cards for review. Consider transition probabilities between topics and user performance.",
+            "status": "pending",
+            "testStrategy": "Test the Markov model by generating learning plans for different users and comparing the plans to their actual learning progress. Evaluate the model's ability to predict effective learning paths."
+          },
+          {
+            "id": 3,
+            "title": "Prioritize Topics Based on Weaknesses and Exams",
+            "description": "Develop a mechanism to prioritize learning topics based on user weaknesses identified by AI diagnostics and upcoming exam schedules.",
+            "dependencies": [],
+            "details": "Implement an algorithm that assigns weights to topics based on their relevance to user weaknesses and exam content. Consider the time remaining before the exam.",
+            "status": "pending",
+            "testStrategy": "Test the prioritization mechanism by generating topic lists for different users and verifying that the lists prioritize topics that are both weak and relevant to upcoming exams."
+          },
+          {
+            "id": 4,
+            "title": "Suggest Specific Memo Cards for Review",
+            "description": "Implement a system to suggest specific memo cards for review based on the prioritized topics and user performance.",
+            "dependencies": [],
+            "details": "Develop a method to link prioritized topics to relevant memo cards. Consider user performance on previous memo card reviews and suggest cards that need reinforcement.",
+            "status": "pending",
+            "testStrategy": "Test the memo card suggestion system by generating lists of suggested memo cards for different users and verifying that the cards are relevant to their prioritized topics and weaknesses."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Rule-Based and Markov Model Systems",
+            "description": "Integrate the rule-based and Markov model systems to create a hybrid approach for generating learning plans.",
+            "dependencies": [
+              "39.1",
+              "39.2",
+              "39.3",
+              "39.4"
+            ],
+            "details": "Combine the strengths of both systems to generate more robust and personalized learning plans. Use the rule-based system for initial prioritization and the Markov model for optimizing the learning path.",
+            "status": "pending",
+            "testStrategy": "Test the integrated system by generating learning plans for different users and comparing the plans to those generated by the individual systems. Evaluate the overall effectiveness of the integrated approach."
+          }
+        ]
       },
       {
-        "id": 9,
-        "title": "Implement Keyboard Shortcuts",
-        "description": "Implement keyboard shortcuts for common formatting options.",
-        "details": "1. Use the `keydown` event listener to capture keyboard shortcuts.\n2. Implement shortcuts for bold (Ctrl/Cmd + B), italic (Ctrl/Cmd + I), underline (Ctrl/Cmd + U), etc.\n3. Prevent default browser behavior for the shortcuts.",
-        "testStrategy": "Use the keyboard shortcuts to apply formatting to the selected text. Verify that the text is formatted correctly.",
+        "id": 40,
+        "title": "Optimize Knowledge Connections",
+        "description": "Optimize knowledge connections based on the memo card data.",
+        "details": "Analyze the relationships between different memo cards. Identify gaps in knowledge and suggest additional memo cards to fill those gaps. Use graph algorithms (e.g., from `graphlib` - install via `npm install graphlib`) to analyze the knowledge graph.",
+        "testStrategy": "Analyze the knowledge connections for different users and verify that the gaps in knowledge are identified correctly and that the suggested memo cards are relevant.",
         "priority": "medium",
         "dependencies": [
-          2
+          39
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Install and Configure Graphlib",
+            "description": "Install the `graphlib` library using npm and set up the environment for its usage in the project.",
+            "dependencies": [],
+            "details": "Install `graphlib` using `npm install graphlib`. Verify the installation by importing the library in a test file and running it.",
+            "status": "pending",
+            "testStrategy": "Create a simple graph using `graphlib` and verify that the graph can be created and manipulated correctly."
+          },
+          {
+            "id": 2,
+            "title": "Analyze Memo Card Relationships",
+            "description": "Analyze the existing memo card data to identify relationships between different cards. Determine the types of relationships (e.g., prerequisite, related topic).",
+            "dependencies": [],
+            "details": "Examine the memo card data structure and identify fields that indicate relationships between cards. Develop a method to extract these relationships programmatically.",
+            "status": "pending",
+            "testStrategy": "Manually verify the identified relationships against a sample of memo cards to ensure accuracy."
+          },
+          {
+            "id": 3,
+            "title": "Build Knowledge Graph",
+            "description": "Construct a knowledge graph using the identified memo card relationships. Represent memo cards as nodes and relationships as edges in the graph.",
+            "dependencies": [
+              "40.2",
+              "40.1"
+            ],
+            "details": "Use the `graphlib` library to create a graph data structure. Populate the graph with memo card data and relationships extracted in the previous step.",
+            "status": "pending",
+            "testStrategy": "Visualize the generated knowledge graph to ensure that the nodes and edges are correctly represented."
+          },
+          {
+            "id": 4,
+            "title": "Identify Knowledge Gaps",
+            "description": "Apply graph algorithms to identify gaps in the knowledge graph. Look for nodes with few connections or missing prerequisite relationships.",
+            "dependencies": [
+              "40.3"
+            ],
+            "details": "Use graph algorithms (e.g., shortest path, centrality measures) to identify nodes that are poorly connected or have missing dependencies. Define criteria for identifying a 'knowledge gap'.",
+            "status": "pending",
+            "testStrategy": "Manually review the identified knowledge gaps and verify that they are indeed gaps in the knowledge domain."
+          },
+          {
+            "id": 5,
+            "title": "Suggest Additional Memo Cards",
+            "description": "Based on the identified knowledge gaps, suggest additional memo cards to fill those gaps. Suggest cards that bridge the gaps and strengthen the knowledge graph.",
+            "dependencies": [
+              "40.4"
+            ],
+            "details": "Develop a method to suggest relevant memo cards based on the identified gaps. Consider using keyword analysis or semantic similarity to find appropriate cards.",
+            "status": "pending",
+            "testStrategy": "Evaluate the relevance of the suggested memo cards to the identified knowledge gaps. Ensure that the suggested cards effectively address the gaps."
+          }
+        ]
       },
       {
-        "id": 10,
-        "title": "Implement Placeholder Text",
-        "description": "Implement placeholder text when the editor is empty.",
-        "details": "1. Use a conditional rendering to display the placeholder text when the editor content is empty.\n2. Hide the placeholder text when the user starts typing.",
-        "testStrategy": "Verify that the placeholder text is displayed when the editor is empty and hidden when the user starts typing.",
+        "id": 41,
+        "title": "Implement Real-time Learning Optimization",
+        "description": "Implement real-time learning optimization based on user activity.",
+        "details": "Track user activity (e.g., memo card views, search queries). Adjust the learning plan in real-time based on user activity. Suggest alternative memo cards or topics based on user struggles.",
+        "testStrategy": "Simulate user activity and verify that the learning plan is adjusted in real-time based on the activity.",
+        "priority": "medium",
+        "dependencies": [
+          40
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Track User Activity",
+            "description": "Implement mechanisms to track user activity, including memo card views, search queries, and other relevant interactions within the learning platform.",
+            "dependencies": [],
+            "details": "Implement event listeners and data logging for user actions. Store activity data in a suitable database or data store. Consider using a message queue for asynchronous processing of activity data.",
+            "status": "pending",
+            "testStrategy": "Simulate user actions and verify that the activity data is correctly logged and stored."
+          },
+          {
+            "id": 2,
+            "title": "Analyze User Activity Data",
+            "description": "Develop algorithms and processes to analyze the collected user activity data to identify patterns, struggles, and areas for improvement.",
+            "dependencies": [
+              "41.1"
+            ],
+            "details": "Implement statistical analysis and machine learning techniques to identify correlations between user activity and learning outcomes. Calculate metrics such as memo card completion rates, search query success rates, and time spent on specific topics.",
+            "status": "pending",
+            "testStrategy": "Use sample user activity data to verify that the analysis algorithms correctly identify patterns and areas for improvement."
+          },
+          {
+            "id": 3,
+            "title": "Adjust Learning Plan in Real-time",
+            "description": "Implement logic to dynamically adjust the user's learning plan based on the analysis of their activity data.",
+            "dependencies": [
+              "41.2"
+            ],
+            "details": "Develop algorithms to prioritize memo cards and topics based on user performance and identified weaknesses. Implement mechanisms to update the learning plan in real-time based on user progress and struggles.",
+            "status": "pending",
+            "testStrategy": "Simulate user activity and verify that the learning plan is adjusted dynamically based on the activity."
+          },
+          {
+            "id": 4,
+            "title": "Suggest Alternative Memo Cards or Topics",
+            "description": "Implement a recommendation system to suggest alternative memo cards or topics to users based on their struggles and learning preferences.",
+            "dependencies": [
+              "41.2"
+            ],
+            "details": "Develop algorithms to identify relevant alternative memo cards or topics based on user activity and learning goals. Implement a user interface to display the recommendations to the user.",
+            "status": "pending",
+            "testStrategy": "Simulate user struggles and verify that the recommendation system suggests relevant alternative memo cards or topics."
+          },
+          {
+            "id": 5,
+            "title": "Integrate with User Interface",
+            "description": "Integrate the real-time learning optimization features into the user interface, providing users with feedback and recommendations.",
+            "dependencies": [
+              "41.3",
+              "41.4"
+            ],
+            "details": "Update the user interface to display the adjusted learning plan and recommendations. Provide users with feedback on their progress and areas for improvement. Ensure that the user interface is responsive and user-friendly.",
+            "status": "pending",
+            "testStrategy": "Conduct user testing to verify that the real-time learning optimization features are integrated seamlessly into the user interface and that users find them helpful."
+          }
+        ]
+      },
+      {
+        "id": 42,
+        "title": "Implement Automatic Vulnerability Diagnostics",
+        "description": "Implement automatic vulnerability diagnostics to identify weak areas in the user's knowledge.",
+        "details": "Analyze memo card data and identify areas where the user is struggling. Use statistical analysis to identify topics with low recall rates. Generate reports highlighting the weak areas.",
+        "testStrategy": "Run the vulnerability diagnostics on sample memo card data and verify that the weak areas are identified correctly.",
+        "priority": "medium",
+        "dependencies": [
+          38
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Analyze Memo Card Data for Recall Rates",
+            "description": "Parse and analyze memo card data to determine recall rates for each topic. Identify topics with significantly lower recall rates than average.",
+            "dependencies": [],
+            "details": "Implement a function to read memo card data, calculate recall rates for each topic, and identify topics below a defined threshold. Consider using statistical measures like standard deviation to identify significant deviations.",
+            "status": "pending",
+            "testStrategy": "Test the function with sample memo card data containing varying recall rates. Verify that the function correctly identifies topics with low recall rates."
+          },
+          {
+            "id": 2,
+            "title": "Implement Statistical Analysis of Recall Rates",
+            "description": "Apply statistical analysis techniques to the calculated recall rates to identify statistically significant weak areas.",
+            "dependencies": [
+              "42.1"
+            ],
+            "details": "Use statistical methods (e.g., t-tests, z-tests) to determine if the low recall rates are statistically significant. Adjust for multiple comparisons if necessary. Consider Bayesian approaches for more robust analysis.",
+            "status": "pending",
+            "testStrategy": "Test the statistical analysis with simulated recall rate data. Verify that the analysis correctly identifies statistically significant weak areas."
+          },
+          {
+            "id": 3,
+            "title": "Generate Vulnerability Reports",
+            "description": "Create a report generation module to highlight the identified weak areas in a user-friendly format.",
+            "dependencies": [
+              "42.2"
+            ],
+            "details": "Design a report format that clearly presents the weak areas, their recall rates, and the statistical significance. Include visualizations (e.g., bar charts, heatmaps) to improve readability. Allow users to customize the report content and format.",
+            "status": "pending",
+            "testStrategy": "Generate reports with sample data and verify that the reports accurately reflect the identified weak areas and are easy to understand."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Analysis with Memo Card System",
+            "description": "Integrate the vulnerability diagnostics module with the existing memo card system to automatically analyze user data.",
+            "dependencies": [
+              "42.1",
+              "42.2",
+              "42.3"
+            ],
+            "details": "Modify the memo card system to trigger the vulnerability diagnostics module periodically or on-demand. Store the generated reports in a database or file system. Provide a user interface for accessing the reports.",
+            "status": "pending",
+            "testStrategy": "Run the integrated system with real user data and verify that the vulnerability diagnostics module is triggered correctly and that the reports are generated and stored properly."
+          },
+          {
+            "id": 5,
+            "title": "Implement User Interface for Report Access",
+            "description": "Develop a user interface within the memo card system for users to access and view their vulnerability reports.",
+            "dependencies": [
+              "42.4"
+            ],
+            "details": "Create a user-friendly interface for browsing and viewing the generated reports. Allow users to filter reports by date, topic, or other criteria. Provide options for downloading or printing the reports.",
+            "status": "pending",
+            "testStrategy": "Test the user interface with different user roles and permissions. Verify that users can access their reports and that the interface is easy to use and navigate."
+          }
+        ]
+      },
+      {
+        "id": 43,
+        "title": "Analyze Time Slot Characteristics",
+        "description": "Analyze memo card characteristics across 5 different time slots.",
+        "details": "Group memo card data by time slot. Analyze the characteristics of the memo cards in each time slot (e.g., topic, difficulty). Identify patterns in the user's learning behavior across different time slots.",
+        "testStrategy": "Analyze memo card data for different users and verify that the time slot analysis is performed correctly.",
         "priority": "low",
         "dependencies": [
-          2
+          38
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Data Extraction and Grouping by Time Slot",
+            "description": "Extract memo card data from the database and group it into five distinct time slots as defined by the application.",
+            "dependencies": [],
+            "details": "Identify the relevant data fields (topic, difficulty, user ID, timestamps) and create a data structure that organizes memo cards by time slot.",
+            "status": "pending",
+            "testStrategy": "Verify that the memo card data is correctly extracted and grouped into the appropriate time slots. Check for data integrity and completeness."
+          },
+          {
+            "id": 2,
+            "title": "Analyze Topic Distribution per Time Slot",
+            "description": "Analyze the distribution of topics covered in memo cards for each of the five time slots.",
+            "dependencies": [
+              "43.1"
+            ],
+            "details": "Calculate the frequency of each topic within each time slot. Identify the most and least frequent topics for each slot.",
+            "status": "pending",
+            "testStrategy": "Verify that the topic distribution is calculated correctly for each time slot. Compare the distributions across different time slots to identify any significant differences."
+          },
+          {
+            "id": 3,
+            "title": "Analyze Difficulty Level Distribution per Time Slot",
+            "description": "Analyze the distribution of difficulty levels assigned to memo cards for each of the five time slots.",
+            "dependencies": [
+              "43.1"
+            ],
+            "details": "Calculate the frequency of each difficulty level (e.g., easy, medium, hard) within each time slot. Identify the average difficulty level for each slot.",
+            "status": "pending",
+            "testStrategy": "Verify that the difficulty level distribution is calculated correctly for each time slot. Compare the distributions across different time slots to identify any significant differences."
+          },
+          {
+            "id": 4,
+            "title": "Identify User Learning Behavior Patterns",
+            "description": "Identify patterns in user learning behavior across different time slots based on topic and difficulty.",
+            "dependencies": [
+              "43.2",
+              "43.3"
+            ],
+            "details": "Analyze how the topics and difficulty levels of memo cards change across the five time slots. Look for patterns such as users focusing on specific topics or difficulty levels during certain times.",
+            "status": "pending",
+            "testStrategy": "Analyze user data to identify common learning patterns across different time slots. Verify that the identified patterns are consistent with the user's learning goals and preferences."
+          },
+          {
+            "id": 5,
+            "title": "Document Findings and Insights",
+            "description": "Document the findings of the time slot analysis, including the topic and difficulty distributions, and the identified user learning behavior patterns.",
+            "dependencies": [
+              "43.4"
+            ],
+            "details": "Create a report summarizing the key findings of the analysis. Include visualizations (e.g., charts, graphs) to illustrate the data and patterns. Provide recommendations for improving the user's learning experience based on the findings.",
+            "status": "pending",
+            "testStrategy": "Review the documentation to ensure that it accurately reflects the results of the analysis and provides clear and actionable insights."
+          }
+        ]
       },
       {
-        "id": 11,
-        "title": "Implement Dark Theme",
-        "description": "Implement dark theme support.",
-        "details": "1. Use CSS variables to define the colors for the dark theme.\n2. Use a theme context to manage the current theme.\n3. Update the editor and toolbar styles based on the current theme.",
-        "testStrategy": "Switch between light and dark themes and verify that the editor and toolbar styles are updated correctly.",
+        "id": 44,
+        "title": "Analyze Time Slot Efficiency",
+        "description": "Analyze learning efficiency for each time slot.",
+        "details": "Measure the user's learning efficiency in each time slot (e.g., recall rate, completion time). Identify the most and least efficient time slots for the user.",
+        "testStrategy": "Measure the learning efficiency for different users and verify that the time slot efficiency analysis is performed correctly.",
         "priority": "low",
         "dependencies": [
-          1
+          43
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Time Slots",
+            "description": "Define the specific time slots to be analyzed (e.g., morning, afternoon, evening, night).",
+            "dependencies": [],
+            "details": "Establish clear boundaries for each time slot to ensure consistent data aggregation.",
+            "status": "pending",
+            "testStrategy": "Verify that the defined time slots cover the entire day and are mutually exclusive."
+          },
+          {
+            "id": 2,
+            "title": "Collect Learning Data per Time Slot",
+            "description": "Gather user learning data (recall rate, completion time, etc.) for each defined time slot.",
+            "dependencies": [],
+            "details": "Extract relevant data points from user learning sessions, categorizing them by time slot.",
+            "status": "pending",
+            "testStrategy": "Ensure that all learning data is correctly assigned to the appropriate time slot."
+          },
+          {
+            "id": 3,
+            "title": "Calculate Efficiency Metrics",
+            "description": "Calculate learning efficiency metrics (e.g., average recall rate, average completion time) for each time slot.",
+            "dependencies": [
+              "44.2"
+            ],
+            "details": "Compute the average recall rate and completion time for each time slot based on the collected data.",
+            "status": "pending",
+            "testStrategy": "Verify the accuracy of the calculated efficiency metrics for each time slot."
+          },
+          {
+            "id": 4,
+            "title": "Identify Most and Least Efficient Time Slots",
+            "description": "Determine the time slots with the highest and lowest learning efficiency based on the calculated metrics.",
+            "dependencies": [
+              "44.3"
+            ],
+            "details": "Compare the efficiency metrics across all time slots to identify the most and least efficient periods.",
+            "status": "pending",
+            "testStrategy": "Confirm that the identified time slots align with the calculated efficiency metrics."
+          },
+          {
+            "id": 5,
+            "title": "Document Findings and Recommendations",
+            "description": "Document the analysis results, including the most and least efficient time slots, and provide recommendations for optimizing learning schedules.",
+            "dependencies": [
+              "44.4"
+            ],
+            "details": "Prepare a report summarizing the analysis findings and suggesting adjustments to learning schedules based on time slot efficiency.",
+            "status": "pending",
+            "testStrategy": "Review the documentation to ensure clarity, accuracy, and actionable recommendations."
+          }
+        ]
       },
       {
-        "id": 12,
-        "title": "Implement Responsive Design",
-        "description": "Implement responsive design for mobile devices.",
-        "details": "1. Use media queries to adjust the editor and toolbar styles for different screen sizes.\n2. Implement toolbar collapsing/expanding for smaller screens.",
-        "testStrategy": "Test the editor on different mobile devices and screen sizes. Verify that the editor and toolbar are displayed correctly.",
+        "id": 45,
+        "title": "Optimize Learning Types for Time Slots",
+        "description": "Optimize learning types for each time slot.",
+        "details": "Suggest different learning types for each time slot based on the user's learning style and the characteristics of the memo cards. For example, suggest visual learning for time slots where the user is more receptive to visual information.",
+        "testStrategy": "Suggest learning types for different users and verify that the suggestions are relevant to their learning style and the time slot characteristics.",
         "priority": "low",
         "dependencies": [
-          3
+          44
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Research Learning Styles and Time-Based Receptivity",
+            "description": "Research different learning styles (visual, auditory, kinesthetic, etc.) and how user receptivity to each style varies across different time slots (morning, afternoon, evening).",
+            "dependencies": [],
+            "details": "Gather information on the effectiveness of different learning styles at different times of the day. Consider factors like circadian rhythms and typical daily activities.",
+            "status": "pending",
+            "testStrategy": "Review existing literature and studies on learning styles and time-based learning effectiveness."
+          },
+          {
+            "id": 2,
+            "title": "Analyze Memo Card Characteristics for Learning Style Alignment",
+            "description": "Analyze the characteristics of memo cards (e.g., text-heavy, image-based, audio-based) and determine which learning styles they best align with.",
+            "dependencies": [],
+            "details": "Categorize memo cards based on their content and format. Determine which learning styles are most suitable for each category. For example, a memo card with a diagram would be suitable for visual learners.",
+            "status": "pending",
+            "testStrategy": "Create a matrix mapping memo card characteristics to learning styles and validate it with user feedback."
+          },
+          {
+            "id": 3,
+            "title": "Develop Algorithm for Learning Type Suggestion",
+            "description": "Develop an algorithm that suggests the most appropriate learning type for a given time slot based on the user's learning style and the characteristics of the memo card.",
+            "dependencies": [
+              "45.1",
+              "45.2"
+            ],
+            "details": "The algorithm should take into account the user's preferred learning style, the time of day, and the content of the memo card. It should output a suggested learning type (e.g., visual, auditory, kinesthetic).",
+            "status": "pending",
+            "testStrategy": "Test the algorithm with a variety of users and memo cards to ensure that the suggestions are relevant and effective."
+          },
+          {
+            "id": 4,
+            "title": "Implement Learning Type Suggestion Feature",
+            "description": "Implement the learning type suggestion feature in the application, integrating the developed algorithm.",
+            "dependencies": [
+              "45.3"
+            ],
+            "details": "Integrate the algorithm into the application's learning plan generation module. Display the suggested learning type to the user for each time slot.",
+            "status": "pending",
+            "testStrategy": "Verify that the learning type suggestion feature is working correctly and that the suggestions are displayed to the user in a clear and concise manner."
+          },
+          {
+            "id": 5,
+            "title": "Gather User Feedback and Iterate on Algorithm",
+            "description": "Gather user feedback on the learning type suggestions and iterate on the algorithm to improve its accuracy and effectiveness.",
+            "dependencies": [
+              "45.4"
+            ],
+            "details": "Collect user feedback through surveys, interviews, and usage data. Analyze the feedback to identify areas where the algorithm can be improved. Update the algorithm based on the feedback.",
+            "status": "pending",
+            "testStrategy": "Track user engagement with the suggested learning types and measure their learning outcomes. Use this data to refine the algorithm."
+          }
+        ]
       },
       {
-        "id": 13,
-        "title": "Integrate with Existing API",
-        "description": "Integrate the new editor with the existing API (`userMarkdownContent`, `onChange`, `editable`).",
-        "details": "1. Update the `DynamicBlockNoteEditor` component to use the new rich text editor.\n2. Pass the `userMarkdownContent`, `onChange`, and `editable` props to the new editor.\n3. Update the parent component to handle the HTML-based data from the new editor.",
-        "testStrategy": "Verify that the new editor is integrated correctly with the existing API and that the data is being passed correctly.",
-        "priority": "high",
+        "id": 46,
+        "title": "Track Learning Progress for Time Slots",
+        "description": "Track learning progress for each time slot.",
+        "details": "Monitor the user's progress in each time slot. Identify areas where the user is falling behind. Adjust the learning plan to address the areas where the user is struggling.",
+        "testStrategy": "Track the learning progress for different users and verify that the progress is tracked correctly and that the learning plan is adjusted accordingly.",
+        "priority": "low",
         "dependencies": [
-          2
+          44
         ],
-        "status": "done",
-        "subtasks": []
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Progress Tracking per Time Slot",
+            "description": "Implement a system to track the user's progress on memo cards within each defined time slot.",
+            "dependencies": [],
+            "details": "Develop a mechanism to record the number of memo cards reviewed, the time spent, and the performance (e.g., accuracy, recall rate) for each time slot. Store this data in a structured format.",
+            "status": "pending",
+            "testStrategy": "Simulate user activity across different time slots and verify that the system accurately records progress metrics for each slot."
+          },
+          {
+            "id": 2,
+            "title": "Identify Areas of Weakness per Time Slot",
+            "description": "Analyze the tracked data to identify specific areas where the user is struggling within each time slot.",
+            "dependencies": [
+              "46.1"
+            ],
+            "details": "Analyze the performance data (accuracy, recall rate) for each memo card category within each time slot. Flag categories where the user's performance falls below a predefined threshold.",
+            "status": "pending",
+            "testStrategy": "Introduce simulated weaknesses in specific memo card categories during certain time slots and verify that the system correctly identifies these areas of weakness."
+          },
+          {
+            "id": 3,
+            "title": "Develop Time Slot Performance Dashboard",
+            "description": "Create a dashboard to visualize the user's learning progress and identify areas of weakness for each time slot.",
+            "dependencies": [
+              "46.1",
+              "46.2"
+            ],
+            "details": "Design and implement a dashboard that displays the user's progress metrics (e.g., cards reviewed, time spent, accuracy) for each time slot. Highlight areas of weakness based on the analysis from subtask 46.2.",
+            "status": "pending",
+            "testStrategy": "Populate the dashboard with simulated user data and verify that the information is displayed accurately and that areas of weakness are clearly highlighted."
+          },
+          {
+            "id": 4,
+            "title": "Adjust Learning Plan Based on Time Slot Performance",
+            "description": "Implement a mechanism to automatically adjust the learning plan based on the identified areas of weakness in each time slot.",
+            "dependencies": [
+              "46.2"
+            ],
+            "details": "Develop an algorithm that prioritizes memo cards from categories where the user is struggling in specific time slots. Increase the frequency of review for these cards during those time slots.",
+            "status": "pending",
+            "testStrategy": "Simulate user weaknesses in specific categories during certain time slots and verify that the learning plan is adjusted to prioritize those categories during those time slots."
+          },
+          {
+            "id": 5,
+            "title": "Evaluate the Effectiveness of Learning Plan Adjustments",
+            "description": "Monitor the user's progress after the learning plan adjustments to evaluate their effectiveness.",
+            "dependencies": [
+              "46.4"
+            ],
+            "details": "Track the user's performance in the areas where the learning plan was adjusted. Measure the improvement in accuracy and recall rate over time. Refine the adjustment algorithm based on the evaluation results.",
+            "status": "pending",
+            "testStrategy": "Simulate user weaknesses, adjust the learning plan, and then simulate continued learning. Verify that the user's performance improves in the previously weak areas and that the improvement is statistically significant."
+          }
+        ]
       },
       {
-        "id": 14,
-        "title": "Implement Data Conversion",
-        "description": "Implement data conversion between JSON and HTML formats.",
-        "details": "1. Implement a function to convert the existing JSON-based data to HTML.\n2. Implement a function to convert the HTML-based data from the new editor to JSON (if needed).\n3. Use a library like `html-to-react` or `cheerio` for parsing and converting HTML.",
-        "testStrategy": "Verify that the data is converted correctly between JSON and HTML formats.",
+        "id": 47,
+        "title": "Predict Exam Success",
+        "description": "Predict exam success based on AI analysis.",
+        "details": "Use machine learning models (e.g., logistic regression from `ml-logistic-regression` - install via `npm install ml-logistic-regression`) to predict exam success based on memo card data and learning patterns. Train the model on historical exam data. Provide a confidence score for the prediction.",
+        "testStrategy": "Train the exam success prediction model on historical exam data. Evaluate the model's performance on a test dataset. Verify that the predictions are accurate and that the confidence scores are reliable.",
         "priority": "medium",
         "dependencies": [
-          13
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 15,
-        "title": "Test and Fix Bugs",
-        "description": "Test the new editor and fix any bugs.",
-        "details": "1. Perform thorough testing of all features and functionalities.\n2. Fix any bugs that are found.\n3. Ensure that the editor meets the success criteria (90% UI similarity, all formatting functions working, API compatibility, no performance degradation, mobile responsive).",
-        "testStrategy": "Perform manual and automated testing to ensure that the editor is working correctly and meets the success criteria.",
-        "priority": "high",
-        "dependencies": [
-          13,
-          14
+          38
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Data Preparation and Preprocessing",
+            "description": "Prepare and preprocess historical exam data, memo card data, and learning patterns for model training. This includes cleaning, transforming, and feature engineering relevant data.",
+            "dependencies": [],
+            "details": "Gather historical exam results, memo card usage data (e.g., time spent, recall rate), and learning patterns (e.g., time slot efficiency). Clean the data by handling missing values and outliers. Transform categorical variables into numerical representations. Engineer features such as average recall rate per memo card, time spent on difficult topics, and time slot efficiency scores.",
+            "status": "pending",
+            "testStrategy": "Verify that the data is cleaned, transformed, and feature engineered correctly. Ensure that the data is in the correct format for model training."
+          },
+          {
+            "id": 2,
+            "title": "Model Training and Selection",
+            "description": "Train a logistic regression model (using `ml-logistic-regression`) on the prepared data to predict exam success. Evaluate different model configurations and select the best performing model.",
+            "dependencies": [
+              "47.1"
+            ],
+            "details": "Install the `ml-logistic-regression` library. Split the data into training and testing sets. Train the logistic regression model on the training data. Evaluate the model's performance on the testing data using metrics such as accuracy, precision, recall, and F1-score. Tune the model's hyperparameters to optimize performance. Consider other machine learning models for comparison.",
+            "status": "pending",
+            "testStrategy": "Evaluate the model's performance on a held-out test dataset. Verify that the model achieves a satisfactory level of accuracy, precision, recall, and F1-score."
+          },
+          {
+            "id": 3,
+            "title": "Confidence Score Calibration",
+            "description": "Calibrate the confidence scores generated by the logistic regression model to ensure they accurately reflect the probability of exam success.",
+            "dependencies": [
+              "47.2"
+            ],
+            "details": "Implement a calibration technique such as Platt scaling or isotonic regression to adjust the confidence scores. Evaluate the calibration performance using metrics such as Brier score or calibration curves.",
+            "status": "pending",
+            "testStrategy": "Verify that the confidence scores are well-calibrated by comparing the predicted probabilities with the actual exam outcomes. Ensure that the Brier score is minimized and the calibration curves are close to the diagonal."
+          },
+          {
+            "id": 4,
+            "title": "Prediction and Integration",
+            "description": "Implement the prediction functionality to predict exam success for new users based on their memo card data and learning patterns. Integrate the prediction model into the existing system.",
+            "dependencies": [
+              "47.3"
+            ],
+            "details": "Develop an API endpoint that accepts user data as input and returns the predicted exam success probability and confidence score. Integrate the API endpoint into the user interface. Ensure that the prediction functionality is robust and scalable.",
+            "status": "pending",
+            "testStrategy": "Test the prediction functionality with different user data and verify that the predictions are accurate and the confidence scores are reliable. Ensure that the integration with the existing system is seamless."
+          },
+          {
+            "id": 5,
+            "title": "Evaluation and Refinement",
+            "description": "Continuously evaluate the performance of the exam success prediction model and refine it based on new data and feedback.",
+            "dependencies": [
+              "47.4"
+            ],
+            "details": "Monitor the model's performance over time and identify areas for improvement. Retrain the model with new data to improve its accuracy and generalization ability. Gather feedback from users and incorporate it into the model development process.",
+            "status": "pending",
+            "testStrategy": "Track the model's performance metrics over time and identify any degradation in performance. Regularly retrain the model with new data and evaluate its performance on a held-out test dataset."
+          }
+        ]
+      },
+      {
+        "id": 48,
+        "title": "Create Personalized Learning Strategies",
+        "description": "Create personalized learning strategies based on the exam success prediction.",
+        "details": "Based on the exam success prediction, generate personalized learning strategies. Suggest specific memo cards to review. Recommend additional resources. Provide guidance on time management and test-taking strategies.",
+        "testStrategy": "Generate learning strategies for different users and verify that the strategies are personalized and relevant to their learning needs and exam success prediction.",
+        "priority": "medium",
+        "dependencies": [
+          47
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Analyze Exam Success Prediction",
+            "description": "Analyze the exam success prediction data to identify areas of strength and weakness for each user.",
+            "dependencies": [],
+            "details": "Examine the output of the exam success prediction model, focusing on identifying specific topics or concepts where the user is predicted to struggle. Quantify the level of risk associated with each area.",
+            "status": "pending",
+            "testStrategy": "Verify that the analysis accurately reflects the exam success prediction data for a diverse set of users."
+          },
+          {
+            "id": 2,
+            "title": "Curate Relevant Memo Cards",
+            "description": "Select specific memo cards relevant to the identified areas of weakness.",
+            "dependencies": [
+              "48.1"
+            ],
+            "details": "Based on the analysis of exam success prediction, identify memo cards that directly address the user's weaknesses. Prioritize memo cards that cover fundamental concepts and frequently tested topics.",
+            "status": "pending",
+            "testStrategy": "Ensure that the selected memo cards are directly relevant to the user's identified weaknesses and cover the necessary material."
+          },
+          {
+            "id": 3,
+            "title": "Recommend Additional Resources",
+            "description": "Recommend additional learning resources to supplement memo card review.",
+            "dependencies": [
+              "48.1"
+            ],
+            "details": "Identify relevant textbooks, online tutorials, practice questions, or other learning materials that can help the user strengthen their understanding of the weak areas. Consider resources that offer different learning styles (e.g., visual, auditory, kinesthetic).",
+            "status": "pending",
+            "testStrategy": "Verify that the recommended resources are appropriate for the user's learning level and address the identified weaknesses."
+          },
+          {
+            "id": 4,
+            "title": "Develop Time Management Guidance",
+            "description": "Provide guidance on effective time management strategies for exam preparation.",
+            "dependencies": [],
+            "details": "Create a personalized study schedule that allocates sufficient time to each topic, focusing on areas of weakness. Suggest techniques for prioritizing tasks and avoiding procrastination. Incorporate regular breaks and review sessions.",
+            "status": "pending",
+            "testStrategy": "Evaluate the effectiveness of the time management guidance by tracking user adherence to the schedule and measuring improvements in study habits."
+          },
+          {
+            "id": 5,
+            "title": "Outline Test-Taking Strategies",
+            "description": "Provide guidance on effective test-taking strategies to maximize performance.",
+            "dependencies": [],
+            "details": "Offer advice on how to approach different types of exam questions, manage time during the exam, and avoid common mistakes. Suggest strategies for dealing with test anxiety and maintaining focus.",
+            "status": "pending",
+            "testStrategy": "Assess the impact of the test-taking strategies on user performance by comparing scores on practice exams before and after implementing the strategies."
+          }
+        ]
+      },
+      {
+        "id": 49,
+        "title": "Implement Metacognitive Learning Coach",
+        "description": "Implement a metacognitive learning coach to guide the user's learning process.",
+        "details": "Provide feedback on the user's learning strategies. Encourage the user to reflect on their learning process. Help the user identify and overcome learning obstacles. Use techniques from cognitive behavioral therapy (CBT) to promote effective learning habits.",
+        "testStrategy": "Provide feedback to different users and verify that the feedback is helpful and relevant to their learning needs.",
+        "priority": "low",
+        "dependencies": [
+          48
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Feedback Mechanism for Learning Strategies",
+            "description": "Design the system for providing feedback on the user's learning strategies, including the structure and content of the feedback.",
+            "dependencies": [],
+            "details": "Define the types of learning strategies to be assessed (e.g., time management, resource utilization, active recall). Design a feedback template that includes positive reinforcement, areas for improvement, and specific suggestions. Consider different feedback delivery methods (e.g., text, visual aids).",
+            "status": "pending",
+            "testStrategy": "Create sample learning scenarios and generate feedback using the designed mechanism. Evaluate the clarity, relevance, and helpfulness of the feedback."
+          },
+          {
+            "id": 2,
+            "title": "Implement Reflection Prompts and Tracking",
+            "description": "Implement a system to prompt users to reflect on their learning process and track their reflections.",
+            "dependencies": [],
+            "details": "Develop a set of reflection prompts covering various aspects of the learning process (e.g., goals, progress, challenges, insights). Implement a mechanism to display these prompts at appropriate intervals. Design a data structure to store user reflections and track their frequency and content.",
+            "status": "pending",
+            "testStrategy": "Test the reflection prompt display and data storage functionality. Verify that the prompts are displayed correctly and that user reflections are stored accurately."
+          },
+          {
+            "id": 3,
+            "title": "Develop Obstacle Identification and Resolution Module",
+            "description": "Create a module to help users identify and overcome learning obstacles.",
+            "dependencies": [],
+            "details": "Develop a questionnaire or interview process to help users identify common learning obstacles (e.g., procrastination, lack of motivation, difficulty understanding concepts). Create a database of potential solutions and resources for each obstacle. Implement a system to match users with relevant solutions based on their identified obstacles.",
+            "status": "pending",
+            "testStrategy": "Test the obstacle identification and resolution module with sample users. Verify that the module accurately identifies obstacles and provides relevant solutions."
+          },
+          {
+            "id": 4,
+            "title": "Integrate CBT Techniques for Effective Learning Habits",
+            "description": "Integrate techniques from cognitive behavioral therapy (CBT) to promote effective learning habits.",
+            "dependencies": [],
+            "details": "Research and select relevant CBT techniques (e.g., goal setting, cognitive restructuring, behavioral activation). Develop modules or exercises that incorporate these techniques into the learning process. Provide guidance and support to users as they implement these techniques.",
+            "status": "pending",
+            "testStrategy": "Evaluate the effectiveness of the CBT-based modules in promoting positive learning habits. Measure changes in user behavior and attitudes towards learning."
+          },
+          {
+            "id": 5,
+            "title": "Implement Metacognitive Coach Integration and Testing",
+            "description": "Integrate all the developed modules into a cohesive metacognitive learning coach and perform comprehensive testing.",
+            "dependencies": [
+              "49.1",
+              "49.2",
+              "49.3",
+              "49.4"
+            ],
+            "details": "Integrate the feedback mechanism, reflection prompts, obstacle resolution module, and CBT techniques into a unified system. Design a user interface that is intuitive and easy to use. Implement logging and monitoring to track user interactions and identify areas for improvement.",
+            "status": "pending",
+            "testStrategy": "Conduct user testing with a diverse group of learners. Gather feedback on the usability, effectiveness, and overall satisfaction with the metacognitive learning coach. Iterate on the design based on user feedback."
+          }
+        ]
+      },
+      {
+        "id": 50,
+        "title": "Implement Adaptive Learning Paths",
+        "description": "Implement adaptive learning paths based on the user's progress and performance.",
+        "details": "Adjust the learning path in real-time based on the user's progress and performance. Provide more challenging material to users who are excelling. Provide additional support to users who are struggling. Use reinforcement learning techniques to optimize the learning path.",
+        "testStrategy": "Simulate user progress and performance and verify that the learning path is adapted correctly based on the user's needs.",
+        "priority": "medium",
+        "dependencies": [
+          48
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design the Adaptive Learning Path Algorithm",
+            "description": "Design the core algorithm for adapting the learning path based on user performance and progress. Define the metrics for measuring performance (e.g., accuracy, completion time) and the rules for adjusting the difficulty level.",
+            "dependencies": [],
+            "details": "Research and select appropriate reinforcement learning techniques (e.g., Q-learning, SARSA). Define the state space, action space, and reward function for the reinforcement learning agent. Consider using a hybrid approach combining rule-based and reinforcement learning methods.",
+            "status": "pending",
+            "testStrategy": "Simulate different user performance scenarios and verify that the algorithm adjusts the learning path accordingly. Evaluate the algorithm's convergence and stability."
+          },
+          {
+            "id": 2,
+            "title": "Implement User Performance Tracking",
+            "description": "Implement a system for tracking user performance and progress. This includes collecting data on user interactions, such as quiz scores, time spent on each module, and completion rates.",
+            "dependencies": [],
+            "details": "Design a database schema to store user performance data. Implement API endpoints for recording user activity. Ensure data privacy and security.",
+            "status": "pending",
+            "testStrategy": "Test the data collection system by simulating user activity and verifying that the data is stored correctly. Verify the accuracy and completeness of the data."
+          },
+          {
+            "id": 3,
+            "title": "Integrate Reinforcement Learning Framework",
+            "description": "Integrate a reinforcement learning framework into the learning platform. This involves setting up the environment, defining the reward function, and training the agent.",
+            "dependencies": [
+              "50.1",
+              "50.2"
+            ],
+            "details": "Choose a suitable reinforcement learning library (e.g., TensorFlow, PyTorch). Implement the environment interface for the learning platform. Train the reinforcement learning agent using simulated user data.",
+            "status": "pending",
+            "testStrategy": "Evaluate the performance of the reinforcement learning agent on a validation set of user data. Verify that the agent is learning to optimize the learning path."
+          },
+          {
+            "id": 4,
+            "title": "Develop Content Difficulty Adjustment Mechanism",
+            "description": "Develop a mechanism for adjusting the difficulty level of the learning content based on the user's performance and the recommendations of the reinforcement learning agent.",
+            "dependencies": [
+              "50.1",
+              "50.3"
+            ],
+            "details": "Implement a system for categorizing learning content by difficulty level. Develop algorithms for selecting appropriate content based on user performance and agent recommendations. Consider using content tagging and metadata to facilitate content selection.",
+            "status": "pending",
+            "testStrategy": "Test the content difficulty adjustment mechanism by simulating different user performance scenarios and verifying that the appropriate content is selected. Evaluate the effectiveness of the content selection algorithm."
+          },
+          {
+            "id": 5,
+            "title": "Implement A/B Testing for Learning Paths",
+            "description": "Implement A/B testing to compare different learning paths and optimize the adaptive learning system. This involves creating different versions of the learning path and randomly assigning users to each version.",
+            "dependencies": [
+              "50.1",
+              "50.2",
+              "50.3",
+              "50.4"
+            ],
+            "details": "Design the A/B testing framework. Implement a system for randomly assigning users to different learning path versions. Collect data on user performance for each version. Analyze the data to identify the best-performing learning path.",
+            "status": "pending",
+            "testStrategy": "Run A/B tests with different learning path configurations. Analyze the results to identify the optimal learning path. Continuously monitor and optimize the learning path based on A/B testing results."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-08-03T06:06:27.263Z",
-      "updated": "2025-08-03T06:12:29.610Z",
+      "updated": "2025-08-04T13:08:53.049Z",
       "description": "Tasks for rich-text-editor context"
+    }
+  },
+  "ai-learning-diagnostician": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Implement MongoDB Atlas Vector Search with OpenAI Embeddings",
+        "description": "Configure MongoDB Atlas Vector Search to enable semantic search capabilities using OpenAI Embeddings API.",
+        "details": "1. **Set up MongoDB Atlas Cluster:** Ensure an Atlas cluster is provisioned. Choose a suitable tier based on anticipated data volume and query load. Enable Atlas Search during cluster creation.\n2. **Create a Vector Search Index:** Define a new Atlas Search index with the `vectorType` set to 'denseVector'. Configure the `fields` array to include the field containing the OpenAI embeddings. Specify the `dimensions` to match the embedding vector size (e.g., 1536 for `text-embedding-ada-002`).\n3. **Generate OpenAI Embeddings:** Use the OpenAI Embeddings API (`text-embedding-ada-002` model is recommended for cost-effectiveness and performance) to generate vector embeddings for the text data to be indexed.  Handle API rate limits gracefully using exponential backoff.\n4. **Store Embeddings in MongoDB:** Store the generated embeddings in the designated MongoDB collection. Ensure the embedding vectors are stored as arrays of floating-point numbers.\n5. **Implement Semantic Search Query:** Construct an aggregation pipeline that uses the `$vectorSearch` operator to perform semantic similarity search.  Specify the `index` name, `path` to the embedding field, `queryVector` (embedding of the search query generated using OpenAI), `numCandidates` (number of documents to consider), and `limit` (number of results to return).\n6. **Optimize for Performance:** Monitor query performance and adjust the `numCandidates` parameter to balance recall and latency. Consider using pre-filtering techniques to reduce the search space.\n7. **Error Handling and Logging:** Implement robust error handling to catch potential issues with the OpenAI API, Atlas Search, and data processing. Log relevant information for debugging and monitoring.\n8. **Security Considerations:** Secure the OpenAI API key and MongoDB Atlas credentials using environment variables or a secrets management system. Implement appropriate access control measures to protect sensitive data.",
+        "testStrategy": "1. **Index Creation Verification:** Verify that the Atlas Search index is created successfully with the correct configuration (vector type, dimensions, fields).\n2. **Embedding Generation and Storage:** Confirm that OpenAI embeddings are generated correctly and stored in MongoDB as arrays of floating-point numbers.\n3. **Semantic Search Accuracy:** Test the semantic search functionality with a variety of queries. Evaluate the relevance of the search results based on semantic similarity, not just keyword matching. Use a ground truth dataset to measure precision and recall.\n4. **Performance Testing:** Measure the query latency for different query types and data volumes. Ensure that the performance meets the required SLAs.  Test with concurrent users to assess scalability.\n5. **Error Handling Validation:** Simulate error conditions (e.g., OpenAI API errors, invalid data) and verify that the application handles them gracefully and logs appropriate error messages.\n6. **Security Audit:** Review the code and configuration to ensure that API keys and database credentials are not exposed and that access control is properly implemented.",
+        "status": "done",
+        "dependencies": [
+          6,
+          7
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Provision MongoDB Atlas Cluster and Enable Atlas Search",
+            "description": "Set up a MongoDB Atlas cluster with an appropriate tier and enable Atlas Search during the cluster creation process.",
+            "dependencies": [],
+            "details": "Choose a suitable Atlas cluster tier based on anticipated data volume and query load. Ensure Atlas Search is enabled during cluster creation.",
+            "status": "done",
+            "testStrategy": "Verify that the Atlas cluster is successfully provisioned and Atlas Search is enabled."
+          },
+          {
+            "id": 2,
+            "title": "Create Vector Search Index in Atlas",
+            "description": "Define a new Atlas Search index with the correct vector type, fields, and dimensions to store OpenAI embeddings.",
+            "dependencies": [],
+            "details": "Create an Atlas Search index with `vectorType` set to 'denseVector'. Configure the `fields` array to include the field containing the OpenAI embeddings. Specify the `dimensions` to match the embedding vector size (e.g., 1536).",
+            "status": "done",
+            "testStrategy": "Verify that the Atlas Search index is created successfully with the correct configuration (vector type, dimensions, fields)."
+          },
+          {
+            "id": 3,
+            "title": "Generate and Store OpenAI Embeddings",
+            "description": "Use the OpenAI Embeddings API to generate vector embeddings for the text data and store them in MongoDB.",
+            "dependencies": [],
+            "details": "Use the OpenAI Embeddings API (`text-embedding-ada-002` model recommended) to generate vector embeddings. Handle API rate limits gracefully. Store the embeddings in the designated MongoDB collection as arrays of floating-point numbers.",
+            "status": "done",
+            "testStrategy": "Confirm that OpenAI embeddings are generated correctly and stored in MongoDB as arrays of floating-point numbers. Verify rate limit handling."
+          },
+          {
+            "id": 4,
+            "title": "Implement Semantic Search Query with $vectorSearch",
+            "description": "Construct an aggregation pipeline that uses the `$vectorSearch` operator to perform semantic similarity search.",
+            "dependencies": [],
+            "details": "Construct an aggregation pipeline using `$vectorSearch`. Specify the `index` name, `path` to the embedding field, `queryVector` (embedding of the search query), `numCandidates`, and `limit`.",
+            "status": "done",
+            "testStrategy": "Verify that the semantic search query returns relevant results based on the similarity between the query vector and the stored embeddings."
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Handling, Logging, and Security",
+            "description": "Implement robust error handling, logging, and security measures for the application.",
+            "dependencies": [],
+            "details": "Implement error handling for OpenAI API, Atlas Search, and data processing. Log relevant information. Secure the OpenAI API key and MongoDB Atlas credentials using environment variables or a secrets management system. Implement access control.",
+            "status": "done",
+            "testStrategy": "Test error handling by simulating API failures and data processing errors. Verify that errors are logged correctly. Confirm that API keys and credentials are secure."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Hybrid Search: Keyword + Vector",
+        "description": "Implement hybrid search by combining keyword and vector search to improve search result accuracy and relevance.",
+        "details": "1.  **Design Hybrid Search Strategy:** Determine the optimal weighting and combination method for keyword and vector search results. Consider using a weighted ranking system or a reciprocal rank fusion approach.\n2.  **Implement Keyword Search:** Integrate existing keyword search functionality (e.g., using MongoDB Atlas Search with text indexing) into the hybrid search pipeline. Ensure keyword search queries are properly constructed and executed.\n3.  **Implement Vector Search:** Utilize the MongoDB Atlas Vector Search functionality (as implemented in Task 1) to perform semantic similarity searches based on user query embeddings.\n4.  **Combine Search Results:** Develop a mechanism to merge and rank the results from keyword and vector searches. This may involve normalizing scores, applying weights, and deduplicating results.\n5.  **Optimize Performance:** Evaluate and optimize the performance of the hybrid search implementation. Consider caching strategies, query optimization techniques, and indexing strategies to minimize latency and maximize throughput.\n6.  **Error Handling:** Implement robust error handling to gracefully handle failures in either the keyword or vector search components. Ensure that errors are logged and reported appropriately.",
+        "testStrategy": "1.  **Relevance Testing:** Evaluate the relevance of hybrid search results compared to keyword-only and vector-only search results. Use a set of test queries with known relevant documents to assess the accuracy and ranking of results.\n2.  **Performance Testing:** Measure the query latency and throughput of the hybrid search implementation under various load conditions. Ensure that performance meets acceptable levels.\n3.  **Weighting Adjustment:** Experiment with different weighting schemes for keyword and vector search results to optimize relevance and ranking. Use A/B testing or other evaluation methods to determine the best weighting configuration.\n4.  **Edge Case Testing:** Test the hybrid search implementation with edge cases, such as queries with ambiguous keywords, queries with no matching keywords, and queries with multiple intents.\n5.  **Integration Testing:** Verify that the hybrid search implementation integrates seamlessly with other components of the search system, such as the user interface and the data indexing pipeline.",
+        "status": "done",
+        "dependencies": [
+          1
+        ],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design and Document Hybrid Search Strategy",
+            "description": "Define the weighting and combination method for keyword and vector search results. Document the chosen strategy, including the rationale behind the selection (e.g., weighted ranking, reciprocal rank fusion).",
+            "dependencies": [],
+            "details": "Research and compare different hybrid search strategies (weighted ranking, reciprocal rank fusion, etc.). Determine the optimal weights for keyword and vector search based on the specific dataset and search requirements. Document the chosen strategy, including the rationale and any parameters.",
+            "status": "done",
+            "testStrategy": "Evaluate the performance of the chosen strategy using a set of test queries and compare it to other strategies. Measure the precision and recall of the hybrid search results."
+          },
+          {
+            "id": 2,
+            "title": "Implement Keyword Search Integration",
+            "description": "Integrate the existing keyword search functionality (MongoDB Atlas Search) into the hybrid search pipeline. Ensure proper query construction and execution.",
+            "dependencies": [],
+            "details": "Configure MongoDB Atlas Search with appropriate text indexing. Develop code to construct and execute keyword search queries based on user input. Handle potential errors during query execution.",
+            "status": "done",
+            "testStrategy": "Verify that keyword search queries are executed correctly and return relevant results. Measure the query latency and throughput of the keyword search component."
+          },
+          {
+            "id": 3,
+            "title": "Implement Vector Search Integration",
+            "description": "Integrate MongoDB Atlas Vector Search (from Task 1) into the hybrid search pipeline to perform semantic similarity searches.",
+            "dependencies": [],
+            "details": "Utilize the MongoDB Atlas Vector Search functionality to perform semantic similarity searches based on user query embeddings. Ensure that the query embeddings are generated correctly and used to query the vector index.",
+            "status": "done",
+            "testStrategy": "Verify that vector search queries are executed correctly and return relevant results based on semantic similarity. Measure the query latency and throughput of the vector search component."
+          },
+          {
+            "id": 4,
+            "title": "Develop Result Combination and Ranking Mechanism",
+            "description": "Develop a mechanism to merge and rank the results from keyword and vector searches, including normalization, weighting, and deduplication.",
+            "dependencies": [
+              "2.1",
+              "2.2",
+              "2.3"
+            ],
+            "details": "Implement a function to combine the results from keyword and vector searches. Normalize the scores from each search component. Apply the weights defined in the hybrid search strategy. Deduplicate any overlapping results. Rank the combined results based on the weighted scores.",
+            "status": "done",
+            "testStrategy": "Evaluate the ranking of the combined results using a set of test queries. Verify that the relevant documents are ranked higher than irrelevant documents. Measure the impact of different weighting schemes on the ranking of results."
+          },
+          {
+            "id": 5,
+            "title": "Optimize and Test Hybrid Search Performance and Error Handling",
+            "description": "Evaluate and optimize the performance of the hybrid search implementation. Implement robust error handling and logging.",
+            "dependencies": [
+              "2.4"
+            ],
+            "details": "Implement caching strategies to reduce query latency. Optimize query execution plans. Implement error handling to gracefully handle failures in either the keyword or vector search components. Log errors and performance metrics for monitoring and debugging.\n<info added on 2025-08-04T13:38:01.163Z>\n하이브리드 검색 구현 상태 분석:\n\n**현재 구현된 부분:**\n1. HybridSearchService - 완전히 구현됨 (키워드 + 벡터 검색 결합)\n2. ResultCombinerService - 완전히 구현됨 (가중치 기반, RRF, 하이브리드 전략)\n3. 하이브리드 검색 전략 문서 - 완성됨\n4. 캐싱 및 에러 처리 - 구현됨\n\n**누락된 부분:**\n1. MemoSearchController에서 하이브리드 검색 사용하지 않음\n2. API 라우트에서 하이브리드 검색 엔드포인트 없음\n3. 프론트엔드에서 하이브리드 검색 호출하는 부분 없음\n\n**다음 단계:**\n1. MemoSearchController에 하이브리드 검색 통합\n2. API 라우트 업데이트\n3. 프론트엔드에서 하이브리드 검색 사용하도록 수정\n</info added on 2025-08-04T13:38:01.163Z>\n<info added on 2025-08-04T13:39:17.454Z>\n하이브리드 검색 구현 완료 상태:\n\n**완료된 작업:**\n1. ✅ HybridSearchService - 완전히 구현됨\n2. ✅ ResultCombinerService - 완전히 구현됨  \n3. ✅ MemoSearchController - 하이브리드 검색으로 업데이트됨\n4. ✅ API 라우트 - 기존 라우트가 업데이트된 컨트롤러 사용\n5. ✅ 하이브리드 검색 전략 문서 - 완성됨\n\n**현재 상태:**\n- 백엔드에서 하이브리드 검색이 완전히 구현되어 있음\n- 프론트엔드에서는 아직 하이브리드 검색 API를 직접 호출하는 부분이 없음 (대부분 클라이언트 사이드 필터링 사용)\n- 하이브리드 검색은 API 엔드포인트를 통해 사용 가능한 상태\n\n**다음 단계:**\n1. 하이브리드 검색 API 테스트\n2. 성능 최적화 및 에러 처리 검증\n3. 필요시 프론트엔드에서 하이브리드 검색 사용하도록 수정\n</info added on 2025-08-04T13:39:17.454Z>",
+            "status": "done",
+            "testStrategy": "Measure the query latency and throughput of the hybrid search implementation. Test the error handling mechanisms by simulating failures in the keyword and vector search components. Monitor the logs for errors and performance issues."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement AI Chat Feature for Hybrid Search",
+        "description": "Implement an AI chat feature for the hybrid search system, enabling AI-driven conversations using search results as context. This includes multi-LLM support, a recommendation query system, and chat storage and management.",
+        "details": "1.  **Design AI Chat Interface:** Develop a user-friendly interface for interacting with the AI chat feature. This should include input fields for user queries, display areas for AI responses, and options for selecting different LLMs.\n2.  **Implement Contextualization of Search Results:** Modify the search result processing to provide relevant context to the AI chat system. This may involve extracting key information from search results and formatting it for the LLM.\n3.  **Integrate Multiple LLMs:** Implement support for multiple LLMs, allowing users to select the desired LLM for their chat sessions. This will require an abstraction layer to handle different LLM APIs and response formats.\n4.  **Develop Recommendation Query System:** Implement a system that suggests relevant queries to the user based on the current search context and chat history. This can be achieved using techniques like query expansion or collaborative filtering.\n5.  **Implement Chat Storage and Management:** Design a database schema to store chat logs, including user queries, AI responses, timestamps, and LLM selections. Implement functionality for retrieving, searching, and managing chat history.\n6.  **Secure API Integration:** Ensure secure integration with LLM APIs, handling authentication, authorization, and rate limiting appropriately.\n7.  **Error Handling and Logging:** Implement robust error handling and logging mechanisms to track issues and ensure system stability.",
+        "testStrategy": "1.  **Functional Testing:** Verify that the AI chat feature correctly integrates with the hybrid search system and provides relevant responses based on search results.\n2.  **LLM Performance Testing:** Evaluate the performance of different LLMs in terms of response quality, speed, and accuracy. Compare the responses of different LLMs for the same queries and contexts.\n3.  **Recommendation Query Testing:** Test the accuracy and relevance of the recommendation query system. Ensure that suggested queries are related to the current search context and user intent.\n4.  **Chat Storage and Management Testing:** Verify that chat logs are stored correctly and can be retrieved, searched, and managed efficiently.\n5.  **Security Testing:** Conduct security testing to identify and address potential vulnerabilities in the API integration and data storage.\n6.  **Performance Testing:** Measure the response time of the AI chat feature under different load conditions. Optimize the system for scalability and performance.",
+        "status": "pending",
+        "dependencies": [
+          1,
+          2
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design and Implement AI Chat Interface",
+            "description": "Develop a user-friendly interface for interacting with the AI chat feature, including input fields, display areas, and LLM selection options.",
+            "dependencies": [],
+            "details": "Design the UI/UX for the chat interface. Implement input field for user queries. Implement display area for AI responses. Add options for selecting different LLMs. Ensure responsiveness and accessibility.\n<info added on 2025-08-04T14:07:42.163Z>\n**Core Design Principles (2024 Latest Trends):**\n\n1. **Clarity and Transparency**: Clearly indicate to users that they are interacting with AI.\n2. **Context Awareness**: Maintain context throughout the conversation (previous queries, user preferences, search results).\n3. **Control and Customization**: Provide users with options to control AI behavior.\n4. **Error Handling and Fallback Mechanisms**: Provide clear error messages and alternatives.\n5. **Accessibility**: Adhere to WCAG guidelines.\n\n**Design Patterns:**\n\n1. **Conversational Search Box**: Input field for natural language questions.\n2. **Search Result Summarization and Contextualization**: AI summarizes search results and provides context.\n3. **Follow-up Question Generation**: AI suggests helpful follow-up questions.\n4. **Citation and Source Display**: Clearly display the source of information.\n5. **Multi-Turn Conversation Management**: Manage session-based conversation history.\n6. **Recommended Query System**: Suggest related queries based on the current conversation and search results.\n\n**Leveraging Hybrid Search:**\n- Perform initial search with keyword search.\n- Refine results through semantic understanding with vector search.\n- Contextualize and summarize with LLM.\n\n**Multi-LLM Support:**\n- Enable LLM switching with an abstraction layer.\n- Monitor and optimize performance.\n- Provide user selection options.\n\n**Implementation Considerations:**\n- Optimize MongoDB Atlas vector search index.\n- Use data modeling for efficient storage and retrieval.\n- Consider scalability and security.\n</info added on 2025-08-04T14:07:42.163Z>\n<info added on 2025-08-04T14:18:26.516Z>\nAI 채팅 인터페이스 설계 및 구현 완료:\n\n**구현된 기능:**\n\n1. **AIChatInterface 컴포넌트** - 완전한 AI 채팅 인터페이스\n   - 다중 LLM 지원 (ChatGPT, Claude, Gemini)\n   - 사용자 API 키 입력 및 관리\n   - 실시간 메시지 전송 및 응답\n   - 추천 쿼리 시스템 (Perplexity 스타일)\n   - 채팅 복사 및 저장 기능\n\n2. **HybridSearchModal 통합** - 기존 검색 모달에 AI 채팅 통합\n   - 검색 결과 아래 \"AI와 대화하기\" 버튼 추가\n   - 검색 모드와 AI 채팅 모드 간 전환\n   - 검색 결과를 AI 컨텍스트로 자동 전달\n\n3. **사용자 경험 개선**\n   - 직관적인 UI/UX 디자인\n   - 키보드 네비게이션 지원 (Enter 키로 메시지 전송)\n   - 자동 스크롤 및 로딩 상태 표시\n   - 접근성 고려 (ARIA 라벨, 시맨틱 HTML)\n\n4. **기술적 구현**\n   - TypeScript 타입 안전성\n   - React Hooks 기반 상태 관리\n   - 에러 처리 및 폴백 메커니즘\n   - 반응형 디자인\n\n**다음 단계:** 백엔드 API 엔드포인트 구현이 필요합니다.\n</info added on 2025-08-04T14:18:26.516Z>",
+            "status": "done",
+            "testStrategy": "Verify the interface is user-friendly and intuitive. Test input fields, display areas, and LLM selection options. Ensure the interface is responsive across different devices and browsers."
+          },
+          {
+            "id": 2,
+            "title": "Contextualize Search Results for AI Chat",
+            "description": "Modify search result processing to provide relevant context to the AI chat system by extracting and formatting key information for the LLM.",
+            "dependencies": [],
+            "details": "Implement logic to extract key information from search results. Format the extracted information into a suitable format for the LLM (e.g., JSON, text). Implement a mechanism to pass the formatted context to the AI chat system.",
+            "status": "done",
+            "testStrategy": "Verify that key information is extracted accurately from search results. Test different formatting options to determine the optimal format for the LLM. Ensure the context is passed correctly to the AI chat system."
+          },
+          {
+            "id": 3,
+            "title": "Integrate and Manage Multiple LLMs",
+            "description": "Implement support for multiple LLMs, including an abstraction layer to handle different LLM APIs and response formats.",
+            "dependencies": [],
+            "details": "Implement an abstraction layer to handle different LLM APIs. Implement logic to select the desired LLM for chat sessions. Handle different LLM response formats. Implement error handling for LLM API calls.",
+            "status": "done",
+            "testStrategy": "Test integration with multiple LLMs. Verify that the abstraction layer handles different LLM APIs correctly. Test LLM selection functionality. Ensure error handling is robust."
+          },
+          {
+            "id": 4,
+            "title": "Develop Recommendation Query System",
+            "description": "Implement a system that suggests relevant queries to the user based on the current search context and chat history.",
+            "dependencies": [],
+            "details": "Implement logic to analyze the current search context and chat history. Use techniques like query expansion or collaborative filtering to generate query suggestions. Display the query suggestions to the user.\n<info added on 2025-08-04T14:08:03.366Z>\n**Recommendation Query System Design Patterns (2024 Latest Trends):**\n\n1. **Personalized Query Expansion**: Expand queries based on user's past behavior, preferences, and context information.\n2. **Semantic Similarity Matching**: Match based on semantic understanding even without exact keyword matching.\n3. **Context-Based Bandit**: Dynamically adjust recommendations based on user feedback and context information.\n4. **Multi-Armed Bandit**: Balance between new recommendations and known good recommendations.\n5. **Explainable Recommendations**: Provide explanations for why a specific item was recommended.\n\n**Best Practices for Perplexity, Claude, and ChatGPT Interfaces:**\n\n**Perplexity Style:**\n- Provide concise and informative answers.\n- Utilize explanation generation for recommendations.\n- Example: \"Since you asked about calculus formulas, 'applications of differential formulas' or 'integration techniques' may also be helpful.\"\n\n**Claude Style:**\n- Leverage strong reasoning and conversational abilities.\n- Refine preferences through dialogue with the user.\n- Example: \"I see you're interested in calculus. What part is the most difficult for you? Is it basic concepts or application problems?\"\n\n**ChatGPT Style:**\n- Generate creative and engaging content.\n- Create personalized explanations, reviews, and stories.\n- Example: \"Think of calculus as climbing a mountain. 'Differentiation' is measuring the slope, and 'integration' is calculating the total distance.\"\n\n**Implementation Considerations:**\n\n1. **Embedding Generation**: Use the text-embedding-ada-002 model, normalized unit length embeddings.\n2. **Index Optimization**: hnsw index type, parameter tuning (m, efConstruction).\n3. **Query Optimization**: Use the $vectorSearch operator, reduce latency with caching.\n4. **Scalability**: Distribute data with sharding, load balancing.\n\n**MongoDB Atlas Vector Search Integration:**\n- Generate embeddings for both user queries and item descriptions.\n- Use cosine similarity or other distance metrics.\n- Reflect changes with regular embedding updates.\n\n**Potential Issues and Mitigation Strategies:**\n- Cold Start Problem: Provide initial recommendations with content-based filtering.\n- Data Sparsity: Utilize collaborative filtering techniques.\n- Bias: Mitigate bias with data analysis and re-weighting techniques.\n- Scalability Issues: Utilize distributed computing frameworks.\n</info added on 2025-08-04T14:08:03.366Z>",
+            "status": "done",
+            "testStrategy": "Test the accuracy and relevance of query suggestions. Evaluate different query expansion and collaborative filtering techniques. Ensure the query suggestions are displayed in a user-friendly manner."
+          },
+          {
+            "id": 5,
+            "title": "Implement Chat Storage and Management",
+            "description": "Design a database schema to store chat logs and implement functionality for retrieving, searching, and managing chat history.",
+            "dependencies": [],
+            "details": "Design a database schema to store chat logs (user queries, AI responses, timestamps, LLM selections). Implement functionality for retrieving chat history. Implement search functionality for chat history. Implement management functionality (e.g., deleting chat logs).\n<info added on 2025-08-04T14:08:30.948Z>\n**Update chat storage and management system design strategy based on the latest information collected through web search:**\n\n**Optimize MongoDB Schema Design (2024 Latest Trends):**\n\n**Recommended Schema: Separate \"conversations\" and \"messages\" collections**\n\n**conversations Collection:**\n```json\n{\n  \"_id\": ObjectId(),\n  \"participants\": [ObjectId], // Array of user IDs\n  \"createdAt\": ISODate(),\n  \"updatedAt\": ISODate(),\n  \"metadata\": {\n    \"name\": String,          // Conversation name\n    \"type\": String,          // Conversation type (private, group)\n    \"searchContext\": {       // Search context\n      \"query\": String,\n      \"results\": [ObjectId], // IDs of searched memos\n      \"filters\": Object\n    }\n  }\n}\n```\n\n**messages Collection:**\n```json\n{\n  \"_id\": ObjectId(),\n  \"conversationId\": ObjectId(), // Reference to conversations collection\n  \"senderId\": ObjectId(),\n  \"timestamp\": ISODate(),\n  \"content\": String,\n  \"contentType\": String, // text, image, video\n  \"embedding\": [Number], // OpenAI embedding (for vector search)\n  \"keywords\": [String],   // Keywords (for keyword search)\n  \"metadata\": {\n    \"location\": {\n      \"type\": \"Point\",\n      \"coordinates\": [Number, Number]\n    },\n    \"mentions\": [ObjectId], // IDs of mentioned users\n    \"llmModel\": String,     // LLM model used\n    \"searchScore\": Number   // Search relevance score\n  }\n}\n```\n\n**Indexing Strategy:**\n\n**messages Collection:**\n- `{ conversationId: 1, timestamp: -1 }`: Retrieve conversation history in chronological order\n- `{ senderId: 1, timestamp: -1 }`: Retrieve messages from a specific user\n- `{ embedding: \"vector\" }`: Atlas Search index for vector search\n- `{ keywords: \"text\" }`: Atlas Search index for keyword search\n- `{ \"metadata.location\": \"2dsphere\" }`: For geospatial queries\n\n**conversations Collection:**\n- `{ participants: 1 }`: Retrieve conversations for a user\n- `{ updatedAt: -1 }`: Display recent conversations\n\n**Hybrid Search Integration:**\n- Store Embeddings: Store OpenAI embeddings in the embedding field\n- Store Keywords: Store keywords extracted from message content in the keywords field\n- Hybrid Search Query: Combine keyword search and vector search\n\n**Additional Best Practices:**\n- Data Validation: Utilize MongoDB schema validation\n- Data Archiving: Archive old messages to a separate collection\n- Security: Implement encryption, RBAC, and access control\n- Monitoring: Utilize MongoDB Atlas monitoring tools\n- TTL Index: Consider TTL index for automatic message deletion\n\n**Project Task Relevance:**\n- Task 1: Create Atlas Search vector index and store embeddings\n- Task 2: Combine keyword and vector search for hybrid search\n- Task 3: Design schema for chat storage and management\n</info added on 2025-08-04T14:08:30.948Z>",
+            "status": "done",
+            "testStrategy": "Verify that chat logs are stored correctly in the database. Test retrieving, searching, and managing chat history. Ensure data security and privacy."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-04T13:09:44.245Z",
+      "updated": "2025-08-04T14:32:21.177Z",
+      "description": "AI 학습 진단사 - 수험생 특화 메모카드 검색 시스템 개발"
     }
   }
 }

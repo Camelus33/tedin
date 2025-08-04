@@ -18,6 +18,7 @@ import api from '@/lib/api'; // Added import for central api instance
 import { useCartStore } from '@/store/cartStore'; // Uncommented
 import { showSuccess, showError } from '@/lib/toast';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
+import SearchUIManager from '@/components/search/SearchUIManager';
 
 // API base URL - this should match what's used elsewhere in the app (REMOVING THIS)
 // const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'; // Commented out
@@ -1009,6 +1010,7 @@ const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false); // 새 
           </Button>
         </div>
       </div>
+      <SearchUIManager />
     </div>
   );
 } 

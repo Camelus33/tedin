@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
+import SearchUIManager from '@/components/search/SearchUIManager';
 
 // Cyber Theme Definition
 const cyberTheme = {
@@ -618,6 +619,7 @@ export default function BooksPageContent() {
           </div>
         )}
       </div>
+      <SearchUIManager />
     </div>
   );
 } 

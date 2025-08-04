@@ -32,8 +32,12 @@ import flashcardRoutes from './routes/flashcards';
 import notificationRoutes from './routes/notifications';
 import summaryNoteRoutes from './routes/summaryNoteRoutes';
 import publicShareRoutes from './routes/publicShareRoutes';
-import aiLinkRoutes from './routes/aiLink'; // AI-Link 라우트 임포트
+
 import performanceRoutes from './routes/performance'; // 성능 모니터링 라우트 임포트
+import memoSearchRoutes from './routes/memoSearch'; // 메모카드 검색 라우트 임포트
+import adminRoutes from './routes/admin'; // 관리자 라우트 임포트
+import aiChatRoutes from './routes/aiChat'; // AI 채팅 라우트 임포트
+import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 
 // Initialize Express app
 const app: Express = express();
@@ -127,8 +131,11 @@ app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/summary-notes', summaryNoteRoutes);
 app.use('/api/public-shares', publicShareRoutes);
-app.use('/api/ai-link', aiLinkRoutes); // AI-Link 라우트 등록
+
 app.use('/api/performance', performanceRoutes); // 성능 모니터링 라우트 등록
+app.use('/api/memo-search', memoSearchRoutes); // 메모카드 검색 라우트 등록
+app.use('/api/admin', adminRoutes); // 관리자 라우트 등록
+app.use('/api/ai-chat', aiChatRoutes); // AI 채팅 라우트 등록
 
 // Cognitive metrics API route
 import cognitiveRoutes from './routes/cognitive';
@@ -141,17 +148,10 @@ app.use('/api/health', healthRoutes);
 console.log(`[App] API routes configured.`);
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: '찾으시는 페이지가 숨어있네요. 다른 곳에서 만나요!' });
-});
+app.use(notFoundHandler);
 
 // Error handler
-app.use((err: any, req: any, res: any, next: any) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    error: err.message || '시스템이 잠시 쉬고 있어요. 조금만 기다려 주세요.',
-  });
-});
+app.use(errorHandler);
 
 // Start the server
 app.listen(PORT, () => {
