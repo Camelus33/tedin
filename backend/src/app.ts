@@ -180,6 +180,21 @@ app.use('/api/cognitive', cognitiveRoutes);
 import healthRoutes from './routes/health';
 app.use('/api/health', healthRoutes);
 
+// 루트 경로 핸들러 (Render 헬스체크용)
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Habitus33 API Server is running',
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+});
+
+// HEAD 요청도 지원 (일부 헬스체크 도구에서 사용)
+app.head('/', (req, res) => {
+  res.status(200).end();
+});
+
 console.log(`[App] API routes configured.`);
 
 // 404 handler
