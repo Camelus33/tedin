@@ -114,13 +114,21 @@ class ApiClient {
 
   // 인증 관련 오류 핸들링 개선
   private async handleResponse(response: Response, url: string): Promise<any> {
+    console.log('🔍 handleResponse 시작:', {
+      url,
+      status: response.status,
+      ok: response.ok,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
+
     if (response.ok) {
       try {
         const data = await response.json();
-        console.log('handleResponse 파싱 성공:', data);
+        console.log('✅ handleResponse 파싱 성공:', data);
         return data;
       } catch (error) {
-        console.error('handleResponse JSON 파싱 실패:', error);
+        console.error('❌ handleResponse JSON 파싱 실패:', error);
         console.log('response.status:', response.status);
         console.log('response.headers:', response.headers);
         throw error;
