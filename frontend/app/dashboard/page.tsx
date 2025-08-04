@@ -329,13 +329,13 @@ export default function DashboardPage() {
               onClick={handleNewReading}
               className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              📖 TS 리딩 시작
+              📖 학습 가속 시작
             </button>
             <button
               onClick={handleNewMemo}
               className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-cyan-500/25 border border-cyan-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              ✍️ 새 메모 작성
+              ✍️ 메모 작성
             </button>
           </div>
         </div>
@@ -562,7 +562,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    단 1분, 곧바로 집중력을 회복합니다.
+                    단 15초, 기억력 회복 게임
                   </p>
                   <div className="text-indigo-400 font-medium">시작하기 →</div>
                 </div>
@@ -577,7 +577,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo Myverse</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    Zengo로 외우세요. 즉시 암기 가능
+                    Zengo 입력, 암기 촉진
                   </p>
                   <div className="text-cyan-400 font-medium">체험하기 →</div>
                 </div>
@@ -592,9 +592,9 @@ export default function DashboardPage() {
               <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
                 <div className="flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-medium text-white mb-2">인지력 분석</h3>
+                    <h3 className="text-lg font-medium text-white mb-2">Mental</h3>
                     <p className="text-gray-300">
-                    사용자의 지식 활동을 온톨로지 AI가 빈틈없이 실시간 분석합니다.
+                    AI가 측정한 학습능력을 확인하세요.
                   </p>
                 </div>
                   <div className="text-indigo-400 font-medium">분석 보기 →</div>
