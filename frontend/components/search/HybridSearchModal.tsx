@@ -63,7 +63,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
 
     setIsLoading(true);
     try {
-      const response = await apiClient.post('/api/memo-search/search', {
+      const response = await apiClient.post('/memo-search/search', {
         query: query.trim(),
         userId: user.id,
         limit: 20,
