@@ -85,7 +85,8 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
   const handleSearch = async () => {
     console.log('🔍 사용자 정보 체크:', {
       user: user,
-      userId: user?.id,
+      userEmail: user?.email,
+      userNickname: user?.nickname,
       isAuthenticated: user?.isAuthenticated,
       userObject: JSON.stringify(user, null, 2)
     });
@@ -100,14 +101,14 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
       return;
     }
 
-    if (!user.id) {
-      console.log('❌ 사용자 ID 없음');
+    if (!user.email) {
+      console.log('❌ 사용자 이메일 없음');
       return;
     }
 
     console.log('🔍 검색 시작:', {
       query: query.trim(),
-      userId: user.id,
+      userEmail: user.email,
       apiUrl: process.env.NEXT_PUBLIC_API_URL
     });
 
@@ -115,7 +116,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
     try {
       const response: SearchResponse = await apiClient.post('/memo-search/search', {
         query: query.trim(),
-        userId: user.id,
+        userId: user.email,
         limit: 20,
         strategy: filters.strategy,
         keywordWeight: filters.keywordWeight,
