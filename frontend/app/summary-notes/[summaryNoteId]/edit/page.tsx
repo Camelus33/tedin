@@ -860,7 +860,7 @@ export default function EditSummaryNotePage() {
           <Textarea 
             value={description} 
             onChange={(e) => setDescription(e.target.value)} 
-            placeholder="지식캡슐을 완성하세요. 메모들간의 관계를 벡터그래프로 표현해 AI - link안에 담아 보관하세요."
+            placeholder="지식캡슐로 단권화하세요. 메모들간의 관계를 벡터그래프로 표현해 AI - link안에 담아 사용하세요."
             rows={3}
             className={`${cyberTheme.inputBg} ${cyberTheme.inputBorder} focus:ring-cyan-500 focus:border-cyan-500 w-full ${cyberTheme.textLight}`}
           />

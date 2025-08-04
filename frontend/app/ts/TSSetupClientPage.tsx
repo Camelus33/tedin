@@ -431,7 +431,7 @@ export default function TSSetupClientPage() { // 컴포넌트 이름 변경
                  <span className={`text-lg font-semibold ${cyberTheme.secondary} w-10 text-center`}>{focusDuration}</span>
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                최소 3분 ~ 최대 17분. 자기만의 집중시간을 찾아보세요.
+                최소 3분 ~ 최대 17분. 컨디션에 맞게 시간을 조절하세요. 
               </p>
             </div>
           </div>

@@ -6,35 +6,7 @@ import Link from 'next/link';
 import Button from '@/components/common/Button';
 import api from '@/lib/api';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
-
-// Cyber Theme Definition (다른 TS 페이지와 일관성 유지)
-const cyberTheme = {
-  primary: 'text-cyan-400',
-  secondary: 'text-purple-400',
-  bgPrimary: 'bg-gray-900',
-  bgSecondary: 'bg-gray-800',
-  cardBg: 'bg-gray-800/60',
-  borderPrimary: 'border-cyan-500',
-  borderSecondary: 'border-purple-500',
-  gradient: 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900',
-  textMuted: 'text-gray-400',
-  textLight: 'text-gray-300',
-  inputBg: 'bg-gray-700/50',
-  inputBorder: 'border-gray-600',
-  inputFocusBorder: 'focus:border-cyan-500',
-  inputFocusRing: 'focus:ring-cyan-500/50',
-  progressBarBg: 'bg-gray-700',
-  progressFg: 'bg-cyan-500',
-  buttonPrimaryBg: 'bg-cyan-600',
-  buttonPrimaryHoverBg: 'hover:bg-cyan-700',
-  buttonSecondaryBg: 'bg-gray-700/50',
-  buttonSecondaryHoverBg: 'hover:bg-gray-600/50',
-  buttonDisabledBg: 'bg-gray-600',
-  errorText: 'text-red-400',
-  errorBorder: 'border-red-500/50',
-  ratingActive: 'text-yellow-400',
-  ratingInactive: 'text-gray-600',
-};
+import { cyberTheme } from '@/src/styles/theme';
 
 type SessionResult = {
   _id: string;
@@ -218,7 +190,7 @@ export default function TSResultPage() {
                   {/* Progress Bar */}
                   <div className={`w-full ${cyberTheme.progressBarBg} h-2 rounded-full overflow-hidden`}>
                     <div 
-                      className={`h-full bg-gradient-to-r ${achievement.color}`}
+                      className={`h-full ${cyberTheme.progressFg}`}
                       style={{ width: `${Math.min((sessionResult.ppm / 5) * 100, 100)}%` }}
                     ></div>
                   </div>
@@ -321,7 +293,7 @@ export default function TSResultPage() {
               href="/dashboard" 
               variant="outline" 
               fullWidth
-              className={`text-sm font-medium ${cyberTheme.buttonSecondaryBg} ${cyberTheme.textLight} ${cyberTheme.inputBorder} hover:${cyberTheme.buttonSecondaryHoverBg}`}
+              className={`text-sm font-medium ${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg}`}
             >
               대시보드
             </Button>
@@ -331,7 +303,7 @@ export default function TSResultPage() {
                 : '/books'}
               variant="outline" 
               fullWidth
-              className={`text-sm font-medium ${cyberTheme.buttonSecondaryBg} ${cyberTheme.textLight} ${cyberTheme.inputBorder} hover:${cyberTheme.buttonSecondaryHoverBg}`}
+              className={`text-sm font-medium ${cyberTheme.buttonOutlineBorder} ${cyberTheme.buttonOutlineText} ${cyberTheme.buttonOutlineHoverBg}`}
             >
               책 페이지로
             </Button>

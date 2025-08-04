@@ -329,13 +329,13 @@ export default function DashboardPage() {
               onClick={handleNewReading}
               className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              📖 학습 가속 시작
+              📖 학습 가속
             </button>
             <button
               onClick={handleNewMemo}
               className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-cyan-500/25 border border-cyan-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              ✍️ 메모 작성
+              ✍️ 새 메모
             </button>
           </div>
         </div>
