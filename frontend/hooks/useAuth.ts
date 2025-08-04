@@ -22,18 +22,42 @@ export default function useAuth() {
       // If we have a token but no user data, try to fetch user data
       setIsLoading(true);
       
-      // Here we would normally make an API call to validate the token and get user info
-      // For now, we'll just set the user as authenticated with minimal data
-      dispatch(loginSuccess({
-        id: 'cached', // This would be replaced with real ID from API
-        email: 'cached@email.com', // This would be replaced with real email from API
-        nickname: 'Cached User', // This would be replaced with real nickname from API
-        token,
-        trialEndsAt: null,
-        inviteCode: null,
-      }));
+      // Fetch actual user data from API using the token
+      const fetchUserProfile = async () => {
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (response.ok) {
+            const userData = await response.json();
+            dispatch(loginSuccess({
+              id: userData.id,
+              email: userData.email,
+              nickname: userData.nickname,
+              token,
+              trialEndsAt: userData.trialEndsAt || null,
+              inviteCode: userData.inviteCode || null,
+            }));
+          } else {
+            // Token is invalid, remove it
+            localStorage.removeItem('token');
+            dispatch(logout());
+          }
+        } catch (error) {
+          console.error('Failed to fetch user profile:', error);
+          // Token is invalid, remove it
+          localStorage.removeItem('token');
+          dispatch(logout());
+        } finally {
+          setIsLoading(false);
+        }
+      };
       
-      setIsLoading(false);
+      fetchUserProfile();
     } else {
       setIsLoading(false);
     }
