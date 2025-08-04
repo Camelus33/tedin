@@ -79,6 +79,12 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
   const handleSearch = async () => {
     if (!query.trim() || !user) return;
 
+    console.log('🔍 검색 시작:', {
+      query: query.trim(),
+      userId: user.id,
+      apiUrl: process.env.NEXT_PUBLIC_API_URL
+    });
+
     setIsLoading(true);
     try {
       const response: SearchResponse = await apiClient.post('/memo-search/search', {
@@ -91,10 +97,16 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
         useCache: true,
       });
 
+      console.log('✅ 검색 성공:', response);
       setResults(response.results || []);
       setSearchResponse(response);
     } catch (error) {
-      console.error('검색 오류:', error);
+      console.error('❌ 검색 오류:', error);
+      console.error('Error details:', {
+        message: (error as any).message,
+        status: (error as any).status,
+        errorData: (error as any).errorData
+      });
       setResults([]);
       setSearchResponse(null);
     } finally {
