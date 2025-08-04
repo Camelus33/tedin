@@ -62,7 +62,13 @@ interface HybridSearchModalProps {
 }
 
 const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }) => {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  
+  console.log('🔍 HybridSearchModal 렌더링:', {
+    user: user,
+    authLoading: authLoading,
+    userKeys: user ? Object.keys(user) : 'no user'
+  });
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
@@ -77,7 +83,27 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
   const [showAIChat, setShowAIChat] = useState(false);
 
   const handleSearch = async () => {
-    if (!query.trim() || !user) return;
+    console.log('🔍 사용자 정보 체크:', {
+      user: user,
+      userId: user?.id,
+      isAuthenticated: user?.isAuthenticated,
+      userObject: JSON.stringify(user, null, 2)
+    });
+
+    if (!query.trim()) {
+      console.log('❌ 쿼리가 비어있음');
+      return;
+    }
+    
+    if (!user) {
+      console.log('❌ 사용자 정보 없음');
+      return;
+    }
+
+    if (!user.id) {
+      console.log('❌ 사용자 ID 없음');
+      return;
+    }
 
     console.log('🔍 검색 시작:', {
       query: query.trim(),
