@@ -88,23 +88,36 @@ export class HybridSearchService {
         };
       }
       if (filters.timeRange) {
-        // 시간 필터링을 위한 추가 조건
-        matchStage.$expr = {
-          $and: [
-            {
-              $gte: [
-                { $dateToString: { format: '%H:%M', date: '$createdAt' } },
-                filters.timeRange.start
-              ]
-            },
-            {
-              $lte: [
-                { $dateToString: { format: '%H:%M', date: '$createdAt' } },
-                filters.timeRange.end
-              ]
-            }
-          ]
-        };
+        // 시간 필터링을 위한 추가 조건 - 기존 $expr과 결합
+        const timeConditions = [
+          {
+            $gte: [
+              { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+              filters.timeRange.start
+            ]
+          },
+          {
+            $lte: [
+              { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+              filters.timeRange.end
+            ]
+          }
+        ];
+        
+        if (matchStage.$expr) {
+          // 기존 $expr 조건이 있다면 결합
+          matchStage.$expr = {
+            $and: [
+              matchStage.$expr,
+              ...timeConditions
+            ]
+          };
+        } else {
+          // 새로운 $expr 조건 생성
+          matchStage.$expr = {
+            $and: timeConditions
+          };
+        }
       }
       if (filters.comprehensionScore) {
         // 이해도점수 필터링
@@ -215,23 +228,36 @@ export class HybridSearchService {
         };
       }
       if (filters.timeRange) {
-        // 시간 필터링을 위한 추가 조건
-        matchStage.$expr = {
-          $and: [
-            {
-              $gte: [
-                { $dateToString: { format: '%H:%M', date: '$createdAt' } },
-                filters.timeRange.start
-              ]
-            },
-            {
-              $lte: [
-                { $dateToString: { format: '%H:%M', date: '$createdAt' } },
-                filters.timeRange.end
-              ]
-            }
-          ]
-        };
+        // 시간 필터링을 위한 추가 조건 - 기존 $expr과 결합
+        const timeConditions = [
+          {
+            $gte: [
+              { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+              filters.timeRange.start
+            ]
+          },
+          {
+            $lte: [
+              { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+              filters.timeRange.end
+            ]
+          }
+        ];
+        
+        if (matchStage.$expr) {
+          // 기존 $expr 조건이 있다면 결합
+          matchStage.$expr = {
+            $and: [
+              matchStage.$expr,
+              ...timeConditions
+            ]
+          };
+        } else {
+          // 새로운 $expr 조건 생성
+          matchStage.$expr = {
+            $and: timeConditions
+          };
+        }
       }
       if (filters.comprehensionScore) {
         // 이해도점수 필터링
@@ -315,7 +341,12 @@ export class HybridSearchService {
   /**
    * Combine and rank results from both searches
    */
-  private combineResults(keywordResults: any[], vectorResults: any[]) {
+  private combineResults(
+    keywordResults: any[], 
+    vectorResults: any[], 
+    keywordWeight: number = this.KEYWORD_WEIGHT,
+    vectorWeight: number = this.VECTOR_WEIGHT
+  ) {
     const combinedMap = new Map();
 
     // Process keyword results
@@ -325,7 +356,7 @@ export class HybridSearchService {
         ...result,
         keywordScore: result.normalizedScore || 0,
         vectorScore: 0,
-        combinedScore: (result.normalizedScore || 0) * this.KEYWORD_WEIGHT,
+        combinedScore: (result.normalizedScore || 0) * keywordWeight, // 동적 가중치 사용
       });
     });
 
@@ -336,14 +367,14 @@ export class HybridSearchService {
         // Document exists in both results
         const existing = combinedMap.get(key);
         existing.vectorScore = result.normalizedScore || 0;
-        existing.combinedScore += (result.normalizedScore || 0) * this.VECTOR_WEIGHT;
+        existing.combinedScore += (result.normalizedScore || 0) * vectorWeight; // 동적 가중치 사용
       } else {
         // Document only in vector results
         combinedMap.set(key, {
           ...result,
           keywordScore: 0,
           vectorScore: result.normalizedScore || 0,
-          combinedScore: (result.normalizedScore || 0) * this.VECTOR_WEIGHT,
+          combinedScore: (result.normalizedScore || 0) * vectorWeight, // 동적 가중치 사용
         });
       }
     });
@@ -407,7 +438,7 @@ export class HybridSearchService {
       
       // Check cache first if enabled
       if (options.useCache !== false) {
-        const cachedResult = cacheService.getCachedSearchResult(searchQuery, updatedFilters);
+        const cachedResult = cacheService.getCachedSearchResult(searchQuery, updatedFilters, naturalLanguageInfo);
         if (cachedResult) {
           loggingService.info('Cache hit for hybrid search', { query: searchQuery });
           return {
@@ -465,7 +496,9 @@ export class HybridSearchService {
         case 'weighted':
           combinedResults = this.combineResults(
             normalizedKeywordResults,
-            normalizedVectorResults
+            normalizedVectorResults,
+            options.keywordWeight || this.KEYWORD_WEIGHT,
+            options.vectorWeight || this.VECTOR_WEIGHT
           );
           break;
           
@@ -527,7 +560,7 @@ export class HybridSearchService {
 
       // Cache the result if enabled
       if (options.useCache !== false) {
-        cacheService.cacheSearchResult(searchQuery, updatedFilters, result, options.cacheTTL);
+        cacheService.cacheSearchResult(searchQuery, updatedFilters, result, options.cacheTTL, naturalLanguageInfo);
       }
 
       return result;

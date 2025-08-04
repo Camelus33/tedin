@@ -12,9 +12,10 @@ export class CacheService {
   /**
    * Generate cache key from query and filters
    */
-  private generateCacheKey(query: string, filters: any): string {
+  private generateCacheKey(query: string, filters: any, naturalLanguageInfo?: any): string {
     const filterString = JSON.stringify(filters);
-    return `search:${query}:${filterString}`;
+    const nlInfoString = naturalLanguageInfo ? JSON.stringify(naturalLanguageInfo) : '';
+    return `search:${query}:${filterString}:${nlInfoString}`;
   }
 
   /**
@@ -128,16 +129,16 @@ export class CacheService {
   /**
    * Cache search result
    */
-  cacheSearchResult(query: string, filters: any, result: any, ttl?: number): void {
-    const key = this.generateCacheKey(query, filters);
+  cacheSearchResult(query: string, filters: any, result: any, ttl?: number, naturalLanguageInfo?: any): void {
+    const key = this.generateCacheKey(query, filters, naturalLanguageInfo);
     this.set(key, result, ttl);
   }
 
   /**
    * Get cached search result
    */
-  getCachedSearchResult(query: string, filters: any): any | null {
-    const key = this.generateCacheKey(query, filters);
+  getCachedSearchResult(query: string, filters: any, naturalLanguageInfo?: any): any | null {
+    const key = this.generateCacheKey(query, filters, naturalLanguageInfo);
     return this.get(key);
   }
 

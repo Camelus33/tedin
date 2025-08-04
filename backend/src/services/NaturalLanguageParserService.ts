@@ -18,21 +18,22 @@ export class NaturalLanguageParserService {
     
     // 이해도점수 패턴들
     const comprehensionPatterns = [
-      // 특정 점수 이상/이하
-      { regex: /이해도점수\s*(\d+)점\s*이상/, type: 'comprehension', operator: 'gte' },
-      { regex: /이해도점수\s*(\d+)점\s*이하/, type: 'comprehension', operator: 'lte' },
-      { regex: /이해도점수\s*(\d+)점/, type: 'comprehension', operator: 'eq' },
-      { regex: /이해도\s*(\d+)점\s*이상/, type: 'comprehension', operator: 'gte' },
-      { regex: /이해도\s*(\d+)점\s*이하/, type: 'comprehension', operator: 'lte' },
-      { regex: /이해도\s*(\d+)점/, type: 'comprehension', operator: 'eq' },
-      { regex: /(\d+)점\s*이상/, type: 'comprehension', operator: 'gte' },
-      { regex: /(\d+)점\s*이하/, type: 'comprehension', operator: 'lte' },
-      { regex: /(\d+)점/, type: 'comprehension', operator: 'eq' },
+      // 특정 점수 이상/이하 (더 구체적인 패턴을 먼저)
+      { regex: /이해도점수\s*(\d+)점\s*이상/g, type: 'comprehension', operator: 'gte' },
+      { regex: /이해도점수\s*(\d+)점\s*이하/g, type: 'comprehension', operator: 'lte' },
+      { regex: /이해도점수\s*(\d+)점(?!\s*[월일시])/g, type: 'comprehension', operator: 'eq' },
+      { regex: /이해도\s*(\d+)점\s*이상/g, type: 'comprehension', operator: 'gte' },
+      { regex: /이해도\s*(\d+)점\s*이하/g, type: 'comprehension', operator: 'lte' },
+      { regex: /이해도\s*(\d+)점(?!\s*[월일시])/g, type: 'comprehension', operator: 'eq' },
+      { regex: /(\d+)점\s*이상/g, type: 'comprehension', operator: 'gte' },
+      { regex: /(\d+)점\s*이하/g, type: 'comprehension', operator: 'lte' },
+      // 더 엄격한 점수 패턴 (날짜/시간 키워드 뒤에 오지 않는 경우만)
+      { regex: /(?<![\d월일시])\s*(\d+)점(?!\s*[월일시])/g, type: 'comprehension', operator: 'eq' },
       
       // 범위 표현
-      { regex: /이해도점수\s*(\d+)점\s*~?\s*(\d+)점/, type: 'comprehension', operator: 'range' },
-      { regex: /이해도\s*(\d+)점\s*~?\s*(\d+)점/, type: 'comprehension', operator: 'range' },
-      { regex: /(\d+)점\s*~?\s*(\d+)점/, type: 'comprehension', operator: 'range' },
+      { regex: /이해도점수\s*(\d+)점\s*~?\s*(\d+)점/g, type: 'comprehension', operator: 'range' },
+      { regex: /이해도\s*(\d+)점\s*~?\s*(\d+)점/g, type: 'comprehension', operator: 'range' },
+      { regex: /(\d+)점\s*~?\s*(\d+)점/g, type: 'comprehension', operator: 'range' },
     ];
 
     // 날짜 패턴들
@@ -199,6 +200,29 @@ export class NaturalLanguageParserService {
     if (match[0].includes('다음 달')) {
       const start = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       const end = new Date(now.getFullYear(), now.getMonth() + 2, 0, 23, 59, 59);
+      return { type: 'range', start, end, originalExpression: original };
+    }
+
+    // 월별 범위 패턴 처리 (예: "6월", "12월")
+    if (type === 'range' && match[1] && !match[2] && !match[3]) { // (\d{1,2})월 패턴
+      const month = parseInt(match[1]) - 1; // 0-based month
+      const currentYear = now.getFullYear();
+      
+      // 현재 년도의 해당 월 전체 범위
+      const start = new Date(currentYear, month, 1);
+      const end = new Date(currentYear, month + 1, 0, 23, 59, 59); // 해당 월의 마지막 날
+      
+      return { type: 'range', start, end, originalExpression: original };
+    }
+
+    // 년월 범위 패턴 처리 (예: "2024년 6월")
+    if (type === 'range' && match[1] && match[2] && !match[3]) { // (\d{4})년\s*(\d{1,2})월 패턴
+      const year = parseInt(match[1]);
+      const month = parseInt(match[2]) - 1; // 0-based month
+      
+      const start = new Date(year, month, 1);
+      const end = new Date(year, month + 1, 0, 23, 59, 59); // 해당 월의 마지막 날
+      
       return { type: 'range', start, end, originalExpression: original };
     }
 
