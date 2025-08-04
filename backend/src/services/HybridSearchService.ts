@@ -1,9 +1,10 @@
-import { MongoClient, Db } from 'mongodb';
+import { MongoClient, Db, ObjectId } from 'mongodb';
 import { embeddingService } from './EmbeddingService';
 import { loggingService } from './LoggingService';
 import { resultCombinerService } from './ResultCombinerService';
 import { cacheService } from './CacheService';
 import { NaturalLanguageParserService } from './NaturalLanguageParserService';
+import User from '../models/User'; // User 모델 import
 
 /**
  * Hybrid Search Service
@@ -44,7 +45,7 @@ export class HybridSearchService {
   private async performKeywordSearch(
     query: string,
     filters: {
-      userId?: string;
+      userId?: ObjectId; // 타입을 ObjectId로 변경
       tags?: string[];
       dateRange?: { start: Date; end: Date };
       timeRange?: { start: string; end: string };
@@ -76,7 +77,7 @@ export class HybridSearchService {
       // Add match stage for filters AFTER search
       const matchStage: any = {};
       if (filters.userId) {
-        matchStage.userId = filters.userId;
+        matchStage.userId = filters.userId; // 이제 ObjectId로 검색
       }
       if (filters.tags && filters.tags.length > 0) {
         matchStage.tags = { $in: filters.tags };
@@ -185,7 +186,7 @@ export class HybridSearchService {
   private async performVectorSearch(
     query: string,
     filters: {
-      userId?: string;
+      userId?: ObjectId; // 타입을 ObjectId로 변경
       tags?: string[];
       dateRange?: { start: Date; end: Date };
       timeRange?: { start: string; end: string };
@@ -216,7 +217,7 @@ export class HybridSearchService {
       // Add match stage for filters AFTER search
       const matchStage: any = {};
       if (filters.userId) {
-        matchStage.userId = filters.userId;
+        matchStage.userId = filters.userId; // 이제 ObjectId로 검색
       }
       if (filters.tags && filters.tags.length > 0) {
         matchStage.tags = { $in: filters.tags };
@@ -436,9 +437,45 @@ export class HybridSearchService {
       // Use clean query for search
       const searchQuery = cleanQuery || query;
       
+      const userEmail = filters.userId; // userId 필드에는 사실상 이메일이 담겨 있음
+      let userObjectId: ObjectId | undefined;
+
+      if (userEmail) {
+        try {
+          const user = await User.findOne({ email: userEmail }).select('_id').lean();
+          if (user) {
+            userObjectId = user._id;
+          } else {
+            // 사용자를 찾을 수 없는 경우, 빈 결과를 반환
+            loggingService.warn('User not found for email, returning empty search results', { userEmail });
+            return {
+              results: [],
+              total: 0,
+              query: searchQuery,
+              originalQuery: query,
+              dateTimeInfo: naturalLanguageInfo,
+              filters: updatedFilters,
+              strategy: options.strategy || 'weighted',
+              performance: {
+                duration: Date.now() - startTime,
+                keywordResults: 0,
+                vectorResults: 0,
+              },
+            };
+          }
+        } catch (error) {
+          loggingService.error('Error finding user by email', { userEmail, error });
+          // DB 오류 시에도 빈 결과를 반환
+          throw error;
+        }
+      }
+
+      // Update filters with the actual user ObjectId
+      const finalFilters = { ...updatedFilters, userId: userObjectId };
+
       // Check cache first if enabled
       if (options.useCache !== false) {
-        const cachedResult = cacheService.getCachedSearchResult(searchQuery, updatedFilters, naturalLanguageInfo);
+        const cachedResult = cacheService.getCachedSearchResult(searchQuery, finalFilters, naturalLanguageInfo);
         if (cachedResult) {
           loggingService.info('Cache hit for hybrid search', { query: searchQuery });
           return {
@@ -452,7 +489,7 @@ export class HybridSearchService {
       loggingService.info('Starting hybrid search', { 
         originalQuery: query, 
         searchQuery, 
-        filters: updatedFilters, 
+        filters: finalFilters, 
         dateTimeInfo: naturalLanguageInfo,
         options 
       });
@@ -463,8 +500,8 @@ export class HybridSearchService {
 
       try {
         [keywordResults, vectorResults] = await Promise.allSettled([
-          this.performKeywordSearch(searchQuery, updatedFilters),
-          this.performVectorSearch(searchQuery, updatedFilters),
+          this.performKeywordSearch(searchQuery, finalFilters),
+          this.performVectorSearch(searchQuery, finalFilters),
         ]).then(results => [
           results[0].status === 'fulfilled' ? results[0].value : [],
           results[1].status === 'fulfilled' ? results[1].value : [],
@@ -473,13 +510,13 @@ export class HybridSearchService {
         loggingService.error('Search execution failed', error);
         // Fallback to individual searches
         try {
-          keywordResults = await this.performKeywordSearch(searchQuery, updatedFilters);
+          keywordResults = await this.performKeywordSearch(searchQuery, finalFilters);
         } catch (keywordError) {
           loggingService.error('Keyword search failed', keywordError);
         }
         
         try {
-          vectorResults = await this.performVectorSearch(searchQuery, updatedFilters);
+          vectorResults = await this.performVectorSearch(searchQuery, finalFilters);
         } catch (vectorError) {
           loggingService.error('Vector search failed', vectorError);
         }
