@@ -211,9 +211,9 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-gray-100">
               <SparklesIcon className="h-5 w-5 text-indigo-500" />
-              하이브리드 검색
+              Ontology Search
               <Badge variant="secondary" className="ml-2">
-                키워드 + 벡터
+                Keyword + Vector
               </Badge>
             </DialogTitle>
           </DialogHeader>
@@ -339,7 +339,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                     className="bg-indigo-600 hover:bg-indigo-700 text-sm"
                   >
                     <ChatBubbleLeftRightIcon className="h-4 w-4 mr-1" />
-                    AI와 대화하기
+                    AI Chat
                   </Button>
                 </div>
                 
@@ -430,11 +430,11 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
               </div>
             ) : query && !isLoading ? (
               <div className="flex items-center justify-center h-full text-gray-400">
-                검색 결과가 없습니다
+                No results found
               </div>
             ) : (
               <div className="flex items-center justify-center h-full text-gray-400">
-                검색어를 입력하고 검색해보세요
+                Enjoy Ontology Search!
               </div>
             )}
           </div>
