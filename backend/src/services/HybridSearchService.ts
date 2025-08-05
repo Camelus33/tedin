@@ -63,7 +63,7 @@ export class HybridSearchService {
       // Add text search stage FIRST (required for Atlas Search)
       pipeline.push({
         $search: {
-          index: 'notes_text_index',
+          index: 'notes_hybrid_index',
           text: {
             query,
             path: ['content', 'tags'],
@@ -219,7 +219,7 @@ export class HybridSearchService {
       // Add vector search stage FIRST (required for Atlas Vector Search)
       pipeline.push({
         $vectorSearch: {
-          index: 'notes_vector_index',
+          index: 'notes_hybrid_index',
           path: 'embedding',
           queryVector: queryEmbedding,
           numCandidates: 100,
