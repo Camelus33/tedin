@@ -365,14 +365,14 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       {recommendations.length > 0 && (
         <div className="p-4 border-t border-gray-700">
           <h4 className="text-xs font-medium text-gray-300 mb-1">추천 질문</h4>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
             {recommendations.map((rec) => (
               <Button
                 key={rec.id}
                 variant="outline"
                 size="sm"
                 onClick={() => handleRecommendationClick(rec)}
-                className="text-xs py-1"
+                className="text-xs py-0.5 px-2 h-auto flex-shrink-0 whitespace-nowrap"
               >
                 💡 {rec.text}
               </Button>
