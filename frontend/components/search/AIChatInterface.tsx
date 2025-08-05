@@ -250,7 +250,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-900">
+    <div className="flex flex-col h-full max-h-full bg-gray-900">
       {/* 헤더 */}
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         <div className="flex items-center gap-2">

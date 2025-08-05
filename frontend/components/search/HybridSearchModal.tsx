@@ -170,7 +170,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
   if (showAIChat) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ChatBubbleLeftRightIcon className="h-5 w-5 text-indigo-500" />
