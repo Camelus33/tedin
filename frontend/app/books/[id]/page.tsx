@@ -615,8 +615,8 @@ const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false); // 새 
   const bookData = book as unknown as BookWithId;
   
   return (
-    <div className={`min-h-screen ${cyberTheme.gradient} p-0 lg:p-4 xl:p-6 ${cyberTheme.textLight}`}>
-      <div className="container mx-auto max-w-4xl px-2 lg:px-0">
+    <div className={`min-h-screen ${cyberTheme.gradient} p-0 lg:p-2 xl:p-4 ${cyberTheme.textLight}`}>
+      <div className="container mx-auto max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl px-2 lg:px-0">
         {/* "내 서재" 버튼 추가 - 히어로아이콘으로 대체하여 축소 */}
         <div className="mb-1 sm:mb-4">
           <Link href="/books" passHref>
