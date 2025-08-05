@@ -1214,15 +1214,9 @@ export default function TSNoteCard({
           </div>
         </div>
 
-      </div>
-      
-      <div className={cn("", {
-        "invisible": isInlineEditing || !note.relatedLinks || note.relatedLinks?.length === 0 || minimalDisplay || isOpen || isPageEditing
-      })}>
-
-        {/* 펼친 상태 내용 */}
+        {/* 지식연결 펼친 상태를 인라인으로 표시 */}
         {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
-          <div className="p-1 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
+          <div className="mt-1 sm:mt-1.5 p-1 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
             <ul className="space-y-1">
               {note.relatedLinks.map((link, idx) => (
                 <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
@@ -1244,7 +1238,7 @@ export default function TSNoteCard({
           </div>
         )}
       </div>
-
+      
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
         <div className="border-t border-gray-700/50 flex flex-wrap items-center justify-start gap-x-1 sm:gap-x-2 gap-y-1 sm:gap-y-1.5 py-1 sm:py-2">
           <TagIcon className="h-3.5 w-3.5 text-gray-500 flex-shrink-0" title="태그" />
