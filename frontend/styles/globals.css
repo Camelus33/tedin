@@ -51,31 +51,7 @@
   }
 }
 
-/* AI 채팅 스크롤바 커스텀 스타일 */
-.ai-chat-scrollbar::-webkit-scrollbar {
-  width: 8px !important;
-}
 
-.ai-chat-scrollbar::-webkit-scrollbar-track {
-  background: rgba(55, 65, 81, 0.5) !important;
-  border-radius: 4px !important;
-}
-
-.ai-chat-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.8) !important;
-  border-radius: 4px !important;
-  border: 1px solid rgba(99, 102, 241, 0.3) !important;
-}
-
-.ai-chat-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 1) !important;
-}
-
-/* Firefox 스크롤바 스타일 */
-.ai-chat-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(99, 102, 241, 0.8) rgba(55, 65, 81, 0.5);
-}
 
 /* 파도 효과 애니메이션 */
 @keyframes ripple {

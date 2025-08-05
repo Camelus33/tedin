@@ -326,26 +326,8 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
 
       {/* 메시지 영역 */}
       <div 
-        className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-indigo-600 scrollbar-track-gray-700" 
-        style={{
-          height: '300px', 
-          border: '2px solid red'
-        }}
+        className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-gray-800"
       >
-        {/* 테스트용 긴 메시지들 추가 */}
-        {Array.from({length: 20}, (_, i) => (
-          <div key={`test-${i}`} className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg p-3 bg-gray-700 text-gray-100">
-              <div className="flex items-start gap-2">
-                <SparklesIcon className="h-4 w-4 text-indigo-400 mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm whitespace-pre-wrap">테스트 메시지 {i + 1} - 이것은 스크롤바를 테스트하기 위한 긴 메시지입니다. 스크롤바가 보이는지 확인해보세요. 이 메시지는 충분히 길어서 스크롤이 필요합니다.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-        
         {messages.map((message) => (
           <div
             key={message.id}
