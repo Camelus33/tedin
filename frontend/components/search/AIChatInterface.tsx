@@ -325,7 +325,13 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       )}
 
       {/* 메시지 영역 */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 ai-chat-scrollbar" style={{height: '300px', border: '2px solid red'}}>
+      <div 
+        className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-indigo-600 scrollbar-track-gray-700" 
+        style={{
+          height: '300px', 
+          border: '2px solid red'
+        }}
+      >
         {/* 테스트용 긴 메시지들 추가 */}
         {Array.from({length: 20}, (_, i) => (
           <div key={`test-${i}`} className="flex justify-start">
