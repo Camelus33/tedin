@@ -135,8 +135,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
     try {
       const response = await apiClient.post('/ai-chat/recommendations', {
         searchQuery,
-        searchResults: searchResults.slice(0, 5), // 상위 5개 결과만 사용
-        userId: user?.id
+        searchResults: searchResults.slice(0, 5) // 상위 5개 결과만 사용
       });
 
       setRecommendations(response.recommendations || []);
@@ -166,8 +165,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
         searchContext: { query: searchQuery, results: searchResults },
         llmProvider: selectedLLM.name,
         llmModel: selectedLLM.model,
-        conversationId: 'temp',
-        userId: user?.id
+        conversationId: 'temp'
       });
 
       const aiMessage: Message = {

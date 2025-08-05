@@ -3,28 +3,21 @@ import { LLMService } from '../services/LLMService';
 import { RecommendationQueryService } from '../services/RecommendationQueryService';
 import { ChatStorageService } from '../services/ChatStorageService';
 import { SearchContextService } from '../services/SearchContextService';
+import { authenticate } from '../middlewares/auth';
 import { ObjectId } from 'mongodb';
 import User from '../models/User';
 
 const router = Router();
+
+// 모든 AI 채팅 라우트에 인증 미들웨어 적용
+router.use(authenticate);
 
 // 서비스 인스턴스 생성
 const llmService = new LLMService();
 const recommendationService = new RecommendationQueryService();
 const chatStorageService = new ChatStorageService();
 
-/**
- * 이메일로 사용자 ID 조회
- */
-async function getUserIdFromEmail(email: string): Promise<string | null> {
-  try {
-    const user = await User.findOne({ email: email.toLowerCase() });
-    return user?._id.toString() || null;
-  } catch (error) {
-    console.error('사용자 조회 오류:', error);
-    return null;
-  }
-}
+// getUserIdFromEmail 함수 제거 - authenticate 미들웨어로 req.user 사용
 
 /**
  * AI 채팅 메시지 전송
@@ -37,9 +30,11 @@ router.post('/send', async (req: Request, res: Response) => {
       searchContext,
       llmProvider,
       llmModel,
-      conversationId,
-      userId
+      conversationId
     } = req.body;
+
+    // 인증된 사용자 ID 사용
+    const userId = req.user._id.toString();
 
     console.log('🔍 send 요청 데이터:', {
       message: message?.substring(0, 50) + '...',
@@ -47,32 +42,19 @@ router.post('/send', async (req: Request, res: Response) => {
       llmProvider,
       llmModel,
       userId,
-      userIdType: typeof userId
+      userEmail: req.user.email
     });
 
     // 필수 필드 검증
-    if (!message || !searchContext || !llmProvider || !userId) {
+    if (!message || !searchContext || !llmProvider) {
       console.log('❌ 필수 필드 누락:', { 
         message: !!message, 
         searchContext: !!searchContext, 
-        llmProvider: !!llmProvider, 
-        userId: !!userId 
+        llmProvider: !!llmProvider
       });
       return res.status(400).json({
         success: false,
         error: '필수 필드가 누락되었습니다.'
-      });
-    }
-
-    // 이메일로 사용자 ID 조회
-    const actualUserId = await getUserIdFromEmail(userId);
-    console.log('🔍 사용자 조회 결과:', { inputUserId: userId, actualUserId });
-    
-    if (!actualUserId) {
-      console.log('❌ 사용자를 찾을 수 없음:', userId);
-      return res.status(400).json({
-        success: false,
-        error: '사용자를 찾을 수 없습니다.'
       });
     }
 
@@ -83,7 +65,7 @@ router.post('/send', async (req: Request, res: Response) => {
       llmProvider,
       llmModel,
       conversationId,
-      userId: actualUserId
+      userId
     });
 
     // 대화 저장
@@ -91,7 +73,7 @@ router.post('/send', async (req: Request, res: Response) => {
     if (!currentConversationId) {
       // 새 대화 생성
       currentConversationId = await chatStorageService.createConversation(
-        actualUserId,
+        userId,
         searchContext
       );
     }
@@ -99,7 +81,7 @@ router.post('/send', async (req: Request, res: Response) => {
     // 사용자 메시지 저장
     await chatStorageService.saveMessage(
       new ObjectId(currentConversationId),
-      new ObjectId(actualUserId),
+      new ObjectId(userId),
       'user',
       message
     );
@@ -107,7 +89,7 @@ router.post('/send', async (req: Request, res: Response) => {
     // AI 응답 저장
     await chatStorageService.saveMessage(
       new ObjectId(currentConversationId),
-      new ObjectId(actualUserId), // AI 메시지도 사용자 ID로 저장 (시스템 메시지 구분)
+      new ObjectId(userId), // AI 메시지도 사용자 ID로 저장 (시스템 메시지 구분)
       'ai',
       llmResponse.content,
       {
@@ -121,7 +103,7 @@ router.post('/send', async (req: Request, res: Response) => {
     await recommendationService.collectUserQuery(
       message,
       searchContext.results,
-      actualUserId
+      userId
     );
 
     res.json({
@@ -149,39 +131,30 @@ router.post('/send', async (req: Request, res: Response) => {
  */
 router.post('/recommendations', async (req: Request, res: Response) => {
   try {
-    const { searchQuery, searchResults, userId } = req.body;
+    const { searchQuery, searchResults } = req.body;
+    
+    // 인증된 사용자 ID 사용
+    const userId = req.user._id.toString();
 
     console.log('🔍 recommendations 요청 데이터:', {
       searchQuery,
       searchResultsCount: searchResults?.length,
       userId,
-      userIdType: typeof userId
+      userEmail: req.user.email
     });
 
-    if (!searchQuery || !searchResults || !userId) {
-      console.log('❌ 필수 필드 누락:', { searchQuery: !!searchQuery, searchResults: !!searchResults, userId: !!userId });
+    if (!searchQuery || !searchResults) {
+      console.log('❌ 필수 필드 누락:', { searchQuery: !!searchQuery, searchResults: !!searchResults });
       return res.status(400).json({
         success: false,
         error: '필수 필드가 누락되었습니다.'
       });
     }
 
-    // 이메일로 사용자 ID 조회
-    const actualUserId = await getUserIdFromEmail(userId);
-    console.log('🔍 사용자 조회 결과:', { inputUserId: userId, actualUserId });
-    
-    if (!actualUserId) {
-      console.log('❌ 사용자를 찾을 수 없음:', userId);
-      return res.status(400).json({
-        success: false,
-        error: '사용자를 찾을 수 없습니다.'
-      });
-    }
-
     const recommendations = await recommendationService.generateRecommendations(
       searchResults,
       searchQuery,
-      actualUserId
+      userId
     );
 
     res.json({
@@ -205,27 +178,21 @@ router.post('/recommendations', async (req: Request, res: Response) => {
  */
 router.post('/save', async (req: Request, res: Response) => {
   try {
-    const { messages, searchContext, userId } = req.body;
+    const { messages, searchContext } = req.body;
+    
+    // 인증된 사용자 ID 사용
+    const userId = req.user._id.toString();
 
-    if (!messages || !userId) {
+    if (!messages) {
       return res.status(400).json({
         success: false,
         error: '필수 필드가 누락되었습니다.'
       });
     }
 
-    // 이메일로 사용자 ID 조회
-    const actualUserId = await getUserIdFromEmail(userId);
-    if (!actualUserId) {
-      return res.status(400).json({
-        success: false,
-        error: '사용자를 찾을 수 없습니다.'
-      });
-    }
-
     // 새 대화 생성
     const conversationId = await chatStorageService.createConversation(
-      actualUserId,
+      userId,
       searchContext
     );
 
@@ -233,7 +200,7 @@ router.post('/save', async (req: Request, res: Response) => {
     for (const message of messages) {
       await chatStorageService.saveMessage(
         conversationId,
-        new ObjectId(actualUserId),
+        new ObjectId(userId),
         message.sender,
         message.content,
         {
