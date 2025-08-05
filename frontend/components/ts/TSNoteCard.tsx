@@ -1146,6 +1146,61 @@ export default function TSNoteCard({
     }
   }, [note._id, fetchScore, minimalDisplay]);
 
+  // 지식연결 렌더링 함수
+  const renderRelatedLinks = () => {
+    // 다음 조건 중 하나라도 해당되면 지식연결을 보여주지 않음:
+    // 1. 최소 표시 모드일 때
+    if (minimalDisplay) return null;
+    // 2. 오버레이가 열려있을 때
+    if (isOpen) return null;
+    // 3. 인라인 편집 중일 때
+    if (isInlineEditing) return null;
+    // 4. 페이지 편집 모드일 때
+    if (isPageEditing) return null;
+    // 5. 관련 링크가 없을 때
+    if (!note.relatedLinks || note.relatedLinks.length === 0) return null;
+
+    const links = note.relatedLinks;
+    const hasLinks = links.length > 0;
+
+    return (
+      <div className="flex flex-col items-start">
+        {/* 빽빽한 텍스트 형태 */}
+        <button
+          onClick={() => setShowRelatedLinks(!showRelatedLinks)}
+          className="text-xs text-gray-300 hover:text-green-400 transition-colors break-words tracking-wide"
+          data-no-toggle
+        >
+          {showRelatedLinks ? '▼' : `▶지식연결(${links.length}/5)`}
+        </button>
+
+        {/* 펼친 상태 내용 */}
+        {showRelatedLinks && hasLinks && (
+          <div className="mt-2 p-1.5 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
+            <ul className="space-y-1">
+              {links.map((link, idx) => (
+                <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
+                  <ArrowTopRightOnSquareIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-500" />
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="line-clamp-1 min-w-0 text-xs break-all"
+                    title={link.url}
+                    onClick={(e) => e.stopPropagation()}
+                    data-no-toggle
+                  >
+                    {link.reason || getDomainFromUrl(link.url)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div
       className={cn(
@@ -1201,42 +1256,10 @@ export default function TSNoteCard({
           <div className="flex items-center">
             {renderMemoEvolutionSummary()}
           </div>
-          <div className={cn("flex items-center", {
-            "invisible": minimalDisplay || isOpen
-          })}>
-            <button
-              onClick={() => setShowRelatedLinks(!showRelatedLinks)}
-              className="text-xs text-gray-300 hover:text-green-400 transition-colors break-words tracking-wide"
-              data-no-toggle
-            >
-              {showRelatedLinks ? '▼' : `▶지식연결(${note.relatedLinks?.length || 0}/5)`}
-            </button>
+          <div className="flex items-center">
+            {renderRelatedLinks()}
           </div>
         </div>
-
-        {/* 지식연결 펼친 상태를 인라인으로 표시 */}
-        {showRelatedLinks && note.relatedLinks && note.relatedLinks.length > 0 && (
-          <div className="mt-1 sm:mt-1.5 p-1 sm:p-2 bg-gray-800/20 rounded-md border border-gray-700/30">
-            <ul className="space-y-1">
-              {note.relatedLinks.map((link, idx) => (
-                <li key={link._id || idx} className="flex items-center text-xs text-gray-300 hover:text-cyan-400 transition-colors duration-150 min-w-0">
-                  <ArrowTopRightOnSquareIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 text-gray-500" />
-                  <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="line-clamp-1 min-w-0 text-xs break-all"
-                    title={link.url}
-                    onClick={(e) => e.stopPropagation()}
-                    data-no-toggle
-                  >
-                    {link.reason || getDomainFromUrl(link.url)}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
       
       {!minimalDisplay && note.tags && note.tags.length > 0 && (
