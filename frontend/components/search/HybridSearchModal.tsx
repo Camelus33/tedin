@@ -221,7 +221,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="pl-10"
+                className="pl-10 text-white placeholder:text-gray-400"
               />
             </div>
             <Button
