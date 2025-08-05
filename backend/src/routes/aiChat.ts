@@ -69,8 +69,17 @@ router.post('/send', async (req: Request, res: Response) => {
     });
 
     // 대화 저장
-    let currentConversationId = conversationId;
-    if (!currentConversationId) {
+    let currentConversationId: ObjectId;
+    
+    // conversationId가 유효한 ObjectId 형식인지 확인
+    const isValidObjectId = (id: string): boolean => {
+      return /^[0-9a-fA-F]{24}$/.test(id);
+    };
+    
+    if (conversationId && isValidObjectId(conversationId)) {
+      // 기존 대화 사용
+      currentConversationId = new ObjectId(conversationId);
+    } else {
       // 새 대화 생성
       currentConversationId = await chatStorageService.createConversation(
         userId,
@@ -80,7 +89,7 @@ router.post('/send', async (req: Request, res: Response) => {
 
     // 사용자 메시지 저장
     await chatStorageService.saveMessage(
-      new ObjectId(currentConversationId),
+      currentConversationId,
       new ObjectId(userId),
       'user',
       message
@@ -88,7 +97,7 @@ router.post('/send', async (req: Request, res: Response) => {
 
     // AI 응답 저장
     await chatStorageService.saveMessage(
-      new ObjectId(currentConversationId),
+      currentConversationId,
       new ObjectId(userId), // AI 메시지도 사용자 ID로 저장 (시스템 메시지 구분)
       'ai',
       llmResponse.content,
@@ -109,7 +118,7 @@ router.post('/send', async (req: Request, res: Response) => {
     res.json({
       success: true,
       response: llmResponse.content,
-      conversationId: currentConversationId,
+      conversationId: currentConversationId.toString(),
       model: llmResponse.model,
       provider: llmResponse.provider,
       usage: llmResponse.usage
