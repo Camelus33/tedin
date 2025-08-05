@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MagnifyingGlassIcon, XMarkIcon, FunnelIcon, SparklesIcon, ChatBubbleLeftRightIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, XMarkIcon, FunnelIcon, SparklesIcon, ChatBubbleLeftRightIcon, CalendarIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 import { apiClient } from '@/lib/apiClient';
 import useAuth from '@/hooks/useAuth';
 import AIChatInterface from './AIChatInterface';
@@ -17,6 +17,7 @@ interface SearchResult {
   tags: string[];
   createdAt: string;
   type: string;
+  bookId?: string;
   importanceReason?: string;
   momentContext?: string;
   relatedKnowledge?: string;
@@ -422,6 +423,21 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                           {result.vectorScore !== undefined && (
                             <span>벡터: {(result.vectorScore * 100).toFixed(0)}%</span>
                           )}
+                        </div>
+                      )}
+                      
+                      {/* 책 링크 아이콘 */}
+                      {result.bookId && (
+                        <div className="flex justify-end mt-2 pt-2 border-t border-gray-700">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10"
+                            onClick={() => window.open(`/books/${result.bookId}`, '_blank')}
+                            title="책 상세페이지로 이동"
+                          >
+                            <BookOpenIcon className="h-4 w-4" />
+                          </Button>
                         </div>
                       )}
                     </CardContent>

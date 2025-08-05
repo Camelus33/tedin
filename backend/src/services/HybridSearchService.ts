@@ -160,8 +160,8 @@ export class HybridSearchService {
           tags: 1,
           createdAt: 1,
           userId: 1,
+          bookId: 1,
           type: 1,
-
           selfRating: 1,
           conceptScore: 1,
           score: { $meta: 'searchScore' },
@@ -312,8 +312,8 @@ export class HybridSearchService {
           tags: 1,
           createdAt: 1,
           userId: 1,
+          bookId: 1,
           type: 1,
-
           selfRating: 1,
           conceptScore: 1,
           score: { $meta: 'vectorSearchScore' },
