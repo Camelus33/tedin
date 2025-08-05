@@ -173,19 +173,14 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
         <DialogContent className="max-w-6xl">
           <div className="flex flex-col max-h-[90vh]">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <ChatBubbleLeftRightIcon className="h-5 w-5 text-indigo-500" />
-                <span className="text-white">Ontology Agent</span>
-                <Badge variant="secondary" className="ml-2">
-                  검색 결과 기반 대화
-                </Badge>
+              <DialogTitle>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleAIChatToggle}
                   className="ml-auto"
                 >
-                  검색으로 돌아가기
+                  검색창으로
                 </Button>
               </DialogTitle>
             </DialogHeader>

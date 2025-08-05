@@ -220,18 +220,16 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   };
 
   // 채팅 복사
-  const copyChat = () => {
-    const chatText = messages
-      .map(msg => `${msg.sender === 'user' ? '사용자' : 'AI'}: ${msg.content}`)
-      .join('\n\n');
-    navigator.clipboard.writeText(chatText);
+  const copyChat = (content: string) => {
+    navigator.clipboard.writeText(content);
+    toast.success('메시지가 복사되었습니다.');
   };
 
   // 채팅 저장
-  const saveChat = async () => {
+  const saveChat = async (messagesToSave: Message[]) => {
     try {
       await apiClient.post('/ai-chat/save', {
-        messages,
+        messages: messagesToSave,
         searchContext: { query: searchQuery, results: searchResults },
         userId: user?.id
       });
@@ -271,24 +269,6 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
           >
             <Cog6ToothIcon className="h-4 w-4" />
             설정
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={copyChat}
-            className="flex items-center gap-1"
-          >
-            <ClipboardDocumentIcon className="h-4 w-4" />
-            복사
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={saveChat}
-            className="flex items-center gap-1"
-          >
-            <SparklesIcon className="h-4 w-4" />
-            저장
           </Button>
         </div>
       </div>
@@ -331,7 +311,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex group ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`max-w-[80%] rounded-lg p-3 ${
@@ -353,6 +333,16 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                   )}
                 </div>
               </div>
+              {message.sender === 'ai' && (
+                <div className="flex justify-end gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyChat(message.content)}>
+                    <ClipboardDocumentIcon className="h-4 w-4 text-gray-400" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => saveChat([message])}>
+                    <SparklesIcon className="h-4 w-4 text-gray-400" />
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -374,15 +364,15 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       {/* 추천 쿼리 */}
       {recommendations.length > 0 && (
         <div className="p-4 border-t border-gray-700">
-          <h4 className="text-sm font-medium text-gray-300 mb-2">추천 질문</h4>
-          <div className="flex flex-wrap gap-2">
+          <h4 className="text-xs font-medium text-gray-300 mb-1">추천 질문</h4>
+          <div className="flex flex-wrap gap-1">
             {recommendations.map((rec) => (
               <Button
                 key={rec.id}
                 variant="outline"
                 size="sm"
                 onClick={() => handleRecommendationClick(rec)}
-                className="text-xs"
+                className="text-xs py-1"
               >
                 💡 {rec.text}
               </Button>
