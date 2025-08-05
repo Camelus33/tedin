@@ -793,8 +793,14 @@ export default function TSNoteCard({
 
     if (details.length === 0) {
       return (
-        <div className="mt-2">
-           <p className="text-xs text-gray-500 italic">1줄만 남겨도 기억은 4배 강해집니다.</p>
+        <div className="flex items-center">
+          <button
+            className="text-xs text-gray-300 hover:text-purple-400 transition-colors break-words tracking-wide"
+            data-no-toggle
+          >
+            ▶기억강화(0/4)
+          </button>
+          <span className="ml-2 text-xs text-gray-500 italic">1줄만 남겨도 4배는 강해집니다.</span>
         </div>
       );
     }
