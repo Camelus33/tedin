@@ -82,6 +82,12 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
   const [showFilters, setShowFilters] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
 
+  const handleClearSearch = () => {
+    setQuery('');
+    setResults([]);
+    setSearchResponse(null);
+  };
+
   const handleSearch = async () => {
     console.log('🔍 사용자 정보 체크:', {
       user: user,
@@ -223,6 +229,16 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                 onKeyPress={handleKeyPress}
                 className="pl-10 text-white placeholder:text-gray-400"
               />
+              {query && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6"
+                  onClick={handleClearSearch}
+                >
+                  <XMarkIcon className="h-4 w-4 text-gray-400" />
+                </Button>
+              )}
             </div>
             <Button
               onClick={handleSearch}
