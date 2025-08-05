@@ -174,7 +174,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ChatBubbleLeftRightIcon className="h-5 w-5 text-indigo-500" />
-              AI 학습 진단사
+              <span className="text-white">Ontology Agent</span>
               <Badge variant="secondary" className="ml-2">
                 검색 결과 기반 대화
               </Badge>

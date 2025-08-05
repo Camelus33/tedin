@@ -255,7 +255,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         <div className="flex items-center gap-2">
           <ChatBubbleLeftRightIcon className="h-5 w-5 text-indigo-500" />
-          <span className="font-medium">AI 학습 진단사</span>
+          <span className="font-medium text-white">Ontology Agent</span>
           {selectedLLM && (
             <Badge variant="secondary" className="text-xs">
               {selectedLLM.name}
@@ -402,7 +402,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={!selectedLLM?.isConfigured || isLoading}
-            className="flex-1"
+            className="flex-1 text-white placeholder:text-gray-300"
           />
           <Button
             onClick={sendMessage}
