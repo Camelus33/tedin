@@ -69,6 +69,38 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Load API keys from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedKeys = localStorage.getItem('habitus33_llm_api_keys');
+      if (savedKeys) {
+        const parsedKeys: Record<string, string> = JSON.parse(savedKeys);
+        
+        setLlmProviders(prevProviders => {
+          const updatedProviders = prevProviders.map(provider => {
+            if (parsedKeys[provider.name]) {
+              return {
+                ...provider,
+                apiKey: parsedKeys[provider.name],
+                isConfigured: true,
+              };
+            }
+            return provider;
+          });
+
+          const firstConfigured = updatedProviders.find(p => p.isConfigured);
+          if (firstConfigured) {
+            setSelectedLLM(firstConfigured);
+          }
+          return updatedProviders;
+        });
+      }
+    } catch (error) {
+      console.error("Failed to load LLM API keys from localStorage:", error);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // 자동 스크롤
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -164,17 +196,28 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
     setInputMessage(recommendation.text);
   };
 
-  // LLM 설정
+  // LLM 설정 및 localStorage에 저장
   const handleLLMConfig = (provider: LLMProvider, apiKey: string) => {
-    const updatedProviders = llmProviders.map(p => 
-      p.name === provider.name 
+    const updatedProviders = llmProviders.map(p =>
+      p.name === provider.name
         ? { ...p, apiKey, isConfigured: !!apiKey.trim() }
         : p
     );
     setLlmProviders(updatedProviders);
-    
+
     if (apiKey.trim()) {
       setSelectedLLM({ ...provider, apiKey, isConfigured: true });
+    } else if (selectedLLM?.name === provider.name) {
+      // 키가 삭제된 경우 선택 해제
+      setSelectedLLM(null);
+    }
+    
+    try {
+      const currentKeys = JSON.parse(localStorage.getItem('habitus33_llm_api_keys') || '{}');
+      currentKeys[provider.name] = apiKey;
+      localStorage.setItem('habitus33_llm_api_keys', JSON.stringify(currentKeys));
+    } catch (error) {
+      console.error("Failed to save LLM API key to localStorage:", error);
     }
   };
 
