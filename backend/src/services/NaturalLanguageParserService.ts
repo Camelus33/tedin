@@ -7,32 +7,57 @@ export class NaturalLanguageParserService {
    * Parse natural language expressions (date, time, comprehension score)
    */
   static parseNaturalLanguageExpression(expression: string): {
-    type: 'date' | 'time' | 'datetime' | 'range' | 'comprehension';
+    type: 'date' | 'time' | 'datetime' | 'range' | 'comprehension' | 'selfRating';
     start?: Date;
     end?: Date;
     timeRange?: { start: string; end: string };
     comprehensionScore?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
+    selfRating?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
     originalExpression: string;
   } {
     const normalized = expression.toLowerCase().trim();
     
-    // 이해도점수 패턴들
+    // 개념이해도점수 + 셀프평가 패턴들
     const comprehensionPatterns = [
-      // 특정 점수 이상/이하 (더 구체적인 패턴을 먼저)
+      // 개념이해도점수 패턴들 (0-100점)
+      { regex: /개념이해도점수\s*(\d+)점\s*이상/g, type: 'comprehension', operator: 'gte' },
+      { regex: /개념이해도점수\s*(\d+)점\s*이하/g, type: 'comprehension', operator: 'lte' },
+      { regex: /개념이해도점수\s*(\d+)점(?!\s*[월일시])/g, type: 'comprehension', operator: 'eq' },
+      { regex: /개념이해도\s*(\d+)점\s*이상/g, type: 'comprehension', operator: 'gte' },
+      { regex: /개념이해도\s*(\d+)점\s*이하/g, type: 'comprehension', operator: 'lte' },
+      { regex: /개념이해도\s*(\d+)점(?!\s*[월일시])/g, type: 'comprehension', operator: 'eq' },
+      
+      // 기존 이해도점수 패턴들 (개념이해도점수로 해석)
       { regex: /이해도점수\s*(\d+)점\s*이상/g, type: 'comprehension', operator: 'gte' },
       { regex: /이해도점수\s*(\d+)점\s*이하/g, type: 'comprehension', operator: 'lte' },
       { regex: /이해도점수\s*(\d+)점(?!\s*[월일시])/g, type: 'comprehension', operator: 'eq' },
       { regex: /이해도\s*(\d+)점\s*이상/g, type: 'comprehension', operator: 'gte' },
       { regex: /이해도\s*(\d+)점\s*이하/g, type: 'comprehension', operator: 'lte' },
       { regex: /이해도\s*(\d+)점(?!\s*[월일시])/g, type: 'comprehension', operator: 'eq' },
+      
+      // 셀프평가 패턴들 (1-5점)
+      { regex: /셀프평가\s*(\d+)점\s*이상/g, type: 'selfRating', operator: 'gte' },
+      { regex: /셀프평가\s*(\d+)점\s*이하/g, type: 'selfRating', operator: 'lte' },
+      { regex: /셀프평가\s*(\d+)점(?!\s*[월일시])/g, type: 'selfRating', operator: 'eq' },
+      { regex: /자가평가\s*(\d+)점\s*이상/g, type: 'selfRating', operator: 'gte' },
+      { regex: /자가평가\s*(\d+)점\s*이하/g, type: 'selfRating', operator: 'lte' },
+      { regex: /자가평가\s*(\d+)점(?!\s*[월일시])/g, type: 'selfRating', operator: 'eq' },
+      { regex: /사용자평가\s*(\d+)점\s*이상/g, type: 'selfRating', operator: 'gte' },
+      { regex: /사용자평가\s*(\d+)점\s*이하/g, type: 'selfRating', operator: 'lte' },
+      { regex: /사용자평가\s*(\d+)점(?!\s*[월일시])/g, type: 'selfRating', operator: 'eq' },
+      
+      // 일반적인 점수 패턴들 (개념이해도점수로 해석)
       { regex: /(\d+)점\s*이상/g, type: 'comprehension', operator: 'gte' },
       { regex: /(\d+)점\s*이하/g, type: 'comprehension', operator: 'lte' },
       // 더 엄격한 점수 패턴 (날짜/시간 키워드 뒤에 오지 않는 경우만)
       { regex: /(?<![\d월일시])\s*(\d+)점(?!\s*[월일시])/g, type: 'comprehension', operator: 'eq' },
       
       // 범위 표현
+      { regex: /개념이해도점수\s*(\d+)점\s*~?\s*(\d+)점/g, type: 'comprehension', operator: 'range' },
       { regex: /이해도점수\s*(\d+)점\s*~?\s*(\d+)점/g, type: 'comprehension', operator: 'range' },
       { regex: /이해도\s*(\d+)점\s*~?\s*(\d+)점/g, type: 'comprehension', operator: 'range' },
+      { regex: /셀프평가\s*(\d+)점\s*~?\s*(\d+)점/g, type: 'selfRating', operator: 'range' },
+      { regex: /자가평가\s*(\d+)점\s*~?\s*(\d+)점/g, type: 'selfRating', operator: 'range' },
       { regex: /(\d+)점\s*~?\s*(\d+)점/g, type: 'comprehension', operator: 'range' },
     ];
 
@@ -87,7 +112,7 @@ export class NaturalLanguageParserService {
     for (const pattern of comprehensionPatterns) {
       const match = normalized.match(pattern.regex);
       if (match) {
-        return this.parseComprehensionMatch(match, pattern.operator, expression);
+        return this.parseComprehensionMatch(match, pattern.operator, expression, pattern.type);
       }
     }
     
@@ -117,30 +142,51 @@ export class NaturalLanguageParserService {
   /**
    * Parse comprehension score match
    */
-  private static parseComprehensionMatch(match: RegExpMatchArray, operator: string, original: string): any {
+  private static parseComprehensionMatch(match: RegExpMatchArray, operator: string, original: string, type: string = 'comprehension'): any {
     if (operator === 'range' && match[1] && match[2]) {
       const min = parseInt(match[1]);
       const max = parseInt(match[2]);
-      return {
-        type: 'comprehension',
-        comprehensionScore: { min, max, operator: 'range' },
-        originalExpression: original,
-      };
+      
+      if (type === 'selfRating') {
+        return {
+          type: 'selfRating',
+          selfRating: { min, max, operator: 'range' },
+          originalExpression: original,
+        };
+      } else {
+        return {
+          type: 'comprehension',
+          comprehensionScore: { min, max, operator: 'range' },
+          originalExpression: original,
+        };
+      }
     }
     
     if (match[1]) {
       const score = parseInt(match[1]);
-      return {
-        type: 'comprehension',
-        comprehensionScore: { 
-          min: score, 
-          operator: operator as 'gte' | 'lte' | 'eq' 
-        },
-        originalExpression: original,
-      };
+      
+      if (type === 'selfRating') {
+        return {
+          type: 'selfRating',
+          selfRating: { 
+            min: score, 
+            operator: operator as 'gte' | 'lte' | 'eq' 
+          },
+          originalExpression: original,
+        };
+      } else {
+        return {
+          type: 'comprehension',
+          comprehensionScore: { 
+            min: score, 
+            operator: operator as 'gte' | 'lte' | 'eq' 
+          },
+          originalExpression: original,
+        };
+      }
     }
 
-    return { type: 'comprehension', originalExpression: original };
+    return { type, originalExpression: original };
   }
 
   /**
@@ -347,18 +393,44 @@ export class NaturalLanguageParserService {
     naturalLanguageInfo?: any;
   } {
     const naturalLanguagePatterns = [
-      // 이해도점수 패턴들
+      // 개념이해도점수 패턴들
+      /개념이해도점수\s*\d+점\s*이상/,
+      /개념이해도점수\s*\d+점\s*이하/,
+      /개념이해도점수\s*\d+점/,
+      /개념이해도\s*\d+점\s*이상/,
+      /개념이해도\s*\d+점\s*이하/,
+      /개념이해도\s*\d+점/,
+      
+      // 기존 이해도점수 패턴들
       /이해도점수\s*\d+점\s*이상/,
       /이해도점수\s*\d+점\s*이하/,
       /이해도점수\s*\d+점/,
       /이해도\s*\d+점\s*이상/,
       /이해도\s*\d+점\s*이하/,
       /이해도\s*\d+점/,
+      
+      // 셀프평가 패턴들
+      /셀프평가\s*\d+점\s*이상/,
+      /셀프평가\s*\d+점\s*이하/,
+      /셀프평가\s*\d+점/,
+      /자가평가\s*\d+점\s*이상/,
+      /자가평가\s*\d+점\s*이하/,
+      /자가평가\s*\d+점/,
+      /사용자평가\s*\d+점\s*이상/,
+      /사용자평가\s*\d+점\s*이하/,
+      /사용자평가\s*\d+점/,
+      
+      // 일반적인 점수 패턴들
       /\d+점\s*이상/,
       /\d+점\s*이하/,
       /\d+점/,
+      
+      // 범위 표현
+      /개념이해도점수\s*\d+점\s*~?\s*\d+점/,
       /이해도점수\s*\d+점\s*~?\s*\d+점/,
       /이해도\s*\d+점\s*~?\s*\d+점/,
+      /셀프평가\s*\d+점\s*~?\s*\d+점/,
+      /자가평가\s*\d+점\s*~?\s*\d+점/,
       /\d+점\s*~?\s*\d+점/,
       
       // 날짜 패턴들

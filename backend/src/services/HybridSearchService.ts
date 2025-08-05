@@ -50,6 +50,7 @@ export class HybridSearchService {
       dateRange?: { start: Date; end: Date };
       timeRange?: { start: string; end: string };
       comprehensionScore?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
+      selfRating?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
       limit?: number;
     } = {}
   ) {
@@ -121,16 +122,29 @@ export class HybridSearchService {
         }
       }
       if (filters.comprehensionScore) {
-        // 이해도점수 필터링
+        // 개념이해도점수 필터링 (0-100점)
         const { min, max, operator } = filters.comprehensionScore;
         if (operator === 'gte') {
-          matchStage.comprehensionScore = { $gte: min };
+          matchStage.conceptScore = { $gte: min };
         } else if (operator === 'lte') {
-          matchStage.comprehensionScore = { $lte: min };
+          matchStage.conceptScore = { $lte: min };
         } else if (operator === 'eq') {
-          matchStage.comprehensionScore = min;
+          matchStage.conceptScore = min;
         } else if (operator === 'range' && max) {
-          matchStage.comprehensionScore = { $gte: min, $lte: max };
+          matchStage.conceptScore = { $gte: min, $lte: max };
+        }
+      }
+      if (filters.selfRating) {
+        // 셀프평가 필터링 (1-5점)
+        const { min, max, operator } = filters.selfRating;
+        if (operator === 'gte') {
+          matchStage.selfRating = { $gte: min };
+        } else if (operator === 'lte') {
+          matchStage.selfRating = { $lte: min };
+        } else if (operator === 'eq') {
+          matchStage.selfRating = min;
+        } else if (operator === 'range' && max) {
+          matchStage.selfRating = { $gte: min, $lte: max };
         }
       }
 
@@ -147,11 +161,9 @@ export class HybridSearchService {
           createdAt: 1,
           userId: 1,
           type: 1,
-          importanceReason: 1,
-          momentContext: 1,
-          relatedKnowledge: 1,
-          mentalImage: 1,
-          comprehensionScore: 1,
+
+          selfRating: 1,
+          conceptScore: 1,
           score: { $meta: 'searchScore' },
         },
       });
@@ -191,6 +203,7 @@ export class HybridSearchService {
       dateRange?: { start: Date; end: Date };
       timeRange?: { start: string; end: string };
       comprehensionScore?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
+      selfRating?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
       limit?: number;
     } = {}
   ) {
@@ -261,16 +274,29 @@ export class HybridSearchService {
         }
       }
       if (filters.comprehensionScore) {
-        // 이해도점수 필터링
+        // 개념이해도점수 필터링 (0-100점)
         const { min, max, operator } = filters.comprehensionScore;
         if (operator === 'gte') {
-          matchStage.comprehensionScore = { $gte: min };
+          matchStage.conceptScore = { $gte: min };
         } else if (operator === 'lte') {
-          matchStage.comprehensionScore = { $lte: min };
+          matchStage.conceptScore = { $lte: min };
         } else if (operator === 'eq') {
-          matchStage.comprehensionScore = min;
+          matchStage.conceptScore = min;
         } else if (operator === 'range' && max) {
-          matchStage.comprehensionScore = { $gte: min, $lte: max };
+          matchStage.conceptScore = { $gte: min, $lte: max };
+        }
+      }
+      if (filters.selfRating) {
+        // 셀프평가 필터링 (1-5점)
+        const { min, max, operator } = filters.selfRating;
+        if (operator === 'gte') {
+          matchStage.selfRating = { $gte: min };
+        } else if (operator === 'lte') {
+          matchStage.selfRating = { $lte: min };
+        } else if (operator === 'eq') {
+          matchStage.selfRating = min;
+        } else if (operator === 'range' && max) {
+          matchStage.selfRating = { $gte: min, $lte: max };
         }
       }
 
@@ -287,11 +313,9 @@ export class HybridSearchService {
           createdAt: 1,
           userId: 1,
           type: 1,
-          importanceReason: 1,
-          momentContext: 1,
-          relatedKnowledge: 1,
-          mentalImage: 1,
-          comprehensionScore: 1,
+
+          selfRating: 1,
+          conceptScore: 1,
           score: { $meta: 'vectorSearchScore' },
         },
       });
@@ -399,6 +423,7 @@ export class HybridSearchService {
       dateRange?: { start: Date; end: Date };
       timeRange?: { start: string; end: string };
       comprehensionScore?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
+      selfRating?: { min: number; max?: number; operator: 'gte' | 'lte' | 'eq' | 'range' };
       limit?: number;
     } = {},
     options: {
@@ -431,6 +456,9 @@ export class HybridSearchService {
         }
         if (naturalLanguageInfo.type === 'comprehension') {
           updatedFilters.comprehensionScore = naturalLanguageInfo.comprehensionScore;
+        }
+        if (naturalLanguageInfo.type === 'selfRating') {
+          updatedFilters.selfRating = naturalLanguageInfo.selfRating;
         }
       }
       

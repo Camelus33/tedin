@@ -30,6 +30,9 @@ export interface INote extends Document {
     pageIndex: number;
   };
   selfRating?: number;
+  conceptScore?: number; // AI가 계산한 개념이해도 점수 (0-100점)
+  embedding?: number[]; // OpenAI 임베딩 벡터
+  embeddingGeneratedAt?: Date; // 임베딩 생성 일시
 }
 
 const NoteSchema: Schema = new Schema({
@@ -172,6 +175,20 @@ const NoteSchema: Schema = new Schema({
     min: 1,
     max: 5,
   },
+  conceptScore: {
+    type: Number,
+    default: null,
+    min: 0,
+    max: 100,
+  },
+  embedding: {
+    type: [Number],
+    default: null,
+  },
+  embeddingGeneratedAt: {
+    type: Date,
+    default: null,
+  },
 });
 
 NoteSchema.index({ userId: 1, clientCreatedAt: -1 });
@@ -183,5 +200,8 @@ NoteSchema.index({ content: 'text' });
 NoteSchema.index({ userId: 1, bookId: 1, isPdfMemo: 1 });
 NoteSchema.index({ userId: 1, bookId: 1, pageNumber: 1 });
 NoteSchema.index({ isPdfMemo: 1, pageNumber: 1 });
+// 개념이해도 점수 검색을 위한 인덱스 추가
+NoteSchema.index({ userId: 1, conceptScore: -1 });
+NoteSchema.index({ userId: 1, selfRating: -1, conceptScore: -1 });
 
 export default mongoose.model<INote>('Note', NoteSchema); 
