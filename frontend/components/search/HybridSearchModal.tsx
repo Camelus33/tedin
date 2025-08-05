@@ -170,31 +170,33 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
   if (showAIChat) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ChatBubbleLeftRightIcon className="h-5 w-5 text-indigo-500" />
-              <span className="text-white">Ontology Agent</span>
-              <Badge variant="secondary" className="ml-2">
-                검색 결과 기반 대화
-              </Badge>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleAIChatToggle}
-                className="ml-auto"
-              >
-                검색으로 돌아가기
-              </Button>
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="flex-1 min-h-0">
-            <AIChatInterface
-              searchResults={results}
-              searchQuery={query}
-              onClose={onClose}
-            />
+        <DialogContent className="max-w-6xl">
+          <div className="flex flex-col max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ChatBubbleLeftRightIcon className="h-5 w-5 text-indigo-500" />
+                <span className="text-white">Ontology Agent</span>
+                <Badge variant="secondary" className="ml-2">
+                  검색 결과 기반 대화
+                </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAIChatToggle}
+                  className="ml-auto"
+                >
+                  검색으로 돌아가기
+                </Button>
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="flex-1 min-h-0">
+              <AIChatInterface
+                searchResults={results}
+                searchQuery={query}
+                onClose={onClose}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -203,20 +205,20 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <SparklesIcon className="h-5 w-5 text-indigo-500" />
-            하이브리드 검색
-            <Badge variant="secondary" className="ml-2">
-              키워드 + 벡터
-            </Badge>
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-4xl">
+        <div className="flex flex-col max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <SparklesIcon className="h-5 w-5 text-indigo-500" />
+              하이브리드 검색
+              <Badge variant="secondary" className="ml-2">
+                키워드 + 벡터
+              </Badge>
+            </DialogTitle>
+          </DialogHeader>
 
-        <div className="flex flex-col h-full">
           {/* 검색 입력 영역 */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 my-4">
             <div className="relative flex-1">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -306,7 +308,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
           {/* 검색 결과 */}
           <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-gray-800 pr-4">
             {isLoading ? (
-              <div className="flex items-center justify-center h-32">
+              <div className="flex items-center justify-center h-full">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
                 <span className="ml-2 text-gray-400">검색 중...</span>
               </div>
@@ -416,11 +418,11 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                 ))}
               </div>
             ) : query && !isLoading ? (
-              <div className="flex items-center justify-center h-32 text-gray-400">
+              <div className="flex items-center justify-center h-full text-gray-400">
                 검색 결과가 없습니다
               </div>
             ) : (
-              <div className="flex items-center justify-center h-32 text-gray-400">
+              <div className="flex items-center justify-center h-full text-gray-400">
                 검색어를 입력하고 검색해보세요
               </div>
             )}
