@@ -41,8 +41,23 @@ router.post('/send', async (req: Request, res: Response) => {
       userId
     } = req.body;
 
+    console.log('🔍 send 요청 데이터:', {
+      message: message?.substring(0, 50) + '...',
+      searchContextQuery: searchContext?.query,
+      llmProvider,
+      llmModel,
+      userId,
+      userIdType: typeof userId
+    });
+
     // 필수 필드 검증
     if (!message || !searchContext || !llmProvider || !userId) {
+      console.log('❌ 필수 필드 누락:', { 
+        message: !!message, 
+        searchContext: !!searchContext, 
+        llmProvider: !!llmProvider, 
+        userId: !!userId 
+      });
       return res.status(400).json({
         success: false,
         error: '필수 필드가 누락되었습니다.'
@@ -51,7 +66,10 @@ router.post('/send', async (req: Request, res: Response) => {
 
     // 이메일로 사용자 ID 조회
     const actualUserId = await getUserIdFromEmail(userId);
+    console.log('🔍 사용자 조회 결과:', { inputUserId: userId, actualUserId });
+    
     if (!actualUserId) {
+      console.log('❌ 사용자를 찾을 수 없음:', userId);
       return res.status(400).json({
         success: false,
         error: '사용자를 찾을 수 없습니다.'
@@ -133,7 +151,15 @@ router.post('/recommendations', async (req: Request, res: Response) => {
   try {
     const { searchQuery, searchResults, userId } = req.body;
 
+    console.log('🔍 recommendations 요청 데이터:', {
+      searchQuery,
+      searchResultsCount: searchResults?.length,
+      userId,
+      userIdType: typeof userId
+    });
+
     if (!searchQuery || !searchResults || !userId) {
+      console.log('❌ 필수 필드 누락:', { searchQuery: !!searchQuery, searchResults: !!searchResults, userId: !!userId });
       return res.status(400).json({
         success: false,
         error: '필수 필드가 누락되었습니다.'
@@ -142,7 +168,10 @@ router.post('/recommendations', async (req: Request, res: Response) => {
 
     // 이메일로 사용자 ID 조회
     const actualUserId = await getUserIdFromEmail(userId);
+    console.log('🔍 사용자 조회 결과:', { inputUserId: userId, actualUserId });
+    
     if (!actualUserId) {
+      console.log('❌ 사용자를 찾을 수 없음:', userId);
       return res.status(400).json({
         success: false,
         error: '사용자를 찾을 수 없습니다.'
