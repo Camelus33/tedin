@@ -1,5 +1,6 @@
 import { MongoClient, Db, ObjectId } from 'mongodb';
 import { SearchResult, RecommendationQuery } from '../types/search';
+import { LLMService } from './LLMService';
 
 /**
  * 추천 쿼리 서비스 (MongoDB 기반)
@@ -9,11 +10,13 @@ export class RecommendationQueryService {
   private client: MongoClient;
   private db: Db;
   private queriesCollection: any;
+  private llmService: LLMService;
 
   constructor() {
     this.client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/habitus33');
     this.db = this.client.db();
     this.queriesCollection = this.db.collection('user_queries');
+    this.llmService = new LLMService();
   }
 
   /**
@@ -95,7 +98,7 @@ export class RecommendationQueryService {
       recommendations.push(...contextQueries);
 
       // 3. AI 기반 추천 (LLM을 활용한 추천)
-      const aiQueries = await this.generateAIRecommendations(searchResults, searchQuery);
+      const aiQueries = await this.generateAIRecommendations(searchResults, searchQuery, userId);
       recommendations.push(...aiQueries);
 
       // 중복 제거 및 정렬
@@ -162,21 +165,98 @@ export class RecommendationQueryService {
    */
   private async generateAIRecommendations(
     searchResults: SearchResult[],
-    searchQuery: string
+    searchQuery: string,
+    userId: string
   ): Promise<RecommendationQuery[]> {
-    // AI 추천은 복잡하므로 간단한 추천으로 대체
+    try {
+      // 검색 결과 컨텍스트 준비
+      const contextSummary = searchResults.slice(0, 3).map((result, index) => 
+        `${index + 1}. ${result.content?.substring(0, 150) || '내용 없음'}...`
+      ).join('\n');
+
+      // AI 추천 생성 프롬프트
+      const prompt = `사용자가 "${searchQuery}"로 검색했고, 다음과 같은 메모들을 찾았습니다:
+
+${contextSummary}
+
+위 검색 결과를 바탕으로 사용자가 다음에 궁금해할 만한 3개의 구체적이고 실용적인 질문을 생성해주세요. 
+각 질문은 검색된 내용과 연관성이 높고, 학습이나 이해를 깊게 할 수 있는 질문이어야 합니다.
+
+다음 JSON 형태로만 응답해주세요:
+[
+  {"text": "구체적인 질문 1", "relevance": 0.9},
+  {"text": "구체적인 질문 2", "relevance": 0.8}, 
+  {"text": "구체적인 질문 3", "relevance": 0.7}
+]`;
+
+      // LLM 호출
+      const llmResponse = await this.llmService.generateResponse({
+        message: prompt,
+        searchContext: { query: searchQuery, results: searchResults },
+        llmProvider: 'ChatGPT',
+        llmModel: 'gpt-4',
+        userId
+      });
+
+      // AI 응답 파싱
+      return this.parseAIRecommendations(llmResponse.content, searchQuery);
+      
+    } catch (error) {
+      console.error('AI 추천 생성 오류:', error);
+      return this.getFallbackAIRecommendations(searchQuery);
+    }
+  }
+
+  /**
+   * AI 응답 파싱 (JSON 파싱 + 폴백)
+   */
+  private parseAIRecommendations(aiResponse: string, searchQuery: string): RecommendationQuery[] {
+    try {
+      // JSON 추출 시도 (AI가 추가 텍스트와 함께 응답할 수 있음)
+      const jsonMatch = aiResponse.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) {
+        throw new Error('JSON 형태를 찾을 수 없음');
+      }
+
+      const parsedRecommendations = JSON.parse(jsonMatch[0]);
+      
+      if (!Array.isArray(parsedRecommendations)) {
+        throw new Error('배열 형태가 아님');
+      }
+
+      // AI 응답을 RecommendationQuery 형태로 변환
+      return parsedRecommendations
+        .filter(rec => rec.text && typeof rec.text === 'string')
+        .slice(0, 3) // 최대 3개만
+        .map((rec, index) => ({
+          id: `ai-${Date.now()}-${index}`,
+          text: rec.text.trim(),
+          relevance: typeof rec.relevance === 'number' ? rec.relevance : 0.8 - (index * 0.1),
+          category: 'ai-generated'
+        }));
+
+    } catch (error) {
+      console.error('AI 응답 파싱 실패:', error, '원본 응답:', aiResponse);
+      return this.getFallbackAIRecommendations(searchQuery);
+    }
+  }
+
+  /**
+   * AI 전용 폴백 추천 쿼리
+   */
+  private getFallbackAIRecommendations(searchQuery: string): RecommendationQuery[] {
     return [
       {
-        id: 'ai-1',
-        text: `${searchQuery} 심화 질문`,
-        relevance: 0.8,
-        category: 'ai-generated'
+        id: `fallback-ai-${Date.now()}-1`,
+        text: `${searchQuery}에 대해 더 자세히 알고 싶어요`,
+        relevance: 0.6,
+        category: 'ai-fallback'
       },
       {
-        id: 'ai-2',
-        text: `${searchQuery} 실전 문제`,
-        relevance: 0.7,
-        category: 'ai-generated'
+        id: `fallback-ai-${Date.now()}-2`,
+        text: `${searchQuery} 관련 실제 사례를 알려주세요`,
+        relevance: 0.5,
+        category: 'ai-fallback'
       }
     ];
   }
