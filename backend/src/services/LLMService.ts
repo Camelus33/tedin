@@ -41,6 +41,10 @@ export class LLMService {
 
   constructor() {
     this.initializeProviders();
+    // 환경 변수에서 기본 API 키 설정
+    this.configureDefaultProviders().catch(error => {
+      console.error('기본 제공자 설정 오류:', error);
+    });
   }
 
   /**
