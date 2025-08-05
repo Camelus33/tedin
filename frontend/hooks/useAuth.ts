@@ -35,7 +35,7 @@ export default function useAuth() {
           if (response.ok) {
             const userData = await response.json();
             dispatch(loginSuccess({
-              id: userData.id,
+              id: userData.userId, // userId 필드를 id로 매핑
               email: userData.email,
               nickname: userData.nickname,
               token,
