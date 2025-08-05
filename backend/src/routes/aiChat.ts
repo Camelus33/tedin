@@ -4,6 +4,7 @@ import { RecommendationQueryService } from '../services/RecommendationQueryServi
 import { ChatStorageService } from '../services/ChatStorageService';
 import { SearchContextService } from '../services/SearchContextService';
 import { ObjectId } from 'mongodb';
+import User from '../models/User';
 
 const router = Router();
 
@@ -11,6 +12,19 @@ const router = Router();
 const llmService = new LLMService();
 const recommendationService = new RecommendationQueryService();
 const chatStorageService = new ChatStorageService();
+
+/**
+ * 이메일로 사용자 ID 조회
+ */
+async function getUserIdFromEmail(email: string): Promise<string | null> {
+  try {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    return user?._id.toString() || null;
+  } catch (error) {
+    console.error('사용자 조회 오류:', error);
+    return null;
+  }
+}
 
 /**
  * AI 채팅 메시지 전송
@@ -35,6 +49,15 @@ router.post('/send', async (req: Request, res: Response) => {
       });
     }
 
+    // 이메일로 사용자 ID 조회
+    const actualUserId = await getUserIdFromEmail(userId);
+    if (!actualUserId) {
+      return res.status(400).json({
+        success: false,
+        error: '사용자를 찾을 수 없습니다.'
+      });
+    }
+
     // LLM 응답 생성
     const llmResponse = await llmService.generateResponse({
       message,
@@ -42,7 +65,7 @@ router.post('/send', async (req: Request, res: Response) => {
       llmProvider,
       llmModel,
       conversationId,
-      userId
+      userId: actualUserId
     });
 
     // 대화 저장
@@ -50,7 +73,7 @@ router.post('/send', async (req: Request, res: Response) => {
     if (!currentConversationId) {
       // 새 대화 생성
       currentConversationId = await chatStorageService.createConversation(
-        userId,
+        actualUserId,
         searchContext
       );
     }
@@ -58,7 +81,7 @@ router.post('/send', async (req: Request, res: Response) => {
     // 사용자 메시지 저장
     await chatStorageService.saveMessage(
       new ObjectId(currentConversationId),
-      new ObjectId(userId),
+      new ObjectId(actualUserId),
       'user',
       message
     );
@@ -66,7 +89,7 @@ router.post('/send', async (req: Request, res: Response) => {
     // AI 응답 저장
     await chatStorageService.saveMessage(
       new ObjectId(currentConversationId),
-      new ObjectId(userId), // AI 메시지도 사용자 ID로 저장 (시스템 메시지 구분)
+      new ObjectId(actualUserId), // AI 메시지도 사용자 ID로 저장 (시스템 메시지 구분)
       'ai',
       llmResponse.content,
       {
@@ -80,7 +103,7 @@ router.post('/send', async (req: Request, res: Response) => {
     await recommendationService.collectUserQuery(
       message,
       searchContext.results,
-      userId
+      actualUserId
     );
 
     res.json({
@@ -117,10 +140,19 @@ router.post('/recommendations', async (req: Request, res: Response) => {
       });
     }
 
+    // 이메일로 사용자 ID 조회
+    const actualUserId = await getUserIdFromEmail(userId);
+    if (!actualUserId) {
+      return res.status(400).json({
+        success: false,
+        error: '사용자를 찾을 수 없습니다.'
+      });
+    }
+
     const recommendations = await recommendationService.generateRecommendations(
       searchResults,
       searchQuery,
-      userId
+      actualUserId
     );
 
     res.json({
@@ -153,9 +185,18 @@ router.post('/save', async (req: Request, res: Response) => {
       });
     }
 
+    // 이메일로 사용자 ID 조회
+    const actualUserId = await getUserIdFromEmail(userId);
+    if (!actualUserId) {
+      return res.status(400).json({
+        success: false,
+        error: '사용자를 찾을 수 없습니다.'
+      });
+    }
+
     // 새 대화 생성
     const conversationId = await chatStorageService.createConversation(
-      userId,
+      actualUserId,
       searchContext
     );
 
@@ -163,7 +204,7 @@ router.post('/save', async (req: Request, res: Response) => {
     for (const message of messages) {
       await chatStorageService.saveMessage(
         conversationId,
-        new ObjectId(userId),
+        new ObjectId(actualUserId),
         message.sender,
         message.content,
         {
