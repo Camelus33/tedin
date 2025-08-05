@@ -170,7 +170,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
   if (showAIChat) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl">
+        <DialogContent className="max-w-6xl bg-secondary">
           <div className="flex flex-col max-h-[90vh]">
             <DialogHeader>
               <DialogTitle>
@@ -200,10 +200,10 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+              <DialogContent className="max-w-4xl bg-secondary">
         <div className="flex flex-col max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-gray-100">
               <SparklesIcon className="h-5 w-5 text-indigo-500" />
               하이브리드 검색
               <Badge variant="secondary" className="ml-2">
@@ -213,7 +213,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
           </DialogHeader>
 
           {/* 검색 입력 영역 */}
-          <div className="flex gap-2 my-4">
+          <div className="flex flex-col sm:flex-row gap-2 my-4">
             <div className="relative flex-1">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -351,10 +351,10 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                 {results.map((result) => (
                   <Card key={result._id} className="hover:bg-gray-800/50 transition-colors">
                     <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1">
+                      <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
+                        <div className="flex-1 mb-2 sm:mb-0">
                           <p className="text-sm text-gray-300 mb-1">{result.content}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-400">
+                          <div className="flex items-center gap-2 text-xs text-gray-400 flex-wrap">
                             <span>{formatDate(result.createdAt)}</span>
                             <span>•</span>
                             <span>{result.type}</span>
@@ -369,7 +369,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                             {result.tags && result.tags.length > 0 && (
                               <>
                                 <span>•</span>
-                                <div className="flex gap-1">
+                                <div className="flex gap-1 flex-wrap">
                                   {result.tags.slice(0, 3).map((tag, index) => (
                                     <Badge key={index} variant="outline" className="text-xs">
                                       {tag}
@@ -385,7 +385,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 ml-4">
+                        <div className="flex items-center gap-2 sm:ml-4">
                           {result.combinedScore && (
                             <Badge 
                               variant="secondary" 
