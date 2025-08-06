@@ -749,8 +749,12 @@ export default function EditSummaryNotePage() {
       };
       const fillColor = fillColorMap[color] || '#2563eb';
       
+      // 동적 크기 지원: 크기 정보가 있으면 사용, 없으면 기본값
+      const nodeSize = getNodeSize(node);
+      const radius = Math.min(nodeSize.width, nodeSize.height) / 2;
+      
       return `
-        <circle cx="${pos.x}" cy="${pos.y}" r="25" fill="${fillColor}" stroke="#1f2937" stroke-width="2"/>
+        <circle cx="${pos.x}" cy="${pos.y}" r="${radius}" fill="${fillColor}" stroke="#1f2937" stroke-width="2"/>
         <text x="${pos.x}" y="${pos.y + 5}" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">${node.order}</text>
       `;
     }).join('');
@@ -766,13 +770,14 @@ export default function EditSummaryNotePage() {
       const config = RELATIONSHIP_CONFIGS[connection.relationshipType as RelationshipType];
       const strokeColor = config.strokeColor;
       
-      // Calculate optimal connection points on circle boundaries
-      const nodeRadius = 25; // SVG에서 사용하는 반지름
+      // 동적 크기를 반영한 연결점 계산
+      const sourceRadius = getNodeRadius(sourceNode);
+      const targetRadius = getNodeRadius(targetNode);
       const connectionPoints = calculateOptimalConnectionPoints(
         sourcePos,
         targetPos,
-        nodeRadius,
-        nodeRadius
+        sourceRadius,
+        targetRadius
       );
       
       if (!connectionPoints) return '';
