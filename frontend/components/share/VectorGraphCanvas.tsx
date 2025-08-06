@@ -174,6 +174,24 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
                   <polygon points="0 0, 10 3.5, 0 7" fill={config.strokeColor}/>
                 </marker>
             ))}
+            
+            {/* 전류 애니메이션을 위한 정의 */}
+            <style>
+              {`
+                @keyframes currentFlow {
+                  0% { stroke-dashoffset: 0; }
+                  100% { stroke-dashoffset: -20; }
+                }
+                
+                .current-flow {
+                  animation: currentFlow 1.5s linear infinite;
+                }
+                
+                .current-glow {
+                  filter: drop-shadow(0 0 3px currentColor);
+                }
+              `}
+            </style>
         </defs>
 
         {canvasConnections.map(connection => {
@@ -203,11 +221,15 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
           // 연결선 스타일 결정
           let strokeWidth: string;
           let strokeOpacity: string = "1";
+          let strokeDasharray: string = "none";
+          let className: string = "";
           
           if (isConnectedToHovered) {
-            // 호버된 노드와 연결된 선은 더 굵게
+            // 호버된 노드와 연결된 선은 더 굵게 + 전류 애니메이션
             strokeWidth = isMinimap ? "1.5" : "2.5";
             strokeOpacity = "1";
+            strokeDasharray = "5,5";
+            className = "current-flow current-glow";
           } else if (hoveredNodeId) {
             // 호버 상태에서 연결되지 않은 선은 투명하게
             strokeWidth = isMinimap ? "0.8" : "1.5";
@@ -232,16 +254,54 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
           let lineElement;
           switch (connection.relationshipType) {
               case 'before-after':
-                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={strokeWidth} strokeDasharray="3,3" strokeOpacity={strokeOpacity} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
+                  lineElement = (
+                    <line 
+                      x1={startX} y1={startY} x2={endX} y2={endY} 
+                      stroke={config.strokeColor} 
+                      strokeWidth={strokeWidth} 
+                      strokeDasharray={isConnectedToHovered ? "5,5" : "3,3"} 
+                      strokeOpacity={strokeOpacity} 
+                      markerEnd={`url(#arrow-${connection.relationshipType})`}
+                      className={className}
+                    />
+                  );
                   break;
               case 'contrast':
-                  lineElement = <path d={createZigzagPath(startX, startY, endX, endY)} stroke={config.strokeColor} strokeWidth={strokeWidth} fill="none" strokeOpacity={strokeOpacity} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
+                  lineElement = (
+                    <path 
+                      d={createZigzagPath(startX, startY, endX, endY)} 
+                      stroke={config.strokeColor} 
+                      strokeWidth={strokeWidth} 
+                      fill="none" 
+                      strokeOpacity={strokeOpacity} 
+                      markerEnd={`url(#arrow-${connection.relationshipType})`}
+                      className={className}
+                    />
+                  );
                   break;
               case 'contains':
-                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={strokeWidth} strokeOpacity={strokeOpacity} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
+                  lineElement = (
+                    <line 
+                      x1={startX} y1={startY} x2={endX} y2={endY} 
+                      stroke={config.strokeColor} 
+                      strokeWidth={strokeWidth} 
+                      strokeOpacity={strokeOpacity} 
+                      markerEnd={`url(#arrow-${connection.relationshipType})`}
+                      className={className}
+                    />
+                  );
                   break;
               default:
-                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={strokeWidth} strokeOpacity={strokeOpacity} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
+                  lineElement = (
+                    <line 
+                      x1={startX} y1={startY} x2={endX} y2={endY} 
+                      stroke={config.strokeColor} 
+                      strokeWidth={strokeWidth} 
+                      strokeOpacity={strokeOpacity} 
+                      markerEnd={`url(#arrow-${connection.relationshipType})`}
+                      className={className}
+                    />
+                  );
           }
 
           return (
