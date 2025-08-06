@@ -3352,12 +3352,104 @@
             "testStrategy": "Verify that chat logs are stored correctly in the database. Test retrieving, searching, and managing chat history. Ensure data security and privacy."
           }
         ]
+      },
+      {
+        "id": 4,
+        "title": "Implement Three-Column Responsive Layout",
+        "description": "Set up the basic three-column layout structure for the Knowledge Blueprint page, ensuring responsiveness for desktop and mobile views.",
+        "details": "1.  Create a new component `KnowledgeBlueprintPage`.\n2.  Implement a three-column layout using CSS Grid or Flexbox.  Consider using a library like Material UI Grid or similar for responsiveness.\n3.  Define CSS media queries to switch to a single-column layout on mobile devices (screen width < 768px).\n4.  Create placeholder components for the Map Panel, Canvas, and Inspector Panel.",
+        "testStrategy": "1.  Verify the three-column layout on desktop browsers.\n2.  Verify the single-column layout on mobile devices and small screen sizes.\n3.  Ensure smooth transition between layouts on different screen sizes.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Integrate Vector Graph Rendering into Canvas",
+        "description": "Integrate the vector graph rendering logic from the existing summary note edit page into the Canvas component of the Knowledge Blueprint.",
+        "details": "1.  Reuse the existing code from `summary-notes/[summaryNoteId]/edit/page.tsx` responsible for rendering the vector graph (`diagram` data).\n2.  Create a `Canvas` component within the `KnowledgeBlueprintPage`.\n3.  Pass the `diagram` data to the `Canvas` component.\n4.  Adapt the existing graph rendering logic to fit within the `Canvas` component, ensuring proper scaling and positioning.\n5.  Implement basic panning and zooming functionality using a library like react-zoom-pan-pinch.",
+        "testStrategy": "1.  Verify that the vector graph is rendered correctly within the Canvas.\n2.  Verify that all nodes and relationships are visible.\n3.  Test panning and zooming functionality.\n4.  Compare the rendered graph with the original summary note edit page to ensure visual consistency.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Visual Language for Graph Relationships",
+        "description": "Implement the visual styling for the vector graph relationships (cause-effect, before-after, etc.) according to the 'Visual Language' proposal.",
+        "details": "1.  Define distinct visual styles (line styles, icons, colors) for each type of relationship (cause-effect, before-after, etc.).\n2.  Modify the graph rendering logic to apply these styles based on the relationship type.\n3.  Ensure that the visual styles are clear and easily distinguishable.",
+        "testStrategy": "1.  Verify that each type of relationship is rendered with its corresponding visual style.\n2.  Ensure that the visual styles are consistent and easy to understand.\n3.  Test with different graph configurations to ensure that the styles are applied correctly in all cases.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Map Panel with Minimap and Navigation",
+        "description": "Create the Map Panel to display a minimap of the entire vector graph and provide search/navigation functionality.",
+        "details": "1.  Create a `MapPanel` component within the `KnowledgeBlueprintPage`.\n2.  Render a smaller version of the vector graph within the `MapPanel`, showing the entire graph at a glance.\n3.  Implement search functionality to allow users to search for specific nodes.\n4.  Implement navigation functionality to allow users to jump to specific nodes in the Canvas by clicking on them in the Map Panel.\n5.  Consider using a library like react-select for the search functionality.",
+        "testStrategy": "1.  Verify that the minimap is rendered correctly in the Map Panel.\n2.  Verify that the search functionality works correctly.\n3.  Verify that navigation from the Map Panel to the Canvas works correctly.\n4.  Ensure that the Map Panel is responsive and adapts to different screen sizes.",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Inspector Panel for Memo Card Details",
+        "description": "Implement the Inspector Panel to display the full details of the currently selected memo card (node).",
+        "details": "1.  Create an `InspectorPanel` component within the `KnowledgeBlueprintPage`.\n2.  Implement a mechanism to track the currently selected node in the Canvas.\n3.  When a node is selected, fetch its details and display them in the `InspectorPanel`.\n4.  Ensure that all original content from the existing shared page (notes, user markdown, metadata) is displayed correctly in the `InspectorPanel`.\n5.  Use a markdown rendering library like react-markdown to display user markdown.",
+        "testStrategy": "1.  Verify that the Inspector Panel displays the correct details for the selected node.\n2.  Verify that all original content is displayed correctly, including notes, user markdown, and metadata.\n3.  Test with different types of nodes to ensure that the Inspector Panel works correctly in all cases.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Integrate Components into Knowledge Blueprint Layout",
+        "description": "Integrate the Canvas, Map Panel, and Inspector Panel components into the main Knowledge Blueprint layout.",
+        "details": "1.  Connect the Canvas, Map Panel, and Inspector Panel components within the `KnowledgeBlueprintPage`.\n2.  Ensure that the components communicate with each other correctly (e.g., selecting a node in the Canvas updates the Inspector Panel).\n3.  Fine-tune the layout to ensure that the components are positioned correctly and that the overall design is visually appealing.",
+        "testStrategy": "1.  Verify that the Canvas, Map Panel, and Inspector Panel components are integrated correctly.\n2.  Verify that the components communicate with each other correctly.\n3.  Ensure that the overall layout is visually appealing and user-friendly.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Conduct Comprehensive Testing",
+        "description": "Conduct thorough testing of the Knowledge Blueprint page to ensure that all requirements are met and that the page is functioning correctly.",
+        "details": "1.  Perform functional testing to verify that all features are working as expected.\n2.  Perform usability testing to ensure that the page is user-friendly and easy to navigate.\n3.  Perform performance testing to ensure that the page is loading quickly and efficiently.\n4.  Perform cross-browser testing to ensure that the page is working correctly in all major browsers.\n5.  Perform responsive testing to ensure that the page is working correctly on different screen sizes and devices.",
+        "testStrategy": "1.  Create a comprehensive test plan that covers all aspects of the Knowledge Blueprint page.\n2.  Execute the test plan and document all findings.\n3.  Address any issues that are identified during testing.\n4.  Retest the page after the issues have been resolved.",
+        "priority": "high",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-08-04T13:09:44.245Z",
-      "updated": "2025-08-04T14:32:21.177Z",
-      "description": "AI 학습 진단사 - 수험생 특화 메모카드 검색 시스템 개발"
+      "updated": "2025-08-06T05:23:28.192Z",
+      "description": "Tasks for ai-learning-diagnostician context"
     }
   }
 }
