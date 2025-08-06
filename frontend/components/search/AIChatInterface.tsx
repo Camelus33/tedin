@@ -195,6 +195,14 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
     setInputMessage(recommendation.text);
   };
 
+  const handleSelectLLM = (provider: LLMProvider) => {
+    if (provider.isConfigured) {
+      setSelectedLLM(provider);
+    } else {
+      toast.error(`${provider.name} 모델의 API 키가 설정되지 않았습니다.`);
+    }
+  };
+
   // LLM 설정 및 localStorage에 저장
   const handleLLMConfig = (provider: LLMProvider, apiKey: string) => {
     const updatedProviders = llmProviders.map(p =>
@@ -204,10 +212,8 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
     );
     setLlmProviders(updatedProviders);
 
-    if (apiKey.trim()) {
-      setSelectedLLM({ ...provider, apiKey, isConfigured: true });
-    } else if (selectedLLM?.name === provider.name) {
-      // 키가 삭제된 경우 선택 해제
+    // If the currently selected provider's key is removed, deselect it.
+    if (selectedLLM?.name === provider.name && !apiKey.trim()) {
       setSelectedLLM(null);
     }
     
@@ -255,13 +261,19 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
         <div className="flex items-center gap-2">
           <ChatBubbleLeftRightIcon className="h-5 w-5 text-indigo-500" />
           <span className="font-medium text-white">Ontology Agent</span>
-          {selectedLLM && (
-            <Badge variant="secondary" className="text-xs">
-              {selectedLLM.name}
-            </Badge>
-          )}
         </div>
         <div className="flex items-center gap-2">
+          {llmProviders.filter(p => p.isConfigured).map(provider => (
+            <Button
+              key={provider.name}
+              variant={selectedLLM?.name === provider.name ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => handleSelectLLM(provider)}
+              className={`text-xs ${selectedLLM?.name === provider.name ? 'font-bold' : ''}`}
+            >
+              {provider.name}
+            </Button>
+          ))}
           <Button
             variant="outline"
             size="sm"
@@ -387,19 +399,21 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
         <div className="flex gap-2">
           <Input
             placeholder={
-              selectedLLM?.isConfigured 
-                ? "AI와 대화해보세요..." 
-                : "AI 모델을 설정해주세요"
+              !llmProviders.some(p => p.isConfigured)
+                ? "AI 모델을 설정해주세요"
+                : !selectedLLM
+                ? "사용할 AI 모델을 선택해주세요"
+                : "AI와 대화해보세요..."
             }
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            disabled={!selectedLLM?.isConfigured || isLoading}
+            disabled={!selectedLLM || isLoading}
             className="flex-1 text-white placeholder:text-gray-300"
           />
           <Button
             onClick={sendMessage}
-            disabled={!inputMessage.trim() || !selectedLLM?.isConfigured || isLoading}
+            disabled={!inputMessage.trim() || !selectedLLM || isLoading}
             className="bg-indigo-600 hover:bg-indigo-700"
           >
             <PaperAirplaneIcon className="h-4 w-4" />
