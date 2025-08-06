@@ -2,12 +2,15 @@
 
 import React, { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar, HelpCircle, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import ExpandableText from '@/components/common/ExpandableText';
-import ClientTimeDisplay from '@/components/share/ClientTimeDisplay';
+import ClientTimeDisplay, { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 import { RELATIONSHIP_CONFIGS, RelationshipType } from '@/components/share/VectorGraphCanvas';
 import { motion, AnimatePresence } from 'framer-motion';
+import LearningJourneyVisualization from '@/components/share/LearningJourneyVisualization';
+import InlineThreadsViewer from '@/components/share/InlineThreadsViewer';
+
 
 const VectorGraphCanvas = dynamic(
   () => import('@/components/share/VectorGraphCanvas'),
@@ -31,15 +34,39 @@ const formatPPM = (ppm?: number | null): string => {
   return `분당 ${ppm.toFixed(1)} 페이지`;
 };
 
-const JourneyContent = ({ htmlData }: { htmlData: any }) => {
+const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, jsonLdData: any, shareId: string }) => {
     const { userMarkdownContent, notes } = htmlData;
+
     return (
         <div className="p-4 bg-gray-800/50 rounded-lg space-y-8">
+            {jsonLdData?.learningJourney && (
+                <LearningJourneyVisualization
+                    learningJourney={jsonLdData.learningJourney}
+                    className="mb-8"
+                />
+            )}
+
+            {notes && notes.length > 0 && (
+                <section className="p-6 bg-gray-700/30 rounded-lg border border-gray-600">
+                    <h3 className="text-xl font-semibold text-gray-200 mb-4">핵심 내용</h3>
+                    <ul className="space-y-2">
+                        {notes.map((note: any, index: number) => (
+                        <li key={`toc-${note._id || index}`} className="text-gray-400 hover:text-cyan-400 transition-colors">
+                            <a href={`#journey-${note._id || index}`} className="flex items-start">
+                            <span className="mr-3 text-cyan-400 font-semibold">{index + 1}.</span>
+                            <span className="flex-1">{note.content?.substring(0, 70) ?? '내용 없음'}{note.content?.length > 70 ? '...' : ''}</span>
+                            </a>
+                        </li>
+                        ))}
+                    </ul>
+                </section>
+            )}
+            
             {userMarkdownContent && (
                 <section className="p-6 bg-indigo-900/30 rounded-lg border-l-4 border-purple-500">
                     <header className="mb-4">
                         <h3 className="text-xl font-semibold text-gray-100 flex items-center">
-                            <SlidersHorizontal className="h-6 w-6 mr-2 text-purple-400" />
+                            <MessageSquare className="h-6 w-6 mr-2 text-purple-400" />
                             작성자 인사이트
                         </h3>
                     </header>
@@ -53,7 +80,7 @@ const JourneyContent = ({ htmlData }: { htmlData: any }) => {
             
             <div className="space-y-10">
                 {notes && notes.map((note: any, index: number) => (
-                    <article key={note._id} id={`journey-${note._id}`} className="border-t border-gray-700 pt-8">
+                    <article key={note._id} id={`journey-${note._id}`} className="border-t border-gray-700 pt-8 scroll-mt-20">
                         <div className="flex items-start space-x-4">
                             <div className="flex-shrink-0 bg-green-600 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">{index + 1}</div>
                             <h3 className="flex-1 text-2xl font-semibold text-indigo-300 break-words">{note.content ?? '내용 없음'}</h3>
@@ -83,6 +110,9 @@ const JourneyContent = ({ htmlData }: { htmlData: any }) => {
                                     </ul>
                                 </section>
                             )}
+                             {typeof note.inlineThreadsCount === 'number' && note.inlineThreadsCount > 0 && (
+                                <InlineThreadsViewer shareId={shareId} noteId={note._id} count={note.inlineThreadsCount} />
+                            )}
                         </div>
                     </article>
                 ))}
@@ -91,8 +121,7 @@ const JourneyContent = ({ htmlData }: { htmlData: any }) => {
     )
 }
 
-
-export default function SharePageLayout({ htmlData }: { htmlData: any }) {
+export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htmlData: any, jsonLdData: any, shareId: string }) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isJourneyVisible, setJourneyVisible] = useState(false);
 
@@ -107,10 +136,12 @@ export default function SharePageLayout({ htmlData }: { htmlData: any }) {
           <h1 className="text-lg font-bold text-indigo-400 truncate" title={title ?? '제목 없음'}>{title ?? '제목 없음'}</h1>
           <p className="text-xs text-gray-400 truncate" title={description}>{description || '설명 없음'}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">
-            공유자: {user?.name || '익명'}
-          </span>
+        <div className="flex items-center gap-4">
+          <div className="text-xs text-gray-500 flex items-center gap-2">
+            <span>공유일: <ClientDateDisplay createdAt={createdAt} /></span>
+            <span>|</span>
+            <span>공유자: {user?.name || '익명'}</span>
+          </div>
           <button className="p-1.5 rounded-md hover:bg-gray-700 transition-colors">
             <Share2 className="w-4 h-4" />
           </button>
@@ -159,15 +190,15 @@ export default function SharePageLayout({ htmlData }: { htmlData: any }) {
               </div>
             </div>
             <div className="flex-grow relative overflow-y-auto">
-              {diagram?.data ? (
-                <div className="relative h-[60vh]">
-                    <VectorGraphCanvas diagramData={diagram.data} onNodeSelect={setSelectedNodeId} />
-                </div>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <p className="text-sm text-gray-500">표시할 벡터그래프 데이터가 없습니다.</p>
-                </div>
-              )}
+              <div className="h-full" style={{ maxHeight: isJourneyVisible ? '50vh' : 'calc(100% - 40px)', transition: 'max-height 0.5s ease-in-out'}}>
+                  {diagram?.data ? (
+                      <VectorGraphCanvas diagramData={diagram.data} onNodeSelect={setSelectedNodeId} />
+                  ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                      <p className="text-sm text-gray-500">표시할 벡터그래프 데이터가 없습니다.</p>
+                      </div>
+                  )}
+              </div>
                  <div className="sticky bottom-0 left-0 right-0 p-2 bg-gray-900/80 backdrop-blur-sm border-t border-gray-700">
                     <button 
                         onClick={() => setJourneyVisible(!isJourneyVisible)}
@@ -186,7 +217,7 @@ export default function SharePageLayout({ htmlData }: { htmlData: any }) {
                             transition={{ duration: 0.3 }}
                             className="overflow-hidden"
                         >
-                            <JourneyContent htmlData={htmlData} />
+                            <JourneyContent htmlData={htmlData} jsonLdData={jsonLdData} shareId={shareId} />
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -235,14 +266,6 @@ export default function SharePageLayout({ htmlData }: { htmlData: any }) {
                 <div className="p-4 text-center text-gray-500 text-sm">
                   <p>그래프에서 노드를 선택하여 상세 정보를 확인하세요.</p>
                 </div>
-              )}
-               {userMarkdownContent && (
-                <section className="mt-6 p-4">
-                    <h4 className="font-semibold text-cyan-400 mb-2">작성자 인사이트</h4>
-                    <div className="prose prose-sm prose-invert max-w-none p-3 bg-gray-700/50 rounded-md">
-                        <pre className="whitespace-pre-wrap font-sans text-sm">{userMarkdownContent}</pre>
-                    </div>
-                </section>
               )}
             </div>
           </div>

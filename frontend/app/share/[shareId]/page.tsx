@@ -47,7 +47,7 @@ export default async function SharePage({ params }: { params: { shareId: string 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
       />
-      <SharePageLayout htmlData={htmlData} />
+      <SharePageLayout htmlData={htmlData} jsonLdData={jsonLdData} />
     </>
   );
 }
