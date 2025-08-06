@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 // Types from SummaryNote edit page - ensure consistency
 interface DiagramNode {
@@ -100,6 +100,22 @@ const createZigzagPath = (startX: number, startY: number, endX: number, endY: nu
     return path;
 };
 
+// 연결된 노드 ID들을 계산하는 유틸리티 함수
+const getConnectedNodeIds = (nodeId: string, connections: DiagramConnection[]): Set<string> => {
+  const connectedIds = new Set<string>();
+  
+  connections.forEach(connection => {
+    if (connection.sourceNoteId === nodeId) {
+      connectedIds.add(connection.targetNoteId);
+    }
+    if (connection.targetNoteId === nodeId) {
+      connectedIds.add(connection.sourceNoteId);
+    }
+  });
+  
+  return connectedIds;
+};
+
 interface VectorGraphCanvasProps {
   diagramData: {
     nodes: DiagramNode[];
@@ -111,9 +127,16 @@ interface VectorGraphCanvasProps {
 
 const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNodeSelect, isMinimap = false }) => {
   const { nodes: canvasNodes, connections: canvasConnections } = diagramData;
+  
+  // 호버 상태 관리
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
   const handleNodeClick = (nodeId: string) => {
     onNodeSelect(nodeId);
+  };
+
+  const handleNodeHover = (nodeId: string | null) => {
+    setHoveredNodeId(nodeId);
   };
 
   const renderGraph = () => {
@@ -139,6 +162,9 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
       x: padding + (pos.x - minX) * scale,
       y: padding + (pos.y - minY) * scale
     });
+
+    // 호버된 노드와 연결된 노드 ID들 계산
+    const connectedNodeIds = hoveredNodeId ? getConnectedNodeIds(hoveredNodeId, canvasConnections) : new Set<string>();
 
     return (
       <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} style={{ background: '#111827' }}>
@@ -170,19 +196,52 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
           const midX = (startX + endX) / 2;
           const midY = (startY + endY) / 2;
 
+          // 연결선이 호버된 노드와 관련된지 확인
+          const isConnectedToHovered = hoveredNodeId && 
+            (connection.sourceNoteId === hoveredNodeId || connection.targetNoteId === hoveredNodeId);
+
+          // 연결선 스타일 결정
+          let strokeWidth: string;
+          let strokeOpacity: string = "1";
+          
+          if (isConnectedToHovered) {
+            // 호버된 노드와 연결된 선은 더 굵게
+            strokeWidth = isMinimap ? "1.5" : "2.5";
+            strokeOpacity = "1";
+          } else if (hoveredNodeId) {
+            // 호버 상태에서 연결되지 않은 선은 투명하게
+            strokeWidth = isMinimap ? "0.8" : "1.5";
+            strokeOpacity = "0.2";
+          } else {
+            // 기본 상태에서 연결선 두께 조정
+            strokeWidth = isMinimap ? "0.8" : "1.5";
+            strokeOpacity = "1";
+          }
+
+          // contains 관계는 여전히 조금 더 굵게
+          if (connection.relationshipType === 'contains') {
+            if (isConnectedToHovered) {
+              strokeWidth = isMinimap ? "2" : "3";
+            } else if (hoveredNodeId) {
+              strokeWidth = isMinimap ? "1" : "2";
+            } else {
+              strokeWidth = isMinimap ? "1.2" : "2.5";
+            }
+          }
+
           let lineElement;
           switch (connection.relationshipType) {
               case 'before-after':
-                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={isMinimap ? "1" : "2"} strokeDasharray="3,3" markerEnd={`url(#arrow-${connection.relationshipType})`} />;
+                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={strokeWidth} strokeDasharray="3,3" strokeOpacity={strokeOpacity} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
                   break;
               case 'contrast':
-                  lineElement = <path d={createZigzagPath(startX, startY, endX, endY)} stroke={config.strokeColor} strokeWidth={isMinimap ? "1" : "2"} fill="none" markerEnd={`url(#arrow-${connection.relationshipType})`} />;
+                  lineElement = <path d={createZigzagPath(startX, startY, endX, endY)} stroke={config.strokeColor} strokeWidth={strokeWidth} fill="none" strokeOpacity={strokeOpacity} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
                   break;
               case 'contains':
-                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={isMinimap ? "2" : "4"} strokeOpacity="0.7" markerEnd={`url(#arrow-${connection.relationshipType})`} />;
+                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={strokeWidth} strokeOpacity={strokeOpacity} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
                   break;
               default:
-                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={isMinimap ? "1" : "2"} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
+                  lineElement = <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={config.strokeColor} strokeWidth={strokeWidth} strokeOpacity={strokeOpacity} markerEnd={`url(#arrow-${connection.relationshipType})`} />;
           }
 
           return (
@@ -190,8 +249,8 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
               {lineElement}
               {!isMinimap && (
                 <>
-                    <circle cx={midX} cy={midY} r="10" fill={config.strokeColor} stroke="#1f2937" strokeWidth="1"/>
-                    <text x={midX} y={midY + 4} textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">{config.icon}</text>
+                    <circle cx={midX} cy={midY} r="10" fill={config.strokeColor} stroke="#1f2937" strokeWidth="1" opacity={strokeOpacity}/>
+                    <text x={midX} y={midY + 4} textAnchor="middle" fill="white" fontSize="12" fontWeight="bold" opacity={strokeOpacity}>{config.icon}</text>
                 </>
               )}
             </g>
@@ -211,10 +270,62 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
           const nodeSize = getNodeSize(node);
           const radius = Math.min(nodeSize.width, nodeSize.height) / 2;
           
+          // 노드 스타일 결정
+          let nodeRadius = radius;
+          let nodeOpacity = "1";
+          let nodeStrokeWidth = "2";
+          let nodeStrokeColor = "#4b5563";
+          
+          if (node.noteId === hoveredNodeId) {
+            // 호버된 노드: 크기 증가, 글로우 효과
+            nodeRadius = radius * 1.2;
+            nodeOpacity = "1";
+            nodeStrokeWidth = "3";
+            nodeStrokeColor = "#60a5fa";
+          } else if (connectedNodeIds.has(node.noteId)) {
+            // 연결된 노드: 약간 크기 증가, 하이라이트
+            nodeRadius = radius * 1.1;
+            nodeOpacity = "0.8";
+            nodeStrokeWidth = "2";
+            nodeStrokeColor = "#fbbf24";
+          } else if (hoveredNodeId) {
+            // 호버 상태에서 연결되지 않은 노드: 투명하게
+            nodeOpacity = "0.3";
+          }
+          
           return (
-            <g key={node.noteId} transform={`translate(${pos.x}, ${pos.y})`} onClick={() => handleNodeClick(node.noteId)} style={{ cursor: 'pointer' }}>
-              <circle r={radius} fill={fillColor} stroke="#4b5563" strokeWidth="2" />
-              {!isMinimap && <text textAnchor="middle" dy=".3em" fill="white" fontSize="16" fontWeight="bold">{node.order}</text>}
+            <g 
+              key={node.noteId} 
+              transform={`translate(${pos.x}, ${pos.y})`} 
+              onClick={() => handleNodeClick(node.noteId)}
+              onMouseEnter={() => handleNodeHover(node.noteId)}
+              onMouseLeave={() => handleNodeHover(null)}
+              style={{ cursor: 'pointer' }}
+            >
+              <circle 
+                r={nodeRadius} 
+                fill={fillColor} 
+                stroke={nodeStrokeColor} 
+                strokeWidth={nodeStrokeWidth}
+                opacity={nodeOpacity}
+                style={{
+                  transition: 'all 0.2s ease-in-out',
+                  filter: node.noteId === hoveredNodeId ? 'drop-shadow(0 0 8px rgba(96, 165, 250, 0.6))' : 'none'
+                }}
+              />
+              {!isMinimap && (
+                <text 
+                  textAnchor="middle" 
+                  dy=".3em" 
+                  fill="white" 
+                  fontSize="16" 
+                  fontWeight="bold"
+                  opacity={nodeOpacity}
+                  style={{ transition: 'opacity 0.2s ease-in-out' }}
+                >
+                  {node.order}
+                </text>
+              )}
             </g>
           );
         })}
