@@ -226,14 +226,66 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
           </div>
           <div className="flex-shrink-0 mt-2 p-2 border-t border-gray-700">
             <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><HelpCircle className="w-4 h-4 text-cyan-400" /> 범례</h3>
-            <div className="space-y-1">
+            <div className="flex flex-wrap gap-1 mb-3">
               {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
-                <div key={key} className="flex items-center gap-2 text-xs">
-                  <div className="w-4 h-4 flex items-center justify-center font-bold" style={{ color: strokeColor }}>{icon}</div>
-                  <span className="text-gray-300">{label}</span>
+                <div key={key} className="px-2 py-1 border border-gray-600 rounded text-xs" style={{ color: strokeColor }}>
+                  {icon} {label}
                 </div>
               ))}
             </div>
+            
+            {/* 연결관계 서술 섹션 */}
+            {diagram?.data?.connections && diagram.data.connections.length > 0 && (
+              <div className="space-y-1">
+                <h4 className="text-xs font-semibold text-yellow-400 mb-2">연결관계</h4>
+                <div className="space-y-1 max-h-24 overflow-y-auto">
+                  {(() => {
+                    const connections = diagram.data.connections;
+                    const nodes = diagram.data.nodes;
+                    
+                    // 노드 ID를 순서 번호로 변환하는 함수
+                    const getNodeOrder = (noteId: string) => {
+                      const node = nodes.find((n: any) => n.noteId === noteId);
+                      return node ? node.order : 0;
+                    };
+                    
+                    // 연결관계를 서술적으로 변환하는 함수
+                    const getRelationshipDescription = (connection: any) => {
+                      const sourceOrder = getNodeOrder(connection.sourceNoteId);
+                      const targetOrder = getNodeOrder(connection.targetNoteId);
+                      
+                      const relationshipMap: { [key: string]: string } = {
+                        'cause-effect': '인과',
+                        'before-after': '전후', 
+                        'foundation-extension': '기반-확장',
+                        'contains': '포함',
+                        'contrast': '대조'
+                      };
+                      
+                      const relationship = relationshipMap[connection.relationshipType] || '연결';
+                      
+                      return `(${sourceOrder}) - ${relationship} - (${targetOrder})`;
+                    };
+                    
+                    // 최대 8개까지만 표시
+                    return connections.slice(0, 8).map((connection: any, index: number) => {
+                      const description = getRelationshipDescription(connection);
+                      
+                      return (
+                        <div key={connection.id || index} className="text-xs text-gray-300 bg-gray-700/30 px-2 py-1 rounded">
+                          {description}
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+                {diagram.data.connections.length > 8 && (
+                  <div className="text-xs text-gray-500 text-center">
+                    +{diagram.data.connections.length - 8}개 더...
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </Panel>
 
@@ -295,7 +347,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
             <div className="flex-grow mt-2 overflow-y-auto pr-1">
               {selectedNote ? (
                 <div className="p-4 space-y-6 text-sm">
-                  <h3 className="font-bold text-lg text-indigo-300 break-words">{selectedNote.content}</h3>
+                  <h3 className="font-bold text-lg text-yellow-300 break-words">{selectedNote.content}</h3>
                   
                   {selectedNote.sessionDetails && (
                     <section className="bg-gray-700/30 p-3 rounded-lg">
