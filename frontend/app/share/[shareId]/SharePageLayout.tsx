@@ -213,7 +213,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
            <div className="flex-shrink-0 p-2 border-b border-gray-700">
                 <h2 className="text-sm font-semibold flex items-center gap-2"><Eye className="w-4 h-4 text-cyan-400" /> Miny Map</h2>
             </div>
-          <div className="flex-grow mt-2 bg-gray-900/50 rounded-md border border-gray-700/50 flex items-center justify-center">
+          <div className="flex-grow mt-2 bg-gray-900/50 rounded-md border border-gray-700/50 flex items-center justify-center p-1">
              {diagram?.data ? (
                 <VectorGraphCanvas diagramData={diagram.data} onNodeSelect={setSelectedNodeId} isMinimap={true} />
               ) : (
@@ -222,11 +222,11 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
           </div>
           <div className="flex-shrink-0 mt-2 p-2 border-t border-gray-700">
             <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><HelpCircle className="w-4 h-4 text-cyan-400" /> 범례</h3>
-            <div className="flex flex-wrap gap-1 mb-3">
+            <div className="flex flex-wrap gap-0.5 mb-3">
               {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
                 <div 
                   key={key} 
-                  className="px-2 py-1 border border-gray-600 rounded text-xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer" 
+                  className="px-1.5 py-0.5 border border-gray-600 rounded text-2xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer" 
                   style={{ 
                     color: 'inherit',
                     '--hover-color': strokeColor 
@@ -356,7 +356,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
             <div className="flex-grow mt-2 overflow-y-auto pr-1">
               {selectedNote ? (
                 <div className="p-4 space-y-6 text-sm">
-                  <h3 className="font-bold text-lg text-yellow-300 break-words">{selectedNote.content}</h3>
+                  <h3 className="text-lg text-yellow-300 break-words">{selectedNote.content}</h3>
                   
                   {selectedNote.sessionDetails && (
                     <section className="bg-gray-700/30 p-3 rounded-lg">
