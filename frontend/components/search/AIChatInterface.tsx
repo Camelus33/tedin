@@ -364,7 +364,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
 
       {/* 추천 쿼리 */}
       {recommendations.length > 0 && (
-        <div className="p-4 border-t border-gray-700">
+        <div className="p-4 border-t border-gray-700 min-w-0">
           <h4 className="text-xs font-medium text-gray-300 mb-1">추천 질문</h4>
           <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
             {recommendations.map((rec) => (
