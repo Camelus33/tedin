@@ -381,6 +381,10 @@ export default function EditSummaryNotePage() {
   // 캔버스에 사용된 메모 ID들을 추적하는 상태 추가
   const [usedMemoIds, setUsedMemoIds] = useState<Set<string>>(new Set());
   
+  // 반응형 동기화를 위한 상태
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [canvasRef, setCanvasRef] = useState<HTMLDivElement | null>(null);
+  
   // 데이터 가져오기 및 저장 로직 (기존 코드 유지)
   useEffect(() => {
     if (!summaryNoteId) return;
@@ -539,6 +543,63 @@ export default function EditSummaryNotePage() {
     };
     fetchSummaryNoteDetails();
   }, [summaryNoteId]);
+
+  // 캔버스 크기 변화 감지 및 반응형 동기화
+  useEffect(() => {
+    if (!canvasRef) return;
+
+    const updateCanvasSize = () => {
+      const rect = canvasRef.getBoundingClientRect();
+      setCanvasSize({ width: rect.width, height: rect.height });
+    };
+
+    // 초기 크기 설정
+    updateCanvasSize();
+
+    // ResizeObserver로 크기 변화 감지
+    const resizeObserver = new ResizeObserver(updateCanvasSize);
+    resizeObserver.observe(canvasRef);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [canvasRef]);
+
+  // 캔버스 크기 변화 시 노드 위치 자동 조정
+  useEffect(() => {
+    if (canvasSize.width === 0 || canvasSize.height === 0 || canvasNodes.length === 0) return;
+
+    const adjustNodePositions = () => {
+      setCanvasNodes(prevNodes => 
+        prevNodes.map(node => {
+          // 현재 노드 위치가 캔버스 경계를 벗어나는지 확인
+          const nodeSize = getNodeSize(node);
+          const maxX = canvasSize.width - nodeSize.width / 2;
+          const maxY = canvasSize.height - nodeSize.height / 2;
+          const minX = nodeSize.width / 2;
+          const minY = nodeSize.height / 2;
+
+          let newX = node.position.x;
+          let newY = node.position.y;
+
+          // 경계를 벗어나면 경계 내로 조정
+          if (newX > maxX) newX = maxX;
+          if (newX < minX) newX = minX;
+          if (newY > maxY) newY = maxY;
+          if (newY < minY) newY = minY;
+
+          return {
+            ...node,
+            position: { x: newX, y: newY }
+          };
+        })
+      );
+    };
+
+    // 디바운스된 조정 함수
+    const timeoutId = setTimeout(adjustNodePositions, 100);
+    return () => clearTimeout(timeoutId);
+  }, [canvasSize, canvasNodes.length]);
 
   const handleNoteUpdate = useCallback((updatedFields: Partial<FetchedNoteDetails>) => {
     setFetchedNotes(prevNotes =>
@@ -1186,7 +1247,8 @@ export default function EditSummaryNotePage() {
                   
                   {/* Canvas Area */}
                   <div 
-                    className="h-full w-full transition-all duration-200"
+                    ref={setCanvasRef}
+                    className="h-full w-full transition-all duration-200 overflow-hidden relative"
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
@@ -1284,12 +1346,22 @@ export default function EditSummaryNotePage() {
                             e.dataTransfer.effectAllowed = 'move';
                           }}
                           onDrag={(e) => {
-                            // 드래그 중 위치 업데이트
+                            // 드래그 중 위치 업데이트 (경계 제한 포함)
                             if (e.clientX !== 0 && e.clientY !== 0) {
                               const canvasRect = e.currentTarget.parentElement?.getBoundingClientRect();
                               if (canvasRect) {
-                                const newX = e.clientX - canvasRect.left;
-                                const newY = e.clientY - canvasRect.top;
+                                let newX = e.clientX - canvasRect.left;
+                                let newY = e.clientY - canvasRect.top;
+                                
+                                // 캔버스 경계 제한
+                                const nodeSize = getNodeSize(node);
+                                const maxX = canvasSize.width - nodeSize.width / 2;
+                                const maxY = canvasSize.height - nodeSize.height / 2;
+                                const minX = nodeSize.width / 2;
+                                const minY = nodeSize.height / 2;
+                                
+                                newX = Math.max(minX, Math.min(maxX, newX));
+                                newY = Math.max(minY, Math.min(maxY, newY));
                                 
                                 setCanvasNodes(prev => prev.map(n => 
                                   n.noteId === node.noteId 
@@ -1612,49 +1684,53 @@ export default function EditSummaryNotePage() {
                   </Button>
                 </div>
               )}
+              
+              {/* 미니맵 - 저장된 벡터그래프 */}
+              {(diagramImageUrl || summaryNote?.diagram?.imageUrl) && (
+                <div className="mt-4 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-medium text-gray-300">저장된 벡터그래프</h4>
+                    <div className="flex gap-1">
+                      <Button
+                        onClick={() => {
+                          const imageUrl = diagramImageUrl || summaryNote?.diagram?.imageUrl;
+                          if (imageUrl) {
+                            const link = document.createElement('a');
+                            link.href = imageUrl;
+                            link.download = `diagram-${summaryNoteId}.svg`;
+                            link.click();
+                          }
+                        }}
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1"
+                      >
+                        다운로드
+                      </Button>
+                      <Button
+                        onClick={() => setDiagramImageUrl(null)}
+                        size="sm"
+                        variant="outline"
+                        className="border-gray-600 text-gray-300 hover:bg-gray-700 text-xs px-2 py-1"
+                      >
+                        ❌
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <img 
+                      src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
+                      alt="미니맵 벡터그래프" 
+                      className="w-full h-32 object-contain rounded border border-gray-600 bg-gray-800"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent pointer-events-none rounded"></div>
+                  </div>
+                </div>
+              )}
             </div>
           </Panel>
         </PanelGroup>
 
-        {/* Saved Diagram Display */}
-        {(diagramImageUrl || summaryNote?.diagram?.imageUrl) && (
-          <div className="mt-8 p-6 bg-gray-800/30 rounded-lg border border-gray-700/50">
-            <h3 className={`text-xl font-semibold mb-4 ${cyberTheme.primary}`}>
-              저장된 벡터그래프
-            </h3>
-            <div className="flex justify-center">
-              <img 
-                src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
-                alt="관계 벡터그래프" 
-                className="max-w-full h-auto rounded-lg shadow-lg border border-gray-600"
-                style={{ maxHeight: '400px' }}
-              />
-            </div>
-            <div className="mt-4 flex justify-center gap-2">
-              <Button 
-                onClick={() => {
-                  const imageUrl = diagramImageUrl || summaryNote?.diagram?.imageUrl;
-                  if (imageUrl) {
-                    const link = document.createElement('a');
-                    link.href = imageUrl;
-                    link.download = `diagram-${summaryNoteId}.svg`;
-                    link.click();
-                  }
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                다운로드
-              </Button>
-              <Button 
-                onClick={() => setDiagramImageUrl(null)}
-                variant="outline"
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
-              >
-                ❌ 숨기기
-              </Button>
-            </div>
-          </div>
-        )}
+
 
         {/* Modals (Flashcard, Related Links) */}
         {showFlashcardModal && noteForFlashcardModal && (
