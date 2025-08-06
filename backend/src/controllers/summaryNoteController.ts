@@ -148,6 +148,19 @@ const validateDiagramData = (diagramData: any, orderedNoteIds: mongoose.Types.Ob
     if (!node.position || typeof node.position.x !== 'number' || typeof node.position.y !== 'number') {
       return { isValid: false, error: '노드 위치가 올바르지 않습니다.' };
     }
+    
+    // 크기 정보 검증 (선택적 필드)
+    if (node.size !== undefined) {
+      if (typeof node.size !== 'object' || node.size === null) {
+        return { isValid: false, error: '노드 크기 정보가 올바르지 않습니다.' };
+      }
+      if (typeof node.size.width !== 'number' || typeof node.size.height !== 'number') {
+        return { isValid: false, error: '노드 크기의 width와 height는 숫자여야 합니다.' };
+      }
+      if (node.size.width <= 0 || node.size.height <= 0) {
+        return { isValid: false, error: '노드 크기는 0보다 커야 합니다.' };
+      }
+    }
   }
 
   // 연결 데이터 검증

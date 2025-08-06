@@ -31,6 +31,11 @@ const DiagramNodeSchema = new Schema({
   position: {
     x: { type: Number, required: true },
     y: { type: Number, required: true }
+  },
+  // 크기 조절 기능 추가 (하위 호환성을 위해 기본값 설정)
+  size: {
+    width: { type: Number, default: 40 },
+    height: { type: Number, default: 40 }
   }
 }, { _id: false });
 
@@ -123,6 +128,11 @@ export interface ISummaryNote extends Document {
         order: number;
         color: string;
         position: { x: number; y: number };
+        // 크기 조절 기능 추가 (하위 호환성을 위해 기본값 설정)
+        size?: {
+          width: number;
+          height: number;
+        };
       }>;
       connections: Array<{
         id: string;
