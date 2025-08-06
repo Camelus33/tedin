@@ -52,22 +52,22 @@ const InlineThreadsViewer = ({ shareId, noteId, count }: InlineThreadsViewerProp
   };
 
   return (
-    <div className="mt-6 pl-12">
+    <div className="mt-6">
       <button
         onClick={handleToggle}
-        className="flex items-center text-sm text-blue-600 hover:underline"
+        className="flex items-center text-sm text-cyan-400 hover:underline"
       >
         <MessageSquare className="h-4 w-4 mr-1" />
         {open ? '댓글 숨기기' : `댓글 ${count}개 보기`}
       </button>
       {open && (
         <div className="mt-4 space-y-4">
-          {loading && <p className="text-gray-500 text-sm">불러오는 중...</p>}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          {threads && threads.length === 0 && <p className="text-gray-500 text-sm">댓글이 없습니다.</p>}
+          {loading && <p className="text-gray-400 text-sm">불러오는 중...</p>}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {threads && threads.length === 0 && <p className="text-gray-400 text-sm">댓글이 없습니다.</p>}
           {threads && threads.map((t) => (
-            <div key={t._id} className="border-l-2 border-gray-300 pl-3">
-              <p className="text-sm text-gray-800 whitespace-pre-wrap">{t.content}</p>
+            <div key={t._id} className="border-l-2 border-gray-600 pl-3">
+              <p className="text-sm text-gray-200 whitespace-pre-wrap">{t.content}</p>
               <p className="text-xs text-gray-500 mt-1">— {t.authorName}</p>
             </div>
           ))}
