@@ -211,7 +211,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
       <PanelGroup direction="horizontal" className="flex-grow">
         <Panel defaultSize={20} minSize={15} className="hidden md:flex flex-col p-2 bg-gray-800/50">
            <div className="flex-shrink-0 p-2 border-b border-gray-700">
-                <h2 className="text-sm font-semibold flex items-center gap-2"><Eye className="w-4 h-4 text-cyan-400" /> 전체 구조 (Map)</h2>
+                <h2 className="text-sm font-semibold flex items-center gap-2"><Eye className="w-4 h-4 text-cyan-400" /> Miny Map</h2>
                 <div className="relative mt-2">
                     <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <input type="text" placeholder="개념 검색..." className="w-full bg-gray-700/80 border border-gray-600 rounded-md pl-8 pr-2 py-1 text-xs focus:ring-cyan-500 focus:border-cyan-500" />
@@ -237,7 +237,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
             {/* 연결관계 서술 섹션 */}
             {diagram?.data?.connections && diagram.data.connections.length > 0 && (
               <div className="space-y-1">
-                <h4 className="text-xs font-semibold text-yellow-400 mb-2">연결관계</h4>
+                <h4 className="text-xs font-semibold text-yellow-400 mb-2">Relation</h4>
                 <div className="space-y-1 max-h-24 overflow-y-auto">
                   {(() => {
                     const connections = diagram.data.connections;
@@ -294,7 +294,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
         <Panel defaultSize={50} minSize={30}>
           <div className="w-full h-full bg-gray-900 relative flex flex-col">
             <div className="flex-shrink-0 p-2 border-b border-gray-700 flex justify-between items-center">
-              <h2 className="text-sm font-semibold">탐색 캔버스 (Canvas)</h2>
+              <h2 className="text-sm font-semibold">Ontology Canvas</h2>
               <div className="flex items-center gap-2">
                 <button className="p-1.5 rounded-md hover:bg-gray-700 transition-colors">
                   <SlidersHorizontal className="w-4 h-4" />
@@ -342,7 +342,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
         <Panel defaultSize={30} minSize={20}>
           <div className="w-full h-full bg-gray-800/50 flex flex-col p-2">
             <div className="flex-shrink-0 p-2 border-b border-gray-700">
-              <h2 className="text-sm font-semibold">상세 내용 (Inspector)</h2>
+              <h2 className="text-sm font-semibold">Inspector</h2>
             </div>
             <div className="flex-grow mt-2 overflow-y-auto pr-1">
               {selectedNote ? (
@@ -376,7 +376,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                   {/* 지식연결 섹션 추가 (Inspector) */}
                   {selectedNote.relatedLinks && selectedNote.relatedLinks.length > 0 && (
                     <section>
-                      <h4 className="font-semibold text-cyan-400 flex items-center mb-2"><LinkIcon className="h-4 w-4 mr-2" />지식연결</h4>
+                      <h4 className="font-semibold text-cyan-400 flex items-center mb-2"><LinkIcon className="h-4 w-4 mr-2" />지식 연결</h4>
                       <div className="space-y-2">
                         {selectedNote.relatedLinks.map((link: any, linkIndex: number) => {
                           const linkInfo = getLinkTypeInfo(link.type);
