@@ -1062,7 +1062,7 @@ export default function EditSummaryNotePage() {
         {/* Main Content Area: 3-Panel Layout */}
         <PanelGroup direction="horizontal" className="flex flex-col md:flex-row h-[calc(100vh-150px)] md:h-[calc(100vh-150px)] gap-2">
           {/* Left Panel: Notes List */}
-          <Panel minSize={25} defaultSize={30} className="h-full bg-gray-800/30 rounded-lg">
+          <Panel minSize={25} defaultSize={25} className="h-full bg-gray-800/30 rounded-lg">
             <div className="h-full flex flex-col p-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">Memo Card</h3>
               <div className="flex-1 overflow-y-auto summary-scrollbar" style={{ minHeight: '300px' }}>
@@ -1115,7 +1115,7 @@ export default function EditSummaryNotePage() {
           <PanelResizeHandle className="hidden sm:block w-[1px] bg-gray-600/30 hover:bg-cyan-500/50 active:bg-cyan-400 transition-colors duration-200 cursor-col-resize" />
 
           {/* Center Panel: Diagram Canvas */}
-          <Panel minSize={30} defaultSize={40} className="overflow-hidden bg-gray-800/30">
+          <Panel minSize={30} defaultSize={50} className="overflow-hidden bg-gray-800/30">
             <div className="h-full flex flex-col">
               <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Ontology Canvas</h3>
               
@@ -1621,7 +1621,7 @@ export default function EditSummaryNotePage() {
           <PanelResizeHandle className="hidden sm:block w-[1px] bg-gray-600/30 hover:bg-cyan-500/50 active:bg-cyan-400 transition-colors duration-200 cursor-col-resize" />
 
           {/* Right Panel: Markdown Editor */}
-          <Panel minSize={25} defaultSize={30} className="h-full bg-gray-800/30 rounded-lg">
+          <Panel minSize={25} defaultSize={25} className="h-full bg-gray-800/30 rounded-lg">
             <div className="h-full flex flex-col p-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">
                 {selectedNode ? (
@@ -1720,7 +1720,7 @@ export default function EditSummaryNotePage() {
                     <img 
                       src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
                       alt="미니맵 벡터그래프" 
-                      className="w-full h-32 object-contain rounded border border-gray-600 bg-gray-800"
+                      className="w-full h-32 object-contain rounded border border-gray-600 bg-white"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent pointer-events-none rounded"></div>
                   </div>
