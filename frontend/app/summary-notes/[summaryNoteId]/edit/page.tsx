@@ -45,6 +45,11 @@ interface DiagramNode {
     x: number;
     y: number;
   };
+  // 크기 조절 기능 추가 (하위 호환성을 위해 기본값 설정)
+  size?: {
+    width: number;
+    height: number;
+  };
 }
 
 interface DiagramConnection {
@@ -140,11 +145,32 @@ const MEMO_ICON_COLORS = [
   'bg-indigo-600'
 ];
 
+// 크기 조절 관련 상수
+const DEFAULT_NODE_SIZE = { width: 40, height: 40 };
+const MIN_NODE_SIZE = { width: 30, height: 30 };
+const MAX_NODE_SIZE = { width: 120, height: 120 };
+const RESIZE_HANDLE_SIZE = 8;
+
+// 크기 관련 유틸리티 함수들
+const getNodeSize = (node: DiagramNode) => {
+  return node.size || DEFAULT_NODE_SIZE;
+};
+
+const getNodeRadius = (node: DiagramNode) => {
+  const size = getNodeSize(node);
+  return Math.min(size.width, size.height) / 2;
+};
+
+const isNodeResizable = (node: DiagramNode) => {
+  return node.size !== undefined;
+};
+
 // Calculate optimal connection points on circle boundaries
 const calculateOptimalConnectionPoints = (
   sourcePos: { x: number; y: number },
   targetPos: { x: number; y: number },
-  radius: number
+  sourceRadius: number,
+  targetRadius: number
 ) => {
   const dx = targetPos.x - sourcePos.x;
   const dy = targetPos.y - sourcePos.y;
@@ -157,10 +183,10 @@ const calculateOptimalConnectionPoints = (
   const unitY = dy / distance;
   
   // Calculate connection points on circle boundaries
-  const startX = sourcePos.x + unitX * radius;
-  const startY = sourcePos.y + unitY * radius;
-  const endX = targetPos.x - unitX * radius;
-  const endY = targetPos.y - unitY * radius;
+  const startX = sourcePos.x + unitX * sourceRadius;
+  const startY = sourcePos.y + unitY * sourceRadius;
+  const endX = targetPos.x - unitX * targetRadius;
+  const endY = targetPos.y - unitY * targetRadius;
   
   return { startX, startY, endX, endY };
 };
@@ -177,6 +203,101 @@ interface BookInfo {
   title: string;
   // Add other fields like author or coverImage if needed later
 }
+
+// 리사이즈 핸들러 컴포넌트
+const ResizeHandle = ({ 
+  node, 
+  onResize, 
+  position 
+}: { 
+  node: DiagramNode; 
+  onResize: (newSize: { width: number; height: number }) => void;
+  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+}) => {
+  const size = getNodeSize(node);
+  const handleSize = RESIZE_HANDLE_SIZE;
+  
+  const getHandlePosition = () => {
+    const halfWidth = size.width / 2;
+    const halfHeight = size.height / 2;
+    
+    switch (position) {
+      case 'top-left':
+        return { x: -halfWidth, y: -halfHeight };
+      case 'top-right':
+        return { x: halfWidth, y: -halfHeight };
+      case 'bottom-left':
+        return { x: -halfWidth, y: halfHeight };
+      case 'bottom-right':
+        return { x: halfWidth, y: halfHeight };
+    }
+  };
+  
+  const handlePosition = getHandlePosition();
+  
+  return (
+    <div
+      className="absolute bg-white border-2 border-blue-500 rounded-full cursor-nw-resize hover:bg-blue-100 transition-colors"
+      style={{
+        width: handleSize,
+        height: handleSize,
+        left: handlePosition.x - handleSize / 2,
+        top: handlePosition.y - handleSize / 2,
+        transform: 'translate(-50%, -50%)',
+        zIndex: 10
+      }}
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startSize = { ...size };
+        
+        const handleMouseMove = (moveEvent: MouseEvent) => {
+          const deltaX = moveEvent.clientX - startX;
+          const deltaY = moveEvent.clientY - startY;
+          
+          let newWidth = startSize.width;
+          let newHeight = startSize.height;
+          
+          // 위치에 따른 크기 조절 로직
+          switch (position) {
+            case 'top-left':
+              newWidth = Math.max(MIN_NODE_SIZE.width, startSize.width - deltaX);
+              newHeight = Math.max(MIN_NODE_SIZE.height, startSize.height - deltaY);
+              break;
+            case 'top-right':
+              newWidth = Math.max(MIN_NODE_SIZE.width, startSize.width + deltaX);
+              newHeight = Math.max(MIN_NODE_SIZE.height, startSize.height - deltaY);
+              break;
+            case 'bottom-left':
+              newWidth = Math.max(MIN_NODE_SIZE.width, startSize.width - deltaX);
+              newHeight = Math.max(MIN_NODE_SIZE.height, startSize.height + deltaY);
+              break;
+            case 'bottom-right':
+              newWidth = Math.max(MIN_NODE_SIZE.width, startSize.width + deltaX);
+              newHeight = Math.max(MIN_NODE_SIZE.height, startSize.height + deltaY);
+              break;
+          }
+          
+          // 최대 크기 제한
+          newWidth = Math.min(MAX_NODE_SIZE.width, newWidth);
+          newHeight = Math.min(MAX_NODE_SIZE.height, newHeight);
+          
+          onResize({ width: newWidth, height: newHeight });
+        };
+        
+        const handleMouseUp = () => {
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+        };
+        
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      }}
+    />
+  );
+};
 
 // Theme (copied from books/page.tsx for consistency if needed, or use a central theme object)
 const cyberTheme = {
@@ -650,6 +771,7 @@ export default function EditSummaryNotePage() {
       const connectionPoints = calculateOptimalConnectionPoints(
         sourcePos,
         targetPos,
+        nodeRadius,
         nodeRadius
       );
       
@@ -1095,7 +1217,9 @@ export default function EditSummaryNotePage() {
                           position: {
                             x: e.clientX - e.currentTarget.getBoundingClientRect().left,
                             y: e.clientY - e.currentTarget.getBoundingClientRect().top
-                          }
+                          },
+                          // 새 노드에 기본 크기 정보 추가
+                          size: DEFAULT_NODE_SIZE
                         };
                         
                         setCanvasNodes(prev => [...prev, newNode]);
@@ -1127,113 +1251,168 @@ export default function EditSummaryNotePage() {
 
                     
                     {/* Existing Nodes */}
-                    {canvasNodes.map((node) => (
-                      <div
-                        key={node.noteId}
-                        className={`absolute ${node.color} text-white rounded-full p-2 text-sm font-medium shadow-lg cursor-move ${
-                          selectedNode === node.noteId ? 'ring-2 ring-yellow-400' : ''
-                        } ${connectionStart === node.noteId ? 'ring-2 ring-red-400' : ''}`}
-                        style={{
-                          left: node.position.x,
-                          top: node.position.y,
-                          transform: 'translate(-50%, -50%)',
-                          width: '40px',
-                          height: '40px'
-                        }}
-                        draggable
-                        onDragStart={(e) => {
-                          // 드래그 시작 시 시각적 피드백
-                          e.currentTarget.style.opacity = '0.7';
-                          e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
-                          // 불필요한 데이터 전송 제거
-                          e.dataTransfer.effectAllowed = 'move';
-                        }}
-                        onDrag={(e) => {
-                          // 드래그 중 위치 업데이트
-                          if (e.clientX !== 0 && e.clientY !== 0) {
-                            const canvasRect = e.currentTarget.parentElement?.getBoundingClientRect();
-                            if (canvasRect) {
-                              const newX = e.clientX - canvasRect.left;
-                              const newY = e.clientY - canvasRect.top;
-                              
-                              setCanvasNodes(prev => prev.map(n => 
-                                n.noteId === node.noteId 
-                                  ? { ...n, position: { x: newX, y: newY } }
-                                  : n
-                              ));
+                    {canvasNodes.map((node) => {
+                      const nodeSize = getNodeSize(node);
+                      const isSelected = selectedNode === node.noteId;
+                      
+                      return (
+                        <div
+                          key={node.noteId}
+                          className={`absolute ${node.color} text-white rounded-full p-2 text-sm font-medium shadow-lg cursor-move ${
+                            isSelected ? 'ring-2 ring-yellow-400' : ''
+                          } ${connectionStart === node.noteId ? 'ring-2 ring-red-400' : ''}`}
+                          style={{
+                            left: node.position.x,
+                            top: node.position.y,
+                            transform: 'translate(-50%, -50%)',
+                            width: `${nodeSize.width}px`,
+                            height: `${nodeSize.height}px`
+                          }}
+                          draggable
+                          onDragStart={(e) => {
+                            // 드래그 시작 시 시각적 피드백
+                            e.currentTarget.style.opacity = '0.7';
+                            e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                            // 불필요한 데이터 전송 제거
+                            e.dataTransfer.effectAllowed = 'move';
+                          }}
+                          onDrag={(e) => {
+                            // 드래그 중 위치 업데이트
+                            if (e.clientX !== 0 && e.clientY !== 0) {
+                              const canvasRect = e.currentTarget.parentElement?.getBoundingClientRect();
+                              if (canvasRect) {
+                                const newX = e.clientX - canvasRect.left;
+                                const newY = e.clientY - canvasRect.top;
+                                
+                                setCanvasNodes(prev => prev.map(n => 
+                                  n.noteId === node.noteId 
+                                    ? { ...n, position: { x: newX, y: newY } }
+                                    : n
+                                ));
+                              }
                             }
-                          }
-                        }}
-                        onDragEnd={(e) => {
-                          // 드래그 종료 시 원래 상태로 복원
-                          e.currentTarget.style.opacity = '';
-                          e.currentTarget.style.transform = 'translate(-50%, -50%)';
-                          // 드래그 후 클릭 이벤트 방지
-                          e.preventDefault();
-                        }}
-                        onClick={(e) => {
-                          // 드래그 후 클릭 이벤트 방지
-                          if (e.detail === 0) return;
-                          
-                          if (isConnecting && connectionStart && connectionStart !== node.noteId) {
-                            // Create connection
-                            const newConnection = {
-                              id: `${connectionStart}-${node.noteId}`,
-                              sourceNoteId: connectionStart,
-                              targetNoteId: node.noteId,
-                              relationshipType: selectedRelationship || 'cause-effect'
-                            };
-                            setCanvasConnections(prev => [...prev, newConnection]);
-                            setIsConnecting(false);
-                            setConnectionStart(null);
-                          } else if (selectedRelationship) {
-                            // Start connection
-                            setIsConnecting(true);
-                            setConnectionStart(node.noteId);
-                            setSelectedNode(node.noteId);
-                          } else {
-                            // Just select node
-                            setSelectedNode(selectedNode === node.noteId ? null : node.noteId);
+                          }}
+                          onDragEnd={(e) => {
+                            // 드래그 종료 시 원래 상태로 복원
+                            e.currentTarget.style.opacity = '';
+                            e.currentTarget.style.transform = 'translate(-50%, -50%)';
+                            // 드래그 후 클릭 이벤트 방지
+                            e.preventDefault();
+                          }}
+                          onClick={(e) => {
+                            // 드래그 후 클릭 이벤트 방지
+                            if (e.detail === 0) return;
                             
-                            // Load node's markdown content
-                            if (selectedNode !== node.noteId) {
-                              const nodeContent = nodeMarkdownContent[node.noteId] || '';
-                              setSelectedNodeMarkdown(nodeContent);
+                            if (isConnecting && connectionStart && connectionStart !== node.noteId) {
+                              // Create connection
+                              const newConnection = {
+                                id: `${connectionStart}-${node.noteId}`,
+                                sourceNoteId: connectionStart,
+                                targetNoteId: node.noteId,
+                                relationshipType: selectedRelationship || 'cause-effect'
+                              };
+                              setCanvasConnections(prev => [...prev, newConnection]);
+                              setIsConnecting(false);
+                              setConnectionStart(null);
+                            } else if (selectedRelationship) {
+                              // Start connection
+                              setIsConnecting(true);
+                              setConnectionStart(node.noteId);
+                              setSelectedNode(node.noteId);
+                            } else {
+                              // Just select node
+                              setSelectedNode(isSelected ? null : node.noteId);
+                              
+                              // Load node's markdown content
+                              if (!isSelected) {
+                                const nodeContent = nodeMarkdownContent[node.noteId] || '';
+                                setSelectedNodeMarkdown(nodeContent);
+                              }
                             }
-                          }
-                        }}
-                        onContextMenu={(e) => {
-                          e.preventDefault();
-                          if (confirm(`노드 ${node.order}번을 삭제하시겠습니까?`)) {
-                            setCanvasNodes(prev => prev.filter(n => n.noteId !== node.noteId));
-                            setCanvasConnections(prev => prev.filter(conn => 
-                              conn.sourceNoteId !== node.noteId && conn.targetNoteId !== node.noteId
-                            ));
-                            // usedMemoIds에서도 해당 메모 ID 제거
-                            setUsedMemoIds(prev => {
-                              const newSet = new Set(prev);
-                              newSet.delete(node.noteId);
-                              return newSet;
-                            });
-                            if (selectedNode === node.noteId) {
-                              setSelectedNode(null);
-                              setSelectedNodeMarkdown('');
+                          }}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            if (confirm(`노드 ${node.order}번을 삭제하시겠습니까?`)) {
+                              setCanvasNodes(prev => prev.filter(n => n.noteId !== node.noteId));
+                              setCanvasConnections(prev => prev.filter(conn => 
+                                conn.sourceNoteId !== node.noteId && conn.targetNoteId !== node.noteId
+                              ));
+                              // usedMemoIds에서도 해당 메모 ID 제거
+                              setUsedMemoIds(prev => {
+                                const newSet = new Set(prev);
+                                newSet.delete(node.noteId);
+                                return newSet;
+                              });
+                              if (isSelected) {
+                                setSelectedNode(null);
+                                setSelectedNodeMarkdown('');
+                              }
                             }
-                          }
-                        }}
-                        title={`노드 ${node.order}번 (드래그로 이동, 우클릭으로 삭제)`}
-                      >
-                        <div className="flex items-center justify-center h-full relative">
-                          <span className="text-sm font-bold">
-                            {node.order}
-                          </span>
-                          {/* Markdown content indicator */}
-                          {nodeMarkdownContent[node.noteId] && nodeMarkdownContent[node.noteId].trim() && (
-                            <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white"></div>
+                          }}
+                          title={`노드 ${node.order}번 (드래그로 이동, 우클릭으로 삭제)`}
+                        >
+                          <div className="flex items-center justify-center h-full relative">
+                            <span className="text-sm font-bold">
+                              {node.order}
+                            </span>
+                            {/* Markdown content indicator */}
+                            {nodeMarkdownContent[node.noteId] && nodeMarkdownContent[node.noteId].trim() && (
+                              <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white"></div>
+                            )}
+                          </div>
+                          
+                          {/* 리사이즈 핸들러 - 선택된 노드에만 표시 */}
+                          {isSelected && (
+                            <>
+                              <ResizeHandle 
+                                node={node} 
+                                position="top-left"
+                                onResize={(newSize) => {
+                                  setCanvasNodes(prev => prev.map(n => 
+                                    n.noteId === node.noteId 
+                                      ? { ...n, size: newSize }
+                                      : n
+                                  ));
+                                }}
+                              />
+                              <ResizeHandle 
+                                node={node} 
+                                position="top-right"
+                                onResize={(newSize) => {
+                                  setCanvasNodes(prev => prev.map(n => 
+                                    n.noteId === node.noteId 
+                                      ? { ...n, size: newSize }
+                                      : n
+                                  ));
+                                }}
+                              />
+                              <ResizeHandle 
+                                node={node} 
+                                position="bottom-left"
+                                onResize={(newSize) => {
+                                  setCanvasNodes(prev => prev.map(n => 
+                                    n.noteId === node.noteId 
+                                      ? { ...n, size: newSize }
+                                      : n
+                                  ));
+                                }}
+                              />
+                              <ResizeHandle 
+                                node={node} 
+                                position="bottom-right"
+                                onResize={(newSize) => {
+                                  setCanvasNodes(prev => prev.map(n => 
+                                    n.noteId === node.noteId 
+                                      ? { ...n, size: newSize }
+                                      : n
+                                  ));
+                                }}
+                              />
+                            </>
                           )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                     
                     {/* Connections */}
                     {canvasConnections.map((connection) => {
@@ -1243,12 +1422,14 @@ export default function EditSummaryNotePage() {
                       
                       if (!sourceNode || !targetNode) return null;
                       
-                      // Calculate optimal connection points on circle boundaries
-                      const nodeRadius = 20; // 40px diameter / 2
+                      // Calculate optimal connection points on circle boundaries using dynamic sizes
+                      const sourceRadius = getNodeRadius(sourceNode);
+                      const targetRadius = getNodeRadius(targetNode);
                       const connectionPoints = calculateOptimalConnectionPoints(
                         sourceNode.position,
                         targetNode.position,
-                        nodeRadius
+                        sourceRadius,
+                        targetRadius
                       );
                       
                       if (!connectionPoints) return null;
