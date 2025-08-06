@@ -29,6 +29,7 @@ export interface LLMRequest {
   llmModel: string;
   conversationId?: string;
   userId?: string;
+  userApiKey?: string;
 }
 
 /**
@@ -36,135 +37,39 @@ export interface LLMRequest {
  * ChatGPT, Claude, Gemini를 지원하는 추상화 레이어
  */
 export class LLMService {
-  private openai: OpenAI | null = null;
-  private providers: Map<string, LLMProvider> = new Map();
-
-  constructor() {
-    this.initializeProviders();
-    // 환경 변수에서 기본 API 키 설정
-    this.configureDefaultProviders().catch(error => {
-      console.error('기본 제공자 설정 오류:', error);
-    });
-  }
-
-  /**
-   * LLM 제공자 초기화
-   */
-  private initializeProviders(): void {
-    this.providers.set('ChatGPT', {
-      name: 'ChatGPT',
-      model: 'gpt-4',
-      apiKey: '',
-      isConfigured: false
-    });
-
-    this.providers.set('Claude', {
-      name: 'Claude',
-      model: 'claude-3-sonnet-20240229',
-      apiKey: '',
-      isConfigured: false
-    });
-
-    this.providers.set('Gemini', {
-      name: 'Gemini',
-      model: 'gemini-pro',
-      apiKey: '',
-      isConfigured: false
-    });
-  }
-
-  /**
-   * LLM 제공자 설정
-   * @param providerName 제공자 이름
-   * @param apiKey API 키
-   */
-  async configureProvider(providerName: string, apiKey: string): Promise<boolean> {
-    try {
-      const provider = this.providers.get(providerName);
-      if (!provider) {
-        throw new Error(`지원하지 않는 LLM 제공자: ${providerName}`);
-      }
-
-      // API 키 유효성 검증
-      const isValid = await this.validateAPIKey(providerName, apiKey);
-      if (!isValid) {
-        throw new Error(`유효하지 않은 API 키: ${providerName}`);
-      }
-
-      // 제공자 설정 업데이트
-      provider.apiKey = apiKey;
-      provider.isConfigured = true;
-
-      // OpenAI 클라이언트 초기화 (ChatGPT용)
-      if (providerName === 'ChatGPT') {
-        this.openai = new OpenAI({
-          apiKey: apiKey,
-        });
-      }
-
-      console.log(`${providerName} 설정 완료`);
-      return true;
-    } catch (error) {
-      console.error(`${providerName} 설정 오류:`, error);
-      return false;
-    }
-  }
-
-  /**
-   * API 키 유효성 검증
-   */
-  private async validateAPIKey(providerName: string, apiKey: string): Promise<boolean> {
-    try {
-      switch (providerName) {
-        case 'ChatGPT':
-          const openai = new OpenAI({ apiKey });
-          await openai.models.list();
-          return true;
-
-        case 'Claude':
-          // Claude API 키 검증 (실제 구현에서는 Claude API 호출)
-          return apiKey.startsWith('sk-ant-');
-
-        case 'Gemini':
-          // Gemini API 키 검증 (실제 구현에서는 Gemini API 호출)
-          return apiKey.length > 0;
-
-        default:
-          return false;
-      }
-    } catch (error) {
-      console.error(`API 키 검증 오류 (${providerName}):`, error);
-      return false;
-    }
-  }
-
   /**
    * LLM 응답 생성
    * @param request LLM 요청
    * @returns LLM 응답
    */
   async generateResponse(request: LLMRequest): Promise<LLMResponse> {
-    const provider = this.providers.get(request.llmProvider);
-    if (!provider || !provider.isConfigured) {
-      throw new Error(`설정되지 않은 LLM 제공자: ${request.llmProvider}`);
+    const { llmProvider, userApiKey } = request;
+
+    if (!userApiKey) {
+      // 환경 변수에서 해당 provider의 기본 키를 찾습니다.
+      const defaultApiKey = this.getDefaultApiKey(llmProvider);
+      if (!defaultApiKey) {
+        throw new Error(`${llmProvider}에 대한 API 키가 제공되지 않았습니다.`);
+      }
+      request.userApiKey = defaultApiKey;
     }
 
     try {
-      switch (request.llmProvider) {
+      switch (llmProvider) {
         case 'ChatGPT':
-          return await this.generateChatGPTResponse(request, provider);
+          return await this.generateChatGPTResponse(request);
 
         case 'Claude':
-          return await this.generateClaudeResponse(request, provider);
+          return await this.generateClaudeResponse(request);
 
         case 'Gemini':
-          return await this.generateGeminiResponse(request, provider);
+          return await this.generateGeminiResponse(request);
 
         default:
-          throw new Error(`지원하지 않는 LLM 제공자: ${request.llmProvider}`);
+          throw new Error(`지원하지 않는 LLM 제공자: ${llmProvider}`);
       }
     } catch (error) {
-      console.error(`LLM 응답 생성 오류 (${request.llmProvider}):`, error);
+      console.error(`LLM 응답 생성 오류 (${llmProvider}):`, error);
       throw error;
     }
   }
@@ -173,12 +78,13 @@ export class LLMService {
    * ChatGPT 응답 생성
    */
   private async generateChatGPTResponse(
-    request: LLMRequest,
-    provider: LLMProvider
+    request: LLMRequest
   ): Promise<LLMResponse> {
-    if (!this.openai) {
-      throw new Error('OpenAI 클라이언트가 초기화되지 않았습니다.');
+    if (!request.userApiKey) {
+      throw new Error('OpenAI API 키가 제공되지 않았습니다.');
     }
+
+    const openai = new OpenAI({ apiKey: request.userApiKey });
 
     const context = SearchContextService.createOptimizedPrompt(
       request.searchContext.results,
@@ -186,8 +92,8 @@ export class LLMService {
       request.message
     );
 
-    const completion = await this.openai.chat.completions.create({
-      model: provider.model,
+    const completion = await openai.chat.completions.create({
+      model: request.llmModel,
       messages: [
         {
           role: 'system',
@@ -206,8 +112,8 @@ export class LLMService {
 
     return {
       content: response,
-      model: provider.model,
-      provider: provider.name,
+      model: request.llmModel,
+      provider: 'ChatGPT',
       usage: completion.usage ? {
         promptTokens: completion.usage.prompt_tokens,
         completionTokens: completion.usage.completion_tokens,
@@ -220,10 +126,13 @@ export class LLMService {
    * Claude 응답 생성
    */
   private async generateClaudeResponse(
-    request: LLMRequest,
-    provider: LLMProvider
+    request: LLMRequest
   ): Promise<LLMResponse> {
-    // Claude API 구현 (실제로는 Anthropic API 사용)
+    if (!request.userApiKey) {
+      throw new Error('Claude API 키가 제공되지 않았습니다.');
+    }
+    // const claude = new Anthropic({ apiKey: request.userApiKey });
+
     const context = SearchContextService.createOptimizedPrompt(
       request.searchContext.results,
       request.searchContext.query,
@@ -235,8 +144,8 @@ export class LLMService {
 
     return {
       content: response,
-      model: provider.model,
-      provider: provider.name
+      model: request.llmModel,
+      provider: 'Claude'
     };
   }
 
@@ -244,10 +153,13 @@ export class LLMService {
    * Gemini 응답 생성
    */
   private async generateGeminiResponse(
-    request: LLMRequest,
-    provider: LLMProvider
+    request: LLMRequest
   ): Promise<LLMResponse> {
-    // Gemini API 구현 (실제로는 Google AI API 사용)
+    if (!request.userApiKey) {
+      throw new Error('Gemini API 키가 제공되지 않았습니다.');
+    }
+    // const gemini = new GoogleAI({ apiKey: request.userApiKey });
+    
     const context = SearchContextService.createOptimizedPrompt(
       request.searchContext.results,
       request.searchContext.query,
@@ -259,79 +171,17 @@ export class LLMService {
 
     return {
       content: response,
-      model: provider.model,
-      provider: provider.name
+      model: request.llmModel,
+      provider: 'Gemini'
     };
   }
 
-  /**
-   * 사용 가능한 LLM 제공자 목록 반환
-   */
-  getAvailableProviders(): LLMProvider[] {
-    return Array.from(this.providers.values());
-  }
-
-  /**
-   * 특정 제공자 정보 반환
-   */
-  getProvider(providerName: string): LLMProvider | undefined {
-    return this.providers.get(providerName);
-  }
-
-  /**
-   * 제공자 설정 상태 확인
-   */
-  isProviderConfigured(providerName: string): boolean {
-    const provider = this.providers.get(providerName);
-    return provider?.isConfigured || false;
-  }
-
-  /**
-   * 제공자 설정 해제
-   */
-  unconfigureProvider(providerName: string): void {
-    const provider = this.providers.get(providerName);
-    if (provider) {
-      provider.apiKey = '';
-      provider.isConfigured = false;
+  private getDefaultApiKey(providerName: string): string | undefined {
+    const upperCaseProvider = providerName.toUpperCase();
+    if (upperCaseProvider === 'CHATGPT') {
+        return process.env.OPENAI_API_KEY;
     }
-  }
-
-  /**
-   * 모든 제공자 설정 해제
-   */
-  unconfigureAllProviders(): void {
-    this.providers.forEach(provider => {
-      provider.apiKey = '';
-      provider.isConfigured = false;
-    });
-  }
-
-  /**
-   * 사용자 API 키로 제공자 설정
-   */
-  async configureProviderWithUserKey(
-    providerName: string,
-    userApiKey: string
-  ): Promise<boolean> {
-    return await this.configureProvider(providerName, userApiKey);
-  }
-
-  /**
-   * 환경 변수에서 기본 API 키 설정
-   */
-  async configureDefaultProviders(): Promise<void> {
-    const defaultKeys = {
-      ChatGPT: process.env.OPENAI_API_KEY,
-      Claude: process.env.ANTHROPIC_API_KEY,
-      Gemini: process.env.GOOGLE_API_KEY
-    };
-
-    for (const [providerName, apiKey] of Object.entries(defaultKeys)) {
-      if (apiKey) {
-        await this.configureProvider(providerName, apiKey);
-      }
-    }
+    return process.env[`${upperCaseProvider}_API_KEY`];
   }
 
   /**

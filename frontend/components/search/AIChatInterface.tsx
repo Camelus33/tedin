@@ -165,6 +165,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
         searchContext: { query: searchQuery, results: searchResults },
         llmProvider: selectedLLM.name,
         llmModel: selectedLLM.model,
+        userApiKey: selectedLLM.apiKey,
         conversationId: 'temp'
       });
 

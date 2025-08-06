@@ -30,6 +30,7 @@ router.post('/send', async (req: Request, res: Response) => {
       searchContext,
       llmProvider,
       llmModel,
+      userApiKey, // 사용자 API 키 추가
       conversationId
     } = req.body;
 
@@ -64,6 +65,7 @@ router.post('/send', async (req: Request, res: Response) => {
       searchContext,
       llmProvider,
       llmModel,
+      userApiKey, // 사용자 API 키 전달
       conversationId,
       userId
     });
@@ -426,66 +428,4 @@ router.get('/stats', async (req: Request, res: Response) => {
   }
 });
 
-/**
- * LLM 제공자 설정
- * POST /api/ai-chat/configure-llm
- */
-router.post('/configure-llm', async (req: Request, res: Response) => {
-  try {
-    const { providerName, apiKey } = req.body;
-
-    if (!providerName || !apiKey) {
-      return res.status(400).json({
-        success: false,
-        error: '제공자 이름과 API 키가 필요합니다.'
-      });
-    }
-
-    const success = await llmService.configureProvider(providerName, apiKey);
-
-    if (success) {
-      res.json({
-        success: true,
-        message: `${providerName} 설정이 완료되었습니다.`
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        error: `${providerName} 설정에 실패했습니다. API 키를 확인해주세요.`
-      });
-    }
-
-  } catch (error) {
-    console.error('LLM 설정 오류:', error);
-    res.status(500).json({
-      success: false,
-      error: 'LLM 설정 중 오류가 발생했습니다.',
-      details: error instanceof Error ? error.message : '알 수 없는 오류'
-    });
-  }
-});
-
-/**
- * 사용 가능한 LLM 제공자 목록 조회
- * GET /api/ai-chat/providers
- */
-router.get('/providers', async (req: Request, res: Response) => {
-  try {
-    const providers = llmService.getAvailableProviders();
-
-    res.json({
-      success: true,
-      providers
-    });
-
-  } catch (error) {
-    console.error('제공자 목록 조회 오류:', error);
-    res.status(500).json({
-      success: false,
-      error: '제공자 목록 조회 중 오류가 발생했습니다.',
-      details: error instanceof Error ? error.message : '알 수 없는 오류'
-    });
-  }
-});
-
-export default router; 
+export default router;
