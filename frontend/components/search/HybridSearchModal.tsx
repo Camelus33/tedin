@@ -10,6 +10,7 @@ import { MagnifyingGlassIcon, XMarkIcon, FunnelIcon, SparklesIcon, ChatBubbleLef
 import { apiClient } from '@/lib/apiClient';
 import useAuth from '@/hooks/useAuth';
 import AIChatInterface from './AIChatInterface';
+import SearchResultCard from './SearchResultCard';
 
 interface SearchResult {
   _id: string;
@@ -154,21 +155,6 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const getScoreColor = (score: number) => {
-    if (score >= 0.8) return 'text-green-500';
-    if (score >= 0.6) return 'text-yellow-500';
-    if (score >= 0.4) return 'text-orange-500';
-    return 'text-red-500';
-  };
-
   const handleAIChatToggle = () => {
     setShowAIChat(!showAIChat);
   };
@@ -207,7 +193,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-              <DialogContent className="max-w-4xl bg-secondary">
+              <DialogContent className="w-full max-w-lg p-4 sm:max-w-xl md:max-w-2xl lg:max-w-4xl sm:p-6 bg-secondary">
         <div className="flex flex-col max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-gray-100">
@@ -366,82 +352,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
                 )}
                 
                 {results.map((result) => (
-                  <Card key={result._id} className="hover:bg-gray-800/50 transition-colors">
-                    <CardContent className="p-4">
-                      <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
-                        <div className="flex-1 mb-2 sm:mb-0">
-                          <p className="text-sm text-gray-300 mb-1">{result.content}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-400 flex-wrap">
-                            <span>{formatDate(result.createdAt)}</span>
-                            <span>•</span>
-                            <span>{result.type}</span>
-                            {result.comprehensionScore !== undefined && (
-                              <>
-                                <span>•</span>
-                                <span className="text-blue-400">
-                                  이해도: {result.comprehensionScore}점
-                                </span>
-                              </>
-                            )}
-                            {result.tags && result.tags.length > 0 && (
-                              <>
-                                <span>•</span>
-                                <div className="flex gap-1 flex-wrap">
-                                  {result.tags.slice(0, 3).map((tag, index) => (
-                                    <Badge key={index} variant="outline" className="text-xs">
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                  {result.tags.length > 3 && (
-                                    <Badge variant="outline" className="text-xs">
-                                      +{result.tags.length - 3}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 sm:ml-4">
-                          {result.combinedScore && (
-                            <Badge 
-                              variant="secondary" 
-                              className={`text-xs ${getScoreColor(result.combinedScore)}`}
-                            >
-                              {(result.combinedScore * 100).toFixed(0)}%
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* 점수 상세 정보 */}
-                      {(result.keywordScore !== undefined || result.vectorScore !== undefined) && (
-                        <div className="flex gap-4 text-xs text-gray-400 mt-2 pt-2 border-t border-gray-700">
-                          {result.keywordScore !== undefined && (
-                            <span>키워드: {(result.keywordScore * 100).toFixed(0)}%</span>
-                          )}
-                          {result.vectorScore !== undefined && (
-                            <span>벡터: {(result.vectorScore * 100).toFixed(0)}%</span>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* 책 링크 아이콘 */}
-                      {result.bookId && (
-                        <div className="flex justify-end mt-2 pt-2 border-t border-gray-700">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0 text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10"
-                            onClick={() => window.open(`/books/${result.bookId}`, '_blank')}
-                            title="책 상세페이지로 이동"
-                          >
-                            <BookOpenIcon className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <SearchResultCard key={result._id} result={result} />
                 ))}
               </div>
             ) : query && !isLoading ? (
