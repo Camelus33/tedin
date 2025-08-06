@@ -846,7 +846,9 @@ export default function EditSummaryNotePage() {
             position: {
               x: node.position.x,
               y: node.position.y
-            }
+            },
+            // ✅ 크기 정보 포함
+            size: node.size
           })),
           connections: canvasConnections.map(conn => ({
             id: conn.id,
