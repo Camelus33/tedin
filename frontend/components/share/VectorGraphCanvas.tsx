@@ -273,6 +273,7 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
                       stroke={config.strokeColor} 
                       strokeWidth={strokeWidth} 
                       fill="none" 
+                      strokeDasharray={isConnectedToHovered ? "5,5" : "3,3"}
                       strokeOpacity={strokeOpacity} 
                       markerEnd={`url(#arrow-${connection.relationshipType})`}
                       className={className}
@@ -285,6 +286,7 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
                       x1={startX} y1={startY} x2={endX} y2={endY} 
                       stroke={config.strokeColor} 
                       strokeWidth={strokeWidth} 
+                      strokeDasharray={isConnectedToHovered ? "8,4" : "6,3"}
                       strokeOpacity={strokeOpacity} 
                       markerEnd={`url(#arrow-${connection.relationshipType})`}
                       className={className}
@@ -297,6 +299,7 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
                       x1={startX} y1={startY} x2={endX} y2={endY} 
                       stroke={config.strokeColor} 
                       strokeWidth={strokeWidth} 
+                      strokeDasharray={isConnectedToHovered ? "5,5" : "3,3"}
                       strokeOpacity={strokeOpacity} 
                       markerEnd={`url(#arrow-${connection.relationshipType})`}
                       className={className}
