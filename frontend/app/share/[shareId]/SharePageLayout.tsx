@@ -226,7 +226,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
               {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
                 <div 
                   key={key} 
-                  className="px-1.5 py-0.5 border border-gray-600 rounded text-2xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer" 
+                  className="px-1.5 py-0.5 border border-gray-600 rounded text-xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer" 
                   style={{ 
                     color: 'inherit',
                     '--hover-color': strokeColor 
