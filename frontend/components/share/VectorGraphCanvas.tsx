@@ -9,6 +9,11 @@ interface DiagramNode {
   order: number;
   color: string;
   position: { x: number; y: number };
+  // 크기 조절 기능 추가 (하위 호환성을 위해 기본값 설정)
+  size?: {
+    width: number;
+    height: number;
+  };
 }
 
 interface DiagramConnection {
@@ -36,10 +41,23 @@ export const RELATIONSHIP_CONFIGS: Record<RelationshipType, RelationshipConfig> 
   'contrast': { label: '대조', icon: '↔', color: 'text-yellow-400', strokeColor: '#facc15', description: 'A와 B의 차이점' }
 };
 
+// 크기 관련 상수 및 유틸리티 함수들
+const DEFAULT_NODE_SIZE = { width: 40, height: 40 };
+
+const getNodeSize = (node: DiagramNode) => {
+  return node.size || DEFAULT_NODE_SIZE;
+};
+
+const getNodeRadius = (node: DiagramNode) => {
+  const size = getNodeSize(node);
+  return Math.min(size.width, size.height) / 2;
+};
+
 const calculateOptimalConnectionPoints = (
   sourcePos: { x: number; y: number },
   targetPos: { x: number; y: number },
-  radius: number
+  sourceRadius: number,
+  targetRadius: number
 ) => {
   const dx = targetPos.x - sourcePos.x;
   const dy = targetPos.y - sourcePos.y;
@@ -50,10 +68,10 @@ const calculateOptimalConnectionPoints = (
   const unitX = dx / distance;
   const unitY = dy / distance;
   
-  const startX = sourcePos.x + unitX * radius;
-  const startY = sourcePos.y + unitY * radius;
-  const endX = targetPos.x - unitX * radius;
-  const endY = targetPos.y - unitY * radius;
+  const startX = sourcePos.x + unitX * sourceRadius;
+  const startY = sourcePos.y + unitY * sourceRadius;
+  const endX = targetPos.x - unitX * targetRadius;
+  const endY = targetPos.y - unitY * targetRadius;
   
   return { startX, startY, endX, endY };
 };
@@ -121,8 +139,6 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
       x: padding + (pos.x - minX) * scale,
       y: padding + (pos.y - minY) * scale
     });
-    
-    const nodeRadius = isMinimap ? 10 : 25;
 
     return (
       <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} style={{ background: '#111827' }}>
@@ -144,7 +160,10 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
           const targetPos = normalizePosition(targetNode.position);
           const config = RELATIONSHIP_CONFIGS[connection.relationshipType];
           
-          const connectionPoints = calculateOptimalConnectionPoints(sourcePos, targetPos, nodeRadius);
+          // 동적 크기를 반영한 연결점 계산
+          const sourceRadius = getNodeRadius(sourceNode);
+          const targetRadius = getNodeRadius(targetNode);
+          const connectionPoints = calculateOptimalConnectionPoints(sourcePos, targetPos, sourceRadius, targetRadius);
           if (!connectionPoints) return null;
           
           const { startX, startY, endX, endY } = connectionPoints;
@@ -188,9 +207,13 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
           };
           const fillColor = fillColorMap[color] || '#2563eb';
           
+          // 동적 크기 지원: 크기 정보가 있으면 사용, 없으면 기본값
+          const nodeSize = getNodeSize(node);
+          const radius = Math.min(nodeSize.width, nodeSize.height) / 2;
+          
           return (
             <g key={node.noteId} transform={`translate(${pos.x}, ${pos.y})`} onClick={() => handleNodeClick(node.noteId)} style={{ cursor: 'pointer' }}>
-              <circle r={nodeRadius} fill={fillColor} stroke="#4b5563" strokeWidth="2" />
+              <circle r={radius} fill={fillColor} stroke="#4b5563" strokeWidth="2" />
               {!isMinimap && <text textAnchor="middle" dy=".3em" fill="white" fontSize="16" fontWeight="bold">{node.order}</text>}
             </g>
           );
