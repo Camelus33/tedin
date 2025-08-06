@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar, HelpCircle, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
+import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar, HelpCircle, ChevronDown, ChevronUp, MessageSquare, ExternalLink } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import ExpandableText from '@/components/common/ExpandableText';
 import ClientTimeDisplay, { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
@@ -36,6 +36,18 @@ const formatPPM = (ppm?: number | null): string => {
 
 const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, jsonLdData: any, shareId: string }) => {
     const { userMarkdownContent, notes } = htmlData;
+
+    // 관련 링크 타입별 아이콘과 라벨 매핑
+    const getLinkTypeInfo = (type: string) => {
+        switch (type) {
+            case 'book': return { icon: BookOpen, label: '책', color: 'text-blue-400' };
+            case 'paper': return { icon: Paperclip, label: '논문/자료', color: 'text-green-400' };
+            case 'youtube': return { icon: ExternalLink, label: '유튜브', color: 'text-red-400' };
+            case 'media': return { icon: ExternalLink, label: '미디어/뉴스', color: 'text-yellow-400' };
+            case 'website': return { icon: ExternalLink, label: '웹사이트', color: 'text-purple-400' };
+            default: return { icon: ExternalLink, label: '링크', color: 'text-gray-400' };
+        }
+    };
 
     return (
         <div className="p-4 bg-gray-800/50 rounded-lg space-y-8">
@@ -110,6 +122,42 @@ const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, json
                                     </ul>
                                 </section>
                             )}
+
+                            {/* 지식연결 섹션 추가 */}
+                            {note.relatedLinks && note.relatedLinks.length > 0 && (
+                                <section>
+                                    <h4 className="font-semibold text-gray-300 flex items-center"><LinkIcon className="h-4 w-4 mr-2 text-gray-500" />지식연결</h4>
+                                    <div className="mt-2 space-y-3">
+                                        {note.relatedLinks.map((link: any, linkIndex: number) => {
+                                            const linkInfo = getLinkTypeInfo(link.type);
+                                            const IconComponent = linkInfo.icon;
+                                            return (
+                                                <div key={link._id || linkIndex} className="bg-gray-700/30 p-3 rounded-lg border border-gray-600/50">
+                                                    <div className="flex items-start space-x-2">
+                                                        <IconComponent className={`h-4 w-4 mt-0.5 flex-shrink-0 ${linkInfo.color}`} />
+                                                        <div className="flex-1 min-w-0">
+                                                            <a 
+                                                                href={link.url} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors break-all"
+                                                            >
+                                                                {link.reason || link.url}
+                                                            </a>
+                                                            {link.reason && (
+                                                                <p className="text-xs text-gray-500 mt-1 break-words">
+                                                                    {link.url}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </section>
+                            )}
+                             
                              {typeof note.inlineThreadsCount === 'number' && note.inlineThreadsCount > 0 && (
                                 <InlineThreadsViewer shareId={shareId} noteId={note._id} count={note.inlineThreadsCount} />
                             )}
@@ -128,6 +176,18 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
   const { title, description, userMarkdownContent, notes, user, createdAt, diagram } = htmlData;
 
   const selectedNote = notes.find((note: any) => note._id === selectedNodeId);
+
+  // 관련 링크 타입별 아이콘과 라벨 매핑 (Inspector용)
+  const getLinkTypeInfo = (type: string) => {
+    switch (type) {
+      case 'book': return { icon: BookOpen, label: '책', color: 'text-blue-400' };
+      case 'paper': return { icon: Paperclip, label: '논문/자료', color: 'text-green-400' };
+      case 'youtube': return { icon: ExternalLink, label: '유튜브', color: 'text-red-400' };
+      case 'media': return { icon: ExternalLink, label: '미디어/뉴스', color: 'text-yellow-400' };
+      case 'website': return { icon: ExternalLink, label: '웹사이트', color: 'text-purple-400' };
+      default: return { icon: ExternalLink, label: '링크', color: 'text-gray-400' };
+    }
+  };
 
   return (
     <main className="font-sans bg-gray-900 text-gray-200 h-screen w-screen flex flex-col overflow-hidden">
@@ -258,6 +318,41 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                         {selectedNote.relatedKnowledge && <li><strong className="block text-indigo-400 mb-1">연상 지식:</strong> <ExpandableText text={selectedNote.relatedKnowledge} /></li>}
                         {selectedNote.mentalImage && <li><strong className="block text-indigo-400 mb-1">떠오른 장면:</strong> <ExpandableText text={selectedNote.mentalImage} /></li>}
                       </ul>
+                    </section>
+                  )}
+
+                  {/* 지식연결 섹션 추가 (Inspector) */}
+                  {selectedNote.relatedLinks && selectedNote.relatedLinks.length > 0 && (
+                    <section>
+                      <h4 className="font-semibold text-cyan-400 flex items-center mb-2"><LinkIcon className="h-4 w-4 mr-2" />지식연결</h4>
+                      <div className="space-y-2">
+                        {selectedNote.relatedLinks.map((link: any, linkIndex: number) => {
+                          const linkInfo = getLinkTypeInfo(link.type);
+                          const IconComponent = linkInfo.icon;
+                          return (
+                            <div key={link._id || linkIndex} className="bg-gray-700/20 p-2 rounded border border-gray-600/30">
+                              <div className="flex items-start space-x-2">
+                                <IconComponent className={`h-3 w-3 mt-0.5 flex-shrink-0 ${linkInfo.color}`} />
+                                <div className="flex-1 min-w-0">
+                                  <a 
+                                    href={link.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors break-all"
+                                  >
+                                    {link.reason || link.url}
+                                  </a>
+                                  {link.reason && (
+                                    <p className="text-xs text-gray-500 mt-1 break-words">
+                                      {link.url}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </section>
                   )}
                   
