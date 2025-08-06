@@ -28,7 +28,7 @@ interface RelationshipConfig {
   description: string;
 }
 
-const RELATIONSHIP_CONFIGS: Record<RelationshipType, RelationshipConfig> = {
+export const RELATIONSHIP_CONFIGS: Record<RelationshipType, RelationshipConfig> = {
   'cause-effect': { label: '인과', icon: '→', color: 'text-red-400', strokeColor: '#f87171', description: 'A가 B의 원인이 됨' },
   'before-after': { label: '전후', icon: '⏭️', color: 'text-blue-400', strokeColor: '#60a5fa', description: '시간적 순서 관계' },
   'foundation-extension': { label: '확장', icon: '↑', color: 'text-green-400', strokeColor: '#4ade80', description: 'A가 B의 기반이 됨' },

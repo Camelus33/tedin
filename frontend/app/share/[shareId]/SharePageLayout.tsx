@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar } from 'lucide-react';
+import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import ExpandableText from '@/components/common/ExpandableText';
 import ClientTimeDisplay from '@/components/share/ClientTimeDisplay';
+import { RELATIONSHIP_CONFIGS, RelationshipType } from '@/components/share/VectorGraphCanvas';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const VectorGraphCanvas = dynamic(
   () => import('@/components/share/VectorGraphCanvas'),
@@ -29,9 +31,70 @@ const formatPPM = (ppm?: number | null): string => {
   return `분당 ${ppm.toFixed(1)} 페이지`;
 };
 
+const JourneyContent = ({ htmlData }: { htmlData: any }) => {
+    const { userMarkdownContent, notes } = htmlData;
+    return (
+        <div className="p-4 bg-gray-800/50 rounded-lg space-y-8">
+            {userMarkdownContent && (
+                <section className="p-6 bg-indigo-900/30 rounded-lg border-l-4 border-purple-500">
+                    <header className="mb-4">
+                        <h3 className="text-xl font-semibold text-gray-100 flex items-center">
+                            <SlidersHorizontal className="h-6 w-6 mr-2 text-purple-400" />
+                            작성자 인사이트
+                        </h3>
+                    </header>
+                    <div className="prose prose-invert max-w-none bg-gray-800 p-4 rounded border border-purple-700">
+                        <pre className="whitespace-pre-wrap font-sans text-lg text-gray-300 leading-loose">
+                            {userMarkdownContent}
+                        </pre>
+                    </div>
+                </section>
+            )}
+            
+            <div className="space-y-10">
+                {notes && notes.map((note: any, index: number) => (
+                    <article key={note._id} id={`journey-${note._id}`} className="border-t border-gray-700 pt-8">
+                        <div className="flex items-start space-x-4">
+                            <div className="flex-shrink-0 bg-green-600 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">{index + 1}</div>
+                            <h3 className="flex-1 text-2xl font-semibold text-indigo-300 break-words">{note.content ?? '내용 없음'}</h3>
+                        </div>
+
+                        <div className="mt-6 pl-12 space-y-6">
+                            {note.sessionDetails && (
+                                <section className="bg-gray-700/50 p-4 rounded-lg">
+                                    <h4 className="font-semibold text-gray-300 flex items-center"><Paperclip className="h-4 w-4 mr-2 text-gray-500" />카드 정보</h4>
+                                    <ul className="mt-2 text-sm text-gray-400 space-y-1">
+                                        {note.sessionDetails?.createdAt && <li><strong>기록 시점:</strong> <ClientTimeDisplay createdAt={note.sessionDetails.createdAt} clientCreatedAt={note.clientCreatedAt} /></li>}
+                                        {note.sessionDetails?.durationSeconds !== undefined && <li><strong>읽은 시간:</strong> {formatSessionDuration(note.sessionDetails.durationSeconds)}</li>}
+                                        {note.sessionDetails?.ppm !== undefined && <li><strong>읽기 속도:</strong> {formatPPM(note.sessionDetails.ppm)}</li>}
+                                        {note.book?.title && <li><strong>출처:</strong> {note.book.title} {note.book.author && `(${note.book.author})`}</li>}
+                                    </ul>
+                                </section>
+                            )}
+
+                            {(note.importanceReason || note.momentContext || note.relatedKnowledge || note.mentalImage) && (
+                                <section>
+                                    <h4 className="font-semibold text-gray-300 flex items-center"><Microscope className="h-4 w-4 mr-2 text-gray-500" />기억 강화</h4>
+                                    <ul className="mt-2 text-sm text-gray-400 space-y-4">
+                                        {note.importanceReason && <li><strong className="text-indigo-400 block mb-1">작성 이유:</strong> <ExpandableText text={note.importanceReason} /></li>}
+                                        {note.momentContext && <li><strong className="text-indigo-400 block mb-1">당시 상황:</strong> <ExpandableText text={note.momentContext} /></li>}
+                                        {note.relatedKnowledge && <li><strong className="text-indigo-400 block mb-1">연상 지식:</strong> <ExpandableText text={note.relatedKnowledge} /></li>}
+                                        {note.mentalImage && <li><strong className="text-indigo-400 block mb-1">떠오른 장면:</strong> <ExpandableText text={note.mentalImage} /></li>}
+                                    </ul>
+                                </section>
+                            )}
+                        </div>
+                    </article>
+                ))}
+            </div>
+        </div>
+    )
+}
+
 
 export default function SharePageLayout({ htmlData }: { htmlData: any }) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [isJourneyVisible, setJourneyVisible] = useState(false);
 
   const { title, description, userMarkdownContent, notes, user, createdAt, diagram } = htmlData;
 
@@ -70,6 +133,17 @@ export default function SharePageLayout({ htmlData }: { htmlData: any }) {
                 <p className="text-xs text-gray-500">미니맵 데이터 없음</p>
               )}
           </div>
+          <div className="flex-shrink-0 mt-2 p-2 border-t border-gray-700">
+            <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><HelpCircle className="w-4 h-4 text-cyan-400" /> 범례</h3>
+            <div className="space-y-1">
+              {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
+                <div key={key} className="flex items-center gap-2 text-xs">
+                  <div className="w-4 h-4 flex items-center justify-center font-bold" style={{ color: strokeColor }}>{icon}</div>
+                  <span className="text-gray-300">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </Panel>
 
         <PanelResizeHandle className="hidden md:block w-[2px] bg-gray-700 hover:bg-cyan-500 transition-colors duration-200 cursor-col-resize" />
@@ -84,14 +158,38 @@ export default function SharePageLayout({ htmlData }: { htmlData: any }) {
                 </button>
               </div>
             </div>
-            <div className="flex-grow relative">
+            <div className="flex-grow relative overflow-y-auto">
               {diagram?.data ? (
-                <VectorGraphCanvas diagramData={diagram.data} onNodeSelect={setSelectedNodeId} />
+                <div className="relative h-[60vh]">
+                    <VectorGraphCanvas diagramData={diagram.data} onNodeSelect={setSelectedNodeId} />
+                </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="text-sm text-gray-500">표시할 벡터그래프 데이터가 없습니다.</p>
                 </div>
               )}
+                 <div className="sticky bottom-0 left-0 right-0 p-2 bg-gray-900/80 backdrop-blur-sm border-t border-gray-700">
+                    <button 
+                        onClick={() => setJourneyVisible(!isJourneyVisible)}
+                        className="w-full flex justify-between items-center p-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-semibold"
+                    >
+                        <span>지식 성장 여정</span>
+                        {isJourneyVisible ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                    </button>
+                </div>
+                <AnimatePresence>
+                    {isJourneyVisible && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="overflow-hidden"
+                        >
+                            <JourneyContent htmlData={htmlData} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
           </div>
         </Panel>
