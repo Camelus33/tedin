@@ -26,8 +26,30 @@ interface PotentialAction {
   targetPlatform?: string[];
 }
 
+interface MemoSummary {
+  memoId: string;
+  contentSummary: string;
+  tags?: string[];
+  createdAt?: string;
+}
+
+interface KnowledgeGrowthEvent {
+  memoId: string;
+  timestamp: string;
+  summary: string;
+  tags?: string[];
+  relatedConcepts?: string[];
+}
+
 interface AiLinkDataV2 {
   executiveSummary: string;
+  memoSummary?: MemoSummary[];
+  knowledgeGrowthTimeline?: {
+    name: string;
+    description: string;
+    timelineEvents: KnowledgeGrowthEvent[];
+    llmAnalysisGuidance: string;
+  };
   potentialAction?: PotentialAction[];
   [key: string]: any; // Allow other properties for the full data view
 }
@@ -77,6 +99,88 @@ const ExecutiveSummaryDisplay = React.memo(({ summary }: { summary: string | und
 });
 ExecutiveSummaryDisplay.displayName = 'ExecutiveSummaryDisplay';
 
+const MemoSummaryDisplay = React.memo(({ memoSummary }: { memoSummary: MemoSummary[] | undefined }) => {
+  if (!memoSummary || memoSummary.length === 0) return null;
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-lg font-bold text-cyan-400 flex items-center">
+        <FileTextIcon className="w-5 h-5 mr-2"/>
+        핵심 메모 요약 ({memoSummary.length}개)
+      </h3>
+      <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+        {memoSummary.map((memo, index) => (
+          <div key={index} className="p-3 rounded-md bg-gray-800/70 border border-gray-700">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm text-gray-300 font-medium">메모 {index + 1}</p>
+                <p className="text-xs text-gray-400 mt-1">{memo.contentSummary}</p>
+                {memo.tags && memo.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {memo.tags.map((tag, tagIndex) => (
+                      <Badge key={tagIndex} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+});
+MemoSummaryDisplay.displayName = 'MemoSummaryDisplay';
+
+const KnowledgeGrowthTimelineDisplay = React.memo(({ timeline }: { timeline: any | undefined }) => {
+  if (!timeline || !timeline.timelineEvents || timeline.timelineEvents.length === 0) return null;
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-lg font-bold text-purple-400 flex items-center">
+        <SparklesIcon className="w-5 h-5 mr-2"/>
+        지식 성장 과정
+      </h3>
+      <div className="space-y-2 max-h-48 overflow-y-auto">
+        {timeline.timelineEvents.map((event: any, index: number) => (
+          <div key={index} className="p-3 rounded-md bg-gray-800/70 border border-gray-700">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-purple-400 font-medium">단계 {index + 1}</span>
+                  {event.timestamp && (
+                    <span className="text-xs text-gray-500">
+                      {new Date(event.timestamp).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-300 mt-1">{event.summary}</p>
+                {event.tags && event.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {event.tags.map((tag: string, tagIndex: number) => (
+                      <Badge key={tagIndex} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {timeline.llmAnalysisGuidance && (
+        <div className="p-3 rounded-md bg-purple-900/20 border border-purple-700/50">
+          <p className="text-xs text-purple-300 font-medium">AI 분석 가이드:</p>
+          <p className="text-xs text-gray-400 mt-1">{timeline.llmAnalysisGuidance}</p>
+        </div>
+      )}
+    </div>
+  );
+});
+KnowledgeGrowthTimelineDisplay.displayName = 'KnowledgeGrowthTimelineDisplay';
 
 const SuggestedActionsDisplay = React.memo(({ actions }: { actions: PotentialAction[] | undefined }) => {
   if (!actions || actions.length === 0) return null;
@@ -88,7 +192,7 @@ const SuggestedActionsDisplay = React.memo(({ actions }: { actions: PotentialAct
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-bold text-purple-400 flex items-center"><SparklesIcon className="w-5 h-5 mr-2"/>추천 액션</h3>
+      <h3 className="text-lg font-bold text-purple-400 flex items-center"><SparklesIcon className="w-5 h-5 mr-2"/>AI 추천 액션</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {actions.map((action, index) => (
           <div key={index} className="p-3 rounded-md bg-gray-800/70 border border-gray-700 flex flex-col justify-between">
@@ -111,6 +215,53 @@ const SuggestedActionsDisplay = React.memo(({ actions }: { actions: PotentialAct
   );
 });
 SuggestedActionsDisplay.displayName = 'SuggestedActionsDisplay';
+
+const LLMOptimizedDataDisplay = React.memo(({ aiLinkData }: { aiLinkData: AiLinkDataV2 | null }) => {
+  if (!aiLinkData) return null;
+
+  const handleCopyLLMData = () => {
+    // LLM이 바로 사용할 수 있는 최적화된 JSON 형태 생성
+    const llmOptimizedData = {
+      executiveSummary: aiLinkData.executiveSummary,
+      memoSummary: aiLinkData.memoSummary || [],
+      knowledgeGrowthTimeline: aiLinkData.knowledgeGrowthTimeline || null,
+      potentialActions: aiLinkData.potentialAction || [],
+      metadata: {
+        totalMemos: aiLinkData.memoSummary?.length || 0,
+        hasTimeline: !!aiLinkData.knowledgeGrowthTimeline,
+        hasActions: (aiLinkData.potentialAction?.length || 0) > 0,
+        generatedAt: new Date().toISOString()
+      }
+    };
+
+    const dataString = JSON.stringify(llmOptimizedData, null, 2);
+    navigator.clipboard.writeText(dataString);
+    toast.success('AI 최적화 데이터가 클립보드에 복사되었습니다.');
+  };
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-lg font-bold text-green-400 flex items-center">
+        <RocketIcon className="w-5 h-5 mr-2"/>
+        AI 최적화 데이터
+      </h3>
+      <div className="p-3 rounded-md bg-green-900/20 border border-green-700/50">
+        <p className="text-xs text-green-300 mb-2">
+          AI가 바로 사용할 수 있도록 최적화된 JSON 형태입니다.
+        </p>
+        <Button
+          size="sm"
+          className="w-full text-xs h-8 bg-green-600 hover:bg-green-700"
+          onClick={handleCopyLLMData}
+        >
+          <ClipboardIcon className="w-3 h-3 mr-2" />
+          AI 데이터 복사
+        </Button>
+      </div>
+    </div>
+  );
+});
+LLMOptimizedDataDisplay.displayName = 'LLMOptimizedDataDisplay';
 
 
 export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModalProps) {
@@ -224,10 +375,10 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             <span>AI-Link</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-4 text-left">
-            <p className="text-center pb-2">AI-Link 복사, 붙여넣고, 이렇게 요청해보세요:</p>
+            <p className="text-center pb-2">지식 그래프를 AI에게 전달하세요:</p>
             <ol className="list-decimal list-inside bg-gray-900/50 p-3 rounded-md space-y-1">
-              <li>ChatGPT agent에 입력하고 답변 요청</li>
-              <li>NotebookLM에 입력하고 음성 오버뷰 생성</li>
+              <li>복사한 데이터를 ChatGPT, Claude, NotebookLM에 붙여넣기</li>
+              <li>AI가 당신의 지식 구조를 이해하고 맞춤형 답변 제공</li>
             </ol>
           </DialogDescription>
         </DialogHeader>
@@ -235,13 +386,13 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-gray-900">
             <TabsTrigger value="share">공유 링크</TabsTrigger>
-            <TabsTrigger value="ai-data">AI 제공 데이터</TabsTrigger>
+            <TabsTrigger value="ai-data">지식 그래프 데이터</TabsTrigger>
           </TabsList>
           
           <TabsContent value="share" className="py-4">
             {generatedUrl ? (
               <div className="space-y-3">
-                <p className="text-sm text-gray-300">링크 생성 성공! 복사하여 공유하세요.</p>
+                <p className="text-sm text-gray-300">공유 링크가 생성되었습니다.</p>
                 <div className="flex items-center space-x-2">
                   <Input
                     readOnly
@@ -260,9 +411,9 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             ) : (
               <div className="text-center space-y-4">
                 <p className="text-gray-300 px-2">
-                  NotebookLM, ChatGPT Agent에 입력
+                  AI가 당신의 지식 구조를 이해할 수 있는 링크를 생성합니다
                   <span className="block font-semibold text-cyan-400 mt-1">
-                    고품질 답변 경험 제공
+                    개인화된 AI 상호작용 경험
                   </span>
                 </p>
                 <Button
@@ -275,7 +426,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
                   ) : (
                     <RocketIcon className="h-4 w-4 mr-2" />
                   )}
-                  {isLoading ? '생성 중...' : '공유 링크 생성'}
+                  {isLoading ? '생성 중...' : '지식 그래프 링크 생성'}
                 </Button>
               </div>
             )}
@@ -289,12 +440,15 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             ) : aiLinkData ? (
               <div className="space-y-4">
                 <ExecutiveSummaryDisplay summary={aiLinkData.executiveSummary} />
+                <MemoSummaryDisplay memoSummary={aiLinkData.memoSummary} />
+                <KnowledgeGrowthTimelineDisplay timeline={aiLinkData.knowledgeGrowthTimeline} />
                 <SuggestedActionsDisplay actions={aiLinkData.potentialAction} />
+                <LLMOptimizedDataDisplay aiLinkData={aiLinkData} />
 
                 <details className="group">
                   <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-300 transition-colors flex items-center">
                     <FileTextIcon className="w-4 h-4 mr-2" />
-                    AI-Link 데이터 (JSON)
+                    전체 지식 그래프 데이터 (JSON)
                   </summary>
                   <div className="relative mt-2 p-4 rounded-md bg-gray-900/70 border border-gray-700 max-h-64 overflow-y-auto">
                     <Button size="icon" variant="ghost" onClick={handleCopyAiData} className="absolute top-2 right-2 h-7 w-7">
@@ -308,7 +462,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
               </div>
             ) : (
               <div className="text-center text-gray-400 h-48 flex items-center justify-center">
-                AI-Link 데이터를 불러오는 데 실패했거나 데이터가 없습니다.
+                지식 그래프 데이터를 불러오는 데 실패했습니다.
               </div>
             )}
           </TabsContent>
