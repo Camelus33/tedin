@@ -1,11 +1,8 @@
 import {
   ActionModule,
   CognitiveProvenance,
-  KnowledgePersonality,
 } from '../types/common';
 import { TimeUtils } from './timeUtils';
-import { CreativePersonaEngine } from './creativePersonaUtils';
-import { getBeliefNetwork } from '../services/BeliefNetworkService';
 
 // frontend/components/ts/TSNoteCard.tsx 에서 가져온 타입 정의를
 // 백엔드에서 사용할 수 있도록 아래에 직접 정의하거나, 공유 타입 파일에서 가져와야 합니다.
@@ -229,37 +226,7 @@ const ACTION_MODULES = {
   ]
 } as const;
 
-// --- 2. 지식 페르소나 상수 ---
-const KNOWLEDGE_PERSONAS = {
-  Visualizer: {
-    profileDescription: "이 사용자는 개념을 시각적 이미지로 구조화하여 이해하는 경향이 강합니다.",
-    interactionStrategyForLLM: {
-      communicationStyle: "아이디어들을 시각적으로 구조화할 수 있도록 마인드맵이나 순서도 생성을 먼저 제안하시오.",
-      questioningStyle: "'이것을 그림으로 표현한다면 어떤 모습일까요?' 와 같이 시각화를 유도하는 질문을 던져 사용자의 사고를 자극하시오."
-    }
-  },
-  Connector: {
-    profileDescription: "이 사용자는 새로운 정보를 기존 지식과 '연결'하여 이해하는 것을 선호합니다.",
-    interactionStrategyForLLM: {
-      communicationStyle: "유추와 비유를 적극적으로 사용하여 설명하시오.",
-      questioningStyle: "'이 개념은 당신의 지식 중 어떤 것과 가장 강하게 연결되나요?' 와 같이 연결을 유도하는 질문을 던져 사용자의 사고를 자극하시오."
-    }
-  },
-  Theorist: {
-    profileDescription: "이 사용자는 개별 사실보다 그 배후의 '핵심 원리나 이론'을 파악하는 것을 중요하게 생각합니다.",
-    interactionStrategyForLLM: {
-      communicationStyle: "논리적이고 체계적인 구조로 설명하고, 관련 이론이나 모델을 함께 제시하시오.",
-      questioningStyle: "'이 현상의 근본적인 원칙은 무엇일까요?' 와 같이 본질을 탐구하는 질문을 던지시오."
-    }
-  },
-  Pragmatist: {
-    profileDescription: "이 사용자는 지식이 '실제 어떤 상황'에서 어떻게 사용되는지에 대한 실용적 맥락을 중시합니다.",
-    interactionStrategyForLLM: {
-      communicationStyle: "구체적인 사례나 실제 적용 예시를 중심으로 설명하시오.",
-      questioningStyle: "'이 지식을 실제로 어떻게 사용할 수 있을까요?' 와 같이 적용을 유도하는 질문을 던지시오."
-    }
-  }
-};
+
 
 
 // =================================================================
@@ -274,55 +241,7 @@ const buildActionModules = (readingPurpose: string = 'general_knowledge') => {
   return ACTION_MODULES[readingPurpose as keyof typeof ACTION_MODULES] || [];
 };
 
-/**
- * @function analyzeKnowledgePersonality
- * @description 노트 리스트를 분석하여 지식 페르소나를 결정합니다.
- */
-const analyzeKnowledgePersonality = (notes: PopulatedTSNote[]): KnowledgePersonality | null => {
-  if (!notes || notes.length === 0) {
-    return {
-      '@type': 'KnowledgePersonality',
-      primaryType: 'Balanced',
-      profileDescription: "이 사용자는 다양한 메모 방식을 균형있게 활용합니다.",
-      interactionStrategyForLLM: {
-        communicationStyle: "상황에 맞는 다양한 설명 방식을 사용하고, 사용자의 다음 행동을 예측하여 여러 옵션을 제안하시오.",
-        questioningStyle: "개방형 질문과 구체적인 질문을 조합하여 사용자의 사고를 다각도로 자극하시오."
-      }
-    };
-  }
 
-  const counts = { Visualizer: 0, Connector: 0, Theorist: 0, Pragmatist: 0 };
-  notes.forEach(note => {
-    if (note.mentalImage) counts.Visualizer++;
-    if (note.relatedKnowledge) counts.Connector++;
-    if (note.importanceReason) counts.Theorist++;
-    if (note.momentContext) counts.Pragmatist++;
-  });
-
-  const totalCounts = Object.values(counts).reduce((sum, count) => sum + count, 0);
-
-  if (totalCounts === 0) {
-    return {
-      '@type': 'KnowledgePersonality',
-      primaryType: 'Balanced',
-      profileDescription: "이 사용자는 다양한 메모 방식을 균형있게 활용하거나, 아직 메모 진화 기능을 사용하지 않았습니다.",
-      interactionStrategyForLLM: {
-        communicationStyle: "상황에 맞는 다양한 설명 방식을 사용하고, 사용자의 다음 행동을 예측하여 여러 옵션을 제안하시오.",
-        questioningStyle: "개방형 질문과 구체적인 질문을 조합하여 사용자의 사고를 다각도로 자극하시오."
-      }
-    };
-  }
-
-  const primaryType = Object.keys(counts).reduce((a, b) => counts[a as keyof typeof counts] > counts[b as keyof typeof counts] ? a : b) as keyof typeof KNOWLEDGE_PERSONAS;
-
-  const personaData = KNOWLEDGE_PERSONAS[primaryType];
-
-  return {
-    '@type': 'KnowledgePersonality',
-    primaryType: primaryType,
-    ...personaData
-  };
-};
 
 /**
  * @function analyzeCognitiveProvenance
@@ -382,367 +301,11 @@ const analyzeCognitiveProvenance = (note: PopulatedTSNote): CognitiveProvenance 
   };
 };
 
-/**
- * @function buildSuggestedActions
- * @description 추론된 CreativePersona를 기반으로 멀티모달 프롬프트 템플릿을 생성합니다.
- * @param creativePersona 추론된 창의적 페르소나 객체
- * @param allTags 문서 전체의 핵심 주제 키워드 배열
- * @returns {any[]} 생성된 프롬프트 템플릿 배열
- */
-const buildSuggestedActions = (creativePersona: any, allTags: string[]): any[] => {
-  if (!creativePersona?.aestheticStyle) {
-    return [];
-  }
 
-  const { dominantColors, dominantMoods, inspirationSources } = creativePersona.aestheticStyle;
-  const mainTopics = allTags.slice(0, 3).join(', ');
 
-  const actions = [];
 
-  // 1. 이미지 생성 프롬프트
-  const imagePrompt = `A cinematic, photorealistic image representing the core concepts of '${mainTopics}'. The overall mood should be '${dominantMoods.join(', ')}' with a dominant color palette of '${dominantColors.join(', ')}'. Style inspired by ${inspirationSources.join(', ')}.`;
-  actions.push({
-    '@type': 'HowToAction',
-    name: '핵심 주제 이미지 생성 (Midjourney, DALL-E)',
-    description: '이 노트의 핵심 주제와 당신의 시각적 페르소나를 결합한 이미지를 생성합니다.',
-    targetPlatform: ['Midjourney', 'DALL-E', 'Stable Diffusion'],
-    llmPrompt: imagePrompt,
-  });
 
-  // 2. 영상 시나리오 프롬프트
-  const videoPrompt = `Create a 30-second video script outline about '${mainTopics}'. Start with a scene that establishes a '${dominantMoods[0] || 'intriguing'}' mood, using '${dominantColors[0] || 'a symbolic'}' color as a key visual motif. The narrative should be influenced by the storytelling style of '${inspirationSources[0] || 'a visionary director'}'.`;
-  actions.push({
-    '@type': 'HowToAction',
-    name: '30초 영상 시나리오 개요 생성 (Sora, Pika)',
-    description: '이 노트의 내용을 바탕으로 당신의 스타일이 반영된 짧은 영상의 시나리오를 구상합니다.',
-    targetPlatform: ['OpenAI Sora', 'Pika Labs', 'RunwayML'],
-    llmPrompt: videoPrompt,
-  });
 
-  // 3. 텍스트 (블로그 포스트) 프롬프트
-  const textPrompt = `Write a 500-word blog post titled "Exploring ${mainTopics}". The tone should be '${dominantMoods[0] || 'thought-provoking'}' and use vivid descriptions, especially evoking colors like '${dominantColors.join(', ')}'. Explain the concepts in a way that someone who appreciates '${inspirationSources[0] || 'deep analysis'}' would find engaging.`;
-  actions.push({
-    '@type': 'HowToAction',
-    name: '블로그 포스트 초안 작성 (ChatGPT, Claude)',
-    description: '당신의 글쓰기 스타일과 분위기를 반영하여 이 노트의 주제에 대한 블로그 글의 초안을 작성합니다.',
-    targetPlatform: ['ChatGPT', 'Claude', 'Gemini'],
-    llmPrompt: textPrompt,
-  });
-
-  return actions;
-};
-
-/**
- * @function buildEpistemicFramework
- * @description 사용자의 신념 네트워크를 분석하여 인식론적 프레임워크를 구축합니다.
- * 사용자가 어떻게 생각하고 논증하는지의 패턴을 분석합니다.
- */
-const buildEpistemicFramework = async (beliefNetwork: any, notes: PopulatedTSNote[]): Promise<any> => {
-  if (!beliefNetwork || !beliefNetwork.nodes || beliefNetwork.nodes.length === 0) {
-    return {
-      '@type': 'EpistemicFramework',
-      status: 'insufficient_data',
-      description: '아직 충분한 생각진화 데이터가 수집되지 않았습니다.',
-      totalNodes: 0,
-      totalEdges: 0,
-      thinkingPatterns: [],
-      argumentationStyle: 'unknown',
-      beliefStrength: 'unknown'
-    };
-  }
-
-  // 1. 사고 패턴 분석
-  const thinkingPatterns = analyzeThinkingPatterns(beliefNetwork);
-  
-  // 2. 논증 스타일 분석
-  const argumentationStyle = analyzeArgumentationStyle(beliefNetwork);
-  
-  // 3. 신념 강도 분석
-  const beliefStrength = analyzeBeliefStrength(beliefNetwork);
-  
-  // 4. 수사적 관계 패턴 분석
-  const rhetoricalPatterns = analyzeRhetoricalPatterns(beliefNetwork);
-
-  return {
-    '@type': 'EpistemicFramework',
-    status: 'analyzed',
-    description: `${beliefNetwork.nodes.length}개의 개념 노드와 ${beliefNetwork.edges.length}개의 관계로 분석된 생각진화 패턴`,
-    totalNodes: beliefNetwork.nodes.length,
-    totalEdges: beliefNetwork.edges.length,
-    lastUpdated: beliefNetwork.lastUpdated,
-    thinkingPatterns,
-    argumentationStyle,
-    beliefStrength,
-    rhetoricalPatterns,
-    
-    // AI가 활용할 수 있는 구체적 지침
-    aiGuidance: {
-      dominantReasoningStyle: thinkingPatterns.dominantStyle,
-      preferredArgumentStructure: argumentationStyle.preferredStructure,
-      confidenceLevel: beliefStrength.averageConfidence,
-      communicationStyle: rhetoricalPatterns.dominantPattern,
-      cognitiveApproach: determineOverallCognitiveApproach(thinkingPatterns, argumentationStyle, beliefStrength)
-    }
-  };
-};
-
-/**
- * 사고 패턴을 분석합니다
- */
-const analyzeThinkingPatterns = (beliefNetwork: any): any => {
-  const nodes = beliefNetwork.nodes || [];
-  const edges = beliefNetwork.edges || [];
-
-  // 노드의 확률 분포 분석
-  const probabilities = nodes.map((node: any) => node.probability || 0.5);
-  const avgProbability = probabilities.reduce((sum: number, p: number) => sum + p, 0) / probabilities.length;
-  
-  // 확신도 기반 분류
-  const highConfidenceNodes = nodes.filter((node: any) => (node.probability || 0.5) > 0.7);
-  const lowConfidenceNodes = nodes.filter((node: any) => (node.probability || 0.5) < 0.3);
-  
-  // 연결성 분석
-  const nodeConnectivity = analyzeNodeConnectivity(nodes, edges);
-  
-  let dominantStyle = 'balanced';
-  if (highConfidenceNodes.length > nodes.length * 0.6) {
-    dominantStyle = 'confident_assertive';
-  } else if (lowConfidenceNodes.length > nodes.length * 0.4) {
-    dominantStyle = 'cautious_exploratory';
-  } else if (nodeConnectivity.averageConnections > 2.5) {
-    dominantStyle = 'interconnected_systematic';
-  }
-
-  return {
-    dominantStyle,
-    averageConfidence: avgProbability,
-    confidenceDistribution: {
-      high: highConfidenceNodes.length,
-      medium: nodes.length - highConfidenceNodes.length - lowConfidenceNodes.length,
-      low: lowConfidenceNodes.length
-    },
-    connectivity: nodeConnectivity,
-    cognitiveFlexibility: calculateCognitiveFlexibility(nodes, edges)
-  };
-};
-
-/**
- * 논증 스타일을 분석합니다
- */
-const analyzeArgumentationStyle = (beliefNetwork: any): any => {
-  const edges = beliefNetwork.edges || [];
-  
-  if (edges.length === 0) {
-    return {
-      preferredStructure: 'unknown',
-      relationshipTypes: {},
-      argumentComplexity: 'simple'
-    };
-  }
-
-  // 관계 타입별 분석
-  const relationTypes = edges.reduce((acc: any, edge: any) => {
-    const relationType = edge.relationSource?.relationType || 'unknown';
-    acc[relationType] = (acc[relationType] || 0) + 1;
-    return acc;
-  }, {});
-
-  // 가장 빈번한 관계 타입
-  const dominantRelationType = Object.keys(relationTypes).reduce((a, b) => 
-    relationTypes[a] > relationTypes[b] ? a : b
-  );
-
-  // 논증 구조 복잡도
-  const avgConditionalProbability = edges.reduce((sum: number, edge: any) => 
-    sum + (edge.conditionalProbability || 0.5), 0) / edges.length;
-
-  let preferredStructure = 'linear';
-  if (relationTypes.elaborates > (edges.length * 0.4)) {
-    preferredStructure = 'elaborative';
-  } else if (relationTypes.attacks > (edges.length * 0.3)) {
-    preferredStructure = 'dialectical';
-  } else if (relationTypes.supports > (edges.length * 0.5)) {
-    preferredStructure = 'supportive';
-  }
-
-  return {
-    preferredStructure,
-    dominantRelationType,
-    relationshipTypes: relationTypes,
-    argumentComplexity: avgConditionalProbability > 0.7 ? 'complex' : avgConditionalProbability > 0.4 ? 'moderate' : 'simple',
-    averageRelationStrength: avgConditionalProbability
-  };
-};
-
-/**
- * 신념 강도를 분석합니다
- */
-const analyzeBeliefStrength = (beliefNetwork: any): any => {
-  const nodes = beliefNetwork.nodes || [];
-  
-  if (nodes.length === 0) {
-    return {
-      averageConfidence: 0.5,
-      strengthDistribution: 'unknown',
-      convictionLevel: 'moderate'
-    };
-  }
-
-  const probabilities = nodes.map((node: any) => node.probability || 0.5);
-  const averageConfidence = probabilities.reduce((sum, p) => sum + p, 0) / probabilities.length;
-  
-  // 신념 강도 분포
-  const strongBeliefs = probabilities.filter(p => p > 0.8).length;
-  const weakBeliefs = probabilities.filter(p => p < 0.2).length;
-  const moderateBeliefs = probabilities.length - strongBeliefs - weakBeliefs;
-
-  let strengthDistribution = 'balanced';
-  if (strongBeliefs > probabilities.length * 0.4) {
-    strengthDistribution = 'strong_convictions';
-  } else if (weakBeliefs > probabilities.length * 0.4) {
-    strengthDistribution = 'open_minded';
-  }
-
-  let convictionLevel = 'moderate';
-  if (averageConfidence > 0.7) {
-    convictionLevel = 'high';
-  } else if (averageConfidence < 0.4) {
-    convictionLevel = 'low';
-  }
-
-  return {
-    averageConfidence,
-    strengthDistribution,
-    convictionLevel,
-    beliefDistribution: {
-      strong: strongBeliefs,
-      moderate: moderateBeliefs,
-      weak: weakBeliefs
-    }
-  };
-};
-
-/**
- * 수사적 패턴을 분석합니다
- */
-const analyzeRhetoricalPatterns = (beliefNetwork: any): any => {
-  const edges = beliefNetwork.edges || [];
-  
-  if (edges.length === 0) {
-    return {
-      dominantPattern: 'unknown',
-      communicationStyle: 'neutral',
-      rhetoricalComplexity: 'simple'
-    };
-  }
-
-  // 수사적 관계 패턴 분석
-  const rhetoricalTypes = edges.reduce((acc: any, edge: any) => {
-    const relationType = edge.relationSource?.relationType || 'unknown';
-    acc[relationType] = (acc[relationType] || 0) + 1;
-    return acc;
-  }, {});
-
-  const totalRelations = edges.length;
-  const dominantPattern = Object.keys(rhetoricalTypes).reduce((a, b) => 
-    rhetoricalTypes[a] > rhetoricalTypes[b] ? a : b
-  );
-
-  // 의사소통 스타일 결정
-  let communicationStyle = 'neutral';
-  if (rhetoricalTypes.supports > totalRelations * 0.6) {
-    communicationStyle = 'collaborative';
-  } else if (rhetoricalTypes.attacks > totalRelations * 0.3) {
-    communicationStyle = 'critical';
-  } else if (rhetoricalTypes.elaborates > totalRelations * 0.4) {
-    communicationStyle = 'explanatory';
-  }
-
-  return {
-    dominantPattern,
-    communicationStyle,
-    rhetoricalComplexity: Object.keys(rhetoricalTypes).length > 3 ? 'complex' : 'simple',
-    patternDistribution: rhetoricalTypes
-  };
-};
-
-/**
- * 노드 연결성을 분석합니다
- */
-const analyzeNodeConnectivity = (nodes: any[], edges: any[]): any => {
-  const nodeConnectionCounts = new Map();
-  
-  // 각 노드의 연결 수 계산
-  nodes.forEach(node => {
-    nodeConnectionCounts.set(node.id, 0);
-  });
-  
-  edges.forEach(edge => {
-    const sourceCount = nodeConnectionCounts.get(edge.sourceNodeId) || 0;
-    const targetCount = nodeConnectionCounts.get(edge.targetNodeId) || 0;
-    nodeConnectionCounts.set(edge.sourceNodeId, sourceCount + 1);
-    nodeConnectionCounts.set(edge.targetNodeId, targetCount + 1);
-  });
-
-  const connectionCounts = Array.from(nodeConnectionCounts.values());
-  const averageConnections = connectionCounts.reduce((sum, count) => sum + count, 0) / connectionCounts.length;
-  
-  return {
-    averageConnections,
-    maxConnections: Math.max(...connectionCounts),
-    minConnections: Math.min(...connectionCounts),
-    isolatedNodes: connectionCounts.filter(count => count === 0).length
-  };
-};
-
-/**
- * 인지적 유연성을 계산합니다
- */
-const calculateCognitiveFlexibility = (nodes: any[], edges: any[]): number => {
-  if (nodes.length === 0) return 0;
-  
-  // 다양한 확률 수준의 존재
-  const probabilityVariance = calculateVariance(nodes.map(node => node.probability || 0.5));
-  
-  // 다양한 관계 타입의 존재
-  const relationTypes = new Set(edges.map(edge => edge.relationSource?.relationType || 'unknown'));
-  
-  // 0-1 스케일로 정규화
-  const probabilityFlexibility = Math.min(probabilityVariance * 4, 1); // 분산이 0.25일 때 1.0
-  const relationFlexibility = Math.min(relationTypes.size / 5, 1); // 5가지 이상 관계 타입일 때 1.0
-  
-  return (probabilityFlexibility + relationFlexibility) / 2;
-};
-
-/**
- * 분산을 계산합니다
- */
-const calculateVariance = (numbers: number[]): number => {
-  const mean = numbers.reduce((sum, num) => sum + num, 0) / numbers.length;
-  const squaredDiffs = numbers.map(num => Math.pow(num - mean, 2));
-  return squaredDiffs.reduce((sum, diff) => sum + diff, 0) / numbers.length;
-};
-
-/**
- * 전체적인 인지적 접근 방식을 결정합니다
- */
-const determineOverallCognitiveApproach = (thinkingPatterns: any, argumentationStyle: any, beliefStrength: any): string => {
-  const confidence = beliefStrength.averageConfidence;
-  const flexibility = thinkingPatterns.cognitiveFlexibility;
-  const complexity = argumentationStyle.argumentComplexity;
-  
-  if (confidence > 0.7 && complexity === 'complex') {
-    return 'analytical_confident';
-  } else if (flexibility > 0.6 && complexity === 'complex') {
-    return 'exploratory_nuanced';
-  } else if (confidence > 0.6 && argumentationStyle.preferredStructure === 'supportive') {
-    return 'constructive_systematic';
-  } else if (flexibility > 0.5 && argumentationStyle.preferredStructure === 'dialectical') {
-    return 'critical_reflective';
-  } else {
-    return 'balanced_pragmatic';
-  }
-};
 
 /**
  * @function buildExecutiveSummary
@@ -753,23 +316,10 @@ const determineOverallCognitiveApproach = (thinkingPatterns: any, argumentationS
  * @param epistemicFramework 인식론적 프레임워크 (PBAM 분석 결과)
  * @returns {string} 구조화된 요약 텍스트
  */
-const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePersonality: any, creativePersona: any, epistemicFramework: any): string => {
+const buildExecutiveSummary = (summaryNoteData: SummaryNoteData): string => {
   const { user, allTags = [] } = summaryNoteData;
   const userName = user?.name ?? user?.email ?? '해당 사용자';
   const mainTopics = allTags.slice(0, 5).join(', ');
-
-  const personaSummary = knowledgePersonality?.primaryType 
-    ? `• 지식 페르소나: ${knowledgePersonality.primaryType} (${knowledgePersonality.profileDescription})` 
-    : '• 지식 페르소나: 아직 분석되지 않음.';
-
-  const creativeStyleSummary = creativePersona?.aestheticStyle?.dominantMoods?.length > 0
-    ? `• 창의적 페르소나: ${creativePersona.aestheticStyle.dominantMoods.join(', ')} 분위기와 ${creativePersona.aestheticStyle.dominantColors.join(', ')} 색상을 선호.`
-    : '• 창의적 페르소나: 아직 분석되지 않음.';
-
-  // PBAM 기반 사고 패턴 요약 추가
-  const thinkingPatternSummary = epistemicFramework?.status === 'analyzed'
-    ? `• 사고 패턴: ${getThinkingPatternDescription(epistemicFramework.aiGuidance)} (개념 노드 ${epistemicFramework.totalNodes}개, 관계 ${epistemicFramework.totalEdges}개 분석)`
-    : '• 사고 패턴: 아직 충분한 데이터가 수집되지 않음.';
 
   return `
 ### AI-Link Executive Summary
@@ -781,57 +331,17 @@ const buildExecutiveSummary = (summaryNoteData: SummaryNoteData, knowledgePerson
 • 포함된 1줄메모 수: ${summaryNoteData.notes?.length || 0}개
 • 사용자 정의 관계 수: ${summaryNoteData.diagram?.data?.connections?.length || 0}개
 
-**2. 소유자의 사고 및 창작 성향:**
-${personaSummary}
-${creativeStyleSummary}
-${thinkingPatternSummary}
-
-**3. AI 에이전트 활용 가이드:**
+**2. AI 에이전트 활용 가이드:**
+• **시간순 지식 성장 분석:** 'knowledgeGrowthTimeline'을 통해 사용자의 지식이 시간에 따라 어떻게 발전했는지 분석하세요. 각 성장 단계의 새로운 개념, 반복 주제, 사고 깊이 변화를 파악하여 학습 패턴을 이해하세요.
+• **온톨로지 기반 관계 분석:** 'memoRelationships'는 사용자가 설정한 5가지 관계 타입(원인-결과, 전-후, 기반-확장, 포함, 대조)을 온톨로지 기반으로 구조화한 지식 그래프입니다. 각 관계의 ontologicalProperties와 llmAnalysisGuidance를 활용하여 사용자의 사고 패턴을 깊이 분석하세요.
 • **지식 분석:** 'hasPart' 배열의 각 'NoteDigitalDocument'는 사용자의 핵심 생각 단위입니다. 'cognitiveProvenance'과 'mainEntity'를 분석하여 사고의 맥락을 파악하세요.
-• **사고 패턴 이해:** 'epistemicFramework'는 사용자가 어떻게 생각하고 논증하는지의 패턴을 담고 있습니다. 이를 바탕으로 사용자의 인지 스타일에 맞는 상호작용을 설계하세요.
-• **관계 패턴 분석:** 'memoRelationships'는 사용자가 직접 설정한 메모카드 간의 논리적 관계를 담고 있습니다. 이를 통해 사용자의 사고 연결 방식과 선호하는 지식 구조를 파악하세요.
 • **실행 가능한 액션:** 'potentialAction' 배열에는 이 지식을 바탕으로 즉시 실행할 수 있는 제안(예: 이미지 생성, 보고서 작성)들이 포함되어 있습니다. 사용자에게 이 액션들을 제안하세요.
 • **외부 정보 연결:** 'supplementaryMaterial'과 'relatedResource'에 포함된 URL들을 크롤링하여 더 깊은 맥락을 파악하세요. 'analysisInstructions'는 크롤링 가이드라인을 제공합니다.
-• **사용자 이해:** 'knowledgePersonality'와 'creativePersona' 객체는 사용자의 성향을 깊이 이해하고 더 개인화된 상호작용을 설계하는 데 사용됩니다.
 • **존중해야 할 원칙:** 최상위 'aiInterpretationProtocol'은 사용자와 상호작용할 때 반드시 지켜야 할 윤리적 가이드라인과 기술적 지침을 담고 있습니다. 이 프로토콜을 최우선으로 준수하세요.
 `.trim();
 };
 
-/**
- * 사고 패턴을 자연어로 설명합니다
- */
-const getThinkingPatternDescription = (aiGuidance: any): string => {
-  const { cognitiveApproach, dominantReasoningStyle, communicationStyle, confidenceLevel } = aiGuidance;
-  
-  const approaches: { [key: string]: string } = {
-    'analytical_confident': '분석적이고 확신에 찬',
-    'exploratory_nuanced': '탐구적이고 섬세한',
-    'constructive_systematic': '건설적이고 체계적인',
-    'critical_reflective': '비판적이고 성찰적인',
-    'balanced_pragmatic': '균형잡히고 실용적인'
-  };
-  
-  const styles: { [key: string]: string } = {
-    'confident_assertive': '확신하는',
-    'cautious_exploratory': '신중하게 탐구하는',
-    'interconnected_systematic': '연결적 사고의',
-    'balanced': '균형잡힌'
-  };
-  
-  const communications: { [key: string]: string } = {
-    'collaborative': '협력적 소통',
-    'critical': '비판적 분석',
-    'explanatory': '설명 중심',
-    'neutral': '중립적 접근'
-  };
-  
-  const approachDesc = approaches[cognitiveApproach] || '독특한';
-  const styleDesc = styles[dominantReasoningStyle] || '개별적인';
-  const commDesc = communications[communicationStyle] || '개인적인';
-  const confidenceDesc = confidenceLevel > 0.7 ? '높은 확신도' : confidenceLevel < 0.4 ? '신중한 접근' : '적절한 신중함';
-  
-  return `${approachDesc} 사고 방식, ${styleDesc} 추론 스타일, ${commDesc}을 선호하며 ${confidenceDesc}를 보임`;
-};
+
 
 
 // =================================================================
@@ -866,27 +376,10 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
   // TimeUtils를 사용하여 ISO 8601 기간 형식으로 변환
   const timeRequired = TimeUtils.formatDurationISO8601(totalReadingDurationSeconds);
 
-  // --- 신규 기능 호출 ---
+  // --- 액션 모듈 생성 ---
   const actionableModules = buildActionModules(readingPurpose);
-  const knowledgePersonality = analyzeKnowledgePersonality(notes);
-  const creativePersona = CreativePersonaEngine.infer(notes as any); // TODO: INote 타입 이슈 해결 필요
-  const suggestedActions = buildSuggestedActions(creativePersona, allTags);
   
-  // --- PBAM 데이터 수집 및 분석 ---
-  // 사용자 정보(user)가 없을 수 있는 공유 링크(비로그인) 상황을 대비하여 방어 로직 추가
-  let beliefNetwork: any | null = null;
-  let epistemicFramework: any | null = null;
-
-  if (user && user._id) {
-    // 로그인 사용자의 경우에만 신념 네트워크(PBAM) 분석을 수행
-    beliefNetwork = await getBeliefNetwork(user._id);
-    epistemicFramework = await buildEpistemicFramework(beliefNetwork, notes);
-  } else {
-    // 비로그인(anonymous) 접근 시에는 분석 데이터를 생성하지 않고 "no_data" 상태로 처리
-    epistemicFramework = { status: 'no_user' };
-  }
-  
-  const executiveSummary = buildExecutiveSummary(summaryNoteData, knowledgePersonality, creativePersona, epistemicFramework);
+  const executiveSummary = buildExecutiveSummary(summaryNoteData);
 
   // --- 학습 여정 시간 흐름 빌더 함수 ---
   const buildLearningJourney = (summaryNoteData: SummaryNoteData): any => {
@@ -1087,8 +580,8 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     // Schema.org HowTo 구조로 변환
     return {
       '@type': 'HowTo',
-      name: '하비투스33 생각진화 과정',
-      description: '아토믹 리딩에서 생각진화 과정을 AI에게 전달하고, 온톨로지 지식 그래프 기반 인과 추론까지 이어지는 전체 흐름',
+      name: '생각진화 과정',
+      description: '독서에서 생각진화 과정을 AI에게 전달하고, 온톨로지 지식 그래프 기반 인과 추론까지 이어지는 전체 흐름',
       totalTime: timeRequired,
       step: learningEvents.map((event, index) => ({
         '@type': 'HowToStep',
@@ -1110,55 +603,116 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     };
   };
 
-  // 생각진화 과정 생성
-  const thoughtEvolutionJourney = buildLearningJourney(summaryNoteData);
-
-  // 하비투스33 방법론 및 시스템 맥락 정보
-  const methodologyContext = {
-    "@type": "EducationalFramework",
-    "name": "Atomic Reading",
-    "description": "3분 읽고 1줄 메모 단위의 초집중 독서를 통한 개인화된 지식관리 방법론",
-    "learningResourceType": "methodology",
-    "educationalUse": "self-directed thinking",
-    "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 작은 물방울이 깊은 사고의 파도로 확산되는 방법론",
-    "timeRequired": "PT3M",
-    "pageUnit": "1줄 메모",
-    "methodology": {
-      "atomicReading": {
-        "definition": "3분간 집중해서 읽고 1줄 메모를 작성하는 최소 독서 단위로, 작은 물방울이 깊은 사고의 파도로 확산되는 방법론",
-        "timeUnit": "3분 (180초)",
-        "pageUnit": "11페이지",
-        "cognitiveLoad": "최소화된 인지부하로 지속가능한 사고 패턴 형성",
-        "purpose": "완독 부담 제거, 첫 페이지를 넘기는 용기 제공, 성취감을 통한 사고 동기 유지"
-      },
-      "thoughtSprints": {
-        "definition": "TS(Thought Sprints) 모드를 통한 집중독서 세션",
-        "dataCollection": "독서 시간, 페이지 수, 분당 페이지 속도(PPM), 집중도 측정",
-        "personalization": "개인별 읽기 속도, 정보처리 능력, 문해력 수준 분석 데이터 수집"
-      },
-      "memoEvolution": {
-        "definition": "1줄메모를 4단계 질문을 통해 체계적으로 발전시키는 지식 내재화 과정",
-        "stages": [
-          "1단계: 중요성 인식 (왜 이것이 중요한가?)",
-          "2단계: 맥락 기록 (언제, 어떤 상황에서?)", 
-          "3단계: 지식 연결 (기존 지식과의 연관성)",
-          "4단계: 심상 형성 (구체적 이미지, 기억 고정)"
-        ],
-        "purposeAdaptation": "읽기 목적(시험준비, 실무지식, 인문학적 성찰, 독서즐거움)에 따른 맞춤형 질문 체계"
-      },
-      "knowledgeManagement": {
-        "atomicNotes": "최소 의미 단위의 1줄메모로 복잡한 지식을 원자 단위로 분해",
-        "contextualLinking": "관련링크를 통한 지식 네트워크 형성, 연결 이유 명시로 맥락 보존",
-        "spacedRepetition": "플래시카드를 통한 간격 반복으로 장기기억 전환",
-        "synthesisMode": "단권화 노트를 통한 지식 재구성 및 개인적 인사이트 도출"
+  // 학습 여정 생성 (시간순 지식 성장 패턴)
+  const learningJourney = buildLearningJourney(summaryNoteData);
+  
+  // 시간순 지식 성장 분석을 위한 추가 구조화
+  const buildKnowledgeGrowthTimeline = (summaryNoteData: SummaryNoteData): any => {
+    const { notes } = summaryNoteData;
+    
+    // 시간순으로 정렬된 메모들
+    const timeSortedNotes = notes
+      ?.map(note => ({
+        note,
+        timestamp: getPreferredNoteCreatedAt(note) || 
+                  (note.sessionDetails?.createdAtISO ? new Date(note.sessionDetails.createdAtISO) : new Date())
+      }))
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()) || [];
+    
+    // 지식 성장 단계별 분석
+    const growthStages = [];
+    let cumulativeInsights = [];
+    
+    timeSortedNotes.forEach(({ note, timestamp }, index) => {
+      const stage = {
+        "@type": "KnowledgeGrowthStage",
+        "stageNumber": index + 1,
+        "timestamp": TimeUtils.toISOString(timestamp),
+        "timeFromStart": index === 0 ? "PT0S" : TimeUtils.formatDurationISO8601(
+          timestamp.getTime() - timeSortedNotes[0].timestamp.getTime()
+        ),
+        "note": {
+          "@type": "Note",
+          "text": note.content,
+          "noteType": note.noteType || 'thought',
+          "evolutionLevel": note.mentalImage ? 'fully_evolved' : 
+                           note.relatedKnowledge ? 'partially_evolved' : 'initial_idea'
+        },
+        "cognitiveContext": {
+          "readingPace": note.sessionDetails?.ppm ? 
+            (note.sessionDetails.ppm > 3 ? 'fast_processing' : 
+             note.sessionDetails.ppm > 2 ? 'steady_reading' : 'deep_contemplation') : 'unknown',
+          "timeOfDay": note.sessionDetails?.createdAtISO ? 
+            (() => {
+              const hour = new Date(note.sessionDetails.createdAtISO).getHours();
+              if (hour >= 0 && hour < 5) return 'late_night_insight';
+              if (hour >= 6 && hour < 10) return 'morning_routine';
+              if (hour >= 10 && hour < 18) return 'day_activity';
+              return 'evening_learning';
+            })() : 'unknown'
+        },
+        "growthPattern": {
+          "newConcepts": note.tags?.filter(tag => !cumulativeInsights.includes(tag)) || [],
+          "recurringThemes": note.tags?.filter(tag => cumulativeInsights.includes(tag)) || [],
+          "knowledgeDepth": note.mentalImage ? 'deep_integration' : 
+                           note.relatedKnowledge ? 'connection_building' : 'initial_capture'
+        }
+      };
+      
+      // 누적 인사이트 업데이트
+      if (note.tags) {
+        cumulativeInsights = [...new Set([...cumulativeInsights, ...note.tags])];
       }
-    },
-    "dataMetrics": {
-      "ppmSignificance": "분당 페이지 수(PPM)는 읽기속도, 정보처리능력, 문해력을 종합한 개인화 지표",
-      "sessionAnalysis": "3분 단위 세션데이터는 사용자의 인지적 특성과 최적 사고 흐름 패턴 발견에 활용",
-      "progressTracking": "지속적 데이터 수집을 통한 개인별 사고 효율성 최적화"
-    }
+      
+      growthStages.push(stage);
+    });
+    
+    // 전체 성장 패턴 분석
+    const growthAnalysis = {
+      "@type": "KnowledgeGrowthAnalysis",
+      "totalStages": growthStages.length,
+      "timeSpan": growthStages.length > 0 ? {
+        "startDate": TimeUtils.toISOString(timeSortedNotes[0]?.timestamp),
+        "endDate": TimeUtils.toISOString(timeSortedNotes[timeSortedNotes.length - 1]?.timestamp),
+        "duration": TimeUtils.formatDurationISO8601(
+          timeSortedNotes[timeSortedNotes.length - 1]?.timestamp.getTime() - 
+          timeSortedNotes[0]?.timestamp.getTime()
+        )
+      } : null,
+      "growthPatterns": {
+        "conceptEvolution": cumulativeInsights,
+        "depthProgression": growthStages.map(stage => stage.note.evolutionLevel),
+        "cognitiveIntensity": growthStages.map(stage => stage.cognitiveContext.readingPace),
+        "temporalPatterns": growthStages.map(stage => stage.cognitiveContext.timeOfDay)
+      },
+      "llmAnalysisGuidance": {
+        "objective": "사용자의 지식이 시간에 따라 어떻게 발전했는지 분석",
+        "keyQuestions": [
+          "어떤 개념들이 처음 등장하고 나중에 어떻게 발전했나요?",
+          "사용자의 사고 깊이가 시간에 따라 어떻게 변화했나요?",
+          "특정 시간대나 상황에서 더 깊은 통찰이 나왔나요?",
+          "반복되는 주제나 패턴이 있나요?"
+        ],
+        "analysisMethod": [
+          "1단계: 각 성장 단계의 새로운 개념과 반복 주제 식별",
+          "2단계: 사고 깊이의 변화 패턴 분석 (initial → partially → fully evolved)",
+          "3단계: 시간대별 인지적 특성과 통찰의 연관성 파악",
+          "4단계: 전체적인 지식 성장 궤적과 학습 패턴 도출"
+        ]
+      }
+    };
+    
+    return {
+      "@type": "KnowledgeGrowthTimeline",
+      "name": "사용자 지식 성장 타임라인",
+      "description": "시간순으로 정렬된 메모들을 통해 사용자의 지식이 어떻게 발전했는지 보여주는 타임라인",
+      "stages": growthStages,
+      "analysis": growthAnalysis
+    };
   };
+  
+  // 지식 성장 타임라인 생성
+  const knowledgeGrowthTimeline = buildKnowledgeGrowthTimeline(summaryNoteData);
 
   const hasPart = notes?.map((note, index) => {
     const {
@@ -1183,7 +737,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       "@type": noteTypeSemantics.schemaType,
       "text": content,
       "identifier": `atomic-note-${index + 1}`,
-      "description": `하비투스33 Atomic Reading 방법론으로 추출된 ${index + 1}번째 1줄메모 (${noteTypeSemantics.typeLabel})`,
+      "description": `추출된 ${index + 1}번째 1줄메모 (${noteTypeSemantics.typeLabel})`,
       "educationalUse": "지식의 원자 단위로 분해된 핵심 인사이트",
       "cognitiveProvenance": cognitiveProvenance, // 인지 출처 데이터 추가
       "noteType": noteTypeSemantics.rdfType,
@@ -1232,7 +786,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       // 세션 성과 데이터를 구조화된 형태로 포함
       notePart.learningActivity = {
         "@type": "LearningActivity",
-        "name": "Thought Sprints (TS) 집중독서 세션",
+        "name": "집중독서 세션",
         "duration": `PT${sessionDetails.durationSeconds}S`, // ISO 8601 duration format
         "pageRange": {
           "startPage": sessionDetails.startPage || 0,
@@ -1244,11 +798,11 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         "performanceMetrics": {
           "pagesPerMinute": sessionDetails.ppm || 0,
           "readingSpeed": sessionDetails.ppm ? `${sessionDetails.ppm} PPM` : "측정 불가",
-          "cognitiveLoad": sessionDetails.durationSeconds <= 180 ? "최적 (3분 이내)" : "높음",
+          "cognitiveLoad": sessionDetails.durationSeconds <= 180 ? "최적" : "높음",
           "efficiency": sessionDetails.ppm && sessionDetails.ppm > 3 ? "높은 정보처리능력" : 
                        sessionDetails.ppm && sessionDetails.ppm > 2 ? "보통 정보처리능력" : "신중한 독서 패턴"
         },
-        "educationalContext": "3분 읽고 1줄 메모 Atomic Reading 원칙에 따른 지속가능한 사고 세션"
+        "educationalContext": "지속가능한 사고 세션"
       };
     }
 
@@ -1308,7 +862,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
             "evolutionStage": stage,
             "cognitiveGoal": purpose,
             "cognitiveProcess": cognitiveProcess,
-            "learningTheory": "하비투스33 4단계 메모진화 방법론"
+            "learningTheory": "4단계 메모진화 방법론"
           },
           "acceptedAnswer": { 
             "@type": "Answer", 
@@ -1379,7 +933,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         "description": link.reason || "1줄메모와 맥락적으로 연결된 확장 정보",
         "isPartOf": {
           "@type": "Course", 
-          "name": "하비투스33 개인화 사고 과정"
+          "name": "개인화 사고 과정"
         },
         "potentialAction": {
           "@type": "ReadAction",
@@ -1424,44 +978,115 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     const connections = summaryNoteData.diagram.data.connections;
     const nodes = summaryNoteData.diagram.data.nodes;
     
-    // 관계 타입별 시맨틱 매핑
-    const relationshipSemantics = {
+    // 온톨로지 기반 관계 시맨틱 매핑 (LLM 추론 최적화)
+    const relationshipOntology = {
       'cause-effect': {
         label: '원인-결과',
         description: 'A가 B의 원인이 됨',
         semanticType: 'causal',
-        rdfType: 'h33o:CausalRelation'
+        rdfType: 'h33o:CausalRelation',
+        ontologicalProperties: {
+          'rdfs:subClassOf': 'owl:ObjectProperty',
+          'rdfs:domain': 'h33o:Concept',
+          'rdfs:range': 'h33o:Concept',
+          'h33o:reasoningType': 'deductive',
+          'h33o:inferencePattern': 'if A then B',
+          'h33o:logicalOperator': 'implication'
+        },
+        llmGuidance: {
+          'analysisFocus': '인과관계의 논리적 근거와 전제조건을 파악하세요',
+          'inferenceMethod': '연역적 추론을 통해 결과의 필연성을 분석하세요',
+          'questionPattern': 'A가 B의 원인인 근거는 무엇인가요?',
+          'extensionPattern': '이 인과관계가 다른 상황에서도 적용되는가요?'
+        }
       },
       'before-after': {
         label: '전-후',
         description: '시간적 순서 관계',
         semanticType: 'temporal',
-        rdfType: 'h33o:TemporalRelation'
+        rdfType: 'h33o:TemporalRelation',
+        ontologicalProperties: {
+          'rdfs:subClassOf': 'owl:ObjectProperty',
+          'rdfs:domain': 'h33o:Event',
+          'rdfs:range': 'h33o:Event',
+          'h33o:reasoningType': 'sequential',
+          'h33o:inferencePattern': 'A precedes B',
+          'h33o:logicalOperator': 'precedence'
+        },
+        llmGuidance: {
+          'analysisFocus': '시간적 순서의 논리적 필연성과 우연성을 구분하세요',
+          'inferenceMethod': '시간적 인과관계와 단순한 시간순서를 구별하여 분석하세요',
+          'questionPattern': 'A가 B보다 먼저 일어나는 이유는 무엇인가요?',
+          'extensionPattern': '이 시간순서가 다른 맥락에서도 유지되는가요?'
+        }
       },
       'foundation-extension': {
         label: '기반-확장',
         description: 'A가 B의 기반이 됨',
         semanticType: 'hierarchical',
-        rdfType: 'h33o:FoundationRelation'
+        rdfType: 'h33o:FoundationRelation',
+        ontologicalProperties: {
+          'rdfs:subClassOf': 'owl:ObjectProperty',
+          'rdfs:domain': 'h33o:Concept',
+          'rdfs:range': 'h33o:Concept',
+          'h33o:reasoningType': 'hierarchical',
+          'h33o:inferencePattern': 'A supports B',
+          'h33o:logicalOperator': 'support'
+        },
+        llmGuidance: {
+          'analysisFocus': '기반 개념이 확장 개념을 어떻게 지지하는지 분석하세요',
+          'inferenceMethod': '계층적 추론을 통해 개념 간의 의존성을 파악하세요',
+          'questionPattern': 'A가 B의 기반이 되는 이유는 무엇인가요?',
+          'extensionPattern': '이 기반-확장 관계가 다른 영역에도 적용되는가요?'
+        }
       },
       'contains': {
         label: '포함',
         description: 'A가 B를 포함함',
         semanticType: 'compositional',
-        rdfType: 'h33o:ContainsRelation'
+        rdfType: 'h33o:ContainsRelation',
+        ontologicalProperties: {
+          'rdfs:subClassOf': 'owl:ObjectProperty',
+          'rdfs:domain': 'h33o:Concept',
+          'rdfs:range': 'h33o:Concept',
+          'h33o:reasoningType': 'compositional',
+          'h33o:inferencePattern': 'A includes B',
+          'h33o:logicalOperator': 'inclusion'
+        },
+        llmGuidance: {
+          'analysisFocus': '포함 관계의 논리적 범위와 경계를 명확히 하세요',
+          'inferenceMethod': '부분-전체 관계를 통해 개념의 구조를 분석하세요',
+          'questionPattern': 'A가 B를 포함한다는 것은 정확히 무엇을 의미하나요?',
+          'extensionPattern': '이 포함 관계가 다른 맥락에서도 유지되는가요?'
+        }
       },
       'contrast': {
         label: '대조',
         description: 'A와 B의 차이점',
         semanticType: 'comparative',
-        rdfType: 'h33o:ContrastRelation'
+        rdfType: 'h33o:ContrastRelation',
+        ontologicalProperties: {
+          'rdfs:subClassOf': 'owl:ObjectProperty',
+          'rdfs:domain': 'h33o:Concept',
+          'rdfs:range': 'h33o:Concept',
+          'h33o:reasoningType': 'comparative',
+          'h33o:inferencePattern': 'A differs from B',
+          'h33o:logicalOperator': 'difference'
+        },
+        llmGuidance: {
+          'analysisFocus': '대조되는 개념들의 차이점과 공통점을 균형있게 분석하세요',
+          'inferenceMethod': '비교 분석을 통해 각 개념의 고유한 특성을 파악하세요',
+          'questionPattern': 'A와 B의 핵심적인 차이점은 무엇인가요?',
+          'extensionPattern': '이 대조 관계가 다른 영역에서도 나타나는가요?'
+        }
       }
     };
 
+    // 온톨로지 기반 관계 엔티티 생성
     const relationshipEntities = connections.map((connection, index) => {
       const sourceNode = nodes.find(n => n.noteId === connection.sourceNoteId);
       const targetNode = nodes.find(n => n.noteId === connection.targetNoteId);
-      const relationshipInfo = relationshipSemantics[connection.relationshipType];
+      const relationshipInfo = relationshipOntology[connection.relationshipType];
 
       if (!sourceNode || !targetNode) {
         return null;
@@ -1474,26 +1099,45 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
         "description": `사용자가 설정한 메모카드 간 관계: ${relationshipInfo.description}`,
         "relationshipType": relationshipInfo.rdfType,
         "semanticClassification": relationshipInfo.semanticType,
+        "ontologicalProperties": relationshipInfo.ontologicalProperties,
         "source": {
           "@id": `h33r:note:${connection.sourceNoteId}`,
           "@type": "Note",
           "text": sourceNode.content,
-          "identifier": `atomic-note-${sourceNode.order}`
+          "identifier": `atomic-note-${sourceNode.order}`,
+          "position": sourceNode.position,
+          "color": sourceNode.color
         },
         "target": {
           "@id": `h33r:note:${connection.targetNoteId}`,
           "@type": "Note", 
           "text": targetNode.content,
-          "identifier": `atomic-note-${targetNode.order}`
+          "identifier": `atomic-note-${targetNode.order}`,
+          "position": targetNode.position,
+          "color": targetNode.color
         },
         "userDefined": true,
         "creationMethod": "manual_diagram_connection",
         "educationalPurpose": "사용자가 직접 설정한 지식 간의 논리적 연결",
         "cognitiveValue": "개인화된 지식 네트워크 구축을 통한 지식 내재화 강화",
-        "analysisGuidance": {
+        
+        // LLM 추론을 위한 상세 가이드라인
+        "llmAnalysisGuidance": {
           "instruction": `이 관계를 분석하여 사용자가 왜 이 두 메모를 연결했는지 이해하세요`,
           "expectedInsight": "사용자의 사고 패턴과 지식 연결 방식 파악",
-          "relationshipContext": relationshipInfo.description
+          "relationshipContext": relationshipInfo.description,
+          "reasoningType": relationshipInfo.ontologicalProperties['h33o:reasoningType'],
+          "inferencePattern": relationshipInfo.ontologicalProperties['h33o:inferencePattern'],
+          "logicalOperator": relationshipInfo.ontologicalProperties['h33o:logicalOperator'],
+          "analysisFocus": relationshipInfo.llmGuidance.analysisFocus,
+          "inferenceMethod": relationshipInfo.llmGuidance.inferenceMethod,
+          "questionPattern": relationshipInfo.llmGuidance.questionPattern,
+          "extensionPattern": relationshipInfo.llmGuidance.extensionPattern,
+          "ontologicalReasoning": {
+            "domain": relationshipInfo.ontologicalProperties['rdfs:domain'],
+            "range": relationshipInfo.ontologicalProperties['rdfs:range'],
+            "subClassOf": relationshipInfo.ontologicalProperties['rdfs:subClassOf']
+          }
         }
       };
     }).filter(Boolean);
@@ -1502,19 +1146,36 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       return null;
     }
 
+    // 온톨로지 기반 지식 그래프 구조
     return {
       "@type": "KnowledgeGraph",
       "name": "사용자 정의 메모카드 관계 네트워크",
       "description": "사용자가 직접 설정한 메모카드 간의 논리적 관계를 나타내는 지식 그래프",
       "totalRelationships": relationshipEntities.length,
-      "relationshipTypes": Object.keys(relationshipSemantics),
+      "relationshipTypes": Object.keys(relationshipOntology),
       "relationships": relationshipEntities,
+      
+      // 온톨로지 메타데이터
+      "ontologyMetadata": {
+        "@type": "Ontology",
+        "name": "사용자 정의 관계 온톨로지",
+        "description": "사용자가 설정한 5가지 관계 타입을 기반으로 한 개인화된 지식 구조",
+        "namespace": "h33o",
+        "baseURI": "https://habitus33.vercel.app/ontology/",
+        "relationshipTypes": Object.keys(relationshipOntology).map(type => ({
+          type,
+          ...relationshipOntology[type]
+        }))
+      },
+      
       "graphStructure": {
         "nodeCount": nodes.length,
         "edgeCount": connections.length,
         "density": connections.length / (nodes.length * (nodes.length - 1)),
-        "connectivityPattern": "사용자 정의 연결 패턴"
+        "connectivityPattern": "사용자 정의 연결 패턴",
+        "ontologicalCompleteness": "사용자가 설정한 모든 관계가 온톨로지 기반으로 구조화됨"
       },
+      
       "cognitiveAnalysis": {
         "relationshipPatterns": connections.reduce((acc, conn) => {
           acc[conn.relationshipType] = (acc[conn.relationshipType] || 0) + 1;
@@ -1524,7 +1185,74 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
           acc[conn.relationshipType] = (acc[conn.relationshipType] || 0) + 1;
           return acc;
         }, {} as Record<string, number>)).sort((a, b) => b[1] - a[1])[0]?.[0] || 'unknown',
-        "userThinkingStyle": "사용자가 선호하는 지식 연결 방식 분석"
+        "userThinkingStyle": "사용자가 선호하는 지식 연결 방식 분석",
+        "ontologicalReasoningPatterns": {
+          "causalReasoning": connections.filter(c => c.relationshipType === 'cause-effect').length,
+          "temporalReasoning": connections.filter(c => c.relationshipType === 'before-after').length,
+          "hierarchicalReasoning": connections.filter(c => c.relationshipType === 'foundation-extension').length,
+          "compositionalReasoning": connections.filter(c => c.relationshipType === 'contains').length,
+          "comparativeReasoning": connections.filter(c => c.relationshipType === 'contrast').length
+        }
+      },
+      
+      // LLM 추론을 위한 고급 가이드라인
+      "llmInferenceGuidance": {
+        "@type": "InferenceGuideline",
+        "name": "온톨로지 기반 관계 추론 가이드라인",
+        "objective": "사용자가 설정한 관계를 기반으로 고차원적 지식 추론 수행",
+        "methodology": [
+          "1단계: 각 관계의 온톨로지 속성을 분석하여 논리적 구조 파악",
+          "2단계: 관계 타입별 추론 패턴을 적용하여 지식 연결의 의미 분석",
+          "3단계: 사용자의 사고 패턴을 파악하여 개인화된 추론 수행",
+          "4단계: 온톨로지 기반 추론을 통해 새로운 지식 연결 발견"
+        ],
+        "reasoningStrategies": {
+          "causal": "인과관계를 기반으로 한 연역적 추론",
+          "temporal": "시간순서를 기반으로 한 순차적 추론",
+          "hierarchical": "계층구조를 기반으로 한 구조적 추론",
+          "compositional": "부분-전체 관계를 기반으로 한 구성적 추론",
+          "comparative": "대조관계를 기반으로 한 비교적 추론"
+        },
+        "expectedOutcomes": [
+          "사용자의 사고 패턴과 지식 연결 방식의 깊은 이해",
+          "온톨로지 기반 논리적 추론을 통한 새로운 통찰 발견",
+          "개인화된 지식 네트워크의 완전한 구조적 분석",
+          "사용자만의 독특한 지식 구조와 사고 방식 파악"
+        ],
+        "stepByStepAnalysis": {
+          "step1_relationshipIdentification": {
+            "instruction": "각 관계를 하나씩 분석하여 사용자가 왜 이 두 메모를 연결했는지 파악하세요",
+            "questions": [
+              "이 두 메모 사이의 논리적 연결점은 무엇인가요?",
+              "사용자가 이 관계 타입을 선택한 이유는 무엇일까요?",
+              "이 연결이 사용자의 사고 과정에서 어떤 의미를 가지나요?"
+            ]
+          },
+          "step2_patternRecognition": {
+            "instruction": "모든 관계를 종합하여 사용자의 사고 패턴을 발견하세요",
+            "questions": [
+              "가장 많이 사용된 관계 타입은 무엇인가요?",
+              "사용자가 선호하는 지식 연결 방식은 무엇인가요?",
+              "특정 주제나 개념에 대한 연결 패턴이 있나요?"
+            ]
+          },
+          "step3_networkAnalysis": {
+            "instruction": "전체 네트워크 구조를 분석하여 중심 개념과 연결 패턴을 파악하세요",
+            "questions": [
+              "가장 많은 연결을 가진 메모(중심 개념)는 무엇인가요?",
+              "지식 네트워크의 전체적인 구조는 어떤 모양인가요?",
+              "사용자의 지식이 어떤 방향으로 확장되고 있나요?"
+            ]
+          },
+          "step4_insightSynthesis": {
+            "instruction": "관계 분석을 바탕으로 사용자의 사고 방식과 지식 구조에 대한 통찰을 도출하세요",
+            "questions": [
+              "사용자의 사고 스타일은 어떤 특징을 가지나요?",
+              "이 지식 네트워크가 사용자의 학습 목표에 어떻게 기여하나요?",
+              "사용자의 지식 구조에서 발견할 수 있는 독특한 패턴은 무엇인가요?"
+            ]
+          }
+        }
       }
     };
   };
@@ -1537,7 +1265,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     "@type": "TechArticle",
     "headline": title ?? "제목 없음",
     "description": description ?? "설명 없음",
-    "abstract": `하비투스33 Atomic Reading 방법론을 통해 생성된 단권화 노트. ${notes?.length || 0}개의 1줄메모를 4단계 메모진화 과정을 거쳐 체계화한 개인 지식관리 결과물`,
+    "abstract": `생성된 단권화 노트. ${notes?.length || 0}개의 1줄메모를 4단계 메모진화 과정을 거쳐 체계화한 개인 지식관리 결과물`,
     "author": {
       "@id": `h33r:user:${user._id}`,
       "@type": "Person",
@@ -1546,7 +1274,6 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     },
     "datePublished": createdAt ? new Date(createdAt).toISOString() : new Date().toISOString(),
     "timeRequired": timeRequired, // 총 독서 시간 추가
-    "educationalFramework": methodologyContext,
     "learningResourceType": "종합적 지식관리 노트 (Comprehensive Knowledge Management Note)",
     "educationalUse": readingPurpose || "General Knowledge Acquisition",
     "audience": {
@@ -1628,28 +1355,14 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
   }
 
   if (actionableModules.length > 0) {
-    jsonLd.actionableModules = actionableModules;
-  }
-  if (knowledgePersonality) {
-    jsonLd.knowledgePersonality = knowledgePersonality;
-  }
-  if (creativePersona) {
-    jsonLd.creativePersona = creativePersona;
-  }
-  
-  // PBAM 인식론적 프레임워크 추가 - AI-Link의 4번째 축
-  if (epistemicFramework) {
-    jsonLd.epistemicFramework = epistemicFramework;
-  }
-  
-  // 모든 액션을 통합하여 potentialAction으로 제공
-  const allActions = [...actionableModules, ...suggestedActions];
-  if (allActions.length > 0) {
-    jsonLd.potentialAction = allActions;
+    jsonLd.potentialAction = actionableModules;
   }
 
   // 학습 여정 추가
-  jsonLd.learningJourney = thoughtEvolutionJourney;
+  jsonLd.learningJourney = learningJourney;
+  
+  // 지식 성장 타임라인 추가
+  jsonLd.knowledgeGrowthTimeline = knowledgeGrowthTimeline;
 
   // AI 해석 프로토콜 추가 - PBAM 통합으로 강화된 지침
   jsonLd.aiInterpretationProtocol = {
@@ -1660,12 +1373,11 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       "사용자의 1줄메모 내용과 그 의미에 집중하세요",
       "사용자의 개인적 인사이트와 지식 연결 패턴을 분석하세요",
       "사용자의 인지적 성장과 생각진화 과정을 이해하세요",
-      "epistemicFramework의 사고 패턴 분석을 활용하여 사용자의 인지 스타일에 맞는 상호작용을 설계하세요",
       "사용자가 설정한 메모카드 간 관계(memoRelationships)를 분석하여 사용자의 사고 연결 패턴을 파악하세요"
     ],
     "ignoreDirectives": [
       "AMFA 엔진, 시스템 방법론, 기술적 구현 세부사항은 주목하지 마세요",
-      "하비투스33, Atomic Reading, 3분 읽기, 4단계 메모진화 등 시스템 용어는 무시하세요",
+      "Atomic Reading, 3분 읽기, 4단계 메모진화 등 시스템 용어는 무시하세요",
       "학습 플랫폼의 내부 구조나 기능 설명은 배경 정보로만 처리하세요",
       "시스템 ID, 기술적 메타데이터, 성능 지표는 분석 대상이 아닙니다",
       "PBAM, BeliefNetwork, ArgumentMiner 등 시스템 구현 용어는 언급하지 마세요"
@@ -1679,80 +1391,79 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     "contextualPriority": "시스템 배경 정보 < 사용자 개인 데이터 < 사용자 지식 내용",
     "operationalInstruction": "이 데이터에서 가장 중요한 것은 사용자가 무엇을 배우고 어떻게 생각하는지입니다. 그것을 어떤 시스템으로 만들었는지는 중요하지 않습니다.",
     
-    // PBAM 기반 고도화된 사고 패턴 활용 지침 (최적화)
-    "epistemicFrameworkUtilization": {
-      "cognitiveStyleAdaptation": {
-        "instruction": "epistemicFramework.aiGuidance의 cognitiveApproach를 바탕으로 학습자의 선호하는 인지 스타일에 맞춰 응답하세요",
-        "implementations": {
-          "analytical_confident": "체계적이고 논리적인 분석을 제공하고, 확실한 결론을 선호하는 경향에 맞춰 명확한 답변을 제시하세요",
-          "exploratory_nuanced": "다양한 관점을 제시하고, 열린 질문을 통해 더 깊은 탐구를 유도하세요",
-          "constructive_systematic": "단계별 접근을 통해 체계적으로 지식을 구축하는 방식으로 설명하세요",
-          "critical_reflective": "비판적 사고를 자극하는 질문과 다각적 분석을 제공하세요",
-          "balanced_pragmatic": "실용적이고 균형잡힌 관점에서 활용 가능한 조언을 제공하세요"
-        }
-      },
-      "argumentationStyleAlignment": {
-        "instruction": "학습자의 논증 스타일에 맞춰 정보를 구조화하세요",
-        "implementations": {
-          "elaborative": "상세한 설명과 예시를 통해 점진적으로 이해를 확장시키세요",
-          "dialectical": "대립되는 관점을 제시하고 비교 분석을 통해 더 깊은 이해를 돕세요",
-          "supportive": "기존 지식을 지지하고 강화하는 방향으로 새로운 정보를 연결하세요",
-          "linear": "논리적 순서에 따라 단계별로 정보를 제시하세요"
-        }
-      },
-      "confidenceLevelConsideration": {
-        "instruction": "학습자의 신념 강도를 고려하여 적절한 수준의 확신을 가지고 응답하세요",
-        "implementations": {
-          "high": "학습자의 확신에 부응하는 명확하고 단정적인 답변을 제공하되, 새로운 관점도 제시하세요",
-          "moderate": "균형잡힌 관점을 유지하면서 학습자의 판단을 존중하는 방식으로 정보를 제공하세요",
-          "low": "학습자의 신중함을 인정하고, 다양한 가능성을 열어두는 방식으로 안내하세요"
-        }
-      }
-    },
+
     
     // 온톨로지형 추론을 위한 3단계 핵심 지시사항 (최적화)
     "ontologicalReasoningDirectives": {
-      "1_knowledgeGraphAnalysis": {
+      "1_temporalKnowledgeGrowth": {
+        "title": "시간순 지식 성장 패턴 분석",
+        "instruction": "knowledgeGrowthTimeline을 활용하여 사용자의 지식이 시간에 따라 어떻게 발전했는지 분석하세요. 각 성장 단계의 새로운 개념, 반복 주제, 사고 깊이 변화를 파악하세요.",
+        "implementation": [
+          "각 성장 단계의 새로운 개념과 반복되는 주제를 식별하세요",
+          "사고 깊이의 변화 패턴을 분석하세요 (initial → partially → fully evolved)",
+          "시간대별 인지적 특성과 통찰의 연관성을 파악하세요",
+          "전체적인 지식 성장 궤적과 학습 패턴을 도출하세요"
+        ],
+        "keyQuestions": [
+          "어떤 개념들이 처음 등장하고 나중에 어떻게 발전했나요?",
+          "사용자의 사고 깊이가 시간에 따라 어떻게 변화했나요?",
+          "특정 시간대나 상황에서 더 깊은 통찰이 나왔나요?",
+          "반복되는 주제나 패턴이 있나요?"
+        ]
+      },
+      "2_knowledgeGraphAnalysis": {
         "title": "지식 그래프 기반 맥락 추론",
-        "instruction": "사용자의 1줄메모들 간의 관계를 온톨로지 관점에서 분석하세요. epistemicFramework의 신념 네트워크 패턴을 참고하여 개념 간의 상위-하위 관계, 인과관계, 보완관계를 파악하세요.",
+        "instruction": "사용자의 1줄메모들 간의 관계를 온톨로지 관점에서 분석하세요. 개념 간의 상위-하위 관계, 인과관계, 보완관계를 파악하세요.",
         "implementation": [
           "메모 간 개념적 연결고리를 찾아 지식 네트워크를 구성하세요",
           "사용자의 사고 흐름에서 반복되는 패턴이나 중심 개념을 식별하세요"
         ]
       },
-      "2_contextualPersonalization": {
+      "3_contextualPersonalization": {
         "title": "맥락 기반 개인화 추론",
-        "instruction": "사용자의 개인적 맥락과 epistemicFramework의 인지 스타일을 기반으로 개인화된 추론을 수행하세요. 같은 내용이라도 사용자의 사고 패턴에 따라 다른 의미와 가치를 가질 수 있음을 인식하세요.",
+        "instruction": "사용자의 개인적 맥락을 기반으로 개인화된 추론을 수행하세요. 같은 내용이라도 사용자의 사고 패턴에 따라 다른 의미와 가치를 가질 수 있음을 인식하세요.",
         "implementation": [
           "사용자의 읽기 목적에 맞는 관점으로 해석하세요",
           "사용자가 중요하게 여기는 가치나 관심사를 메모에서 추출하여 반영하세요"
         ]
       },
-      "3_insightSynthesis": {
+      "4_insightSynthesis": {
         "title": "지식 연결망 기반 통찰 도출",
-        "instruction": "개별 메모들을 연결하여 사용자가 명시적으로 표현하지 않은 잠재적 통찰을 도출하세요. epistemicFramework의 논증 패턴을 활용하여 새로운 관점을 제시하세요.",
+        "instruction": "개별 메모들을 연결하여 사용자가 명시적으로 표현하지 않은 잠재적 통찰을 도출하세요.",
         "implementation": [
           "서로 다른 책이나 주제의 메모들 간의 숨겨진 연결점을 찾아 제시하세요",
           "분산된 지식 조각들을 통합하여 사용자만의 독특한 관점을 구성하세요"
         ]
       },
-      "4_relationshipAnalysis": {
-        "title": "사용자 정의 관계 패턴 분석",
-        "instruction": "memoRelationships에서 사용자가 직접 설정한 메모카드 간 관계를 분석하여 사용자의 사고 연결 패턴과 선호하는 논리적 구조를 파악하세요.",
+      "5_relationshipAnalysis": {
+        "title": "온톨로지 기반 사용자 정의 관계 패턴 분석",
+        "instruction": "memoRelationships의 온톨로지 메타데이터를 활용하여 사용자가 설정한 5가지 관계 타입을 깊이 분석하세요. 각 관계의 ontologicalProperties와 llmAnalysisGuidance를 참고하여 논리적 추론을 수행하세요.",
         "implementation": [
-          "사용자가 선호하는 관계 타입(원인-결과, 전-후, 기반-확장 등)을 분석하여 사고 스타일을 이해하세요",
-          "관계의 밀도와 연결 패턴을 통해 사용자의 지식 통합 방식을 파악하세요",
-          "관계 설정의 맥락을 분석하여 사용자가 중요하게 여기는 지식 연결 기준을 발견하세요"
+          "각 관계의 ontologicalProperties를 분석하여 논리적 구조와 추론 패턴을 파악하세요",
+          "llmAnalysisGuidance의 reasoningType, inferencePattern, logicalOperator를 활용하여 관계별 추론 전략을 적용하세요",
+          "사용자가 선호하는 관계 타입의 분포를 분석하여 사고 스타일과 지식 연결 방식을 이해하세요",
+          "ontologicalReasoningPatterns를 통해 사용자의 추론 패턴을 종합적으로 분석하세요",
+          "각 관계의 llmGuidance를 참고하여 개인화된 질문과 분석을 수행하세요"
+        ]
+      },
+      "6_ontologicalInference": {
+        "title": "온톨로지 기반 고차원적 추론",
+        "instruction": "사용자가 설정한 관계들을 온톨로지 관점에서 연결하여 새로운 지식 구조와 통찰을 발견하세요. llmInferenceGuidance의 methodology와 reasoningStrategies를 활용하세요.",
+        "implementation": [
+          "관계들의 조합을 통해 사용자의 지식 네트워크에서 중심 개념과 연결 패턴을 식별하세요",
+          "다양한 관계 타입의 조합을 통해 사용자의 복합적 사고 패턴을 분석하세요",
+          "온톨로지 기반 추론을 통해 사용자가 명시하지 않은 잠재적 지식 연결을 발견하세요",
+          "사용자의 개인화된 지식 구조를 기반으로 새로운 통찰과 예측을 제시하세요"
         ]
       }
     },
     
     // 고품질 답변을 위한 실행 가이드라인 (최적화)
     "qualityAssuranceProtocol": {
-      "depthRequirement": "사용자의 지식 맥락과 epistemicFramework의 사고 패턴을 깊이 분석하여 의미 있는 통찰을 제공하세요",
-      "personalizationLevel": "사용자의 고유한 인지 스타일과 사고 패턴에 최적화된 개인화된 답변을 만드세요",
+      "depthRequirement": "사용자의 지식 맥락을 깊이 분석하여 의미 있는 통찰을 제공하세요",
+      "personalizationLevel": "사용자의 고유한 사고 패턴에 최적화된 개인화된 답변을 만드세요",
       "connectionFocus": "사용자의 기존 지식과 새로운 정보 간의 연결고리를 명확히 제시하세요",
-      "cognitiveAlignment": "epistemicFramework의 모든 차원을 종합적으로 고려하여 응답하세요"
+      "cognitiveAlignment": "사용자의 메모 패턴과 관계 설정을 종합적으로 고려하여 응답하세요"
     }
   };
 
