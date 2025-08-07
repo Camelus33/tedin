@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar, HelpCircle, ChevronDown, ChevronUp, MessageSquare, ExternalLink, BarChart3 } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -10,6 +10,7 @@ import { RELATIONSHIP_CONFIGS, RelationshipType } from '@/components/share/Vecto
 import { motion, AnimatePresence } from 'framer-motion';
 import LearningJourneyVisualization from '@/components/share/LearningJourneyVisualization';
 import InlineThreadsViewer from '@/components/share/InlineThreadsViewer';
+import { flashcardApi, Flashcard } from '@/lib/api';
 
 
 const VectorGraphCanvas = dynamic(
@@ -60,7 +61,10 @@ const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, json
 
             {notes && notes.length > 0 && (
                 <section className="p-6 bg-gray-700/30 rounded-lg border border-gray-600">
-                    <h3 className="text-xl font-semibold text-gray-200 mb-4">핵심 내용</h3>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <BookOpen className="w-4 h-4 text-cyan-400" />
+                      핵심 내용
+                    </h3>
                     <ul className="space-y-2">
                         {notes.map((note: any, index: number) => (
                         <li key={`toc-${note._id || index}`} className="text-gray-400 hover:text-cyan-400 transition-colors">
@@ -77,8 +81,8 @@ const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, json
             {userMarkdownContent && (
                 <section className="p-6 bg-indigo-900/30 rounded-lg border-l-4 border-purple-500">
                     <header className="mb-4">
-                        <h3 className="text-xl font-semibold text-gray-100 flex items-center">
-                            <MessageSquare className="h-6 w-6 mr-2 text-purple-400" />
+                        <h3 className="text-lg font-semibold flex items-center gap-2">
+                            <MessageSquare className="w-4 h-4 text-purple-400" />
                             Comment
                         </h3>
                     </header>
@@ -95,13 +99,13 @@ const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, json
                     <article key={note._id} id={`journey-${note._id}`} className="border-t border-gray-700 pt-8 scroll-mt-20">
                         <div className="flex items-start space-x-4">
                             <div className="flex-shrink-0 bg-green-600 text-white h-8 w-8 rounded-full flex items-center justify-center font-bold">{index + 1}</div>
-                            <h3 className="flex-1 text-2xl font-semibold text-indigo-300 break-words">{note.content ?? '내용 없음'}</h3>
+                            <h3 className="flex-1 text-lg font-semibold text-indigo-300 break-words">{note.content ?? '내용 없음'}</h3>
                         </div>
 
                         <div className="mt-6 pl-12 space-y-6">
                             {note.sessionDetails && (
                                 <section className="bg-gray-700/50 p-4 rounded-lg">
-                                    <h4 className="font-semibold text-gray-300 flex items-center"><Paperclip className="h-4 w-4 mr-2 text-gray-500" />카드 정보</h4>
+                                    <h4 className="font-semibold flex items-center gap-2"><Paperclip className="w-4 h-4 text-cyan-400" />카드 정보</h4>
                                     <ul className="mt-2 text-sm text-gray-400 space-y-1">
                                         {note.sessionDetails?.createdAt && <li><strong>기록 시점:</strong> <ClientTimeDisplay createdAt={note.sessionDetails.createdAt} clientCreatedAt={note.clientCreatedAt} /></li>}
                                         {note.sessionDetails?.durationSeconds !== undefined && <li><strong>읽은 시간:</strong> {formatSessionDuration(note.sessionDetails.durationSeconds)}</li>}
@@ -113,7 +117,7 @@ const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, json
 
                             {(note.importanceReason || note.momentContext || note.relatedKnowledge || note.mentalImage) && (
                                 <section>
-                                    <h4 className="font-semibold text-gray-300 flex items-center"><Microscope className="h-4 w-4 mr-2 text-gray-500" />기억 강화</h4>
+                                    <h4 className="font-semibold flex items-center gap-2"><Microscope className="w-4 h-4 text-cyan-400" />기억 강화</h4>
                                     <ul className="mt-2 text-sm text-gray-400 space-y-4">
                                         {note.importanceReason && <li><strong className="text-indigo-400 block mb-1">작성 이유:</strong> <ExpandableText text={note.importanceReason} /></li>}
                                         {note.momentContext && <li><strong className="text-indigo-400 block mb-1">당시 상황:</strong> <ExpandableText text={note.momentContext} /></li>}
@@ -126,7 +130,7 @@ const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, json
                             {/* 지식연결 섹션 추가 */}
                             {note.relatedLinks && note.relatedLinks.length > 0 && (
                                 <section>
-                                    <h4 className="font-semibold text-gray-300 flex items-center"><LinkIcon className="h-4 w-4 mr-2 text-gray-500" />지식연결</h4>
+                                    <h4 className="font-semibold flex items-center gap-2"><LinkIcon className="w-4 h-4 text-cyan-400" />지식연결</h4>
                                     <div className="mt-2 space-y-3">
                                         {note.relatedLinks.map((link: any, linkIndex: number) => {
                                             const linkInfo = getLinkTypeInfo(link.type);
@@ -173,10 +177,35 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isJourneyVisible, setJourneyVisible] = useState(false);
   const [insightVisible, setInsightVisible] = useState(false);
+  const [selectedNoteFlashcards, setSelectedNoteFlashcards] = useState<Flashcard[]>([]);
+  const [flashcardsLoading, setFlashcardsLoading] = useState(false);
 
   const { title, description, userMarkdownContent, notes, user, createdAt, diagram } = htmlData;
 
   const selectedNote = notes.find((note: any) => note._id === selectedNodeId);
+
+  // 선택된 노드의 복습카드 가져오기
+  useEffect(() => {
+    if (selectedNote?._id) {
+      setFlashcardsLoading(true);
+      // memoId로 복습카드 조회 (API에 memoId 필터 추가 필요)
+      flashcardApi.list({ bookId: selectedNote.bookId || '' })
+        .then((flashcards: Flashcard[]) => {
+          // memoId가 일치하는 복습카드만 필터링
+          const memoFlashcards = flashcards.filter(card => card.memoId === selectedNote._id);
+          setSelectedNoteFlashcards(memoFlashcards);
+        })
+        .catch((error) => {
+          console.error('복습카드 조회 실패:', error);
+          setSelectedNoteFlashcards([]);
+        })
+        .finally(() => {
+          setFlashcardsLoading(false);
+        });
+    } else {
+      setSelectedNoteFlashcards([]);
+    }
+  }, [selectedNote?._id]);
 
   // 관련 링크 타입별 아이콘과 라벨 매핑 (Inspector용)
   const getLinkTypeInfo = (type: string) => {
@@ -263,8 +292,8 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
             {/* 학습 지표 대시보드 */}
             {notes && notes.length > 0 && (
               <div className="space-y-1 mb-3">
-                <h4 className="text-xs font-semibold text-white mb-2 flex items-center gap-2">
-                  <BarChart3 className="w-3 h-3" />
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-cyan-400" />
                   학습 지표
                 </h4>
                 
@@ -397,27 +426,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
               </div>
             )}
             
-            <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><HelpCircle className="w-4 h-4 text-cyan-400" /> 범례</h3>
-            <div className="flex flex-wrap gap-0.5 mb-3">
-              {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
-                <div 
-                  key={key} 
-                  className="px-1.5 py-0.5 border border-gray-600 rounded text-xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer" 
-                  style={{ 
-                    color: 'inherit',
-                    '--hover-color': strokeColor 
-                  } as React.CSSProperties}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = strokeColor;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = '';
-                  }}
-                >
-                  {icon} {label}
-                </div>
-              ))}
-            </div>
+
           </div>
         </Panel>
 
@@ -442,6 +451,33 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                       <p className="text-sm text-gray-500">표시할 벡터그래프 데이터가 없습니다.</p>
                       </div>
                   )}
+              </div>
+              
+              {/* 범례 - 우측하단 고정 */}
+              <div className="absolute bottom-4 right-4 bg-gray-800/90 backdrop-blur-sm border border-gray-600 rounded-lg p-3 shadow-lg">
+                <h4 className="text-xs font-semibold flex items-center gap-2 mb-2 text-gray-300">
+                  <HelpCircle className="w-3 h-3 text-cyan-400" /> 범례
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
+                    <div 
+                      key={key} 
+                      className="px-1.5 py-0.5 border border-gray-600 rounded text-xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer bg-gray-700/50" 
+                      style={{ 
+                        color: 'inherit',
+                        '--hover-color': strokeColor 
+                      } as React.CSSProperties}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = strokeColor;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = '';
+                      }}
+                    >
+                      {icon} {label}
+                    </div>
+                  ))}
+                </div>
               </div>
                  <div className="sticky bottom-0 left-0 right-0 p-2 bg-gray-900/80 backdrop-blur-sm border-t border-gray-700">
                     <button 
@@ -483,7 +519,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                   
                   {selectedNote.sessionDetails && (
                     <section className="bg-gray-700/30 p-3 rounded-lg">
-                      <h4 className="font-semibold text-cyan-400 flex items-center mb-2"><Paperclip className="h-4 w-4 mr-2" />카드 정보</h4>
+                      <h4 className="font-semibold flex items-center gap-2 mb-2"><Paperclip className="w-4 h-4 text-cyan-400" />카드 정보</h4>
                       <ul className="text-xs text-gray-300 space-y-1">
                         {selectedNote.sessionDetails?.createdAt && <li><strong>기록 시점:</strong> <ClientTimeDisplay createdAt={selectedNote.sessionDetails.createdAt} clientCreatedAt={selectedNote.clientCreatedAt} /></li>}
                         {selectedNote.sessionDetails?.durationSeconds !== undefined && <li><strong>읽은 시간:</strong> {formatSessionDuration(selectedNote.sessionDetails.durationSeconds)}</li>}
@@ -493,9 +529,19 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                     </section>
                   )}
 
+                  {/* 생각추가 섹션 */}
+                  {selectedNote.thoughtExpansion && (
+                    <section>
+                      <h4 className="font-semibold flex items-center gap-2 mb-2"><BarChart3 className="w-4 h-4 text-blue-400" />생각추가</h4>
+                      <div className="text-xs text-gray-300">
+                        <ExpandableText text={selectedNote.thoughtExpansion} />
+                      </div>
+                    </section>
+                  )}
+
                   {(selectedNote.importanceReason || selectedNote.momentContext || selectedNote.relatedKnowledge || selectedNote.mentalImage) && (
                     <section>
-                      <h4 className="font-semibold text-cyan-400 flex items-center mb-2"><Microscope className="h-4 w-4 mr-2" />기억 강화</h4>
+                      <h4 className="font-semibold flex items-center gap-2 mb-2"><Microscope className="w-4 h-4 text-cyan-400" />기억 강화</h4>
                       <ul className="text-xs text-gray-300 space-y-3">
                         {selectedNote.importanceReason && <li><strong className="block text-indigo-400 mb-1">작성 이유:</strong> <ExpandableText text={selectedNote.importanceReason} /></li>}
                         {selectedNote.momentContext && <li><strong className="block text-indigo-400 mb-1">당시 상황:</strong> <ExpandableText text={selectedNote.momentContext} /></li>}
@@ -505,10 +551,58 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                     </section>
                   )}
 
+                  {/* 복습카드 섹션 */}
+                  {(selectedNote.flashcardCount && selectedNote.flashcardCount > 0) || selectedNoteFlashcards.length > 0 ? (
+                    <section>
+                      <h4 className="font-semibold flex items-center gap-2 mb-2"><BarChart3 className="w-4 h-4 text-purple-400" />복습카드</h4>
+                      <div className="space-y-2">
+                        {flashcardsLoading ? (
+                          <div className="text-xs text-gray-400 text-center py-2">복습카드 불러오는 중...</div>
+                        ) : selectedNoteFlashcards.length > 0 ? (
+                          selectedNoteFlashcards.map((flashcard, index) => (
+                            <div key={flashcard._id || index} className="bg-gray-700/20 p-2 rounded border border-gray-600/30">
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-purple-400 font-semibold">문제 {index + 1}</span>
+                                  <span className="text-xs text-gray-400">
+                                    {flashcard.srsState?.repetitions || 0}회 복습
+                                  </span>
+                                </div>
+                                <div className="text-xs text-gray-300 font-medium">
+                                  {flashcard.question}
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                  답: {flashcard.answer}
+                                </div>
+                                {flashcard.srsState?.lastResult && (
+                                  <div className="text-xs text-gray-500">
+                                    마지막 결과: {flashcard.srsState.lastResult === 'correct' ? '정답' : 
+                                                   flashcard.srsState.lastResult === 'hard' ? '어려움' : 
+                                                   flashcard.srsState.lastResult === 'incorrect' ? '오답' : '미정'}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="bg-gray-700/20 p-2 rounded border border-gray-600/30">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-gray-300">생성된 복습카드</span>
+                              <span className="text-xs text-purple-400 font-semibold">{selectedNote.flashcardCount || 0}개</span>
+                            </div>
+                            <div className="mt-1 text-xs text-gray-400">
+                              이 메모에서 {selectedNote.flashcardCount || 0}개의 복습카드가 생성되었습니다.
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </section>
+                  ) : null}
+
                   {/* 지식연결 섹션 추가 (Inspector) */}
                   {selectedNote.relatedLinks && selectedNote.relatedLinks.length > 0 && (
                     <section>
-                      <h4 className="font-semibold text-cyan-400 flex items-center mb-2"><LinkIcon className="h-4 w-4 mr-2" />지식 연결</h4>
+                      <h4 className="font-semibold flex items-center gap-2 mb-2"><LinkIcon className="w-4 h-4 text-cyan-400" />지식 연결</h4>
                       <div className="space-y-2">
                         {selectedNote.relatedLinks.map((link: any, linkIndex: number) => {
                           const linkInfo = getLinkTypeInfo(link.type);
