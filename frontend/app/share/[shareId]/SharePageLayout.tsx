@@ -453,16 +453,13 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                   )}
               </div>
               
-              {/* 범례 - 우측하단 고정 (위치 조정) */}
-              <div className="absolute bottom-8 right-4 bg-gray-800/90 backdrop-blur-sm border border-gray-600 rounded-lg p-3 shadow-lg max-h-32 overflow-y-auto">
-                <h4 className="text-xs font-semibold flex items-center gap-2 mb-2 text-gray-300">
-                  <HelpCircle className="w-3 h-3 text-cyan-400" /> 범례
-                </h4>
-                <div className="flex flex-wrap gap-1">
+              {/* 범례 - 좌측상단 고정 (아이콘 및 메뉴명 제거) */}
+              <div className="absolute top-4 left-4 bg-gray-800/90 backdrop-blur-sm border border-gray-600 rounded-lg p-2 shadow-lg">
+                <div className="flex flex-wrap gap-0.5">
                   {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
                     <div 
                       key={key} 
-                      className="px-1.5 py-0.5 border border-gray-600 rounded text-xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer bg-gray-700/50" 
+                      className="px-1 py-0.5 border border-gray-600 rounded text-xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer bg-gray-700/50" 
                       style={{ 
                         color: 'inherit',
                         '--hover-color': strokeColor 
