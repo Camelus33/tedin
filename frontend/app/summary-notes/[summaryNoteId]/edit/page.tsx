@@ -1645,92 +1645,91 @@ export default function EditSummaryNotePage() {
                 )}
               </h3>
               
-              <div className="flex-1 overflow-hidden min-h-0" style={{ minHeight: '400px' }}>
-                <Textarea
-                  value={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
-                  onChange={(e) => {
-                    const content = e.target.value;
-                    if (selectedNode) {
-                      // Update node's markdown content
-                      setNodeMarkdownContent(prev => ({
-                        ...prev,
-                        [selectedNode]: content
-                      }));
-                      setSelectedNodeMarkdown(content);
-                    } else {
-                      // Update main markdown content
-                      setUserMarkdownContent(content);
-                    }
-                  }}
-                  placeholder="메모카드, 벡터그래프를 통해 알게된 내용을 정리하세요."
-                  className="p-4 bg-gray-800 text-gray-300 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 resize-none"
-                  style={{
-                    backgroundColor: 'rgb(31, 41, 55)', // gray-800
-                    color: 'rgb(209, 213, 219)', // gray-300
-                    height: '368px', // Textarea 직접 높이 설정
-                  }}
-                />
-              </div>
-              
-              {/* 수동 저장 버튼 */}
-              {!selectedNode && (
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    onClick={handleManualSaveText}
-                    className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2"
-                  >
-                    저장
-                  </Button>
-                </div>
-              )}
-              
-              {/* 미니맵 - 저장된 벡터그래프 */}
-              <div className="mt-4 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-gray-300">저장된 벡터그래프</h4>
-                    <div className="flex gap-1">
-                      <Button
-                        onClick={() => {
-                          const imageUrl = diagramImageUrl || summaryNote?.diagram?.imageUrl;
-                          if (imageUrl) {
-                            const link = document.createElement('a');
-                            link.href = imageUrl;
-                            link.download = `diagram-${summaryNoteId}.svg`;
-                            link.click();
-                          }
-                        }}
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1"
-                      >
-                        다운로드
-                      </Button>
-                      <Button
-                        onClick={() => setDiagramImageUrl(null)}
-                        size="sm"
-                        variant="outline"
-                        className="border-gray-600 text-gray-300 hover:bg-gray-700 text-xs px-2 py-1"
-                      >
-                        ❌
-                      </Button>
+              <Textarea
+                value={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
+                onChange={(e) => {
+                  const content = e.target.value;
+                  if (selectedNode) {
+                    // Update node's markdown content
+                    setNodeMarkdownContent(prev => ({
+                      ...prev,
+                      [selectedNode]: content
+                    }));
+                    setSelectedNodeMarkdown(content);
+                  } else {
+                    // Update main markdown content
+                    setUserMarkdownContent(content);
+                  }
+                }}
+                placeholder="메모카드, 벡터그래프를 통해 알게된 내용을 정리하세요."
+                className="flex-1 w-full p-4 bg-gray-800 text-gray-300 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 resize-none"
+                style={{
+                  backgroundColor: 'rgb(31, 41, 55)', // gray-800
+                  color: 'rgb(209, 213, 219)', // gray-300
+                }}
+              />
+
+              <div className="mt-auto flex-shrink-0">
+                {/* 수동 저장 버튼 */}
+                {!selectedNode && (
+                  <div className="mt-4 flex justify-end">
+                    <Button
+                      onClick={handleManualSaveText}
+                      className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2"
+                    >
+                      저장
+                    </Button>
+                  </div>
+                )}
+                
+                {/* 미니맵 - 저장된 벡터그래프 */}
+                <div className="mt-4 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-sm font-medium text-gray-300">저장된 벡터그래프</h4>
+                      <div className="flex gap-1">
+                        <Button
+                          onClick={() => {
+                            const imageUrl = diagramImageUrl || summaryNote?.diagram?.imageUrl;
+                            if (imageUrl) {
+                              const link = document.createElement('a');
+                              link.href = imageUrl;
+                              link.download = `diagram-${summaryNoteId}.svg`;
+                              link.click();
+                            }
+                          }}
+                          size="sm"
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1"
+                        >
+                          다운로드
+                        </Button>
+                        <Button
+                          onClick={() => setDiagramImageUrl(null)}
+                          size="sm"
+                          variant="outline"
+                          className="border-gray-600 text-gray-300 hover:bg-gray-700 text-xs px-2 py-1"
+                        >
+                          ❌
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      {(diagramImageUrl || summaryNote?.diagram?.imageUrl) ? (
+                        <>
+                          <img 
+                            src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
+                            alt="미니맵 벡터그래프" 
+                            className="w-full h-32 object-contain rounded border border-gray-600 bg-white"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent pointer-events-none rounded"></div>
+                        </>
+                      ) : (
+                        <div className="w-full h-32 flex items-center justify-center text-gray-500 text-sm border border-gray-600 rounded bg-gray-800">
+                          저장된 벡터그래프가 없습니다
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="relative">
-                    {(diagramImageUrl || summaryNote?.diagram?.imageUrl) ? (
-                      <>
-                        <img 
-                          src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
-                          alt="미니맵 벡터그래프" 
-                          className="w-full h-32 object-contain rounded border border-gray-600 bg-white"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent pointer-events-none rounded"></div>
-                      </>
-                    ) : (
-                      <div className="w-full h-32 flex items-center justify-center text-gray-500 text-sm border border-gray-600 rounded bg-gray-800">
-                        저장된 벡터그래프가 없습니다
-                      </div>
-                    )}
-                  </div>
-                </div>
+              </div>
             </div>
           </Panel>
         </PanelGroup>
