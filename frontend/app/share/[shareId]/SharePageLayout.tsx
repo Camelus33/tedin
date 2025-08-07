@@ -453,8 +453,8 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                   )}
               </div>
               
-              {/* 범례 - 우측하단 고정 */}
-              <div className="absolute bottom-4 right-4 bg-gray-800/90 backdrop-blur-sm border border-gray-600 rounded-lg p-3 shadow-lg">
+              {/* 범례 - 우측하단 고정 (위치 조정) */}
+              <div className="absolute bottom-8 right-4 bg-gray-800/90 backdrop-blur-sm border border-gray-600 rounded-lg p-3 shadow-lg max-h-32 overflow-y-auto">
                 <h4 className="text-xs font-semibold flex items-center gap-2 mb-2 text-gray-300">
                   <HelpCircle className="w-3 h-3 text-cyan-400" /> 범례
                 </h4>
