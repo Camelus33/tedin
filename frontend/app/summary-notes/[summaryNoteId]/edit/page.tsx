@@ -1065,7 +1065,7 @@ export default function EditSummaryNotePage() {
           <Panel minSize={25} defaultSize={25} className="h-full bg-gray-800/30 rounded-lg">
             <div className="h-full flex flex-col p-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">Memo Card</h3>
-              <div className="flex-1 overflow-y-auto summary-scrollbar" style={{ minHeight: '300px' }}>
+              <div className="flex-1 overflow-y-auto summary-scrollbar">
                 <div className="space-y-4">
                   {fetchedNotes.length > 0 ? (
                     fetchedNotes.map((note, idx) => {
