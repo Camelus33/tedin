@@ -170,8 +170,8 @@ const VectorGraphCanvas: React.FC<VectorGraphCanvasProps> = ({ diagramData, onNo
       <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} style={{ background: '#111827' }}>
         <defs>
             {Object.entries(RELATIONSHIP_CONFIGS).map(([key, config]) => (
-                 <marker key={key} id={`arrow-${key}`} markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                  <polygon points="0 0, 10 3.5, 0 7" fill={config.strokeColor}/>
+                 <marker key={key} id={`arrow-${key}`} markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+                  <polygon points="0 0, 6 2, 0 4" fill={config.strokeColor}/>
                 </marker>
             ))}
             

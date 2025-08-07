@@ -4,6 +4,7 @@ import Note from '../models/Note'; // Assuming Note model is in the same directo
 import mongoose from 'mongoose';
 import PublicShare from '../models/PublicShare';
 import { nanoid } from 'nanoid';
+import { buildJsonLd } from '../utils/jsonLdBuilder';
 
 /**
  * @function createSummaryNote
@@ -360,11 +361,11 @@ export const createPublicShareLink = async (req: Request, res: Response): Promis
 
 /**
  * @function getSummaryNoteData
- * @description ID를 사용하여 특정 단권화 노트의 순수 JSON 데이터를 조회합니다. AI-Link 생성을 위해 사용됩니다.
- * 해당 단권화 노트가 요청한 사용자의 소유인지 확인하는 로직이 포함됩니다.
+ * @description ID를 사용하여 특정 단권화 노트의 AI-Link용 구조화된 데이터를 조회합니다.
+ * jsonLdBuilder를 사용하여 LLM이 이해할 수 있는 형태로 데이터를 구조화합니다.
  * @param {Request} req - Express 요청 객체. params에 summaryNoteId 포함.
  * @param {Response} res - Express 응답 객체.
- * @returns {Promise<void>} 성공 시 200 상태 코드와 조회된 단권화 노트의 순수 데이터 객체를 JSON으로 반환합니다.
+ * @returns {Promise<void>} 성공 시 200 상태 코드와 구조화된 AI 데이터를 JSON으로 반환합니다.
  */
 export const getSummaryNoteData = async (req: Request, res: Response) => {
   try {
@@ -375,7 +376,7 @@ export const getSummaryNoteData = async (req: Request, res: Response) => {
         return res.status(400).json({ message: '유효하지 않은 노트 ID 형식입니다.' });
     }
 
-    // .lean()을 사용하여 순수 JavaScript 객체로 바로 조회합니다.
+    // SummaryNote 데이터 조회
     const summaryNoteData = await SummaryNote.findById(summaryNoteId).lean();
 
     if (!summaryNoteData) {
@@ -386,8 +387,62 @@ export const getSummaryNoteData = async (req: Request, res: Response) => {
     if (summaryNoteData.userId.toString() !== userId) {
       return res.status(403).json({ message: '이 노트에 접근할 수 없어요. 내 노트로 돌아갈까요?' });
     }
+
+    // 관련 Note 데이터 조회
+    const notes = await Note.find({
+      _id: { $in: summaryNoteData.orderedNoteIds },
+      userId: new mongoose.Types.ObjectId(userId)
+    }).lean();
+
+    // Book 데이터 조회 (필요한 경우)
+    const bookIds = [...new Set(notes.map(note => note.bookId).filter(Boolean))];
+    const books = bookIds.length > 0 ? await mongoose.model('Book').find({
+      _id: { $in: bookIds }
+    }).lean() : [];
+
+    // 사용자 정보 조회
+    const user = await mongoose.model('User').findById(userId).lean();
+
+    // jsonLdBuilder에 전달할 데이터 구조 생성
+    const summaryNoteForBuilder = {
+      _id: summaryNoteData._id.toString(),
+      title: summaryNoteData.title,
+      description: summaryNoteData.description,
+      userMarkdownContent: summaryNoteData.userMarkdownContent,
+      createdAt: summaryNoteData.createdAt,
+      user: {
+        _id: (user as any)?._id?.toString() || userId,
+        name: (user as any)?.name || '',
+        email: (user as any)?.email || ''
+      },
+      notes: notes.map(note => ({
+        ...note,
+        _id: note._id.toString(),
+        bookId: note.bookId?.toString(),
+        userId: note.userId?.toString(),
+        book: books.find(book => book._id.toString() === note.bookId?.toString()) || undefined
+      })),
+      readingPurpose: (summaryNoteData as any).readingPurpose,
+      totalReadingTimeISO: (summaryNoteData as any).totalReadingTimeISO,
+      allTags: summaryNoteData.tags,
+      diagram: summaryNoteData.diagram
+    };
+
+    // jsonLdBuilder를 사용하여 구조화된 AI 데이터 생성
+    const aiLinkData = await buildJsonLd(summaryNoteForBuilder as any);
+
+    // AI 제공 데이터에 필요한 핵심 필드들만 추출하여 반환
+    const responseData = {
+      executiveSummary: (aiLinkData as any).executiveSummary,
+      memoSummary: (aiLinkData as any).memoSummary,
+      knowledgeGrowthTimeline: (aiLinkData as any).knowledgeGrowthTimeline,
+      potentialAction: (aiLinkData as any).potentialAction || [],
+      memoRelationships: (aiLinkData as any).memoRelationships,
+      // 전체 데이터도 포함 (개발자용)
+      fullData: aiLinkData
+    };
     
-    res.status(200).json(summaryNoteData);
+    res.status(200).json(responseData);
     
   } catch (error: any) {
     console.error('[GetSummaryNoteData Error]', error);

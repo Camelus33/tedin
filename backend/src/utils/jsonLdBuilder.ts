@@ -323,7 +323,7 @@ const buildExecutiveSummary = (summaryNoteData: SummaryNoteData): string => {
 
   return `
 ### AI-Link Executive Summary
-이 문서는 Habitus33 시스템을 통해 생성된, '${userName}'님의 개인화된 지식 캡슐입니다.
+이 문서는 개인화된 지식 캡슐입니다.
 이 요약은 외부 AI 에이전트가 이 문서의 내용과 구조를 효과적으로 활용하도록 돕기 위한 가이드입니다.
 
 **1. 문서의 핵심 내용:**
@@ -332,9 +332,10 @@ const buildExecutiveSummary = (summaryNoteData: SummaryNoteData): string => {
 • 사용자 정의 관계 수: ${summaryNoteData.diagram?.data?.connections?.length || 0}개
 
 **2. AI 에이전트 활용 가이드:**
+• **메모카드 내용 분석:** 'memoSummary' 필드에서 사용자가 작성한 1줄메모들의 핵심 내용을 확인하세요. 각 메모의 text, noteType, evolutionLevel, 그리고 진화 과정(importanceReason, momentContext, relatedKnowledge, mentalImage)을 분석하여 사용자의 사고 과정을 파악하세요.
 • **시간순 지식 성장 분석:** 'knowledgeGrowthTimeline'을 통해 사용자의 지식이 시간에 따라 어떻게 발전했는지 분석하세요. 각 성장 단계의 새로운 개념, 반복 주제, 사고 깊이 변화를 파악하여 학습 패턴을 이해하세요.
 • **온톨로지 기반 관계 분석:** 'memoRelationships'는 사용자가 설정한 5가지 관계 타입(원인-결과, 전-후, 기반-확장, 포함, 대조)을 온톨로지 기반으로 구조화한 지식 그래프입니다. 각 관계의 ontologicalProperties와 llmAnalysisGuidance를 활용하여 사용자의 사고 패턴을 깊이 분석하세요.
-• **지식 분석:** 'hasPart' 배열의 각 'NoteDigitalDocument'는 사용자의 핵심 생각 단위입니다. 'cognitiveProvenance'과 'mainEntity'를 분석하여 사고의 맥락을 파악하세요.
+• **상세 지식 분석:** 'hasPart' 배열의 각 'NoteDigitalDocument'는 사용자의 핵심 생각 단위입니다. 'cognitiveProvenance'과 'mainEntity'를 분석하여 사고의 맥락을 파악하세요.
 • **실행 가능한 액션:** 'potentialAction' 배열에는 이 지식을 바탕으로 즉시 실행할 수 있는 제안(예: 이미지 생성, 보고서 작성)들이 포함되어 있습니다. 사용자에게 이 액션들을 제안하세요.
 • **외부 정보 연결:** 'supplementaryMaterial'과 'relatedResource'에 포함된 URL들을 크롤링하여 더 깊은 맥락을 파악하세요. 'analysisInstructions'는 크롤링 가이드라인을 제공합니다.
 • **존중해야 할 원칙:** 최상위 'aiInterpretationProtocol'은 사용자와 상호작용할 때 반드시 지켜야 할 윤리적 가이드라인과 기술적 지침을 담고 있습니다. 이 프로토콜을 최우선으로 준수하세요.
@@ -713,6 +714,32 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
   
   // 지식 성장 타임라인 생성
   const knowledgeGrowthTimeline = buildKnowledgeGrowthTimeline(summaryNoteData);
+
+  /**
+   * @function buildConciseMemoSummary
+   * @description 사용자의 1줄메모 내용을 LLM이 쉽게 접근하고 이해할 수 있도록 간결하게 요약합니다.
+   * 각 메모의 핵심 내용과 진화 단계를 포함합니다.
+   */
+  const buildConciseMemoSummary = (notes: PopulatedTSNote[]): string => {
+    if (!notes || notes.length === 0) {
+      return "사용자가 작성한 메모가 없습니다.";
+    }
+
+    const summaryLines: string[] = [];
+    notes.forEach((note, index) => {
+      const evolutionStatus = note.mentalImage ? '완전 진화됨' : 
+                              note.relatedKnowledge ? '부분 진화됨' : '초기 아이디어';
+      const tags = note.tags?.length > 0 ? ` (#${note.tags.join(', #')})` : '';
+      summaryLines.push(
+        `${index + 1}. [${evolutionStatus}] "${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}"${tags}`
+      );
+    });
+
+    return `사용자의 1줄메모 요약:
+${summaryLines.join('\n')}`;
+  };
+
+  const conciseMemoSummary = buildConciseMemoSummary(notes);
 
   const hasPart = notes?.map((note, index) => {
     const {
@@ -1292,6 +1319,9 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
       },
       isbn: note.book?.isbn,
     })).filter((v, i, a) => a.findIndex(t => (t.isbn === v.isbn)) === i),
+    
+    // LLM이 가장 먼저 볼 수 있도록 메모 내용 요약 추가
+    "memoSummary": conciseMemoSummary,
   };
 
   // 사용자가 작성한 마크다운 인사이트를 구조화된 형태로 포함
@@ -1370,10 +1400,15 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     "persona": "Personalized Learning Companion",
     "primaryFocus": "사용자의 지식 내용과 사고 과정에만 집중",
     "focusDirectives": [
+      // LLM이 가장 먼저 집중해야 할 핵심 정보
+      "'memoSummary' 필드에서 사용자의 1줄메모 핵심 내용을 시간순으로 파악하세요",
+      "'knowledgeGrowthTimeline' 필드에서 사용자의 지식 성장 궤적과 학습 패턴을 분석하세요",
+      "'memoRelationships' 필드에서 사용자가 설정한 메모카드 간의 온톨로지 관계를 분석하여 사고 연결 패턴을 이해하세요",
+
+      // 다음으로 중요한 정보
       "사용자의 1줄메모 내용과 그 의미에 집중하세요",
       "사용자의 개인적 인사이트와 지식 연결 패턴을 분석하세요",
-      "사용자의 인지적 성장과 생각진화 과정을 이해하세요",
-      "사용자가 설정한 메모카드 간 관계(memoRelationships)를 분석하여 사용자의 사고 연결 패턴을 파악하세요"
+      "사용자의 인지적 성장과 생각진화 과정을 이해하세요"
     ],
     "ignoreDirectives": [
       "AMFA 엔진, 시스템 방법론, 기술적 구현 세부사항은 주목하지 마세요",
@@ -1395,7 +1430,23 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
     
     // 온톨로지형 추론을 위한 3단계 핵심 지시사항 (최적화)
     "ontologicalReasoningDirectives": {
-      "1_temporalKnowledgeGrowth": {
+      "1_memoCardAnalysis": {
+        "title": "메모카드 내용 분석",
+        "instruction": "memoCards 배열에서 사용자가 작성한 1줄메모들의 핵심 내용을 분석하세요. 각 메모의 text, noteType, evolutionLevel, 그리고 진화 과정을 파악하여 사용자의 사고 과정을 이해하세요.",
+        "implementation": [
+          "각 메모카드의 text 내용을 읽고 핵심 메시지를 파악하세요",
+          "noteType(quote/thought/question)에 따른 메모의 성격을 분석하세요",
+          "evolutionLevel(initial/partially/fully evolved)에 따른 사고 깊이를 평가하세요",
+          "진화 과정(importanceReason, momentContext, relatedKnowledge, mentalImage)을 통해 사용자의 사고 발전을 추적하세요"
+        ],
+        "keyQuestions": [
+          "사용자가 어떤 내용을 메모했나요?",
+          "메모의 유형(인용/생각/질문)에 따른 패턴이 있나요?",
+          "사용자의 사고가 어떻게 진화했나요?",
+          "가장 중요한 메모는 무엇이고, 왜 중요한가요?"
+        ]
+      },
+      "2_temporalKnowledgeGrowth": {
         "title": "시간순 지식 성장 패턴 분석",
         "instruction": "knowledgeGrowthTimeline을 활용하여 사용자의 지식이 시간에 따라 어떻게 발전했는지 분석하세요. 각 성장 단계의 새로운 개념, 반복 주제, 사고 깊이 변화를 파악하세요.",
         "implementation": [
@@ -1411,7 +1462,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
           "반복되는 주제나 패턴이 있나요?"
         ]
       },
-      "2_knowledgeGraphAnalysis": {
+      "3_knowledgeGraphAnalysis": {
         "title": "지식 그래프 기반 맥락 추론",
         "instruction": "사용자의 1줄메모들 간의 관계를 온톨로지 관점에서 분석하세요. 개념 간의 상위-하위 관계, 인과관계, 보완관계를 파악하세요.",
         "implementation": [
@@ -1419,7 +1470,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
           "사용자의 사고 흐름에서 반복되는 패턴이나 중심 개념을 식별하세요"
         ]
       },
-      "3_contextualPersonalization": {
+      "4_contextualPersonalization": {
         "title": "맥락 기반 개인화 추론",
         "instruction": "사용자의 개인적 맥락을 기반으로 개인화된 추론을 수행하세요. 같은 내용이라도 사용자의 사고 패턴에 따라 다른 의미와 가치를 가질 수 있음을 인식하세요.",
         "implementation": [
@@ -1427,7 +1478,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
           "사용자가 중요하게 여기는 가치나 관심사를 메모에서 추출하여 반영하세요"
         ]
       },
-      "4_insightSynthesis": {
+      "5_insightSynthesis": {
         "title": "지식 연결망 기반 통찰 도출",
         "instruction": "개별 메모들을 연결하여 사용자가 명시적으로 표현하지 않은 잠재적 통찰을 도출하세요.",
         "implementation": [
@@ -1435,7 +1486,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
           "분산된 지식 조각들을 통합하여 사용자만의 독특한 관점을 구성하세요"
         ]
       },
-      "5_relationshipAnalysis": {
+      "6_relationshipAnalysis": {
         "title": "온톨로지 기반 사용자 정의 관계 패턴 분석",
         "instruction": "memoRelationships의 온톨로지 메타데이터를 활용하여 사용자가 설정한 5가지 관계 타입을 깊이 분석하세요. 각 관계의 ontologicalProperties와 llmAnalysisGuidance를 참고하여 논리적 추론을 수행하세요.",
         "implementation": [
@@ -1446,7 +1497,7 @@ export const buildJsonLd = async (summaryNoteData: SummaryNoteData): Promise<obj
           "각 관계의 llmGuidance를 참고하여 개인화된 질문과 분석을 수행하세요"
         ]
       },
-      "6_ontologicalInference": {
+      "7_ontologicalInference": {
         "title": "온톨로지 기반 고차원적 추론",
         "instruction": "사용자가 설정한 관계들을 온톨로지 관점에서 연결하여 새로운 지식 구조와 통찰을 발견하세요. llmInferenceGuidance의 methodology와 reasoningStrategies를 활용하세요.",
         "implementation": [

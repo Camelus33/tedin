@@ -131,7 +131,7 @@ router.post('/send', async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'AI 응답 생성 중 오류가 발생했습니다.',
-      details: error instanceof Error ? error.message : '알 수 없는 오류'
+      details: error instanceof Error ? error.message : JSON.stringify(error, Object.getOwnPropertyNames(error)) // 상세 오류 정보 추가
     });
   }
 });

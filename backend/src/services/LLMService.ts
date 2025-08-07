@@ -70,6 +70,8 @@ export class LLMService {
       }
     } catch (error) {
       console.error(`LLM 응답 생성 오류 (${llmProvider}):`, error);
+      // 오류 객체를 자세히 로깅
+      console.error('LLM API 호출 오류 상세:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
       throw error;
     }
   }
@@ -84,42 +86,49 @@ export class LLMService {
       throw new Error('OpenAI API 키가 제공되지 않았습니다.');
     }
 
-    const openai = new OpenAI({ apiKey: request.userApiKey });
+    try { // ChatGPT 응답 생성 블록에 try-catch 추가
+      const openai = new OpenAI({ apiKey: request.userApiKey });
 
-    const context = SearchContextService.createOptimizedPrompt(
-      request.searchContext.results,
-      request.searchContext.query,
-      request.message
-    );
+      const context = SearchContextService.createOptimizedPrompt(
+        request.searchContext.results,
+        request.searchContext.query,
+        request.message
+      );
 
-    const completion = await openai.chat.completions.create({
-      model: request.llmModel,
-      messages: [
-        {
-          role: 'system',
-          content: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.'
-        },
-        {
-          role: 'user',
-          content: context
-        }
-      ],
-      max_tokens: 1000,
-      temperature: 0.7,
-    });
+      const completion = await openai.chat.completions.create({
+        model: request.llmModel,
+        messages: [
+          {
+            role: 'system',
+            content: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.'
+          },
+          {
+            role: 'user',
+            content: context
+          }
+        ],
+        max_tokens: 1000,
+        temperature: 0.7,
+      });
 
-    const response = completion.choices[0]?.message?.content || '응답을 생성할 수 없습니다.';
+      const response = completion.choices[0]?.message?.content || '응답을 생성할 수 없습니다.';
 
-    return {
-      content: response,
-      model: request.llmModel,
-      provider: 'ChatGPT',
-      usage: completion.usage ? {
-        promptTokens: completion.usage.prompt_tokens,
-        completionTokens: completion.usage.completion_tokens,
-        totalTokens: completion.usage.total_tokens,
-      } : undefined
-    };
+      return {
+        content: response,
+        model: request.llmModel,
+        provider: 'ChatGPT',
+        usage: completion.usage ? {
+          promptTokens: completion.usage.prompt_tokens,
+          completionTokens: completion.usage.completion_tokens,
+          totalTokens: completion.usage.total_tokens,
+        } : undefined
+      };
+    } catch (error) {
+      console.error(`ChatGPT 응답 생성 오류:`, error);
+      // 오류 객체를 자세히 로깅
+      console.error('ChatGPT API 호출 오류 상세:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      throw error;
+    }
   }
 
   /**
@@ -133,20 +142,27 @@ export class LLMService {
     }
     // const claude = new Anthropic({ apiKey: request.userApiKey });
 
-    const context = SearchContextService.createOptimizedPrompt(
-      request.searchContext.results,
-      request.searchContext.query,
-      request.message
-    );
+    try { // Claude 응답 생성 블록에 try-catch 추가
+      const context = SearchContextService.createOptimizedPrompt(
+        request.searchContext.results,
+        request.searchContext.query,
+        request.message
+      );
 
-    // 임시 구현 - 실제로는 Anthropic API 호출
-    const response = `[Claude 응답] ${request.message}에 대한 답변입니다. 검색된 ${request.searchContext.results.length}개의 메모를 참고하여 답변을 생성했습니다.`;
+      // 임시 구현 - 실제로는 Anthropic API 호출
+      const response = `[Claude 응답] ${request.message}에 대한 답변입니다. 검색된 ${request.searchContext.results.length}개의 메모를 참고하여 답변을 생성했습니다.`;
 
-    return {
-      content: response,
-      model: request.llmModel,
-      provider: 'Claude'
-    };
+      return {
+        content: response,
+        model: request.llmModel,
+        provider: 'Claude'
+      };
+    } catch (error) {
+      console.error(`Claude 응답 생성 오류:`, error);
+      // 오류 객체를 자세히 로깅
+      console.error('Claude API 호출 오류 상세:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      throw error;
+    }
   }
 
   /**
@@ -160,20 +176,27 @@ export class LLMService {
     }
     // const gemini = new GoogleAI({ apiKey: request.userApiKey });
     
-    const context = SearchContextService.createOptimizedPrompt(
-      request.searchContext.results,
-      request.searchContext.query,
-      request.message
-    );
+    try { // Gemini 응답 생성 블록에 try-catch 추가
+      const context = SearchContextService.createOptimizedPrompt(
+        request.searchContext.results,
+        request.searchContext.query,
+        request.message
+      );
 
-    // 임시 구현 - 실제로는 Google AI API 호출
-    const response = `[Gemini 응답] ${request.message}에 대한 답변입니다. 검색된 ${request.searchContext.results.length}개의 메모를 참고하여 답변을 생성했습니다.`;
+      // 임시 구현 - 실제로는 Google AI API 호출
+      const response = `[Gemini 응답] ${request.message}에 대한 답변입니다. 검색된 ${request.searchContext.results.length}개의 메모를 참고하여 답변을 생성했습니다.`;
 
-    return {
-      content: response,
-      model: request.llmModel,
-      provider: 'Gemini'
-    };
+      return {
+        content: response,
+        model: request.llmModel,
+        provider: 'Gemini'
+      };
+    } catch (error) {
+      console.error(`Gemini 응답 생성 오류:`, error);
+      // 오류 객체를 자세히 로깅
+      console.error('Gemini API 호출 오류 상세:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+      throw error;
+    }
   }
 
   private getDefaultApiKey(providerName: string): string | undefined {
@@ -226,6 +249,8 @@ export class LLMService {
     request: LLMRequest
   ): Promise<LLMResponse> {
     console.error(`LLM 오류 (${request.llmProvider}):`, error);
+    // 오류 객체를 자세히 로깅
+    console.error('LLM API 호출 오류 상세:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
 
     // 폴백 응답 생성
     const fallbackResponse = `죄송합니다. ${request.llmProvider}에서 응답을 생성하는 중 오류가 발생했습니다. 

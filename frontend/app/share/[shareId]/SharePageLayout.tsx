@@ -79,7 +79,7 @@ const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, json
                     <header className="mb-4">
                         <h3 className="text-xl font-semibold text-gray-100 flex items-center">
                             <MessageSquare className="h-6 w-6 mr-2 text-purple-400" />
-                            작성자 인사이트
+                            Comment
                         </h3>
                     </header>
                     <div className="prose prose-invert max-w-none bg-gray-800 p-4 rounded border border-purple-700">
@@ -172,6 +172,7 @@ const JourneyContent = ({ htmlData, jsonLdData, shareId }: { htmlData: any, json
 export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htmlData: any, jsonLdData: any, shareId: string }) {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isJourneyVisible, setJourneyVisible] = useState(false);
+  const [insightVisible, setInsightVisible] = useState(false);
 
   const { title, description, userMarkdownContent, notes, user, createdAt, diagram } = htmlData;
 
@@ -213,14 +214,52 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
            <div className="flex-shrink-0 p-2 border-b border-gray-700">
                 <h2 className="text-sm font-semibold flex items-center gap-2"><Eye className="w-4 h-4 text-cyan-400" /> Miny Map</h2>
             </div>
-          <div className="flex-grow mt-2 bg-gray-900/50 rounded-md border border-gray-700/50 flex items-center justify-center p-1">
+          <div className="flex-shrink-0 mt-2 bg-gray-900/50 rounded-md border border-gray-700/50 flex items-center justify-center p-1" style={{ height: '120px' }}>
              {diagram?.data ? (
                 <VectorGraphCanvas diagramData={diagram.data} onNodeSelect={setSelectedNodeId} isMinimap={true} />
               ) : (
                 <p className="text-xs text-gray-500">미니맵 데이터 없음</p>
               )}
           </div>
+          
+          {/* 인사이트 토글 섹션 */}
           <div className="flex-shrink-0 mt-2 p-2 border-t border-gray-700">
+            <button 
+              onClick={() => setInsightVisible(!insightVisible)}
+              className="w-full flex justify-between items-center p-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-semibold"
+            >
+              <span className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-purple-400" />
+                인사이트
+              </span>
+              {insightVisible ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            <AnimatePresence>
+              {insightVisible && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-2 p-3 bg-gray-700/30 rounded border border-gray-600/50">
+                    {userMarkdownContent ? (
+                      <div className="text-xs text-gray-300 leading-relaxed">
+                        <pre className="whitespace-pre-wrap font-sans text-xs text-gray-300">
+                          {userMarkdownContent}
+                        </pre>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500 text-center">작성된 인사이트가 없습니다.</p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          
+          <div className="flex-grow mt-2 p-2 border-t border-gray-700">
             <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><HelpCircle className="w-4 h-4 text-cyan-400" /> 범례</h3>
             <div className="flex flex-wrap gap-0.5 mb-3">
               {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
@@ -247,7 +286,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
             {diagram?.data?.connections && diagram.data.connections.length > 0 && (
               <div className="space-y-1">
                 <h4 className="text-xs font-semibold text-white mb-2">Relation</h4>
-                <div className="space-y-1 max-h-24 overflow-y-auto">
+                <div className="space-y-1 max-h-20 overflow-y-auto">
                   {(() => {
                     const connections = diagram.data.connections;
                     const nodes = diagram.data.nodes;
@@ -276,8 +315,8 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                       return `(${sourceOrder}) - ${relationship} - (${targetOrder})`;
                     };
                     
-                    // 최대 8개까지만 표시
-                    return connections.slice(0, 8).map((connection: any, index: number) => {
+                    // 최대 6개까지만 표시 (공간 절약)
+                    return connections.slice(0, 6).map((connection: any, index: number) => {
                       const description = getRelationshipDescription(connection);
                       
                       return (
@@ -288,9 +327,9 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                     });
                   })()}
                 </div>
-                {diagram.data.connections.length > 8 && (
+                {diagram.data.connections.length > 6 && (
                   <div className="text-xs text-gray-500 text-center">
-                    +{diagram.data.connections.length - 8}개 더...
+                    +{diagram.data.connections.length - 6}개 더...
                   </div>
                 )}
               </div>
@@ -325,7 +364,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                         onClick={() => setJourneyVisible(!isJourneyVisible)}
                         className="w-full flex justify-between items-center p-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-semibold"
                     >
-                        <span>지식 성장 여정</span>
+                        <span>Timeline</span>
                         {isJourneyVisible ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                     </button>
                 </div>
@@ -356,7 +395,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
             <div className="flex-grow mt-2 overflow-y-auto pr-1">
               {selectedNote ? (
                 <div className="p-4 space-y-6 text-sm">
-                  <h3 className="text-lg text-yellow-300 break-words">{selectedNote.content}</h3>
+                  <h3 className="text-lg text-white hover:text-yellow-300 transition-colors break-words">{selectedNote.content}</h3>
                   
                   {selectedNote.sessionDetails && (
                     <section className="bg-gray-700/30 p-3 rounded-lg">
