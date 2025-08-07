@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LearningJourneyVisualization from '@/components/share/LearningJourneyVisualization';
 import InlineThreadsViewer from '@/components/share/InlineThreadsViewer';
 import { flashcardApi, Flashcard } from '@/lib/api';
+import FlashcardDeck from '@/components/flashcard/FlashcardDeck';
 
 
 const VectorGraphCanvas = dynamic(
@@ -179,6 +180,8 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
   const [insightVisible, setInsightVisible] = useState(false);
   const [selectedNoteFlashcards, setSelectedNoteFlashcards] = useState<Flashcard[]>([]);
   const [flashcardsLoading, setFlashcardsLoading] = useState(false);
+  // 복습카드 정답 토글 상태 추가
+  const [showAnswerFor, setShowAnswerFor] = useState<{ [id: string]: boolean }>({});
 
   const { title, description, userMarkdownContent, notes, user, createdAt, diagram } = htmlData;
 
@@ -194,6 +197,8 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
           // memoId가 일치하는 복습카드만 필터링
           const memoFlashcards = flashcards.filter(card => card.memoId === selectedNote._id);
           setSelectedNoteFlashcards(memoFlashcards);
+          // 정답 토글 상태 초기화
+          setShowAnswerFor({});
         })
         .catch((error) => {
           console.error('복습카드 조회 실패:', error);
@@ -204,8 +209,14 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
         });
     } else {
       setSelectedNoteFlashcards([]);
+      setShowAnswerFor({});
     }
   }, [selectedNote?._id]);
+
+  // 정답 토글 함수
+  const toggleShowAnswer = (id: string) => {
+    setShowAnswerFor(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   // 관련 링크 타입별 아이콘과 라벨 매핑 (Inspector용)
   const getLinkTypeInfo = (type: string) => {
@@ -556,31 +567,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                         {flashcardsLoading ? (
                           <div className="text-xs text-gray-400 text-center py-2">복습카드 불러오는 중...</div>
                         ) : selectedNoteFlashcards.length > 0 ? (
-                          selectedNoteFlashcards.map((flashcard, index) => (
-                            <div key={flashcard._id || index} className="bg-gray-700/20 p-2 rounded border border-gray-600/30">
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs text-purple-400 font-semibold">문제 {index + 1}</span>
-                                  <span className="text-xs text-gray-400">
-                                    {flashcard.srsState?.repetitions || 0}회 복습
-                                  </span>
-                                </div>
-                                <div className="text-xs text-gray-300 font-medium">
-                                  {flashcard.question}
-                                </div>
-                                <div className="text-xs text-gray-400">
-                                  답: {flashcard.answer}
-                                </div>
-                                {flashcard.srsState?.lastResult && (
-                                  <div className="text-xs text-gray-500">
-                                    마지막 결과: {flashcard.srsState.lastResult === 'correct' ? '정답' : 
-                                                   flashcard.srsState.lastResult === 'hard' ? '어려움' : 
-                                                   flashcard.srsState.lastResult === 'incorrect' ? '오답' : '미정'}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          ))
+                          <FlashcardDeck bookId={selectedNote.bookId || ''} memoId={selectedNote._id} />
                         ) : (
                           <div className="bg-gray-700/20 p-2 rounded border border-gray-600/30">
                             <div className="flex items-center justify-between">

@@ -30,9 +30,10 @@ const cyberTheme = {
 
 interface FlashcardDeckProps {
   bookId: string;
+  memoId?: string; // 특정 메모의 복습카드만 필터링하기 위한 옵션
 }
 
-const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
+const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId, memoId }) => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +45,14 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
     setLoading(true);
     flashcardApi.list({ bookId })
       .then((data) => {
-        setFlashcards(Array.isArray(data) ? data : data.flashcards || []);
+        let allFlashcards = Array.isArray(data) ? data : data.flashcards || [];
+        
+        // memoId가 제공된 경우 해당 메모의 복습카드만 필터링
+        if (memoId) {
+          allFlashcards = allFlashcards.filter((card: Flashcard) => card.memoId === memoId);
+        }
+        
+        setFlashcards(allFlashcards);
         setShowAnswerFor({});
       })
               .catch((e) => setError(e.message || '복습 카드 불러오기 실패'))
@@ -57,7 +65,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId }) => {
     books.getById(bookId)
       .then((data) => setBookTitle(data.title || ''))
       .catch(() => setBookTitle(''));
-  }, [bookId]);
+  }, [bookId, memoId]);
 
   const toggleShowAnswer = (id: string) => {
     setShowAnswerFor(prev => ({ ...prev, [id]: !prev[id] }));
