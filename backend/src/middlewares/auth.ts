@@ -58,8 +58,12 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
           return res.status(401).json({ error: '유효하지 않은 사용자입니다.' });
         }
         
-        // 사용자 정보 요청에 추가
-        req.user = user;
+        // 사용자 정보 요청에 추가 (lean 사용 시 id 게터가 없으므로 보강)
+        const normalizedUser: any = {
+          ...user,
+          id: (user as any)._id ? (user as any)._id.toString() : (user as any).id,
+        };
+        req.user = normalizedUser;
         next();
       } catch (error: any) {
         // 토큰 만료 처리
