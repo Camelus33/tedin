@@ -323,8 +323,8 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                 </div>
                 
                 {/* 개별 노드 지표 */}
-                <div className="space-y-1 max-h-16 overflow-y-auto">
-                  {notes.slice(0, 4).map((note: any, index: number) => {
+                <div className="space-y-1 max-h-32 overflow-y-auto">
+                  {notes.map((note: any, index: number) => {
                     const thoughtExpansion = note.thoughtExpansion || 0;
                     const memoryEnhancement = [
                       note.importanceReason ? 1 : 0,
@@ -394,13 +394,6 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                     );
                   })}
                 </div>
-                
-                {/* 추가 정보 */}
-                {notes.length > 4 && (
-                  <div className="text-xs text-gray-500 text-center">
-                    +{notes.length - 4}개 더...
-                  </div>
-                )}
               </div>
             )}
             
