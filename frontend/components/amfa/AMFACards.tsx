@@ -56,7 +56,7 @@ const steps: AMFAStep[] = [
     title: 'Memo Evolve',
     subtitle: "1줄 메모를 진화된 지식으로",
     description: "단순한 메모를 4단계 진화로 깊이 있는 지식으로 발전",
-    detailedDescription: "단순한 메모가 아닙니다. 4단계 진화 과정을 통해 1줄 메모를 깊이 있는 지식으로 발전시킵니다. 생각추가, 메모진화, 지식연결, 복습 카드를 통해 기억 보존률을 4배 향상시킵니다.",
+    detailedDescription: "단순한 메모가 아닙니다. 4단계 진화 과정을 통해 1줄 메모를 깊이 있는 지식으로 발전시킵니다. 생각추가, 메모진화, 지식연결, 퀴즈 카드를 통해 기억 보존률을 4배 향상시킵니다.",
     icon: LightBulbIcon,
     color: 'from-blue-400 to-purple-500',
     bgGradient: 'from-blue-50 to-purple-50',
@@ -64,7 +64,7 @@ const steps: AMFAStep[] = [
       "4단계 체계적 진화",
       "생각추가로 깊이 있는 사고",
       "지식연결로 네트워크 구축",
-      "복습 카드로 장기 기억 형성"
+      "퀴즈 카드로 장기 기억 형성"
     ],
     benefits: [
       "기억 보존률 4배 향상",

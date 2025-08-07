@@ -143,8 +143,8 @@ export type TSNoteCardProps = {
   onUpdate?: (updatedFields: Partial<TSNote>) => void;
   /** 
    * @property {(note: TSNote) => void} [onFlashcardConvert]
-   * - (선택적) 복습 카드 변환 버튼 클릭 시 호출되는 콜백 함수입니다.
-   *   해당 노트 객체를 인자로 전달하여 부모 컴포넌트에서 복습 카드 생성 로직을 처리하도록 합니다.
+   * - (선택적) 퀴즈 카드 변환 버튼 클릭 시 호출되는 콜백 함수입니다.
+*   해당 노트 객체를 인자로 전달하여 부모 컴포넌트에서 퀴즈 카드 생성 로직을 처리하도록 합니다.
    */
   onFlashcardConvert?: (note: TSNote) => void;
   /** 
@@ -311,7 +311,7 @@ const cyberTheme = {
 
 /**
  * @component TSNoteCard
- * @description 1줄 메모(노트)를 표시하고, 메모 진화(4단계 질문 답변), 복습 카드 변환, 관련 링크 관리,
+ * @description 1줄 메모(노트)를 표시하고, 메모 진화(4단계 질문 답변), 퀴즈 카드 변환, 관련 링크 관리,
  *              지식 카트 담기 등의 기능을 제공하는 핵심 UI 컴포넌트입니다.
  * @param {TSNoteCardProps} props - 컴포넌트가 받는 프롭들.
  */
@@ -1344,8 +1344,8 @@ export default function TSNoteCard({
                   {onFlashcardConvert && (
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onFlashcardConvert(note); }} className={`${cyberTheme.menuItemHover} ${cyberTheme.primaryText} text-xs sm:text-sm`}>
                       <GiCutDiamond className={`h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5 ${cyberTheme.primaryText}`} /> 
-                      <span className="hidden sm:inline">복습 카드</span>
-                      <span className="sm:hidden">복습</span>
+                                      <span className="hidden sm:inline">퀴즈 카드</span>
+                <span className="sm:hidden">퀴즈</span>
                     </DropdownMenuItem>
                   )}
                   {onRelatedLinks && (

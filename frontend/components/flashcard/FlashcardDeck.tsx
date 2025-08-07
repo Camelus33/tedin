@@ -30,7 +30,7 @@ const cyberTheme = {
 
 interface FlashcardDeckProps {
   bookId: string;
-  memoId?: string; // 특정 메모의 복습카드만 필터링하기 위한 옵션
+  memoId?: string; // 특정 메모의 퀴즈카드만 필터링하기 위한 옵션
 }
 
 const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId, memoId }) => {
@@ -47,7 +47,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId, memoId }) => {
       .then((data) => {
         let allFlashcards = Array.isArray(data) ? data : data.flashcards || [];
         
-        // memoId가 제공된 경우 해당 메모의 복습카드만 필터링
+        // memoId가 제공된 경우 해당 메모의 퀴즈카드만 필터링
         if (memoId) {
           allFlashcards = allFlashcards.filter((card: Flashcard) => card.memoId === memoId);
         }
@@ -55,7 +55,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId, memoId }) => {
         setFlashcards(allFlashcards);
         setShowAnswerFor({});
       })
-              .catch((e) => setError(e.message || '복습 카드 불러오기 실패'))
+              .catch((e) => setError(e.message || '퀴즈 카드 불러오기 실패'))
       .finally(() => setLoading(false));
   };
 
@@ -77,7 +77,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId, memoId }) => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('정말로 이 복습 카드를 삭제하시겠습니까?')) return;
+    if (!window.confirm('정말로 이 퀴즈 카드를 삭제하시겠습니까?')) return;
     try {
       await flashcardApi.delete(id);
       fetchDeck();
@@ -86,13 +86,13 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId, memoId }) => {
     }
   };
 
-      if (loading) return <div className={`text-center py-10 ${cyberTheme.textMuted}`}>복습 카드 불러오는 중...</div>;
+      if (loading) return <div className={`text-center py-10 ${cyberTheme.textMuted}`}>퀴즈 카드 불러오는 중...</div>;
   if (error) return <div className={`text-center py-10 ${cyberTheme.errorText}`}>{error}</div>;
   
   return (
     <div className="space-y-6 mt-6">
       {flashcards.length === 0 && (
-        <div className={`text-center py-10 ${cyberTheme.textMuted}`}>복습 카드가 없습니다.</div>
+        <div className={`text-center py-10 ${cyberTheme.textMuted}`}>퀴즈 카드가 없습니다.</div>
       )}
 
       {flashcards.map((card) => (

@@ -149,14 +149,14 @@ type RelatedLink = {
  * @page BookDetailPage
  * @description 특정 책의 상세 정보, 관련 TS 노트 목록, TS 세션 정보 등을 표시하는 페이지 컴포넌트입니다.
  * 사용자는 이 페이지에서 TS 노트를 확인하고, 해당 노트의 메모 진화 기능을 사용하거나,
- * 노트를 지식 카트에 담거나, 복습 카드로 만들거나, 관련 외부 링크를 추가/관리할 수 있습니다.
+ * 노트를 지식 카트에 담거나, 퀴즈 카드로 만들거나, 관련 외부 링크를 추가/관리할 수 있습니다.
  * URL 경로의 `[id]` 파라미터를 통해 표시할 책을 식별합니다.
  * 
  * 주요 기능:
  * - 책 상세 정보 표시 (커버 이미지, 제목, 저자, 진행도 등)
  * - 해당 책의 1줄 메모(`TSNoteCard`) 목록 표시 및 메모 진화 기능 제공
  * - 1줄 메모를 지식 카트에 추가 (`onAddToCart` 프롭을 `TSNoteCard`에 전달)
- * - 1줄 메모를 복습 카드로 변환하는 기능
+ * - 1줄 메모를 퀴즈 카드로 변환하는 기능
  * - 1줄 메모에 관련 외부 지식 링크를 추가하고 관리하는 기능
  * - TS 모드 시작 기능
  * - 책 정보 수정 및 삭제 기능 (구현 예정 또는 부분 구현)
@@ -184,10 +184,10 @@ export default function BookDetailPage() {
   const [tsSessions, setTsSessions] = useState<Session[]>([]); // 현재 책에 속한 TS 세션 목록 상태
   const [sessionsLoading, setSessionsLoading] = useState<boolean>(true); // 세션 로딩 상태
   const [isDeleting, setIsDeleting] = useState<boolean>(false); // 책 삭제 진행 상태
-  const [flashcardFormNote, setFlashcardFormNote] = useState<PageNote | null>(null); // 복습 카드 생성 폼에 전달될 노트
-const [flashcardDeckKey, setFlashcardDeckKey] = useState(0); // 복습 카드 덱 강제 리렌더링을 위한 키
-const [activeTab, setActiveTab] = useState<'memo' | 'flashcard' | 'relatedLinks'>('memo'); // 현재 활성화된 탭 (메모진화, 지식연결, 복습 카드)
-const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false); // 새 복습 카드 수동 생성 폼 표시 여부
+    const [flashcardFormNote, setFlashcardFormNote] = useState<PageNote | null>(null); // 퀴즈 카드 생성 폼에 전달될 노트
+  const [flashcardDeckKey, setFlashcardDeckKey] = useState(0); // 퀴즈 카드 덱 강제 리렌더링을 위한 키
+  const [activeTab, setActiveTab] = useState<'memo' | 'flashcard' | 'relatedLinks'>('memo'); // 현재 활성화된 탭 (메모진화, 지식연결, 퀴즈 카드)
+  const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false); // 새 퀴즈 카드 수동 생성 폼 표시 여부
   const [selectedRelatedNote, setSelectedRelatedNote] = useState<PageNote | null>(null); // 지식연결 탭에서 선택된 노트
   const [isBookDetailExpanded, setIsBookDetailExpanded] = useState<boolean>(false); // 책 상세 정보 확장 상태
   
@@ -790,7 +790,7 @@ const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false); // 새 
             className={`px-2 sm:px-4 py-2 rounded-t-lg font-bold border-b-2 transition-colors whitespace-nowrap text-sm sm:text-base ${activeTab === 'flashcard' ? 'border-purple-400 text-purple-300 bg-gray-900 max-sm:bg-purple-500/20 max-sm:border-purple-400 max-sm:shadow-purple-500/30 max-sm:shadow-lg max-sm:rounded-lg' : 'border-transparent text-gray-400 bg-gray-800 hover:text-purple-200 max-sm:bg-gray-700/60 max-sm:rounded-lg max-sm:border max-sm:border-gray-500/30'}`}
             onClick={() => setActiveTab('flashcard')}
           >
-            <span className="hidden sm:inline">복습 카드</span>
+                            <span className="hidden sm:inline">퀴즈 카드</span>
             <span className="sm:hidden">카드</span>
           </button>
         </div>
@@ -971,7 +971,7 @@ const [showNewFlashcardForm, setShowNewFlashcardForm] = useState(false); // 새 
             ) : (
               <>
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-purple-400">복습 카드</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-purple-400">퀴즈 카드</h2>
                 <button
                   className="px-3 py-1 rounded bg-cyan-700 text-white text-xs hover:bg-cyan-800 font-semibold ml-4"
                   onClick={() => setShowNewFlashcardForm((v) => !v)}

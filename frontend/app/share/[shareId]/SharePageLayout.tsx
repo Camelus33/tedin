@@ -180,28 +180,28 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
   const [insightVisible, setInsightVisible] = useState(false);
   const [selectedNoteFlashcards, setSelectedNoteFlashcards] = useState<Flashcard[]>([]);
   const [flashcardsLoading, setFlashcardsLoading] = useState(false);
-  // 복습카드 정답 토글 상태 추가
+  // 퀴즈카드 정답 토글 상태 추가
   const [showAnswerFor, setShowAnswerFor] = useState<{ [id: string]: boolean }>({});
 
   const { title, description, userMarkdownContent, notes, user, createdAt, diagram } = htmlData;
 
   const selectedNote = notes.find((note: any) => note._id === selectedNodeId);
 
-  // 선택된 노드의 복습카드 가져오기
+  // 선택된 노드의 퀴즈카드 가져오기
   useEffect(() => {
     if (selectedNote?._id) {
       setFlashcardsLoading(true);
-      // memoId로 복습카드 조회 (API에 memoId 필터 추가 필요)
+      // memoId로 퀴즈카드 조회 (API에 memoId 필터 추가 필요)
       flashcardApi.list({ bookId: selectedNote.bookId || '' })
         .then((flashcards: Flashcard[]) => {
-          // memoId가 일치하는 복습카드만 필터링
+          // memoId가 일치하는 퀴즈카드만 필터링
           const memoFlashcards = flashcards.filter(card => card.memoId === selectedNote._id);
           setSelectedNoteFlashcards(memoFlashcards);
           // 정답 토글 상태 초기화
           setShowAnswerFor({});
         })
         .catch((error) => {
-          console.error('복습카드 조회 실패:', error);
+          console.error('퀴즈카드 조회 실패:', error);
           setSelectedNoteFlashcards([]);
         })
         .finally(() => {
@@ -358,7 +358,7 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                         return avgFlashcards.toFixed(1);
                       })()}
                     </div>
-                    <div className="text-xs text-gray-400">복습카드</div>
+                    <div className="text-xs text-gray-400">퀴즈카드</div>
                   </div>
                 </div>
                 
@@ -559,23 +559,23 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                     </section>
                   )}
 
-                  {/* 복습카드 섹션 */}
+                  {/* 퀴즈카드 섹션 */}
                   {(selectedNote.flashcardCount && selectedNote.flashcardCount > 0) || selectedNoteFlashcards.length > 0 ? (
                     <section>
-                      <h4 className="font-semibold flex items-center gap-2 mb-2"><BarChart3 className="w-4 h-4 text-purple-400" />복습카드</h4>
+                      <h4 className="font-semibold flex items-center gap-2 mb-2"><BarChart3 className="w-4 h-4 text-purple-400" />퀴즈카드</h4>
                       <div className="space-y-2">
                         {flashcardsLoading ? (
-                          <div className="text-xs text-gray-400 text-center py-2">복습카드 불러오는 중...</div>
+                          <div className="text-xs text-gray-400 text-center py-2">퀴즈카드 불러오는 중...</div>
                         ) : selectedNoteFlashcards.length > 0 ? (
                           <FlashcardDeck bookId={selectedNote.bookId || ''} memoId={selectedNote._id} />
                         ) : (
                           <div className="bg-gray-700/20 p-2 rounded border border-gray-600/30">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs text-gray-300">생성된 복습카드</span>
+                              <span className="text-xs text-gray-300">생성된 퀴즈카드</span>
                               <span className="text-xs text-purple-400 font-semibold">{selectedNote.flashcardCount || 0}개</span>
                             </div>
                             <div className="mt-1 text-xs text-gray-400">
-                              이 메모에서 {selectedNote.flashcardCount || 0}개의 복습카드가 생성되었습니다.
+                              이 메모에서 {selectedNote.flashcardCount || 0}개의 퀴즈카드가 생성되었습니다.
                             </div>
                           </div>
                         )}

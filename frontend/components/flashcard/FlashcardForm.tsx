@@ -23,11 +23,11 @@ const cyberTheme = {
   labelColor: 'text-cyan-300',
 };
 
-// [TS메모카드→복습 카드 변환 연계 가이드]
-// - 이 컴포넌트는 TSNoteCard(메모진화 시스템)에서 복습 카드 변환(onFlashcardConvert) 요청 시 사용됩니다.
-// - note(메모) 기반으로 복습 카드 생성 시 /api/flashcards/from-memo API를 호출하며, 메모의 내용(content)이 기본 문제(question)로 사용됩니다.
-// - 생성된 복습 카드는 onCreated 콜백으로 상위 상태에 전달되어, 반복 복습(SRS) 등에서 활용됩니다.
-// - editId가 있으면 기존 복습 카드 수정, 없으면 새로 생성합니다.
+// [TS메모카드→퀴즈 카드 변환 연계 가이드]
+// - 이 컴포넌트는 TSNoteCard(메모진화 시스템)에서 퀴즈 카드 변환(onFlashcardConvert) 요청 시 사용됩니다.
+// - note(메모) 기반으로 퀴즈 카드 생성 시 /api/flashcards/from-memo API를 호출하며, 메모의 내용(content)이 기본 문제(question)로 사용됩니다.
+// - 생성된 퀴즈 카드는 onCreated 콜백으로 상위 상태에 전달되어, 반복 복습(SRS) 등에서 활용됩니다.
+// - editId가 있으면 기존 퀴즈 카드 수정, 없으면 새로 생성합니다.
 // - UX: 생성/수정/에러 피드백, 입력값 검증, API 연동, 취소(onCancel) 등 직관적 피드백 제공.
 // - 보안: 저장/수정 시 JWT 토큰 필요, 인증 실패 시 동작 제한.
 // - 유지보수 시 TSNoteCard, BookDetailPage, flashcardApi, 인증/보안 연동을 반드시 함께 점검하세요.
@@ -113,13 +113,13 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ note, bookId, pageStart, 
       }
       onCreated(card);
     } catch (err: any) {
-              setError(err.response?.data?.message || err.message || '복습 카드 처리 중 오류 발생');
+              setError(err.response?.data?.message || err.message || '퀴즈 카드 처리 중 오류 발생');
     } finally {
       setLoading(false);
     }
   };
 
-      const formTitle = isEditing ? '복습 카드 수정' : '새 복습 카드 생성';
+      const formTitle = isEditing ? '퀴즈 카드 수정' : '새 퀴즈 카드 생성';
 
   return (
     <form onSubmit={handleSubmit} className={`p-2 sm:p-6 rounded-lg shadow-xl ${cyberTheme.formBg} border border-gray-700/50`}>
@@ -167,8 +167,8 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ note, bookId, pageStart, 
           type="submit" 
           disabled={loading}
           className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} text-white font-semibold transition-colors duration-150 disabled:opacity-60 flex items-center justify-center p-0`}
-                      title={isEditing ? "변경사항 저장" : "복습 카드 생성"}
-            aria-label={isEditing ? "변경사항 저장" : "복습 카드 생성"}
+                              title={isEditing ? "변경사항 저장" : "퀴즈 카드 생성"}
+        aria-label={isEditing ? "변경사항 저장" : "퀴즈 카드 생성"}
         >
           {loading ? <span className="animate-spin h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent rounded-full"></span> : (isEditing ? <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6" /> : <PlusCircleIcon className="h-5 w-5 sm:h-6 sm:w-6" />)}
         </Button>
