@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar, HelpCircle, ChevronDown, ChevronUp, MessageSquare, ExternalLink } from 'lucide-react';
+import { Share2, Search, SlidersHorizontal, Eye, Paperclip, Microscope, Link as LinkIcon, BookOpen, Calendar, HelpCircle, ChevronDown, ChevronUp, MessageSquare, ExternalLink, BarChart3 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import ExpandableText from '@/components/common/ExpandableText';
 import ClientTimeDisplay, { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
@@ -282,54 +282,100 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
               ))}
             </div>
             
-            {/* 연결관계 서술 섹션 */}
-            {diagram?.data?.connections && diagram.data.connections.length > 0 && (
+            {/* 학습 지표 대시보드 */}
+            {notes && notes.length > 0 && (
               <div className="space-y-1">
-                <h4 className="text-xs font-semibold text-white mb-2">Relation</h4>
-                <div className="space-y-1 max-h-20 overflow-y-auto">
-                  {(() => {
-                    const connections = diagram.data.connections;
-                    const nodes = diagram.data.nodes;
-                    
-                    // 노드 ID를 순서 번호로 변환하는 함수
-                    const getNodeOrder = (noteId: string) => {
-                      const node = nodes.find((n: any) => n.noteId === noteId);
-                      return node ? node.order : 0;
-                    };
-                    
-                    // 연결관계를 서술적으로 변환하는 함수
-                    const getRelationshipDescription = (connection: any) => {
-                      const sourceOrder = getNodeOrder(connection.sourceNoteId);
-                      const targetOrder = getNodeOrder(connection.targetNoteId);
-                      
-                      const relationshipMap: { [key: string]: string } = {
-                        'cause-effect': '인과',
-                        'before-after': '전후', 
-                        'foundation-extension': '기반-확장',
-                        'contains': '포함',
-                        'contrast': '대조'
-                      };
-                      
-                      const relationship = relationshipMap[connection.relationshipType] || '연결';
-                      
-                      return `(${sourceOrder}) - ${relationship} - (${targetOrder})`;
-                    };
-                    
-                    // 최대 6개까지만 표시 (공간 절약)
-                    return connections.slice(0, 6).map((connection: any, index: number) => {
-                      const description = getRelationshipDescription(connection);
-                      
-                      return (
-                        <div key={connection.id || index} className="text-xs text-gray-300 bg-gray-700/30 px-2 py-1 rounded">
-                          {description}
-                        </div>
-                      );
-                    });
-                  })()}
+                <h4 className="text-xs font-semibold text-white mb-2 flex items-center gap-2">
+                  <BarChart3 className="w-3 h-3" />
+                  학습 지표
+                </h4>
+                
+                {/* 전체 평균 요약 */}
+                <div className="grid grid-cols-2 gap-1 mb-2">
+                  <div className="bg-gray-700/30 p-1.5 rounded text-center">
+                    <div className="text-sm font-bold text-cyan-400">
+                      {(() => {
+                        const avgMemory = notes.reduce((sum: number, note: any) => {
+                          const memoryCount = [
+                            note.importanceReason ? 1 : 0,
+                            note.momentContext ? 1 : 0,
+                            note.relatedKnowledge ? 1 : 0,
+                            note.mentalImage ? 1 : 0
+                          ].filter(Boolean).length;
+                          return sum + memoryCount;
+                        }, 0) / notes.length;
+                        return avgMemory.toFixed(1);
+                      })()}
+                    </div>
+                    <div className="text-xs text-gray-400">기억강화</div>
+                  </div>
+                  <div className="bg-gray-700/30 p-1.5 rounded text-center">
+                    <div className="text-sm font-bold text-green-400">
+                      {(() => {
+                        const avgConnections = notes.reduce((sum: number, note: any) => {
+                          return sum + (note.relatedLinks?.length || 0);
+                        }, 0) / notes.length;
+                        return avgConnections.toFixed(1);
+                      })()}
+                    </div>
+                    <div className="text-xs text-gray-400">지식연결</div>
+                  </div>
                 </div>
-                {diagram.data.connections.length > 6 && (
+                
+                {/* 개별 노드 지표 */}
+                <div className="space-y-1 max-h-20 overflow-y-auto">
+                  {notes.slice(0, 6).map((note: any, index: number) => {
+                    const memoryEnhancement = [
+                      note.importanceReason ? 1 : 0,
+                      note.momentContext ? 1 : 0,
+                      note.relatedKnowledge ? 1 : 0,
+                      note.mentalImage ? 1 : 0
+                    ].filter(Boolean).length;
+                    
+                    const knowledgeConnections = note.relatedLinks?.length || 0;
+                    
+                    return (
+                      <div key={note._id || index} className="bg-gray-700/20 p-2 rounded border border-gray-600/30">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-medium text-gray-300">{note.order || index + 1}번</span>
+                          <span className="text-xs text-gray-400">
+                            {memoryEnhancement + knowledgeConnections}/8
+                          </span>
+                        </div>
+                        
+                        {/* 진행률 바들 */}
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-500 w-8">기억</span>
+                            <div className="flex-1 bg-gray-600 rounded-full h-1">
+                              <div 
+                                className="bg-cyan-400 h-1 rounded-full transition-all"
+                                style={{ width: `${(memoryEnhancement / 4) * 100}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-gray-400 w-4">{memoryEnhancement}/4</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-500 w-8">연결</span>
+                            <div className="flex-1 bg-gray-600 rounded-full h-1">
+                              <div 
+                                className="bg-green-400 h-1 rounded-full transition-all"
+                                style={{ width: `${Math.min((knowledgeConnections / 5) * 100, 100)}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-gray-400 w-4">{knowledgeConnections}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* 추가 정보 */}
+                {notes.length > 6 && (
                   <div className="text-xs text-gray-500 text-center">
-                    +{diagram.data.connections.length - 6}개 더...
+                    +{notes.length - 6}개 더...
                   </div>
                 )}
               </div>
