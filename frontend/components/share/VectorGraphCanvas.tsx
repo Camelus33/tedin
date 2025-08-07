@@ -34,11 +34,11 @@ interface RelationshipConfig {
 }
 
 export const RELATIONSHIP_CONFIGS: Record<RelationshipType, RelationshipConfig> = {
-  'cause-effect': { label: '인과', icon: '→', color: 'text-red-400', strokeColor: '#f87171', description: 'A가 B의 원인이 됨' },
-  'before-after': { label: '전후', icon: '⏭️', color: 'text-blue-400', strokeColor: '#60a5fa', description: '시간적 순서 관계' },
-  'foundation-extension': { label: '확장', icon: '↑', color: 'text-green-400', strokeColor: '#4ade80', description: 'A가 B의 기반이 됨' },
-  'contains': { label: '포함', icon: '⊃', color: 'text-purple-400', strokeColor: '#a78bfa', description: 'A가 B를 포함함' },
-  'contrast': { label: '대조', icon: '↔', color: 'text-yellow-400', strokeColor: '#facc15', description: 'A와 B의 차이점' }
+  'cause-effect': { label: '인과', icon: '→', color: 'text-red-400', strokeColor: '#8b5cf6', description: 'A가 B의 원인이 됨' },
+  'before-after': { label: '전후', icon: '⏭️', color: 'text-blue-400', strokeColor: '#8b5cf6', description: '시간적 순서 관계' },
+  'foundation-extension': { label: '확장', icon: '↑', color: 'text-green-400', strokeColor: '#8b5cf6', description: 'A가 B의 기반이 됨' },
+  'contains': { label: '포함', icon: '⊃', color: 'text-purple-400', strokeColor: '#8b5cf6', description: 'A가 B를 포함함' },
+  'contrast': { label: '대조', icon: '↔', color: 'text-yellow-400', strokeColor: '#8b5cf6', description: 'A와 B의 차이점' }
 };
 
 // 크기 관련 상수 및 유틸리티 함수들
