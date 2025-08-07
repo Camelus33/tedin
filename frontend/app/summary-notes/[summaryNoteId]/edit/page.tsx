@@ -1645,7 +1645,7 @@ export default function EditSummaryNotePage() {
                 )}
               </h3>
               
-              <div className="flex-1 overflow-hidden min-h-0" style={{ minHeight: '300px' }}>
+              <div className="flex-1 overflow-hidden min-h-0" style={{ minHeight: '600px' }}>
                 <Textarea
                   value={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
                   onChange={(e) => {
