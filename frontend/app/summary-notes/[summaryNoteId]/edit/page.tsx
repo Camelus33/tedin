@@ -1065,7 +1065,7 @@ export default function EditSummaryNotePage() {
           <Panel minSize={25} defaultSize={25} className="h-full bg-gray-800/30 rounded-lg">
             <div className="h-full flex flex-col p-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">Memo Card</h3>
-              <div className="flex-1 overflow-y-auto summary-scrollbar">
+              <div className="flex-1 overflow-y-auto summary-scrollbar" style={{ height: 'calc(100% - 60px)' }}>
                 <div className="space-y-4">
                   {fetchedNotes.length > 0 ? (
                     fetchedNotes.map((note, idx) => {
@@ -1183,7 +1183,7 @@ export default function EditSummaryNotePage() {
                   </div>
                 )}
               </div>
-              <div className="flex-grow p-4">
+              <div className="flex-1 p-4" style={{ height: 'calc(100% - 120px)' }}>
                 {/* Canvas with Icon Palette */}
                 <div className="h-full bg-gray-900/30 rounded-lg border border-gray-700/50 relative">
                   {/* Icon Palette - Top Left */}
@@ -1647,7 +1647,7 @@ export default function EditSummaryNotePage() {
                 )}
               </h3>
               
-              <div className="flex-grow h-full">
+              <div className="flex-1 overflow-hidden" style={{ height: 'calc(100% - 60px)' }}>
                 <Textarea
                   value={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
                   onChange={(e) => {
