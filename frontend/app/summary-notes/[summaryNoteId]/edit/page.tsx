@@ -1663,10 +1663,11 @@ export default function EditSummaryNotePage() {
                     }
                   }}
                   placeholder="메모카드, 벡터그래프를 통해 알게된 내용을 정리하세요."
-                  className="h-full p-4 bg-gray-800 text-gray-300 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 resize-none"
+                  className="p-4 bg-gray-800 text-gray-300 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 resize-none"
                   style={{
                     backgroundColor: 'rgb(31, 41, 55)', // gray-800
                     color: 'rgb(209, 213, 219)', // gray-300
+                    height: '368px', // Textarea 직접 높이 설정
                   }}
                 />
               </div>
