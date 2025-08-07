@@ -1024,11 +1024,9 @@ export default function EditSummaryNotePage() {
             <Button onClick={() => setIsAiLinkModalOpen(true)} className={`${cyberTheme.buttonPrimaryBg}`}>
               <RocketIcon className="w-5 h-5 mr-2" /> AI 링크 생성
             </Button>
-            {canvasNodes.length > 0 && (
-              <Button onClick={saveDiagramAsImage} className="bg-green-600 hover:bg-green-700 text-white">
-                벡터 그래프 저장
-              </Button>
-            )}
+            <Button onClick={saveDiagramAsImage} className="bg-green-600 hover:bg-green-700 text-white">
+              벡터 그래프 저장
+            </Button>
             {/* Dropdown Menu for Delete */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -1647,7 +1645,7 @@ export default function EditSummaryNotePage() {
                 )}
               </h3>
               
-              <div className="flex-1 overflow-hidden min-h-0">
+              <div className="flex-1 overflow-hidden min-h-0" style={{ minHeight: '300px' }}>
                 <Textarea
                   value={selectedNode ? selectedNodeMarkdown : userMarkdownContent}
                   onChange={(e) => {
@@ -1686,8 +1684,7 @@ export default function EditSummaryNotePage() {
               )}
               
               {/* 미니맵 - 저장된 벡터그래프 */}
-              {(diagramImageUrl || summaryNote?.diagram?.imageUrl) && (
-                <div className="mt-4 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+              <div className="mt-4 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-medium text-gray-300">저장된 벡터그래프</h4>
                     <div className="flex gap-1">
@@ -1717,15 +1714,22 @@ export default function EditSummaryNotePage() {
                     </div>
                   </div>
                   <div className="relative">
-                    <img 
-                      src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
-                      alt="미니맵 벡터그래프" 
-                      className="w-full h-32 object-contain rounded border border-gray-600 bg-white"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent pointer-events-none rounded"></div>
+                    {(diagramImageUrl || summaryNote?.diagram?.imageUrl) ? (
+                      <>
+                        <img 
+                          src={diagramImageUrl || summaryNote?.diagram?.imageUrl} 
+                          alt="미니맵 벡터그래프" 
+                          className="w-full h-32 object-contain rounded border border-gray-600 bg-white"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent pointer-events-none rounded"></div>
+                      </>
+                    ) : (
+                      <div className="w-full h-32 flex items-center justify-center text-gray-500 text-sm border border-gray-600 rounded bg-gray-800">
+                        저장된 벡터그래프가 없습니다
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
             </div>
           </Panel>
         </PanelGroup>
