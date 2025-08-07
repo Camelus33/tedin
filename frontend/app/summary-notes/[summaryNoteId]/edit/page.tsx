@@ -1060,8 +1060,8 @@ export default function EditSummaryNotePage() {
         {/* Main Content Area: 3-Panel Layout */}
         <PanelGroup direction="horizontal" className="h-[calc(100vh-150px)]">
           {/* Left Panel: Notes List */}
-          <Panel minSize={25} defaultSize={25} className="h-full bg-gray-800/30 rounded-lg">
-            <div className="h-full flex flex-col p-4">
+          <Panel minSize={25} defaultSize={25} className="h-full min-h-0 bg-gray-800/30 rounded-lg">
+            <div className="h-full min-h-0 overflow-hidden flex flex-col p-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">Memo Card</h3>
               <div className="flex-1 overflow-y-auto summary-scrollbar min-h-0">
                 <div className="space-y-4">
@@ -1114,7 +1114,7 @@ export default function EditSummaryNotePage() {
 
           {/* Center Panel: Diagram Canvas */}
           <Panel minSize={30} defaultSize={50} className="overflow-hidden bg-gray-800/30">
-            <div className="h-full flex flex-col">
+            <div className="h-full min-h-0 flex flex-col">
               <h3 className="text-xl font-semibold text-gray-300 mb-4 text-center">Ontology Canvas</h3>
               
               <div className="p-4 border-b border-gray-700/50">
@@ -1619,8 +1619,8 @@ export default function EditSummaryNotePage() {
           <PanelResizeHandle className="hidden sm:block w-[1px] bg-gray-600/30 hover:bg-cyan-500/50 active:bg-cyan-400 transition-colors duration-200 cursor-col-resize" />
 
           {/* Right Panel: Markdown Editor */}
-          <Panel minSize={25} defaultSize={25} className="h-full bg-gray-800/30 rounded-lg">
-            <div className="h-full flex flex-col p-4">
+          <Panel minSize={25} defaultSize={25} className="h-full min-h-0 bg-gray-800/30 rounded-lg">
+            <div className="h-full min-h-0 flex flex-col p-4">
               <h3 className="text-xl font-semibold text-gray-300 mb-3 text-center">
                 {selectedNode ? (
                   <div className="flex items-center justify-center gap-3">
