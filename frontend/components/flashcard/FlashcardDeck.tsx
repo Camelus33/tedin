@@ -133,8 +133,8 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId, memoId }) => {
 
       {flashcards.map((card) => (
         <div key={card._id} className={`${cyberTheme.cardBg} rounded-xl p-5 shadow-lg border ${cyberTheme.borderPrimary}/20 relative transition-all duration-300 hover:shadow-cyan-500/20`}>
-          {/* SRS 상태 표시 */}
-          <div className="absolute top-3 left-3 flex items-center gap-2">
+          {/* SRS 상태 표시 - 상단에 고정 */}
+          <div className="flex items-center gap-2 mb-4">
             {isCardDueForReview(card) && (
               <div className="flex items-center gap-1 px-2 py-1 bg-red-500/20 border border-red-500/30 rounded-full">
                 <ExclamationTriangleIcon className="h-3 w-3 text-red-400" />
@@ -143,7 +143,7 @@ const FlashcardDeck: React.FC<FlashcardDeckProps> = ({ bookId, memoId }) => {
             )}
             {card.srsState?.repetitions !== undefined && (
               <div className="flex items-center gap-1 px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full">
-                <span>{card.srsState.repetitions || 0}회 복습</span>
+                <span className="text-xs text-purple-400">{card.srsState.repetitions || 0}회 복습</span>
               </div>
             )}
           </div>
