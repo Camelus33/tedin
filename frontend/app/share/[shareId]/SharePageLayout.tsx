@@ -260,38 +260,27 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
           </div>
           
           <div className="flex-grow mt-2 p-2 border-t border-gray-700">
-            <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><HelpCircle className="w-4 h-4 text-cyan-400" /> 범례</h3>
-            <div className="flex flex-wrap gap-0.5 mb-3">
-              {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
-                <div 
-                  key={key} 
-                  className="px-1.5 py-0.5 border border-gray-600 rounded text-xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer" 
-                  style={{ 
-                    color: 'inherit',
-                    '--hover-color': strokeColor 
-                  } as React.CSSProperties}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = strokeColor;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = '';
-                  }}
-                >
-                  {icon} {label}
-                </div>
-              ))}
-            </div>
-            
             {/* 학습 지표 대시보드 */}
             {notes && notes.length > 0 && (
-              <div className="space-y-1">
+              <div className="space-y-1 mb-3">
                 <h4 className="text-xs font-semibold text-white mb-2 flex items-center gap-2">
                   <BarChart3 className="w-3 h-3" />
                   학습 지표
                 </h4>
                 
-                {/* 전체 평균 요약 */}
+                {/* 전체 평균 요약 - 4가지 항목 */}
                 <div className="grid grid-cols-2 gap-1 mb-2">
+                  <div className="bg-gray-700/30 p-1.5 rounded text-center">
+                    <div className="text-sm font-bold text-blue-400">
+                      {(() => {
+                        const avgThoughts = notes.reduce((sum: number, note: any) => {
+                          return sum + (note.thoughtExpansion || 0);
+                        }, 0) / notes.length;
+                        return avgThoughts.toFixed(1);
+                      })()}
+                    </div>
+                    <div className="text-xs text-gray-400">생각추가</div>
+                  </div>
                   <div className="bg-gray-700/30 p-1.5 rounded text-center">
                     <div className="text-sm font-bold text-cyan-400">
                       {(() => {
@@ -320,51 +309,85 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                     </div>
                     <div className="text-xs text-gray-400">지식연결</div>
                   </div>
+                  <div className="bg-gray-700/30 p-1.5 rounded text-center">
+                    <div className="text-sm font-bold text-purple-400">
+                      {(() => {
+                        const avgFlashcards = notes.reduce((sum: number, note: any) => {
+                          return sum + (note.flashcardCount || 0);
+                        }, 0) / notes.length;
+                        return avgFlashcards.toFixed(1);
+                      })()}
+                    </div>
+                    <div className="text-xs text-gray-400">복습카드</div>
+                  </div>
                 </div>
                 
                 {/* 개별 노드 지표 */}
-                <div className="space-y-1 max-h-20 overflow-y-auto">
-                  {notes.slice(0, 6).map((note: any, index: number) => {
+                <div className="space-y-1 max-h-16 overflow-y-auto">
+                  {notes.slice(0, 4).map((note: any, index: number) => {
+                    const thoughtExpansion = note.thoughtExpansion || 0;
                     const memoryEnhancement = [
                       note.importanceReason ? 1 : 0,
                       note.momentContext ? 1 : 0,
                       note.relatedKnowledge ? 1 : 0,
                       note.mentalImage ? 1 : 0
                     ].filter(Boolean).length;
-                    
                     const knowledgeConnections = note.relatedLinks?.length || 0;
+                    const flashcardCount = note.flashcardCount || 0;
                     
                     return (
                       <div key={note._id || index} className="bg-gray-700/20 p-2 rounded border border-gray-600/30">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-medium text-gray-300">{note.order || index + 1}번</span>
                           <span className="text-xs text-gray-400">
-                            {memoryEnhancement + knowledgeConnections}/8
+                            {thoughtExpansion + memoryEnhancement + knowledgeConnections + flashcardCount}/12
                           </span>
                         </div>
                         
-                        {/* 진행률 바들 */}
+                        {/* 4가지 진행률 바 */}
                         <div className="space-y-1">
                           <div className="flex items-center gap-1">
-                            <span className="text-xs text-gray-500 w-8">기억</span>
+                            <span className="text-xs text-gray-500 w-6">생각</span>
+                            <div className="flex-1 bg-gray-600 rounded-full h-1">
+                              <div 
+                                className="bg-blue-400 h-1 rounded-full transition-all"
+                                style={{ width: `${Math.min((thoughtExpansion / 3) * 100, 100)}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-gray-400 w-3">{thoughtExpansion}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-500 w-6">기억</span>
                             <div className="flex-1 bg-gray-600 rounded-full h-1">
                               <div 
                                 className="bg-cyan-400 h-1 rounded-full transition-all"
                                 style={{ width: `${(memoryEnhancement / 4) * 100}%` }}
                               ></div>
                             </div>
-                            <span className="text-xs text-gray-400 w-4">{memoryEnhancement}/4</span>
+                            <span className="text-xs text-gray-400 w-3">{memoryEnhancement}/4</span>
                           </div>
                           
                           <div className="flex items-center gap-1">
-                            <span className="text-xs text-gray-500 w-8">연결</span>
+                            <span className="text-xs text-gray-500 w-6">연결</span>
                             <div className="flex-1 bg-gray-600 rounded-full h-1">
                               <div 
                                 className="bg-green-400 h-1 rounded-full transition-all"
-                                style={{ width: `${Math.min((knowledgeConnections / 5) * 100, 100)}%` }}
+                                style={{ width: `${Math.min((knowledgeConnections / 3) * 100, 100)}%` }}
                               ></div>
                             </div>
-                            <span className="text-xs text-gray-400 w-4">{knowledgeConnections}</span>
+                            <span className="text-xs text-gray-400 w-3">{knowledgeConnections}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-500 w-6">복습</span>
+                            <div className="flex-1 bg-gray-600 rounded-full h-1">
+                              <div 
+                                className="bg-purple-400 h-1 rounded-full transition-all"
+                                style={{ width: `${Math.min((flashcardCount / 2) * 100, 100)}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-gray-400 w-3">{flashcardCount}</span>
                           </div>
                         </div>
                       </div>
@@ -373,13 +396,35 @@ export default function SharePageLayout({ htmlData, jsonLdData, shareId }: { htm
                 </div>
                 
                 {/* 추가 정보 */}
-                {notes.length > 6 && (
+                {notes.length > 4 && (
                   <div className="text-xs text-gray-500 text-center">
-                    +{notes.length - 6}개 더...
+                    +{notes.length - 4}개 더...
                   </div>
                 )}
               </div>
             )}
+            
+            <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><HelpCircle className="w-4 h-4 text-cyan-400" /> 범례</h3>
+            <div className="flex flex-wrap gap-0.5 mb-3">
+              {Object.entries(RELATIONSHIP_CONFIGS).map(([key, { label, icon, strokeColor }]) => (
+                <div 
+                  key={key} 
+                  className="px-1.5 py-0.5 border border-gray-600 rounded text-xs text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer" 
+                  style={{ 
+                    color: 'inherit',
+                    '--hover-color': strokeColor 
+                  } as React.CSSProperties}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = strokeColor;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '';
+                  }}
+                >
+                  {icon} {label}
+                </div>
+              ))}
+            </div>
           </div>
         </Panel>
 
