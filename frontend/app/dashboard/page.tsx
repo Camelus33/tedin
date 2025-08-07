@@ -73,99 +73,62 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
-      
-      // 사용자 정보 가져오기
-      console.log('🔍 [DEBUG] 0. Starting to fetch user info...');
-      try {
-        const userResponse = await apiClient.get('/users/profile');
-        const userData = Array.isArray(userResponse) ? userResponse[0] : (userResponse?.data || userResponse);
-        console.log('🔍 [DEBUG] 0.5. User data:', userData);
-        setUser(userData);
-             } catch (userError) {
-         console.error('🔍 [DEBUG] Error fetching user info:', userError);
-         // Redux에서 가져온 사용자 정보를 fallback으로 사용
-         if (reduxUser && reduxUser.nickname) {
-           setUser({
-             _id: reduxUser.id || 'unknown',
-             nickname: reduxUser.nickname,
-             email: reduxUser.email || '',
-             profileImage: reduxUser.profileImage || undefined
-           });
-         }
-       }
-      
-      // 1) 모든 메모를 가져오되, 기본 정렬은 최신순으로 요청
-      const memosResponse = await apiClient.get('/notes?sort=createdAt:desc');
-      console.log('🔍 [DEBUG] 2. Raw memos API response:', memosResponse);
-      console.log('🔍 [DEBUG] 3. Raw memos data:', memosResponse?.data);
-      console.log('🔍 [DEBUG] 4. Is memos data an array?', Array.isArray(memosResponse?.data));
-      console.log('🔍 [DEBUG] 5. Memos data length:', memosResponse?.data?.length);
-      console.log('🔍 [DEBUG] 5.5. Is memosResponse directly an array?', Array.isArray(memosResponse));
-      console.log('🔍 [DEBUG] 5.6. memosResponse direct length:', memosResponse?.length);
-      
-      // API 응답이 직접 배열인지 확인하고 적절히 처리
-      const rawNotes = Array.isArray(memosResponse) ? memosResponse : (memosResponse?.data || []);
-      console.log('🔍 [DEBUG] 6. Raw notes after fallback:', rawNotes);
-      
-      // 클라이언트에서 필요한 필드 매핑 (content 보완) - 로그 제거
-      const mappedNotes = rawNotes.map((n: any) => {
-          const mapped = {
-            ...n,
-            content: n.content || n.title || '',
-            tags: n.tags || [],
-          };
-          return mapped;
-        });
-      console.log('🔍 [DEBUG] 9. Final mapped notes (최근 3개):', mappedNotes);
-      setRecentMemos(mappedNotes);
-      console.log('🔍 [DEBUG] 10. Set recentMemos state to:', mappedNotes);
-      
-      // 전체 메모 개수 설정 (실제 API에서 받은 전체 개수 사용)
-      setMemoCount(rawNotes.length);
-      console.log('🔍 [DEBUG] 10.5. Set memoCount to:', rawNotes.length);
+      // 사용자, 노트(제한), 요약노트를 병렬로 가져오기
+      const [userResponse, memosResponse, summaryNotesResponse] = await Promise.all([
+        apiClient.get('/users/profile').catch(() => null),
+        apiClient.get('/notes?sort=createdAt:desc&limit=30'),
+        apiClient.get('/summary-notes')
+      ]);
 
-      // 2) 책 정보 batch 요청 (중복 bookId 제거)
-      const uniqueBookIds = [...new Set(mappedNotes.map((m: TSNote) => m.bookId).filter(Boolean))];
-      if (uniqueBookIds.length > 0) {
-        try {
-          const booksRes = await apiClient.post('/books/batch', { bookIds: uniqueBookIds });
-          const map = new Map<string, { title: string }>();
-          (booksRes?.data || []).forEach((b: any) => {
-            map.set(b._id, { title: b.title });
-          });
-          setBookInfoMap(map);
-        } catch (bookErr) {
-          console.warn('Failed to batch fetch books', bookErr);
-        }
+      // 사용자 정보 설정 (fallback: redux)
+      const userData = Array.isArray(userResponse) ? userResponse[0] : (userResponse?.data || userResponse);
+      if (userData && userData.nickname) {
+        setUser(userData);
+      } else if (reduxUser && reduxUser.nickname) {
+        setUser({
+          _id: reduxUser.id || 'unknown',
+          nickname: reduxUser.nickname,
+          email: reduxUser.email || '',
+          profileImage: reduxUser.profileImage || undefined
+        });
       }
 
-      // 단권화 노트 가져오기 (최신 3개만 표시)
-      console.log('🔍 [DEBUG] 11. Starting to fetch summary notes...');
-      const summaryNotesResponse = await apiClient.get('/summary-notes');
-      console.log('🔍 [DEBUG] 12. Raw summary notes API response:', summaryNotesResponse);
-      console.log('🔍 [DEBUG] 13. Raw summary notes data:', summaryNotesResponse?.data);
-      console.log('🔍 [DEBUG] 14. Is summary notes data an array?', Array.isArray(summaryNotesResponse?.data));
-      console.log('🔍 [DEBUG] 15. Summary notes data length:', summaryNotesResponse?.data?.length);
-      console.log('🔍 [DEBUG] 15.5. Is summaryNotesResponse directly an array?', Array.isArray(summaryNotesResponse));
-      console.log('🔍 [DEBUG] 15.6. summaryNotesResponse direct length:', summaryNotesResponse?.length);
-      
-      // API 응답이 직접 배열인지 확인하고 적절히 처리
+      // 노트 데이터 가공
+      const rawNotes = Array.isArray(memosResponse) ? memosResponse : (memosResponse?.data || []);
+      const mappedNotes = rawNotes.map((n: any) => ({
+        ...n,
+        content: n.content || n.title || '',
+        tags: n.tags || [],
+      }));
+      setRecentMemos(mappedNotes);
+      setMemoCount(rawNotes.length);
+
+      // 책 정보 batch 요청 (중복 bookId 제거)
+      const uniqueBookIds = [...new Set(mappedNotes.map((m: TSNote) => m.bookId).filter(Boolean))];
+      if (uniqueBookIds.length > 0) {
+        apiClient.post('/books/batch', { bookIds: uniqueBookIds })
+          .then((booksRes) => {
+            const map = new Map<string, { title: string }>();
+            (booksRes?.data || []).forEach((b: any) => {
+              map.set(b._id, { title: b.title });
+            });
+            setBookInfoMap(map);
+          })
+          .catch(() => {/* noop */});
+      }
+
+      // 요약노트 최신 4개만
       const allSummaryNotes = Array.isArray(summaryNotesResponse) ? summaryNotesResponse : (summaryNotesResponse?.data || []);
-      console.log('🔍 [DEBUG] 16. All summary notes after fallback:', allSummaryNotes);
-      
-      // 클라이언트 사이드에서 최신 4개만 선택
       const recentSummaryNotes = allSummaryNotes
         .sort((a: SummaryNote, b: SummaryNote) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
         .slice(0, 4);
-      console.log('🔍 [DEBUG] 17. Recent 4 summary notes:', recentSummaryNotes);
       setSummaryNotes(recentSummaryNotes);
-      console.log('🔍 [DEBUG] 18. Set summaryNotes state to:', recentSummaryNotes);
 
     } catch (error) {
-      console.error('🔍 [DEBUG] ERROR in fetchDashboardData:', error);
+      // 에러는 사용자에게 노출하지 않고 콘솔 최소 출력
+      console.error('Failed to load dashboard data');
     } finally {
       setIsLoading(false);
-      console.log('🔍 [DEBUG] 19. Finished loading, isLoading set to false');
     }
   }; // end fetchDashboardData
 

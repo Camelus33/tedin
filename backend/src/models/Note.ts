@@ -203,5 +203,7 @@ NoteSchema.index({ isPdfMemo: 1, pageNumber: 1 });
 // 개념이해도 점수 검색을 위한 인덱스 추가
 NoteSchema.index({ userId: 1, conceptScore: -1 });
 NoteSchema.index({ userId: 1, selfRating: -1, conceptScore: -1 });
+// 대시보드 최신순 조회 최적화를 위한 인덱스
+NoteSchema.index({ userId: 1, createdAt: -1 });
 
 export default mongoose.model<INote>('Note', NoteSchema); 

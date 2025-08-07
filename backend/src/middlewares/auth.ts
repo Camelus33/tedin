@@ -53,7 +53,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         }
         
         // 다른 사용자는 정상적인 인증 프로세스 진행
-        const user = await User.findById(decoded.userId);
+        const user = await User.findById(decoded.userId).lean();
         if (!user) {
           return res.status(401).json({ error: '유효하지 않은 사용자입니다.' });
         }

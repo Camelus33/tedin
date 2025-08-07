@@ -20,9 +20,13 @@ export const getUserNotes = async (req: Request, res: Response) => {
       return res.status(401).json({ message: '인증이 필요합니다.' });
     }
 
+    // 제한 및 프로젝션으로 페이로드 최소화
+    const limit = Math.min(Number((req.query as any).limit) || 30, 100);
     const notes = await Note.find({ userId })
       .sort({ createdAt: -1 })
-      .select('-__v');
+      .limit(limit)
+      .select('_id userId bookId type content tags createdAt clientCreatedAt')
+      .lean();
 
     res.status(200).json(notes);
   } catch (error) {

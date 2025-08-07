@@ -141,7 +141,9 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
 app.use(compression());
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
 console.log(`[App] Basic middleware (cors, json, urlencoded, etc.) configured.`);
 
 // Serve static files from the 'uploads' directory
