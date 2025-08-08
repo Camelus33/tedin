@@ -312,12 +312,9 @@ export default function DashboardPage() {
         <div className="mb-8">
           {recentMemos.length > 0 ? (
             <h1 className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
-              <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 최근 <span className="text-indigo-300">{recentDaysWindow}일</span> 동안 <span className="text-indigo-300">{recentMemos.length}개</span>,{` `}
-              {typeof totalMemoCount === 'number' ? (
-                <>총 <span className="text-indigo-300">{totalMemoCount}개</span>를 작성했습니다.</>
-              ) : (
-                <>총 <span className="text-indigo-300">{memoCount}개</span>를 작성했습니다.</>
-              )}
+              <>Wow, <span className="text-cyan-300">{user?.nickname || 'User'}</span>! {` `}
+              <span className="text-indigo-300">{recentMemos.length}</span> in <span className="text-indigo-300">{recentDaysWindow}</span> days — {` `}
+              <span className="text-indigo-300">{typeof totalMemoCount === 'number' ? totalMemoCount : memoCount}</span> total. Keep going!</>
             </h1>
           ) : (
             <h1 className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
@@ -333,13 +330,13 @@ export default function DashboardPage() {
               onClick={handleNewReading}
               className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              📖 학습 가속
+              TS Learning
             </button>
             <button
               onClick={handleNewMemo}
               className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-cyan-500/25 border border-cyan-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              ✍️ 새 메모
+              New Memo
             </button>
           </div>
         </div>
@@ -347,7 +344,7 @@ export default function DashboardPage() {
         {/* 최근 메모 카드 섹션 */}
         <div className="mb-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
-            <h2 className="text-lg sm:text-xl font-medium text-white">최근 메모 카드</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white">Recent...</h2>
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
               {/* 보기 전환 버튼 */}
               <div className="flex items-center bg-gray-800/50 backdrop-blur-md rounded-lg p-1 border border-indigo-500/30">
@@ -379,7 +376,7 @@ export default function DashboardPage() {
                   onClick={() => setSortMenuOpen(!sortMenuOpen)}
                   className="flex items-center space-x-2 px-3 py-2 text-sm text-cyan-300 hover:text-cyan-100 border border-indigo-500/30 rounded-md hover:border-indigo-400/50 transition-colors bg-gray-800/30 backdrop-blur-md min-h-[44px]"
                 >
-                  <span>최신 항목</span>
+                  <span>Newest</span>
                   <FiChevronDown className="w-4 h-4" />
                 </button>
 
@@ -392,7 +389,7 @@ export default function DashboardPage() {
                       }}
                       className="block w-full text-left px-4 py-2 text-sm text-cyan-300 hover:bg-indigo-800/50 hover:text-cyan-100"
                     >
-                      최신 항목
+                      Newest
                       </button>
                     <button 
                       onClick={() => {
@@ -401,7 +398,7 @@ export default function DashboardPage() {
                       }}
                       className="block w-full text-left px-4 py-2 text-sm text-cyan-300 hover:bg-indigo-800/50 hover:text-cyan-100"
                     >
-                      오래된 항목
+                      Oldest
                     </button>
                   </div>
                 )}
@@ -412,7 +409,7 @@ export default function DashboardPage() {
                 href="/books"
                 className="text-sm text-cyan-400 hover:text-cyan-200 transition-colors flex items-center space-x-1 border border-cyan-500/30 px-3 py-2 rounded-md hover:border-cyan-400/50 bg-gray-800/30 backdrop-blur-md min-h-[44px]"
               >
-                <span>나의 도서관</span>
+                <span>My Lib</span>
                 <span>→</span>
               </Link>
             </div>
@@ -513,7 +510,7 @@ export default function DashboardPage() {
         <div className="space-y-12">
           {/* 최근 단권화 노트 섹션 */}
           <div>
-            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">최근 단권화 노트</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">Recent Summary</h2>
             {(() => {
               return summaryNotes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -547,7 +544,7 @@ export default function DashboardPage() {
           
           {/* Zengo & Zengo Myverse 섹션 */}
           <div>
-            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">두뇌 퍼즐</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">Brain Puzzles</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Link href="/zengo" className="group">
                 <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
@@ -560,7 +557,7 @@ export default function DashboardPage() {
                   <p className="text-gray-300 mb-4">
                     단 15초, 기억력 회복
                   </p>
-                  <div className="text-indigo-400 font-medium">시작하기 →</div>
+                  <div className="text-indigo-400 font-medium">Get Started →</div>
                 </div>
               </Link>
 
@@ -575,7 +572,7 @@ export default function DashboardPage() {
                   <p className="text-gray-300 mb-4">
                     Zengo 입력, 암기 촉진
                   </p>
-                  <div className="text-cyan-400 font-medium">체험하기 →</div>
+                  <div className="text-cyan-400 font-medium">Try Now →</div>
                 </div>
               </Link>
               </div>
@@ -583,7 +580,7 @@ export default function DashboardPage() {
 
           {/* 인지 분석 섹션 */}
           <div>
-            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">인지 분석</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">Meta Cognitive</h2>
             <Link href="/analytics" className="group">
               <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
                 <div className="flex items-center justify-between">
@@ -593,7 +590,7 @@ export default function DashboardPage() {
                     AI가 측정한 학습능력을 확인하세요.
                   </p>
                 </div>
-                  <div className="text-indigo-400 font-medium">분석 보기 →</div>
+                    <div className="text-indigo-400 font-medium">View →</div>
                 </div>
               </div>
             </Link>
