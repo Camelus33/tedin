@@ -404,9 +404,6 @@ export default function MyversePage() {
               <h1 className={`font-extrabold text-xl tracking-tight ${cyberTheme.textLight} group-hover:text-cyan-300 transition-colors`}>
                 Habitus33
               </h1>
-              <p className={`text-xs font-medium tracking-wider ${cyberTheme.textMuted}`}>
-                Prompt Free, AI - Link
-              </p>
             </div>
           </Link>
           <div className="flex items-center gap-4">

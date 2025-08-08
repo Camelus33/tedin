@@ -11,6 +11,7 @@ import AppLogo from '@/components/common/AppLogo';
 import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 import SearchUIManager from '@/components/search/SearchUIManager';
+import NotificationBell from '@/components/common/NotificationBell';
 
 // 타입 정의 - TSNote를 사용
 
@@ -227,9 +228,9 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-blue-900">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-indigo-500/20 bg-black/20 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <header className="sticky top-0 z-10 py-3 px-4 backdrop-blur-md shadow-sm bg-gray-900/60 border-b border-gray-700/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between">
             {/* 좌측: 로고 */}
             <div className="flex items-center">
               <Link href="/dashboard" className="flex items-center space-x-3">
@@ -238,8 +239,15 @@ export default function DashboardPage() {
               </Link>
               </div>
 
-            {/* 우측: 사용자 프로필 */}
+            {/* 우측: 알림 + 사용자 정보/프로필 */}
             <div className="flex items-center space-x-4">
+              {/* 알림 벨 */}
+              <NotificationBell />
+              {/* 사용자 닉네임/이메일 로컬파트 */}
+              <div className="hidden sm:block text-right mr-1">
+                <p className="font-semibold text-white">{user?.nickname || '사용자'}</p>
+                <p className="text-xs text-gray-300">{user?.email ? user.email.split('@')[0] : '나만의 암기노트'}</p>
+              </div>
               {/* 사용자 프로필 메뉴 */}
               <div className="relative" ref={profileMenuRef}>
                 <button
@@ -304,7 +312,7 @@ export default function DashboardPage() {
         <div className="mb-8">
           {recentMemos.length > 0 ? (
             <h1 className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
-              <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 최근 <span className="text-indigo-300">{recentDaysWindow}일</span> 동안 <span className="text-indigo-300">{recentMemos.length}개</span>의 메모카드를 작성했으며{` `}
+              <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 최근 <span className="text-indigo-300">{recentDaysWindow}일</span> 동안 <span className="text-indigo-300">{recentMemos.length}개</span>,{` `}
               {typeof totalMemoCount === 'number' ? (
                 <>총 <span className="text-indigo-300">{totalMemoCount}개</span>를 작성했습니다.</>
               ) : (
@@ -547,7 +555,7 @@ export default function DashboardPage() {
           
           {/* Zengo & Zengo Myverse 섹션 */}
           <div>
-            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">두뇌 훈련</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">두뇌 퍼즐</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Link href="/zengo" className="group">
                 <div className="bg-gray-800/40 backdrop-blur-md border border-indigo-500/30 rounded-lg p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all group-hover:border-indigo-400/50 group-hover:bg-gray-800/60">
@@ -558,7 +566,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-medium text-white">Zengo</h3>
                   </div>
                   <p className="text-gray-300 mb-4">
-                    단 15초, 기억력 회복 게임
+                    단 15초, 기억력 회복
                   </p>
                   <div className="text-indigo-400 font-medium">시작하기 →</div>
                 </div>
