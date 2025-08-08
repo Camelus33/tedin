@@ -20,7 +20,20 @@ export interface IUser extends Document {
     recommendedTsDuration?: number;
     notificationTime?: string;
     communityInterest?: boolean;
+    notifications?: {
+      allowWebPush?: boolean;
+      dailyLimit?: number;
+      quietHours?: { start?: string; end?: string; tz?: string };
+      categories?: Record<string, boolean>;
+    };
   };
+  webPushSubscriptions?: Array<{
+    endpoint: string;
+    keys: { p256dh: string; auth: string };
+    userAgent?: string;
+    createdAt?: Date;
+    isActive?: boolean;
+  }>;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -80,6 +93,24 @@ const UserSchema: Schema = new Schema({
   preferences: {
     type: Schema.Types.Mixed,
     default: {}
+  },
+  webPushSubscriptions: {
+    type: [
+      new Schema(
+        {
+          endpoint: { type: String, required: true },
+          keys: {
+            p256dh: { type: String, required: true },
+            auth: { type: String, required: true },
+          },
+          userAgent: { type: String, default: '' },
+          createdAt: { type: Date, default: Date.now },
+          isActive: { type: Boolean, default: true },
+        },
+        { _id: false }
+      ),
+    ],
+    default: [],
   },
 });
 
