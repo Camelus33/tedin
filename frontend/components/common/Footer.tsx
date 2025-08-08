@@ -9,8 +9,8 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 border-t border-gray-800 mt-auto text-sm text-gray-400 font-sans">
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12"> {/* tighter padding on mobile */}
-        {/* Mobile Minimal Footer */}
-        <div className="flex sm:hidden items-center justify-between">
+        {/* Mobile Minimal Footer (<=375px) */}
+        <div className="hidden max-[375px]:flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center space-x-2">
             <AppLogo className="w-8 h-8" />
             <span className="text-base font-semibold text-white">habitus33</span>
@@ -18,8 +18,8 @@ export default function Footer() {
           <p className="text-xs text-gray-400">© {currentYear} Tedin Inc.</p>
         </div>
 
-        {/* Desktop/Tablet Full Footer */}
-        <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"> {/* Reduced gap from gap-10 */}
+        {/* Tablet/Desktop Full Footer (>=376px) */}
+        <div className="grid max-[375px]:hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"> {/* Reduced gap from gap-10 */}
 
           {/* Column 1: Logo & Catchphrase */}
           <div className="space-y-4 lg:col-span-1">
@@ -112,7 +112,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Row: Copyright Notice */}
-        <div className="hidden sm:block mt-10 pt-6 border-t border-gray-700 text-center"> {/* hide long copyright on mobile */}
+        <div className="hidden max-[375px]:block mt-10 pt-6 border-t border-gray-700 text-center"> {/* hide long copyright on <=375px */}
           <p className="text-xs text-gray-400 leading-relaxed">
             &copy; {currentYear} Tedin Inc. All rights reserved.
             All content related to this page is protected by intellectual property rights.
