@@ -5,6 +5,7 @@ import Note from '../models/Note';
 import Session from '../models/Session';
 import User from '../models/User';
 import SummaryNote from '../models/SummaryNote';
+import { WebPushService } from '../services/WebPushService';
 
 // GET /api/notifications?unreadOnly=true|false
 export const getNotifications = async (req: Request, res: Response) => {
@@ -149,6 +150,78 @@ export const runEngagementJobs = async (req: Request, res: Response) => {
     for (const u of users) {
       const userId = u._id;
 
+      // --- Policy helpers ---
+      const getPolicy = () => {
+        const notif = (u as any).preferences?.notifications || {};
+        const allowWebPush = !!notif.allowWebPush;
+        const dailyLimit = Number.isFinite(notif.dailyLimit) ? Number(notif.dailyLimit) : 2;
+        const quiet = notif.quietHours || {};
+        const tz = quiet.tz || 'Asia/Seoul';
+        const startStr = quiet.start || '';
+        const endStr = quiet.end || '';
+        const categories = notif.categories || {};
+        return { allowWebPush, dailyLimit, quiet: { startStr, endStr, tz }, categories };
+      };
+
+      const minutesInTz = (d: Date, tz: string) => {
+        try {
+          const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour12: false, hour: '2-digit', minute: '2-digit' });
+          const parts = fmt.formatToParts(d);
+          const hh = Number(parts.find(p => p.type === 'hour')?.value || '0');
+          const mm = Number(parts.find(p => p.type === 'minute')?.value || '0');
+          return hh * 60 + mm;
+        } catch {
+          // fallback to server time
+          return d.getHours() * 60 + d.getMinutes();
+        }
+      };
+
+      const isWithinQuietHours = (d: Date, start: string, end: string, tz: string) => {
+        if (!start || !end) return false;
+        const toMin = (s: string) => {
+          const [h, m] = s.split(':').map((x) => Number(x || 0));
+          return h * 60 + m;
+        };
+        const nowM = minutesInTz(d, tz);
+        const sM = toMin(start);
+        const eM = toMin(end);
+        if (sM === eM) return false; // disabled
+        if (sM < eM) return nowM >= sM && nowM < eM; // same-day window
+        return nowM >= sM || nowM < eM; // overnight window
+      };
+
+      const countToday = async (): Promise<number> => {
+        return Notification.countDocuments({ userId, createdAt: { $gte: startOfToday } });
+      };
+
+      const dispatchIfAllowed = async (type: INotification['type'], message: string) => {
+        const { allowWebPush, dailyLimit, quiet, categories } = getPolicy();
+        // category opt-in (default true if not specified)
+        const catAllowed = categories[type] !== false;
+        if (!catAllowed) return false;
+
+        // daily limit check (applies to overall in-app creation)
+        const todayCount = await countToday();
+        if (todayCount >= dailyLimit) return false;
+
+        // quiet hours -> suppress both in minimal policy
+        const inQuiet = isWithinQuietHours(now, quiet.startStr, quiet.endStr, quiet.tz);
+        if (inQuiet) return false;
+
+        // create in-app
+        await Notification.create({ userId, senderId: userId, gameId: userId, type, message });
+
+        // web push if allowed
+        if (allowWebPush) {
+          await WebPushService.sendToUser(String(userId), {
+            title: 'Habitus33',
+            body: message,
+            data: { actionLink: '/dashboard', type },
+          });
+        }
+        return true;
+      };
+
       // Helper: prevent duplicate same-day by type
       const ensureOncePerDay = async (type: INotification['type']) => {
         const exists = await Notification.findOne({ userId, type, createdAt: { $gte: startOfToday } }).lean();
@@ -158,8 +231,7 @@ export const runEngagementJobs = async (req: Request, res: Response) => {
       // 1) Daily memo nudge: no notes in last 24h
       const noteCount24h = await Note.countDocuments({ userId, createdAt: { $gte: dayAgo } });
       if (noteCount24h === 0 && (await ensureOncePerDay('nudge_memo'))) {
-        await Notification.create({ userId, senderId: userId, gameId: userId, type: 'nudge_memo', message: '오늘의 생각을 한 줄 메모로 남겨보세요 ✍️' });
-        created++;
+        if (await dispatchIfAllowed('nudge_memo', '오늘의 생각을 한 줄 메모로 남겨보세요 ✍️')) created++;
       }
 
       // 2) TS reminder: preferences.notificationTime ±15분, today TS 0
@@ -173,8 +245,7 @@ export const runEngagementJobs = async (req: Request, res: Response) => {
         if (within15m) {
           const tsToday = await Session.countDocuments({ userId, mode: 'TS', status: 'completed', createdAt: { $gte: startOfToday } });
           if (tsToday === 0 && (await ensureOncePerDay('nudge_ts'))) {
-            await Notification.create({ userId, senderId: userId, gameId: userId, type: 'nudge_ts', message: '하루 10분, TS로 집중을 끌어올려요 🔥' });
-            created++;
+            if (await dispatchIfAllowed('nudge_ts', '하루 10분, TS로 집중을 끌어올려요 🔥')) created++;
           }
         }
       }
@@ -183,8 +254,7 @@ export const runEngagementJobs = async (req: Request, res: Response) => {
       const zengoToday = await Session.countDocuments({ userId, mode: 'ZENGO', status: 'completed', createdAt: { $gte: startOfToday } });
       const zengo3d = await Session.countDocuments({ userId, mode: 'ZENGO', status: 'completed', createdAt: { $gte: threeDaysAgo } });
       if (zengoToday === 0 && zengo3d === 0 && (await ensureOncePerDay('nudge_zengo'))) {
-        await Notification.create({ userId, senderId: userId, gameId: userId, type: 'nudge_zengo', message: '15초 두뇌 워밍업! Zengo로 시작해요 🧠' });
-        created++;
+        if (await dispatchIfAllowed('nudge_zengo', '15초 두뇌 워밍업! Zengo로 시작해요 🧠')) created++;
       }
 
       // 4) Suggest summary: last 7d memos >= 10, and no recent summary note
@@ -192,8 +262,7 @@ export const runEngagementJobs = async (req: Request, res: Response) => {
       if (memos7d >= 10) {
         const recentSummary = await SummaryNote.findOne({ userId, createdAt: { $gte: sevenDaysAgo } }).select('_id').lean();
         if (!recentSummary && (await ensureOncePerDay('suggest_summary'))) {
-          await Notification.create({ userId, senderId: userId, gameId: userId, type: 'suggest_summary', message: '메모가 충분해요. 단권화 노트를 만들어 볼까요? 📚' });
-          created++;
+          if (await dispatchIfAllowed('suggest_summary', '메모가 충분해요. 단권화 노트를 만들어 볼까요? 📚')) created++;
         }
       }
     }
