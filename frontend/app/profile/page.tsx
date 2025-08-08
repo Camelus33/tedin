@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { UserIcon, EnvelopeIcon, PhoneIcon, CreditCardIcon, ArrowUpCircleIcon, ReceiptRefundIcon, TagIcon, QuestionMarkCircleIcon, XCircleIcon, BellIcon, MoonIcon, DocumentArrowDownIcon, ShieldCheckIcon, ArrowRightOnRectangleIcon, LifebuoyIcon } from '@heroicons/react/24/outline';
+import { subscribeWebPush, unsubscribeWebPush } from '@/lib/push';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 
 type UserProfile = {
@@ -34,6 +35,8 @@ export default function ProfilePage() {
   const [goal, setGoal] = useState('');
   const [customNote, setCustomNote] = useState('');
   const [customInfoMsg, setCustomInfoMsg] = useState('');
+  const [webPushEnabled, setWebPushEnabled] = useState<boolean>(false);
+  const [webPushBusy, setWebPushBusy] = useState<boolean>(false);
   
   // Fetch user profile data
   useEffect(() => {
@@ -98,6 +101,44 @@ export default function ProfilePage() {
 
     fetchProfileData();
   }, [router]);
+
+  // Initialize Web Push toggle state from existing subscription
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+    (async () => {
+      try {
+        const reg = await navigator.serviceWorker.getRegistration();
+        const sub = await reg?.pushManager.getSubscription();
+        setWebPushEnabled(!!sub);
+      } catch {
+        setWebPushEnabled(false);
+      }
+    })();
+  }, []);
+
+  const handleToggleWebPush = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enabled = e.target.checked;
+    setWebPushBusy(true);
+    try {
+      if (enabled) {
+        const vapid = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+        if (!vapid) {
+          alert('웹 푸시 키가 설정되지 않았습니다. 관리자에게 문의하세요.');
+          setWebPushEnabled(false);
+          return;
+        }
+        const res = await subscribeWebPush(vapid);
+        setWebPushEnabled(!!res);
+      } else {
+        await unsubscribeWebPush();
+        setWebPushEnabled(false);
+      }
+    } catch (err: any) {
+      alert('웹 푸시 설정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setWebPushBusy(false);
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -401,9 +442,25 @@ export default function ProfilePage() {
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <ShieldCheckIcon className="w-6 h-6 text-indigo-500" /> 기타 설정
           </h2>
-          {/* 알림 설정 (UI만) */}
+          {/* 웹 푸시 알림 */}
+          <div className="flex items-center gap-3 mb-4">
+            <BellIcon className="w-5 h-5 text-indigo-500" />
+            <span className="text-gray-800">웹 푸시 알림</span>
+            <input
+              type="checkbox"
+              className="accent-indigo-600"
+              checked={webPushEnabled}
+              disabled={webPushBusy}
+              onChange={handleToggleWebPush}
+            />
+            {webPushBusy && (
+              <span className="text-xs text-gray-500 ml-2">처리 중...</span>
+            )}
+          </div>
+
+          {/* 이메일 알림 (추후) */}
           <div className="flex items-center gap-3 mb-4 opacity-60">
-            <BellIcon className="w-5 h-5 text-indigo-400" />
+            <EnvelopeIcon className="w-5 h-5 text-indigo-400" />
             <span className="text-gray-700">이메일 알림</span>
             <input type="checkbox" className="accent-indigo-500" disabled />
             <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>

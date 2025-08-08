@@ -168,6 +168,19 @@ export default function RootLayout({
           
           <Footer />
         </Providers>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistration().then(function(reg){
+                    if(!reg){ navigator.serviceWorker.register('/sw.js'); }
+                  });
+                }
+              })();
+            `,
+          }}
+        />
       </body>
     </html>
   )
