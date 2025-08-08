@@ -24,7 +24,8 @@ export default function Footer() {
           {/* Column 1: Logo & Catchphrase */}
           <div className="space-y-4 lg:col-span-1">
             <Link href="/dashboard" className="flex items-center space-x-3 group">
-              <AppLogo className="w-12 h-12 text-white flex-shrink-0 group-hover:opacity-90 transition-opacity" />
+              {/* Ensure desktop/logo stays at previous large size while preventing shrink */}
+              <AppLogo className="w-12 h-12 md:w-14 md:h-14 text-white flex-shrink-0 group-hover:opacity-90 transition-opacity" />
               <div className="flex items-end space-x-1.5">
                 <span className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors leading-none">habitus33</span>
               </div>
