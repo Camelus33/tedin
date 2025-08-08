@@ -31,11 +31,11 @@ router.put('/:id/read', markAsRead);
 // Mark all notifications as read
 router.put('/readAll', markAllRead);
 
+// Delete all read notifications (place before '/:id' to avoid route shadowing)
+router.delete('/read', deleteAllRead);
+
 // Delete a single read notification
 router.delete('/:id', deleteNotification);
-
-// Delete all read notifications
-router.delete('/read', deleteAllRead);
 
 // Web Push subscription management
 router.post('/webpush/subscribe', subscribeWebPush);
