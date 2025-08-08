@@ -269,6 +269,8 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
   const [generatedUrl, setGeneratedUrl] = useState('');
   const [isCopied, setIsCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('share');
+  // 선택 유도형(안3): 관계 v1 vs 순서·리듬 v2 중 선택
+  const [profileChoice, setProfileChoice] = useState<'v1' | 'v2'>('v2');
   
   const [aiLinkData, setAiLinkData] = useState<AiLinkDataV2 | null>(null);
   const [isDataLoading, setIsDataLoading] = useState(false);
@@ -384,6 +386,8 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
           </DialogDescription>
         </DialogHeader>
 
+        {/* 모달 내부 스크롤 영역(잘림 방지) */}
+        <div className="max-h-[85vh] overflow-y-auto pr-1">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-gray-900">
             <TabsTrigger value="share">공유 링크</TabsTrigger>
@@ -440,14 +444,30 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
               </div>
             ) : aiLinkData ? (
               <div className="space-y-4">
-                <ExecutiveSummaryDisplay summary={aiLinkData.executiveSummary} />
-                <MemoSummaryDisplay memoSummary={aiLinkData.memoSummary} />
-                <KnowledgeGrowthTimelineDisplay timeline={aiLinkData.knowledgeGrowthTimeline} />
-                <SuggestedActionsDisplay actions={aiLinkData.potentialAction} />
-                <LLMOptimizedDataDisplay aiLinkData={aiLinkData} />
+                {/* 선택 유도 카드: 관계 v1 vs 순서·리듬 v2 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setProfileChoice('v1')}
+                    className={`text-left p-3 rounded-md border ${profileChoice==='v1' ? 'border-purple-400 bg-purple-900/20' : 'border-gray-700 bg-gray-900/40'} hover:border-purple-400 transition`}
+                    title="메모 간 연결·구조 분석에 특화"
+                  >
+                    <p className="text-sm font-semibold text-purple-300">관계 중심 (v1)</p>
+                    <p className="text-xs text-gray-400 mt-1">메모 간 연결·구조를 LLM에 전달하고 싶을 때 선택</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setProfileChoice('v2')}
+                    className={`text-left p-3 rounded-md border ${profileChoice==='v2' ? 'border-cyan-400 bg-cyan-900/20' : 'border-gray-700 bg-gray-900/40'} hover:border-cyan-400 transition`}
+                    title="생각의 순서·간격(Δt)·리듬·세션 분석에 특화"
+                  >
+                    <p className="text-sm font-semibold text-cyan-300">순서·리듬 중심 (v2)</p>
+                    <p className="text-xs text-gray-400 mt-1">생각의 타임라인과 리듬을 LLM에 전달하고 싶을 때 선택</p>
+                  </button>
+                </div>
 
-                {/* V2 보조 패널 (모달 전용) */}
-                {aiLinkData?.analysisV2 && (
+                {/* 선택된 프로파일에 따른 상세 */}
+                {profileChoice === 'v2' && aiLinkData?.analysisV2 && (
                   <div className="space-y-3">
                     <h3 className="text-sm font-semibold text-cyan-300">생각의 순서·리듬·복습 흐름(V2)</h3>
                     <p className="text-[11px] text-gray-400">메모 관계로 대화하려면 관계 v1을, 생각의 순서·리듬으로 대화하려면 V2를 선택하세요.</p>
@@ -541,7 +561,12 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
                       </Button>
                     </div>
 
-                    {/* v1 관계 그래프: 유저 친화적 라벨로 선택 복사 */}
+                  </div>
+                )}
+
+                {profileChoice === 'v1' && (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold text-purple-300">관계 그래프 데이터 (V1)</h3>
                     <div className="p-3 rounded-md bg-gray-900/50 border border-gray-800">
                       <p className="text-xs text-gray-300 mb-2">관계 중심(v1): 메모 간 연결·구조를 LLM에 전달</p>
                       <div className="grid grid-cols-2 gap-2">
@@ -616,6 +641,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             )}
           </TabsContent>
         </Tabs>
+        </div>
       </DialogContent>
     </Dialog>
   );
