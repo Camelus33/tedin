@@ -234,8 +234,15 @@ export default function DashboardPage() {
             {/* 좌측: 로고 */}
             <div className="flex items-center">
               <Link href="/dashboard" className="flex items-center space-x-3">
-                <AppLogo />
-                <span className="text-xl font-bold text-white">Habitus33</span>
+                {/* 모바일 전용 작은 로고 */}
+                <div className="sm:hidden">
+                  <AppLogo className="w-7 h-7" />
+                </div>
+                {/* 데스크톱/태블릿에서는 기존 그대로 */}
+                <div className="hidden sm:block">
+                  <AppLogo />
+                </div>
+                <span className="text-base sm:text-xl font-bold text-white">Habitus33</span>
               </Link>
               </div>
 
@@ -512,7 +519,7 @@ export default function DashboardPage() {
         <div className="space-y-12">
           {/* 최근 단권화 노트 섹션 */}
           <div>
-            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">Recent Summary</h2>
+            <h2 className="text-lg sm:text-xl font-medium text-white mb-6">Summary Notes</h2>
             {(() => {
               return summaryNotes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
