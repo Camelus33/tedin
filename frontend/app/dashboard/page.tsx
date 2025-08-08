@@ -49,6 +49,8 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('latest');
+  const [conceptScores, setConceptScores] = useState<Map<string, number>>(new Map());
+  const [scoresLoading, setScoresLoading] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -57,6 +59,36 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  // Fetch concept scores for notes when Top Score sorting is selected
+  useEffect(() => {
+    const fetchMissingScores = async () => {
+      if (sortBy !== 'topScore') return;
+      const ids = (recentMemos || []).map((m: any) => m._id).filter(Boolean);
+      const missing = ids.filter((id) => !conceptScores.has(id));
+      if (missing.length === 0) return;
+      try {
+        setScoresLoading(true);
+        const requests = missing.map((id) =>
+          apiClient
+            .get(`/notes/${id}/concept-score`)
+            .then((res: any) => ({ id, score: res?.data?.conceptUnderstandingScore?.totalScore }))
+            .catch(() => ({ id, score: undefined }))
+        );
+        const results = await Promise.all(requests);
+        setConceptScores((prev) => {
+          const next = new Map(prev);
+          results.forEach(({ id, score }) => {
+            if (typeof score === 'number') next.set(id, score);
+          });
+          return next;
+        });
+      } finally {
+        setScoresLoading(false);
+      }
+    };
+    fetchMissingScores();
+  }, [sortBy, recentMemos, conceptScores]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -204,6 +236,25 @@ export default function DashboardPage() {
   // 파생 상태: viewMode, sortBy, recentMemos 로부터 화면에 표시할 메모 목록 계산
   const displayedMemos = useMemo(() => {
     if (!recentMemos || recentMemos.length === 0) return [] as TSNote[];
+
+    if (sortBy === 'topScore') {
+      // Base order index (existing order) to preserve for items without scores
+      const baseIndex = new Map<string, number>();
+      recentMemos.forEach((m: any, idx: number) => baseIndex.set(m._id, idx));
+      const arr = [...recentMemos];
+      arr.sort((a: any, b: any) => {
+        const sa = conceptScores.get(a._id);
+        const sb = conceptScores.get(b._id);
+        const hasA = typeof sa === 'number';
+        const hasB = typeof sb === 'number';
+        if (hasA && hasB) return (sb as number) - (sa as number); // desc
+        if (hasA && !hasB) return -1; // scored first
+        if (!hasA && hasB) return 1;
+        // both missing: keep existing order
+        return (baseIndex.get(a._id)! - baseIndex.get(b._id)!);
+      });
+      return viewMode === 'grid' ? (arr as TSNote[]).slice(0, 3) : (arr as TSNote[]);
+    }
 
     const sorted = [...recentMemos].sort((a, b) => {
       const dateA = new Date(a.createdAt ?? a.clientCreatedAt ?? 0).getTime();
@@ -378,7 +429,7 @@ export default function DashboardPage() {
                   onClick={() => setSortMenuOpen(!sortMenuOpen)}
                   className="flex items-center space-x-2 px-3 py-2 text-sm text-cyan-300 hover:text-cyan-100 border border-indigo-500/30 rounded-md hover:border-indigo-400/50 transition-colors bg-gray-800/30 backdrop-blur-md min-h-[44px]"
                 >
-                  <span>Newest</span>
+                  <span>{sortBy === 'latest' ? 'Newest' : sortBy === 'oldest' ? 'Oldest' : 'Top Score'}</span>
                   <FiChevronDown className="w-4 h-4" />
                 </button>
 
@@ -401,6 +452,15 @@ export default function DashboardPage() {
                       className="block w-full text-left px-4 py-2 text-sm text-cyan-300 hover:bg-indigo-800/50 hover:text-cyan-100"
                     >
                       Oldest
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setSortBy('topScore');
+                        setSortMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-cyan-300 hover:bg-indigo-800/50 hover:text-cyan-100"
+                    >
+                      Top Score
                     </button>
                   </div>
                 )}
