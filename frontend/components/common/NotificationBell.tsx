@@ -28,9 +28,14 @@ export default function NotificationBell() {
   const fetchNotifications = async () => {
     if (!token) return;
     try {
-      const data: NotificationType[] = await apiClient.get('/notifications');
+      const data: NotificationType[] = await apiClient.get('/notifications?limit=20');
       setNotifications(data);
-      setUnreadCount(data.filter(n => !n.isRead).length);
+      try {
+        const countRes = await apiClient.get('/notifications/count?unreadOnly=true');
+        setUnreadCount(countRes?.count ?? data.filter(n => !n.isRead).length);
+      } catch {
+        setUnreadCount(data.filter(n => !n.isRead).length);
+      }
     } catch (err: any) {
       console.error('알림 로딩 에러', err);
       if (!err.message || !err.message.includes('AbortError')) {
@@ -83,6 +88,23 @@ export default function NotificationBell() {
       {open && (
         <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 shadow-lg rounded divide-y divide-gray-200 dark:divide-gray-700 z-50">
           <div className="p-2">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium dark:text-gray-100">알림</span>
+              {unreadCount > 0 && (
+                <button
+                  onClick={async () => {
+                    try {
+                      await apiClient.put('/notifications/readAll', {});
+                      setUnreadCount(0);
+                      fetchNotifications();
+                    } catch (e) {}
+                  }}
+                  className="text-xs text-blue-600 hover:underline"
+                >
+                  모두 읽음
+                </button>
+              )}
+            </div>
             {notifications.slice(0,5).map(n => (
               <div
                 key={n._id}

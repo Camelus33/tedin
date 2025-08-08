@@ -7,11 +7,17 @@ export const getNotifications = async (req: Request, res: Response) => {
   try {
     const userId = req.user._id;
     const unreadOnly = req.query.unreadOnly === 'true';
+    const limit = Math.min(parseInt((req.query.limit as string) || '20', 10), 100);
+    const skip = Math.max(parseInt((req.query.skip as string) || '0', 10), 0);
     const filter: FilterQuery<INotification> = { userId };
     if (unreadOnly) {
       Object.assign(filter, { isRead: false });
     }
-    const notifications = await Notification.find(filter).sort({ createdAt: -1 });
+    const notifications = await Notification.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('senderId', 'nickname');
     res.status(200).json(notifications);
   } catch (err: any) {
     console.error('Error fetching notifications:', err);
@@ -30,6 +36,7 @@ export const markAsRead = async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Unauthorized' });
     }
     notif.isRead = true;
+    notif.readAt = new Date();
     await notif.save();
     res.status(200).json(notif);
   } catch (err: any) {
@@ -44,7 +51,7 @@ export const markAllRead = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const result = await Notification.updateMany(
       { userId, isRead: false },
-      { isRead: true }
+      { isRead: true, readAt: new Date() }
     );
     res.status(200).json({ modifiedCount: result.modifiedCount });
   } catch (err: any) {
