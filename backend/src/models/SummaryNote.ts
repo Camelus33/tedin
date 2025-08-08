@@ -143,6 +143,22 @@ export interface ISummaryNote extends Document {
     };
     lastModified?: Date;         // 마지막 수정 시간
   };
+  /**
+   * @property {any} [aiDataSnapshotV2] - v2 AI 데이터 스냅샷(응답 캐싱용). 하위호환을 위해 선택 필드.
+   */
+  aiDataSnapshotV2?: any;
+  /**
+   * @property {Date} [aiDataSnapshotUpdatedAt] - 스냅샷 최신화 시각
+   */
+  aiDataSnapshotUpdatedAt?: Date;
+  /**
+   * @property {any} [aiRelGraphSnapshotV1] - v1 관계 그래프 스냅샷(compact/llm 포함 가능)
+   */
+  aiRelGraphSnapshotV1?: any;
+  /**
+   * @property {Date} [aiRelGraphSnapshotUpdatedAt] - v1 관계 그래프 스냅샷 최신화 시각
+   */
+  aiRelGraphSnapshotUpdatedAt?: Date;
 }
 
 /**
@@ -171,6 +187,13 @@ const SummaryNoteSchema: Schema = new Schema({
       default: Date.now 
     }
   }
+  ,
+  // v2 AI 데이터 스냅샷(옵션)
+  aiDataSnapshotV2: { type: Schema.Types.Mixed, default: null },
+  aiDataSnapshotUpdatedAt: { type: Date, default: null },
+  // v1 관계 그래프 스냅샷(옵션)
+  aiRelGraphSnapshotV1: { type: Schema.Types.Mixed, default: null },
+  aiRelGraphSnapshotUpdatedAt: { type: Date, default: null }
 }, { 
   /**
    * timestamps 옵션: true로 설정 시, createdAt 및 updatedAt 필드를 자동으로 생성하고 관리합니다.
@@ -185,6 +208,12 @@ SummaryNoteSchema.index({ userId: 1, title: 'text', tags: 'text' });
 SummaryNoteSchema.index({ 'diagram.data.nodes.noteId': 1 });
 SummaryNoteSchema.index({ 'diagram.data.connections.sourceNoteId': 1 });
 SummaryNoteSchema.index({ 'diagram.data.connections.targetNoteId': 1 });
+
+// 캐시 무효화 및 조회 최적화를 위한 인덱스
+// - orderedNoteIds를 통한 포함 여부 탐색 (노트/플래시카드 변경 시 무효화 쿼리 가속)
+// - 사용자 스코프 정렬/조회용 updatedAt 복합 인덱스
+SummaryNoteSchema.index({ userId: 1, orderedNoteIds: 1 });
+SummaryNoteSchema.index({ userId: 1, updatedAt: -1 });
 
 /**
  * @model SummaryNote

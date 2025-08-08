@@ -1,0 +1,15 @@
+# Task ID: 6
+# Title: Implement Visual Language for Graph Relationships
+# Status: pending
+# Dependencies: 5
+# Priority: medium
+# Description: Implement the visual styling for the vector graph relationships (cause-effect, before-after, etc.) according to the 'Visual Language' proposal.
+# Details:
+1.  Define distinct visual styles (line styles, icons, colors) for each type of relationship (cause-effect, before-after, etc.).
+2.  Modify the graph rendering logic to apply these styles based on the relationship type.
+3.  Ensure that the visual styles are clear and easily distinguishable.
+
+# Test Strategy:
+1.  Verify that each type of relationship is rendered with its corresponding visual style.
+2.  Ensure that the visual styles are consistent and easy to understand.
+3.  Test with different graph configurations to ensure that the styles are applied correctly in all cases.

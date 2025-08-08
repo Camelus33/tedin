@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Note from '../models/Note';
+import SummaryNote from '../models/SummaryNote';
 import Book from '../models/Book';
 import InlineThread from '../models/InlineThread';
 import User from '../models/User';
@@ -133,6 +134,19 @@ export const updateNote = async (req: Request, res: Response) => {
       { new: true }
     ).select('-__v');
 
+    // 스냅샷 무효화: 이 노트를 포함하는 모든 SummaryNote의 스냅샷 제거 (v2, v1 관계 그래프)
+    try {
+      await SummaryNote.updateMany(
+        { userId, orderedNoteIds: { $in: [noteId] } },
+        { $set: { 
+          aiDataSnapshotV2: null, 
+          aiDataSnapshotUpdatedAt: null,
+          aiRelGraphSnapshotV1: null,
+          aiRelGraphSnapshotUpdatedAt: null
+        } }
+      );
+    } catch {}
+
     res.status(200).json(updatedNote);
   } catch (error) {
     console.error('노트 업데이트 중 오류 발생:', error);
@@ -157,6 +171,19 @@ export const deleteNote = async (req: Request, res: Response) => {
     }
 
     await Note.deleteOne({ _id: noteId });
+
+    // 스냅샷 무효화 (v2, v1 관계 그래프)
+    try {
+      await SummaryNote.updateMany(
+        { userId, orderedNoteIds: { $in: [noteId] } },
+        { $set: { 
+          aiDataSnapshotV2: null, 
+          aiDataSnapshotUpdatedAt: null,
+          aiRelGraphSnapshotV1: null,
+          aiRelGraphSnapshotUpdatedAt: null
+        } }
+      );
+    } catch {}
 
     res.status(200).json({ message: '노트가 삭제되었습니다.' });
   } catch (error) {
@@ -398,6 +425,14 @@ export const addInlineThread = async (req: Request, res: Response) => {
       return res.status(500).json({ message: '노트에 인라인메모 쓰레드 참조 추가 실패했습니다.' });
     }
 
+    // v2 스냅샷 무효화: 이 노트를 포함하는 SummaryNote들
+    try {
+      await SummaryNote.updateMany(
+        { userId, orderedNoteIds: { $in: [noteId] } },
+        { $set: { aiDataSnapshotV2: null, aiDataSnapshotUpdatedAt: null } }
+      );
+    } catch {}
+
     res.status(201).json(savedThread);
   } catch (error) {
     console.error('인라인메모 쓰레드 생성 중 오류 발생:', error);
@@ -451,6 +486,14 @@ export const updateInlineThread = async (req: Request, res: Response) => {
       { new: true }
     );
 
+    // v2 스냅샷 무효화
+    try {
+      await SummaryNote.updateMany(
+        { userId, orderedNoteIds: { $in: [noteId] } },
+        { $set: { aiDataSnapshotV2: null, aiDataSnapshotUpdatedAt: null } }
+      );
+    } catch {}
+
     res.status(200).json(updatedThread);
   } catch (error) {
     console.error('인라인메모 쓰레드 수정 중 오류 발생:', error);
@@ -502,6 +545,14 @@ export const deleteInlineThread = async (req: Request, res: Response) => {
 
       await session.commitTransaction();
       
+      // v2 스냅샷 무효화
+      try {
+        await SummaryNote.updateMany(
+          { userId, orderedNoteIds: { $in: [noteId] } },
+          { $set: { aiDataSnapshotV2: null, aiDataSnapshotUpdatedAt: null } }
+        );
+      } catch {}
+
       res.status(200).json({ message: '인라인메모 쓰레드가 삭제되었습니다.' });
     } catch (error) {
       await session.abortTransaction();

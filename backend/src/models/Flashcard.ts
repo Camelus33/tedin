@@ -48,4 +48,9 @@ const FlashcardSchema = new Schema<IFlashcard>({
 });
 
 const Flashcard = mongoose.model<IFlashcard>('Flashcard', FlashcardSchema);
+
+// 인덱스 최적화
+// - 사용자/메모 단위로 nextReview 조회 및 무효화 가속
+FlashcardSchema.index({ userId: 1, memoId: 1, 'srsState.nextReview': 1 });
+FlashcardSchema.index({ userId: 1, memoId: 1, updatedAt: -1 });
 export default Flashcard; 

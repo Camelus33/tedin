@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Flashcard from '../models/Flashcard';
+import SummaryNote from '../models/SummaryNote';
 import mongoose from 'mongoose';
 import Note from '../models/Note';
 
@@ -24,6 +25,21 @@ export const createFlashcard = async (req: Request, res: Response) => {
       pageEnd,
       tags
     });
+    // 스냅샷 무효화: 해당 메모를 포함하는 SummaryNote들 (v2, v1 관계 그래프)
+    try {
+      if (memoId) {
+        await SummaryNote.updateMany(
+          { userId, orderedNoteIds: { $in: [memoId] } },
+          { $set: { 
+            aiDataSnapshotV2: null, 
+            aiDataSnapshotUpdatedAt: null,
+            aiRelGraphSnapshotV1: null,
+            aiRelGraphSnapshotUpdatedAt: null
+          } }
+        );
+      }
+    } catch {}
+
     res.status(201).json(flashcard);
   } catch (error) {
     console.error('플래시카드 생성 오류:', error);
@@ -78,6 +94,23 @@ export const reviewFlashcard = async (req: Request, res: Response) => {
     const nextReview = new Date(Date.now() + interval * 24 * 60 * 60 * 1000);
     card.srsState = { interval, ease, repetitions, nextReview, lastResult: result };
     await card.save();
+
+    // 스냅샷 무효화: 카드가 연결된 메모를 포함하는 SummaryNote들 (v2, v1 관계 그래프)
+    try {
+      const memoId = card.memoId ? String(card.memoId) : null;
+      if (memoId) {
+        await SummaryNote.updateMany(
+          { userId, orderedNoteIds: { $in: [memoId] } },
+          { $set: { 
+            aiDataSnapshotV2: null, 
+            aiDataSnapshotUpdatedAt: null,
+            aiRelGraphSnapshotV1: null,
+            aiRelGraphSnapshotUpdatedAt: null
+          } }
+        );
+      }
+    } catch {}
+
     res.status(200).json(card);
   } catch (error) {
     console.error('플래시카드 복습(SRS) 오류:', error);
@@ -125,6 +158,17 @@ export const updateFlashcard = async (req: Request, res: Response) => {
     const update = req.body;
     const card = await Flashcard.findOneAndUpdate({ _id: id, userId }, update, { new: true });
     if (!card) return res.status(404).json({ message: '카드 없음' });
+    // v2 스냅샷 무효화: 연결 메모 기반으로 무효화 시도
+    try {
+      const memoId = card?.memoId ? String(card.memoId) : null;
+      if (memoId) {
+        await SummaryNote.updateMany(
+          { userId, orderedNoteIds: { $in: [memoId] } },
+          { $set: { aiDataSnapshotV2: null, aiDataSnapshotUpdatedAt: null } }
+        );
+      }
+    } catch {}
+
     res.status(200).json(card);
   } catch (error) {
     console.error('플래시카드 수정 오류:', error);
@@ -138,8 +182,25 @@ export const deleteFlashcard = async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ message: '인증 필요' });
     const { id } = req.params;
-    const card = await Flashcard.findOneAndDelete({ _id: id, userId });
+    const card = await Flashcard.findOne({ _id: id, userId });
     if (!card) return res.status(404).json({ message: '카드 없음' });
+    const memoIdBeforeDelete = card.memoId ? String(card.memoId) : null;
+    await Flashcard.deleteOne({ _id: id, userId });
+    // 스냅샷 무효화 (v2, v1 관계 그래프)
+    try {
+      if (memoIdBeforeDelete) {
+        await SummaryNote.updateMany(
+          { userId, orderedNoteIds: { $in: [memoIdBeforeDelete] } },
+          { $set: { 
+            aiDataSnapshotV2: null, 
+            aiDataSnapshotUpdatedAt: null,
+            aiRelGraphSnapshotV1: null,
+            aiRelGraphSnapshotUpdatedAt: null
+          } }
+        );
+      }
+    } catch {}
+
     res.status(200).json({ message: '삭제 완료' });
   } catch (error) {
     console.error('플래시카드 삭제 오류:', error);

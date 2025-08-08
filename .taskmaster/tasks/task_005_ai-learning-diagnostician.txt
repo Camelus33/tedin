@@ -1,0 +1,18 @@
+# Task ID: 5
+# Title: Integrate Vector Graph Rendering into Canvas
+# Status: pending
+# Dependencies: 4
+# Priority: high
+# Description: Integrate the vector graph rendering logic from the existing summary note edit page into the Canvas component of the Knowledge Blueprint.
+# Details:
+1.  Reuse the existing code from `summary-notes/[summaryNoteId]/edit/page.tsx` responsible for rendering the vector graph (`diagram` data).
+2.  Create a `Canvas` component within the `KnowledgeBlueprintPage`.
+3.  Pass the `diagram` data to the `Canvas` component.
+4.  Adapt the existing graph rendering logic to fit within the `Canvas` component, ensuring proper scaling and positioning.
+5.  Implement basic panning and zooming functionality using a library like react-zoom-pan-pinch.
+
+# Test Strategy:
+1.  Verify that the vector graph is rendered correctly within the Canvas.
+2.  Verify that all nodes and relationships are visible.
+3.  Test panning and zooming functionality.
+4.  Compare the rendered graph with the original summary note edit page to ensure visual consistency.

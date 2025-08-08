@@ -1,0 +1,241 @@
+# Task ID: 3
+# Title: Implement AI Chat Feature for Hybrid Search
+# Status: pending
+# Dependencies: 1, 2
+# Priority: medium
+# Description: Implement an AI chat feature for the hybrid search system, enabling AI-driven conversations using search results as context. This includes multi-LLM support, a recommendation query system, and chat storage and management.
+# Details:
+1.  **Design AI Chat Interface:** Develop a user-friendly interface for interacting with the AI chat feature. This should include input fields for user queries, display areas for AI responses, and options for selecting different LLMs.
+2.  **Implement Contextualization of Search Results:** Modify the search result processing to provide relevant context to the AI chat system. This may involve extracting key information from search results and formatting it for the LLM.
+3.  **Integrate Multiple LLMs:** Implement support for multiple LLMs, allowing users to select the desired LLM for their chat sessions. This will require an abstraction layer to handle different LLM APIs and response formats.
+4.  **Develop Recommendation Query System:** Implement a system that suggests relevant queries to the user based on the current search context and chat history. This can be achieved using techniques like query expansion or collaborative filtering.
+5.  **Implement Chat Storage and Management:** Design a database schema to store chat logs, including user queries, AI responses, timestamps, and LLM selections. Implement functionality for retrieving, searching, and managing chat history.
+6.  **Secure API Integration:** Ensure secure integration with LLM APIs, handling authentication, authorization, and rate limiting appropriately.
+7.  **Error Handling and Logging:** Implement robust error handling and logging mechanisms to track issues and ensure system stability.
+
+# Test Strategy:
+1.  **Functional Testing:** Verify that the AI chat feature correctly integrates with the hybrid search system and provides relevant responses based on search results.
+2.  **LLM Performance Testing:** Evaluate the performance of different LLMs in terms of response quality, speed, and accuracy. Compare the responses of different LLMs for the same queries and contexts.
+3.  **Recommendation Query Testing:** Test the accuracy and relevance of the recommendation query system. Ensure that suggested queries are related to the current search context and user intent.
+4.  **Chat Storage and Management Testing:** Verify that chat logs are stored correctly and can be retrieved, searched, and managed efficiently.
+5.  **Security Testing:** Conduct security testing to identify and address potential vulnerabilities in the API integration and data storage.
+6.  **Performance Testing:** Measure the response time of the AI chat feature under different load conditions. Optimize the system for scalability and performance.
+
+# Subtasks:
+## 1. Design and Implement AI Chat Interface [done]
+### Dependencies: None
+### Description: Develop a user-friendly interface for interacting with the AI chat feature, including input fields, display areas, and LLM selection options.
+### Details:
+Design the UI/UX for the chat interface. Implement input field for user queries. Implement display area for AI responses. Add options for selecting different LLMs. Ensure responsiveness and accessibility.
+<info added on 2025-08-04T14:07:42.163Z>
+**Core Design Principles (2024 Latest Trends):**
+
+1. **Clarity and Transparency**: Clearly indicate to users that they are interacting with AI.
+2. **Context Awareness**: Maintain context throughout the conversation (previous queries, user preferences, search results).
+3. **Control and Customization**: Provide users with options to control AI behavior.
+4. **Error Handling and Fallback Mechanisms**: Provide clear error messages and alternatives.
+5. **Accessibility**: Adhere to WCAG guidelines.
+
+**Design Patterns:**
+
+1. **Conversational Search Box**: Input field for natural language questions.
+2. **Search Result Summarization and Contextualization**: AI summarizes search results and provides context.
+3. **Follow-up Question Generation**: AI suggests helpful follow-up questions.
+4. **Citation and Source Display**: Clearly display the source of information.
+5. **Multi-Turn Conversation Management**: Manage session-based conversation history.
+6. **Recommended Query System**: Suggest related queries based on the current conversation and search results.
+
+**Leveraging Hybrid Search:**
+- Perform initial search with keyword search.
+- Refine results through semantic understanding with vector search.
+- Contextualize and summarize with LLM.
+
+**Multi-LLM Support:**
+- Enable LLM switching with an abstraction layer.
+- Monitor and optimize performance.
+- Provide user selection options.
+
+**Implementation Considerations:**
+- Optimize MongoDB Atlas vector search index.
+- Use data modeling for efficient storage and retrieval.
+- Consider scalability and security.
+</info added on 2025-08-04T14:07:42.163Z>
+<info added on 2025-08-04T14:18:26.516Z>
+AI 채팅 인터페이스 설계 및 구현 완료:
+
+**구현된 기능:**
+
+1. **AIChatInterface 컴포넌트** - 완전한 AI 채팅 인터페이스
+   - 다중 LLM 지원 (ChatGPT, Claude, Gemini)
+   - 사용자 API 키 입력 및 관리
+   - 실시간 메시지 전송 및 응답
+   - 추천 쿼리 시스템 (Perplexity 스타일)
+   - 채팅 복사 및 저장 기능
+
+2. **HybridSearchModal 통합** - 기존 검색 모달에 AI 채팅 통합
+   - 검색 결과 아래 "AI와 대화하기" 버튼 추가
+   - 검색 모드와 AI 채팅 모드 간 전환
+   - 검색 결과를 AI 컨텍스트로 자동 전달
+
+3. **사용자 경험 개선**
+   - 직관적인 UI/UX 디자인
+   - 키보드 네비게이션 지원 (Enter 키로 메시지 전송)
+   - 자동 스크롤 및 로딩 상태 표시
+   - 접근성 고려 (ARIA 라벨, 시맨틱 HTML)
+
+4. **기술적 구현**
+   - TypeScript 타입 안전성
+   - React Hooks 기반 상태 관리
+   - 에러 처리 및 폴백 메커니즘
+   - 반응형 디자인
+
+**다음 단계:** 백엔드 API 엔드포인트 구현이 필요합니다.
+</info added on 2025-08-04T14:18:26.516Z>
+
+## 2. Contextualize Search Results for AI Chat [done]
+### Dependencies: None
+### Description: Modify search result processing to provide relevant context to the AI chat system by extracting and formatting key information for the LLM.
+### Details:
+Implement logic to extract key information from search results. Format the extracted information into a suitable format for the LLM (e.g., JSON, text). Implement a mechanism to pass the formatted context to the AI chat system.
+
+## 3. Integrate and Manage Multiple LLMs [done]
+### Dependencies: None
+### Description: Implement support for multiple LLMs, including an abstraction layer to handle different LLM APIs and response formats.
+### Details:
+Implement an abstraction layer to handle different LLM APIs. Implement logic to select the desired LLM for chat sessions. Handle different LLM response formats. Implement error handling for LLM API calls.
+
+## 4. Develop Recommendation Query System [done]
+### Dependencies: None
+### Description: Implement a system that suggests relevant queries to the user based on the current search context and chat history.
+### Details:
+Implement logic to analyze the current search context and chat history. Use techniques like query expansion or collaborative filtering to generate query suggestions. Display the query suggestions to the user.
+<info added on 2025-08-04T14:08:03.366Z>
+**Recommendation Query System Design Patterns (2024 Latest Trends):**
+
+1. **Personalized Query Expansion**: Expand queries based on user's past behavior, preferences, and context information.
+2. **Semantic Similarity Matching**: Match based on semantic understanding even without exact keyword matching.
+3. **Context-Based Bandit**: Dynamically adjust recommendations based on user feedback and context information.
+4. **Multi-Armed Bandit**: Balance between new recommendations and known good recommendations.
+5. **Explainable Recommendations**: Provide explanations for why a specific item was recommended.
+
+**Best Practices for Perplexity, Claude, and ChatGPT Interfaces:**
+
+**Perplexity Style:**
+- Provide concise and informative answers.
+- Utilize explanation generation for recommendations.
+- Example: "Since you asked about calculus formulas, 'applications of differential formulas' or 'integration techniques' may also be helpful."
+
+**Claude Style:**
+- Leverage strong reasoning and conversational abilities.
+- Refine preferences through dialogue with the user.
+- Example: "I see you're interested in calculus. What part is the most difficult for you? Is it basic concepts or application problems?"
+
+**ChatGPT Style:**
+- Generate creative and engaging content.
+- Create personalized explanations, reviews, and stories.
+- Example: "Think of calculus as climbing a mountain. 'Differentiation' is measuring the slope, and 'integration' is calculating the total distance."
+
+**Implementation Considerations:**
+
+1. **Embedding Generation**: Use the text-embedding-ada-002 model, normalized unit length embeddings.
+2. **Index Optimization**: hnsw index type, parameter tuning (m, efConstruction).
+3. **Query Optimization**: Use the $vectorSearch operator, reduce latency with caching.
+4. **Scalability**: Distribute data with sharding, load balancing.
+
+**MongoDB Atlas Vector Search Integration:**
+- Generate embeddings for both user queries and item descriptions.
+- Use cosine similarity or other distance metrics.
+- Reflect changes with regular embedding updates.
+
+**Potential Issues and Mitigation Strategies:**
+- Cold Start Problem: Provide initial recommendations with content-based filtering.
+- Data Sparsity: Utilize collaborative filtering techniques.
+- Bias: Mitigate bias with data analysis and re-weighting techniques.
+- Scalability Issues: Utilize distributed computing frameworks.
+</info added on 2025-08-04T14:08:03.366Z>
+
+## 5. Implement Chat Storage and Management [done]
+### Dependencies: None
+### Description: Design a database schema to store chat logs and implement functionality for retrieving, searching, and managing chat history.
+### Details:
+Design a database schema to store chat logs (user queries, AI responses, timestamps, LLM selections). Implement functionality for retrieving chat history. Implement search functionality for chat history. Implement management functionality (e.g., deleting chat logs).
+<info added on 2025-08-04T14:08:30.948Z>
+**Update chat storage and management system design strategy based on the latest information collected through web search:**
+
+**Optimize MongoDB Schema Design (2024 Latest Trends):**
+
+**Recommended Schema: Separate "conversations" and "messages" collections**
+
+**conversations Collection:**
+```json
+{
+  "_id": ObjectId(),
+  "participants": [ObjectId], // Array of user IDs
+  "createdAt": ISODate(),
+  "updatedAt": ISODate(),
+  "metadata": {
+    "name": String,          // Conversation name
+    "type": String,          // Conversation type (private, group)
+    "searchContext": {       // Search context
+      "query": String,
+      "results": [ObjectId], // IDs of searched memos
+      "filters": Object
+    }
+  }
+}
+```
+
+**messages Collection:**
+```json
+{
+  "_id": ObjectId(),
+  "conversationId": ObjectId(), // Reference to conversations collection
+  "senderId": ObjectId(),
+  "timestamp": ISODate(),
+  "content": String,
+  "contentType": String, // text, image, video
+  "embedding": [Number], // OpenAI embedding (for vector search)
+  "keywords": [String],   // Keywords (for keyword search)
+  "metadata": {
+    "location": {
+      "type": "Point",
+      "coordinates": [Number, Number]
+    },
+    "mentions": [ObjectId], // IDs of mentioned users
+    "llmModel": String,     // LLM model used
+    "searchScore": Number   // Search relevance score
+  }
+}
+```
+
+**Indexing Strategy:**
+
+**messages Collection:**
+- `{ conversationId: 1, timestamp: -1 }`: Retrieve conversation history in chronological order
+- `{ senderId: 1, timestamp: -1 }`: Retrieve messages from a specific user
+- `{ embedding: "vector" }`: Atlas Search index for vector search
+- `{ keywords: "text" }`: Atlas Search index for keyword search
+- `{ "metadata.location": "2dsphere" }`: For geospatial queries
+
+**conversations Collection:**
+- `{ participants: 1 }`: Retrieve conversations for a user
+- `{ updatedAt: -1 }`: Display recent conversations
+
+**Hybrid Search Integration:**
+- Store Embeddings: Store OpenAI embeddings in the embedding field
+- Store Keywords: Store keywords extracted from message content in the keywords field
+- Hybrid Search Query: Combine keyword search and vector search
+
+**Additional Best Practices:**
+- Data Validation: Utilize MongoDB schema validation
+- Data Archiving: Archive old messages to a separate collection
+- Security: Implement encryption, RBAC, and access control
+- Monitoring: Utilize MongoDB Atlas monitoring tools
+- TTL Index: Consider TTL index for automatic message deletion
+
+**Project Task Relevance:**
+- Task 1: Create Atlas Search vector index and store embeddings
+- Task 2: Combine keyword and vector search for hybrid search
+- Task 3: Design schema for chat storage and management
+</info added on 2025-08-04T14:08:30.948Z>
+

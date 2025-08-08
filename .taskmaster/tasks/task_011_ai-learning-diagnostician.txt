@@ -1,0 +1,73 @@
+# Task ID: 11
+# Title: AI-Link data: micro-timeline, rhythm metrics, SRS overlay, snapshot caching
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Enhance AI-provided data so LLM can read fine-grained thought evolution and time rhythm. Add InlineThread micro-timeline, Δt/burst/gap metrics and session labels, SRS review overlay, and snapshot caching. Keep API backward compatible with additive fields.
+# Details:
+Scope: backend jsonLdBuilder + controllers, optional caching field on SummaryNote, frontend AiLinkModal/Share rendering. Constraints: additive changes, feature-flagged. Perf targets: p95 ≤ 400ms on 50-note summary; repeat fetch p95 -30% with snapshot. Security: auth preserved on /summary-notes/:id/data; no leakage of private notes beyond owner; public share unchanged.
+
+# Test Strategy:
+Unit tests for timeline builders (micro events, Δt/burst/gap labeling, session grouping, SRS overlay). Controller tests for /summary-notes/:id/data additive fields. Simple perf smoke (timing) with seeded 50 notes. Visual check in AiLinkModal/Share. Rollout with feature flags.
+
+# Subtasks:
+## 1. Backend: Merge InlineThread micro-events into KnowledgeGrowthTimeline [pending]
+### Dependencies: None
+### Description: Extend jsonLdBuilder to fetch InlineThread per note and generate micro-events (timestamp, type, text). Merge into the main KnowledgeGrowthTimeline preserving ordering and source attribution. No breaking changes: expose under analysisV2.microTimeline field adjacent to existing timeline.
+### Details:
+Implementation: in buildJsonLd, for each note, retrieve inline thread items with timestamps; compute event objects {noteId, inlineThreadId, timestampISO, kind:"inline-add"|"edit", textSnippet}. Merge with note-level events and sort stably by time then event priority. Keep old fields intact.
+
+## 2. Backend: Δt metrics and burst/gap rhythm labeling [pending]
+### Dependencies: None
+### Description: Compute delta between consecutive notes (preferred timestamp) and label rhythm patterns (e.g., burst, normal, gap) with configurable thresholds.
+### Details:
+Add fields on analysisV2 for each stage: deltaMs, deltaHuman, rhythmLabel from thresholds (e.g., <=2min burst, 2–30min normal, >30min gap). Thresholds behind feature flag/config; include summary aggregates.
+
+## 3. Backend: Session grouping and within-session ordering [pending]
+### Dependencies: None
+### Description: Attach session grouping labels using originSession and session timestamps; compute withinSessionOrder and sessionIndex.
+### Details:
+For each note, detect originSession; group contiguous notes sharing session; add fields {sessionId, sessionIndex, withinSessionOrder, sessionStartISO}. Provide session summary nodes in analysisV2.sessionGroups.
+
+## 4. Backend: SRS overlay events from Flashcard history [pending]
+### Dependencies: None
+### Description: Overlay flashcard review events related to notes (by memoId) onto the timeline.
+### Details:
+Query Flashcard by {userId, memoId in orderedNoteIds}. For each card, project review history (if tracked) or lastResult/nextReview; emit events {type:"srs-review", result, tsISO}. Attach under analysisV2.srsOverlay and interleave into KnowledgeGrowthTimelineV2 if enabled.
+
+## 5. Backend: Snapshot caching on SummaryNote save [pending]
+### Dependencies: None
+### Description: On create/update SummaryNote, optionally precompute AI data snapshot and store on the document to reduce first-load latency.
+### Details:
+Add optional fields on SummaryNote: aiDataSnapshotV1 (Mixed), aiDataSnapshotUpdatedAt. Feature-flagged; background job safe. Controller getSummaryNoteData serves snapshot when fresh, else recompute and refresh.
+
+## 6. Feature flags and additive API contract [pending]
+### Dependencies: None
+### Description: Introduce feature flags and an additive response shape to avoid breaking existing consumers.
+### Details:
+Support request header X-AI-DATA-V: 1|2 or query ?v=2 to include analysisV2 fields (microTimeline, rhythm, sessionGroups, srsOverlay). Keep existing fields (executiveSummary, memoSummary, knowledgeGrowthTimeline) untouched.
+
+## 7. Indexes and performance tuning [pending]
+### Dependencies: None
+### Description: Ensure indexes and lean queries for timeline aggregation; small perf smoke tests.
+### Details:
+Add indexes: Note {userId, createdAt}, Flashcard {userId, memoId}, SummaryNote {userId}. Use .lean(), projections, and bounded $in operations. Add timing logs in dev and a script to seed 50 notes then measure p95.
+
+## 8. Frontend: AiLinkModal updates for V2 data [pending]
+### Dependencies: None
+### Description: Render micro-timeline, rhythm labels, and SRS overlay when present; gracefully degrade if absent.
+### Details:
+In components/summary-notes/AiLinkModal.tsx add optional panels for analysisV2; lazy render; guard for undefined; maintain current UI paths. Add copy-to-clipboard for V2 JSON.
+
+## 9. Frontend: Share page JSON-LD and visuals [pending]
+### Dependencies: None
+### Description: Include extended timeline fields in JSON-LD (size-aware) and add subtle badges/legends for rhythm and SRS in Share view.
+### Details:
+Update buildJsonLd to add extended structures under ai-link-context; ensure script stays within safe size; update app/share/[shareId] rendering to show legends if V2 present.
+
+## 10. Tests, QA checklist, and docs [pending]
+### Dependencies: None
+### Description: Unit tests for builders, controller contract tests, manual QA, and documentation updates.
+### Details:
+Add unit tests for delta labeling and session grouping; API contract test for /summary-notes/:id/data?v=2; AiLinkModal smoke; docs: AI_Link_Architecture_Guide and Private link docs updated. Rollout plan and rollback steps.
+

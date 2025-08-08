@@ -1,0 +1,18 @@
+# Task ID: 7
+# Title: Implement Map Panel with Minimap and Navigation
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: Create the Map Panel to display a minimap of the entire vector graph and provide search/navigation functionality.
+# Details:
+1.  Create a `MapPanel` component within the `KnowledgeBlueprintPage`.
+2.  Render a smaller version of the vector graph within the `MapPanel`, showing the entire graph at a glance.
+3.  Implement search functionality to allow users to search for specific nodes.
+4.  Implement navigation functionality to allow users to jump to specific nodes in the Canvas by clicking on them in the Map Panel.
+5.  Consider using a library like react-select for the search functionality.
+
+# Test Strategy:
+1.  Verify that the minimap is rendered correctly in the Map Panel.
+2.  Verify that the search functionality works correctly.
+3.  Verify that navigation from the Map Panel to the Canvas works correctly.
+4.  Ensure that the Map Panel is responsive and adapts to different screen sizes.

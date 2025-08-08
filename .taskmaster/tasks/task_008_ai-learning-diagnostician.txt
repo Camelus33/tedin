@@ -1,0 +1,17 @@
+# Task ID: 8
+# Title: Implement Inspector Panel for Memo Card Details
+# Status: pending
+# Dependencies: 4
+# Priority: high
+# Description: Implement the Inspector Panel to display the full details of the currently selected memo card (node).
+# Details:
+1.  Create an `InspectorPanel` component within the `KnowledgeBlueprintPage`.
+2.  Implement a mechanism to track the currently selected node in the Canvas.
+3.  When a node is selected, fetch its details and display them in the `InspectorPanel`.
+4.  Ensure that all original content from the existing shared page (notes, user markdown, metadata) is displayed correctly in the `InspectorPanel`.
+5.  Use a markdown rendering library like react-markdown to display user markdown.
+
+# Test Strategy:
+1.  Verify that the Inspector Panel displays the correct details for the selected node.
+2.  Verify that all original content is displayed correctly, including notes, user markdown, and metadata.
+3.  Test with different types of nodes to ensure that the Inspector Panel works correctly in all cases.

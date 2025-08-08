@@ -3444,11 +3444,197 @@
         ],
         "status": "pending",
         "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "AI-Link data: micro-timeline, rhythm metrics, SRS overlay, snapshot caching",
+        "description": "Enhance AI-provided data so LLM can read fine-grained thought evolution and time rhythm. Add InlineThread micro-timeline, Δt/burst/gap metrics and session labels, SRS review overlay, and snapshot caching. Keep API backward compatible with additive fields.",
+        "details": "Scope: backend jsonLdBuilder + controllers, optional caching field on SummaryNote, frontend AiLinkModal/Share rendering. Constraints: additive changes, feature-flagged. Perf targets: p95 ≤ 400ms on 50-note summary; repeat fetch p95 -30% with snapshot. Security: auth preserved on /summary-notes/:id/data; no leakage of private notes beyond owner; public share unchanged.",
+        "testStrategy": "Unit tests for timeline builders (micro events, Δt/burst/gap labeling, session grouping, SRS overlay). Controller tests for /summary-notes/:id/data additive fields. Simple perf smoke (timing) with seeded 50 notes. Visual check in AiLinkModal/Share. Rollout with feature flags.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Backend: Merge InlineThread micro-events into KnowledgeGrowthTimeline",
+            "description": "Extend jsonLdBuilder to fetch InlineThread per note and generate micro-events (timestamp, type, text). Merge into the main KnowledgeGrowthTimeline preserving ordering and source attribution. No breaking changes: expose under analysisV2.microTimeline field adjacent to existing timeline.",
+            "details": "Implementation: in buildJsonLd, for each note, retrieve inline thread items with timestamps; compute event objects {noteId, inlineThreadId, timestampISO, kind:\"inline-add\"|\"edit\", textSnippet}. Merge with note-level events and sort stably by time then event priority. Keep old fields intact.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 2,
+            "title": "Backend: Δt metrics and burst/gap rhythm labeling",
+            "description": "Compute delta between consecutive notes (preferred timestamp) and label rhythm patterns (e.g., burst, normal, gap) with configurable thresholds.",
+            "details": "Add fields on analysisV2 for each stage: deltaMs, deltaHuman, rhythmLabel from thresholds (e.g., <=2min burst, 2–30min normal, >30min gap). Thresholds behind feature flag/config; include summary aggregates.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 3,
+            "title": "Backend: Session grouping and within-session ordering",
+            "description": "Attach session grouping labels using originSession and session timestamps; compute withinSessionOrder and sessionIndex.",
+            "details": "For each note, detect originSession; group contiguous notes sharing session; add fields {sessionId, sessionIndex, withinSessionOrder, sessionStartISO}. Provide session summary nodes in analysisV2.sessionGroups.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 4,
+            "title": "Backend: SRS overlay events from Flashcard history",
+            "description": "Overlay flashcard review events related to notes (by memoId) onto the timeline.",
+            "details": "Query Flashcard by {userId, memoId in orderedNoteIds}. For each card, project review history (if tracked) or lastResult/nextReview; emit events {type:\"srs-review\", result, tsISO}. Attach under analysisV2.srsOverlay and interleave into KnowledgeGrowthTimelineV2 if enabled.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 5,
+            "title": "Backend: Snapshot caching on SummaryNote save",
+            "description": "On create/update SummaryNote, optionally precompute AI data snapshot and store on the document to reduce first-load latency.",
+            "details": "Add optional fields on SummaryNote: aiDataSnapshotV1 (Mixed), aiDataSnapshotUpdatedAt. Feature-flagged; background job safe. Controller getSummaryNoteData serves snapshot when fresh, else recompute and refresh.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 6,
+            "title": "Feature flags and additive API contract",
+            "description": "Introduce feature flags and an additive response shape to avoid breaking existing consumers.",
+            "details": "Support request header X-AI-DATA-V: 1|2 or query ?v=2 to include analysisV2 fields (microTimeline, rhythm, sessionGroups, srsOverlay). Keep existing fields (executiveSummary, memoSummary, knowledgeGrowthTimeline) untouched.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 7,
+            "title": "Indexes and performance tuning",
+            "description": "Ensure indexes and lean queries for timeline aggregation; small perf smoke tests.",
+            "details": "Add indexes: Note {userId, createdAt}, Flashcard {userId, memoId}, SummaryNote {userId}. Use .lean(), projections, and bounded $in operations. Add timing logs in dev and a script to seed 50 notes then measure p95.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 8,
+            "title": "Frontend: AiLinkModal updates for V2 data",
+            "description": "Render micro-timeline, rhythm labels, and SRS overlay when present; gracefully degrade if absent.",
+            "details": "In components/summary-notes/AiLinkModal.tsx add optional panels for analysisV2; lazy render; guard for undefined; maintain current UI paths. Add copy-to-clipboard for V2 JSON.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 9,
+            "title": "Frontend: Share page JSON-LD and visuals",
+            "description": "Include extended timeline fields in JSON-LD (size-aware) and add subtle badges/legends for rhythm and SRS in Share view.",
+            "details": "Update buildJsonLd to add extended structures under ai-link-context; ensure script stays within safe size; update app/share/[shareId] rendering to show legends if V2 present.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          },
+          {
+            "id": 10,
+            "title": "Tests, QA checklist, and docs",
+            "description": "Unit tests for builders, controller contract tests, manual QA, and documentation updates.",
+            "details": "Add unit tests for delta labeling and session grouping; API contract test for /summary-notes/:id/data?v=2; AiLinkModal smoke; docs: AI_Link_Architecture_Guide and Private link docs updated. Rollout plan and rollback steps.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 11
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "V1 관계 그래프 최적화: compact/LLM 프로파일/캐시/프론트 지연 로딩",
+        "description": "V1 응답(메모카드 간 관계 그래프)을 하위 호환을 유지하며 경량화하고, LLM 입력에 최적화된 선택적 프로파일을 제공. 초기 로딩 및 반복 조회 지연을 줄이고, 소비 측(모달)에서 부분 복사·지연 렌더를 지원.",
+        "details": "목표: payload 40–70% 축소(콘텐츠 분리·정규화·사전화), 서버 p95 20–40% 개선(lean/projection/캐시), LLM 입력 길이 30–60% 단축(LLM 전용 요약). 제약: 기본 v1 응답은 그대로, 신규는 쿼리/헤더 플래그로만 활성화. 보안: 소유자 범위 권한 동일, 민감 본문은 compact에서 제외.",
+        "testStrategy": "계약 테스트: v1 기본 응답 바이트 동일성. compact: nodes/edges만, 키 이름·정렬 고정. llm: adjacency, 요약 지표(centrality近似/topK) 포함, 상위 N 본문만. 캐시: TTL·무효화 검증. 프론트: 모달에서 compact 소비·부분 복사·가상화 스모크.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Backend: v1 compact 응답 추가(nodes/edges 정규화, 콘텐츠 제외)",
+            "description": "?compact=1 또는 X-REL-GRAPH-OPT: compact 일 때 v1 관계 그래프를 경량 정규화 포맷으로 반환. nodes[{id,ts,tags}], edges[{s,t,r,w}] + dicts{tagCodes, relCodes}.",
+            "details": "- 기존 v1은 영향 없음. - .lean()+projection으로 필요한 필드만. - timestamp epoch, 정렬키 고정(id asc, s/t asc). - dict 적용으로 반복 문자열 제거.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 2,
+            "title": "Backend: v1 llm 프로파일 추가(adjacency+요약지표+상위N 본문)",
+            "description": "?llm=1 또는 X-REL-GRAPH-OPT: llm 일 때 LLM 친화 페이로드 제공. adjacency, degree/centrality近似, community 라벨(옵션), 상위 N 노드의 요약 텍스트.",
+            "details": "- 본문은 상위 N만(기본 10). - 지표는 O(n) 근사(간단 degree/weighted-degree). - 가이드 텍스트 1줄 포함: 관계 의미 설명.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 3,
+            "title": "Backend: 캐싱/무효화(v1 그래프)",
+            "description": "v1 compact/llm 응답에 스냅샷 캐시와 TTL 적용. 노트/인라인/플래시카드 변경 이벤트 연동 무효화.",
+            "details": "- SummaryNote에 aiRelGraphSnapshotV1, aiRelGraphSnapshotUpdatedAt 추가(혼동 방지). - TTL 기본 5분. - 변경 컨트롤러에서 해당 SummaryNote 무효화.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 4,
+            "title": "Backend: 인덱스·프로젝션 정리",
+            "description": "userId,_id,createdAt, 관계키에 인덱스 점검. 프로젝션으로 불필요 필드 제거. p95 타임 측정 로그.",
+            "details": "- .lean(), select({}) 적용. - rg 스크립트/seed로 50노트 기준 p95 로그.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 5,
+            "title": "Frontend: 모달에서 compact 우선 소비 + 부분 복사",
+            "description": "AiLinkModal에서 관계 그래프 영역은 기본 compact 페이로드를 요청·표시. '그래프만 복사', '요약 지표만' 버튼 제공.",
+            "details": "- 탭 내 섹션 접기/펼치기 유지. - 길이 길 경우 가상 리스트. - 기존 v2 보조 패널과 공존.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 6,
+            "title": "Frontend: LLM 프로파일 빠른 전송",
+            "description": "모달에서 'LLM 데이터 복사(v1)' 버튼 추가. compact/llm 중 선택 복사 가능 드롭다운.",
+            "details": "- 최대 길이 안내 툴팁. - 실패 시 폴백 메시지.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 7,
+            "title": "Tests: 계약·성능 스모크",
+            "description": "v1 기본 응답 바이트 동일성. compact/llm 스키마 검증 및 p95 측정.",
+            "details": "- supertest 계약 테스트. - 50노트 seed로 p95 타임 로깅.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          },
+          {
+            "id": 8,
+            "title": "Docs & Rollout",
+            "description": "옵션 플래그, 스키마 예시, LLM 사용 가이드, 롤백 절차 문서화.",
+            "details": "- docs/REL_GRAPH_V1_OPTIMIZATION.md. - 환경변수/TTL/상위N 기본값 표.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 12
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-08-04T13:09:44.245Z",
-      "updated": "2025-08-06T05:23:28.192Z",
+      "updated": "2025-08-08T01:55:44.900Z",
       "description": "Tasks for ai-learning-diagnostician context"
     }
   }

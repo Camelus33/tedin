@@ -279,9 +279,10 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
       if (activeTab === 'ai-data' && isOpen && !aiLinkData) {
         setIsDataLoading(true);
         try {
-          const response = await api.get(`/summary-notes/${summaryNoteId}/data`);
+          // v2 데이터 요청 (모달 한정)
+          const response = await api.get(`/summary-notes/${summaryNoteId}/data`, { params: { v: '2' } });
           setAiLinkData(response.data);
-          toast.success('AI-Link V2 데이터를 성공적으로 불러왔습니다.');
+          toast.success('V2 데이터 로드 완료');
         } catch (error) {
           console.error('Failed to fetch AI link data:', error);
           toast.error('AI-Link 데이터를 불러오는 데 실패했습니다.');
@@ -302,7 +303,7 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
       if (shareId) {
         const fullUrl = `${window.location.origin}/share/${shareId}`;
         setGeneratedUrl(fullUrl);
-        toast.success('당신의 지식을 나눌 준비가 되었습니다.');
+        toast.success('공유 링크가 준비되었습니다.');
       }
     } catch (error) {
       console.error('Failed to generate AI link:', error);
@@ -375,18 +376,18 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             <span>AI-Link</span>
           </DialogTitle>
           <DialogDescription className="text-gray-400 pt-4 text-left">
-            <p className="text-center pb-2">지식 그래프를 AI에게 전달하세요:</p>
+            <p className="text-center pb-2">LLM이 생각의 순서·시간 리듬을 이해하도록 데이터를 전달합니다.</p>
             <ol className="list-decimal list-inside bg-gray-900/50 p-3 rounded-md space-y-1">
               <li>복사한 데이터를 ChatGPT, Claude, NotebookLM에 붙여넣기</li>
-              <li>AI가 당신의 지식 구조를 이해하고 맞춤형 답변 제공</li>
+              <li>LLM이 생각의 순서·시간 리듬을 읽고 맞춤 코칭을 제안</li>
             </ol>
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-900">
+            <TabsList className="grid w-full grid-cols-2 bg-gray-900">
             <TabsTrigger value="share">공유 링크</TabsTrigger>
-            <TabsTrigger value="ai-data">지식 그래프 데이터</TabsTrigger>
+              <TabsTrigger value="ai-data">AI 제공 데이터</TabsTrigger>
           </TabsList>
           
           <TabsContent value="share" className="py-4">
@@ -411,9 +412,9 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
             ) : (
               <div className="text-center space-y-4">
                 <p className="text-gray-300 px-2">
-                  AI가 당신의 지식 구조를 이해할 수 있는 링크를 생성합니다
+                  LLM이 분석할 수 있는 공유 링크를 생성합니다
                   <span className="block font-semibold text-cyan-400 mt-1">
-                    개인화된 AI 상호작용 경험
+                    개인화된 코칭을 위한 준비 완료
                   </span>
                 </p>
                 <Button
@@ -444,6 +445,154 @@ export function AiLinkModal({ summaryNoteId, isOpen, onOpenChange }: AiLinkModal
                 <KnowledgeGrowthTimelineDisplay timeline={aiLinkData.knowledgeGrowthTimeline} />
                 <SuggestedActionsDisplay actions={aiLinkData.potentialAction} />
                 <LLMOptimizedDataDisplay aiLinkData={aiLinkData} />
+
+                {/* V2 보조 패널 (모달 전용) */}
+                {aiLinkData?.analysisV2 && (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold text-cyan-300">생각의 순서·리듬·복습 흐름(V2)</h3>
+                    <p className="text-[11px] text-gray-400">메모 관계로 대화하려면 관계 v1을, 생각의 순서·리듬으로 대화하려면 V2를 선택하세요.</p>
+
+                    {/* timelineV2 요약 */}
+                    {Array.isArray(aiLinkData.analysisV2.timelineV2) && aiLinkData.analysisV2.timelineV2.length > 0 && (
+                      <details className="group">
+                        <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-200">타임라인(Δt·리듬·세션) 미리보기</summary>
+                        <div className="mt-2 p-3 rounded-md bg-gray-900/60 border border-gray-800 max-h-56 overflow-y-auto">
+                          {aiLinkData.analysisV2.timelineV2.slice(0, 20).map((ev: any, idx: number) => (
+                            <div key={idx} className="text-xs text-gray-300 flex items-center justify-between py-1 border-b border-gray-800/60">
+                              <div className="flex-1 pr-2 truncate">
+                                <span className="text-cyan-400">{new Date(ev.timestampISO).toLocaleString()}</span>
+                                <span className="ml-2 text-gray-400">Δt: {ev.deltaHuman || '-'}</span>
+                                <span className="ml-2 text-gray-400">리듬: {ev.rhythmPersonal || ev.rhythmLabel}</span>
+                              </div>
+                              <div className="text-gray-500 whitespace-nowrap">세션 {ev.sessionIndex || '-'} · 시간대 {ev.hourOfDay}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+
+                    {/* 체인 요약 */}
+                    {Array.isArray(aiLinkData.analysisV2.chains) && aiLinkData.analysisV2.chains.length > 0 && (
+                      <details className="group">
+                        <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-200">생각의 사슬(Chains) 요약</summary>
+                        <div className="mt-2 p-3 rounded-md bg-gray-900/60 border border-gray-800 max-h-56 overflow-y-auto">
+                          {aiLinkData.analysisV2.chains.slice(0, 10).map((ch: any, idx: number) => {
+                            const dur = ch?.strength?.durationMs || 0;
+                            const minutes = Math.floor(dur / 60000);
+                            const seconds = Math.floor((dur % 60000) / 1000);
+                            return (
+                              <div key={idx} className="text-xs text-gray-300 py-1 border-b border-gray-800/60">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-purple-300">사슬 {idx + 1}</span>
+                                  <span className="text-gray-500">길이 {ch?.strength?.length || 0} · {minutes}m {seconds}s</span>
+                                </div>
+                                {Array.isArray(ch?.dominantTags) && ch.dominantTags.length > 0 && (
+                                  <div className="mt-1 text-gray-400">대표 태그: {ch.dominantTags.join(', ')}</div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </details>
+                    )}
+
+                    {/* SRS 오버레이 요약 */}
+                    {Array.isArray(aiLinkData.analysisV2.srsOverlay) && aiLinkData.analysisV2.srsOverlay.length > 0 && (
+                      <details className="group">
+                        <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-200">복습(SRS) 이벤트</summary>
+                        <div className="mt-2 p-3 rounded-md bg-gray-900/60 border border-gray-800 max-h-48 overflow-y-auto">
+                          {aiLinkData.analysisV2.srsOverlay.slice(0, 20).map((e: any, idx: number) => (
+                            <div key={idx} className="text-xs text-gray-300 py-1 border-b border-gray-800/60">
+                              메모 {e.memoId} · 다음 복습 {e.nextReviewISO ? new Date(e.nextReviewISO).toLocaleDateString() : '-'} · 결과 {e.lastResult || '-'}
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+
+                    {/* 미세 타임라인 요약 */}
+                    {Array.isArray(aiLinkData.analysisV2.microTimeline) && aiLinkData.analysisV2.microTimeline.length > 0 && (
+                      <details className="group">
+                        <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-200">인라인(미세) 타임라인</summary>
+                        <div className="mt-2 p-3 rounded-md bg-gray-900/60 border border-gray-800 max-h-48 overflow-y-auto">
+                          {aiLinkData.analysisV2.microTimeline.slice(0, 20).map((m: any, idx: number) => (
+                            <div key={idx} className="text-xs text-gray-300 py-1 border-b border-gray-800/60">
+                              {new Date(m.timestampISO).toLocaleString()} · {m.textSnippet}
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+
+                    {/* V2 JSON 복사 */}
+                    <div className="p-3 rounded-md bg-cyan-900/20 border border-cyan-700/50">
+                      <p className="text-xs text-cyan-300 mb-2">LLM에 붙여넣을 V2 분석 데이터(JSON)</p>
+                      <Button
+                        size="sm"
+                        className="w-full text-xs h-8 bg-cyan-600 hover:bg-cyan-700"
+                        onClick={() => {
+                          const v2 = aiLinkData?.analysisV2 || {};
+                          const payload = JSON.stringify(v2, null, 2);
+                          navigator.clipboard.writeText(payload);
+                          toast.success('V2 분석 데이터가 복사되었습니다.');
+                        }}
+                      >
+                        <ClipboardIcon className="w-3 h-3 mr-2" /> V2 분석 데이터 복사(순서·리듬)
+                      </Button>
+                    </div>
+
+                    {/* v1 관계 그래프: 유저 친화적 라벨로 선택 복사 */}
+                    <div className="p-3 rounded-md bg-gray-900/50 border border-gray-800">
+                      <p className="text-xs text-gray-300 mb-2">관계 중심(v1): 메모 간 연결·구조를 LLM에 전달</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          size="sm"
+                          className="text-xs h-8 bg-gray-700 hover:bg-gray-600"
+                          title="가벼운 nodes/edges 데이터로 그래프 구조만 전달"
+                          onClick={async () => {
+                            try {
+                              const res = await api.get(`/summary-notes/${summaryNoteId}/data`, { params: { compact: '1' } });
+                              const compact = (res.data as any)?.memoRelGraphCompact;
+                              if (!compact) {
+                                toast.error('연결 구조 데이터를 불러올 수 없습니다.');
+                                return;
+                              }
+                              navigator.clipboard.writeText(JSON.stringify(compact, null, 2));
+                              toast.success('연결 구조 데이터가 복사되었습니다.');
+                            } catch (e) {
+                              toast.error('연결 구조 데이터를 불러오는 데 실패했습니다.');
+                            }
+                          }}
+                        >
+                          <ClipboardIcon className="w-3 h-3 mr-2" /> 연결 구조 복사(v1·가벼움)
+                        </Button>
+
+                        <Button
+                          size="sm"
+                          className="text-xs h-8 bg-gray-700 hover:bg-gray-600"
+                          title="adjacency/요약지표 포함: LLM이 바로 분석하기 좋음"
+                          onClick={async () => {
+                            try {
+                              const res = await api.get(`/summary-notes/${summaryNoteId}/data`, { params: { llm: '1' } });
+                              const llm = (res.data as any)?.memoRelGraphLLM;
+                              if (!llm) {
+                                toast.error('연결 요약 데이터를 불러올 수 없습니다.');
+                                return;
+                              }
+                              navigator.clipboard.writeText(JSON.stringify(llm, null, 2));
+                              toast.success('연결 요약 데이터가 복사되었습니다.');
+                            } catch (e) {
+                              toast.error('연결 요약 데이터를 불러오는 데 실패했습니다.');
+                            }
+                          }}
+                        >
+                          <ClipboardIcon className="w-3 h-3 mr-2" /> 연결 요약 복사(v1·분석용)
+                        </Button>
+                      </div>
+                      <p className="text-[10px] text-gray-500 mt-2">가벼움: nodes/edges 정규화 · 분석용: adjacency/요약지표/상위N</p>
+                    </div>
+                  </div>
+                )}
 
                 <details className="group">
                   <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-300 transition-colors flex items-center">

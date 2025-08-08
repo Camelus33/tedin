@@ -1,0 +1,55 @@
+# Task ID: 1
+# Title: Implement MongoDB Atlas Vector Search with OpenAI Embeddings
+# Status: done
+# Dependencies: 6, 7
+# Priority: high
+# Description: Configure MongoDB Atlas Vector Search to enable semantic search capabilities using OpenAI Embeddings API.
+# Details:
+1. **Set up MongoDB Atlas Cluster:** Ensure an Atlas cluster is provisioned. Choose a suitable tier based on anticipated data volume and query load. Enable Atlas Search during cluster creation.
+2. **Create a Vector Search Index:** Define a new Atlas Search index with the `vectorType` set to 'denseVector'. Configure the `fields` array to include the field containing the OpenAI embeddings. Specify the `dimensions` to match the embedding vector size (e.g., 1536 for `text-embedding-ada-002`).
+3. **Generate OpenAI Embeddings:** Use the OpenAI Embeddings API (`text-embedding-ada-002` model is recommended for cost-effectiveness and performance) to generate vector embeddings for the text data to be indexed.  Handle API rate limits gracefully using exponential backoff.
+4. **Store Embeddings in MongoDB:** Store the generated embeddings in the designated MongoDB collection. Ensure the embedding vectors are stored as arrays of floating-point numbers.
+5. **Implement Semantic Search Query:** Construct an aggregation pipeline that uses the `$vectorSearch` operator to perform semantic similarity search.  Specify the `index` name, `path` to the embedding field, `queryVector` (embedding of the search query generated using OpenAI), `numCandidates` (number of documents to consider), and `limit` (number of results to return).
+6. **Optimize for Performance:** Monitor query performance and adjust the `numCandidates` parameter to balance recall and latency. Consider using pre-filtering techniques to reduce the search space.
+7. **Error Handling and Logging:** Implement robust error handling to catch potential issues with the OpenAI API, Atlas Search, and data processing. Log relevant information for debugging and monitoring.
+8. **Security Considerations:** Secure the OpenAI API key and MongoDB Atlas credentials using environment variables or a secrets management system. Implement appropriate access control measures to protect sensitive data.
+
+# Test Strategy:
+1. **Index Creation Verification:** Verify that the Atlas Search index is created successfully with the correct configuration (vector type, dimensions, fields).
+2. **Embedding Generation and Storage:** Confirm that OpenAI embeddings are generated correctly and stored in MongoDB as arrays of floating-point numbers.
+3. **Semantic Search Accuracy:** Test the semantic search functionality with a variety of queries. Evaluate the relevance of the search results based on semantic similarity, not just keyword matching. Use a ground truth dataset to measure precision and recall.
+4. **Performance Testing:** Measure the query latency for different query types and data volumes. Ensure that the performance meets the required SLAs.  Test with concurrent users to assess scalability.
+5. **Error Handling Validation:** Simulate error conditions (e.g., OpenAI API errors, invalid data) and verify that the application handles them gracefully and logs appropriate error messages.
+6. **Security Audit:** Review the code and configuration to ensure that API keys and database credentials are not exposed and that access control is properly implemented.
+
+# Subtasks:
+## 1. Provision MongoDB Atlas Cluster and Enable Atlas Search [done]
+### Dependencies: None
+### Description: Set up a MongoDB Atlas cluster with an appropriate tier and enable Atlas Search during the cluster creation process.
+### Details:
+Choose a suitable Atlas cluster tier based on anticipated data volume and query load. Ensure Atlas Search is enabled during cluster creation.
+
+## 2. Create Vector Search Index in Atlas [done]
+### Dependencies: None
+### Description: Define a new Atlas Search index with the correct vector type, fields, and dimensions to store OpenAI embeddings.
+### Details:
+Create an Atlas Search index with `vectorType` set to 'denseVector'. Configure the `fields` array to include the field containing the OpenAI embeddings. Specify the `dimensions` to match the embedding vector size (e.g., 1536).
+
+## 3. Generate and Store OpenAI Embeddings [done]
+### Dependencies: None
+### Description: Use the OpenAI Embeddings API to generate vector embeddings for the text data and store them in MongoDB.
+### Details:
+Use the OpenAI Embeddings API (`text-embedding-ada-002` model recommended) to generate vector embeddings. Handle API rate limits gracefully. Store the embeddings in the designated MongoDB collection as arrays of floating-point numbers.
+
+## 4. Implement Semantic Search Query with $vectorSearch [done]
+### Dependencies: None
+### Description: Construct an aggregation pipeline that uses the `$vectorSearch` operator to perform semantic similarity search.
+### Details:
+Construct an aggregation pipeline using `$vectorSearch`. Specify the `index` name, `path` to the embedding field, `queryVector` (embedding of the search query), `numCandidates`, and `limit`.
+
+## 5. Implement Error Handling, Logging, and Security [done]
+### Dependencies: None
+### Description: Implement robust error handling, logging, and security measures for the application.
+### Details:
+Implement error handling for OpenAI API, Atlas Search, and data processing. Log relevant information. Secure the OpenAI API key and MongoDB Atlas credentials using environment variables or a secrets management system. Implement access control.
+

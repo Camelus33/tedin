@@ -1,0 +1,61 @@
+# Task ID: 12
+# Title: V1 관계 그래프 최적화: compact/LLM 프로파일/캐시/프론트 지연 로딩
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: V1 응답(메모카드 간 관계 그래프)을 하위 호환을 유지하며 경량화하고, LLM 입력에 최적화된 선택적 프로파일을 제공. 초기 로딩 및 반복 조회 지연을 줄이고, 소비 측(모달)에서 부분 복사·지연 렌더를 지원.
+# Details:
+목표: payload 40–70% 축소(콘텐츠 분리·정규화·사전화), 서버 p95 20–40% 개선(lean/projection/캐시), LLM 입력 길이 30–60% 단축(LLM 전용 요약). 제약: 기본 v1 응답은 그대로, 신규는 쿼리/헤더 플래그로만 활성화. 보안: 소유자 범위 권한 동일, 민감 본문은 compact에서 제외.
+
+# Test Strategy:
+계약 테스트: v1 기본 응답 바이트 동일성. compact: nodes/edges만, 키 이름·정렬 고정. llm: adjacency, 요약 지표(centrality近似/topK) 포함, 상위 N 본문만. 캐시: TTL·무효화 검증. 프론트: 모달에서 compact 소비·부분 복사·가상화 스모크.
+
+# Subtasks:
+## 1. Backend: v1 compact 응답 추가(nodes/edges 정규화, 콘텐츠 제외) [pending]
+### Dependencies: None
+### Description: ?compact=1 또는 X-REL-GRAPH-OPT: compact 일 때 v1 관계 그래프를 경량 정규화 포맷으로 반환. nodes[{id,ts,tags}], edges[{s,t,r,w}] + dicts{tagCodes, relCodes}.
+### Details:
+- 기존 v1은 영향 없음. - .lean()+projection으로 필요한 필드만. - timestamp epoch, 정렬키 고정(id asc, s/t asc). - dict 적용으로 반복 문자열 제거.
+
+## 2. Backend: v1 llm 프로파일 추가(adjacency+요약지표+상위N 본문) [pending]
+### Dependencies: None
+### Description: ?llm=1 또는 X-REL-GRAPH-OPT: llm 일 때 LLM 친화 페이로드 제공. adjacency, degree/centrality近似, community 라벨(옵션), 상위 N 노드의 요약 텍스트.
+### Details:
+- 본문은 상위 N만(기본 10). - 지표는 O(n) 근사(간단 degree/weighted-degree). - 가이드 텍스트 1줄 포함: 관계 의미 설명.
+
+## 3. Backend: 캐싱/무효화(v1 그래프) [pending]
+### Dependencies: None
+### Description: v1 compact/llm 응답에 스냅샷 캐시와 TTL 적용. 노트/인라인/플래시카드 변경 이벤트 연동 무효화.
+### Details:
+- SummaryNote에 aiRelGraphSnapshotV1, aiRelGraphSnapshotUpdatedAt 추가(혼동 방지). - TTL 기본 5분. - 변경 컨트롤러에서 해당 SummaryNote 무효화.
+
+## 4. Backend: 인덱스·프로젝션 정리 [pending]
+### Dependencies: None
+### Description: userId,_id,createdAt, 관계키에 인덱스 점검. 프로젝션으로 불필요 필드 제거. p95 타임 측정 로그.
+### Details:
+- .lean(), select({}) 적용. - rg 스크립트/seed로 50노트 기준 p95 로그.
+
+## 5. Frontend: 모달에서 compact 우선 소비 + 부분 복사 [pending]
+### Dependencies: None
+### Description: AiLinkModal에서 관계 그래프 영역은 기본 compact 페이로드를 요청·표시. '그래프만 복사', '요약 지표만' 버튼 제공.
+### Details:
+- 탭 내 섹션 접기/펼치기 유지. - 길이 길 경우 가상 리스트. - 기존 v2 보조 패널과 공존.
+
+## 6. Frontend: LLM 프로파일 빠른 전송 [pending]
+### Dependencies: None
+### Description: 모달에서 'LLM 데이터 복사(v1)' 버튼 추가. compact/llm 중 선택 복사 가능 드롭다운.
+### Details:
+- 최대 길이 안내 툴팁. - 실패 시 폴백 메시지.
+
+## 7. Tests: 계약·성능 스모크 [pending]
+### Dependencies: None
+### Description: v1 기본 응답 바이트 동일성. compact/llm 스키마 검증 및 p95 측정.
+### Details:
+- supertest 계약 테스트. - 50노트 seed로 p95 타임 로깅.
+
+## 8. Docs & Rollout [pending]
+### Dependencies: None
+### Description: 옵션 플래그, 스키마 예시, LLM 사용 가이드, 롤백 절차 문서화.
+### Details:
+- docs/REL_GRAPH_V1_OPTIMIZATION.md. - 환경변수/TTL/상위N 기본값 표.
+
