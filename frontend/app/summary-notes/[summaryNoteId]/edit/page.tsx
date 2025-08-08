@@ -1096,6 +1096,7 @@ export default function EditSummaryNotePage() {
                             sessionDetails={note.sessionDetails}
                             readingPurpose={currentBookReadingPurpose || 'humanities_self_reflection'}
                             isPageEditing={false}
+                             enableOverlayEvolutionMode={true}
                             bookTitle={noteBookTitle}
                           />
                         </div>
