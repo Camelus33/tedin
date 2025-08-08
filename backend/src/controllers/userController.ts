@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
+import Note from '../models/Note';
 import Session from '../models/Session';
 import Book from '../models/Book';
 import UserStats from '../models/UserStats';
@@ -178,7 +179,7 @@ export const getUserStats = async (req: Request, res: Response) => {
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
     // Fetch relevant data in parallel
-    const [latestSession, userStats, totalBooks, todayTsCount, totalTsCount] = await Promise.all([
+    const [latestSession, userStats, totalBooks, todayTsCount, totalTsCount, totalNotes] = await Promise.all([
       Session.findOne({ userId: userObjectId, mode: 'TS', status: 'completed', ppm: { $ne: null, $gt: 0 } })
         .sort({ createdAt: -1 })
         .select('ppm')
@@ -187,6 +188,7 @@ export const getUserStats = async (req: Request, res: Response) => {
       Book.countDocuments({ userId: userObjectId }),
       Session.countDocuments({ userId: userObjectId, mode: 'TS', status: 'completed', createdAt: { $gte: startOfToday } }),
       Session.countDocuments({ userId: userObjectId, mode: 'TS', status: 'completed' }),
+      Note.countDocuments({ userId: userObjectId }),
     ]);
     // Compute today's ZenGo score from history
     let todayZengoScore = 0;
@@ -203,6 +205,7 @@ export const getUserStats = async (req: Request, res: Response) => {
       todayZengoScore,
       totalZengoScore: userStats?.zengoTotalScore ?? 0,
       totalBooks: totalBooks || 0,
+      totalNotes: totalNotes || 0,
     };
     res.status(200).json(response);
   } catch (error) {

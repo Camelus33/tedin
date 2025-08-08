@@ -44,6 +44,7 @@ export default function DashboardPage() {
   const [bookInfoMap, setBookInfoMap] = useState<Map<string, { title: string }>>(new Map());
   const [summaryNotes, setSummaryNotes] = useState<SummaryNote[]>([]);
   const [memoCount, setMemoCount] = useState(0);
+  const [totalMemoCount, setTotalMemoCount] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('latest');
@@ -74,10 +75,11 @@ export default function DashboardPage() {
     try {
       setIsLoading(true);
       // 사용자, 노트(제한), 요약노트를 병렬로 가져오기
-      const [userResponse, memosResponse, summaryNotesResponse] = await Promise.all([
+      const [userResponse, memosResponse, summaryNotesResponse, userStatsResponse] = await Promise.all([
         apiClient.get('/users/profile').catch(() => null),
         apiClient.get('/notes?sort=createdAt:desc&limit=30'),
-        apiClient.get('/summary-notes')
+        apiClient.get('/summary-notes'),
+        apiClient.get('/users/me/stats').catch(() => null),
       ]);
 
       // 사용자 정보 설정 (fallback: redux)
@@ -102,6 +104,11 @@ export default function DashboardPage() {
       }));
       setRecentMemos(mappedNotes);
       setMemoCount(rawNotes.length);
+      // 총 메모 수 저장 (백엔드 통계 사용)
+      const statsData = Array.isArray(userStatsResponse) ? userStatsResponse[0] : (userStatsResponse?.data || userStatsResponse);
+      if (statsData && typeof statsData.totalNotes === 'number') {
+        setTotalMemoCount(statsData.totalNotes);
+      }
 
       // 책 정보 batch 요청 (중복 bookId 제거)
       const uniqueBookIds = [...new Set(mappedNotes.map((m: TSNote) => m.bookId).filter(Boolean))];
@@ -177,7 +184,21 @@ export default function DashboardPage() {
   };
 
   // 렌더링 전 상태 확인 - 로그 간소화
-  console.log('🔍 [RENDER] User:', user?.nickname, 'Memos:', recentMemos?.length, 'SummaryNotes:', summaryNotes?.length);
+  console.log('🔍 [RENDER] User:', user?.nickname, 'Memos:', recentMemos?.length, 'SummaryNotes:', summaryNotes?.length, 'TotalMemos:', totalMemoCount);
+  // 최근 X일 계산: 최근 30개 중 가장 오래된 메모와 오늘(자정) 사이 일수 (최소 1일)
+  const recentDaysWindow = useMemo(() => {
+    if (!recentMemos || recentMemos.length === 0) return 0;
+    const toStartOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const validTimes: number[] = recentMemos
+      .map((m) => new Date((m as any).createdAt ?? (m as any).clientCreatedAt ?? 0).getTime())
+      .filter((t) => Number.isFinite(t) && t > 0);
+    if (validTimes.length === 0) return 0;
+    const oldest = new Date(Math.min(...validTimes));
+    const todayStart = toStartOfDay(new Date());
+    const oldestStart = toStartOfDay(oldest);
+    const diffDays = Math.ceil((todayStart.getTime() - oldestStart.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(diffDays, 1);
+  }, [recentMemos]);
 
   // 파생 상태: viewMode, sortBy, recentMemos 로부터 화면에 표시할 메모 목록 계산
   const displayedMemos = useMemo(() => {
@@ -281,9 +302,20 @@ export default function DashboardPage() {
 
         {/* 상태 메시지 */}
         <div className="mb-8">
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
-            <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 현재 <span className="text-indigo-300">{memoCount}개</span>의 메모카드를 작성하셨습니다.
-          </h1>
+          {recentMemos.length > 0 ? (
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
+              <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 최근 <span className="text-indigo-300">{recentDaysWindow}일</span> 동안 <span className="text-indigo-300">{recentMemos.length}개</span>의 메모카드를 작성했으며{` `}
+              {typeof totalMemoCount === 'number' ? (
+                <>총 <span className="text-indigo-300">{totalMemoCount}개</span>를 작성했습니다.</>
+              ) : (
+                <>총 <span className="text-indigo-300">{memoCount}개</span>를 작성했습니다.</>
+              )}
+            </h1>
+          ) : (
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-medium text-white leading-relaxed">
+              <span className="text-cyan-300">{user?.nickname || '사용자'}</span>님, 아직 메모카드가 없습니다.
+            </h1>
+          )}
         </div>
 
         {/* 새로 만들기 버튼 */}
