@@ -471,23 +471,17 @@ export default function DashboardPage() {
                         minimalDisplay={true}
                         bookTitle={bookInfoMap.get(memo.bookId)?.title}
                         className={`
-                          bg-gradient-to-br ${colorScheme.bg}
-                          ${colorScheme.border}
-                          shadow-md ${colorScheme.shadow}
-                          transform ${colorScheme.rotation} hover:rotate-0
-                          hover:shadow-xl
-                          hover:scale-110
+                          bg-stone-50
+                          border border-stone-200
+                          shadow-[0_1px_2px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)]
+                          transform ${colorScheme.rotation}
+                          hover:shadow-md hover:scale-105 hover:rotate-0
                           transition-all duration-300 ease-out
                           relative
-                          !rounded-none
+                          !rounded-[6px]
                           !pb-3
-                          backdrop-blur-none
-                          before:absolute before:top-0 before:left-0 before:w-full before:h-full
-                          before:bg-gradient-to-br before:from-transparent before:to-black/5
-                          before:pointer-events-none
-                          after:absolute after:top-0 after:right-0 after:w-3 after:h-3
-                          after:bg-gradient-to-bl after:from-black/15 after:to-transparent
-                          after:pointer-events-none after:transform after:rotate-45 after:translate-x-1 after:-translate-y-1
+                          before:absolute before:inset-0 before:pointer-events-none
+                          before:bg-[radial-gradient(circle_at_10%_10%,rgba(0,0,0,0.03)_0,transparent_40%),radial-gradient(circle_at_90%_20%,rgba(0,0,0,0.02)_0,transparent_30%),radial-gradient(circle_at_20%_80%,rgba(0,0,0,0.02)_0,transparent_35%)] before:opacity-70
                           [&>div]:!rounded-none
                           [&_p]:!text-gray-800 [&_p]:!font-semibold
                           ${viewMode === 'grid' ? '[&_p]:!text-lg [&_p]:!leading-relaxed' : '[&_p]:!text-sm [&_p]:!leading-snug [&_p]:!line-clamp-2'}
@@ -496,8 +490,6 @@ export default function DashboardPage() {
                           [&_.text-gray-400]:!text-gray-600
                           [&_.text-cyan-400]:!text-indigo-700
                           [&_span:not([class*="text-"])]:!text-gray-700
-                          border-t-4 border-t-black/10
-                          shadow-[0_1px_3px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.6)]
                         `}
                       />
                     </div>
