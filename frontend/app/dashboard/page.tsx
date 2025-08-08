@@ -234,14 +234,7 @@ export default function DashboardPage() {
             {/* 좌측: 로고 */}
             <div className="flex items-center">
               <Link href="/dashboard" className="flex items-center space-x-3">
-                {/* 375px 이하에서만 작은 로고 */}
-                <div className="hidden max-[375px]:block">
-                  <AppLogo className="w-7 h-7" />
-                </div>
-                {/* 376px 이상에서는 기존 크기 유지 */}
-                <div className="block max-[375px]:hidden">
-                  <AppLogo />
-                </div>
+                <AppLogo className="w-11 h-11 max-[375px]:w-7 max-[375px]:h-7" />
                 <span className="text-xl max-[375px]:text-base font-bold text-white">Habitus33</span>
               </Link>
               </div>
