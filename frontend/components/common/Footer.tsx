@@ -12,10 +12,10 @@ export default function Footer() {
         {/* Mobile Minimal Footer (<=375px) */}
         <div className="hidden max-[375px]:flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center space-x-2">
-            <AppLogo className="w-8 h-8" />
-            <span className="text-base font-semibold text-white">habitus33</span>
+            <AppLogo className="w-6 h-6" />
+            <span className="text-sm font-semibold text-white">habitus33</span>
           </Link>
-          <p className="text-xs text-gray-400">© {currentYear} Tedin Inc.</p>
+          <p className="text-xs text-gray-400">© 2025 Tedin Inc.</p>
         </div>
 
         {/* Tablet/Desktop Full Footer (>=376px) */}
@@ -111,12 +111,10 @@ export default function Footer() {
            </div>
         </div>
 
-        {/* Bottom Row: Copyright Notice */}
-        <div className="hidden max-[375px]:block mt-10 pt-6 border-t border-gray-700 text-center"> {/* hide long copyright on <=375px */}
+        {/* Desktop/Tablet Only: Concise Copyright */}
+        <div className="block max-[375px]:hidden mt-10 pt-6 border-t border-gray-700 text-center">
           <p className="text-xs text-gray-400 leading-relaxed">
-            &copy; {currentYear} Tedin Inc. All rights reserved.
-            All content related to this page is protected by intellectual property rights.
-            Unauthorized reproduction, distribution, and use for AI training are prohibited.
+            &copy; {currentYear} Tedin Inc. Protected by copyright and patents. AI training prohibited.
           </p>
         </div>
       </div>
