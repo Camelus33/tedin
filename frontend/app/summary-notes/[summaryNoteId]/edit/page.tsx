@@ -9,7 +9,7 @@ import FlashcardForm from '@/components/flashcard/FlashcardForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon, EllipsisVerticalIcon, ArrowPathIcon, EyeIcon, PencilIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, DocumentTextIcon, ShareIcon, TrashIcon, EllipsisVerticalIcon, ArrowPathIcon, EyeIcon, PencilIcon, ArrowLeftIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { RocketIcon } from 'lucide-react';
 import { AiFillYoutube } from 'react-icons/ai';
 import { NewspaperIcon } from '@heroicons/react/24/solid';
@@ -1676,9 +1676,11 @@ export default function EditSummaryNotePage() {
                   <div className="mt-4 flex justify-end">
                     <Button
                       onClick={handleManualSaveText}
-                      className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2"
+                      className="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-2"
+                      aria-label="저장"
+                      title="저장"
                     >
-                      저장
+                      <ArrowUpTrayIcon className="w-4 h-4" />
                     </Button>
                   </div>
                 )}
@@ -1686,7 +1688,9 @@ export default function EditSummaryNotePage() {
                 {/* 미니맵 - 저장된 벡터그래프 */}
                 <div className="mt-4 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-medium text-gray-300">저장된 벡터그래프</h4>
+                      <h4 className="text-sm font-medium text-gray-300">
+                        <PhotoIcon className="w-4 h-4" aria-label="저장된 벡터그래프" title="저장된 벡터그래프" />
+                      </h4>
                       <div className="flex gap-1">
                         <Button
                           onClick={() => {
@@ -1699,17 +1703,11 @@ export default function EditSummaryNotePage() {
                             }
                           }}
                           size="sm"
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1"
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1"
+                          aria-label="다운로드"
+                          title="다운로드"
                         >
-                          다운로드
-                        </Button>
-                        <Button
-                          onClick={() => setDiagramImageUrl(null)}
-                          size="sm"
-                          variant="outline"
-                          className="border-gray-600 text-gray-300 hover:bg-gray-700 text-xs px-2 py-1"
-                        >
-                          ❌
+                          <ArrowDownTrayIcon className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
