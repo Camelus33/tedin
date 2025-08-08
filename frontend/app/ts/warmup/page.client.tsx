@@ -344,6 +344,8 @@ export default function TSWarmupPage() {
   // Accessibility & input
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
   const [fixationHighContrast, setFixationHighContrast] = useState<boolean>(false);
+  const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [showTutorial, setShowTutorial] = useState<boolean>(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -352,6 +354,22 @@ export default function TSWarmupPage() {
     update();
     mq.addEventListener?.('change', update);
     return () => mq.removeEventListener?.('change', update);
+  }, []);
+
+  // 첫 사용 간단 튜토리얼(2초 표시 후 자동 숨김)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const key = 'tsWarmupTutorialSeen';
+      if (!localStorage.getItem(key)) {
+        setShowTutorial(true);
+        const t = setTimeout(() => {
+          setShowTutorial(false);
+          try { localStorage.setItem(key, '1'); } catch {}
+        }, 2000);
+        return () => clearTimeout(t);
+      }
+    } catch {}
   }, []);
 
   // Predefined simple stories for Text Flow - Highlight variation
@@ -1020,6 +1038,27 @@ export default function TSWarmupPage() {
 
   const exercise = activeExerciseDetail; // Use the new state
 
+  const getMicroCopy = (): string => {
+    if (!exercise) return '';
+    if (exercise.id === 'guided_breathing') {
+      if (breathingPhase === 'inhale') return '들이마시기';
+      if (breathingPhase === 'hold1' || breathingPhase === 'hold2') return '멈춤';
+      if (breathingPhase === 'exhale') return '내쉬기';
+      if (breathingPhase === 'done') return '완료';
+    } else if (exercise.id === 'peripheral_vision_expansion') {
+      if (eyeTrackingPhase === 'running' && probeRtMs === null) return '중앙 고정 · 보이면 한 번 탭';
+      if (eyeTrackingPhase === 'done' && lastAfcChoice === null) return '좌/우 선택';
+      if (eyeTrackingPhase === 'done') return '완료';
+      return '중앙 고정';
+    } else if (exercise.id === 'text_flow') {
+      if (textFlowPhase === 'running') return '강조 단어만 보기';
+      if (textFlowPhase === 'done' && comprehensionAnswer === null) return '이해됨/애매함 응답';
+      if (textFlowPhase === 'done') return '완료';
+      return '준비';
+    }
+    return '';
+  };
+
   // Loading State UI
   if (isLoading || !exercise) { // Check activeExerciseDetail
     return (
@@ -1056,7 +1095,11 @@ export default function TSWarmupPage() {
     <div className={`min-h-screen flex flex-col ${cyberTheme.gradient} text-gray-100`}>
       {/* Header */}
       <header className={`p-3 sm:p-4 ${cyberTheme.bgSecondary} shadow-md flex justify-between items-center`}>
-        <h1 className={`text-lg sm:text-xl font-bold ${cyberTheme.primary}`}>준비 운동 ({currentExerciseIndex + 1}/{EXERCISE_CONFIGURATIONS.length})</h1>
+        <h1 className={`text-lg sm:text-xl font-bold ${cyberTheme.primary}`}>
+          {exercise.id === 'guided_breathing' && '심호흡 16초'}
+          {exercise.id === 'peripheral_vision_expansion' && '주변 시 보기'}
+          {exercise.id === 'text_flow' && '흐름 따라가기'}
+        </h1>
         <div className="flex items-center">
           <ClockIcon className={`h-5 w-5 mr-2 ${cyberTheme.secondary}`} />
           <span className={`text-base sm:text-lg font-mono ${cyberTheme.textLight}`}>{formatTime(timeLeft)}</span>
@@ -1067,6 +1110,14 @@ export default function TSWarmupPage() {
             onClick={() => setFixationHighContrast(v => !v)}
           >
             HC {fixationHighContrast ? 'ON' : 'OFF'}
+          </button>
+          {/* Help icon */}
+          <button
+            aria-label="도움말"
+            className={`ml-2 text-xs px-2 py-1 rounded border ${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryHoverBg}`}
+            onClick={() => setShowHelp(s => !s)}
+          >
+            ⓘ
           </button>
         </div>
       </header>
@@ -1083,8 +1134,8 @@ export default function TSWarmupPage() {
             ></div>
           </div>
 
-          <h2 className={`text-xl sm:text-2xl font-semibold mb-2 sm:mb-3 ${cyberTheme.secondary}`}>{exercise.title}</h2>
-          <p className={`${cyberTheme.textLight} mb-4 sm:mb-5 text-xs sm:text-sm leading-relaxed`}>{exercise.description}</p>
+          {/* Minimal microcopy: 1 line only */}
+          <p className={`mb-4 sm:mb-5 text-sm ${cyberTheme.textLight}`}>{getMicroCopy()}</p>
 
           {/* Exercise Content */}
           <div className={`${cyberTheme.inputBg} p-4 rounded-lg mb-5 sm:mb-6 border ${cyberTheme.inputBorder} min-h-[150px] sm:min-h-[120px] flex items-center justify-center`}>
@@ -1364,17 +1415,8 @@ export default function TSWarmupPage() {
             )}
           </div>
           
-          {/* Question/Prompt area - to be simplified or removed for most exercises */}
-          {/* For now, let's assume a generic completion button will be used mostly */}
-          { (exercise.id === 'guided_breathing' && breathingPhase === 'done') ||
-            (exercise.id === 'peripheral_vision_expansion' && eyeTrackingPhase === 'done') || 
-            (exercise.id === 'text_flow' && textFlowPhase === 'done') ? 
-            (
-              <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>준비 끝! 이제 파도를 만날 준비가 되었어요.</p>
-            ) : (
-              <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>화면의 안내에 따라 훈련을 진행하세요.</p>
-            )
-          }
+          {/* Minimal status line only */}
+          <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>{(exercise.id === 'text_flow' && textFlowPhase === 'done') || (exercise.id === 'guided_breathing' && breathingPhase === 'done') || (exercise.id === 'peripheral_vision_expansion' && eyeTrackingPhase === 'done') ? '완료' : getMicroCopy()}</p>
 
 
           {/* Options / Input - This section will be heavily refactored or removed.
@@ -1396,20 +1438,14 @@ export default function TSWarmupPage() {
           </div>
 
           {/* Tip Section */}
-          {exercise.tip && (
-            <div className="mb-6">
-              <button 
-                onClick={handleToggleTip}
-                className={`flex items-center text-sm ${cyberTheme.textMuted} ${cyberTheme.buttonSecondaryHoverBg} p-2 rounded-md`}
-              >
-                <LightBulbIcon className={`h-5 w-5 mr-2 ${showTip ? cyberTheme.tipIcon : cyberTheme.textMuted}`} />
-                {showTip ? '도움말 숨기기' : '도움말 보기'}
-              </button>
-              {showTip && (
-                <div className={`mt-2 p-3 rounded-md ${cyberTheme.tipBg} border ${cyberTheme.tipBorder}`}>
-                  <p className={`text-xs ${cyberTheme.textLight}`}>{exercise.tip}</p>
-                </div>
-              )}
+          {/* Help Overlay (on demand) */}
+          {showHelp && (
+            <div className={`mb-4 p-3 rounded-md ${cyberTheme.tipBg} border ${cyberTheme.tipBorder}`}>
+              <p className={`text-xs ${cyberTheme.textLight}`}>
+                {exercise.id === 'guided_breathing' && '어깨 힘 빼고, 배를 부풀리며 천천히'}
+                {exercise.id === 'peripheral_vision_expansion' && '시선은 +에 고정, 주변 변화만 느끼기'}
+                {exercise.id === 'text_flow' && '강조가 이동하면 시선만 함께 이동'}
+              </p>
             </div>
           )}
           
