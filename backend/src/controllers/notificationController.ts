@@ -111,6 +111,47 @@ export const subscribeWebPush = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * DELETE /api/notifications/:id
+ * 사용자의 읽은 알림 한 건을 삭제한다.
+ */
+export const deleteNotification = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user._id;
+    const { id } = req.params;
+
+    const notif = await Notification.findById(id);
+    if (!notif) return res.status(404).json({ error: 'Notification not found' });
+    if (notif.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+    if (!notif.isRead) {
+      return res.status(400).json({ error: 'Only read notifications can be deleted' });
+    }
+
+    await Notification.deleteOne({ _id: id });
+    return res.status(204).send();
+  } catch (err: any) {
+    console.error('Error deleting notification:', err);
+    return res.status(500).json({ error: 'Failed to delete notification' });
+  }
+};
+
+/**
+ * DELETE /api/notifications/read
+ * 사용자의 읽은 알림 전체를 삭제한다.
+ */
+export const deleteAllRead = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user._id;
+    const result = await Notification.deleteMany({ userId, isRead: true });
+    return res.status(200).json({ deletedCount: result.deletedCount });
+  } catch (err: any) {
+    console.error('Error deleting read notifications:', err);
+    return res.status(500).json({ error: 'Failed to delete read notifications' });
+  }
+};
+
 // DELETE /api/notifications/webpush/unsubscribe
 export const unsubscribeWebPush = async (req: Request, res: Response) => {
   try {

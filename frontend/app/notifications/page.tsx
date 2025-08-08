@@ -68,6 +68,37 @@ export default function NotificationsPage() {
     }
   };
 
+  const deleteOne = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/notifications/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok && res.status !== 204) throw new Error('삭제 실패');
+      setNotifications(prev => prev.filter(n => n._id !== id));
+    } catch (err) {
+      console.error(err);
+      toast.error('삭제 실패');
+    }
+  };
+
+  const deleteAllRead = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/notifications/read', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('읽은 항목 삭제 실패');
+      setNotifications(prev => prev.filter(n => !n.isRead));
+      toast.success('읽은 알림이 삭제되었습니다');
+    } catch (err) {
+      console.error(err);
+      toast.error('읽은 항목 삭제 실패');
+    }
+  };
+
   const handleNavigate = (n: NotificationType) => {
     markAsRead(n._id);
     router.push(`/myverse/games/${n.gameId}`);
@@ -81,9 +112,14 @@ export default function NotificationsPage() {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">알림</h1>
-        <button onClick={markAllAsRead} className="px-4 py-2 bg-blue-500 text-white rounded">
-          모두 읽음 처리
-        </button>
+        <div className="flex gap-2">
+          <button onClick={markAllAsRead} className="px-3 py-2 bg-blue-500 text-white rounded">
+            모두 읽음
+          </button>
+          <button onClick={deleteAllRead} className="px-3 py-2 bg-red-500 text-white rounded">
+            읽은 항목 삭제
+          </button>
+        </div>
       </div>
       {loading ? (
         <p>로딩 중...</p>
@@ -98,11 +134,18 @@ export default function NotificationsPage() {
                   <p>{n.message}</p>
                   <p className="text-xs text-gray-500"><ClientTimeDisplay createdAt={n.createdAt} /></p>
                 </div>
-                {!n.isRead && (
-                  <button onClick={() => markAsRead(n._id)} className="px-2 py-1 bg-green-500 text-white rounded">
-                    읽음
-                  </button>
-                )}
+                <div className="flex gap-2">
+                  {!n.isRead && (
+                    <button onClick={() => markAsRead(n._id)} className="px-2 py-1 bg-green-500 text-white rounded">
+                      읽음
+                    </button>
+                  )}
+                  {n.isRead && (
+                    <button onClick={(e) => { e.stopPropagation(); deleteOne(n._id); }} className="px-2 py-1 bg-red-500 text-white rounded">
+                      삭제
+                    </button>
+                  )}
+                </div>
               </div>
             </li>
           ))}
