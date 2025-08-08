@@ -1007,14 +1007,26 @@ export default function TSWarmupPage() {
             pushEvent('text_flow', 'highlight_tick', { wordIndex: idx, intervalMs });
           });
         }
+        
+        // --- Guard: ensure at least one valid event is sent ---
+        // 서버는 events 배열이 비어 있으면 400(Bad Request)을 반환한다.
+        // 사용자 상호작용 없이 종료되는 경우를 위해 합성 이벤트를 1건 주입해 데이터 일관성을 유지한다.
+        if (eventsRef.current.length === 0) {
+          const syntheticExerciseId = activeExerciseDetail?.id ?? 'guided_breathing';
+          pushEvent(syntheticExerciseId, 'session_completed', { reason: 'no_user_events' });
+        }
+        
         // Compose payload and send
-        const eventsPayload: WarmupEventClientPayload = {
-          sessionId,
-          warmupVersion: 'v1',
-          device,
-          events: eventsRef.current.splice(0),
-        };
-        warmupEventsService.sendEvents(eventsPayload).catch(() => {});
+        const pendingEvents = eventsRef.current.splice(0);
+        if (pendingEvents.length > 0) {
+          const eventsPayload: WarmupEventClientPayload = {
+            sessionId,
+            warmupVersion: 'v1',
+            device,
+            events: pendingEvents,
+          };
+          warmupEventsService.sendEvents(eventsPayload).catch(() => {});
+        }
       } catch (e) {
         // Ignore metrics errors; do not block navigation
       }
