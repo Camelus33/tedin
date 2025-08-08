@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticate } from '../middlewares/auth';
-import { getNotifications, markAsRead, markAllRead } from '../controllers/notificationController';
+import { getNotifications, markAsRead, markAllRead, subscribeWebPush, unsubscribeWebPush } from '../controllers/notificationController';
 import Notification from '../models/Notification';
 
 const router = express.Router();
@@ -30,5 +30,9 @@ router.put('/:id/read', markAsRead);
 
 // Mark all notifications as read
 router.put('/readAll', markAllRead);
+
+// Web Push subscription management
+router.post('/webpush/subscribe', subscribeWebPush);
+router.delete('/webpush/unsubscribe', unsubscribeWebPush);
 
 export default router; 

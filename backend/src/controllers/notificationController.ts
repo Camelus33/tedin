@@ -64,6 +64,71 @@ export const markAllRead = async (req: Request, res: Response) => {
   }
 }; 
 
+// POST /api/notifications/webpush/subscribe
+export const subscribeWebPush = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user._id;
+    const { endpoint, keys, userAgent } = req.body || {};
+    if (!endpoint || !keys?.p256dh || !keys?.auth) {
+      return res.status(400).json({ error: 'Invalid subscription payload' });
+    }
+
+    // Try update existing by endpoint
+    const updateExisting = await User.updateOne(
+      { _id: userId, 'webPushSubscriptions.endpoint': endpoint },
+      {
+        $set: {
+          'webPushSubscriptions.$.keys': { p256dh: keys.p256dh, auth: keys.auth },
+          'webPushSubscriptions.$.userAgent': userAgent || '',
+          'webPushSubscriptions.$.isActive': true,
+        },
+      }
+    );
+
+    if (updateExisting.matchedCount === 0) {
+      // Push new subscription
+      await User.updateOne(
+        { _id: userId },
+        {
+          $push: {
+            webPushSubscriptions: {
+              endpoint,
+              keys: { p256dh: keys.p256dh, auth: keys.auth },
+              userAgent: userAgent || '',
+              isActive: true,
+              createdAt: new Date(),
+            },
+          },
+        }
+      );
+    }
+
+    return res.status(200).json({ ok: true });
+  } catch (err: any) {
+    console.error('subscribeWebPush error', err);
+    return res.status(500).json({ error: 'Failed to subscribe web push' });
+  }
+};
+
+// DELETE /api/notifications/webpush/unsubscribe
+export const unsubscribeWebPush = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user._id;
+    const { endpoint } = req.body || {};
+    if (!endpoint) return res.status(400).json({ error: 'Endpoint required' });
+
+    await User.updateOne(
+      { _id: userId, 'webPushSubscriptions.endpoint': endpoint },
+      { $set: { 'webPushSubscriptions.$.isActive': false } }
+    );
+
+    return res.status(200).json({ ok: true });
+  } catch (err: any) {
+    console.error('unsubscribeWebPush error', err);
+    return res.status(500).json({ error: 'Failed to unsubscribe web push' });
+  }
+};
+
 // ADMIN JOB: Generate nudges and suggestions
 export const runEngagementJobs = async (req: Request, res: Response) => {
   try {
