@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import { apiClient } from '@/lib/apiClient';
-import { FiGrid, FiList, FiChevronDown, FiBook, FiTarget, FiFileText, FiZap, FiFilePlus } from 'react-icons/fi';
+import { FiGrid, FiList, FiChevronDown, FiBook, FiTarget, FiFileText } from 'react-icons/fi';
 import AppLogo from '@/components/common/AppLogo';
 import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
@@ -328,17 +328,15 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
             <button
               onClick={handleNewReading}
-              className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-500/30 text-sm sm:text-base min-h-[44px] flex items-center gap-2"
+              className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              <FiZap className="w-4 h-4" />
-              <span>TS Learning</span>
+              TS Learning
             </button>
             <button
               onClick={handleNewMemo}
-              className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-cyan-500/25 border border-cyan-500/30 text-sm sm:text-base min-h-[44px] flex items-center gap-2"
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-cyan-500/25 border border-cyan-500/30 text-sm sm:text-base min-h-[44px]"
             >
-              <FiFilePlus className="w-4 h-4" />
-              <span>New Memo</span>
+              New Memo
             </button>
           </div>
         </div>
