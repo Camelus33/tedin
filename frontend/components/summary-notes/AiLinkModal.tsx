@@ -100,7 +100,7 @@ const ExecutiveSummaryDisplay = React.memo(({ summary }: { summary: string | und
 ExecutiveSummaryDisplay.displayName = 'ExecutiveSummaryDisplay';
 
 const MemoSummaryDisplay = React.memo(({ memoSummary }: { memoSummary: MemoSummary[] | undefined }) => {
-  if (!memoSummary || memoSummary.length === 0) return null;
+  if (!Array.isArray(memoSummary) || memoSummary.length === 0) return null;
 
   return (
     <div className="space-y-3">
@@ -135,7 +135,7 @@ const MemoSummaryDisplay = React.memo(({ memoSummary }: { memoSummary: MemoSumma
 MemoSummaryDisplay.displayName = 'MemoSummaryDisplay';
 
 const KnowledgeGrowthTimelineDisplay = React.memo(({ timeline }: { timeline: any | undefined }) => {
-  if (!timeline || !timeline.timelineEvents || timeline.timelineEvents.length === 0) return null;
+  if (!timeline || !Array.isArray(timeline.timelineEvents) || timeline.timelineEvents.length === 0) return null;
 
   return (
     <div className="space-y-3">
