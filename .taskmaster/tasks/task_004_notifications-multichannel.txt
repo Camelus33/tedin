@@ -1,0 +1,11 @@
+# Task ID: 4
+# Title: Phase 4: Monitoring & docs
+# Status: pending
+# Dependencies: None
+# Priority: low
+# Description: Add delivery logs/metrics and document admin/user setup.
+# Details:
+Sentry hooks for send failures, basic /admin/notifications/metrics, README for setup (VAPID, SendGrid), user-facing settings help.
+
+# Test Strategy:
+Trigger failures, verify logs/metrics; review docs; smoke test metrics endpoint.

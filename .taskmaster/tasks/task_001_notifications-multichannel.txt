@@ -1,0 +1,54 @@
+# Task ID: 1
+# Title: Phase 1: Web Push subscription roundtrip
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Implement minimal Web Push (VAPID) end-to-end subscription and test delivery.
+# Details:
+Backend: extend User schema (preferences.notifications.allowWebPush, webPushSubscriptions[]), add POST /notifications/webpush/subscribe and DELETE /notifications/webpush/unsubscribe, implement WebPushService with VAPID.
+Frontend: service worker (public/sw.js), registration, subscribe/unsubscribe helper, settings toggle.
+Test: subscribe from browser and send a test push.
+Constraints: sync send, cleanup stale subscriptions (410).
+
+# Test Strategy:
+Manual: 1) Enable Web Push in settings; 2) Confirm subscription stored; 3) Use test endpoint to send push; 4) Verify receipt; 5) Revoke and confirm unsubscribe.
+
+# Subtasks:
+## 1. Backend: extend User schema for Web Push [pending]
+### Dependencies: None
+### Description: Add preferences.notifications.allowWebPush and webPushSubscriptions[] to User model.
+### Details:
+- preferences.notifications.allowWebPush: boolean default false
+- webPushSubscriptions: [{ endpoint, keys:{p256dh, auth}, userAgent, createdAt, isActive }]
+- Keep changes minimal and backward compatible
+
+## 2. Backend: subscribe/unsubscribe routes [pending]
+### Dependencies: None
+### Description: Add POST /notifications/webpush/subscribe and DELETE /notifications/webpush/unsubscribe (auth).
+### Details:
+Persist subscription on subscribe; mark inactive on unsubscribe; validate ownership.
+
+## 3. Backend: WebPushService with VAPID [pending]
+### Dependencies: None
+### Description: Implement WebPushService using web-push and env keys.
+### Details:
+Read VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT from env; send(userId,payload) to all active subs; cleanup 410.
+
+## 4. Frontend: service worker + registration [pending]
+### Dependencies: None
+### Description: Add public/sw.js and register SW in app; helper to create PushSubscription.
+### Details:
+Request permission, subscribe via pushManager with VAPID public key, POST subscription to backend.
+
+## 5. Frontend: settings toggle [pending]
+### Dependencies: None
+### Description: Add UI toggle to enable/disable Web Push in profile/settings.
+### Details:
+On enable -> subscribe; on disable -> unsubscribe; reflect status.
+
+## 6. E2E test + cleanup [pending]
+### Dependencies: None
+### Description: Manual end-to-end verification and stale subscription cleanup logic.
+### Details:
+Subscribe, send test push (admin test route), verify receipt; mark inactive on 410; retest.
+

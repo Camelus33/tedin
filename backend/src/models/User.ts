@@ -12,6 +12,7 @@ export interface IUser extends Document {
   phone?: string;
   recoveryEmail?: string;
   profileImage?: string;
+  jobCode?: string;
   preferences: {
     goals?: Array<'focus'|'memory'|'exam'>;
     memorySpanScore?: number;
@@ -70,6 +71,11 @@ const UserSchema: Schema = new Schema({
   },
   profileImage: {
     type: String,
+    default: '',
+  },
+  jobCode: {
+    type: String,
+    trim: true,
     default: '',
   },
   invitedBy: {

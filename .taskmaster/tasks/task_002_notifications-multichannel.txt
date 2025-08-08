@@ -1,0 +1,13 @@
+# Task ID: 2
+# Title: Phase 2: Email channel (SendGrid)
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Add email delivery channel with templated messages and unsubscribe links.
+# Details:
+Backend: EmailService (SendGrid), templates for nudge_memo, nudge_ts, nudge_zengo, suggest_summary; routes to manage email opt-in/out; signed unsubscribe links.
+Frontend: settings toggle for email channel.
+Test: send templated mail to sandbox recipient.
+
+# Test Strategy:
+Manual: 1) Opt-in email; 2) Trigger test email send; 3) Validate template, links, headers; 4) Unsubscribe via link and verify opt-out persisted.

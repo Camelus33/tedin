@@ -3637,5 +3637,113 @@
       "updated": "2025-08-08T01:55:44.900Z",
       "description": "Tasks for ai-learning-diagnostician context"
     }
+  },
+  "notifications-multichannel": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Phase 1: Web Push subscription roundtrip",
+        "description": "Implement minimal Web Push (VAPID) end-to-end subscription and test delivery.",
+        "details": "Backend: extend User schema (preferences.notifications.allowWebPush, webPushSubscriptions[]), add POST /notifications/webpush/subscribe and DELETE /notifications/webpush/unsubscribe, implement WebPushService with VAPID.\nFrontend: service worker (public/sw.js), registration, subscribe/unsubscribe helper, settings toggle.\nTest: subscribe from browser and send a test push.\nConstraints: sync send, cleanup stale subscriptions (410).",
+        "testStrategy": "Manual: 1) Enable Web Push in settings; 2) Confirm subscription stored; 3) Use test endpoint to send push; 4) Verify receipt; 5) Revoke and confirm unsubscribe.",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Backend: extend User schema for Web Push",
+            "description": "Add preferences.notifications.allowWebPush and webPushSubscriptions[] to User model.",
+            "details": "- preferences.notifications.allowWebPush: boolean default false\n- webPushSubscriptions: [{ endpoint, keys:{p256dh, auth}, userAgent, createdAt, isActive }]\n- Keep changes minimal and backward compatible",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 2,
+            "title": "Backend: subscribe/unsubscribe routes",
+            "description": "Add POST /notifications/webpush/subscribe and DELETE /notifications/webpush/unsubscribe (auth).",
+            "details": "Persist subscription on subscribe; mark inactive on unsubscribe; validate ownership.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 3,
+            "title": "Backend: WebPushService with VAPID",
+            "description": "Implement WebPushService using web-push and env keys.",
+            "details": "Read VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT from env; send(userId,payload) to all active subs; cleanup 410.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 4,
+            "title": "Frontend: service worker + registration",
+            "description": "Add public/sw.js and register SW in app; helper to create PushSubscription.",
+            "details": "Request permission, subscribe via pushManager with VAPID public key, POST subscription to backend.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 5,
+            "title": "Frontend: settings toggle",
+            "description": "Add UI toggle to enable/disable Web Push in profile/settings.",
+            "details": "On enable -> subscribe; on disable -> unsubscribe; reflect status.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 6,
+            "title": "E2E test + cleanup",
+            "description": "Manual end-to-end verification and stale subscription cleanup logic.",
+            "details": "Subscribe, send test push (admin test route), verify receipt; mark inactive on 410; retest.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Phase 2: Email channel (SendGrid)",
+        "description": "Add email delivery channel with templated messages and unsubscribe links.",
+        "details": "Backend: EmailService (SendGrid), templates for nudge_memo, nudge_ts, nudge_zengo, suggest_summary; routes to manage email opt-in/out; signed unsubscribe links.\nFrontend: settings toggle for email channel.\nTest: send templated mail to sandbox recipient.",
+        "testStrategy": "Manual: 1) Opt-in email; 2) Trigger test email send; 3) Validate template, links, headers; 4) Unsubscribe via link and verify opt-out persisted.",
+        "status": "done",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Phase 3: Policy engine & jobs integration",
+        "description": "Apply Quiet Hours, daily limits, category opt-in, and dedup to multichannel dispatch. Wire engagement jobs to channels.",
+        "details": "Extend Notification with channel/status/deliveredAt/providerMessageId/actionLink; implement policy evaluation; update runEngagementJobs to dispatch to In‑App + Web Push + Email respecting policy.",
+        "testStrategy": "Manual: set Quiet Hours and limits; run jobs; verify messages are skipped or sent as expected; check dedup per day.",
+        "status": "deferred",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Phase 4: Monitoring & docs",
+        "description": "Add delivery logs/metrics and document admin/user setup.",
+        "details": "Sentry hooks for send failures, basic /admin/notifications/metrics, README for setup (VAPID, SendGrid), user-facing settings help.",
+        "testStrategy": "Trigger failures, verify logs/metrics; review docs; smoke test metrics endpoint.",
+        "status": "deferred",
+        "dependencies": [],
+        "priority": "low",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-08T06:33:06.673Z",
+      "updated": "2025-08-08T07:15:32.234Z",
+      "description": "Implement Web Push and Email notification channels with policy controls (Quiet Hours, daily limits, categories)."
+    }
   }
 }

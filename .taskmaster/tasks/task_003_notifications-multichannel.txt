@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Phase 3: Policy engine & jobs integration
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Apply Quiet Hours, daily limits, category opt-in, and dedup to multichannel dispatch. Wire engagement jobs to channels.
+# Details:
+Extend Notification with channel/status/deliveredAt/providerMessageId/actionLink; implement policy evaluation; update runEngagementJobs to dispatch to In‑App + Web Push + Email respecting policy.
+
+# Test Strategy:
+Manual: set Quiet Hours and limits; run jobs; verify messages are skipped or sent as expected; check dedup per day.

@@ -58,6 +58,7 @@ export const getProfile = async (req: Request, res: Response) => {
       phone: (user as any).phone || '',
       recoveryEmail: (user as any).recoveryEmail || '',
       profileImage: (user as any).profileImage || '',
+      jobCode: (user as any).jobCode || '',
       trialEndsAt: user.trialEndsAt,
     });
   } catch (error) {
@@ -67,6 +68,16 @@ export const getProfile = async (req: Request, res: Response) => {
 };
 
 // Update user profile
+// 서버 측 안전 매핑: 직업 코드 -> 정적 아이콘 경로
+const JOB_ICON_MAP: Record<string, string> = {
+  student: '/avatars/jobs/student.svg',
+  engineer: '/avatars/jobs/engineer.svg',
+  doctor: '/avatars/jobs/doctor.svg',
+  teacher: '/avatars/jobs/teacher.svg',
+  designer: '/avatars/jobs/designer.svg',
+  researcher: '/avatars/jobs/researcher.svg',
+};
+
 export const updateProfile = async (req: Request, res: Response) => {
   // Add log to check if the handler is reached
   console.log('--- Received PUT /api/users/profile request ---');
@@ -75,7 +86,7 @@ export const updateProfile = async (req: Request, res: Response) => {
 
   try {
     const userId = req.user._id;
-    const { nickname, phone, recoveryEmail, profileImage } = req.body;
+    const { nickname, phone, recoveryEmail, profileImage, jobCode } = req.body;
     
     // Find and update user
     const updateFields: any = {};
@@ -83,6 +94,11 @@ export const updateProfile = async (req: Request, res: Response) => {
     if (phone !== undefined) updateFields.phone = phone;
     if (recoveryEmail !== undefined) updateFields.recoveryEmail = recoveryEmail;
     if (profileImage !== undefined) updateFields.profileImage = profileImage;
+    // 직업 코드가 들어오면 서버 매핑을 통해 안전하게 아이콘 경로 설정
+    if (typeof jobCode === 'string' && jobCode in JOB_ICON_MAP) {
+      updateFields.jobCode = jobCode;
+      updateFields.profileImage = JOB_ICON_MAP[jobCode];
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
@@ -101,6 +117,7 @@ export const updateProfile = async (req: Request, res: Response) => {
       phone: updatedUser.phone || '',
       recoveryEmail: updatedUser.recoveryEmail || '',
       profileImage: updatedUser.profileImage || '',
+      jobCode: (updatedUser as any).jobCode || '',
       trialEndsAt: updatedUser.trialEndsAt,
     });
   } catch (error) {

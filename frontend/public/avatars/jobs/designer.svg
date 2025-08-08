@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="12" fill="#F5F3FF"/>
+  <!-- Pen tool -->
+  <path d="M32 14l8 14-8 8-8-8 8-14z" fill="#8B5CF6"/>
+  <circle cx="32" cy="36" r="3" fill="#C4B5FD"/>
+  <!-- Ruler -->
+  <rect x="14" y="44" width="36" height="6" rx="2" fill="#A78BFA"/>
+  <path d="M18 44v6M22 44v6M26 44v6M30 44v6M34 44v6M38 44v6M42 44v6" stroke="#7C3AED" stroke-width="1.5"/>
+</svg>
+

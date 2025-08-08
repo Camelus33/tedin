@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="12" fill="#EEF2FF"/>
+  <!-- Bust -->
+  <circle cx="32" cy="26" r="6" fill="#fff" stroke="#4F46E5" stroke-width="2"/>
+  <path d="M20 42c2.5-5 8-8 12-8s9.5 3 12 8v4H20v-4z" fill="#fff" stroke="#4F46E5" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Mortarboard -->
+  <path d="M12 20l20-8 20 8-20 8-20-8z" fill="#4F46E5"/>
+  <path d="M44 24v8" stroke="#6366F1" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="44" cy="33" r="2" fill="#6366F1"/>
+</svg>
+

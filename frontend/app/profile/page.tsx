@@ -12,6 +12,7 @@ type UserProfile = {
   email: string;
   nickname: string;
   profileImage?: string;
+  jobCode?: string;
   invitedBy?: string;
   trialEndsAt: string;
   inviteCode?: string;
@@ -25,6 +26,7 @@ export default function ProfilePage() {
   const [editNickname, setEditNickname] = useState<string>('');
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+  const [selectedJobCode, setSelectedJobCode] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
@@ -66,6 +68,7 @@ export default function ProfilePage() {
           setEditNickname(profileData?.nickname || '');
           setPhone((profileData as any).phone || '');
           setRecoveryEmail((profileData as any).recoveryEmail || '');
+          setSelectedJobCode((profileData as any).jobCode || '');
         } catch (profileError) {
           console.error('프로필 데이터 로딩 오류:', profileError);
           // 서버 연결 오류 시 더미 데이터 설정
@@ -162,6 +165,9 @@ export default function ProfilePage() {
 
     try {
       let updatedData: any = { nickname: editNickname, phone, recoveryEmail };
+      if (selectedJobCode) {
+        updatedData.jobCode = selectedJobCode;
+      }
       let profileImageUrl = profile.profileImage;
 
       // Upload profile image if selected
@@ -211,6 +217,7 @@ export default function ProfilePage() {
       setProfile(data);
       setPhone(data.phone || '');
       setRecoveryEmail(data.recoveryEmail || '');
+      setSelectedJobCode(data.jobCode || '');
       setIsEditing(false);
       setProfileImage(null);
     } catch (err: any) {
@@ -315,6 +322,37 @@ export default function ProfilePage() {
               >
                 이미지 변경
               </label>
+            </div>
+          </div>
+
+          {/* 직업 아이콘 선택 */}
+          <div className="mb-4">
+            <div className="text-sm font-semibold text-gray-700 mb-2">직업 선택</div>
+            <div role="radiogroup" className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+              {[
+                { code: 'student', label: '학생', img: '/avatars/jobs/student.svg' },
+                { code: 'engineer', label: '엔지니어', img: '/avatars/jobs/engineer.svg' },
+                { code: 'doctor', label: '의사', img: '/avatars/jobs/doctor.svg' },
+                { code: 'teacher', label: '교사', img: '/avatars/jobs/teacher.svg' },
+                { code: 'designer', label: '디자이너', img: '/avatars/jobs/designer.svg' },
+                { code: 'researcher', label: '연구자', img: '/avatars/jobs/researcher.svg' },
+              ].map(item => (
+                <button
+                  key={item.code}
+                  type="button"
+                  role="radio"
+                  aria-checked={selectedJobCode === item.code}
+                  onClick={() => setSelectedJobCode(item.code)}
+                  className={`relative border rounded-lg p-2 flex flex-col items-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${selectedJobCode === item.code ? 'border-indigo-500' : 'border-gray-200'}`}
+                  title={item.label}
+                >
+                  <img src={item.img} alt={item.label} className="w-10 h-10" />
+                  <span className="text-xs text-gray-600">{item.label}</span>
+                  {selectedJobCode === item.code && (
+                    <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded">선택</span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
 

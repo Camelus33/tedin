@@ -17,6 +17,11 @@ const profileUpdateValidation = [
     .isLength({ min: 2, max: 20 })
     .withMessage('닉네임은 2자 이상, 20자 이하이어야 합니다')
     .trim(),
+  body('jobCode')
+    .optional()
+    .isString()
+    .isIn(['student','engineer','doctor','teacher','designer','researcher'])
+    .withMessage('유효하지 않은 직업 코드입니다'),
 ];
 
 // Validation for settings update
