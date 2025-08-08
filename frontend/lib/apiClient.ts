@@ -342,6 +342,25 @@ async function postWarmupEvents(payload: WarmupEventClientPayload) {
   return apiClient.post('/ts/warmup/events', payload);
 }
 
+// Validate queued payloads to avoid retrying forever on bad data
+function isValidModeId(mode: any): mode is WarmupModeId {
+  return mode === 'guided_breathing' || mode === 'peripheral_vision' || mode === 'text_flow';
+}
+
+function isValidEventsPayload(payload: WarmupEventClientPayload): boolean {
+  if (!payload || typeof payload.sessionId !== 'string' || payload.sessionId.length === 0) return false;
+  if (!Array.isArray(payload.events) || payload.events.length === 0) return false;
+  for (const ev of payload.events) {
+    if (!ev) return false;
+    if (!isValidModeId((ev as any).mode)) return false;
+    if (typeof ev.eventType !== 'string' || ev.eventType.length === 0) return false;
+    if (typeof ev.clientEventId !== 'string' || ev.clientEventId.length === 0) return false;
+    if (typeof ev.data !== 'object' || ev.data == null) return false;
+    if (ev.ts && isNaN(new Date(ev.ts).getTime())) return false;
+  }
+  return true;
+}
+
 export const warmupEventsService = {
   async sendEvents(payload: WarmupEventClientPayload): Promise<{ ok: boolean; queued?: boolean }> {
     try {
@@ -359,6 +378,11 @@ export const warmupEventsService = {
     const remaining: WarmupEventClientPayload[] = [];
     let sent = 0;
     for (const item of queue) {
+      // Drop invalid items to prevent infinite 400 retries
+      if (!isValidEventsPayload(item)) {
+        debugLogger.warn('Dropping invalid warmup events payload from queue', item);
+        continue;
+      }
       try {
         await postWarmupEvents(item);
         sent += 1;

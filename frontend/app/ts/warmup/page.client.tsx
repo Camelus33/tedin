@@ -6,7 +6,6 @@ import Button from '@/components/common/Button';
 import Spinner from '@/components/ui/Spinner';
 import { InformationCircleIcon, CheckCircleIcon, XCircleIcon, LightBulbIcon, ClockIcon, ChevronRightIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import api from '@/lib/api';
-import { warmupEventsService, type WarmupEventClientPayload } from '@/lib/apiClient';
 import { v4 as uuidv4 } from 'uuid';
 
 // Cyber Theme Definition (Consistent with other TS pages)
@@ -209,8 +208,15 @@ export default function TSWarmupPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('sessionId');
 
-  // Raw event buffer (not reactive)
-  const eventsRef = useRef<WarmupEventClientPayload['events']>([]);
+  // Raw event buffer kept only in-memory (not persisted, not transmitted)
+  type WarmupEvent = {
+    mode: 'guided_breathing' | 'peripheral_vision' | 'text_flow';
+    eventType: string;
+    ts: string;
+    clientEventId: string;
+    data: Record<string, any>;
+  };
+  const eventsRef = useRef<WarmupEvent[]>([]);
 
   const getModeIdForEvents = (exerciseId: string) => {
     if (exerciseId === 'peripheral_vision_expansion') return 'peripheral_vision' as const;
@@ -465,9 +471,14 @@ export default function TSWarmupPage() {
     return () => clearTimeout(loadingTimer);
   }, []);
 
-  // Flush queued warmup events once on mount (best-effort)
+  // Ensure any legacy queued warmup data are cleared (no data recording policy)
   useEffect(() => {
-    warmupEventsService.flushQueue().catch(() => {});
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('warmupEventsQueue');
+        localStorage.removeItem('warmupMetricsQueue');
+      }
+    } catch {}
   }, []);
 
   // NEW: useEffect to select and set the active exercise variation
@@ -991,16 +1002,8 @@ export default function TSWarmupPage() {
         }
         
         // Compose payload and send
-        const pendingEvents = eventsRef.current.splice(0);
-        if (pendingEvents.length > 0) {
-          const eventsPayload: WarmupEventClientPayload = {
-            sessionId,
-            warmupVersion: 'v1',
-            device,
-            events: pendingEvents,
-          };
-          warmupEventsService.sendEvents(eventsPayload).catch(() => {});
-        }
+        // No external transmission: we intentionally do not persist or send warmup events
+        eventsRef.current.splice(0);
       } catch (e) {
         // Ignore metrics errors; do not block navigation
       }
