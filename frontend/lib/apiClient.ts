@@ -215,87 +215,7 @@ export const paymentService = {
  */
 export type WarmupModeId = 'guided_breathing' | 'peripheral_vision' | 'text_flow';
 
-export interface WarmupModeResult {
-  mode: WarmupModeId;
-  durationSec: number;
-  metrics: Record<string, any>;
-}
-
-export interface WarmupMetricsPayload {
-  sessionId: string;
-  userIdHash?: string | null;
-  timestamp: string; // ISO string
-  warmupVersion: string; // e.g., "v1"
-  results: WarmupModeResult[];
-  device?: { width: number; height: number; dpr: number; reducedMotion: boolean };
-}
-
-const WARMUP_QUEUE_KEY = 'warmupMetricsQueue';
-
-function loadWarmupQueue(): WarmupMetricsPayload[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(WARMUP_QUEUE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveWarmupQueue(queue: WarmupMetricsPayload[]) {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(WARMUP_QUEUE_KEY, JSON.stringify(queue));
-  } catch {}
-}
-
-function enqueueWarmupMetrics(payload: WarmupMetricsPayload) {
-  const q = loadWarmupQueue();
-  q.push(payload);
-  saveWarmupQueue(q);
-}
-
-async function postWarmupMetrics(payload: WarmupMetricsPayload) {
-  return apiClient.post('/ts/warmup/metrics', payload);
-}
-
-export const warmupMetricsService = {
-  /**
-   * Fire-and-forget send. On failure, payload is queued for later.
-   */
-  async sendWarmupMetrics(payload: WarmupMetricsPayload): Promise<{ ok: boolean; queued?: boolean }> {
-    try {
-      await postWarmupMetrics(payload);
-      return { ok: true };
-    } catch (err) {
-      debugLogger.warn('Warmup metrics send failed; enqueueing for retry', err);
-      enqueueWarmupMetrics(payload);
-      return { ok: false, queued: true };
-    }
-  },
-
-  /**
-   * Try to flush any queued metrics. Removes successful ones; retains failures.
-   */
-  async flushQueue(): Promise<{ sent: number; remaining: number }> {
-    const queue = loadWarmupQueue();
-    if (queue.length === 0) return { sent: 0, remaining: 0 };
-    const remaining: WarmupMetricsPayload[] = [];
-    let sent = 0;
-    for (const item of queue) {
-      try {
-        await postWarmupMetrics(item);
-        sent += 1;
-      } catch (err) {
-        remaining.push(item);
-      }
-    }
-    saveWarmupQueue(remaining);
-    return { sent, remaining: remaining.length };
-  },
-};
+// (Removed) WarmupMetrics: data collection is disabled by policy
 
 // --- New: Warmup raw events client ---
 export type WarmupEventClientPayload = {
@@ -361,36 +281,16 @@ function isValidEventsPayload(payload: WarmupEventClientPayload): boolean {
   return true;
 }
 
+// Export a no-op service to avoid accidental usage across the app
 export const warmupEventsService = {
-  async sendEvents(payload: WarmupEventClientPayload): Promise<{ ok: boolean; queued?: boolean }> {
-    try {
-      await postWarmupEvents(payload);
-      return { ok: true };
-    } catch (err) {
-      debugLogger.warn('Warmup events send failed; enqueueing for retry', err);
-      enqueueEvents(payload);
-      return { ok: false, queued: true };
-    }
+  async sendEvents(_: WarmupEventClientPayload): Promise<{ ok: boolean; queued?: boolean }> {
+    return { ok: true };
   },
   async flushQueue(): Promise<{ sent: number; remaining: number }> {
-    const queue = loadEventsQueue();
-    if (queue.length === 0) return { sent: 0, remaining: 0 };
-    const remaining: WarmupEventClientPayload[] = [];
-    let sent = 0;
-    for (const item of queue) {
-      // Drop invalid items to prevent infinite 400 retries
-      if (!isValidEventsPayload(item)) {
-        debugLogger.warn('Dropping invalid warmup events payload from queue', item);
-        continue;
-      }
-      try {
-        await postWarmupEvents(item);
-        sent += 1;
-      } catch (err) {
-        remaining.push(item);
-      }
+    // Clear any legacy queues just in case
+    if (typeof window !== 'undefined') {
+      try { localStorage.removeItem(EVENTS_QUEUE_KEY); } catch {}
     }
-    saveEventsQueue(remaining);
-    return { sent, remaining: remaining.length };
+    return { sent: 0, remaining: 0 };
   },
 };
