@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 const cyberTheme = {
   primary: 'text-cyan-400',
   secondary: 'text-purple-400',
+    highlightSoft: 'text-cyan-300',
   bgPrimary: 'bg-gray-900',
   bgSecondary: 'bg-gray-800',
   cardBg: 'bg-gray-800/60',
@@ -275,6 +276,7 @@ export default function TSWarmupPage() {
   const [probeShownAt, setProbeShownAt] = useState<number | null>(null);
   const [probeRtMs, setProbeRtMs] = useState<number | null>(null);
   const [lastPeripheralTarget, setLastPeripheralTarget] = useState<'left' | 'right' | null>(null);
+  // Removed: 2AFC choice UI/state (no longer needed)
   const [lastAfcChoice, setLastAfcChoice] = useState<'left' | 'right' | null>(null);
   const [lastAfcCorrect, setLastAfcCorrect] = useState<boolean | null>(null);
   // Stimulus summary metrics
@@ -315,7 +317,9 @@ export default function TSWarmupPage() {
   const [wordGroupBank, setWordGroupBank] = useState<string[]>([]);
   const [highlightIntervals, setHighlightIntervals] = useState<number[]>([]);
   const [lastHighlightTs, setLastHighlightTs] = useState<number>(0);
+  // Removed: comprehension quick check buttons (no data recording policy)
   const [comprehensionAnswer, setComprehensionAnswer] = useState<boolean | null>(null);
+  const [progressPulseKey, setProgressPulseKey] = useState<number>(0);
 
   // Breathing measurement states
   const [relaxationBefore, setRelaxationBefore] = useState<number | null>(null);
@@ -480,6 +484,11 @@ export default function TSWarmupPage() {
       }
     } catch {}
   }, []);
+
+  // Re-trigger progress micro-pulse when step changes
+  useEffect(() => {
+    setProgressPulseKey((prev) => prev + 1);
+  }, [currentExerciseIndex]);
 
   // NEW: useEffect to select and set the active exercise variation
   useEffect(() => {
@@ -1036,12 +1045,11 @@ export default function TSWarmupPage() {
       if (breathingPhase === 'done') return '완료';
     } else if (exercise.id === 'peripheral_vision_expansion') {
       if (eyeTrackingPhase === 'running' && probeRtMs === null) return '중앙 고정 · 보이면 한 번 탭';
-      if (eyeTrackingPhase === 'done' && lastAfcChoice === null) return '좌/우 선택';
+      // Removed final 2AFC prompt
       if (eyeTrackingPhase === 'done') return '완료';
       return '중앙 고정';
     } else if (exercise.id === 'text_flow') {
       if (textFlowPhase === 'running') return '강조 단어만 보기';
-      if (textFlowPhase === 'done' && comprehensionAnswer === null) return '이해됨/애매함 응답';
       if (textFlowPhase === 'done') return '완료';
       return '준비';
     }
@@ -1082,6 +1090,13 @@ export default function TSWarmupPage() {
   // Main Exercise UI
   return (
     <div className={`min-h-screen flex flex-col ${cyberTheme.gradient} text-gray-100`}>
+      <style>{`
+        @keyframes pulseY {
+          0% { transform: scaleY(1); }
+          60% { transform: scaleY(1.3); }
+          100% { transform: scaleY(1); }
+        }
+      `}</style>
       {/* Header */}
       <header className={`p-3 sm:p-4 ${cyberTheme.bgSecondary} shadow-md flex justify-between items-center`}>
         <h1 className={`text-lg sm:text-xl font-bold ${cyberTheme.primary}`}>
@@ -1115,12 +1130,17 @@ export default function TSWarmupPage() {
       <main className="flex-grow container mx-auto p-3 sm:p-4 md:p-6 lg:p-8 flex items-center justify-center">
         <div className={`${cyberTheme.cardBg} rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-md sm:max-w-lg md:max-w-xl border ${cyberTheme.borderPrimary}`}>
           
-          {/* Progress Bar */}
+          {/* Progress Bar with micro pulse on step change */}
           <div className={`w-full ${cyberTheme.progressBarBg} rounded-full h-2 sm:h-2.5 mb-4 sm:mb-6`}>
             <div 
-              className={`${cyberTheme.progressFg} h-2 sm:h-2.5 rounded-full transition-all duration-300 ease-out`}
-              style={{ width: `${((currentExerciseIndex + 1) / EXERCISE_CONFIGURATIONS.length) * 100}%` }}
-            ></div>
+              key={progressPulseKey}
+              className={`${cyberTheme.progressFg} h-2 sm:h-2.5 rounded-full`}
+              style={{
+                width: `${((currentExerciseIndex + 1) / EXERCISE_CONFIGURATIONS.length) * 100}%`,
+                transform: prefersReducedMotion ? 'none' : 'scaleY(1)',
+                animation: prefersReducedMotion ? 'none' : 'pulseY 180ms cubic-bezier(0.34, 1.56, 0.64, 1)'
+              }}
+            />
           </div>
 
           {/* Minimal microcopy: 1 line only */}
@@ -1228,7 +1248,7 @@ export default function TSWarmupPage() {
                    }}>
                 {showCentralFixation && dotPosition && ( // dotPosition is now central fixation
                   <div
-                    className={`absolute w-2 h-2 sm:w-3 sm:h-3 ${fixationHighContrast ? 'bg-white' : 'bg-red-500'} rounded-full`} // Central dot style
+                    className={`absolute w-2 h-2 sm:w-3 sm:h-3 ${fixationHighContrast ? 'bg-white' : 'bg-green-500'} rounded-full`} // Central dot style
                     style={{
                       top: dotPosition.top,
                       left: dotPosition.left,
@@ -1273,16 +1293,7 @@ export default function TSWarmupPage() {
                 {eyeTrackingPhase === 'idle' && <p className={`${cyberTheme.textMuted}`}>고정점 응시 준비 중...</p>}
               </div>
             )}
-            {/* Peripheral final 2AFC */}
-            {exercise.id === 'peripheral_vision_expansion' && eyeTrackingPhase === 'done' && lastAfcChoice === null && (
-              <div className="mt-2 flex justify-center gap-3">
-                <Button onClick={() => { setLastAfcChoice('left'); const correct = (lastPeripheralTarget === 'left'); setLastAfcCorrect(correct); pushEvent('peripheral_vision_expansion', 'afc_answer', { choice: 'left', target: lastPeripheralTarget, correct }); }} className="px-3 py-1">좌</Button>
-                <Button onClick={() => { setLastAfcChoice('right'); const correct = (lastPeripheralTarget === 'right'); setLastAfcCorrect(correct); pushEvent('peripheral_vision_expansion', 'afc_answer', { choice: 'right', target: lastPeripheralTarget, correct }); }} className="px-3 py-1">우</Button>
-              </div>
-            )}
-            {exercise.id === 'peripheral_vision_expansion' && eyeTrackingPhase === 'done' && lastAfcChoice !== null && (
-              <p className={`mt-2 text-center text-sm ${cyberTheme.textLight}`}>선택: {lastAfcChoice === 'left' ? '좌' : '우'} · 정답: {lastAfcCorrect ? '정답' : '오답'}</p>
-            )}
+            {/* Removed: peripheral 2AFC UI */}
             {exercise.id === 'visual_span' && (
               <div className="text-center w-full relative min-h-[100px]">
                 { (visualSpanPhase === 'idle' || visualSpanPhase === 'interval') && 
@@ -1326,6 +1337,17 @@ export default function TSWarmupPage() {
             )}
             {exercise.id === 'text_flow' && (
                  <div className="text-center w-full overflow-hidden relative flex items-center justify-center" style={{ height: '150px' }}>
+                      {/* Scan-line gradient mask for subtle focus guidance */}
+                      {!prefersReducedMotion && (
+                        <div
+                          aria-hidden
+                          className="pointer-events-none absolute inset-0"
+                          style={{
+                            maskImage: 'linear-gradient(90deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0.05) 100%)',
+                            WebkitMaskImage: 'linear-gradient(90deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0.05) 100%)'
+                          }}
+                        />
+                      )}
                       { (exercise.variationParams as TextFlowVariationParams).flowType === 'highlight' && textFlowPhase === 'running' && textFlowContent.length > 0 && (
                           <p className={`text-xl ${cyberTheme.textLight} p-4`}>
                               {textFlowContent.map((word, index) => {
@@ -1337,18 +1359,19 @@ export default function TSWarmupPage() {
                                       // 현재 강조 단어
                                       highlightClass = `${cyberTheme.primary} font-bold`;
                                       transformStyle = { 
-                                          transform: 'translateY(-2px) scale(1.05)',
-                                          transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                                          transform: prefersReducedMotion ? 'none' : 'translateY(-1px) scale(1.04)',
+                                          transition: prefersReducedMotion ? 'none' : 'transform 0.16s cubic-bezier(0.2, 0.0, 0.2, 1), opacity 0.16s',
+                                          opacity: 1
                                       };
                                   } else if (index === currentHighlightIndex - 1 || index === currentHighlightIndex + 1) {
                                       // 인접 단어들 - 약간의 강조
-                                      highlightClass = prefersReducedMotion ? '' : 'text-cyan-300';
+                                      highlightClass = prefersReducedMotion ? '' : cyberTheme.highlightSoft;
                                   }
                                   
                                   return (
                                       <span 
                                           key={index} 
-                                          className={`inline-block transition-all ${highlightClass}`}
+                                          className={`inline-block ${highlightClass}`}
                                           style={transformStyle}
                                       >
                                           {word}{' '}
@@ -1387,16 +1410,7 @@ export default function TSWarmupPage() {
                       {textFlowPhase === 'idle' && <p className={`${cyberTheme.textMuted}`}>텍스트 흐름 준비 중...</p>}
                   </div>
             )}
-            {/* Text comprehension quick check */}
-            {exercise.id === 'text_flow' && textFlowPhase === 'done' && comprehensionAnswer === null && (
-              <div className="mt-2 flex justify-center gap-3">
-                <Button onClick={() => { setComprehensionAnswer(true); pushEvent('text_flow', 'comprehension', { value: true }); }} className="px-3 py-1">이해됨</Button>
-                <Button onClick={() => { setComprehensionAnswer(false); pushEvent('text_flow', 'comprehension', { value: false }); }} variant="secondary" className="px-3 py-1">애매함</Button>
-              </div>
-            )}
-            {exercise.id === 'text_flow' && textFlowPhase === 'done' && comprehensionAnswer !== null && (
-              <p className={`mt-2 text-center text-sm ${cyberTheme.textLight}`}>이해도 응답: {comprehensionAnswer ? '이해됨' : '애매함'}</p>
-            )}
+            {/* Removed comprehension quick check UI */}
 
             {/* Fallback for unhandled exercise types (should ideally not happen) */}
             {exercise.id !== 'guided_breathing' && exercise.id !== 'peripheral_vision_expansion' && exercise.id !== 'text_flow' && (
@@ -1404,10 +1418,7 @@ export default function TSWarmupPage() {
             )}
           </div>
           
-          {/* Minimal status line only */}
-          <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>{(exercise.id === 'text_flow' && textFlowPhase === 'done') || (exercise.id === 'guided_breathing' && breathingPhase === 'done') || (exercise.id === 'peripheral_vision_expansion' && eyeTrackingPhase === 'done') ? '완료' : getMicroCopy()}</p>
-
-
+          
           {/* Options / Input - This section will be heavily refactored or removed.
               For now, we rely on userInteracted state set by exercise logic.
           */}
@@ -1453,7 +1464,7 @@ export default function TSWarmupPage() {
               disabled={!userInteracted}
               className={`w-full flex-grow ${!userInteracted ? cyberTheme.buttonDisabledBg : cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg}`}
             >
-              {currentExerciseIndex === EXERCISE_CONFIGURATIONS.length - 1 ? '이제 물결 속으로' : '다음 훈련'} 
+              {currentExerciseIndex === EXERCISE_CONFIGURATIONS.length - 1 ? '이제 시작' : '다음 훈련'} 
               <ChevronRightIcon className="h-5 w-5 ml-2" />
             </Button>
           </div>
