@@ -1,5 +1,6 @@
 import express from 'express';
 import { embeddingService } from '../services/EmbeddingService';
+import { runEngagementJobs } from '../controllers/notificationController';
 import { authenticate } from '../middlewares/auth';
 import { isAdmin } from '../middlewares/isAdmin';
 
@@ -73,3 +74,12 @@ router.post('/generate-embedding/:memoId', authenticate, isAdmin, async (req, re
 });
 
 export default router; 
+
+/**
+ * @route POST /api/admin/jobs/engagement
+ * @desc Run engagement nudges (memo/TS/Zengo) and summary suggestions (Admin/secret)
+ * @access Protected via secret query param
+ */
+router.post('/jobs/engagement', async (req, res) => {
+  return runEngagementJobs(req as any, res as any);
+});
