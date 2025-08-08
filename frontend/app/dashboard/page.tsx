@@ -338,7 +338,7 @@ export default function DashboardPage() {
               className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-4 sm:px-6 py-3 sm:py-3 rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all font-medium shadow-lg hover:shadow-cyan-500/25 border border-cyan-500/30 text-sm sm:text-base min-h-[44px] flex items-center gap-2"
             >
               <FiFilePlus className="w-4 h-4" />
-              <span>New Memo</span>
+              <span>Snap Note</span>
             </button>
           </div>
         </div>

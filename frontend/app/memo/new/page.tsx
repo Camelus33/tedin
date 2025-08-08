@@ -203,7 +203,7 @@ function NewMemoContent() {
            <div className="absolute top-0 right-0 w-3 h-3 bg-gradient-to-bl from-black/15 to-transparent transform rotate-45 translate-x-1 -translate-y-1"></div>
            
            <h1 className="text-xl font-bold text-gray-800 mb-3 font-orbitron tracking-wide text-center">
-             Atomic Memo
+             Snap Note
            </h1>
           
           {error && (

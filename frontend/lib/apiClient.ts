@@ -207,3 +207,166 @@ export const paymentService = {
     return apiClient.post('/payments/cancel-subscription', {});
   },
 }; 
+
+/**
+ * TS Warmup metrics client helper
+ * - Safe with 200/204 and non-JSON responses (handled by handleResponse)
+ * - 1 retry via local queue (stored in localStorage) on failure
+ */
+export type WarmupModeId = 'guided_breathing' | 'peripheral_vision' | 'text_flow';
+
+export interface WarmupModeResult {
+  mode: WarmupModeId;
+  durationSec: number;
+  metrics: Record<string, any>;
+}
+
+export interface WarmupMetricsPayload {
+  sessionId: string;
+  userIdHash?: string | null;
+  timestamp: string; // ISO string
+  warmupVersion: string; // e.g., "v1"
+  results: WarmupModeResult[];
+  device?: { width: number; height: number; dpr: number; reducedMotion: boolean };
+}
+
+const WARMUP_QUEUE_KEY = 'warmupMetricsQueue';
+
+function loadWarmupQueue(): WarmupMetricsPayload[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(WARMUP_QUEUE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveWarmupQueue(queue: WarmupMetricsPayload[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(WARMUP_QUEUE_KEY, JSON.stringify(queue));
+  } catch {}
+}
+
+function enqueueWarmupMetrics(payload: WarmupMetricsPayload) {
+  const q = loadWarmupQueue();
+  q.push(payload);
+  saveWarmupQueue(q);
+}
+
+async function postWarmupMetrics(payload: WarmupMetricsPayload) {
+  return apiClient.post('/ts/warmup/metrics', payload);
+}
+
+export const warmupMetricsService = {
+  /**
+   * Fire-and-forget send. On failure, payload is queued for later.
+   */
+  async sendWarmupMetrics(payload: WarmupMetricsPayload): Promise<{ ok: boolean; queued?: boolean }> {
+    try {
+      await postWarmupMetrics(payload);
+      return { ok: true };
+    } catch (err) {
+      debugLogger.warn('Warmup metrics send failed; enqueueing for retry', err);
+      enqueueWarmupMetrics(payload);
+      return { ok: false, queued: true };
+    }
+  },
+
+  /**
+   * Try to flush any queued metrics. Removes successful ones; retains failures.
+   */
+  async flushQueue(): Promise<{ sent: number; remaining: number }> {
+    const queue = loadWarmupQueue();
+    if (queue.length === 0) return { sent: 0, remaining: 0 };
+    const remaining: WarmupMetricsPayload[] = [];
+    let sent = 0;
+    for (const item of queue) {
+      try {
+        await postWarmupMetrics(item);
+        sent += 1;
+      } catch (err) {
+        remaining.push(item);
+      }
+    }
+    saveWarmupQueue(remaining);
+    return { sent, remaining: remaining.length };
+  },
+};
+
+// --- New: Warmup raw events client ---
+export type WarmupEventClientPayload = {
+  sessionId: string;
+  warmupVersion?: string;
+  device?: { width?: number; height?: number; dpr?: number; reducedMotion?: boolean };
+  events: Array<{
+    mode: WarmupModeId;
+    eventType: string;
+    ts?: string; // ISO
+    clientEventId: string; // uuid
+    data: Record<string, any>;
+  }>;
+};
+
+const EVENTS_QUEUE_KEY = 'warmupEventsQueue';
+
+function loadEventsQueue(): WarmupEventClientPayload[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(EVENTS_QUEUE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveEventsQueue(queue: WarmupEventClientPayload[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(EVENTS_QUEUE_KEY, JSON.stringify(queue));
+  } catch {}
+}
+
+function enqueueEvents(payload: WarmupEventClientPayload) {
+  const q = loadEventsQueue();
+  q.push(payload);
+  saveEventsQueue(q);
+}
+
+async function postWarmupEvents(payload: WarmupEventClientPayload) {
+  return apiClient.post('/ts/warmup/events', payload);
+}
+
+export const warmupEventsService = {
+  async sendEvents(payload: WarmupEventClientPayload): Promise<{ ok: boolean; queued?: boolean }> {
+    try {
+      await postWarmupEvents(payload);
+      return { ok: true };
+    } catch (err) {
+      debugLogger.warn('Warmup events send failed; enqueueing for retry', err);
+      enqueueEvents(payload);
+      return { ok: false, queued: true };
+    }
+  },
+  async flushQueue(): Promise<{ sent: number; remaining: number }> {
+    const queue = loadEventsQueue();
+    if (queue.length === 0) return { sent: 0, remaining: 0 };
+    const remaining: WarmupEventClientPayload[] = [];
+    let sent = 0;
+    for (const item of queue) {
+      try {
+        await postWarmupEvents(item);
+        sent += 1;
+      } catch (err) {
+        remaining.push(item);
+      }
+    }
+    saveEventsQueue(remaining);
+    return { sent, remaining: remaining.length };
+  },
+};

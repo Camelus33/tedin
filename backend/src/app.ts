@@ -73,6 +73,7 @@ import memoSearchRoutes from './routes/memoSearch'; // 메모카드 검색 라�
 import adminRoutes from './routes/admin'; // 관리자 라우트 임포트
 import aiChatRoutes from './routes/aiChat'; // AI 채팅 라우트 임포트
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
+import warmupRoutes from './routes/warmup';
 
 // Initialize Express app
 const app: Express = express();
@@ -173,6 +174,7 @@ app.use('/api/performance', performanceRoutes); // 성능 모니터링 라우트
 app.use('/api/memo-search', memoSearchRoutes); // 메모카드 검색 라우트 등록
 app.use('/api/admin', adminRoutes); // 관리자 라우트 등록
 app.use('/api/ai-chat', aiChatRoutes); // AI 채팅 라우트 등록
+app.use('/api', warmupRoutes); // TS warmup routes
 
 // Cognitive metrics API route
 import cognitiveRoutes from './routes/cognitive';

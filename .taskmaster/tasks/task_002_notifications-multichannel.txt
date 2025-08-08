@@ -1,6 +1,6 @@
 # Task ID: 2
 # Title: Phase 2: Email channel (SendGrid)
-# Status: pending
+# Status: done
 # Dependencies: None
 # Priority: high
 # Description: Add email delivery channel with templated messages and unsubscribe links.

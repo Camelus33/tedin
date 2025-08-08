@@ -327,7 +327,7 @@ export default function ProfilePage() {
 
           {/* 직업 아이콘 선택 */}
           <div className="mb-4">
-            <div className="text-sm font-semibold text-gray-700 mb-2">직업 선택</div>
+            <div className="text-sm font-semibold text-gray-700 mb-2">페르소나 선택</div>
             <div role="radiogroup" className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {[
                 { code: 'student', label: '학생', img: '/avatars/jobs/student.svg' },

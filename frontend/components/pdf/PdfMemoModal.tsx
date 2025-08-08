@@ -177,7 +177,7 @@ export default function PdfMemoModal({
       <div className={`${cyberTheme.cardBg} border ${cyberTheme.inputBorder} rounded-xl p-4 w-full max-w-lg max-h-[85vh] overflow-y-auto`}>
         {/* 헤더 - 컴팩트하게 */}
         <div className="flex justify-between items-center mb-3">
-          <h2 className={`text-lg font-bold ${cyberTheme.textLight}`}>PDF 메모 작성</h2>
+          <h2 className={`text-lg font-bold ${cyberTheme.textLight}`}>PDF Snap Note</h2>
         </div>
 
         {/* 페이지 정보 - 컴팩트하게 */}

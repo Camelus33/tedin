@@ -1,6 +1,6 @@
 # Task ID: 3
 # Title: Phase 3: Policy engine & jobs integration
-# Status: pending
+# Status: deferred
 # Dependencies: None
 # Priority: medium
 # Description: Apply Quiet Hours, daily limits, category opt-in, and dedup to multichannel dispatch. Wire engagement jobs to channels.

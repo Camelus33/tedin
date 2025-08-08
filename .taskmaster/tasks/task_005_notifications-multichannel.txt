@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: TS Warmup v1: 3-mode redesign (<=20s each) with metrics foundation
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Redesign warmup into 3 concise modes (breathing, peripheral, text-flow) with per-mode measurement points and a reusable metrics pipeline.
+# Details:
+
+
+# Test Strategy:
+

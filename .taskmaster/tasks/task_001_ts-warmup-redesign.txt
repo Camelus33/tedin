@@ -1,0 +1,73 @@
+# Task ID: 1
+# Title: TS Warmup v1: 3-mode redesign (<=20s each) with metrics foundation
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Redesign warmup into 3 concise modes (breathing, peripheral, text-flow) with per-mode measurement points and a reusable metrics pipeline.
+# Details:
+
+
+# Test Strategy:
+
+
+# Subtasks:
+## 1. Reduce to 3 modes and enforce <=20s per mode [done]
+### Dependencies: None
+### Description: Remove visual_span from rotation. Set total session to 60s (3x20s). Adjust breathing/peripheral/text-flow parameters to complete within ~16s execution + ~4s buffer.
+### Details:
+
+
+## 2. Inject minimal measurement points per mode (UI only) [done]
+### Dependencies: None
+### Description: Add pre/post relaxation slider (breathing), single probe RT+final 2AFC (peripheral), highlight interval stats+1 comprehension Y/N (text-flow). Do not send yet.
+### Details:
+
+
+## 3. Metrics client helper and batching [done]
+### Dependencies: None
+### Description: Add sendWarmupMetrics() in frontend/lib/apiClient.ts with 200/204 handling, non-JSON safe parse, and 1 retry. Queue locally on failure.
+### Details:
+
+
+## 4. Wire metrics send on warmup finish [done]
+### Dependencies: None
+### Description: Hook into handleFinishWarmup to send batch payload (sessionId, device, results[]) without blocking navigation; fire-and-forget with try/catch.
+### Details:
+
+
+## 5. Accessibility & reduced-motion safeguards [done]
+### Dependencies: None
+### Description: Prefers-reduced-motion branch, flash frequency <=3Hz, fixation high-contrast toggle, keyboard input for probes.
+### Details:
+
+
+## 6. Animation polish (GPU-friendly) [done]
+### Dependencies: None
+### Description: Move inline animation to keyframes/classes; use transform/opacity, will-change hints; unify easing and brand-consistent palette.
+### Details:
+
+
+## 7. Flush queued warmup metrics on mount [pending]
+### Dependencies: None
+### Description: Call warmupMetricsService.flushQueue() once on component mount; ignore errors.
+### Details:
+
+
+## 8. Add peripheral stimulus summary metrics [pending]
+### Dependencies: None
+### Description: Collect count, actual mean presentation/ISI (ms), and quadrant balance; attach to metrics payload.
+### Details:
+
+
+## 9. Compute text-flow derived metrics [pending]
+### Dependencies: None
+### Description: Compute stability_index (late/early avg) and wpm_eq from highlightIntervals; include in payload.
+### Details:
+
+
+## 10. Expose high-contrast toggle UI [pending]
+### Dependencies: None
+### Description: Add a small toggle button to switch fixationHighContrast in peripheral UI.
+### Details:
+
+

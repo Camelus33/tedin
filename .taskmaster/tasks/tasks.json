@@ -3703,6 +3703,60 @@
             "status": "done",
             "dependencies": [],
             "parentTaskId": 1
+          },
+          {
+            "id": 7,
+            "title": "Reduce to 3 modes and enforce <=20s per mode",
+            "description": "Remove visual_span from rotation. Set total session to 60s (3x20s). Adjust breathing/peripheral/text-flow parameters to complete within ~16s execution + ~4s buffer.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 8,
+            "title": "Inject minimal measurement points per mode (UI only)",
+            "description": "Add pre/post relaxation slider (breathing), single probe RT+final 2AFC (peripheral), highlight interval stats+1 comprehension Y/N (text-flow). Do not send yet.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 9,
+            "title": "Metrics client helper and batching",
+            "description": "Add sendWarmupMetrics() in frontend/lib/apiClient.ts with 200/204 handling, non-JSON safe parse, and 1 retry. Queue locally on failure.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 10,
+            "title": "Wire metrics send on warmup finish",
+            "description": "Hook into handleFinishWarmup to send batch payload (sessionId, device, results[]) without blocking navigation; fire-and-forget with try/catch.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 11,
+            "title": "Accessibility & reduced-motion safeguards",
+            "description": "Prefers-reduced-motion branch, flash frequency <=3Hz, fixation high-contrast toggle, keyboard input for probes.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 12,
+            "title": "Animation polish (GPU-friendly)",
+            "description": "Move inline animation to keyframes/classes; use transform/opacity, will-change hints; unify easing and brand-consistent palette.",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
           }
         ]
       },
@@ -3738,12 +3792,134 @@
         "dependencies": [],
         "priority": "low",
         "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "TS Warmup v1: 3-mode redesign (<=20s each) with metrics foundation",
+        "description": "Redesign warmup into 3 concise modes (breathing, peripheral, text-flow) with per-mode measurement points and a reusable metrics pipeline.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-08-08T06:33:06.673Z",
-      "updated": "2025-08-08T07:15:32.234Z",
+      "updated": "2025-08-08T13:06:59.519Z",
       "description": "Implement Web Push and Email notification channels with policy controls (Quiet Hours, daily limits, categories)."
+    }
+  },
+  "ts-warmup-redesign": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "TS Warmup v1: 3-mode redesign (<=20s each) with metrics foundation",
+        "description": "Redesign warmup into 3 concise modes (breathing, peripheral, text-flow) with per-mode measurement points and a reusable metrics pipeline.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Reduce to 3 modes and enforce <=20s per mode",
+            "description": "Remove visual_span from rotation. Set total session to 60s (3x20s). Adjust breathing/peripheral/text-flow parameters to complete within ~16s execution + ~4s buffer.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 2,
+            "title": "Inject minimal measurement points per mode (UI only)",
+            "description": "Add pre/post relaxation slider (breathing), single probe RT+final 2AFC (peripheral), highlight interval stats+1 comprehension Y/N (text-flow). Do not send yet.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 3,
+            "title": "Metrics client helper and batching",
+            "description": "Add sendWarmupMetrics() in frontend/lib/apiClient.ts with 200/204 handling, non-JSON safe parse, and 1 retry. Queue locally on failure.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 4,
+            "title": "Wire metrics send on warmup finish",
+            "description": "Hook into handleFinishWarmup to send batch payload (sessionId, device, results[]) without blocking navigation; fire-and-forget with try/catch.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 5,
+            "title": "Accessibility & reduced-motion safeguards",
+            "description": "Prefers-reduced-motion branch, flash frequency <=3Hz, fixation high-contrast toggle, keyboard input for probes.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 6,
+            "title": "Animation polish (GPU-friendly)",
+            "description": "Move inline animation to keyframes/classes; use transform/opacity, will-change hints; unify easing and brand-consistent palette.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 7,
+            "title": "Flush queued warmup metrics on mount",
+            "description": "Call warmupMetricsService.flushQueue() once on component mount; ignore errors.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 8,
+            "title": "Add peripheral stimulus summary metrics",
+            "description": "Collect count, actual mean presentation/ISI (ms), and quadrant balance; attach to metrics payload.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 9,
+            "title": "Compute text-flow derived metrics",
+            "description": "Compute stability_index (late/early avg) and wpm_eq from highlightIntervals; include in payload.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 10,
+            "title": "Expose high-contrast toggle UI",
+            "description": "Add a small toggle button to switch fixationHighContrast in peripheral UI.",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-08T13:08:12.928Z",
+      "updated": "2025-08-08T13:36:33.236Z",
+      "description": "TS warmup redesign: 3-mode (breathing, peripheral, text-flow), each <= 20s, with measurable, reusable metrics."
     }
   }
 }

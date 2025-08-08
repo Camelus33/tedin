@@ -1,6 +1,6 @@
 # Task ID: 4
 # Title: Phase 4: Monitoring & docs
-# Status: pending
+# Status: deferred
 # Dependencies: None
 # Priority: low
 # Description: Add delivery logs/metrics and document admin/user setup.

@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/common/Button';
 import Spinner from '@/components/ui/Spinner';
 import { InformationCircleIcon, CheckCircleIcon, XCircleIcon, LightBulbIcon, ClockIcon, ChevronRightIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import api from '@/lib/api';
+import { warmupEventsService, type WarmupEventClientPayload } from '@/lib/apiClient';
+import { v4 as uuidv4 } from 'uuid';
 
 // Cyber Theme Definition (Consistent with other TS pages)
 const cyberTheme = {
@@ -156,24 +158,23 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
     generalDescription: '편안한 자세로 화면의 안내에 따라 숨을 조절하여 뇌에 신선한 산소를 듬뿍 넣어주세요.',
     tip: '숨을 내쉴 때 마음 속 긴장이 함께 빠져나가는 장면을 떠올려 보세요.',
     variations: [
-      // Placeholder - will be filled in later
-      { 
-        name: '기본 호흡', 
-        durations: { inhale: 4000, hold1: 2000, exhale: 6000 }, 
-        totalCycles: 3, 
-        instructionText: '기본 호흡: 화면의 안내에 따라 들이쉬고(4초), 잠시 멈췄다가(2초), 천천히 내쉬세요(6초).' 
+      {
+        name: '기본 호흡',
+        durations: { inhale: 3000, hold1: 1000, exhale: 4000 },
+        totalCycles: 2,
+        instructionText: '기본 호흡: 들이쉬기(3초) - 잠시 멈춤(1초) - 내쉬기(4초)를 2회 반복합니다.'
       } as BreathingVariationParams,
-      { 
-        name: '박스 호흡', 
-        durations: { inhale: 4000, hold1: 4000, exhale: 4000, hold2: 4000 }, 
-        totalCycles: 3, 
-        instructionText: '박스 호흡: 네모를 그리듯 들이쉬고(4초), 멈추고(4초), 내쉬고(4초), 다시 멈춥니다(4초).' 
+      {
+        name: '박스 호흡',
+        durations: { inhale: 3000, hold1: 3000, exhale: 3000, hold2: 3000 },
+        totalCycles: 1,
+        instructionText: '박스 호흡: 들이쉬기(3초) - 멈춤(3초) - 내쉬기(3초) - 멈춤(3초)를 1회 수행합니다.'
       } as BreathingVariationParams,
-      { 
-        name: '이완 호흡 (4-7-8 변형)', 
-        durations: { inhale: 4000, hold1: 7000, exhale: 8000 }, 
-        totalCycles: 2, 
-        instructionText: '이완 호흡: 깊게 들이쉬고(4초), 충분히 숨을 참았다가(7초), 길게 내뱉으세요(8초).' 
+      {
+        name: '이완 호흡 (간소화 변형)',
+        durations: { inhale: 2000, hold1: 3000, exhale: 4000 },
+        totalCycles: 2,
+        instructionText: '이완 호흡: 들이쉬기(2초) - 멈춤(3초) - 내쉬기(4초)를 2회 반복합니다.'
       } as BreathingVariationParams,
     ],
   },
@@ -199,35 +200,7 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
       } as EyeTrackingVariationParams,
     ],
   },
-  {
-    id: 'visual_span',
-    title: '동적 시야 확장',
-    generalDescription: '중심을 주시하면서 주변에 나타나는 시각 정보를 빠르게 포착하여 한 번에 더 넓은 범위를 인식하는 능력이 생깁니다.',
-    tip: '중심에 시선을 고정한 채 주변을 넓게 인지하려고 노력하세요.',
-    variations: [
-      // Placeholder - will be filled in later
-      {
-        name: '3x3 문자 그리드',
-        stimulusType: 'letters',
-        gridSize: { rows: 3, cols: 3 },
-        stimuliCount: 4, // Number of cells to show a letter in
-        presentationTime: 350, // ms
-        interStimulusInterval: 750, // ms
-        repetitions: 12,
-        instructionText: '중앙의 '+' 표시에 시선을 고정한 채, 그리드에 짧게 나타나는 문자들을 인지하세요.'
-      } as VisualSpanVariationParams,
-      {
-        name: '단어 쌍 확장',
-        stimulusType: 'words',
-        wordLength: 3, // Approximate length of words to use/generate
-        stimuliCount: 2, // Two words: one left, one right
-        presentationTime: 450, // ms
-        interStimulusInterval: 850, // ms
-        repetitions: 10,
-        instructionText: '중앙의 '+' 표시에 시선을 고정한 채, 좌우에 동시에 나타나는 단어들을 한눈에 파악하세요.'
-      } as VisualSpanVariationParams,
-    ],
-  },
+  
   {
     id: 'text_flow',
     title: '텍스트 흐름 훈련',
@@ -239,9 +212,9 @@ const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
         contentType: 'simpleStory',
         flowType: 'highlight',
         initialSpeed: 550,
-        acceleration: 0.97,
-        totalDuration: 0,
-        instructionText: '하이라이트되는 단어를 따라 시선을 이동하세요. 속도가 점점 빨라집니다.'
+        acceleration: 0.98,
+        totalDuration: 16,
+        instructionText: '하이라이트되는 단어를 따라 시선을 이동하세요. 속도가 점차 빨라지며 16초 내에 종료됩니다.'
       } as TextFlowVariationParams,
       {
         name: '단어 그룹 순간 노출',
@@ -262,7 +235,27 @@ export default function TSWarmupPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('sessionId');
 
-  const [timeLeft, setTimeLeft] = useState<number>(180); // Adjusted total time for 4 exercises (e.g., 3 mins)
+  // Raw event buffer (not reactive)
+  const eventsRef = useRef<WarmupEventClientPayload['events']>([]);
+
+  const getModeIdForEvents = (exerciseId: string) => {
+    if (exerciseId === 'peripheral_vision_expansion') return 'peripheral_vision' as const;
+    if (exerciseId === 'guided_breathing') return 'guided_breathing' as const;
+    return 'text_flow' as const;
+  };
+
+  const pushEvent = (exerciseId: string, eventType: string, data: Record<string, any>) => {
+    const mode = getModeIdForEvents(exerciseId);
+    eventsRef.current.push({
+      mode,
+      eventType,
+      ts: new Date().toISOString(),
+      clientEventId: uuidv4(),
+      data,
+    });
+  };
+
+  const [timeLeft, setTimeLeft] = useState<number>(60); // Total time for 3 exercises (3 x 20s)
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState<number>(0); // Renamed for clarity
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
@@ -298,6 +291,17 @@ export default function TSWarmupPage() {
   } | null>(null);
   const [peripheralRepetitionCount, setPeripheralRepetitionCount] = useState<number>(0);
   const [showCentralFixation, setShowCentralFixation] = useState<boolean>(true);
+  const [peripheralStartTime, setPeripheralStartTime] = useState<number>(0);
+  const [probeShownAt, setProbeShownAt] = useState<number | null>(null);
+  const [probeRtMs, setProbeRtMs] = useState<number | null>(null);
+  const [lastPeripheralTarget, setLastPeripheralTarget] = useState<'left' | 'right' | null>(null);
+  const [lastAfcChoice, setLastAfcChoice] = useState<'left' | 'right' | null>(null);
+  const [lastAfcCorrect, setLastAfcCorrect] = useState<boolean | null>(null);
+  // Stimulus summary metrics
+  const [stimulusCount, setStimulusCount] = useState<number>(0);
+  const [presentDurations, setPresentDurations] = useState<number[]>([]);
+  const [isiDurations, setIsiDurations] = useState<number[]>([]);
+  const [quadrantCounts, setQuadrantCounts] = useState<{ Q1: number; Q2: number; Q3: number; Q4: number }>({ Q1: 0, Q2: 0, Q3: 0, Q4: 0 });
 
   // States specific to Chunking Practice / Visual Span
   const [chunkingPhase, setChunkingPhase] = useState<'showing' | 'hidden' | 'question' | 'done'>('hidden'); // Adapt for visual span
@@ -329,6 +333,26 @@ export default function TSWarmupPage() {
   const [currentWordGroup, setCurrentWordGroup] = useState<string>('');
   const [currentGroupIndex, setCurrentGroupIndex] = useState<number>(0);
   const [wordGroupBank, setWordGroupBank] = useState<string[]>([]);
+  const [highlightIntervals, setHighlightIntervals] = useState<number[]>([]);
+  const [lastHighlightTs, setLastHighlightTs] = useState<number>(0);
+  const [comprehensionAnswer, setComprehensionAnswer] = useState<boolean | null>(null);
+
+  // Breathing measurement states
+  const [relaxationBefore, setRelaxationBefore] = useState<number | null>(null);
+  const [relaxationAfter, setRelaxationAfter] = useState<number | null>(null);
+
+  // Accessibility & input
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
+  const [fixationHighContrast, setFixationHighContrast] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setPrefersReducedMotion(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
 
   // Predefined simple stories for Text Flow - Highlight variation
   const SIMPLE_STORIES = [
@@ -447,6 +471,11 @@ export default function TSWarmupPage() {
   useEffect(() => {
     const loadingTimer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(loadingTimer);
+  }, []);
+
+  // Flush queued warmup events once on mount (best-effort)
+  useEffect(() => {
+    warmupEventsService.flushQueue().catch(() => {});
   }, []);
 
   // NEW: useEffect to select and set the active exercise variation
@@ -630,10 +659,19 @@ export default function TSWarmupPage() {
       setPeripheralRepetitionCount(0);
       setShowCentralFixation(true); // Ensure fixation is visible
       setDotPosition({ top: '50%', left: '50%' }); // Central fixation dot
+      setPeripheralStartTime(Date.now());
       return;
     }
 
     if (eyeTrackingPhase === 'running') {
+      // Hard limit ~16s for stimulus run within 20s cap
+      if (peripheralStartTime && Date.now() - peripheralStartTime >= 16000) {
+        setEyeTrackingPhase('done');
+        setUserInteracted(true);
+        setPeripheralStimulus(null);
+        setShowCentralFixation(true);
+        return;
+      }
       if (peripheralRepetitionCount >= (params.repetitions || 10)) {
         setEyeTrackingPhase('done');
         setUserInteracted(true);
@@ -646,29 +684,65 @@ export default function TSWarmupPage() {
       const randomLocationIndex = Math.floor(Math.random() * params.locations.length);
       const newStimulus = {
         location: params.locations[randomLocationIndex],
-        shape: 'circle' as 'circle' | 'square', // Example, can be parameterized
-        color: cyberTheme.secondary.replace('text-', 'bg-') || 'bg-purple-400', // Example
+        shape: 'circle' as 'circle' | 'square',
+        color: fixationHighContrast ? 'bg-white' : (cyberTheme.secondary.replace('text-', 'bg-') || 'bg-purple-400'),
         visible: true,
         id: Date.now(),
       };
       setPeripheralStimulus(newStimulus);
+      setStimulusCount(c => c + 1);
+      // Record stimulus_presented raw event
+      try {
+        const presentMs = prefersReducedMotion ? Math.min(400, (params.presentationTime || 300)) : (params.presentationTime || 300);
+        const isiMs = prefersReducedMotion ? Math.max(700, (params.interStimulusInterval || 500)) : (params.interStimulusInterval || 500);
+        pushEvent('peripheral_vision_expansion', 'stimulus_presented', {
+          topPct: parseFloat(newStimulus.location.top),
+          leftPct: parseFloat(newStimulus.location.left),
+          presentMs,
+          isiMs,
+          quadrant: (() => {
+            const leftVal = parseFloat(newStimulus.location.left);
+            const side: 'left' | 'right' = isNaN(leftVal) ? 'left' : (leftVal <= 50 ? 'left' : 'right');
+            const topVal = parseFloat(newStimulus.location.top);
+            return (topVal <= 50 ? (side === 'left' ? 'Q2' : 'Q1') : (side === 'left' ? 'Q3' : 'Q4'));
+          })(),
+        });
+      } catch {}
+      // Record target side and first probe timestamp
+      try {
+        const leftStr = newStimulus.location.left;
+        const leftVal = typeof leftStr === 'string' ? parseFloat(leftStr) : 50;
+        const side: 'left' | 'right' = isNaN(leftVal) ? 'left' : (leftVal <= 50 ? 'left' : 'right');
+        setLastPeripheralTarget(side);
+        // Quadrant from top/left
+        const topVal = parseFloat(newStimulus.location.top);
+        const q = (topVal <= 50 ? (side === 'left' ? 'Q2' : 'Q1') : (side === 'left' ? 'Q3' : 'Q4')) as keyof typeof quadrantCounts;
+        setQuadrantCounts(prev => ({ ...prev, [q]: prev[q] + 1 }));
+      } catch {}
+      if (probeShownAt === null) {
+        setProbeShownAt(Date.now());
+      }
       setShowCentralFixation(true); // Central fixation always on during stimulus
 
+      const presentMs = prefersReducedMotion ? Math.min(400, (params.presentationTime || 300)) : (params.presentationTime || 300);
+      const isiMs = prefersReducedMotion ? Math.max(700, (params.interStimulusInterval || 500)) : (params.interStimulusInterval || 500);
       stimulusTimer = setTimeout(() => {
         setPeripheralStimulus(prev => prev ? { ...prev, visible: false } : null);
+        setPresentDurations(prev => [...prev, presentMs]);
         // Interval before next stimulus
         intervalTimer = setTimeout(() => {
+          setIsiDurations(prev => [...prev, isiMs]);
           setPeripheralRepetitionCount(prev => prev + 1);
           // Loop back by virtue of state change and this effect re-running
-        }, params.interStimulusInterval || 500);
-      }, params.presentationTime || 300);
+        }, isiMs);
+      }, presentMs);
     }
 
     return () => {
       clearTimeout(stimulusTimer);
       clearTimeout(intervalTimer);
     };
-  }, [activeExerciseDetail, eyeTrackingPhase, peripheralRepetitionCount]);
+  }, [activeExerciseDetail, eyeTrackingPhase, peripheralRepetitionCount, probeShownAt]);
 
   // Effect for Visual Span Grid / Word Pairs
   useEffect(() => {
@@ -781,7 +855,10 @@ export default function TSWarmupPage() {
       setTextFlowContent(story.split(/\s+/)); 
       setCurrentHighlightIndex(-1);
       setCurrentWordSpeed(params.initialSpeed);
-      setTextFlowStartTime(Date.now());
+      const now = Date.now();
+      setTextFlowStartTime(now);
+      setLastHighlightTs(now);
+      setHighlightIntervals([]);
     };
 
 
@@ -796,6 +873,17 @@ export default function TSWarmupPage() {
     }
 
     if (textFlowPhase === 'running') {
+      // Enforce total duration cutoff for highlight mode
+      if (
+        (params.flowType === 'highlight') &&
+        params.totalDuration &&
+        textFlowStartTime &&
+        Date.now() - textFlowStartTime >= params.totalDuration * 1000
+      ) {
+        setTextFlowPhase('done');
+        setUserInteracted(true);
+        return;
+      }
       if (params.flowType === 'flash') {
         if (currentGroupIndex >= (params.totalGroups || 15) -1) { // Check if it's the last group already shown
             // After last group is shown for its presentationTime, then mark done
@@ -825,6 +913,11 @@ export default function TSWarmupPage() {
         }
         if (currentHighlightIndex < textFlowContent.length - 1) {
           timerId = setTimeout(() => {
+            const now = Date.now();
+            if (lastHighlightTs) {
+              setHighlightIntervals(prev => [...prev, now - lastHighlightTs]);
+            }
+            setLastHighlightTs(now);
             setCurrentHighlightIndex(prev => prev + 1);
             if (params.acceleration) {
               setCurrentWordSpeed(prevSpeed => Math.max(100, prevSpeed * params.acceleration!));
@@ -879,6 +972,34 @@ export default function TSWarmupPage() {
     try {
       // Activate the session (warmup -> active)
       await api.put(`/sessions/${sessionId}/activate`);
+      // Build and send raw warmup events first (fire-and-forget)
+      try {
+        const device = {
+          width: typeof window !== 'undefined' ? window.innerWidth : 0,
+          height: typeof window !== 'undefined' ? window.innerHeight : 0,
+          dpr: typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1,
+          reducedMotion: typeof window !== 'undefined' ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false,
+        };
+        // Push any summary events we still want as raw atoms
+        if (relaxationBefore !== null) pushEvent('guided_breathing', 'relaxation_before', { value: relaxationBefore });
+        if (relaxationAfter !== null) pushEvent('guided_breathing', 'relaxation_after', { value: relaxationAfter });
+        if (highlightIntervals.length > 0) {
+          // Emit each highlight interval as events
+          highlightIntervals.forEach((intervalMs, idx) => {
+            pushEvent('text_flow', 'highlight_tick', { wordIndex: idx, intervalMs });
+          });
+        }
+        // Compose payload and send
+        const eventsPayload: WarmupEventClientPayload = {
+          sessionId,
+          warmupVersion: 'v1',
+          device,
+          events: eventsRef.current.splice(0),
+        };
+        warmupEventsService.sendEvents(eventsPayload).catch(() => {});
+      } catch (e) {
+        // Ignore metrics errors; do not block navigation
+      }
     } catch (error) {
       console.error('세션 활성화 오류', error);
       alert('세션을 활성화하는 중 오류가 발생했습니다.');
@@ -939,6 +1060,14 @@ export default function TSWarmupPage() {
         <div className="flex items-center">
           <ClockIcon className={`h-5 w-5 mr-2 ${cyberTheme.secondary}`} />
           <span className={`text-base sm:text-lg font-mono ${cyberTheme.textLight}`}>{formatTime(timeLeft)}</span>
+          {/* High-contrast toggle (peripheral) */}
+          <button
+            aria-label="고대비 고정점 토글"
+            className={`ml-3 text-xs px-2 py-1 rounded border ${cyberTheme.inputBorder} ${cyberTheme.buttonSecondaryHoverBg}`}
+            onClick={() => setFixationHighContrast(v => !v)}
+          >
+            HC {fixationHighContrast ? 'ON' : 'OFF'}
+          </button>
         </div>
       </header>
 
@@ -965,6 +1094,13 @@ export default function TSWarmupPage() {
                 <p className={`mb-2 text-sm ${cyberTheme.textMuted}`}>
                   호흡 주기: {breathingCycle} / {(exercise.variationParams as BreathingVariationParams).totalCycles}
                 </p>
+                {/* Relaxation slider BEFORE */}
+                {breathingCycle === 1 && relaxationBefore === null && (
+                  <div className="mb-2">
+                    <label className={`block text-xs mb-1 ${cyberTheme.textMuted}`}>현재 긴장도(0-10)</label>
+                    <input type="range" min={0} max={10} defaultValue={5} onChange={(e)=> { const v = parseInt(e.target.value); if (relaxationBefore === null) { pushEvent('guided_breathing','relaxation_before',{ value: v }); } setRelaxationBefore(v); }} className="w-full"/>
+                  </div>
+                )}
                 
                 {(exercise.variationParams as BreathingVariationParams).name === '박스 호흡' ? (
                   // Box Breathing UI
@@ -1032,13 +1168,27 @@ export default function TSWarmupPage() {
                   {breathingPhase === 'hold2' && (exercise.variationParams as BreathingVariationParams).durations.hold2 && `잠시 멈추세요 (${(exercise.variationParams as BreathingVariationParams).durations.hold2! / 1000}초)`}
                   {breathingPhase === 'done' && '물방울이 완성되었습니다!'}
                 </p>
+                {/* Relaxation slider AFTER */}
+                {breathingPhase === 'done' && relaxationAfter === null && (
+                  <div className="mt-2">
+                    <label className={`block text-xs mb-1 ${cyberTheme.textMuted}`}>지금 긴장도(0-10)</label>
+                    <input type="range" min={0} max={10} defaultValue={3} onChange={(e)=> { const v = parseInt(e.target.value); if (relaxationAfter === null) { pushEvent('guided_breathing','relaxation_after',{ value: v }); } setRelaxationAfter(v); }} className="w-full"/>
+                  </div>
+                )}
               </div>
             )}
             {exercise.id === 'peripheral_vision_expansion' && (
-              <div className="text-center relative w-full h-32 sm:h-40 flex items-center justify-center border border-gray-700"> {/* Container for peripheral stimuli */}
+              <div className="text-center relative w-full h-32 sm:h-40 flex items-center justify-center border border-gray-700"
+                   onClick={() => {
+                     if (eyeTrackingPhase === 'running' && probeShownAt && probeRtMs === null) {
+                       const rt = Date.now() - probeShownAt;
+                       setProbeRtMs(rt);
+                       pushEvent('peripheral_vision_expansion', 'probe_tap', { rtMs: rt });
+                     }
+                   }}>
                 {showCentralFixation && dotPosition && ( // dotPosition is now central fixation
                   <div
-                    className={`absolute w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full`} // Central dot style
+                    className={`absolute w-2 h-2 sm:w-3 sm:h-3 ${fixationHighContrast ? 'bg-white' : 'bg-red-500'} rounded-full`} // Central dot style
                     style={{
                       top: dotPosition.top,
                       left: dotPosition.left,
@@ -1051,7 +1201,7 @@ export default function TSWarmupPage() {
                     {/* 주 자극 */}
                     <div
                       key={peripheralStimulus.id}
-                      className={`absolute w-6 h-6 sm:w-8 sm:h-8 rounded-md transition-all duration-300 ${peripheralStimulus.color} ${peripheralStimulus.shape === 'square' ? '' : 'rounded-full'}`}
+                       className={`absolute w-6 h-6 sm:w-8 sm:h-8 rounded-md transition-transform duration-200 ease-out ${peripheralStimulus.color} ${peripheralStimulus.shape === 'square' ? '' : 'rounded-full'}`}
                       style={{
                         top: peripheralStimulus.location.top,
                         left: peripheralStimulus.location.left,
@@ -1062,7 +1212,7 @@ export default function TSWarmupPage() {
                     />
                     {/* 파도 효과 - 첫 번째 파동 */}
                     <div
-                      className="absolute rounded-full bg-purple-400 opacity-0 animate-ripple"
+                       className="absolute rounded-full bg-purple-400 opacity-0 animate-ripple will-change-transform will-change-opacity"
                       style={{
                         top: peripheralStimulus.location.top,
                         left: peripheralStimulus.location.left,
@@ -1074,11 +1224,24 @@ export default function TSWarmupPage() {
                     />
                   </>
                 )}
+                {eyeTrackingPhase === 'running' && probeRtMs === null && (
+                  <p className={`${cyberTheme.textMuted} absolute bottom-1 text-xs`}>자극이 보일 때 화면을 한 번 탭하세요</p>
+                )}
                 {eyeTrackingPhase === 'done' && (
                   <CheckCircleIcon className={`w-12 h-12 sm:w-16 sm:h-16 ${cyberTheme.primary}`} />
                 )}
                 {eyeTrackingPhase === 'idle' && <p className={`${cyberTheme.textMuted}`}>고정점 응시 준비 중...</p>}
               </div>
+            )}
+            {/* Peripheral final 2AFC */}
+            {exercise.id === 'peripheral_vision_expansion' && eyeTrackingPhase === 'done' && lastAfcChoice === null && (
+              <div className="mt-2 flex justify-center gap-3">
+                <Button onClick={() => { setLastAfcChoice('left'); const correct = (lastPeripheralTarget === 'left'); setLastAfcCorrect(correct); pushEvent('peripheral_vision_expansion', 'afc_answer', { choice: 'left', target: lastPeripheralTarget, correct }); }} className="px-3 py-1">좌</Button>
+                <Button onClick={() => { setLastAfcChoice('right'); const correct = (lastPeripheralTarget === 'right'); setLastAfcCorrect(correct); pushEvent('peripheral_vision_expansion', 'afc_answer', { choice: 'right', target: lastPeripheralTarget, correct }); }} className="px-3 py-1">우</Button>
+              </div>
+            )}
+            {exercise.id === 'peripheral_vision_expansion' && eyeTrackingPhase === 'done' && lastAfcChoice !== null && (
+              <p className={`mt-2 text-center text-sm ${cyberTheme.textLight}`}>선택: {lastAfcChoice === 'left' ? '좌' : '우'} · 정답: {lastAfcCorrect ? '정답' : '오답'}</p>
             )}
             {exercise.id === 'visual_span' && (
               <div className="text-center w-full relative min-h-[100px]">
@@ -1139,7 +1302,7 @@ export default function TSWarmupPage() {
                                       };
                                   } else if (index === currentHighlightIndex - 1 || index === currentHighlightIndex + 1) {
                                       // 인접 단어들 - 약간의 강조
-                                      highlightClass = 'text-cyan-300';
+                                      highlightClass = prefersReducedMotion ? '' : 'text-cyan-300';
                                   }
                                   
                                   return (
@@ -1184,9 +1347,19 @@ export default function TSWarmupPage() {
                       {textFlowPhase === 'idle' && <p className={`${cyberTheme.textMuted}`}>텍스트 흐름 준비 중...</p>}
                   </div>
             )}
+            {/* Text comprehension quick check */}
+            {exercise.id === 'text_flow' && textFlowPhase === 'done' && comprehensionAnswer === null && (
+              <div className="mt-2 flex justify-center gap-3">
+                <Button onClick={() => { setComprehensionAnswer(true); pushEvent('text_flow', 'comprehension', { value: true }); }} className="px-3 py-1">이해됨</Button>
+                <Button onClick={() => { setComprehensionAnswer(false); pushEvent('text_flow', 'comprehension', { value: false }); }} variant="secondary" className="px-3 py-1">애매함</Button>
+              </div>
+            )}
+            {exercise.id === 'text_flow' && textFlowPhase === 'done' && comprehensionAnswer !== null && (
+              <p className={`mt-2 text-center text-sm ${cyberTheme.textLight}`}>이해도 응답: {comprehensionAnswer ? '이해됨' : '애매함'}</p>
+            )}
 
             {/* Fallback for unhandled exercise types (should ideally not happen) */}
-            {exercise.id !== 'guided_breathing' && exercise.id !== 'peripheral_vision_expansion' && exercise.id !== 'visual_span' && exercise.id !== 'text_flow' && (
+            {exercise.id !== 'guided_breathing' && exercise.id !== 'peripheral_vision_expansion' && exercise.id !== 'text_flow' && (
               <p className="text-center text-lg">알 수 없는 예열 운동입니다.</p>
             )}
           </div>
@@ -1195,7 +1368,6 @@ export default function TSWarmupPage() {
           {/* For now, let's assume a generic completion button will be used mostly */}
           { (exercise.id === 'guided_breathing' && breathingPhase === 'done') ||
             (exercise.id === 'peripheral_vision_expansion' && eyeTrackingPhase === 'done') || 
-            (exercise.id === 'visual_span' && visualSpanPhase === 'done') || 
             (exercise.id === 'text_flow' && textFlowPhase === 'done') ? 
             (
               <p className={`font-medium mb-3 ${cyberTheme.textLight}`}>준비 끝! 이제 파도를 만날 준비가 되었어요.</p>
