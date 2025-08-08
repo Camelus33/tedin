@@ -1,6 +1,7 @@
 import express from 'express';
 import { embeddingService } from '../services/EmbeddingService';
 import { runEngagementJobs } from '../controllers/notificationController';
+import { WebPushService } from '../services/WebPushService';
 import { authenticate } from '../middlewares/auth';
 import { isAdmin } from '../middlewares/isAdmin';
 
@@ -82,4 +83,24 @@ export default router;
  */
 router.post('/jobs/engagement', async (req, res) => {
   return runEngagementJobs(req as any, res as any);
+});
+
+/**
+ * @route POST /api/admin/test-webpush/:userId
+ * @desc Send a test web push to a user (Admin only)
+ * @access Private (Admin)
+ */
+router.post('/test-webpush/:userId', authenticate, isAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const result = await WebPushService.sendToUser(userId, {
+      title: 'Habitus33 Test Push',
+      body: '웹 푸시가 정상 동작합니다. 눌러서 대시보드로 이동하세요.',
+      data: { actionLink: '/dashboard', type: 'test' },
+    });
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    console.error('test-webpush error', err);
+    res.status(500).json({ success: false, error: 'Failed to send test push' });
+  }
 });
