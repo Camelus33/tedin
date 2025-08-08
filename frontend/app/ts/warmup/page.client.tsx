@@ -153,32 +153,6 @@ type Exercise = {
 // NEW EXERCISE CONFIGURATIONS
 const EXERCISE_CONFIGURATIONS: ExerciseConfig[] = [
   {
-    id: 'guided_breathing',
-    title: '마음챙김 호흡',
-    generalDescription: '편안한 자세로 화면의 안내에 따라 숨을 조절하여 뇌에 신선한 산소를 듬뿍 넣어주세요.',
-    tip: '숨을 내쉴 때 마음 속 긴장이 함께 빠져나가는 장면을 떠올려 보세요.',
-    variations: [
-      {
-        name: '기본 호흡',
-        durations: { inhale: 3000, hold1: 1000, exhale: 4000 },
-        totalCycles: 2,
-        instructionText: '기본 호흡: 들이쉬기(3초) - 잠시 멈춤(1초) - 내쉬기(4초)를 2회 반복합니다.'
-      } as BreathingVariationParams,
-      {
-        name: '박스 호흡',
-        durations: { inhale: 3000, hold1: 3000, exhale: 3000, hold2: 3000 },
-        totalCycles: 1,
-        instructionText: '박스 호흡: 들이쉬기(3초) - 멈춤(3초) - 내쉬기(3초) - 멈춤(3초)를 1회 수행합니다.'
-      } as BreathingVariationParams,
-      {
-        name: '이완 호흡 (간소화 변형)',
-        durations: { inhale: 2000, hold1: 3000, exhale: 4000 },
-        totalCycles: 2,
-        instructionText: '이완 호흡: 들이쉬기(2초) - 멈춤(3초) - 내쉬기(4초)를 2회 반복합니다.'
-      } as BreathingVariationParams,
-    ],
-  },
-  {
     id: 'peripheral_vision_expansion',
     title: '고정점 응시와 주변 시야 확장',
     generalDescription: '중앙의 한 점에 시선을 고정한 채, 주변에 나타나는 시각적 자극을 인지하여 시야 범위를 넓히는 훈련입니다. 시선을 옮기지 않는 것이 중요합니다.',
