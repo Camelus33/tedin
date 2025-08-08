@@ -123,15 +123,22 @@ class ApiClient {
     });
 
     if (response.ok) {
+      // 204 No Content 또는 비-JSON 응답 대비
+      if (response.status === 204) {
+        return { ok: true } as const;
+      }
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        return { ok: true } as const;
+      }
       try {
         const data = await response.json();
         console.log('✅ handleResponse 파싱 성공:', data);
         return data;
       } catch (error) {
+        // 비어있는 본문 등으로 JSON 파싱 실패 시에도 성공 응답으로 처리
         console.error('❌ handleResponse JSON 파싱 실패:', error);
-        console.log('response.status:', response.status);
-        console.log('response.headers:', response.headers);
-        throw error;
+        return { ok: true } as const;
       }
     }
 
