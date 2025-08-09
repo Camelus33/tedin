@@ -223,6 +223,7 @@ export const getUserStats = async (req: Request, res: Response) => {
       totalZengoScore: userStats?.zengoTotalScore ?? 0,
       totalBooks: totalBooks || 0,
       totalNotes: totalNotes || 0,
+      totalUsageMs: userStats?.totalUsageMs ?? 0,
     };
     res.status(200).json(response);
   } catch (error) {
@@ -230,3 +231,30 @@ export const getUserStats = async (req: Request, res: Response) => {
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 }; 
+
+// Increment total usage time (milliseconds)
+export const addUsageTime = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: '인증이 필요합니다.' });
+    }
+
+    const { deltaMs } = req.body as { deltaMs?: number };
+    const inc = typeof deltaMs === 'number' && isFinite(deltaMs) && deltaMs > 0 ? Math.min(deltaMs, 60 * 60 * 1000) : 0; // cap 1h per call
+    if (inc === 0) {
+      return res.status(400).json({ message: 'deltaMs가 필요합니다.' });
+    }
+
+    const updated = await UserStats.findOneAndUpdate(
+      { userId: new mongoose.Types.ObjectId(userId) },
+      { $inc: { totalUsageMs: inc } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).lean();
+
+    res.status(200).json({ ok: true, totalUsageMs: updated?.totalUsageMs ?? 0 });
+  } catch (error) {
+    console.error('누적 사용시간 증가 실패:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};

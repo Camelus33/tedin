@@ -1,5 +1,5 @@
 import express from 'express';
-import { getProfile, updateProfile, getSettings, updateSettings, searchUsers, getUserStats, upload, uploadProfileImage } from '../controllers/userController';
+import { getProfile, updateProfile, getSettings, updateSettings, searchUsers, getUserStats, upload, uploadProfileImage, addUsageTime } from '../controllers/userController';
 import { authenticate } from '../middlewares/auth';
 import { body } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -58,6 +58,16 @@ router.get('/search', searchUsers);
 
 // Get user statistics
 router.get('/me/stats', getUserStats);
+
+// Add client usage time (milliseconds)
+router.post('/me/usage', (req, res) => {
+  // Simple validation here to avoid heavy validator for a single number
+  const deltaMs = (req.body && (req.body as any).deltaMs) as unknown;
+  if (typeof deltaMs !== 'number' || !isFinite(deltaMs) || deltaMs <= 0) {
+    return res.status(400).json({ message: '유효한 deltaMs가 필요합니다.' });
+  }
+  return addUsageTime(req as any, res as any);
+});
 
 // Update user profile
 router.put(

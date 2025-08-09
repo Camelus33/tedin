@@ -12,6 +12,7 @@ import TSNoteCard, { TSNote } from '@/components/ts/TSNoteCard';
 import { ClientDateDisplay } from '@/components/share/ClientTimeDisplay';
 import SearchUIManager from '@/components/search/SearchUIManager';
 import NotificationBell from '@/components/common/NotificationBell';
+import HeaderClock from '@/components/common/HeaderClock';
 
 // 타입 정의 - TSNote를 사용
 
@@ -241,6 +242,8 @@ export default function DashboardPage() {
 
             {/* 우측: 알림 + 사용자 정보/프로필 */}
             <div className="flex items-center space-x-4">
+              {/* 데스크톱 전용 헤더 시계 */}
+              <HeaderClock />
               {/* 알림 벨 */}
               <NotificationBell />
               {/* 사용자 닉네임/이메일 로컬파트 */}

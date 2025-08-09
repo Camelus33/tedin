@@ -18,6 +18,7 @@ export interface IUserStats extends Document {
   zengoLevelPlays: Map<string, number>; // Number of plays per level (e.g., {'3x3-easy': 10, '5x5-medium': 5})
   zengoPlayHistory: IZengoPlayHistory[]; // History of recent plays (consider limiting size)
   totalTsDurationSec: number; // Total duration of completed TS sessions in seconds
+  totalUsageMs: number; // Total accumulated service usage time across sessions/devices (milliseconds)
   badges: Types.ObjectId[]; // Array of earned Badge ObjectIds
   createdAt: Date;
   updatedAt: Date;
@@ -47,6 +48,11 @@ const UserStatsSchema = new Schema<IUserStats>(
       default: 0,
     },
     totalTsDurationSec: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    totalUsageMs: {
       type: Number,
       default: 0,
       min: 0,

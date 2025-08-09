@@ -19,6 +19,7 @@ import { RootState } from '@/store/store';
 import CollectionCard from '@/components/CollectionCard';
 import AppLogo from '@/components/common/AppLogo';
 import NotificationBell from '@/components/common/NotificationBell';
+import HeaderClock from '@/components/common/HeaderClock';
 import { AcademicCapIcon, BookOpenIcon, BriefcaseIcon, SunIcon, PlusIcon, TagIcon, SquaresPlusIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameCard from '@/components/GameCard';
@@ -407,6 +408,7 @@ export default function MyversePage() {
             </div>
           </Link>
           <div className="flex items-center gap-4">
+            <HeaderClock />
             <NotificationBell />
             <div className="flex items-center">
               <div className="mr-3 text-right">
