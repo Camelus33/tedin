@@ -176,16 +176,25 @@ function PdfViewerComponent({
   // PDF 문서 로드 성공 핸들러
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     console.log('PDF 뷰어: 문서 로드 성공, 총 페이지 수:', numPages);
+    // 초기 가시 페이지: 타깃 페이지 중심으로 -1, 0, +1
+    const target = currentPage || 1;
+    const initialVisible = new Set<number>();
+    for (let i = Math.max(1, target - 1); i <= Math.min(numPages, target + 1); i++) {
+      initialVisible.add(i);
+    }
+    // 보호 차원: 문서 시작부도 포함하고 싶다면 아래 주석 해제
+    // initialVisible.add(1);
+
     setState(prev => ({
       ...prev,
       numPages,
       isLoading: false,
       error: null,
-      // 연속 스크롤에서는 처음 몇 페이지를 초기에 로드
-      visiblePages: new Set(Array.from({ length: Math.min(3, numPages) }, (_, i) => i + 1)),
-      pageHeights: new Map() // 페이지 높이 맵 초기화
+      visiblePages: initialVisible,
+      pageHeights: new Map(),
+      pageNumber: target
     }));
-  }, []);
+  }, [currentPage]);
 
   // 페이지 렌더링 완료 후 높이 측정
   const onPageLoadSuccess = useCallback((pageNumber: number) => {
@@ -455,6 +464,7 @@ function PdfViewerComponent({
         setTimeout(scrollNow, 50);
       }
     };
+    // 첫 렌더 타이밍을 보장하기 위해 약간 지연
     setTimeout(scrollNow, 0);
   }, [currentPage, state.numPages]);
 
