@@ -90,6 +90,7 @@ export default function MyversePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [userLevel, setUserLevel] = useState<number>(0);
 
   // '내 컬렉션' 탭 > '전체보기' 상태 복원
   const [accessibleGames, setAccessibleGames] = useState<MyverseGameData[]>([]);
@@ -250,6 +251,29 @@ export default function MyversePage() {
   useEffect(() => {
     fetchData();
   }, []); // 빈 의존성 배열로 마운트 시 한 번만 실행
+
+  // Fetch user stats to update prev level hint (for level-up notifications)
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch((process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/api/users/me/stats', {
+          headers: {
+            'Authorization': typeof window !== 'undefined' ? `Bearer ${localStorage.getItem('token') || ''}` : '',
+            'X-Prev-Level': (typeof window !== 'undefined' ? (localStorage.getItem('h33_prev_level') || '') : '') as any,
+          } as any,
+          cache: 'no-store',
+        });
+        const stats = await res.json();
+        if (stats && Number.isFinite(stats.level)) {
+          setUserLevel(Number(stats.level) || 0);
+          const prev = Number(localStorage.getItem('h33_prev_level') || '0');
+          if (stats.level > prev) {
+            localStorage.setItem('h33_prev_level', String(stats.level));
+          }
+        }
+      } catch {}
+    })();
+  }, []);
 
   // '내 컬렉션' 탭 데이터 로드 useEffect 수정
   useEffect(() => {
@@ -412,12 +436,17 @@ export default function MyversePage() {
             <NotificationBell />
             <div className="flex items-center">
               <div className="mr-3 text-right">
-                <p className={`font-semibold ${cyberTheme.textLight}`}>
+                <p className={`font-semibold ${cyberTheme.textLight} leading-tight`}>
                   {user?.nickname || '사용자'}
                 </p>
-                <p className={`text-xs ${cyberTheme.textMuted}`}>
-                  {user?.email ? user.email.split('@')[0] : '나만의 암기노트'}
-                </p>
+                <div className="flex items-center justify-end gap-1">
+                  <span className={`text-[10px] tracking-wider px-1.5 py-0.5 rounded-full border ${userLevel >= 30 ? 'border-purple-400/30 text-purple-300' : userLevel >= 10 ? 'border-indigo-400/30 text-indigo-300' : 'border-cyan-400/30 text-cyan-300'}`}>
+                    {`LV${userLevel}`}
+                  </span>
+                  <p className={`text-xs ${cyberTheme.textMuted}`}>
+                    {user?.email ? user.email.split('@')[0] : '나만의 암기노트'}
+                  </p>
+                </div>
               </div>
               <div className="relative">
                 <div 

@@ -106,14 +106,23 @@ Habitus33은 **AMFA 엔진**을 통해 사용자의 학습을 가속화합니다
 
 ```bash
 # 저장소 클론
-git clone https://github.com/your-username/habitus33.git
+git clone https://github.com/Camelus33/habitus33.git
 cd habitus33
 
-# 의존성 설치
+# 의존성 설치 (루트에서 워크스페이스 일괄 설치)
 npm install
 
-# 개발 서버 실행
-npm run dev
+# 환경 변수 설정
+# 1) backend/.env
+#    - MONGODB_URI=...
+#    - JWT_SECRET=...
+#    - (선택) FRONTEND_URL=http://localhost:3000
+# 2) frontend/.env.local
+#    - NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# 개발 서버 실행 (두 개 터미널 권장)
+npm run dev:backend   # http://localhost:8000
+npm run dev:frontend  # http://localhost:3000
 ```
 
 ## 📖 문서
@@ -121,6 +130,29 @@ npm run dev
 - [브랜드 가이드라인](./docs/HABITUS33_Brand_Guidelines_v3.4.md)
 - [마케팅 전략 가이드](./docs/Habitus33_Marketing_Strategy_Guide.md)
 - [AI-Link 아키텍처 가이드](./docs/AI_Link_Architecture_Guide.txt)
+
+## ⏱ 헤더 시계 & 누적 사용시간 집계
+
+- 데스크톱 헤더 우측 알림 아이콘 왼쪽에 다음 시간이 표시됩니다.
+  - 누적: 계정 기준 전체 사용 누적시간 (서버 집계)
+  - 세션: 현재 로그인 이후 경과시간 (클라이언트 실시간)
+- 프론트엔드: `frontend/components/common/HeaderClock.tsx`
+- 백엔드 API
+  - `GET /api/users/me/stats` → `{ totalUsageMs, ... }` (ms)
+  - `POST /api/users/me/usage` → 바디 `{ deltaMs: number }` (인증 필요)
+    - 클라이언트는 가시 상태에서 약 60초마다 하트비트를 전송하고, 탭 비활성/종료 시 최소한의 요청만 보냅니다.
+
+## 🧮 XP/Level 모델(무한 성장형)
+
+- 목적: 많이·잘 학습하는 사용자가 빠르게 성장. 일일 시간 상한 없음.
+- XP 구성(감소효용):
+  - `XP_time = a · (T_hours)^0.85`
+  - `XP_memo = b · (M)^0.80`
+  - `XP_concept = c · (C_sum / 1000)^0.90`
+  - 총합: `Total_XP = XP_time + XP_memo + XP_concept`
+- 레벨 임계치: `RequiredXP(L) = k · L^1.45`
+- 초기 계수(튜닝 대상): `a=80, b=100, c=220, k=500`
+- API: `GET /api/users/me/stats` 응답에 `level, totalXP, nextLevel, progressToNext, xpBreakdown` 포함
 
 ## 🤝 기여하기
 

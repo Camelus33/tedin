@@ -8,6 +8,8 @@ import mongoose from 'mongoose';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { computeXPLevel, DEFAULT_LEVEL_CONFIG } from '../services/LevelService';
+import Notification from '../models/Notification';
 
 // Multer configuration for profile image uploads
 const storage = multer.diskStorage({
@@ -215,6 +217,43 @@ export const getUserStats = async (req: Request, res: Response) => {
         .reduce((sum, h) => sum + (h.score || 0), 0);
     }
     // Prepare response matching frontend expectations
+    // Compute memoCount and concept score sum
+    const [userNotesAggregate] = await Note.aggregate([
+      { $match: { userId: userObjectId } },
+      {
+        $group: {
+          _id: '$userId',
+          memoCount: { $sum: 1 },
+          conceptScoreSum: { $sum: { $ifNull: ['$conceptScore', 0] } },
+        },
+      },
+    ]);
+
+    const memoCount = userNotesAggregate?.memoCount || 0;
+    const conceptScoreSum = userNotesAggregate?.conceptScoreSum || 0;
+    const totalUsageMs = userStats?.totalUsageMs ?? 0;
+
+    const levelInfo = computeXPLevel(
+      { totalUsageMs, memoCount, conceptScoreSum },
+      DEFAULT_LEVEL_CONFIG
+    );
+
+    // Optional: create level-up notification when crossing threshold (client can pass prevLevel header)
+    const prevLevel = Number(req.headers['x-prev-level'] || 0);
+    if (Number.isFinite(prevLevel) && levelInfo.level > prevLevel) {
+      try {
+        await Notification.create({
+          userId: userObjectId,
+          senderId: userObjectId,
+          gameId: userObjectId, // placeholder ref
+          type: 'level_up',
+          message: `레벨 업! LV${levelInfo.level}에 도달했습니다 🎉`,
+        } as any);
+      } catch (e) {
+        console.warn('level_up notification creation failed', e);
+      }
+    }
+
     const response = {
       recentPpm: latestSession?.ppm ?? null,
       todayTsCount,
@@ -223,7 +262,12 @@ export const getUserStats = async (req: Request, res: Response) => {
       totalZengoScore: userStats?.zengoTotalScore ?? 0,
       totalBooks: totalBooks || 0,
       totalNotes: totalNotes || 0,
-      totalUsageMs: userStats?.totalUsageMs ?? 0,
+      totalUsageMs,
+      level: levelInfo.level,
+      totalXP: Math.round(levelInfo.totalXP),
+      nextLevel: levelInfo.nextLevel,
+      progressToNext: levelInfo.progressToNext,
+      xpBreakdown: levelInfo.breakdown,
     };
     res.status(200).json(response);
   } catch (error) {

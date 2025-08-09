@@ -57,7 +57,12 @@ class ApiClient {
    */
   async get(endpoint: string): Promise<any> {
     try {
-      const response = await this.fetchWithAuth(endpoint);
+      const response = await this.fetchWithAuth(endpoint, {
+        headers: {
+          // Hint to server for level-up notification when client-side knows previous level
+          'X-Prev-Level': (typeof window !== 'undefined' ? (localStorage.getItem('h33_prev_level') || '') : '') as any,
+        } as any,
+      });
       return response;
     } catch (error) {
       debugLogger.error(`GET ${endpoint} 실패`, error);

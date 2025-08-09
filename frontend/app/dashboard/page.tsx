@@ -52,6 +52,7 @@ export default function DashboardPage() {
   const [sortBy, setSortBy] = useState('latest');
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const [userLevel, setUserLevel] = useState<number>(0);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const sortMenuRef = useRef<HTMLDivElement>(null);
 
@@ -111,6 +112,18 @@ export default function DashboardPage() {
       if (statsData && typeof statsData.totalNotes === 'number') {
         setTotalMemoCount(statsData.totalNotes);
       }
+      if (statsData && Number.isFinite(statsData.level)) {
+        setUserLevel(Number(statsData.level) || 0);
+      }
+      // Save prev level hint for server-side level-up notification
+      try {
+        if (statsData && Number.isFinite(statsData.level)) {
+          const prev = Number(localStorage.getItem('h33_prev_level') || '0');
+          if (statsData.level > prev) {
+            localStorage.setItem('h33_prev_level', String(statsData.level));
+          }
+        }
+      } catch {}
 
       // 책 정보 batch 요청 (중복 bookId 제거)
       const uniqueBookIds = [...new Set(mappedNotes.map((m: TSNote) => m.bookId).filter(Boolean))];
@@ -248,8 +261,13 @@ export default function DashboardPage() {
               <NotificationBell />
               {/* 사용자 닉네임/이메일 로컬파트 */}
               <div className="hidden sm:block text-right mr-1">
-                <p className="font-semibold text-white">{user?.nickname || '사용자'}</p>
-                <p className="text-xs text-gray-300">{user?.email ? user.email.split('@')[0] : '나만의 암기노트'}</p>
+                <p className="font-semibold text-white leading-tight">{user?.nickname || '사용자'}</p>
+                <div className="flex items-center justify-end gap-1">
+                  <span className={`text-[10px] tracking-wider px-1.5 py-0.5 rounded-full border ${userLevel >= 30 ? 'border-purple-400/30 text-purple-300' : userLevel >= 10 ? 'border-indigo-400/30 text-indigo-300' : 'border-cyan-400/30 text-cyan-300'}`}>
+                    {`LV${userLevel}`}
+                  </span>
+                  <span className="text-xs text-gray-300">{user?.email ? user.email.split('@')[0] : '나만의 암기노트'}</span>
+                </div>
               </div>
               {/* 사용자 프로필 메뉴 */}
               <div className="relative" ref={profileMenuRef}>
