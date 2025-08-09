@@ -306,7 +306,7 @@ export default function DashboardPage() {
             href="/brain-hack-routine"
             className="inline-flex items-center space-x-2 px-3 py-2 text-sm text-indigo-300 hover:text-indigo-100 bg-indigo-900/30 hover:bg-indigo-800/40 border border-indigo-500/40 hover:border-indigo-400/60 rounded-lg transition-all backdrop-blur-md shadow-lg hover:shadow-indigo-500/20"
           >
-            <span>🌊</span>
+            <AppLogo className="w-4 h-4" />
             <span>what's habitus?</span>
           </Link>
         </div>
