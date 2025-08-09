@@ -4,7 +4,8 @@ import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon, ChatBubbleOvalLeftEllipsisIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import api, { inlineThreadApi } from '@/lib/api'; // Import the central api instance
-import PdfReaderModal from '@/components/pdf/PdfReaderModal';
+import dynamic from 'next/dynamic';
+const PdfViewerOverlay = dynamic(() => import('@/components/pdf/PdfViewerOverlay'), { ssr: false });
 import AiCoachPopover from '../common/AiCoachPopover';
 import ConceptScoreIcon from '../ConceptScoreIcon';
 import ConceptScorePopup from '../ConceptScorePopup';
@@ -1507,14 +1508,14 @@ export default function TSNoteCard({
         />
       )}
 
-      {/* PDF 리더 모달 */}
+      {/* PDF 풀스크린 오버레이 (포털) */}
       {showPdfPreview && (
-        <PdfReaderModal
+        <PdfViewerOverlay
           isOpen={showPdfPreview}
           onClose={() => setShowPdfPreview(false)}
           bookId={note.bookId}
           initialPage={note.pageNumber || 1}
-          title={bookTitle ? `${bookTitle}` : undefined}
+          title={bookTitle}
         />
       )}
     </div>
