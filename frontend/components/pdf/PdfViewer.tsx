@@ -84,6 +84,8 @@ function PdfViewerComponent({
   const pageRef = useRef<HTMLDivElement>(null);
   const documentRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // 초기 렌더 시 교차관찰자(onPageChange)가 1페이지를 부모에 보고하여 외부 currentPage를 덮어쓰는 것을 방지하기 위한 가드
+  const suppressOnPageChangeRef = useRef<boolean>(true);
 
   // === 가로 리사이즈 상태 및 핸들러 ===
   const MIN_WIDTH = 400;
@@ -402,8 +404,8 @@ function PdfViewerComponent({
         console.log(`PDF 뷰어: 로드된 페이지 수: ${visiblePageNumbers.size}, 현재 페이지: ${mostVisiblePage}, 보이는 페이지: [${Array.from(visiblePageNumbers).sort().join(', ')}]`);
       }
 
-      // 현재 페이지 변경 콜백 호출 (실제 변경된 경우에만)
-      if (mostVisiblePage !== state.pageNumber) {
+      // 현재 페이지 변경 콜백 호출 (실제 변경된 경우이며, 초기화 억제 기간이 아닐 때만)
+      if (mostVisiblePage !== state.pageNumber && !suppressOnPageChangeRef.current) {
         onPageChange?.(mostVisiblePage);
       }
     }, 150); // 150ms throttle로 성능 최적화
@@ -451,6 +453,9 @@ function PdfViewerComponent({
       return { ...prev, visiblePages: extended };
     });
 
+    // 초기 점프 동안에는 onPageChange를 부모로 리포트하지 않도록 억제
+    suppressOnPageChangeRef.current = true;
+
     let tries = 0;
     const maxTries = 10;
     const scrollNow = () => {
@@ -458,7 +463,14 @@ function PdfViewerComponent({
       const pageEl = pageRefs.current[currentPage - 1];
       if (container && pageEl) {
         const top = pageEl.offsetTop - 8;
-        container.scrollTo({ top, behavior: 'instant' as ScrollBehavior });
+        // 즉시 점프. 일부 브라우저에서 behavior 미지원 시 직접 대입으로 폴백
+        try {
+          container.scrollTo({ top, behavior: 'instant' as ScrollBehavior });
+        } catch {
+          container.scrollTop = top;
+        }
+        // 초기 점프 성공 → 잠시 후 onPageChange 리포트 허용
+        setTimeout(() => { suppressOnPageChangeRef.current = false; }, 100);
       } else if (tries < maxTries) {
         tries += 1;
         setTimeout(scrollNow, 50);
@@ -466,6 +478,10 @@ function PdfViewerComponent({
     };
     // 첫 렌더 타이밍을 보장하기 위해 약간 지연
     setTimeout(scrollNow, 0);
+
+    // 혹시라도 스크롤이 끝내 실패해도 일정 시간 후에는 onPageChange 허용
+    const fallbackTimer = setTimeout(() => { suppressOnPageChangeRef.current = false; }, 1000);
+    return () => clearTimeout(fallbackTimer);
   }, [currentPage, state.numPages]);
 
   // 텍스트 선택 이벤트 리스너 등록
