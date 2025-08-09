@@ -179,6 +179,12 @@ export default function TSReadingPage() {
         setSessionData(adjustedData);
         setTimeRemaining(incomingDuration);
         setStartTime(Date.now());
+        // 세션 시작 페이지로 PDF 초기 페이지 설정
+        if (typeof adjustedData.startPage === 'number' && adjustedData.startPage > 0) {
+          setCurrentPdfPage(Math.max(1, adjustedData.startPage));
+        } else {
+          setCurrentPdfPage(1);
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
