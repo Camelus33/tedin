@@ -60,14 +60,12 @@ export default function PdfMemoModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 모달이 열릴 때 선택된 텍스트를 메모 필드에 자동 입력
+  // 모달이 열릴 때 입력칸은 항상 빈칸으로 시작
   useEffect(() => {
-    if (isOpen && selectedText) {
-      // 페이지 번호를 포함한 텍스트로 설정
-      const textWithPageNumber = `[p.${pageNumber}] ${selectedText}`;
-      setMemoText(textWithPageNumber);
+    if (isOpen) {
+      setMemoText('');
     }
-  }, [isOpen, selectedText, pageNumber]);
+  }, [isOpen]);
 
   // 모달 닫을 때 상태 초기화
   const handleClose = () => {
@@ -203,9 +201,9 @@ export default function PdfMemoModal({
               </label>
               <div className="flex gap-1">
                 {[
-                  { value: 'quote', label: '인용', icon: '📖' },
-                  { value: 'thought', label: '생각', icon: '💭' },
-                  { value: 'question', label: '질문', icon: '❓' }
+                  { value: 'quote', label: '인용' },
+                  { value: 'thought', label: '생각' },
+                  { value: 'question', label: '질문' }
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -217,8 +215,7 @@ export default function PdfMemoModal({
                         : `${cyberTheme.inputBg} ${cyberTheme.inputBorder} ${cyberTheme.textLight} ${cyberTheme.inputFocusBorder}`
                     }`}
                   >
-                    <div className="text-sm mb-1">{option.icon}</div>
-                    <div className="text-xs">{option.label}</div>
+                    <div className="text-xs font-medium">{option.label}</div>
                   </button>
                 ))}
               </div>

@@ -1245,23 +1245,39 @@ export default function TSNoteCard({
       )}
 
       <div className="flex-grow mb-1 sm:mb-2 space-y-0.5 sm:space-y-1">
-        <p
-          className={cn(
-            // 기본 글꼴 크기와 굵기: minimalDisplay 에 따라 다르게 설정
-            minimalDisplay ?
-              "text-xs sm:text-sm leading-snug font-normal" :
-              "text-sm sm:text-base md:text-lg leading-relaxed font-medium",
-            "whitespace-pre-wrap break-words break-all",
-            isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
-            // 인라인 편집 중이 아닐 때만 왼쪽 border 적용 (또는 isPageEditing && !isInlineEditing 조건 추가)
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-2 sm:border-l-4 border-cyan-600 pl-1.5 sm:pl-2 md:pl-3 py-1' : 'py-1',
-            minimalDisplay ? 'pb-5' : '', // 하단 오버레이(책 제목/날짜) 공간 확보
-            // 호버 효과 추가
-            !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'hover:text-yellow-300 transition-colors duration-200' : ''
-          )}
-        >
-          {note.highlightedText || note.content}
-        </p>
+        {note.highlightedText && note.content ? (
+          <p
+            className={cn(
+              minimalDisplay ?
+                "text-xs sm:text-sm leading-snug font-normal" :
+                "text-sm sm:text-base md:text-lg leading-relaxed font-medium",
+              "whitespace-pre-wrap break-words break-all",
+              isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
+              !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-2 sm:border-l-4 border-cyan-600 pl-1.5 sm:pl-2 md:pl-3 py-1' : 'py-1',
+              minimalDisplay ? 'pb-5' : '',
+              !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'hover:text-yellow-300 transition-colors duration-200' : ''
+            )}
+          >
+            <span className="block sm:inline">{note.highlightedText}</span>
+            <span className="hidden sm:inline mx-2">—</span>
+            <span className="block sm:inline">{note.content}</span>
+          </p>
+        ) : (
+          <p
+            className={cn(
+              minimalDisplay ?
+                "text-xs sm:text-sm leading-snug font-normal" :
+                "text-sm sm:text-base md:text-lg leading-relaxed font-medium",
+              "whitespace-pre-wrap break-words break-all",
+              isPageEditing || (isOpen && enableOverlayEvolutionMode) || minimalDisplay ? 'text-gray-300' : 'text-white',
+              !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'border-l-2 sm:border-l-4 border-cyan-600 pl-1.5 sm:pl-2 md:pl-3 py-1' : 'py-1',
+              minimalDisplay ? 'pb-5' : '',
+              !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'hover:text-yellow-300 transition-colors duration-200' : ''
+            )}
+          >
+            {note.highlightedText || note.content}
+          </p>
+        )}
 
         {/* 책 제목(출처) 표시 - 생각추가 위로 이동 */}
         <div className={cn("mt-0.5 sm:mt-1.5 text-xs text-gray-400 flex items-center min-w-0", {
