@@ -45,8 +45,6 @@ const ConceptScorePopup: React.FC<ConceptScorePopupProps> = ({
   isOpen,
   onClose
 }) => {
-  if (!isOpen) return null;
-
   // ESC 키로 닫기 및 바디 스크롤 잠금
   useEffect(() => {
     if (!isOpen) return;
@@ -72,6 +70,8 @@ const ConceptScorePopup: React.FC<ConceptScorePopupProps> = ({
   const stopPropagation = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
   }, []);
+
+  if (!isOpen) return null;
 
   return (
     <div
