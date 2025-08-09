@@ -495,8 +495,8 @@ function PdfViewerComponent({
   }
 
   return (
-    <div className="flex justify-center w-full">
-      <div className={`pdf-viewer ${className}`}>
+      <div className="w-full">
+        <div className={`pdf-viewer ${className}`}>
         {/* PDF 뷰어 컨트롤 */}
         <div className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -560,7 +560,7 @@ function PdfViewerComponent({
         {/* PDF 문서 영역 - 오른쪽 경계선 드래그로 폭 조절 가능 */}
         <div 
           ref={documentRef}
-          className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x"
+          className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x mx-auto"
           style={{ 
             height: containerHeight,
             maxHeight: '1200px', 

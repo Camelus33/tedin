@@ -83,15 +83,15 @@ export default function PdfViewerOverlay({
       </div>
 
       {/* Content area */}
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <div className="h-full w-full flex items-center justify-center p-3">
+      <div className="flex-1 min-h-0">
+        <div className="h-full w-full overflow-auto p-3">
           <PdfViewer
             bookId={bookId}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
             enableTextSelection={false}
             containerHeight="100%"
-            className="mx-auto max-w-6xl w-full"
+            className="mx-auto max-w-6xl w-full h-full"
           />
         </div>
       </div>
