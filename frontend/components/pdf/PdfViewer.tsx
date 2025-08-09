@@ -428,6 +428,36 @@ function PdfViewerComponent({
     }));
   }, [currentPage]);
 
+  // 외부에서 페이지가 바뀔 때 해당 페이지로 즉시 스크롤 (배지 클릭 등)
+  useEffect(() => {
+    if (!state.numPages || !currentPage) return;
+
+    // 대상 페이지 요소가 보장되도록 가시 페이지 집합 확장
+    setState(prev => {
+      if (prev.visiblePages.has(currentPage)) return prev;
+      const extended = new Set(prev.visiblePages);
+      extended.add(currentPage);
+      if (currentPage > 1) extended.add(currentPage - 1);
+      if (prev.numPages && currentPage < prev.numPages) extended.add(currentPage + 1);
+      return { ...prev, visiblePages: extended };
+    });
+
+    let tries = 0;
+    const maxTries = 10;
+    const scrollNow = () => {
+      const container = documentRef.current;
+      const pageEl = pageRefs.current[currentPage - 1];
+      if (container && pageEl) {
+        const top = pageEl.offsetTop - 8;
+        container.scrollTo({ top, behavior: 'instant' as ScrollBehavior });
+      } else if (tries < maxTries) {
+        tries += 1;
+        setTimeout(scrollNow, 50);
+      }
+    };
+    setTimeout(scrollNow, 0);
+  }, [currentPage, state.numPages]);
+
   // 텍스트 선택 이벤트 리스너 등록
   useEffect(() => {
     if (!enableTextSelection) return;
