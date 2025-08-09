@@ -88,8 +88,8 @@ export default function NotificationBell() {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button onClick={handleToggle} className="relative">
-        <FiBell size={24} className="text-white hover:text-gray-200 transition-colors" />
+      <button onClick={handleToggle} className="relative inline-flex items-center justify-center p-1.5 rounded-md hover:bg-white/5 transition-colors">
+        <FiBell size={20} className="text-white hover:text-gray-200 transition-colors" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-red-600 text-white">
             {unreadCount}
