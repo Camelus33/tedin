@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#0a0f1a"/>
+    </linearGradient>
+    <style>
+      .title { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:36px; font-weight:800; }
+      .box { fill:#0f172a; stroke:#6366f1; stroke-width:3; rx:16; fill-opacity:0.6; }
+      .label { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:22px; font-weight:700; }
+      .sub { fill:#93c5fd; font-family: Inter, Arial, sans-serif; font-size:18px; }
+      .arrow { stroke:#60a5fa; stroke-width:4; marker-end:url(#a); }
+      .step { fill:#111827; stroke:#22d3ee; stroke-width:2; rx:8; }
+      .stepText { fill:#22d3ee; font-family: Inter, Arial, sans-serif; font-size:16px; }
+    </style>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#bg)"/>
+  <text x="60" y="90" class="title">Bridge: Hybrid Search → Conversational Context</text>
+
+  <!-- Boxes -->
+  <g transform="translate(80,180)">
+    <rect class="box" x="0" y="0" width="400" height="200" rx="16"/>
+    <text class="label" x="24" y="56">Hybrid Search</text>
+    <text class="sub" x="24" y="96">Keywords + Vectors (personal scope)</text>
+  </g>
+
+  <g transform="translate(540,180)">
+    <rect class="box" x="0" y="0" width="400" height="200" rx="16"/>
+    <text class="label" x="24" y="56">Result Set</text>
+    <text class="sub" x="24" y="96">Top‑k ranked memos</text>
+  </g>
+
+  <g transform="translate(1000,180)">
+    <rect class="box" x="0" y="0" width="480" height="200" rx="16"/>
+    <text class="label" x="24" y="56">Context Injection</text>
+    <text class="sub" x="24" y="96">RAG + Rhythm (current position / next transition)</text>
+  </g>
+
+  <g transform="translate(80,460)">
+    <rect class="box" x="0" y="0" width="1400" height="220" rx="16"/>
+    <text class="label" x="24" y="56">Conversational Response</text>
+    <text class="sub" x="24" y="96">Reflect trajectory & recommend next step</text>
+  </g>
+
+  <!-- Arrows -->
+  <line class="arrow" x1="480" y1="280" x2="540" y2="280"/>
+  <line class="arrow" x1="940" y1="280" x2="1000" y2="280"/>
+  <line class="arrow" x1="1240" y1="380" x2="1240" y2="460"/>
+
+  <!-- Steps -->
+  <g transform="translate(80,720)">
+    <rect class="step" x="0" y="0" width="200" height="40" rx="8"/>
+    <text class="stepText" x="16" y="26">1. Query</text>
+  </g>
+  <g transform="translate(300,720)">
+    <rect class="step" x="0" y="0" width="220" height="40" rx="8"/>
+    <text class="stepText" x="16" y="26">2. Rank & Select</text>
+  </g>
+  <g transform="translate(540,720)">
+    <rect class="step" x="0" y="0" width="280" height="40" rx="8"/>
+    <text class="stepText" x="16" y="26">3. Inject + Structure</text>
+  </g>
+  <g transform="translate(840,720)">
+    <rect class="step" x="0" y="0" width="280" height="40" rx="8"/>
+    <text class="stepText" x="16" y="26">4. Generate + Guide</text>
+  </g>
+  <g transform="translate(1140,720)">
+    <rect class="step" x="0" y="0" width="340" height="40" rx="8"/>
+    <text class="stepText" x="16" y="26">5. Feedback (metrics → loop)</text>
+  </g>
+</svg>
+
+

@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import { updateFromNote, getBeliefNetwork } from '../services/BeliefNetworkService';
 import { PrismaClient } from '@prisma/client';
 import ConceptScoreService from '../services/ConceptScoreService';
+import ThoughtEvent from '../models/ThoughtEvent';
 
 const prisma = new PrismaClient();
 const conceptScoreService = ConceptScoreService.getInstance();
@@ -92,6 +93,19 @@ export const createNote = async (req: Request, res: Response) => {
 
     const savedNote = await newNote.save();
     
+    // 이벤트 로깅: create_note
+    try {
+      await ThoughtEvent.create({
+        userId,
+        noteId: savedNote._id,
+        type: 'create_note',
+        textPreview: String(content || '').slice(0, 200),
+        createdAt: new Date(),
+        clientCreatedAt: null,
+        meta: { bookId, type },
+      });
+    } catch {}
+
     res.status(201).json(savedNote);
   } catch (error) {
     console.error('노트 생성 중 오류 발생:', error);
@@ -122,17 +136,46 @@ export const updateNote = async (req: Request, res: Response) => {
     if (type !== undefined) updateData.type = type;
     if (content !== undefined) updateData.content = content;
     if (tags !== undefined) updateData.tags = tags;
-    if (importanceReason !== undefined) updateData.importanceReason = importanceReason;
-    if (momentContext !== undefined) updateData.momentContext = momentContext;
-    if (relatedKnowledge !== undefined) updateData.relatedKnowledge = relatedKnowledge;
-    if (mentalImage !== undefined) updateData.mentalImage = mentalImage;
-    if (relatedLinks !== undefined) updateData.relatedLinks = relatedLinks;
+    if (importanceReason !== undefined) {
+      updateData.importanceReason = importanceReason;
+      updateData.importanceReasonAt = new Date();
+    }
+    if (momentContext !== undefined) {
+      updateData.momentContext = momentContext;
+      updateData.momentContextAt = new Date();
+    }
+    if (relatedKnowledge !== undefined) {
+      updateData.relatedKnowledge = relatedKnowledge;
+      updateData.relatedKnowledgeAt = new Date();
+    }
+    if (mentalImage !== undefined) {
+      updateData.mentalImage = mentalImage;
+      updateData.mentalImageAt = new Date();
+    }
+    if (relatedLinks !== undefined) {
+      // 입력된 링크 항목에 createdAt 기본값 주입
+      const links = Array.isArray(relatedLinks) ? relatedLinks : [];
+      updateData.relatedLinks = links.map((l: any) => ({ ...l, createdAt: l?.createdAt || new Date() }));
+    }
 
     const updatedNote = await Note.findByIdAndUpdate(
       noteId,
       { $set: updateData },
       { new: true }
     ).select('-__v');
+
+    // 이벤트 로깅: update_note
+    try {
+      await ThoughtEvent.create({
+        userId,
+        noteId,
+        type: 'update_note',
+        textPreview: String(content || '').slice(0, 200),
+        createdAt: new Date(),
+        clientCreatedAt: null,
+        meta: { updatedFields: Object.keys(updateData) },
+      });
+    } catch {}
 
     // 스냅샷 무효화: 이 노트를 포함하는 모든 SummaryNote의 스냅샷 제거 (v2, v1 관계 그래프)
     try {
@@ -425,6 +468,67 @@ export const addInlineThread = async (req: Request, res: Response) => {
       return res.status(500).json({ message: '노트에 인라인메모 쓰레드 참조 추가 실패했습니다.' });
     }
 
+    // 이벤트 로깅: add_inline_thread
+    try {
+      await ThoughtEvent.create({
+        userId,
+        noteId,
+        type: 'add_inline_thread',
+        textPreview: String(content || '').slice(0, 200),
+        createdAt: new Date(),
+        clientCreatedAt: null,
+        meta: { threadId: savedThread._id },
+      });
+    } catch {}
+
+    // 마일스톤 자동 알림 평가 (인라인 쓰레드 추가 시에도 평가)
+    try {
+      const after = await Note.findById(noteId).lean();
+      if (after) {
+        const evolveCountAfter = [after.importanceReason, after.momentContext, after.relatedKnowledge, after.mentalImage]
+          .filter(v => v && String(v).trim().length > 0).length;
+        const inlineCountAfter = Array.isArray((after as any).inlineThreads) ? (after as any).inlineThreads.length : 0;
+        const linkCountAfter = Array.isArray(after.relatedLinks) ? after.relatedLinks.length : 0;
+
+        const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
+        const evolveAllDone = evolveCountAfter === 4;
+        const milestone2Reached = inlineCountAfter >= 4 && evolveAllDone && linkCountAfter >= 4;
+
+        const updates: any = {};
+        if (milestone1Reached && !(after as any).milestone1NotifiedAt) {
+          updates.milestone1NotifiedAt = new Date();
+          try {
+            await ThoughtEvent.create({
+              userId,
+              noteId,
+              type: 'update_note',
+              textPreview: '[milestone] stage1 reached',
+              createdAt: new Date(),
+              clientCreatedAt: null,
+              meta: { milestone: 1, inlineCountAfter, evolveCountAfter, linkCountAfter },
+            });
+          } catch {}
+        }
+        if (milestone2Reached && !(after as any).milestone2NotifiedAt) {
+          updates.milestone2NotifiedAt = new Date();
+          try {
+            await ThoughtEvent.create({
+              userId,
+              noteId,
+              type: 'update_note',
+              textPreview: '[milestone] stage2 reached',
+              createdAt: new Date(),
+              clientCreatedAt: null,
+              meta: { milestone: 2, inlineCountAfter, evolveCountAfter, linkCountAfter },
+            });
+          } catch {}
+        }
+        if (Object.keys(updates).length > 0) {
+          await Note.findByIdAndUpdate(noteId, { $set: updates });
+        }
+      }
+    } catch {}
+
     // v2 스냅샷 무효화: 이 노트를 포함하는 SummaryNote들
     try {
       await SummaryNote.updateMany(
@@ -679,8 +783,8 @@ export const updateNoteConceptScore = async (req: Request, res: Response) => {
       return res.status(400).json({ message: '유효하지 않은 액션입니다.' });
     }
 
-    // 노트 업데이트 (액션에 따라)
-    await updateNoteBasedOnAction(noteId, action, data);
+    // 노트 업데이트 (액션에 따라) - userId를 데이터에 포함시켜 이벤트 로깅에 활용
+    await updateNoteBasedOnAction(noteId, action, { ...data, userId });
 
     // 캐시 무효화
     conceptScoreService.invalidateCache(noteId);
@@ -724,22 +828,79 @@ async function updateNoteBasedOnAction(noteId: string, action: string, data: any
 
   switch (action) {
     case 'add_thought':
-      if (data.importanceReason) updateData.importanceReason = data.importanceReason;
-      if (data.momentContext) updateData.momentContext = data.momentContext;
-      if (data.relatedKnowledge) updateData.relatedKnowledge = data.relatedKnowledge;
-      if (data.mentalImage) updateData.mentalImage = data.mentalImage;
+      if (data.importanceReason) {
+        updateData.importanceReason = data.importanceReason;
+        updateData.importanceReasonAt = new Date();
+      }
+      if (data.momentContext) {
+        updateData.momentContext = data.momentContext;
+        updateData.momentContextAt = new Date();
+      }
+      if (data.relatedKnowledge) {
+        updateData.relatedKnowledge = data.relatedKnowledge;
+        updateData.relatedKnowledgeAt = new Date();
+      }
+      if (data.mentalImage) {
+        updateData.mentalImage = data.mentalImage;
+        updateData.mentalImageAt = new Date();
+      }
+      // 이벤트 로깅: add_thought
+      try {
+        await ThoughtEvent.create({
+          userId: (data && data.userId) ? new mongoose.Types.ObjectId(data.userId) : undefined,
+          noteId,
+          type: 'add_thought',
+          textPreview: String(
+            data.importanceReason || data.momentContext || data.relatedKnowledge || data.mentalImage || ''
+          ).slice(0, 200),
+          createdAt: new Date(),
+          clientCreatedAt: null,
+          meta: {
+            hasImportanceReason: !!data.importanceReason,
+            hasMomentContext: !!data.momentContext,
+            hasRelatedKnowledge: !!data.relatedKnowledge,
+            hasMentalImage: !!data.mentalImage,
+          },
+        });
+      } catch {}
       break;
 
     case 'evolve_memo':
       if (data.evolutionStage) {
         updateData[data.evolutionStage] = data.content;
       }
+      // 이벤트 로깅: evolve_memo
+      try {
+        await ThoughtEvent.create({
+          userId: (mongoose as any).Types.ObjectId.isValid((data as any).userId) ? (data as any).userId : undefined,
+          noteId,
+          type: 'evolve_memo',
+          textPreview: String(data?.content || '').slice(0, 200),
+          createdAt: new Date(),
+          clientCreatedAt: null,
+          meta: { stage: data.evolutionStage },
+        });
+      } catch {}
       break;
 
     case 'add_connection':
       if (data.relatedLinks) {
-        updateData.$push = { relatedLinks: data.relatedLinks };
+        const links = Array.isArray(data.relatedLinks) ? data.relatedLinks : [data.relatedLinks];
+        const stamped = links.map((l: any) => ({ ...l, createdAt: l?.createdAt || new Date() }));
+        updateData.$push = { relatedLinks: { $each: stamped } };
       }
+      // 이벤트 로깅: add_connection
+      try {
+        await ThoughtEvent.create({
+          userId: (mongoose as any).Types.ObjectId.isValid((data as any).userId) ? (data as any).userId : undefined,
+          noteId,
+          type: 'add_connection',
+          textPreview: String((Array.isArray(data.relatedLinks) ? data.relatedLinks[0]?.reason : data.relatedLinks?.reason) || '').slice(0, 200),
+          createdAt: new Date(),
+          clientCreatedAt: null,
+          meta: { linksCount: Array.isArray(data.relatedLinks) ? data.relatedLinks.length : 1 },
+        });
+      } catch {}
       break;
 
     case 'create_flashcard':
@@ -763,6 +924,56 @@ async function updateNoteBasedOnAction(noteId: string, action: string, data: any
   }
 
   if (Object.keys(updateData).length > 0) {
+    // 마일스톤 자동 알림 로직: 업데이트 전후 상태를 비교하기 위해 현재 노트 로드
+    const before = await Note.findById(noteId).lean();
     await Note.findByIdAndUpdate(noteId, updateData);
+    const after = await Note.findById(noteId).lean();
+
+    if (after) {
+      // 조건: 인라인 쓰레드 ≥1, 메모진화 4단계 중 ≥1, 관련 링크 ≥1 달성 시 1차 알림(한 번만)
+      const evolveCountAfter = [after.importanceReason, after.momentContext, after.relatedKnowledge, after.mentalImage]
+        .filter(v => v && String(v).trim().length > 0).length;
+      const inlineCountAfter = Array.isArray((after as any).inlineThreads) ? (after as any).inlineThreads.length : 0;
+      const linkCountAfter = Array.isArray(after.relatedLinks) ? after.relatedLinks.length : 0;
+
+      const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
+
+      // 조건: 인라인 쓰레드 ≥4, 메모진화 4단계 모두, 링크 ≥4 달성 시 2차 알림(한 번만)
+      const evolveAllDone = evolveCountAfter === 4;
+      const milestone2Reached = inlineCountAfter >= 4 && evolveAllDone && linkCountAfter >= 4;
+
+      const updates: any = {};
+      if (milestone1Reached && !(after as any).milestone1NotifiedAt) {
+        updates.milestone1NotifiedAt = new Date();
+        try {
+          await ThoughtEvent.create({
+            userId: (data && data.userId) ? new mongoose.Types.ObjectId(data.userId) : undefined,
+            noteId,
+            type: 'update_note',
+            textPreview: '[milestone] stage1 reached',
+            createdAt: new Date(),
+            clientCreatedAt: null,
+            meta: { milestone: 1, inlineCountAfter, evolveCountAfter, linkCountAfter },
+          });
+        } catch {}
+      }
+      if (milestone2Reached && !(after as any).milestone2NotifiedAt) {
+        updates.milestone2NotifiedAt = new Date();
+        try {
+          await ThoughtEvent.create({
+            userId: (data && data.userId) ? new mongoose.Types.ObjectId(data.userId) : undefined,
+            noteId,
+            type: 'update_note',
+            textPreview: '[milestone] stage2 reached',
+            createdAt: new Date(),
+            clientCreatedAt: null,
+            meta: { milestone: 2, inlineCountAfter, evolveCountAfter, linkCountAfter },
+          });
+        } catch {}
+      }
+      if (Object.keys(updates).length > 0) {
+        await Note.findByIdAndUpdate(noteId, { $set: updates });
+      }
+    }
   }
 } 

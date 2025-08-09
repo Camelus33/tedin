@@ -203,18 +203,18 @@ const TimeSeriesChartCard: React.FC<TimeSeriesChartCardProps> = ({
       const data = payload[0].payload as TimeSeriesDataPoint;
       return (
         <div className="bg-white p-2 border border-gray-200 shadow-md rounded">
-          <p className="text-xs font-medium">{formatDate(data.date)}</p>
-          <p className="text-xs">
-            {metricLabel}: <span className="font-semibold">{data.value}</span>
+          <p className="text-xs font-medium text-gray-900">{formatDate(data.date)}</p>
+          <p className="text-xs text-gray-900">
+            {metricLabel}: <span className="font-semibold text-gray-900">{data.value}</span>
           </p>
           {showBaseline && data.baseline !== undefined && (
-            <p className="text-xs">
-              {baselineLabel}: <span className="font-semibold">{data.baseline}</span>
+            <p className="text-xs text-gray-900">
+              {baselineLabel}: <span className="font-semibold text-gray-900">{data.baseline}</span>
             </p>
           )}
           {userGoal && (
-            <p className="text-xs">
-              목표까지: <span className="font-semibold">{Math.max(0, userGoal - data.value)}</span>
+            <p className="text-xs text-gray-900">
+              목표까지: <span className="font-semibold text-gray-900">{Math.max(0, userGoal - data.value)}</span>
             </p>
           )}
         </div>
@@ -375,7 +375,7 @@ const TimeSeriesChartCard: React.FC<TimeSeriesChartCardProps> = ({
         
         <div 
           ref={chartContainerRef}
-          className="h-64 w-full relative" 
+          className="h-64 w-full relative rounded-md border border-neutral-800 bg-neutral-900" 
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
@@ -459,7 +459,7 @@ const TimeSeriesChartCard: React.FC<TimeSeriesChartCardProps> = ({
           {/* 활성 데이터 포인트 정보 */}
           {activeData && (
             <div 
-              className="absolute bg-white p-3 rounded-lg shadow-md border border-gray-100 transition-opacity duration-300 ease-in-out"
+              className="absolute bg-white p-3 rounded-lg shadow-md border border-gray-100 transition-opacity duration-300 ease-in-out text-gray-900"
               style={{ 
                 opacity: 1,
                 left: `${(selectedPointIndex || 0) / (data.length - 1) * 100}%`,

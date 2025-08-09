@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#0a0f1a"/>
+    </linearGradient>
+    <style>
+      .title { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:36px; font-weight:800; }
+      .label { fill:#cbd5e1; font-family: Inter, Arial, sans-serif; font-size:20px; }
+      .note { fill:#93c5fd; font-family: Inter, Arial, sans-serif; font-size:18px; }
+      .axis { stroke:#334155; stroke-width:2; }
+      .bar { fill:#6366f1; opacity:0.9; }
+      .spark { fill:none; stroke:#60a5fa; stroke-width:4; }
+      .donutBg { fill:none; stroke:#1f2937; stroke-width:18; }
+      .donutVal { fill:none; stroke:#22d3ee; stroke-width:18; stroke-linecap:round; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#bg)"/>
+  <text x="60" y="90" class="title">Key KPIs</text>
+
+  <!-- KPI 1: Δt to Recommendation (bar) -->
+  <g transform="translate(80,140)">
+    <text class="label" x="0" y="0">Δt vs Recommended Timing</text>
+    <line class="axis" x1="0" y1="20" x2="460" y2="20"/>
+    <rect class="bar" x="0" y="40" width="420" height="24" rx="6"/>
+    <rect fill="#10b981" opacity="0.9" x="0" y="74" width="460" height="24" rx="6"/>
+    <text class="note" x="0" y="120">▼ 14% deviation</text>
+  </g>
+
+  <!-- KPI 2: Transition Success (donut) -->
+  <g transform="translate(640,140)">
+    <text class="label" x="0" y="0">Next-Step Adoption</text>
+    <circle class="donutBg" cx="120" cy="100" r="70"/>
+    <path class="donutVal" d="M120,30 A70,70 0 1,1 60,167"/>
+    <text class="title" x="100" y="110" font-size="28">68%</text>
+  </g>
+
+  <!-- KPI 3: Capsule Reuse (sparkline) -->
+  <g transform="translate(1000,140)">
+    <text class="label" x="0" y="0">AI‑Link Reuse</text>
+    <polyline class="spark" points="0,120 30,110 60,130 90,80 120,95 150,60 180,70 210,40"/>
+    <text class="note" x="0" y="160">↑ 2.1x QoQ</text>
+  </g>
+</svg>
+
+

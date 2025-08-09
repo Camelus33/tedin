@@ -10,6 +10,7 @@ import ReflectionJournal from '@/components/analytics/ReflectionJournal';
 import PersonalizedSuggestions from '@/components/analytics/PersonalizedSuggestions';
 import { ExtendedCognitiveMetrics, extendedMetricDisplayNames } from '../../src/types/cognitiveMetricsExtended';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { apiClient } from '@/lib/apiClient';
 
 // V2 확장 타입 사용
 type CognitiveMetrics = ExtendedCognitiveMetrics;
@@ -33,6 +34,14 @@ export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<string>('3m');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [aggregate, setAggregate] = useState<null | {
+    rangeDays: number;
+    samples: { notes: number; events: number };
+    speed: { mean: number; std: number; count: number };
+    curvature: { mean: number; std: number; count: number };
+    rhythm: { intervalMeanMin: number; intervalStdMin: number; intervalCV: number; burstinessIndex: number; count: number };
+    timeOfDay: { byHour: number[]; byWeekday: number[] };
+  }>(null);
 
   // 백엔드 API에서 가져온 데이터를 저장하는 상태
   const [percentileRanks, setPercentileRanks] = useState<Partial<CognitiveMetrics> | null>(null);
@@ -185,9 +194,23 @@ export default function AnalyticsPage() {
     }
   };
 
+  // 집계(생각 패턴) 로딩
+  const fetchAggregate = async () => {
+    try {
+      const days = 30; // 기본 30일
+      const res = await apiClient.get(`/analytics/aggregate?days=${days}`);
+      setAggregate(res || null);
+    } catch (e) {
+      // 집계는 부가 정보이므로 에러시 무시하고 넘어갑니다
+      console.warn('aggregate fetch failed', e);
+      setAggregate(null);
+    }
+  };
+
   // 컴포넌트 마운트 시 및 timeRange 변경 시 데이터 로드
   useEffect(() => {
     fetchData(timeRange);
+    fetchAggregate();
   }, [timeRange]);
 
   // 시간 범위 변경 핸들러
@@ -377,6 +400,91 @@ export default function AnalyticsPage() {
           </div>
                   </TabsContent>
                 </Tabs>
+              </CardContent>
+            </Card>
+          )}
+          {/* 생각 패턴 요약 (베타) */}
+          {aggregate && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>생각 패턴 요약 (베타)</CardTitle>
+                <CardDescription>
+                  최근 {aggregate.rangeDays}일 기준. 속도/곡률/리듬과 시간대 분포를 요약합니다.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="p-4 rounded-lg border">
+                    <div className="text-sm text-gray-500 mb-1">의미 속도(mean ± std)</div>
+                    <div className="text-2xl font-semibold">{aggregate.speed.mean.toFixed(4)} <span className="text-base text-gray-500">± {aggregate.speed.std.toFixed(4)}</span></div>
+                    <div className="text-xs text-gray-500 mt-1">samples: {aggregate.speed.count}</div>
+                  </div>
+                  <div className="p-4 rounded-lg border">
+                    <div className="text-sm text-gray-500 mb-1">곡률(mean ± std)</div>
+                    <div className="text-2xl font-semibold">{aggregate.curvature.mean.toFixed(4)} <span className="text-base text-gray-500">± {aggregate.curvature.std.toFixed(4)}</span></div>
+                    <div className="text-xs text-gray-500 mt-1">samples: {aggregate.curvature.count}</div>
+                  </div>
+                  <div className="p-4 rounded-lg border">
+                    <div className="text-sm text-gray-500 mb-1">리듬(간격 평균/표준편차, CV)</div>
+                    <div className="text-2xl font-semibold">{aggregate.rhythm.intervalMeanMin.toFixed(1)}m <span className="text-base text-gray-500">/ {aggregate.rhythm.intervalStdMin.toFixed(1)}m</span></div>
+                    <div className="text-xs text-gray-500 mt-1">CV: {aggregate.rhythm.intervalCV.toFixed(3)} · burst: {aggregate.rhythm.burstinessIndex.toFixed(3)} · samples: {aggregate.rhythm.count}</div>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* 시간대 분포 (막대) */}
+                  <div className="p-4 rounded-lg border">
+                    <div className="text-sm text-gray-700 font-medium mb-3">시간대 분포 (시)</div>
+                    {(() => {
+                      const maxHour = Math.max(...aggregate.timeOfDay.byHour, 1);
+                      return (
+                        <div className="space-y-2">
+                          {aggregate.timeOfDay.byHour.map((v, i) => {
+                            const pct = Math.round((v / maxHour) * 100);
+                            return (
+                              <div key={i} className="flex items-center gap-3">
+                                <div className="w-10 shrink-0 text-xs text-gray-500 tabular-nums">{i}h</div>
+                                <div className="flex-1 h-3 rounded bg-gray-100 overflow-hidden">
+                                  <div className="h-3 rounded bg-indigo-500" style={{ width: `${pct}%` }} />
+                                </div>
+                                <div className="w-10 shrink-0 text-[11px] text-gray-500 text-right tabular-nums">{v}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* 요일 분포 (막대) */}
+                  <div className="p-4 rounded-lg border">
+                    <div className="text-sm text-gray-700 font-medium mb-3">요일 분포</div>
+                    {(() => {
+                      const days = ['일','월','화','수','목','금','토'];
+                      const maxW = Math.max(...aggregate.timeOfDay.byWeekday, 1);
+                      return (
+                        <div className="space-y-2">
+                          {aggregate.timeOfDay.byWeekday.map((v, i) => {
+                            const pct = Math.round((v / maxW) * 100);
+                            return (
+                              <div key={i} className="flex items-center gap-3">
+                                <div className="w-10 shrink-0 text-xs text-gray-500">{days[i]}</div>
+                                <div className="flex-1 h-3 rounded bg-gray-100 overflow-hidden">
+                                  <div className="h-3 rounded bg-indigo-500" style={{ width: `${pct}%` }} />
+                                </div>
+                                <div className="w-10 shrink-0 text-[11px] text-gray-500 text-right tabular-nums">{v}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                <div className="mt-6 text-xs text-gray-500">
+                  표기는 상대 지표이며 활동이 많아질수록 정밀도가 향상됩니다. (샘플: 노트 {aggregate.samples.notes}, 이벤트 {aggregate.samples.events})
+                </div>
               </CardContent>
             </Card>
           )}

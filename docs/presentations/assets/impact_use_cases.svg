@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#0a0f1a"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <style>
+      .title { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:36px; font-weight:800; }
+      .card { fill:#0f172a; stroke:#6366f1; stroke-width:3; rx:18; fill-opacity:0.7; filter:url(#glow); }
+      .hdr { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:24px; font-weight:800; }
+      .txt { fill:#cbd5e1; font-family: Inter, Arial, sans-serif; font-size:18px; }
+      .kpi { fill:#22d3ee; font-family: Inter, Arial, sans-serif; font-size:20px; font-weight:800; }
+      .badge { fill:#1e293b; stroke:#22d3ee; stroke-width:2; rx:10; }
+      .badgeText { fill:#22d3ee; font-family: Inter, Arial, sans-serif; font-size:14px; }
+      .icon { fill:#6366f1; opacity:0.9; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#bg)"/>
+  <text x="60" y="90" class="title">Real‑World Impact: Three Scenarios</text>
+
+  <!-- Student -->
+  <g transform="translate(80,140)">
+    <rect class="card" x="0" y="0" width="440" height="600" rx="18"/>
+    <circle class="icon" cx="44" cy="56" r="16"/>
+    <text class="hdr" x="72" y="64">High‑Stress Student</text>
+    <text class="txt" x="24" y="110">• 시험 직전 리듬 최적화</text>
+    <text class="txt" x="24" y="140">• 요약→퀴즈 전이 자동 추천</text>
+    <text class="txt" x="24" y="170">• 난이도/분량 실시간 튜닝</text>
+    <rect class="badge" x="24" y="200" width="200" height="30" rx="10"/>
+    <text class="badgeText" x="34" y="220">Δt deviation ▼18%</text>
+    <rect class="badge" x="24" y="240" width="220" height="30" rx="10"/>
+    <text class="badgeText" x="34" y="260">retention ↑1.6×</text>
+    <text class="kpi" x="24" y="310">Outcome: 집중·회복 주기 안정화</text>
+  </g>
+
+  <!-- Researcher -->
+  <g transform="translate(580,140)">
+    <rect class="card" x="0" y="0" width="440" height="600" rx="18"/>
+    <circle class="icon" cx="44" cy="56" r="16"/>
+    <text class="hdr" x="72" y="64">Researcher</text>
+    <text class="txt" x="24" y="110">• 주제 전환 각도(θ) 감지</text>
+    <text class="txt" x="24" y="140">• 발산/수렴 궤적 안내</text>
+    <text class="txt" x="24" y="170">• 관련 문헌/아이디어 연결</text>
+    <rect class="badge" x="24" y="200" width="230" height="30" rx="10"/>
+    <text class="badgeText" x="34" y="220">time‑to‑insight ▼22%</text>
+    <rect class="badge" x="24" y="240" width="220" height="30" rx="10"/>
+    <text class="badgeText" x="34" y="260">reuse ↑2.3×</text>
+    <text class="kpi" x="24" y="310">Outcome: 탐색→수렴 루프 단축</text>
+  </g>
+
+  <!-- Professional -->
+  <g transform="translate(1080,140)">
+    <rect class="card" x="0" y="0" width="440" height="600" rx="18"/>
+    <circle class="icon" cx="44" cy="56" r="16"/>
+    <text class="hdr" x="72" y="64">Knowledge Worker</text>
+    <text class="txt" x="24" y="110">• 보고서 전개 정책(난이도/길이)</text>
+    <text class="txt" x="24" y="140">• 캡슐 기반 브리프 자동화</text>
+    <text class="txt" x="24" y="170">• 개인 스코프 검색→대화</text>
+    <rect class="badge" x="24" y="200" width="240" height="30" rx="10"/>
+    <text class="badgeText" x="34" y="220">draft time ▼28%</text>
+    <rect class="badge" x="24" y="240" width="220" height="30" rx="10"/>
+    <text class="badgeText" x="34" y="260">quality↑</text>
+    <text class="kpi" x="24" y="310">Outcome: 산출물 품질·속도 동시 개선</text>
+  </g>
+</svg>
+
+

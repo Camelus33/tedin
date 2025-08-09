@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#0a0f1a"/>
+    </linearGradient>
+    <style>
+      .card { fill:#0f172a; stroke:#6366f1; stroke-width:3; rx:16; fill-opacity:0.6; }
+      .label { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:22px; font-weight:700; }
+      .hint { fill:#93c5fd; font-family: Inter, Arial, sans-serif; font-size:18px; }
+      .arrow { stroke:#60a5fa; stroke-width:4; marker-end:url(#a); }
+      .title { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:36px; font-weight:800; }
+    </style>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#bg)"/>
+  <text x="60" y="90" class="title">AMFA State Machine</text>
+
+  <!-- States -->
+  <g transform="translate(80,180)">
+    <rect class="card" x="0" y="0" width="280" height="160" rx="16"/>
+    <text class="label" x="20" y="50">1줄 메모</text>
+    <text class="hint" x="20" y="90">Atomic read/write</text>
+  </g>
+
+  <g transform="translate(380,180)">
+    <rect class="card" x="0" y="0" width="280" height="160" rx="16"/>
+    <text class="label" x="20" y="50">생각 추가</text>
+    <text class="hint" x="20" y="90">Elaboration</text>
+  </g>
+
+  <g transform="translate(680,180)">
+    <rect class="card" x="0" y="0" width="280" height="160" rx="16"/>
+    <text class="label" x="20" y="50">기억 강화</text>
+    <text class="hint" x="20" y="90">Spaced recall</text>
+  </g>
+
+  <g transform="translate(980,180)">
+    <rect class="card" x="0" y="0" width="280" height="160" rx="16"/>
+    <text class="label" x="20" y="50">지식 연결</text>
+    <text class="hint" x="20" y="90">Graph linking</text>
+  </g>
+
+  <g transform="translate(1280,180)">
+    <rect class="card" x="0" y="0" width="280" height="160" rx="16"/>
+    <text class="label" x="20" y="50">단권화</text>
+    <text class="hint" x="20" y="90">Focused note</text>
+  </g>
+
+  <!-- Transitions -->
+  <line class="arrow" x1="360" y1="260" x2="380" y2="260"/>
+  <line class="arrow" x1="660" y1="260" x2="680" y2="260"/>
+  <line class="arrow" x1="960" y1="260" x2="980" y2="260"/>
+  <line class="arrow" x1="1260" y1="260" x2="1280" y2="260"/>
+
+  <!-- Policies -->
+  <text class="hint" x="440" y="230">요약</text>
+  <text class="hint" x="740" y="230">추론</text>
+  <text class="hint" x="1040" y="230">응용</text>
+
+  <!-- Caption -->
+  <text class="hint" x="80" y="420">Stateful evolution enables next-step recommendations (form, difficulty, timing)</text>
+</svg>
+
+

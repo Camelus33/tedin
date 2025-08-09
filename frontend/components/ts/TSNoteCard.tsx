@@ -4,6 +4,7 @@ import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon, ChatBubbleOvalLeftEllipsisIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import api, { inlineThreadApi } from '@/lib/api'; // Import the central api instance
+import { showSuccess } from '@/lib/toast';
 import dynamic from 'next/dynamic';
 const PdfViewerOverlay = dynamic(() => import('@/components/pdf/PdfViewerOverlay'), { ssr: false });
 import AiCoachPopover from '../common/AiCoachPopover';
@@ -487,7 +488,24 @@ export default function TSNoteCard({
     if (hasChanges && onUpdate) {
       setIsSavingEvolution(true);
       try {
+        const beforeMilestone1 = (note as any).milestone1NotifiedAt || null;
+        const beforeMilestone2 = (note as any).milestone2NotifiedAt || null;
+
         await onUpdate(changedFields);
+
+        // 변경 후 노트 리패치하여 마일스톤 변화 감지
+        try {
+          const refreshed = await api.get(`/notes/${note._id}`);
+          const after = refreshed.data || {};
+          const afterMilestone1 = after.milestone1NotifiedAt || null;
+          const afterMilestone2 = after.milestone2NotifiedAt || null;
+          if (!beforeMilestone1 && afterMilestone1) {
+            showSuccess('좋아요! 생각추가/기억강화/지식연결이 시작되었어요. 비슷한 메모를 연결해볼까요?');
+          }
+          if (!beforeMilestone2 && afterMilestone2) {
+            showSuccess('훌륭해요! 4단계 + 연결 4개 달성! 포커스드 노트로 묶어 보시겠어요?');
+          }
+        } catch {}
         // 오버레이 또는 인라인 편집 상태에 따라 적절히 닫기
         if (enableOverlayEvolutionMode) {
           setIsOpen(false); 
@@ -964,7 +982,19 @@ export default function TSNoteCard({
             thread._id === tempThread._id ? newThread : thread
           ) || []
         }));
-        
+
+        // 마일스톤 변화 감지 (리패치)
+        try {
+          const refreshed = await api.get(`/notes/${note._id}`);
+          const after = refreshed.data || {};
+          if (!(note as any).milestone1NotifiedAt && after.milestone1NotifiedAt) {
+            showSuccess('좋아요! 생각추가/기억강화/지식연결이 시작되었어요. 비슷한 메모를 연결해볼까요?');
+          }
+          if (!(note as any).milestone2NotifiedAt && after.milestone2NotifiedAt) {
+            showSuccess('훌륭해요! 4단계 + 연결 4개 달성! 포커스드 노트로 묶어 보시겠어요?');
+          }
+        } catch {}
+
         // 🚫 중복 API 호출 방지: onAddInlineThread 콜백 호출 제거
         // TSNoteCard에서 이미 완전한 API 호출과 상태 관리를 처리하므로
         // 부모 컴포넌트에 추가 알림이 불필요함

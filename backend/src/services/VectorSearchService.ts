@@ -59,7 +59,7 @@ export class VectorSearchService {
       const truncatedText = text.length > 8000 ? text.substring(0, 8000) : text;
 
       const response = await openai.embeddings.create({
-        model: 'text-embedding-ada-002',
+        model: 'text-embedding-3-small',
         input: truncatedText,
       });
       

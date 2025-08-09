@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="420" viewBox="0 0 1600 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#0a0f1a"/>
+    </linearGradient>
+    <style>
+      .card { fill:#0f172a; stroke:#6366f1; stroke-width:2; rx:16; fill-opacity:0.7; }
+      .metric { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:44px; font-weight:800; }
+      .label { fill:#93c5fd; font-family: Inter, Arial, sans-serif; font-size:18px; }
+      .logo { fill:#111827; stroke:#334155; stroke-width:2; rx:10; }
+      .shot { fill:#0b1220; stroke:#4f46e5; stroke-width:2; rx:14; }
+      .cap { fill:#cbd5e1; font-family: Inter, Arial, sans-serif; font-size:14px; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1600" height="420" fill="url(#bg)"/>
+
+  <!-- Metrics -->
+  <g transform="translate(60,40)">
+    <rect class="card" x="0" y="0" width="420" height="120" rx="16"/>
+    <text class="metric" x="24" y="70">▼ 14%</text>
+    <text class="label" x="24" y="100">Δt vs recommended timing</text>
+  </g>
+  <g transform="translate(500,40)">
+    <rect class="card" x="0" y="0" width="420" height="120" rx="16"/>
+    <text class="metric" x="24" y="70">68%</text>
+    <text class="label" x="24" y="100">next‑step adoption</text>
+  </g>
+  <g transform="translate(940,40)">
+    <rect class="card" x="0" y="0" width="420" height="120" rx="16"/>
+    <text class="metric" x="24" y="70">2.1×</text>
+    <text class="label" x="24" y="100">AI‑Link reuse QoQ</text>
+  </g>
+
+  <!-- Logo wall -->
+  <g transform="translate(60,190)">
+    <rect class="logo" x="0" y="0" width="160" height="60" rx="10"/>
+    <rect class="logo" x="180" y="0" width="160" height="60" rx="10"/>
+    <rect class="logo" x="360" y="0" width="160" height="60" rx="10"/>
+    <rect class="logo" x="540" y="0" width="160" height="60" rx="10"/>
+    <rect class="logo" x="720" y="0" width="160" height="60" rx="10"/>
+    <rect class="logo" x="900" y="0" width="160" height="60" rx="10"/>
+  </g>
+  <text class="cap" x="60" y="270">Sample logos · Replace with partners or references</text>
+
+  <!-- Demo stills -->
+  <g transform="translate(60,300)">
+    <rect class="shot" x="0" y="0" width="300" height="90" rx="14"/>
+    <rect class="shot" x="320" y="0" width="300" height="90" rx="14"/>
+    <rect class="shot" x="640" y="0" width="300" height="90" rx="14"/>
+  </g>
+  <text class="cap" x="60" y="405">3‑frame demo preview · Replace with real captures</text>
+</svg>
+
+

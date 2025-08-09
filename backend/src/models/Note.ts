@@ -10,13 +10,18 @@ export interface INote extends Document {
   clientCreatedAt?: Date;
   originSession?: mongoose.Types.ObjectId;
   importanceReason?: string;
+  importanceReasonAt?: Date; // 메모 진화: 중요 이유 입력 시점
   momentContext?: string;
+  momentContextAt?: Date; // 메모 진화: 맥락 입력 시점
   relatedKnowledge?: string;
+  relatedKnowledgeAt?: Date; // 메모 진화: 관련 지식 입력 시점
   mentalImage?: string;
+  mentalImageAt?: Date; // 메모 진화: 심상 입력 시점
   relatedLinks?: Array<{
     type: 'book' | 'paper' | 'youtube' | 'media' | 'website';
     url: string;
     reason?: string;
+    createdAt?: Date; // 링크 추가 시점
   }>;
   inlineThreads?: mongoose.Types.ObjectId[];
   isPdfMemo?: boolean;
@@ -33,6 +38,9 @@ export interface INote extends Document {
   conceptScore?: number; // AI가 계산한 개념이해도 점수 (0-100점)
   embedding?: number[]; // OpenAI 임베딩 벡터
   embeddingGeneratedAt?: Date; // 임베딩 생성 일시
+  // 알림 마일스톤 기록
+  milestone1NotifiedAt?: Date;
+  milestone2NotifiedAt?: Date;
 }
 
 const NoteSchema: Schema = new Schema({
@@ -72,11 +80,19 @@ const NoteSchema: Schema = new Schema({
     maxlength: 1000,
     default: '',
   },
+  importanceReasonAt: {
+    type: Date,
+    default: null,
+  },
   momentContext: {
     type: String,
     trim: true,
     maxlength: 1000,
     default: '',
+  },
+  momentContextAt: {
+    type: Date,
+    default: null,
   },
   relatedKnowledge: {
     type: String,
@@ -84,11 +100,19 @@ const NoteSchema: Schema = new Schema({
     maxlength: 1000,
     default: '',
   },
+  relatedKnowledgeAt: {
+    type: Date,
+    default: null,
+  },
   mentalImage: {
     type: String,
     trim: true,
     maxlength: 1000,
     default: '',
+  },
+  mentalImageAt: {
+    type: Date,
+    default: null,
   },
   relatedLinks: {
     type: [
@@ -107,6 +131,10 @@ const NoteSchema: Schema = new Schema({
           trim: true,
           maxlength: 1000,
           default: '',
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
         },
       },
     ],
@@ -186,6 +214,14 @@ const NoteSchema: Schema = new Schema({
     default: null,
   },
   embeddingGeneratedAt: {
+    type: Date,
+    default: null,
+  },
+  milestone1NotifiedAt: {
+    type: Date,
+    default: null,
+  },
+  milestone2NotifiedAt: {
     type: Date,
     default: null,
   },

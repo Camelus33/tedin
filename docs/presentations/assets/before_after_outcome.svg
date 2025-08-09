@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#0a0f1a"/>
+    </linearGradient>
+    <style>
+      .title { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:36px; font-weight:800; }
+      .panel { fill:#0f172a; stroke:#6366f1; stroke-width:3; rx:18; fill-opacity:0.7; }
+      .hdr { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:24px; font-weight:800; }
+      .txt { fill:#cbd5e1; font-family: Inter, Arial, sans-serif; font-size:18px; }
+      .delta { fill:#22d3ee; font-family: Inter, Arial, sans-serif; font-size:22px; font-weight:800; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#bg)"/>
+  <text x="60" y="90" class="title">Before → After (Outcomes)</text>
+
+  <!-- Before -->
+  <g transform="translate(80,160)">
+    <rect class="panel" x="0" y="0" width="700" height="620" rx="18"/>
+    <text class="hdr" x="24" y="56">Before: Snapshot‑centric</text>
+    <text class="txt" x="24" y="100">• 내용 위주, 타이밍/맥락 부재</text>
+    <text class="txt" x="24" y="130">• 재사용/전이 정책 없음</text>
+    <text class="txt" x="24" y="160">• 개인 리듬 반영 없음</text>
+  </g>
+
+  <!-- After -->
+  <g transform="translate(820,160)">
+    <rect class="panel" x="0" y="0" width="700" height="620" rx="18"/>
+    <text class="hdr" x="24" y="56">After: Trajectory‑aware</text>
+    <text class="txt" x="24" y="100">• 전이/간격/난이도 정책 주도</text>
+    <text class="txt" x="24" y="130">• 캡슐화로 맥락 보존, 재사용↑</text>
+    <text class="txt" x="24" y="160">• 타이밍 개인화, 성과 개선</text>
+    <text class="delta" x="24" y="220">Δt ▼14% · Adoption 68% · Reuse 2.1×</text>
+  </g>
+</svg>
+
+

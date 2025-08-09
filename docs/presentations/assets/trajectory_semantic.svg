@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#0a0f1a"/>
+    </linearGradient>
+    <style>
+      .title { fill:#e5e7eb; font-family: Inter, Arial, sans-serif; font-size:36px; font-weight:800; }
+      .axis { stroke:#334155; stroke-width:2; }
+      .grid { stroke:#1f2a3a; stroke-width:1; opacity:0.6; }
+      .point { fill:#6366f1; opacity:0.9; }
+      .pointB { fill:#22d3ee; opacity:0.9; }
+      .traj { fill:none; stroke:#60a5fa; stroke-width:4; marker-end:url(#arrow); }
+      .diverge { fill:none; stroke:#f59e0b; stroke-width:3; stroke-dasharray:6 6; }
+      .converge { fill:none; stroke:#10b981; stroke-width:3; stroke-dasharray:6 6; }
+      .label { fill:#cbd5e1; font-family: Inter, Arial, sans-serif; font-size:18px; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#bg)"/>
+  <text x="60" y="90" class="title">Semantic Trajectory</text>
+
+  <!-- Axes -->
+  <g transform="translate(120,140)">
+    <rect x="0" y="0" width="1360" height="680" fill="none" stroke="#243041" stroke-width="2" rx="12"/>
+    <!-- Grid -->
+    <g>
+      <g>
+        <line class="grid" x1="0" y1="85" x2="1360" y2="85"/>
+        <line class="grid" x1="0" y1="170" x2="1360" y2="170"/>
+        <line class="grid" x1="0" y1="255" x2="1360" y2="255"/>
+        <line class="grid" x1="0" y1="340" x2="1360" y2="340"/>
+        <line class="grid" x1="0" y1="425" x2="1360" y2="425"/>
+        <line class="grid" x1="0" y1="510" x2="1360" y2="510"/>
+        <line class="grid" x1="0" y1="595" x2="1360" y2="595"/>
+      </g>
+      <g>
+        <line class="grid" x1="170" y1="0" x2="170" y2="680"/>
+        <line class="grid" x1="340" y1="0" x2="340" y2="680"/>
+        <line class="grid" x1="510" y1="0" x2="510" y2="680"/>
+        <line class="grid" x1="680" y1="0" x2="680" y2="680"/>
+        <line class="grid" x1="850" y1="0" x2="850" y2="680"/>
+        <line class="grid" x1="1020" y1="0" x2="1020" y2="680"/>
+        <line class="grid" x1="1190" y1="0" x2="1190" y2="680"/>
+      </g>
+    </g>
+
+    <!-- Trajectory path -->
+    <path class="traj" d="M60,600 C200,560 260,520 320,500 C420,460 540,480 620,420 C700,360 760,320 860,300 C980,276 1080,310 1180,240"/>
+
+    <!-- Points along trajectory -->
+    <circle class="point" cx="60" cy="600" r="8"/>
+    <circle class="point" cx="320" cy="500" r="8"/>
+    <circle class="point" cx="620" cy="420" r="8"/>
+    <circle class="point" cx="860" cy="300" r="8"/>
+    <circle class="point" cx="1180" cy="240" r="8"/>
+
+    <!-- Divergence and Convergence illustration -->
+    <path class="diverge" d="M620,420 C700,380 740,350 780,340"/>
+    <path class="converge" d="M620,420 C700,420 760,420 820,410"/>
+
+    <!-- Angle / Speed annotations -->
+    <text class="label" x="300" y="540">θ (topic shift angle)</text>
+    <text class="label" x="640" y="460">Δv (semantic speed)</text>
+    <text class="label" x="980" y="280">convergence / divergence</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(1240,820)">
+    <circle class="point" cx="0" cy="0" r="6"/>
+    <text class="label" x="12" y="6">observed memo embedding</text>
+  </g>
+</svg>
+
+
