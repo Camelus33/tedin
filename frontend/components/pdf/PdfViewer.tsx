@@ -498,7 +498,10 @@ function PdfViewerComponent({
       <div className="w-full">
         <div className={`pdf-viewer ${className}`}>
         {/* PDF 뷰어 컨트롤 */}
-        <div className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between">
+         <div
+           className="pdf-controls bg-gray-800/80 backdrop-blur-md border border-cyan-500/40 rounded-t-xl p-3 flex items-center justify-between mx-auto"
+           style={{ width: `${viewerWidth}px` }}
+         >
           <div className="flex items-center space-x-2">
             {/* 현재 페이지 정보 (네비게이션 버튼 제거) */}
             <span className="text-cyan-300 text-sm font-mono px-2">
