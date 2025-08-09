@@ -47,7 +47,7 @@ export default function PdfReaderModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/60 z-[80] flex items-center justify-center p-4"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       role="dialog"
@@ -55,8 +55,8 @@ export default function PdfReaderModal({
       aria-labelledby="pdf-reader-modal-title"
       tabIndex={-1}
     >
-      <div className="w-full max-w-5xl h-[90vh] bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between p-3 border-b border-gray-700 bg-gray-800/70">
+      <div className="w-full max-w-5xl max-h-[100dvh] bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-y-auto flex flex-col">
+        <div className="flex items-center justify-between p-3 border-b border-gray-700 bg-gray-800/70 sticky top-0 z-10">
           <div className="flex flex-col">
             <h2 id="pdf-reader-modal-title" className="text-sm font-semibold text-gray-200">
               {title ? `${title}` : 'PDF 미리보기'}
@@ -78,6 +78,7 @@ export default function PdfReaderModal({
             currentPage={currentPage}
             onPageChange={setCurrentPage}
             enableTextSelection={false}
+            containerHeight="100%"
             className="mx-auto"
           />
         </div>

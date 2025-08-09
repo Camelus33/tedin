@@ -32,6 +32,11 @@ interface PdfViewerProps {
   onHighlightEdit?: (highlight: PdfHighlight) => void;
   onHighlightDelete?: (highlightId: string) => void;
   enableHighlighting?: boolean;
+  /**
+   * 부모 레이아웃에 맞춘 문서 컨테이너 높이. 기본값은 90vh.
+   * 모달 내부에서는 '100%'를 권장합니다.
+   */
+  containerHeight?: string;
 }
 
 interface PdfViewerState {
@@ -60,7 +65,8 @@ function PdfViewerComponent({
   onHighlightClick,
   onHighlightEdit,
   onHighlightDelete,
-  enableHighlighting = true
+  enableHighlighting = true,
+  containerHeight = '90vh'
 }: PdfViewerProps) {
   const [state, setState] = useState<PdfViewerState>({
     numPages: null,
@@ -556,7 +562,7 @@ function PdfViewerComponent({
           ref={documentRef}
           className="pdf-document bg-gray-900/60 border-x border-b border-cyan-500/40 rounded-b-xl overflow-auto resize-x"
           style={{ 
-            height: '90vh', 
+            height: containerHeight,
             maxHeight: '1200px', 
             width: `${viewerWidth}px`,
             minWidth: `${MIN_WIDTH}px`,
