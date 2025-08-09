@@ -254,12 +254,13 @@ export default function TSReadingPage() {
     setShowPdfViewer(!showPdfViewer);
   };
 
-  const handlePdfTextSelect = (selectedText: string, coordinates: DOMRect) => {
+  const handlePdfTextSelect = (selectedText: string, coordinates: DOMRect, pageNumber: number) => {
     console.log('[PDF 텍스트 선택]', selectedText, coordinates);
     
     setSelectedText(selectedText);
     setSelectedCoordinates(coordinates);
-    setSelectedPageNumber(currentPdfPage);
+    // 뷰어에서 계산된 실제 선택 페이지를 사용
+    setSelectedPageNumber(pageNumber);
     setIsMemoModalOpen(true);
     
     // 메모 작성 중 타이머 일시정지

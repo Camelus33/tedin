@@ -1,6 +1,7 @@
 export { default as PdfViewer } from './PdfViewer';
 export { default as PdfHighlightOverlay } from './PdfHighlightOverlay';
 export { default as PdfMemoModal } from './PdfMemoModal';
+export { default as PdfReaderModal } from './PdfReaderModal';
 
 export interface PdfHighlight {
   id: string;

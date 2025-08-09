@@ -19,7 +19,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 interface PdfViewerProps {
   bookId: string;
-  onTextSelect?: (selectedText: string, coordinates: DOMRect) => void;
+  onTextSelect?: (selectedText: string, coordinates: DOMRect, pageNumber: number) => void;
   onError?: (error: string) => void;
   className?: string;
   enableTextSelection?: boolean;
@@ -306,7 +306,7 @@ function PdfViewerComponent({
       selection.removeAllRanges();
     } else {
       // 일반 텍스트 선택 콜백 호출
-      onTextSelect?.(selectedText, rect);
+      onTextSelect?.(selectedText, rect, selectedPageNumber);
     }
   }, [enableTextSelection, onTextSelect, state.highlightMode, state.pageNumber, enableHighlighting, onHighlightCreate]);
 

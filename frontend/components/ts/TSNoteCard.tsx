@@ -4,6 +4,7 @@ import { GiCutDiamond, GiRock } from 'react-icons/gi';
 import { QuestionMarkCircleIcon, ArrowTopRightOnSquareIcon, LightBulbIcon, PhotoIcon, LinkIcon, SparklesIcon, ShoppingCartIcon, PencilSquareIcon, TagIcon, EllipsisVerticalIcon, BookOpenIcon as SolidBookOpenIcon, ChevronLeftIcon, ChevronRightIcon, ChatBubbleOvalLeftEllipsisIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import api, { inlineThreadApi } from '@/lib/api'; // Import the central api instance
+import PdfReaderModal from '@/components/pdf/PdfReaderModal';
 import AiCoachPopover from '../common/AiCoachPopover';
 import ConceptScoreIcon from '../ConceptScoreIcon';
 import ConceptScorePopup from '../ConceptScorePopup';
@@ -58,6 +59,10 @@ export interface TSNote {
   content: string;
   /** @property {string[]} tags - 노트와 관련된 태그 목록. */
   tags: string[];
+  /** @property {number} [pageNumber] - 하이라이트된 문장의 페이지 번호. */
+  pageNumber?: number;
+  /** @property {string} [highlightedText] - 밑줄친 원문 텍스트. */
+  highlightedText?: string;
   /** @property {string} [importanceReason] - 메모 진화: 중요하다고 생각한 이유. */
   importanceReason?: string;
   /** @property {string} [momentContext] - 메모 진화: 메모 작성 당시의 상황이나 맥락. */
@@ -335,6 +340,7 @@ export default function TSNoteCard({
   onDeleteInlineThread,
 }: TSNoteCardProps) {
   const [note, setNote] = useState(initialNote);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // 오버레이 UI 표시 상태
   const [isInlineEditing, setIsInlineEditing] = useState(false); // 인라인 편집 상태 관리
   const [showSessionDetailsPopover, setShowSessionDetailsPopover] = useState(false);
@@ -1218,6 +1224,18 @@ export default function TSNoteCard({
       onClick={handleCardClick}
       ref={cardRef}
     >
+      {/* 페이지 배지 (우측 상단) */}
+      {typeof note.pageNumber === 'number' && note.pageNumber > 0 && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setShowPdfPreview(true); }}
+          className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 px-1.5 py-0.5 rounded-md text-[10px] sm:text-xs bg-gray-800/80 border border-gray-600/60 text-gray-200 hover:bg-gray-700/80 transition-colors"
+          title={`페이지 ${note.pageNumber}`}
+          data-no-toggle
+        >
+          p.{note.pageNumber}
+        </button>
+      )}
       {!minimalDisplay && sessionDetails && Object.keys(sessionDetails).length > 0 && ( 
         <>
           {renderSessionInfoButton()}
@@ -1241,7 +1259,7 @@ export default function TSNoteCard({
             !isPageEditing && !(isOpen && enableOverlayEvolutionMode) && !minimalDisplay && !isInlineEditing ? 'hover:text-yellow-300 transition-colors duration-200' : ''
           )}
         >
-          {note.content}
+          {note.highlightedText || note.content}
         </p>
 
         {/* 책 제목(출처) 표시 - 생각추가 위로 이동 */}
@@ -1486,6 +1504,17 @@ export default function TSNoteCard({
           score={score}
           isOpen={showConceptScorePopup}
           onClose={handleConceptScoreClose}
+        />
+      )}
+
+      {/* PDF 리더 모달 */}
+      {showPdfPreview && (
+        <PdfReaderModal
+          isOpen={showPdfPreview}
+          onClose={() => setShowPdfPreview(false)}
+          bookId={note.bookId}
+          initialPage={note.pageNumber || 1}
+          title={bookTitle ? `${bookTitle}` : undefined}
         />
       )}
     </div>
