@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -47,9 +47,44 @@ const ConceptScorePopup: React.FC<ConceptScorePopupProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  // ESC 키로 닫기 및 바디 스크롤 잠금
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, onClose]);
+
+  const handleOverlayClick = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  const stopPropagation = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="relative bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 border border-cyan-500/30 shadow-2xl rounded-2xl max-w-xs w-full p-4 sm:p-6 flex flex-col items-center min-h-[220px]">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      onClick={handleOverlayClick}
+      role="dialog"
+      aria-modal="true"
+      aria-label="개념이해도 점수"
+    >
+      <div
+        className="relative bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 border border-cyan-500/30 shadow-2xl rounded-2xl max-w-xs w-full p-4 sm:p-6 flex flex-col items-center min-h-[220px]"
+        onClick={stopPropagation}
+      >
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
