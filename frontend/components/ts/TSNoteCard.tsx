@@ -104,30 +104,32 @@ export interface TSSessionDetails {
 }
 
 // 목적별 4단계 질문/가이드/placeholder 매핑
+// 질문은 모든 목적에서 공통(why, where/context, association, mental image)
+// placeholder만 목적별로 차등 제공하여 입력 혼란을 줄입니다.
 const memoEvolutionPrompts: Record<string, Array<{ question: string; placeholder: string }>> = {
   exam_prep: [
-    { question: '밑줄친 이유가 무엇인가?', placeholder: '(예: 핵심 개념, 빈출 공식)' },
-    { question: '메모 작성 당시 느낌은 어떠했나요?', placeholder: '(예: 용어가 생소함, 어려움. 이해안됨)' },
-    { question: '머리 속에서 무엇과 연결되었나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
-    { question: '한 장의 그림으로 표현해본다면?', placeholder: '(예: 마인드맵, 차트, 표)' },
+    { question: '왜 이 문장을 메모했나요?', placeholder: '(예: 시험 대비 핵심 개념, 빈출 포인트)' },
+    { question: '그때의 장소나 상황은 어땠나요?', placeholder: '(예: 독서실/도서관, 모의고사 전, 커피 마시며 정리)' },
+    { question: '이 문장이 어떤 지식/문장/경험과 연결되나요?', placeholder: '(예: 기출 문제, 요약집, 공식과의 연결)' },
+    { question: '이 문장을 읽으면 마음속에 어떤 장면이 떠오르나요?', placeholder: '(예: 공책에 정리된 공식, 도식·마인드맵 이미지)' },
   ],
   practical_knowledge: [
-    { question: '어떻게 내 업무와 연결되나요?', placeholder: '(예: 특정 문제 해결, 프로세스 개선)' },
-    { question: '이 것이 필요했던 상황이 있나요?', placeholder: '(예: 버그 해결 중, 보고서 작성 시)' },
-    { question: '어떤 나의 경험/지식과 연상시키나요?', placeholder: '(예: 특정 책, 인물, 영상)' },
-    { question: '핵심을 한 문장으로 설명해 본다면?', placeholder: '(예: \'이 건 우리가 알고 있는 피라미드와 비슷해요\')' },
+    { question: '왜 이 문장을 메모했나요?', placeholder: '(예: 업무 문제 해결, 프로세스 개선에 필요)' },
+    { question: '그때의 장소나 상황은 어땠나요?', placeholder: '(예: 버그 대응, 보고서 작성, 미팅 전 준비)' },
+    { question: '이 문장이 어떤 지식/문장/경험과 연결되나요?', placeholder: '(예: 사내 문서, 코드 패턴, 레거시 이슈와 연결)' },
+    { question: '이 문장을 읽으면 마음속에 어떤 장면이 떠오르나요?', placeholder: '(예: 개선된 흐름도, 전/후 비교 다이어그램)' },
   ],
   humanities_self_reflection: [
-    { question: '어떤 감정/생각을 불러일으켰나요?', placeholder: '(예: 특정 감정, 떠오른 질문)' },
-    { question: '메모를 적던 당시 상황은 어떠했나요?', placeholder: '(예: 특정 장소, 인물, 경험)' },
-    { question: '어떤 다른 지식을 연상시키나요?', placeholder: '(예: 책, 영화, 역사적 사건)' },
-    { question: '내용을 한 폭의 그림이나 장면으로 묘사한다면?', placeholder: '(예: \'노을 지는 바다를 혼자 보는 모습\')' },
+    { question: '왜 이 문장을 메모했나요?', placeholder: '(예: 내 생각/가치관에 질문을 던짐, 마음이 움직임)' },
+    { question: '그때의 장소나 상황은 어땠나요?', placeholder: '(예: 산책, 카페, 집에서 조용히 읽던 중)' },
+    { question: '이 문장이 어떤 지식/문장/경험과 연결되나요?', placeholder: '(예: 다른 책/영화/역사 사례와의 연결)' },
+    { question: '이 문장을 읽으면 마음속에 어떤 장면이 떠오르나요?', placeholder: '(예: 상징적 이미지/은유적 장면: 노을, 바다, 인물 표정)' },
   ],
   reading_pleasure: [
-    { question: '이 메모, 어떤 점이 가장 흥미로웠나요?', placeholder: '(예: 반전, 문체, 대사의 맛)' },
-    { question: '이 구절을 읽을 때, 어떤 기분이었나요?', placeholder: '(예: 짜릿함, 평온함, 슬픔, 웃음)' },
-    { question: '이 메모의 즐거움, 어떤 다른 작품/경험을 떠올리게 하나요?', placeholder: '(예: 영화 A의 한 장면, 어릴 적 놀이공원 갔던 경험)' },
-    { question: '책 속의 어떤 장면이 머릿속에 생생하게 그려졌나요?', placeholder: '(예: 인물의 표정, 배경 묘사, 분위기)' },
+    { question: '왜 이 문장을 메모했나요?', placeholder: '(예: 문체·비유·전개가 흥미로움)' },
+    { question: '그때의 장소나 상황은 어땠나요?', placeholder: '(예: 휴식/여행/취침 전 가벼운 독서)' },
+    { question: '이 문장이 어떤 지식/문장/경험과 연결되나요?', placeholder: '(예: 비슷한 분위기의 작품/장면/대사)' },
+    { question: '이 문장을 읽으면 마음속에 어떤 장면이 떠오르나요?', placeholder: '(예: 인물의 표정, 배경 묘사, 공기감이 느껴지는 컷)' },
   ],
 };
 
