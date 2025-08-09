@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { apiClient } from '@/lib/apiClient';
-import { FiClock } from 'react-icons/fi';
+import { FiClock, FiLayers } from 'react-icons/fi';
 
 function formatHms(totalMs: number): string {
   const totalSec = Math.max(0, Math.floor(totalMs / 1000));
@@ -140,15 +140,19 @@ export default function HeaderClock() {
 
   return (
     <div
-      className="hidden lg:flex items-center gap-2 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-white/80"
+      className="hidden lg:flex items-center gap-3 px-3 py-1.5 rounded-full bg-gradient-to-r from-indigo-500/10 via-cyan-500/10 to-transparent border border-white/10 text-white/85 hover:border-cyan-400/30 transition-colors shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
       aria-label={`누적 사용시간 ${formatHms(displayTotal)}, 세션 ${formatHms(sessionElapsed)}`}
-      title={`누적 ${formatHms(displayTotal)} • 세션 ${formatHms(sessionElapsed)}`}
+      title={`${formatHms(displayTotal)} • ${formatHms(sessionElapsed)}`}
     >
-      <FiClock className="w-4 h-4 text-cyan-300" aria-hidden="true" />
-      <div className="flex items-center gap-2 font-medium [font-variant-numeric:tabular-nums]">
-        <span className="text-xs">누적 {formatHms(displayTotal)}</span>
-        <span className="text-white/30">•</span>
-        <span className="text-xs">세션 {formatHms(sessionElapsed)}</span>
+      <div className="inline-flex items-center gap-1.5">
+        <FiLayers className="w-3.5 h-3.5 text-indigo-300 drop-shadow-[0_0_6px_rgba(99,102,241,0.35)]" aria-hidden="true" />
+        <span className="text-[11px] [font-variant-numeric:tabular-nums] tracking-wide" aria-hidden="true">{formatHms(displayTotal)}</span>
+        <span className="sr-only">누적 {formatHms(displayTotal)}</span>
+      </div>
+      <div className="inline-flex items-center gap-1.5">
+        <FiClock className="w-3.5 h-3.5 text-cyan-300 drop-shadow-[0_0_6px_rgba(34,211,238,0.35)]" aria-hidden="true" />
+        <span className="text-[11px] [font-variant-numeric:tabular-nums] tracking-wide" aria-hidden="true">{formatHms(sessionElapsed)}</span>
+        <span className="sr-only">세션 {formatHms(sessionElapsed)}</span>
       </div>
     </div>
   );
