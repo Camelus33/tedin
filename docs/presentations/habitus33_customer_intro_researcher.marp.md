@@ -15,7 +15,7 @@ style: |
 ---
 
 ![bg](./assets/bg_cover.svg)
-# Prompt Free, Habitus33
+# Thought Pattern Mapping, Habitus33
 ![bg right:40% 80%](../../frontend/public/images/mascot/habitus-logo-seal.png)
 Researcher Edition — 문헌‑메모를 AI‑준비 지식으로
 

@@ -16,7 +16,7 @@ style: |
 
 ![bg](./assets/bg_cover.svg)
 ![bg](./assets/bg_cover.svg)
-# Prompt Free, Habitus33
+# Thought Pattern Mapping, Habitus33
 ![bg right:30% 70%](../../frontend/public/images/mascot/habitus-logo-seal.png)
 Learner Edition — 시험 대비에 강한 지식 캡슐 플랫폼
 
@@ -33,9 +33,9 @@ Learner Edition — 시험 대비에 강한 지식 캡슐 플랫폼
 
 ![bg](./assets/bg_solution.svg)
 ![bg](./assets/bg_solution.svg)
-# 해결: 프롬프트‑프리 학습 가속
+# 해결: 생각 패턴 매핑 기반 학습 가속
 ![bg opacity:0.06](data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'><rect x='80' y='560' width='1440' height='260' rx='16' fill='%23ffffff' fill-opacity='0.06' stroke='%2374c0fc' stroke-dasharray='10,8' stroke-opacity='0.5' stroke-width='3'/><text x='150' y='700' fill='%2374c0fc' fill-opacity='0.8' font-size='28' font-family='Arial'>Screenshot placeholder</text></svg>)
-최소 입력으로 개인 맥락을 자동 수집·진화·단권화 →
+최소 입력으로 메모와 생각 흐름의 패턴을 매핑(TPM) →
 AI가 곧장 이해하는 지식 캡슐(AI‑Link)로 시험 대비 가속
 
 ---

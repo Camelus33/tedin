@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   // Add metadataBase
   metadataBase: new URL(baseUrl),
   title: 'Habitus33 | Atomic Memo, Success Habit!',
-  description: 'Atomic Memo. Accelerate your learning!',
+  description: 'Thought Pattern Mapping(TPM)으로 생각의 패턴을 분석하고 AI-Link로 지식 캡슐을 만드는 학습 도구',
   // Add other relevant metadata: keywords, open graph tags, etc.
-  keywords: ['Habitus33','AI-Link', '프롬프트 프리', 'AI 메모장', '생산성 향상', 'AI 연결', '지식그래프', 'AI 보고서', '온톨로지', '대학생 필수앱', '성인학습자', '시험공부앱', '수험생', '연구자', '대학원생', '직장인', '엔지니어'],
+  keywords: ['Thought Pattern Mapping','TPM','AI-Link','Habitus33','AI 메모장','생산성 향상','AI 연결','지식그래프','AI 보고서','온톨로지','대학생 필수앱','성인학습자','시험공부앱','수험생','연구자','대학원생','직장인','엔지니어'],
   openGraph: {
     title: 'Habitus33 | Atomic Memo, Success Habit!',
-    description: 'Atomic Memo. Accelerate your learning!',
+    description: 'Thought Pattern Mapping(TPM)으로 생각의 패턴을 분석하고 AI-Link로 지식 캡슐을 만드는 학습 도구',
     // images: ['/og-image.png'], // Add OG image path later
     url: '/', // Relative to metadataBase
     siteName: 'Habitus33',

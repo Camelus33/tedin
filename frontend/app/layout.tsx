@@ -16,8 +16,8 @@ const notoSerifKr = Noto_Serif_KR({
 
 export const metadata = {
   title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
-  description: 'AI-Link 기술로 복잡한 맥락을 지식 캡슐에 담아 프롬프트 없이도 AI가 당신을 깊이 이해하게 만드는 혁신적인 학습 도구입니다.',
-  keywords: 'AI, 학습, 메모, 지식관리, 프롬프트프리, AI-Link, AMFA, 학습가속기, 지식캡슐화',
+  description: 'Thought Pattern Mapping(TPM)으로 당신의 메모와 생각 흐름을 분석해 패턴을 발견하고, AI-Link로 지식 캡슐을 만들어 더 깊이 이해하는 학습 도구입니다.',
+  keywords: 'Thought Pattern Mapping, TPM, AI-Link, AMFA, AI, 학습, 메모, 지식관리, 학습가속기, 지식캡슐화',
   authors: [{ name: 'Habitus33 Team' }],
   creator: 'Habitus33',
   publisher: 'Habitus33',
@@ -36,20 +36,20 @@ export const metadata = {
     url: 'https://habitus33.vercel.app',
     siteName: 'Habitus33',
     title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
-    description: 'AI-Link 기술로 복잡한 맥락을 지식 캡슐에 담아 프롬프트 없이도 AI가 당신을 깊이 이해하게 만드는 혁신적인 학습 도구입니다.',
+    description: 'Thought Pattern Mapping(TPM)으로 생각의 패턴을 분석하고 AI-Link로 지식 캡슐을 만드는 학습 도구입니다.',
     images: [
       {
         url: '/hero-image.png',
         width: 1200,
         height: 630,
-        alt: 'Habitus33 - AI와 자연스러운 소통을 위한 지식 캡슐화 플랫폼',
+          alt: 'Habitus33 - Thought Pattern Mapping(TPM)과 AI-Link로 지식 캡슐을 만드는 플랫폼',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
-    description: 'AI-Link 기술로 복잡한 맥락을 지식 캡슐에 담아 프롬프트 없이도 AI가 당신을 깊이 이해하게 만드는 혁신적인 학습 도구입니다.',
+    description: 'Thought Pattern Mapping(TPM)으로 생각의 패턴을 분석하고 AI-Link로 지식 캡슐을 만드는 학습 도구입니다.',
     images: ['/hero-image.png'],
     creator: '@habitus33',
     site: '@habitus33',
@@ -95,7 +95,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
               "name": "Habitus33",
-              "description": "AI-Link 기술로 복잡한 맥락을 지식 캡슐에 담아 프롬프트 없이도 AI가 당신을 깊이 이해하게 만드는 혁신적인 학습 도구입니다.",
+              "description": "Thought Pattern Mapping(TPM)으로 생각의 패턴을 분석하고 AI-Link로 지식 캡슐을 만들어 더 깊이 이해하게 돕는 학습 도구입니다.",
               "url": "https://habitus33.vercel.app",
               "applicationCategory": "EducationalApplication",
               "operatingSystem": "Web",
@@ -125,7 +125,7 @@ export default function RootLayout({
               "featureList": [
                 "AI-Link 지식 캡슐화",
                 "AMFA 메모 진화 시스템", 
-                "프롬프트 프리 AI 소통",
+                "Thought Pattern Mapping 분석",
                 "학습 가속기",
                 "지식 네트워크 연결"
               ]

@@ -48,7 +48,7 @@ ${step.action?.result ? `- 결과: ${typeof step.action.result === 'object' ? JS
     const startDate = learningJourney.timeSpan?.startDate || learningJourney.step[0]?.startTime;
     const endDate = learningJourney.timeSpan?.endDate || learningJourney.step[learningJourney.step.length - 1]?.startTime;
 
-    return `
+      return `
 === HABITUS33 생각진화 과정 분석 데이터 ===
 
 제목: ${title}
@@ -62,13 +62,13 @@ ${steps}
 
 === 학습 패턴 분석 포인트 ===
 
-1. AMFA 프레임워크 적용: Atomic Memo → Memo Evolve → Furnace Knowledge → AI Link
-2. 파도 효과: 3분 읽기에서 시작하여 깊은 학습으로 확산
-3. 시간 흐름: 각 단계별 소요 시간과 학습 깊이의 상관관계
-4. 개인화된 학습: 사용자의 읽기 속도, 메모 스타일, 지식 연결 패턴
-5. 지속 가능성: 부담 없는 시작에서 의미 있는 결과로의 자연스러운 진행
+1. Thought Pattern Mapping(TPM) 관점: 메모/생각 흐름에서 반복·연결·약점 패턴 추출
+2. AMFA 적용: Atomic Memo → Memo Evolve → Furnace Knowledge → AI Link
+3. 파도 효과: 3분 읽기에서 시작하여 깊은 학습으로 확산
+4. 시간 흐름: 각 단계별 소요 시간과 학습 깊이의 상관관계
+5. 개인화 학습: 읽기 속도, 메모 스타일, 지식 연결 패턴
 
-        이 데이터는 HABITUS33의 "Prompt Free, AI - Link" 철학을 구현한 실제 학습 사례입니다.
+        이 데이터는 HABITUS33의 "Thought Pattern Mapping (TPM), AI-Link" 철학을 구현한 실제 학습 사례입니다.
 AI 에이전트는 이 정보를 바탕으로 학습자의 패턴을 분석하고 개선점을 제안할 수 있습니다.
 
 주의: 시간 정보는 UTC 기준으로 표시되며, 실제 사용자 화면에서는 현지 시간대로 변환되어 표시됩니다.

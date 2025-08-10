@@ -43,7 +43,7 @@ AI도 마찬가지입니다. 당신의 전문 영역, 학습 배경, 현재 관�
 
 ### 4단계: AI-Link 캡슐화
 ```
-🤖 당신만의 지식 DNA가 담긴 프롬프트-프리 AI 파트너 완성
+🤖 당신만의 지식 DNA와 Thought Pattern Mapping(TPM) 기반 AI 파트너 완성
 ```
 
 ---
@@ -84,4 +84,4 @@ AI와의 대화 품질을 **10배 이상** 끌어올립니다.
 당신의 첫 번째 AI-Link를 만들어보세요.
 오늘 읽은 아티클 한 줄부터 시작하면 됩니다.
 
-#AI #DeepResearch #지식관리 #생산성 #ChatGPT #프롬프트프리 #행동경제학 #도메인전문성 #Habitus33 
+#AI #DeepResearch #지식관리 #생산성 #ChatGPT #ThoughtPatternMapping #TPM #행동경제학 #도메인전문성 #Habitus33

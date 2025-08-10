@@ -148,7 +148,7 @@ router.get('/metrics', authenticate, async (req, res) => {
   }
 });
 
-// 반복 패턴 집계: 시간대/요일 기준 유사 텍스트 반복 탐지(간단 카운트)
+// Thought Pattern Mapping (TPM): 시간대/요일 기준 유사 텍스트 반복 탐지(간단 카운트)
 router.get('/repetition', authenticate, async (req, res) => {
   try {
     const userId = req.user?.id;

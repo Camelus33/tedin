@@ -326,7 +326,7 @@ function WelcomeStep({ onPersonaSelect }: { onPersonaSelect: (persona: UserPerso
       >
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
           <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            AI, Prompt Free
+            Thought Pattern Mapping
           </span>
         </h1>
         <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto">
@@ -404,9 +404,9 @@ function PersonaValueStep({ persona, onNext }: { persona: UserPersona; onNext: (
             {personaConfig.title}
           </span>
         </h1>
-        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-          {personaConfig.description}
-        </p>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            {personaConfig.description}
+          </p>
       </motion.div>
 
       <motion.div
@@ -437,8 +437,8 @@ function PersonaValueStep({ persona, onNext }: { persona: UserPersona; onNext: (
               After: Habitus33 AI-Link
             </h3>
             <div className="space-y-2 text-gray-300">
-              <p>• 프롬프트 없이 즉시 소통</p>
-              <p>• 당신의 맥락을 완벽 이해</p>
+              <p>• 생각/학습 패턴 기반 맞춤 조언</p>
+              <p>• 당신의 맥락과 습관을 반영</p>
               <p>• 개인화된 전문가 수준 조언</p>
               <p>• 학습/연구/업무 스타일 반영</p>
             </div>

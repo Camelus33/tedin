@@ -16,7 +16,7 @@ style: |
 
 ![bg](./assets/bg_cover.svg)
 ![bg](./assets/bg_cover.svg)
-# Prompt Free, Habitus33
+# Thought Pattern Mapping, Habitus33
 ![bg right:30% 70%](../../frontend/public/images/mascot/habitus-logo-seal.png)
 Your knowledge becomes AI‑ready context
 
@@ -37,7 +37,7 @@ Your knowledge becomes AI‑ready context
 # One‑line Solution
 ![bg opacity:0.06](data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'><rect x='80' y='560' width='1440' height='260' rx='16' fill='%23ffffff' fill-opacity='0.06' stroke='%2374c0fc' stroke-dasharray='10,8' stroke-opacity='0.5' stroke-width='3'/><text x='150' y='700' fill='%2374c0fc' fill-opacity='0.8' font-size='28' font-family='Arial'>Screenshot placeholder</text></svg>)
 Capture → Evolve → Consolidate → Capsule (AI‑Link)
-Minimal input, AI‑ready knowledge capsule for immediate use
+Map thought patterns (TPM) to create AI‑ready knowledge capsules for immediate use
 
 ---
 
