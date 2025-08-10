@@ -505,6 +505,24 @@ export default function TSNoteCard({
           if (!beforeMilestone2 && afterMilestone2) {
             showSuccess('훌륭해요! 4단계 + 연결 4개 달성! 포커스드 노트로 묶어 보시겠어요?');
           }
+          // 반복/방향 제안(경량) — 로그인 환경에서만
+          try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            if (token) {
+              fetch(`${base}/api/analytics/repetition?days=30`, { headers: { Authorization: `Bearer ${token}` } })
+                .then(r => r.json()).then((data) => {
+                  if (data?.buckets?.length) {
+                    showSuccess('이 시간대에 자주 반복하던 생각이에요. 다른 관점으로 확장해볼까요?');
+                  }
+                }).catch(() => {});
+              fetch(`${base}/api/analytics/direction`, { headers: { Authorization: `Bearer ${token}` } })
+                .then(r => r.json()).then((data) => {
+                  const tags = data?.suggestions?.map((s:any)=> s.tag).filter(Boolean) || [];
+                  if (tags.length) showSuccess(`다음으로 이어질 가능성 높은 주제: ${tags.join(', ')}`);
+                }).catch(() => {});
+            }
+          } catch {}
         } catch {}
         // 오버레이 또는 인라인 편집 상태에 따라 적절히 닫기
         if (enableOverlayEvolutionMode) {

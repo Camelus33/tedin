@@ -148,6 +148,100 @@ router.get('/metrics', authenticate, async (req, res) => {
   }
 });
 
+// 반복 패턴 집계: 시간대/요일 기준 유사 텍스트 반복 탐지(간단 카운트)
+router.get('/repetition', authenticate, async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: '인증이 필요합니다.' });
+
+    const { days = 30 } = req.query as any;
+    const since = new Date(Date.now() - Math.max(1, Math.min(120, Number(days))) * 24 * 3600 * 1000);
+
+    // ThoughtEvent의 hourBucket/weekday를 활용해 집계 (사전 채워져 있지 않은 데이터는 createdAt에서 보정)
+    const events = await ThoughtEvent.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(userId), createdAt: { $gte: since } } },
+      {
+        $addFields: {
+          hourBucket: { $ifNull: ['$hourBucket', { $hour: '$createdAt' }] },
+          weekday: { $ifNull: ['$weekday', { $dayOfWeek: '$createdAt' }] }, // 1..7 (Sun=1)
+        },
+      },
+      {
+        $group: {
+          _id: { hour: '$hourBucket', weekday: { $subtract: ['$weekday', 1] } }, // 0..6
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    return res.status(200).json({ since, buckets: events });
+  } catch (e) {
+    console.error('repetition analytics error:', e);
+    return res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
+
+// 방향 예측(간단 전이 확률): 최근 메모 임베딩 벡터 방향과 유사한 과거 전이 목적지를 Top-3 추천
+router.get('/direction', authenticate, async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: '인증이 필요합니다.' });
+
+    // 최근 노트 10개 임베딩으로 대략적인 방향 벡터 계산
+    const recent = await Note.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select('embedding tags content createdAt')
+      .lean();
+
+    const emb = recent.map((r: any) => r.embedding).filter((v: any) => Array.isArray(v) && v.length > 0);
+    if (emb.length < 2) return res.status(200).json({ message: 'insufficient_embeddings', suggestions: [] });
+
+    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const mean = emb[0].map((_: any, i: number) => avg(emb.map((v: number[]) => v[i] || 0)));
+    const last = emb[0];
+    const dir = last.map((v: number, i: number) => v - (mean[i] || 0));
+
+    // 간단 KNN: 과거 노트 500개에서 dir과 가장 코사인 유사한 임베딩 Top-50을 찾고 태그/키워드 빈도로 추천
+    const pool = await Note.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(10)
+      .limit(500)
+      .select('embedding tags content createdAt')
+      .lean();
+
+    const cosine = (a: number[], b: number[]) => {
+      const len = Math.min(a.length, b.length);
+      let dot = 0, na = 0, nb = 0;
+      for (let i = 0; i < len; i++) { const va = a[i] || 0, vb = b[i] || 0; dot += va * vb; na += va*va; nb += vb*vb; }
+      const denom = Math.sqrt(na) * Math.sqrt(nb) || 1;
+      return dot / denom;
+    };
+
+    const scored = pool
+      .filter(n => Array.isArray((n as any).embedding) && (n as any).embedding.length > 0)
+      .map(n => ({ n, score: cosine(dir, (n as any).embedding) }))
+      .sort((a,b) => b.score - a.score)
+      .slice(0, 50);
+
+    // 태그/키워드 기반 간단 추천(태그가 없으면 내용 상위 단어 토큰화 대체 가능)
+    const tagCounts: Record<string, number> = {};
+    for (const { n } of scored) {
+      const tags = Array.isArray((n as any).tags) ? (n as any).tags : [];
+      for (const t of tags) tagCounts[String(t)] = (tagCounts[String(t)] || 0) + 1;
+    }
+    const suggestions = Object.entries(tagCounts)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([tag, count]) => ({ tag, votes: count }));
+
+    return res.status(200).json({ message: 'ok', suggestions });
+  } catch (e) {
+    console.error('direction analytics error:', e);
+    return res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+});
 // GET /api/analytics/aggregate
 // 고해상도 지표: speed(의미 속도), curvature(곡률), rhythm(간격/버스트), 시간대 분포
 router.get('/aggregate', authenticate, async (req, res) => {

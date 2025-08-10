@@ -22,6 +22,8 @@ export interface IThoughtEvent extends Document {
   createdAt: Date;
   clientCreatedAt?: Date | null;
   meta?: Record<string, any> | null; // 간단한 부가 정보
+  hourBucket?: number | null; // 0..23 (UTC)
+  weekday?: number | null; // 0..6 (UTC, 0=Sun)
 }
 
 const ThoughtEventSchema: Schema = new Schema(
@@ -51,12 +53,15 @@ const ThoughtEventSchema: Schema = new Schema(
     createdAt: { type: Date, default: Date.now },
     clientCreatedAt: { type: Date, default: null },
     meta: { type: Schema.Types.Mixed, default: null },
+    hourBucket: { type: Number, default: null, index: true },
+    weekday: { type: Number, default: null, index: true },
   },
   { minimize: true }
 );
 
 ThoughtEventSchema.index({ userId: 1, createdAt: -1 });
 ThoughtEventSchema.index({ type: 1, createdAt: -1 });
+ThoughtEventSchema.index({ userId: 1, hourBucket: 1, weekday: 1 });
 
 export default mongoose.model<IThoughtEvent>('ThoughtEvent', ThoughtEventSchema);
 
