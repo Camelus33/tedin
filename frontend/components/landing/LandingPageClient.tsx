@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,13 +15,25 @@ import HowItWorksSection from './sections/HowItWorksSection';
 import FaqSection from './sections/FaqSection';
 import TestimonialsSection from './sections/TestimonialsSection';
 import FinalCtaSection from './sections/FinalCtaSection';
-import { apiClient } from '@/lib/apiClient';
 import Header from '@/components/common/Header';
 
 export default function LandingPageClient() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [aggregate, setAggregate] = useState<any>(null);
+  // 랜딩은 로그인 전 데이터 사용 금지 → 데모 데이터만 사용
+  const aggregate = useMemo(() => {
+    const byHour = Array.from({ length: 24 }, (_, h) => {
+      // 간단한 데모 패턴: 저녁 시간대가 높게
+      const base = 5 + Math.round(4 * Math.sin((h - 12) / 24 * Math.PI * 2));
+      const eveningBoost = h >= 19 && h <= 22 ? 6 : 0;
+      return Math.max(0, base + eveningBoost);
+    });
+    const byWeekday = [3, 4, 5, 6, 7, 5, 3]; // 수/목이 높은 데모 패턴
+    return {
+      rangeDays: 30,
+      timeOfDay: { byHour, byWeekday },
+    };
+  }, []);
 
   useEffect(() => {
     // Simple check for token - enhance later if needed
@@ -33,17 +45,7 @@ export default function LandingPageClient() {
     }
   }, [router]);
 
-  useEffect(() => {
-    // 실시간 패턴 프리뷰용 집계 데이터(최근 30일)
-    (async () => {
-      try {
-        const res = await apiClient.get('/analytics/aggregate?days=30');
-        setAggregate(res);
-      } catch (e) {
-        setAggregate(null);
-      }
-    })();
-  }, []);
+  // 실제 네트워크 호출 없음 (데모만 표시)
 
   // Prevent rendering the landing page briefly if logged in
   if (isLoggedIn) {
