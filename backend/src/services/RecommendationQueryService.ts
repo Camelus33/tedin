@@ -50,7 +50,6 @@ export class RecommendationQueryService {
           },
           $setOnInsert: { 
             createdAt: now,
-            usageCount: 0
           }
         },
         { upsert: true }

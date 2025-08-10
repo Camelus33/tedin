@@ -106,11 +106,45 @@ export class LLMService {
           max_output_tokens: 1000,
         });
 
-        // Responses API 결과에서 텍스트 추출 (SDK에 따라 output_text 가 제공될 수 있음)
-        const responseText: string = resp?.output_text
-          || resp?.output?.[0]?.content?.[0]?.text
-          || resp?.choices?.[0]?.message?.content
-          || '응답을 생성할 수 없습니다.';
+        // Responses API 결과에서 텍스트 추출 (여러 응답 형태를 안전하게 처리)
+        const extractText = (node: any): string | undefined => {
+          try {
+            if (!node) return undefined;
+            if (typeof node === 'string') return node;
+            // 우선 경로 기반 빠른 추출
+            const direct = node.output_text
+              || node.response?.output_text
+              || node.output?.[0]?.content?.[0]?.text
+              || node.output?.[0]?.content?.[0]?.text?.value
+              || node.choices?.[0]?.message?.content
+              || node.data?.[0]?.content?.[0]?.text;
+            if (typeof direct === 'string' && direct.trim()) return direct;
+
+            // 광범위 순회로 모든 text 필드 수집
+            const texts: string[] = [];
+            const visit = (n: any) => {
+              if (n == null) return;
+              if (typeof n === 'string') { texts.push(n); return; }
+              if (Array.isArray(n)) { n.forEach(visit); return; }
+              if (typeof n === 'object') {
+                // 흔한 패턴들 처리
+                if (typeof (n as any).text === 'string') texts.push((n as any).text);
+                if (typeof (n as any).value === 'string') texts.push((n as any).value);
+                // 일반 객체 키 순회
+                for (const key of Object.keys(n)) {
+                  visit((n as any)[key]);
+                }
+              }
+            };
+            visit(node);
+            const joined = texts.join(' ').trim();
+            return joined || undefined;
+          } catch {
+            return undefined;
+          }
+        };
+
+        const responseText: string = extractText(resp) || '응답을 생성할 수 없습니다.';
 
         const usage = resp?.usage || resp?.response?.usage;
         return {
