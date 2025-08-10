@@ -62,9 +62,9 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   const [selectedLLM, setSelectedLLM] = useState<LLMProvider | null>(null);
   const [showLLMSettings, setShowLLMSettings] = useState(false);
   const [llmProviders, setLlmProviders] = useState<LLMProvider[]>([
-    { name: 'ChatGPT', model: 'gpt-5', apiKey: '', isConfigured: false },
-    { name: 'Claude', model: 'claude-3-sonnet', apiKey: '', isConfigured: false },
-    { name: 'Gemini', model: 'gemini-pro', apiKey: '', isConfigured: false }
+    { name: 'ChatGPT', model: 'gpt-4o', apiKey: '', isConfigured: false },
+    { name: 'Claude', model: 'claude-3-5-sonnet-latest', apiKey: '', isConfigured: false },
+    { name: 'Gemini', model: 'gemini-1.5-flash', apiKey: '', isConfigured: false }
   ]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -429,9 +429,10 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => { if (hasDraggedRef.current) return; handleRecommendationClick(rec); }}
-                className="text-xs py-0.5 px-2 h-auto flex-shrink-0 whitespace-nowrap snap-start max-w-full sm:max-w-none sm:whitespace-nowrap truncate"
+                className="text-xs py-0.5 px-2 h-auto flex-shrink-0 whitespace-nowrap snap-start"
               >
-                💡 {rec.text}
+                <span className="mr-1">💡</span>
+                <span className="block max-w-[80vw] overflow-hidden text-ellipsis whitespace-nowrap sm:max-w-none">{rec.text}</span>
               </Button>
             ))}
           </div>

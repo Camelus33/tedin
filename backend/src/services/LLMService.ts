@@ -300,11 +300,11 @@ export class LLMService {
   }
 
   private getDefaultApiKey(providerName: string): string | undefined {
-    const upperCaseProvider = providerName.toUpperCase();
-    if (upperCaseProvider === 'CHATGPT') {
-        return process.env.OPENAI_API_KEY;
-    }
-    return process.env[`${upperCaseProvider}_API_KEY`];
+    const upper = providerName.toUpperCase();
+    if (upper === 'CHATGPT') return process.env.OPENAI_API_KEY;
+    if (upper === 'CLAUDE') return process.env.ANTHROPIC_API_KEY;
+    if (upper === 'GEMINI') return process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+    return undefined;
   }
 
   /**
