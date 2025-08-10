@@ -190,7 +190,57 @@ export const updateNote = async (req: Request, res: Response) => {
       );
     } catch {}
 
-    res.status(200).json(updatedNote);
+    // 마일스톤 자동 알림 평가: updateNote에서도 일관되게 적용
+    try {
+      const after = await Note.findById(noteId).lean();
+      if (after) {
+        const evolveCountAfter = [after.importanceReason, after.momentContext, after.relatedKnowledge, after.mentalImage]
+          .filter(v => v && String(v).trim().length > 0).length;
+        const inlineCountAfter = Array.isArray((after as any).inlineThreads) ? (after as any).inlineThreads.length : 0;
+        const linkCountAfter = Array.isArray(after.relatedLinks) ? after.relatedLinks.length : 0;
+
+        const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
+        const evolveAllDone = evolveCountAfter === 4;
+        const milestone2Reached = inlineCountAfter >= 4 && evolveAllDone && linkCountAfter >= 4;
+
+        const updates: any = {};
+        if (milestone1Reached && !(after as any).milestone1NotifiedAt) {
+          updates.milestone1NotifiedAt = new Date();
+          try {
+            await ThoughtEvent.create({
+              userId,
+              noteId,
+              type: 'update_note',
+              textPreview: '[milestone] stage1 reached',
+              createdAt: new Date(),
+              clientCreatedAt: null,
+              meta: { milestone: 1, inlineCountAfter, evolveCountAfter, linkCountAfter },
+            });
+          } catch {}
+        }
+        if (milestone2Reached && !(after as any).milestone2NotifiedAt) {
+          updates.milestone2NotifiedAt = new Date();
+          try {
+            await ThoughtEvent.create({
+              userId,
+              noteId,
+              type: 'update_note',
+              textPreview: '[milestone] stage2 reached',
+              createdAt: new Date(),
+              clientCreatedAt: null,
+              meta: { milestone: 2, inlineCountAfter, evolveCountAfter, linkCountAfter },
+            });
+          } catch {}
+        }
+        if (Object.keys(updates).length > 0) {
+          await Note.findByIdAndUpdate(noteId, { $set: updates });
+        }
+      }
+    } catch {}
+
+    // 최신 상태로 응답 (마일스톤 갱신이 있었을 경우 포함)
+    const finalNote = await Note.findById(noteId).select('-__v');
+    res.status(200).json(finalNote || updatedNote);
   } catch (error) {
     console.error('노트 업데이트 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });

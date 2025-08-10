@@ -230,10 +230,26 @@ export default function BookDetailPage() {
     setLinkReason('');
     try {
       await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
-      setTsNotes(prevTsNotes => prevTsNotes.map(n => n._id === noteId ? {...n, relatedLinks: updatedLinks} : n));
-      if (selectedRelatedNote && selectedRelatedNote._id === noteId) {
-        setSelectedRelatedNote(prev => prev ? {...prev, relatedLinks: updatedLinks} : null);
-      }
+      // 저장 후 최신 노트 재조회하여 마일스톤 변화 감지 (토스트는 TSNoteCard가 담당하지만, 여기서도 보조적으로 일관성 확보)
+      try {
+        const prev = tsNotes.find(n => n._id === noteId) || selectedRelatedNote;
+        const beforeMilestone1 = (prev as any)?.milestone1NotifiedAt || null;
+        const beforeMilestone2 = (prev as any)?.milestone2NotifiedAt || null;
+        const refreshed = await api.get(`/notes/${noteId}`);
+        const next = refreshed.data || {};
+        setTsNotes(prevTsNotes => prevTsNotes.map(n => n._id === noteId ? { ...n, ...next } : n));
+        if (selectedRelatedNote && selectedRelatedNote._id === noteId) {
+          setSelectedRelatedNote(prev => prev ? { ...prev, ...next } : null);
+        }
+        const afterMilestone1 = (next as any).milestone1NotifiedAt || null;
+        const afterMilestone2 = (next as any).milestone2NotifiedAt || null;
+        if (!beforeMilestone1 && afterMilestone1) {
+          showSuccess('좋아요! 생각추가/기억강화/지식연결이 시작되었어요. 비슷한 메모를 연결해볼까요?');
+        }
+        if (!beforeMilestone2 && afterMilestone2) {
+          showSuccess('훌륭해요! 4단계 + 연결 4개 달성! 포커스드 노트로 묶어 보시겠어요?');
+        }
+      } catch {}
     } catch (err) {
       alert('링크를 저장하는 중 잠시 문제가 생겼어요: ' + (err as any).message);
       const originalLinks = (relatedLinksMap[noteId] || []).filter(link => link.url !== newLink.url || link.type !== newLink.type);
@@ -266,10 +282,25 @@ export default function BookDetailPage() {
     setRelatedLinksMap(prev => ({ ...prev, [noteId]: updatedLinks }));
     try {
       await api.put(`/notes/${noteId}`, { relatedLinks: updatedLinks });
-      setTsNotes(prevTsNotes => prevTsNotes.map(n => n._id === noteId ? {...n, relatedLinks: updatedLinks} : n));
-      if (selectedRelatedNote && selectedRelatedNote._id === noteId) {
-        setSelectedRelatedNote(prev => prev ? {...prev, relatedLinks: updatedLinks} : null);
-      }
+      try {
+        const prev = tsNotes.find(n => n._id === noteId) || selectedRelatedNote;
+        const beforeMilestone1 = (prev as any)?.milestone1NotifiedAt || null;
+        const beforeMilestone2 = (prev as any)?.milestone2NotifiedAt || null;
+        const refreshed = await api.get(`/notes/${noteId}`);
+        const next = refreshed.data || {};
+        setTsNotes(prevTsNotes => prevTsNotes.map(n => n._id === noteId ? { ...n, ...next } : n));
+        if (selectedRelatedNote && selectedRelatedNote._id === noteId) {
+          setSelectedRelatedNote(prev => prev ? { ...prev, ...next } : null);
+        }
+        const afterMilestone1 = (next as any).milestone1NotifiedAt || null;
+        const afterMilestone2 = (next as any).milestone2NotifiedAt || null;
+        if (!beforeMilestone1 && afterMilestone1) {
+          showSuccess('좋아요! 생각추가/기억강화/지식연결이 시작되었어요. 비슷한 메모를 연결해볼까요?');
+        }
+        if (!beforeMilestone2 && afterMilestone2) {
+          showSuccess('훌륭해요! 4단계 + 연결 4개 달성! 포커스드 노트로 묶어 보시겠어요?');
+        }
+      } catch {}
     } catch (err) {
       alert('링크를 정리하는 중 잠시 문제가 생겼어요: ' + (err as any).message);
       setRelatedLinksMap(prev => ({ ...prev, [noteId]: [...updatedLinks, linkToDelete].sort() })); 
