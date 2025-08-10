@@ -68,6 +68,11 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   ]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recsScrollRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const scrollStartLeftRef = useRef(0);
+  const hasDraggedRef = useRef(false);
 
   // Load API keys from localStorage on mount
   useEffect(() => {
@@ -127,6 +132,40 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       generateRecommendations();
     }
   }, [searchResults, searchQuery]);
+
+  // 데스크톱 마우스 드래그로 추천 쿼리 영역 좌우 스크롤
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current || !recsScrollRef.current) return;
+      const dx = e.pageX - dragStartXRef.current;
+      if (Math.abs(dx) > 5) hasDraggedRef.current = true;
+      recsScrollRef.current.scrollLeft = scrollStartLeftRef.current - dx;
+    };
+
+    const handleMouseUp = () => {
+      isDraggingRef.current = false;
+      // 드래그 종료 후 즉시 클릭이 발생해도 무시되도록 한 틱 뒤 리셋
+      setTimeout(() => {
+        hasDraggedRef.current = false;
+      }, 0);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+  const handleRecsMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!recsScrollRef.current) return;
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.pageX;
+    scrollStartLeftRef.current = recsScrollRef.current.scrollLeft;
+    hasDraggedRef.current = false;
+    e.preventDefault();
+  };
 
   // 추천 쿼리 생성
   const generateRecommendations = async () => {
@@ -378,14 +417,19 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       {recommendations.length > 0 && (
         <div className="p-4 border-t border-gray-700 min-w-0">
           <h4 className="text-xs font-medium text-gray-300 mb-1">맥락기반 추천 질문</h4>
-          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+          <div
+            ref={recsScrollRef}
+            className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x snap-mandatory overscroll-x-contain cursor-grab active:cursor-grabbing select-none"
+            onMouseDown={handleRecsMouseDown}
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
             {recommendations.map((rec) => (
               <Button
                 key={rec.id}
                 variant="outline"
                 size="sm"
-                onClick={() => handleRecommendationClick(rec)}
-                className="text-xs py-0.5 px-2 h-auto flex-shrink-0 whitespace-nowrap"
+                onClick={() => { if (hasDraggedRef.current) return; handleRecommendationClick(rec); }}
+                className="text-xs py-0.5 px-2 h-auto flex-shrink-0 whitespace-nowrap snap-start"
               >
                 💡 {rec.text}
               </Button>
