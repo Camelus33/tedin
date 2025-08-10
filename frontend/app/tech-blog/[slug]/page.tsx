@@ -29,18 +29,18 @@ export async function generateMetadata({ params }: Props) {
 export default async function TechBlogPostPage({ params }: Props) {
   const post = await techBlogApi.get(params.slug)
   return (
-    <main className="container mx-auto px-4 sm:px-6 py-8">
-      <article className="prose prose-indigo max-w-none">
-        <h1>{post.title}</h1>
-        {post.coverImageUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={post.coverImageUrl} alt="cover" className="my-4 rounded border" />
-        )}
-        <p className="text-sm text-gray-500">{post.publishedAt ? new Date(post.publishedAt).toLocaleString('ko-KR') : ''}</p>
-        <div className="mt-6 prose prose-indigo max-w-none">
+    <main className="px-4 sm:px-6 py-10">
+      <div className="mx-auto w-full max-w-3xl">
+        <article className="prose prose-zinc prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-extrabold prose-h1:text-4xl md:prose-h1:text-5xl prose-h1:leading-tight prose-h2:text-3xl prose-h3:text-2xl prose-p:text-gray-700 prose-p:leading-8 prose-li:leading-8 prose-a:text-indigo-600 hover:prose-a:text-indigo-700 prose-a:underline underline-offset-2 prose-strong:text-gray-900 prose-blockquote:border-l-4 prose-blockquote:border-indigo-200 prose-blockquote:text-gray-700 prose-img:rounded-xl prose-img:shadow-sm prose-hr:my-10">
+          <h1 className="mb-3 tracking-tight">{post.title}</h1>
+          {post.coverImageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={post.coverImageUrl} alt="cover" className="my-6 w-full rounded-lg border object-cover" />
+          )}
+          <p className="text-xs text-gray-500">{post.publishedAt ? new Date(post.publishedAt).toLocaleString('ko-KR') : ''}</p>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content || ''}</ReactMarkdown>
-        </div>
-      </article>
+        </article>
+      </div>
       {/* 관리자 전용 수정/삭제 */}
       <EditDeleteControls id={(post as any)._id} initial={{ title: post.title, slug: post.slug, category: post.category, excerpt: post.excerpt, content: post.content }} />
       {/* JSON-LD for SEO */}
