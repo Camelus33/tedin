@@ -109,6 +109,13 @@ export default function OnboardingPage() {
     }
   });
 
+  // 스텝 전환 시 화면 상단으로 스크롤 리셋
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [onboardingState.currentStep]);
+
   // Auto-advance to dashboard if user is already onboarded
   // TODO: Add isOnboarded field to user state or implement onboarding check
   // useEffect(() => {
@@ -134,10 +141,13 @@ export default function OnboardingPage() {
   };
 
   const goToStep = (step: number) => {
-    setOnboardingState(prev => ({
-      ...prev,
-      currentStep: step
-    }));
+    // 페르소나 미선택 상태에서는 2단계 이상 이동 금지
+    setOnboardingState(prev => {
+      if (step > 1 && !prev.selectedPersona) {
+        return prev;
+      }
+      return { ...prev, currentStep: step };
+    });
   };
 
   // Persona selection handler
@@ -293,8 +303,17 @@ export default function OnboardingPage() {
           <div className="w-24 flex justify-end">
             {onboardingState.currentStep < TOTAL_STEPS ? (
               <button
-                onClick={nextStep}
-                className="flex items-center space-x-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg transition-colors"
+                onClick={
+                  onboardingState.currentStep === 1 && !onboardingState.selectedPersona
+                    ? undefined
+                    : nextStep
+                }
+                disabled={onboardingState.currentStep === 1 && !onboardingState.selectedPersona}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                  onboardingState.currentStep === 1 && !onboardingState.selectedPersona
+                    ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                    : 'bg-cyan-500 hover:bg-cyan-600 text-white'
+                }`}
               >
                 <span>다음</span>
                 <ArrowRightIcon className="h-4 w-4" />
@@ -329,9 +348,9 @@ function WelcomeStep({ onPersonaSelect }: { onPersonaSelect: (persona: UserPerso
             Thought Pattern Mapping
           </span>
         </h1>
-        <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto">
-          <br />
-          
+        <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-8">
+          당신의 메모 속 반복되는 생각의 패턴을 분석해,
+          과거 실수를 줄이고 더 현명한 결정을 돕습니다.
         </p>
       </motion.div>
 
