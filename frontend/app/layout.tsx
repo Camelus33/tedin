@@ -1,5 +1,5 @@
 import '@/styles/globals.css'
-import { Noto_Serif_KR } from 'next/font/google'
+import { Noto_Serif_KR, Noto_Sans_KR } from 'next/font/google'
 import { Providers as ReduxProvider } from '@/store/provider'
 import { Providers } from './providers'
 import './dashboard/styles/dashboard.css';
@@ -12,6 +12,14 @@ const notoSerifKr = Noto_Serif_KR({
   weight: ['400', '700', '900'], // 필요한 가중치 선택
   display: 'swap',
   variable: '--font-noto-serif-kr',
+});
+
+// Noto Sans KR 폰트 설정 (본문용)
+const notoSansKr = Noto_Sans_KR({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+  variable: '--font-noto-sans-kr',
 });
 
 export const metadata = {
@@ -76,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko" className={notoSerifKr.variable} suppressHydrationWarning>
+    <html lang="ko" className={`${notoSerifKr.variable} ${notoSansKr.variable}`} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="manifest" href="/manifest.json" />

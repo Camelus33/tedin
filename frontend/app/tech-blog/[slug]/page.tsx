@@ -32,7 +32,7 @@ export default async function TechBlogPostPage({ params }: Props) {
   return (
     <main className="px-4 sm:px-6 py-10">
       <div className="mx-auto w-full max-w-3xl">
-        <article className="prose prose-tech prose-lg max-w-none">
+        <article className="prose prose-tech prose-lg max-w-none rounded-2xl bg-paper-ivory p-6 md:p-8">
           <h1 className="mb-3 tracking-tight">{post.title}</h1>
           {post.coverImageUrl && (
             // eslint-disable-next-line @next/next/no-img-element

@@ -15,7 +15,7 @@ module.exports = {
   		screens: {
   			'xs': '475px',
   		},
-  		colors: {
+    		colors: {
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
   				foreground: 'hsl(var(--primary-foreground))'
@@ -75,13 +75,16 @@ module.exports = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			},
-  			brand: {
+    			brand: {
   				primary: '#192A56',       // Deep Navy
   				secondary: '#F5F5F5',     // Warm Gray
   				accent: {
   					sage: '#87A96B',         // Sage Green
   					orange: '#E89F71',       // Muted Orange
-  				},
+    			},
+          paper: {
+            ivory: '#FBF7EF',
+          },
   			},
   			indigo: {
   				50: '#eef2ff',
@@ -99,7 +102,8 @@ module.exports = {
   		},
     		fontFamily: {
   			sans: ['Pretendard Variable', ...fontFamily.sans],
-  			serif: ['var(--font-noto-serif-kr)', ...fontFamily.serif],
+    			serif: ['var(--font-noto-serif-kr)', ...fontFamily.serif],
+          body: ['var(--font-noto-sans-kr)', ...fontFamily.sans],
   		},
         typography: (theme) => ({
           tech: {
@@ -129,6 +133,7 @@ module.exports = {
               p: {
                 fontSize: '1.0625rem',
                 lineHeight: '1.9',
+                fontFamily: 'var(--font-noto-sans-kr), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji"',
               },
               a: {
                 textDecoration: 'none',
@@ -154,6 +159,7 @@ module.exports = {
                 padding: '0.15rem 0.375rem',
                 borderRadius: '0.375rem',
                 fontWeight: '600',
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
               },
               pre: {
                 backgroundColor: '#0b1020',
