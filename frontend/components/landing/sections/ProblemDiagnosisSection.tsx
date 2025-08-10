@@ -19,16 +19,16 @@ export default function ProblemDiagnosisSection() {
           className="text-center"
         >
           <h2 className="text-3xl sm:text-4xl font-bold font-serif text-gray-900 tracking-tight text-center">
-            왜 학습은 힘들까요?
+            왜 생각은 쉽게 반복될까요?
           </h2>
           <div className="mt-8 text-lg text-gray-600 space-y-8 max-w-3xl mx-auto">
             <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
-              <p className="font-semibold text-gray-800">방대한 학습량에 압도되어 학습 시간에 대한 두려움이 생기고, 그로 인한 학습불안이 계속됩니다.</p>
+              <p className="font-semibold text-gray-800">흩어진 메모에서는 흐름이 보이지 않습니다. 우리는 언제·어디에서·어떤 내용이 이어졌는지 기록하고, 반복과 편향을 감지합니다.</p>
               <blockquote className="mt-2 pl-4 border-l-4 border-gray-300 italic text-gray-500">
-                "언제 다 끝나지? 이렇게 해도 될까? 시간이 부족한데..."
+                "또 같은 생각을 했네? 다음엔 어디로 확장하면 좋을까?"
               </blockquote>
               <p className="mt-4">
-                막연히 오래 앉아 있는다고 해서 해결되지 않습니다.<span className="font-semibold text-indigo-600">시간 단축</span>이 답입니다.
+                Habitus33는 <span className="font-semibold text-indigo-600">방향·속도·리듬</span>을 수치화해 생각의 흐름을 보여줍니다.
               </p>
             </div>
           </div>

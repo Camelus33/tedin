@@ -3,30 +3,30 @@ import Image from 'next/image';
 
 const testimonials = [
   {
-    name: '김OO, 토플 준비생',
-    title: '영어독해 시간이 2시간 → 1시간으로 줄었어요.',
+    name: '김OO, 연구자',
+    title: '반복되는 가설 루프에서 벗어났어요',
     quote: [
-      { text: '토익 시험을 앞두고 영어독해에 매일 2시간씩 투자했는데도 점수가 안 올라서 고민이었어요. ', highlighted: false },
-      { text: 'Time Sprint로 빠르게 핵심 문장 뽑는 데 집중했는데, 효과가 대단했어요.', highlighted: true },
-      { text: ' 절약된 시간으로 다른 과목에 좀 더 투자할 수 있게 되었어요.', highlighted: false },
+      { text: '같은 시간대에 같은 메모를 반복한다는 걸 보고, ', highlighted: false },
+      { text: '유사 생각 알림으로 다른 방향을 시도하게 됐습니다.', highlighted: true },
+      { text: ' 결과적으로 아이디어가 더 빨리 확장돼요.', highlighted: false },
     ],
   },
   {
-    name: '이OO, 공무원 수험생',
-    title: "하루 8시간 → 5시간, 듣는 복습으로 운동도 가능",
+    name: '이OO, 엔지니어',
+    title: '아키텍처 아이디어가 자연스럽게 이어져요',
     quote: [
-      { text: "과목이 너무 많아서 까먹는게 많았죠. 하루 8시간씩 공부해도 별로 남는 게 없었죠. ", highlighted: false },
-      { text: "메모카드 기능이 대박이었죠. 반복 학습 시간이 반이상 크게 줄었어요.", highlighted: true },
-      { text: " 운동할 때, 들으며 복습할 수 있어 너무 좋아요.", highlighted: false },
+      { text: '메모 진화 4단계로 맥락을 채우고, ', highlighted: false },
+      { text: '속도·곡률 집계로 다음 단계 타이밍을 잡습니다.', highlighted: true },
+      { text: ' 회의 준비 시간이 절반으로 줄었어요.', highlighted: false },
     ]
   },
   {
-    name: '박OO, 직장인 (시험준비 병행)',
-    title: '자격증 공부 시간 3시간 → 1시간 30분',
+    name: '박OO, 수험생',
+    title: '불안감이 줄고 공부가 선명해졌습니다',
     quote: [
-      { text: '퇴근 후 3시간씩 자격증 공부하느라 체력이 바닥났는데, ', highlighted: false },
-      { text: "단권화 노트로 복습하니 딱 반으로 줄었어요.", highlighted: true },
-      { text: ' 스트레스가 준 게 제일 커요. 시간압박감이 심했거든요.', highlighted: false },
+      { text: '생각의 흐름이 보이니, ', highlighted: false },
+      { text: '어떤 날에 암기가 잘 되는지 시간대 분포로 확인합니다.', highlighted: true },
+      { text: ' 패턴에 맞춰 계획을 바꾸니 효율이 올라갔어요.', highlighted: false },
     ]
   },
 ];
@@ -36,10 +36,10 @@ export default function TestimonialsSection() {
     <section className="py-20 md:py-28 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold font-serif text-gray-800 text-center mb-6">
-          반으로 준 학습 시간, 스트레스도 반
+          패턴이 보이면, 다음이 빨라집니다
         </h2>
         <p className="text-lg md:text-xl text-gray-600 text-center mb-16 max-w-3xl mx-auto">
-          학습 시간 단축이 합격 여부를 결정합니다.
+          반복을 줄이고, 확장을 돕는 실제 사용자들의 경험입니다.
         </p>
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-10">
@@ -66,15 +66,15 @@ export default function TestimonialsSection() {
             </div>
           ))}
         </div>
-        
+
         {/* 브랜드 핵심 메시지 */}
         <div className="mt-20 text-center">
           <div className="max-w-4xl mx-auto">
             <blockquote className="text-2xl md:text-3xl font-serif text-gray-700 italic leading-relaxed">
-              "학습 시간 단축이 곧 생산성 향상입니다."
+              "생각의 흐름을 읽으면, 다음이 보입니다."
             </blockquote>
             <cite className="block mt-6 text-lg text-gray-500 not-italic">
-              — 절약된 시간으로 더 큰 성과 —
+              — 방향·속도·리듬을 아는 메모 —
             </cite>
           </div>
         </div>

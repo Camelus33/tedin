@@ -21,7 +21,11 @@ const FadingBlock = ({
       repeatType: 'reverse',
       ease: 'easeInOut',
     }}
-    className="h-2 bg-indigo-200 rounded-full"
+    className="h-2 rounded-full"
+    style={{
+      background:
+        'linear-gradient(90deg, rgba(99,102,241,0.7) 0%, rgba(56,189,248,0.5) 100%)',
+    }}
   />
 )
 
@@ -46,8 +50,8 @@ const ContextLine = ({
     }}
     className="flex items-center space-x-2"
   >
-    <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
-    <span className="text-sm text-gray-500">{text}</span>
+    <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
+    <span className="text-sm text-gray-600">{text}</span>
   </motion.div>
 )
 
@@ -55,10 +59,10 @@ export default function FadingContextAnimation() {
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-xl">
       <div className="flex items-center space-x-4">
-        <div className="w-12 h-12 bg-gray-800 rounded-full flex-shrink-0" />
+        <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-cyan-500 rounded-full flex-shrink-0" />
         <div className="w-full space-y-3">
-          <div className="h-2 bg-gray-800 rounded-full w-3/4" />
-          <div className="h-2 bg-gray-800 rounded-full w-1/2" />
+          <div className="h-2 bg-gray-900 rounded-full w-3/4" />
+          <div className="h-2 bg-gray-900 rounded-full w-1/2" />
         </div>
       </div>
 
@@ -73,13 +77,19 @@ export default function FadingContextAnimation() {
         </div>
 
         <div className="pl-14 pt-2 space-y-2">
-          <ContextLine text="새로운 개념을 배우면..." delay={0} isFading={true} />
-          <ContextLine text="메모가 체계적으로 발전되지 않음..." delay={0.2} isFading={true} />
-          <ContextLine text="같은 내용을 반복 학습하게 됨..." delay={0.4} isFading={true} />
+          <ContextLine text="같은 시간대에 비슷한 생각을 반복..." delay={0} isFading={true} />
+          <ContextLine text="연결 없이 흩어져 흐름을 놓침..." delay={0.2} isFading={true} />
+          <ContextLine text="어디서 방향을 바꿔야 할지 모름..." delay={0.4} isFading={true} />
         </div>
       </div>
-       <p className="text-center text-xs text-gray-400 mt-4">
-        학습 과정의 부산물이 발전되지 않으면 학습 시간이 늘어납니다.
+      <div className="mt-5 flex items-center justify-center gap-2 text-[11px]">
+        <span className="px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">Speed</span>
+        <span className="px-2 py-1 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-100">Curvature</span>
+        <span className="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">Rhythm</span>
+        <span className="px-2 py-1 rounded-full bg-gray-50 text-gray-700 border border-gray-200">Time</span>
+      </div>
+      <p className="text-center text-xs text-gray-500 mt-3">
+        Habitus33는 방향·속도·리듬·시간대 패턴을 수치화해 반복을 줄입니다.
       </p>
     </div>
   )

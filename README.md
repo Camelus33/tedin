@@ -1,15 +1,21 @@
-# Habitus33 - Learning Acceleration Platform
+# Habitus33 - 생각의 패턴과 방향을 추적하는 AI 메모 서비스
 
-> **"Learning Acceleration, Habitus33"** - 인지과학 기반의 체계적 학습 가속 플랫폼으로 학습 시간을 25% 단축하고 기억 보존률을 4배 향상시킵니다
+> **"Track Your Thought Patterns, Evolve Your Knowledge"**
+>
+> Habitus33은 사용자의 1줄 메모, 인라인 쓰레드, 메모 진화(4단계), 지식 연결의 시간적 흐름을 정밀하게 기록하고, **생각의 방향·속도·리듬**을 분석하여 성장을 돕는 AI 메모/학습 서비스입니다.
 
-## 🚀 핵심 가치
+## 🚀 무엇을 해결하나요? (TL;DR)
 
-Habitus33은 **AMFA 엔진**을 통해 사용자의 학습을 가속화합니다:
+- 생각의 패턴과 방향을 추적: 메모 활동의 시간·내용 흐름을 기록해 방향, 속도, 리듬을 수치화
+- 유사/반복 생각 감지: 임베딩 기반 유사도 + 자카드 폴백으로 과거 유사 메모 탐지
+- 성장 타이밍 안내: 인라인/진화/연결 달성 시 토스트로 “다음 행동” 제안
+- 최소 변경, 최대 효과: 기존 구조 유지 + 필드 추가/이벤트 스트림/분석 API만 도입
 
-- **A (Atomic Reading)**: 3분 집중 독서로 핵심 추출
-- **M (Memo Evolution)**: 1줄 메모를 진화된 지식으로 발전  
-- **F (Furnace Knowledge)**: 지식의 용광로를 통한 재구성
-- **A (AI-Link)**: 개인화된 AI 파트너 생성
+## 🧩 핵심 개념
+
+- AMFA: A(Atomic Reading) → M(Memo Evolution) → F(Focused Note) → A(AI-Link)
+- Thought Analytics: Speed(속도), Curvature(방향 전환), Rhythm(리듬/CV), Time Patterns(시간대/요일)
+- ThoughtEvent: 메모 생성/수정/인라인/연결/진화/마일스톤을 표준화하여 기록
 
 ## 🎯 주요 기능
 
@@ -32,10 +38,13 @@ Habitus33은 **AMFA 엔진**을 통해 사용자의 학습을 가속화합니다
 - **즉시 소통**: 프롬프트 없이도 AI가 사용자 맥락 파악
 - **지식 공유**: AI 접근 가능한 구조화된 데이터로 공유
 
-### 📚 지식 관리 시스템
+### 📚 지식 관리 + 생각 패턴 추적
 - **책 관리**: PDF 업로드, 하이라이트, 메모 작성
 - **컬렉션**: 주제별 메모 그룹화 및 연결
 - **개념이해도**: 실시간 학습 진행도 측정
+- **생각 패턴 집계**: `/api/analytics/aggregate`로 최근 N일의 생각 속도/곡률/리듬·시간대/요일 분포 제공
+- **유사 생각 탐지**: `/api/analytics/similar`로 과거 메모와의 의미적 유사성(임베딩/자카드) 검색
+- **마일스톤 알림**: 인라인 쓰레드·진화 4단계·지식 연결 달성 시 토스트 알림 (프론트 `TSNoteCard`)
 
 ### 🧠 인지과학 기반 게임
 
@@ -53,13 +62,20 @@ Habitus33은 **AMFA 엔진**을 통해 사용자의 학습을 가속화합니다
 - **AMFA 엔진 활용**: 실제 학습 워크플로우 적용
 - **개인화된 루틴**: 사용자 패턴에 맞춘 최적화된 학습 경로
 
-### 📊 학습 분석 시스템
+### 📊 생각 패턴 분석 시스템
 
-#### **인지과학 기반 분석**
-- **8가지 인지 메트릭**: 작업기억력, 주의력, 처리속도, 인지유연성, 시공간정밀도, 패턴인식, 해마활성화, 실행기능
-- **백분위 순위**: 동일 연령대 대비 상대적 위치 파악
-- **시계열 분석**: 시간에 따른 인지능력 변화 추적
-- **강점/약점 분석**: 개인별 인지 프로필 진단
+#### 지표 정의
+- Speed: 인접 메모 임베딩 간 (1 - cosine) / Δt(min)
+- Curvature: 연속 의미 이동 벡터 간 각도(라디안)
+- Rhythm: 이벤트 간 간격 평균/표준편차/변동계수(CV), 간이 버스트 지수
+- Time Patterns: 시간대/요일 히스토그램
+
+#### 빠른 확인 방법
+```bash
+# 백엔드 기동 후(로컬: http://localhost:8000)
+curl -H "Authorization: Bearer <TOKEN>" \
+  "http://localhost:8000/api/analytics/aggregate?days=30" | jq
+```
 
 #### **학습 효과 측정**
 - **개념이해도**: 실시간 학습 진행도 측정
@@ -69,8 +85,8 @@ Habitus33은 **AMFA 엔진**을 통해 사용자의 학습을 가속화합니다
 ## 🛠 기술 스택
 
 - **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
-- **Backend**: Node.js, Express, TypeScript, MongoDB
-- **AI Integration**: OpenAI, Claude, Gemini, Perplexity
+- **Backend**: Node.js, Express, TypeScript, MongoDB(Mongoose)
+- **AI Integration**: OpenAI(Embedding `text-embedding-3-small`), Claude, Gemini, Perplexity
 - **PDF Processing**: PDF.js, react-pdf
 - **State Management**: Redux Toolkit, Zustand
 - **Deployment**: Vercel (Frontend), Render (Backend)
@@ -117,6 +133,7 @@ npm install
 #    - MONGODB_URI=...
 #    - JWT_SECRET=...
 #    - (선택) FRONTEND_URL=http://localhost:3000
+#    - (선택) OPENAI_API_KEY=...  # 임베딩/유사도 검색 활성화
 # 2) frontend/.env.local
 #    - NEXT_PUBLIC_API_URL=http://localhost:8000
 
@@ -130,6 +147,30 @@ npm run dev:frontend  # http://localhost:3000
 - [브랜드 가이드라인](./docs/HABITUS33_Brand_Guidelines_v3.4.md)
 - [마케팅 전략 가이드](./docs/Habitus33_Marketing_Strategy_Guide.md)
 - [AI-Link 아키텍처 가이드](./docs/AI_Link_Architecture_Guide.txt)
+
+## 🧱 데이터 모델 하이라이트
+
+- `backend/src/models/Note.ts`
+  - `importanceReasonAt/momentContextAt/relatedKnowledgeAt/mentalImageAt: Date`
+  - `relatedLinks[].createdAt: Date`
+  - `milestone1NotifiedAt/milestone2NotifiedAt: Date`
+  - `embedding: number[]`(선택), `embeddingGeneratedAt: Date`
+
+- `backend/src/models/ThoughtEvent.ts`
+  - `type`: `create_note | update_note | add_inline_thread | evolve_memo | add_connection | add_thought | milestone_achieved`
+  - `userId, noteId, sessionId, textPreview, tokens, createdAt, clientCreatedAt, meta`
+
+## 🔌 API 요약(핵심)
+
+- Analytics
+  - `GET /api/analytics/aggregate?days=30` → 속도/곡률/리듬/시간대 분포 집계
+  - `POST /api/analytics/similar` → `{ text, limit?, hourBucket?, weekday? }` 유사 메모 탐지
+  - `GET /api/analytics/metrics` → 최근 7일 이벤트/링크 개수
+
+- Diagnostics(관리자)
+  - `GET /api/diagnostics/env` → 주요 키 존재 여부
+  - `POST /api/diagnostics/embedding` → 임베딩 테스트
+  - `POST /api/diagnostics/embedding/batch` → 비어있는 임베딩 일괄 생성(페이징)
 
 ## ⏱ 헤더 시계 & 누적 사용시간 집계
 
@@ -168,4 +209,4 @@ npm run dev:frontend  # http://localhost:3000
 
 ---
 
-**"Learning Acceleration, Habitus33"** - 인지과학 기반의 체계적 학습 가속 플랫폼
+**"Think Forward, Habitus33"** - 생각의 패턴과 방향을 추적하고 성장으로 연결합니다.
