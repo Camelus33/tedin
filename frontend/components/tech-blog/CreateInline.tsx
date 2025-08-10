@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import useAuth from '@/hooks/useAuth';
 import { techBlogApi } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function TechBlogCreateInline() {
   const { user, isAuthenticated } = useAuth();
@@ -35,6 +37,14 @@ export default function TechBlogCreateInline() {
   }
 
   if (!isAuthenticated || !allowed) return null;
+
+  const normalizeHeadings = (value: string) => {
+    // 라인 시작의 "#. ", "##. " ... "#######. " 패턴을 표준 마크다운 헤딩으로 교정
+    // 7개 이상 # 는 6개로 한정
+    return value
+      .replace(/^(\s*)(#{7,})\.\s/gm, (_, s) => `${s}###### `)
+      .replace(/^(\s*)(#{1,6})\.\s/gm, '$1$2 ');
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,13 +151,23 @@ export default function TechBlogCreateInline() {
             <label className="block text-sm font-medium text-gray-700">내용</label>
             <textarea
               value={form.content}
-              onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
-              className="mt-1 w-full rounded border px-3 py-2 h-40"
+              onChange={e => setForm(f => ({ ...f, content: normalizeHeadings(e.target.value) }))}
+              className="mt-1 w-full rounded border px-3 py-2 h-40 font-mono"
+              placeholder="#. 제목, ##. 부제목 형식으로 입력하면 자동 적용됩니다."
               required
             />
             <div className="mt-2 flex items-center gap-3">
               <input type="file" accept="image/*" onChange={e=>{const file=e.target.files?.[0]; if(file) onUploadBodyImage(file)}} />
               <span className="text-xs text-gray-500">본문에 이미지 삽입</span>
+            </div>
+            {/* 라이브 미리보기 */}
+            <div className="mt-4 rounded-2xl bg-paper-ivory p-4">
+              <div className="text-xs text-gray-500 mb-2">미리보기</div>
+              <article className="prose prose-tech max-w-none font-body">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {form.content || ''}
+                </ReactMarkdown>
+              </article>
             </div>
           </div>
           <div className="flex items-center gap-3">
