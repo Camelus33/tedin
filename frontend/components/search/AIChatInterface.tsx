@@ -3,6 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { 
+  Select, 
+  SelectTrigger, 
+  SelectContent, 
+  SelectItem, 
+  SelectValue 
+} from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -66,6 +73,13 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
     { name: 'Claude', model: 'claude-3-5-sonnet-latest', apiKey: '', isConfigured: false },
     { name: 'Gemini', model: 'gemini-1.5-flash', apiKey: '', isConfigured: false }
   ]);
+
+  // 간단한 프리셋 모델 목록 (사용자는 언제든 커스텀 입력 가능)
+  const modelPresets: Record<string, string[]> = {
+    ChatGPT: ['gpt-4o', 'gpt-4o-mini', 'gpt-4.1', 'gpt-4.1-mini'],
+    Claude: ['claude-3-5-sonnet-latest', 'claude-3-opus-latest', 'claude-3-haiku-latest'],
+    Gemini: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-2.0-flash']
+  };
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recsScrollRef = useRef<HTMLDivElement>(null);
@@ -78,9 +92,10 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   useEffect(() => {
     try {
       const savedKeys = localStorage.getItem('habitus33_llm_api_keys');
+      const savedModels = localStorage.getItem('habitus33_llm_models');
       if (savedKeys) {
         const parsedKeys: Record<string, string> = JSON.parse(savedKeys);
-        
+        const parsedModels: Record<string, string> = savedModels ? JSON.parse(savedModels) : {};
         setLlmProviders(prevProviders => {
           const updatedProviders = prevProviders.map(provider => {
             if (parsedKeys[provider.name]) {
@@ -88,6 +103,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                 ...provider,
                 apiKey: parsedKeys[provider.name],
                 isConfigured: true,
+                model: parsedModels[provider.name] || provider.model,
               };
             }
             return provider;
@@ -265,6 +281,20 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
     }
   };
 
+  const handleModelChange = (provider: LLMProvider, model: string) => {
+    const updated = llmProviders.map(p =>
+      p.name === provider.name ? { ...p, model } : p
+    );
+    setLlmProviders(updated);
+    try {
+      const currentModels = JSON.parse(localStorage.getItem('habitus33_llm_models') || '{}');
+      currentModels[provider.name] = model;
+      localStorage.setItem('habitus33_llm_models', JSON.stringify(currentModels));
+    } catch (error) {
+      console.error('Failed to save LLM model to localStorage:', error);
+    }
+  };
+
   // 채팅 복사
   const copyChat = (content: string) => {
     navigator.clipboard.writeText(content);
@@ -332,23 +362,51 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
             <h3 className="font-medium mb-3">AI 모델 설정</h3>
             <div className="space-y-3">
               {llmProviders.map((provider) => (
-                <div key={provider.name} className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <label className="text-sm font-medium">{provider.name}</label>
-                    <Input
-                      type="password"
-                      placeholder="API 키를 입력하세요"
-                      value={provider.apiKey}
-                      onChange={(e) => handleLLMConfig(provider, e.target.value)}
-                      className="mt-1"
-                    />
+                <div key={provider.name} className="flex flex-col gap-2 rounded-md border border-gray-700 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <label className="text-sm font-medium">{provider.name}</label>
+                      <Input
+                        type="password"
+                        placeholder="API 키를 입력하세요"
+                        value={provider.apiKey}
+                        onChange={(e) => handleLLMConfig(provider, e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                    <Badge 
+                      variant={provider.isConfigured ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {provider.isConfigured ? '설정됨' : '미설정'}
+                    </Badge>
                   </div>
-                  <Badge 
-                    variant={provider.isConfigured ? "default" : "secondary"}
-                    className="text-xs"
-                  >
-                    {provider.isConfigured ? '설정됨' : '미설정'}
-                  </Badge>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs text-gray-400">모델 (프리셋)</label>
+                      <Select value={provider.model} onValueChange={(val) => handleModelChange(provider, val)}>
+                        <SelectTrigger className="h-8 mt-1">
+                          <SelectValue placeholder="모델 선택" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(modelPresets[provider.name] || []).map(m => (
+                            <SelectItem key={m} value={m}>{m}</SelectItem>
+                          ))}
+                          <SelectItem value={provider.model}>현재: {provider.model}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-400">모델 (직접 입력)</label>
+                      <Input
+                        placeholder="예: gpt-4o, claude-3-5-sonnet-latest, gemini-1.5-pro"
+                        value={provider.model}
+                        onChange={(e) => handleModelChange(provider, e.target.value)}
+                        className="h-8 mt-1"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-gray-500">공식 문서에서 최신 모델명을 확인해 입력하세요. 잘못된 모델명을 입력하면 호출이 실패할 수 있습니다.</p>
                 </div>
               ))}
             </div>
