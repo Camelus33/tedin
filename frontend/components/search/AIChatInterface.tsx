@@ -70,15 +70,15 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   const [showLLMSettings, setShowLLMSettings] = useState(false);
   const [llmProviders, setLlmProviders] = useState<LLMProvider[]>([
     { name: 'ChatGPT', model: 'gpt-4o', apiKey: '', isConfigured: false },
-    { name: 'Claude', model: 'claude-3-5-sonnet-latest', apiKey: '', isConfigured: false },
-    { name: 'Gemini', model: 'gemini-1.5-flash', apiKey: '', isConfigured: false }
+    { name: 'Claude', model: 'claude-sonnet-4.0', apiKey: '', isConfigured: false },
+    { name: 'Gemini', model: 'gemini-2.5-flash', apiKey: '', isConfigured: false }
   ]);
 
   // 간단한 프리셋 모델 목록 (사용자는 언제든 커스텀 입력 가능)
   const modelPresets: Record<string, string[]> = {
-    ChatGPT: ['gpt-4o', 'gpt-4o-mini', 'gpt-4.1', 'gpt-4.1-mini'],
-    Claude: ['claude-3-5-sonnet-latest', 'claude-3-opus-latest', 'claude-3-haiku-latest'],
-    Gemini: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-2.0-flash']
+    ChatGPT: ['gpt-5', 'gpt-4o'],
+    Claude: ['claude-sonnet-4.0', 'claude-opus-4.1'],
+    Gemini: ['gemini-2.5-pro', 'gemini-2.5-flash']
   };
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
