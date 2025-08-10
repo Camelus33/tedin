@@ -83,6 +83,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recsScrollRef = useRef<HTMLDivElement>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragStartXRef = useRef(0);
   const scrollStartLeftRef = useRef(0);
@@ -130,6 +131,13 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // 설정 패널 토글 시 자동 스크롤
+  useEffect(() => {
+    if (showLLMSettings) {
+      settingsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [showLLMSettings]);
 
   // 초기 컨텍스트 메시지 생성
   useEffect(() => {
@@ -286,6 +294,10 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       p.name === provider.name ? { ...p, model } : p
     );
     setLlmProviders(updated);
+    // 현재 선택된 공급자의 모델이 변경되면 선택 상태도 즉시 동기화
+    if (selectedLLM?.name === provider.name) {
+      setSelectedLLM({ ...provider, model });
+    }
     try {
       const currentModels = JSON.parse(localStorage.getItem('habitus33_llm_models') || '{}');
       currentModels[provider.name] = model;
@@ -324,7 +336,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full max-h-full bg-secondary">
+    <div className="flex flex-col h-full max-h-full min-h-0 bg-secondary">
       {/* 헤더 */}
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         <div className="flex items-center gap-2">
@@ -357,8 +369,9 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
 
       {/* LLM 설정 */}
       {showLLMSettings && (
-        <Card className="m-4">
-          <CardContent className="p-4">
+        <div ref={settingsRef} className="m-4 max-h-[50vh] sm:max-h-[60vh] overflow-y-auto rounded-md">
+          <Card>
+            <CardContent className="p-4">
             <h3 className="font-medium mb-3">AI 모델 설정</h3>
             <div className="space-y-3">
               {llmProviders.map((provider) => (
@@ -412,11 +425,12 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
             </div>
           </CardContent>
         </Card>
+        </div>
       )}
 
       {/* 메시지 영역 */}
       <div 
-        className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-gray-800"
+        className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-gray-800"
       >
         {messages.map((message) => (
           <div
