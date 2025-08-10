@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { techBlogApi } from '@/lib/api'
+import TechBlogCreateInline from '@/components/tech-blog/CreateInline'
 
 export const metadata = {
   title: 'Habitus33 기술블로그',
@@ -39,11 +40,18 @@ export default async function TechBlogIndexPage() {
           <Link key={p.slug} href={`/tech-blog/${p.slug}`} className="group rounded-lg border border-gray-200 bg-white p-5 hover:border-gray-300 transition-colors">
             <div className="text-xs text-indigo-600 font-medium uppercase tracking-wide">{p.category === 'update' ? '기능 업데이트' : '기술 포스팅'}</div>
             <h2 className="mt-1 text-lg font-semibold text-gray-900 group-hover:text-indigo-700">{p.title}</h2>
+            {p.coverImageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={p.coverImageUrl} alt="cover" className="mt-2 h-28 w-full object-cover rounded border" />
+            )}
             {p.excerpt && <p className="mt-1 text-sm text-gray-600 line-clamp-2">{p.excerpt}</p>}
             <div className="mt-2 text-xs text-gray-400">{p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('ko-KR') : ''}</div>
           </Link>
         ))}
       </div>
+
+      {/* 관리자 전용 인라인 작성 */}
+      <TechBlogCreateInline />
     </main>
   )
 }

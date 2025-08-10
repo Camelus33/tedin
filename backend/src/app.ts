@@ -6,7 +6,7 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import path from 'path';
+import * as path from 'path';
 
 console.log(`[App] Starting application...`);
 console.log(`[App] Current working directory (cwd): ${process.cwd()}`);

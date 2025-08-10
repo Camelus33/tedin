@@ -664,7 +664,7 @@ export const techBlogApi = {
   },
   get: async (slug: string) => {
     const response = await api.get(`/tech-blog/${slug}`);
-    return response.data as { _id: string; title: string; slug: string; category: 'update'|'post'; content: string; excerpt?: string; tags?: string[]; publishedAt?: string };
+    return response.data as { _id: string; title: string; slug: string; category: 'update'|'post'; content: string; excerpt?: string; tags?: string[]; coverImageUrl?: string; publishedAt?: string };
   },
   create: async (payload: { title: string; slug: string; category: 'update'|'post'; content: string; excerpt?: string; tags?: string[]; coverImageUrl?: string; status?: 'draft'|'published'; publishedAt?: string; }) => {
     const response = await api.post('/tech-blog', payload);
@@ -677,5 +677,13 @@ export const techBlogApi = {
   remove: async (id: string) => {
     const response = await api.delete(`/tech-blog/${id}`);
     return response.data;
+  },
+  uploadImage: async (file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    const response = await api.post('/tech-blog/upload', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data as { path: string; url: string };
   },
 };
