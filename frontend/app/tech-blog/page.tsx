@@ -39,15 +39,15 @@ export default async function TechBlogIndexPage() {
           </div>
         )}
         {posts.map((p) => (
-            <Link key={p.slug} href={`/tech-blog/${p.slug}`} className="group rounded-xl border border-gray-200 bg-white p-5 hover:border-gray-300 transition-colors shadow-sm hover:shadow">
-            <div className="text-xs text-indigo-600 font-medium uppercase tracking-wide">{p.category === 'update' ? '기능 업데이트' : '기술 포스팅'}</div>
-              <h2 className="mt-1 text-xl font-extrabold text-gray-900 group-hover:text-indigo-700 leading-tight">{p.title}</h2>
+            <Link key={p.slug} href={`/tech-blog/${p.slug}`} className="group rounded-2xl border border-gray-200 bg-white p-6 hover:border-gray-300 transition-all shadow-sm hover:shadow-md">
+            <div className="text-[11px] text-indigo-600 font-semibold uppercase tracking-wider">{p.category === 'update' ? '기능 업데이트' : '기술 포스팅'}</div>
+              <h2 className="mt-2 text-[20px] md:text-[22px] font-extrabold text-gray-900 group-hover:text-indigo-700 leading-snug">{p.title}</h2>
             {p.coverImageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.coverImageUrl} alt="cover" className="mt-2 h-36 w-full object-cover rounded-lg border" />
+                <img src={p.coverImageUrl} alt="cover" className="mt-3 h-40 w-full object-cover rounded-xl border" />
             )}
-              {p.excerpt && <p className="mt-2 text-[15px] text-gray-700 leading-7 line-clamp-2">{p.excerpt}</p>}
-            <div className="mt-2 text-xs text-gray-400">{p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('ko-KR') : ''}</div>
+              {p.excerpt && <p className="mt-3 text-[15px] text-gray-700 leading-7 line-clamp-2">{p.excerpt}</p>}
+            <div className="mt-3 text-[11px] text-gray-400">{p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('ko-KR') : ''}</div>
           </Link>
         ))}
         </div>

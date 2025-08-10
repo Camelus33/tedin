@@ -97,10 +97,92 @@ module.exports = {
   				700: '#047857',
   			}
   		},
-  		fontFamily: {
+    		fontFamily: {
   			sans: ['Pretendard Variable', ...fontFamily.sans],
   			serif: ['var(--font-noto-serif-kr)', ...fontFamily.serif],
   		},
+        typography: (theme) => ({
+          tech: {
+            css: {
+              '--tw-prose-body': theme('colors.gray.700'),
+              '--tw-prose-headings': theme('colors.gray.900'),
+              '--tw-prose-links': theme('colors.indigo.600'),
+              '--tw-prose-links-hover': theme('colors.indigo.700'),
+              '--tw-prose-bullets': theme('colors.indigo.600'),
+              '--tw-prose-captions': theme('colors.gray.500'),
+              '--tw-prose-code': theme('colors.gray.900'),
+              '--tw-prose-hr': theme('colors.gray.200'),
+
+              maxWidth: '100%',
+              h1: {
+                fontFamily: 'var(--font-noto-serif-kr), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+                letterSpacing: '-0.01em',
+              },
+              h2: {
+                fontFamily: 'var(--font-noto-serif-kr), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+                letterSpacing: '-0.01em',
+              },
+              h3: {
+                fontFamily: 'var(--font-noto-serif-kr), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+                letterSpacing: '-0.005em',
+              },
+              p: {
+                fontSize: '1.0625rem',
+                lineHeight: '1.9',
+              },
+              a: {
+                textDecoration: 'none',
+                fontWeight: '600',
+                borderBottom: `1px solid ${theme('colors.indigo.200')}`,
+                transition: 'color .2s ease, border-color .2s ease',
+                '&:hover': {
+                  color: theme('colors.indigo.700'),
+                  borderBottomColor: theme('colors.indigo.400'),
+                },
+              },
+              blockquote: {
+                fontStyle: 'normal',
+                borderLeftColor: theme('colors.indigo.200'),
+                backgroundColor: theme('colors.gray.50'),
+                padding: '0.5rem 1rem',
+                borderRadius: '0.5rem',
+              },
+              'code::before': { content: '""' },
+              'code::after': { content: '""' },
+              code: {
+                backgroundColor: theme('colors.gray.100'),
+                padding: '0.15rem 0.375rem',
+                borderRadius: '0.375rem',
+                fontWeight: '600',
+              },
+              pre: {
+                backgroundColor: '#0b1020',
+                color: '#e5e7eb',
+                borderRadius: '0.75rem',
+                padding: '1rem',
+                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.04)'
+              },
+              img: {
+                borderRadius: '0.75rem',
+                boxShadow: '0 1px 2px rgba(16,24,40,0.06), 0 1px 3px rgba(16,24,40,0.10)'
+              },
+              hr: {
+                marginTop: '3rem',
+                marginBottom: '3rem',
+              },
+              ul: {
+                marginTop: '1em',
+                marginBottom: '1em',
+              },
+              'ul > li::marker': {
+                color: theme('colors.indigo.600'),
+              },
+              strong: {
+                color: theme('colors.gray.900'),
+              }
+            }
+          }
+        }),
   				animation: {
 			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 			'bounce-gentle': 'bounce-gentle 3s ease-in-out infinite',
