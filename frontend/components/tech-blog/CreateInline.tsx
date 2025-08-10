@@ -21,6 +21,19 @@ export default function TechBlogCreateInline() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
 
+  const onUploadBodyImage = async (file: File) => {
+    try {
+      setBusy(true);
+      const { url } = await techBlogApi.uploadImage(file);
+      setForm(f => ({ ...f, content: `${f.content}\n\n![image](${url})` }));
+      setMsg('본문 이미지 업로드 완료');
+    } catch (err: any) {
+      setMsg(err?.message || '본문 이미지 업로드 실패');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!isAuthenticated || !allowed) return null;
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -132,6 +145,10 @@ export default function TechBlogCreateInline() {
               className="mt-1 w-full rounded border px-3 py-2 h-40"
               required
             />
+            <div className="mt-2 flex items-center gap-3">
+              <input type="file" accept="image/*" onChange={e=>{const file=e.target.files?.[0]; if(file) onUploadBodyImage(file)}} />
+              <span className="text-xs text-gray-500">본문에 이미지 삽입</span>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <button

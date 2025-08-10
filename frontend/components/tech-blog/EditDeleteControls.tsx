@@ -38,6 +38,19 @@ export default function EditDeleteControls({ id, initial }: Props) {
     }
   };
 
+  const onUploadBodyImage = async (file: File) => {
+    try {
+      setBusy(true);
+      const { url } = await techBlogApi.uploadImage(file);
+      setForm(f => ({ ...f, content: `${f.content}\n\n![image](${url})` }));
+      setMsg('본문 이미지 업로드 완료');
+    } catch (err: any) {
+      setMsg(err?.message || '본문 이미지 업로드 실패');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const onDelete = async () => {
     if (busy) return;
     if (!confirm('정말 삭제하시겠습니까?')) return;
@@ -83,6 +96,10 @@ export default function EditDeleteControls({ id, initial }: Props) {
           <div>
             <label className="block text-sm font-medium text-gray-700">내용</label>
             <textarea value={form.content} onChange={e=>setForm(f=>({ ...f, content: e.target.value }))} className="mt-1 w-full rounded border px-3 py-2 h-40" required />
+            <div className="mt-2 flex items-center gap-3">
+              <input type="file" accept="image/*" onChange={e=>{const file=e.target.files?.[0]; if(file) onUploadBodyImage(file)}} />
+              <span className="text-xs text-gray-500">본문에 이미지 삽입</span>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">커버 이미지 URL</label>
