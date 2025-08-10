@@ -294,7 +294,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full max-h-full bg-gray-900">
+    <div className="flex flex-col h-full max-h-full bg-secondary">
       {/* 헤더 */}
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         <div className="flex items-center gap-2">
@@ -429,7 +429,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => { if (hasDraggedRef.current) return; handleRecommendationClick(rec); }}
-                className="text-xs py-0.5 px-2 h-auto flex-shrink-0 whitespace-nowrap snap-start"
+                className="text-xs py-0.5 px-2 h-auto flex-shrink-0 whitespace-nowrap snap-start max-w-full sm:max-w-none sm:whitespace-nowrap truncate"
               >
                 💡 {rec.text}
               </Button>
@@ -439,7 +439,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       )}
 
       {/* 입력 영역 */}
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-4 border-t border-gray-700 sticky bottom-0 bg-secondary/95 backdrop-blur supports-[backdrop-filter]:bg-secondary/75">
         <div className="flex gap-2">
           <Input
             placeholder={

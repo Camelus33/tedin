@@ -206,7 +206,7 @@ const HybridSearchModal: React.FC<HybridSearchModalProps> = ({ isOpen, onClose }
           </DialogHeader>
 
           {/* 검색 입력 영역 */}
-          <div className="flex flex-col sm:flex-row gap-2 my-4">
+          <div className="flex flex-col sm:flex-row gap-2 my-4 sticky top-0 z-10 bg-secondary/95 backdrop-blur supports-[backdrop-filter]:bg-secondary/75 pt-4">
             <div className="relative flex-1">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input

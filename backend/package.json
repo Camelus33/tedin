@@ -29,6 +29,8 @@
     "_deprecated_expand-zengo": "echo \"⚠️ 이 스크립트는 더 이상 사용되지 않습니다. clean-zengo-data를 사용하세요.\" && exit 1"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.25.2",
+    "@google/generative-ai": "^0.21.0",
     "@prisma/client": "^5.11.0",
     "@types/web-push": "^3.6.4",
     "bcrypt": "^5.1.0",

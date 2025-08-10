@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { SearchContextService } from './SearchContextService';
 
 export interface LLMProvider {
@@ -210,26 +212,39 @@ export class LLMService {
     if (!request.userApiKey) {
       throw new Error('Claude API 키가 제공되지 않았습니다.');
     }
-    // const claude = new Anthropic({ apiKey: request.userApiKey });
-
-    try { // Claude 응답 생성 블록에 try-catch 추가
+    try {
+      const anthropic = new Anthropic({ apiKey: request.userApiKey });
       const context = SearchContextService.createOptimizedPrompt(
         request.searchContext.results,
         request.searchContext.query,
         request.message
       );
 
-      // 임시 구현 - 실제로는 Anthropic API 호출
-      const response = `[Claude 응답] ${request.message}에 대한 답변입니다. 검색된 ${request.searchContext.results.length}개의 메모를 참고하여 답변을 생성했습니다.`;
+      const model = request.llmModel || 'claude-3-5-sonnet-latest';
+      const completion = await anthropic.messages.create({
+        model,
+        max_tokens: 1024,
+        temperature: 0.7,
+        messages: [
+          {
+            role: 'user',
+            content: `당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.\n\n${context}`,
+          },
+        ],
+      } as any);
+
+      const text = (completion as any)?.content?.[0]?.text ||
+        (completion as any)?.content?.[0]?.type === 'text' && (completion as any)?.content?.[0]?.text ||
+        JSON.stringify(completion);
 
       return {
-        content: response,
-        model: request.llmModel,
-        provider: 'Claude'
+        content: typeof text === 'string' ? text : '[빈 응답]',
+        model,
+        provider: 'Claude',
+        usage: undefined,
       };
     } catch (error) {
       console.error(`Claude 응답 생성 오류:`, error);
-      // 오류 객체를 자세히 로깅
       console.error('Claude API 호출 오류 상세:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
       throw error;
     }
@@ -244,26 +259,41 @@ export class LLMService {
     if (!request.userApiKey) {
       throw new Error('Gemini API 키가 제공되지 않았습니다.');
     }
-    // const gemini = new GoogleAI({ apiKey: request.userApiKey });
-    
-    try { // Gemini 응답 생성 블록에 try-catch 추가
+    try {
+      const genAI = new GoogleGenerativeAI(request.userApiKey);
+      const model = request.llmModel || 'gemini-2.0-flash';
       const context = SearchContextService.createOptimizedPrompt(
         request.searchContext.results,
         request.searchContext.query,
         request.message
       );
 
-      // 임시 구현 - 실제로는 Google AI API 호출
-      const response = `[Gemini 응답] ${request.message}에 대한 답변입니다. 검색된 ${request.searchContext.results.length}개의 메모를 참고하여 답변을 생성했습니다.`;
+      // text-only generation using SDK
+      const generation = await genAI.getGenerativeModel({ model }).generateContent({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                text: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.\n\n' + context,
+              },
+            ],
+          },
+        ],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+      } as any);
+
+      const text = (generation as any)?.response?.text?.() ||
+                   (generation as any)?.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
+                   '[빈 응답]';
 
       return {
-        content: response,
-        model: request.llmModel,
-        provider: 'Gemini'
+        content: typeof text === 'string' ? text : '[빈 응답]',
+        model,
+        provider: 'Gemini',
       };
     } catch (error) {
       console.error(`Gemini 응답 생성 오류:`, error);
-      // 오류 객체를 자세히 로깅
       console.error('Gemini API 호출 오류 상세:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
       throw error;
     }
