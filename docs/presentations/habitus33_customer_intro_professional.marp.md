@@ -16,7 +16,7 @@ style: |
 
 ![bg](./assets/bg_cover.svg)
 ![bg](./assets/bg_cover.svg)
-# Prompt Free, Habitus33
+# Thought Pattern Mapping, Habitus33
 ![bg right:30% 70%](../../frontend/public/images/mascot/habitus-logo-seal.png)
 Professional Edition — 업무 지식을 AI‑준비 자산으로
 

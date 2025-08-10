@@ -19,7 +19,7 @@ style: |
 ---
 
 ![bg](./assets/bg_cover.svg)
-# Prompt Free, Habitus33
+# Thought Pattern Mapping, Habitus33
 ![bg right:30% 70%](../../frontend/public/images/mascot/habitus-logo-seal.png)
 개인 지식이 곧 AI의 문맥이 되는 학습 가속 플랫폼
 
@@ -36,7 +36,7 @@ style: |
 ![bg opacity:0.06](data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'><rect x='80' y='560' width='1440' height='260' rx='16' fill='%23ffffff' fill-opacity='0.06' stroke='%2393c5fd' stroke-dasharray='10,8' stroke-opacity='0.5' stroke-width='3'/><text x='150' y='700' fill='%2393c5fd' fill-opacity='0.8' font-size='28' font-family='Arial'>Screenshot placeholder</text></svg>)
 - 메모·하이라이트가 흩어져 실행 가능한 지식으로 승격되지 않음
 - AI가 나의 맥락을 모른 채 “일반적인” 답만 제공 → 시간 낭비
-- 프롬프트 공수와 자료 회수 비용이 큼 → 생산성 병목
+- 패턴 파악/자료 회수 비용이 큼 → 생산성 병목
 
 ---
 
@@ -44,7 +44,7 @@ style: |
 # 한 줄 해결
 <!-- Screenshot placeholder -->
 ![bg opacity:0.06](data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'><rect x='80' y='560' width='1440' height='260' rx='16' fill='%23ffffff' fill-opacity='0.06' stroke='%2374c0fc' stroke-dasharray='10,8' stroke-opacity='0.5' stroke-width='3'/><text x='150' y='700' fill='%2374c0fc' fill-opacity='0.8' font-size='28' font-family='Arial'>Screenshot placeholder</text></svg>)
-최소 입력으로 개인 맥락을 자동 수집·진화·단권화하고,
+최소 입력으로 메모/생각 흐름의 패턴을 매핑(TPM)하고,
 AI가 곧바로 이해·활용 가능한 지식 캡슐(AI‑Link)로 제공
 
 ---
@@ -147,7 +147,7 @@ AI‑Link 생성(공유/활용) → 하이브리드 검색/AI 대화 → 인지 
 ![bg opacity:0.06](data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'><rect x='80' y='560' width='1440' height='260' rx='16' fill='%23ffffff' fill-opacity='0.06' stroke='%2394a3b8' stroke-dasharray='10,8' stroke-opacity='0.5' stroke-width='3'/><text x='150' y='700' fill='%2394a3b8' fill-opacity='0.8' font-size='28' font-family='Arial'>Competitive diff visual</text></svg>)
 - 대체재: 일반 메모앱 + 범용 AI → 맥락 결핍, 수작업 많음
 - Habitus33: 단권화→AI‑Link 캡슐, 검색→대화 연결, 인지 피드백 루프 내장
-- 결과: 프롬프트‑프리 경험과 지속적 학습 가속
+- 결과: TPM 경험과 지속적 학습 가속
 
 ---
 

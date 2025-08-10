@@ -6,7 +6,7 @@ import InteractiveCanvas from '@/components/animations/InteractiveCanvas';
 import AppLogo from '@/components/common/AppLogo';
 
 const IntroSection = () => {
-  const headlineParts = ["Prompt-Free.", "One Capsule."];
+  const headlineParts = ["Thought Pattern Mapping.", "One Capsule."];
   
   const sentence = {
     hidden: { opacity: 1 },
