@@ -440,7 +440,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       )}
 
       {/* 입력 영역 */}
-      <div className="p-4 border-t border-gray-700 sticky bottom-0 bg-secondary/95 backdrop-blur supports-[backdrop-filter]:bg-secondary/75">
+      <div className="p-4 border-t border-gray-700 sticky bottom-0 bg-secondary/95 backdrop-blur supports-[backdrop-filter]:bg-secondary/75 sm:static sm:bg-transparent sm:backdrop-blur-0 sm:supports-[backdrop-filter]:bg-transparent">
         <div className="flex gap-2">
           <Input
             placeholder={

@@ -47,13 +47,9 @@ export class LLMService {
   async generateResponse(request: LLMRequest): Promise<LLMResponse> {
     const { llmProvider, userApiKey } = request;
 
-    if (!userApiKey) {
-      // 환경 변수에서 해당 provider의 기본 키를 찾습니다.
-      const defaultApiKey = this.getDefaultApiKey(llmProvider);
-      if (!defaultApiKey) {
-        throw new Error(`${llmProvider}에 대한 API 키가 제공되지 않았습니다.`);
-      }
-      request.userApiKey = defaultApiKey;
+    // 사용자 입력 키만 허용. 누락 시 에러 반환
+    if (!userApiKey || !String(userApiKey).trim()) {
+      throw new Error(`${llmProvider}에 대한 사용자 API 키가 필요합니다.`);
     }
 
     try {
@@ -299,11 +295,8 @@ export class LLMService {
     }
   }
 
-  private getDefaultApiKey(providerName: string): string | undefined {
-    const upper = providerName.toUpperCase();
-    if (upper === 'CHATGPT') return process.env.OPENAI_API_KEY;
-    if (upper === 'CLAUDE') return process.env.ANTHROPIC_API_KEY;
-    if (upper === 'GEMINI') return process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+  // 정책상 서버 기본키는 사용하지 않습니다. (사용자 제공 키 필수)
+  private getDefaultApiKey(_providerName: string): string | undefined {
     return undefined;
   }
 
