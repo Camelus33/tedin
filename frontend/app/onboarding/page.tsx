@@ -349,8 +349,8 @@ function WelcomeStep({ onPersonaSelect }: { onPersonaSelect: (persona: UserPerso
           </span>
         </h1>
         <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-8">
-          당신의 메모 속 반복되는 생각의 패턴을 분석해,
-          과거 실수를 줄이고 더 현명한 결정을 돕습니다.
+          메모를 살펴, 생각이 자주 가는 길(습관)을 알아봅니다.<br />
+          지금의 생각이 예전과 비슷하면, 그때 바로 안내해 드려요.
         </p>
       </motion.div>
 
@@ -403,79 +403,47 @@ function WelcomeStep({ onPersonaSelect }: { onPersonaSelect: (persona: UserPerso
 
 // Step 2: Persona-specific Value Proposition
 function PersonaValueStep({ persona, onNext }: { persona: UserPersona; onNext: () => void }) {
-  if (!persona) return null;
-  
-  const personaConfig = PERSONAS[persona];
-  
   return (
     <div className="text-center py-16">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="mb-12"
-      >
-        <div className="mb-6">
-          <personaConfig.icon className={`h-20 w-20 mx-auto bg-gradient-to-r ${personaConfig.color} bg-clip-text text-transparent`} />
-        </div>
-        <h1 className="text-3xl md:text-5xl font-bold mb-4">
-          <span className={`bg-gradient-to-r ${personaConfig.color} bg-clip-text text-transparent`}>
-            {personaConfig.title}
-          </span>
-        </h1>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            {personaConfig.description}
-          </p>
-      </motion.div>
-
-      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-gray-800/50 rounded-2xl p-8 max-w-4xl mx-auto mb-12"
+        transition={{ duration: 0.3 }}
+        className="mb-10"
       >
-        <h2 className="text-2xl font-semibold mb-6 text-white">
-          이런 경험을 하게 됩니다
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <h3 className={`text-lg font-semibold bg-gradient-to-r ${personaConfig.color} bg-clip-text text-transparent`}>
-              Before: 기존 AI 사용
-            </h3>
-            <div className="space-y-2 text-gray-400">
-              <p>• 매번 긴 프롬프트 작성</p>
-              <p>• 맥락 설명에 시간 소모</p>
-              <p>• 일반적인 답변만 제공</p>
-              <p>• 개인화된 조언 부족</p>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <h3 className={`text-lg font-semibold bg-gradient-to-r ${personaConfig.color} bg-clip-text text-transparent`}>
-              After: Habitus33 AI-Link
-            </h3>
-            <div className="space-y-2 text-gray-300">
-              <p>• 생각/학습 패턴 기반 맞춤 조언</p>
-              <p>• 당신의 맥락과 습관을 반영</p>
-              <p>• 개인화된 전문가 수준 조언</p>
-              <p>• 학습/연구/업무 스타일 반영</p>
-            </div>
-          </div>
-        </div>
+        <h1 className="text-3xl md:text-5xl font-bold mb-4">
+          <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+            무엇을 살펴보나요?
+          </span>
+        </h1>
+        <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-8">
+          복잡한 기술이 아닙니다. 일상의 기록에서 드러난
+          <span className="text-cyan-300"> ‘자주 하던 방식’</span>을 가볍게 보여드립니다.
+        </p>
       </motion.div>
+
+      <div className="max-w-3xl mx-auto mb-10">
+        <div className="flex flex-wrap gap-2 justify-center">
+          <span className="px-3 py-1 text-sm rounded-full bg-gray-700 text-gray-200">자주 하던 방식</span>
+          <span className="px-3 py-1 text-sm rounded-full bg-gray-700 text-gray-200">되풀이된 실수</span>
+          <span className="px-3 py-1 text-sm rounded-full bg-gray-700 text-gray-200">집중 잘 되는 시간</span>
+          <span className="px-3 py-1 text-sm rounded-full bg-gray-700 text-gray-200">나도 모르게 서두름</span>
+        </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50 mb-10">
+        <p className="text-gray-300">
+          지금 생각이 지난달과 비슷해요(<span className="text-cyan-300">비슷함 73%</span>).<br />
+          이번엔 먼저 <span className="text-cyan-300">근거</span>를 적어볼까요?
+        </p>
+      </div>
 
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
+        transition={{ delay: 0.2 }}
         onClick={onNext}
-        className={`
-          px-8 py-4 rounded-xl font-semibold text-white
-          bg-gradient-to-r ${personaConfig.color}
-          hover:scale-105 transition-transform
-          shadow-lg hover:shadow-xl
-        `}
+        className="px-8 py-4 rounded-xl font-semibold text-white bg-gradient-to-r from-cyan-500 to-purple-500 hover:scale-105 transition-transform shadow-lg hover:shadow-xl"
       >
         AMFA 프로세스 체험해보기
       </motion.button>
@@ -485,22 +453,37 @@ function PersonaValueStep({ persona, onNext }: { persona: UserPersona; onNext: (
 
 // Step 3: AMFA Introduction
 function AMFAIntroStep({ onNext }: { onNext: () => void }) {
+  const [selectedAmfaStep, setSelectedAmfaStep] = useState<string | null>(null);
   return (
     <div className="py-16">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-5xl font-bold mb-6">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl md:text-5xl font-bold mb-4">
           <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
             AMFA 프로세스
           </span>
         </h1>
-        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-          4단계로 당신만의 지식 캡슐을 만드는 여정을 시작합니다
+        <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-8">
+          4단계로 메모 속 생각의 패턴을 확보·연결·통합하여, AI‑Link로 즉시 활용합니다
         </p>
       </div>
 
-      <div className="mb-12">
-        <AMFACards onStepSelect={() => {}} />
+      {/* 경량 애니메이션(선택 사항) */}
+      <div className="mb-8">
+        <ArticleToCapsuleAnimation />
       </div>
+
+      <div className="mb-6">
+        <AMFACards onStepSelect={(id) => setSelectedAmfaStep(id)} />
+      </div>
+
+      {selectedAmfaStep && (
+        <div className="text-center mb-10 text-sm text-gray-300">
+          {selectedAmfaStep === 'atomic' && <span>패턴의 최소 단위를 확보하는 단계입니다.</span>}
+          {selectedAmfaStep === 'memo' && <span>메모 간 관계를 만들어 패턴을 드러냅니다.</span>}
+          {selectedAmfaStep === 'furnace' && <span>발견된 패턴을 통합·요약해 맥락을 강화합니다.</span>}
+          {selectedAmfaStep === 'ai' && <span>패턴이 담긴 컨텍스트를 AI‑Link로 즉시 활용합니다.</span>}
+        </div>
+      )}
 
       <div className="text-center">
         <motion.button
@@ -528,6 +511,8 @@ function InteractiveDemoStep({
 }) {
   const [demoStep, setDemoStep] = useState(1);
   const [generatedContent, setGeneratedContent] = useState('');
+  const [patternCount, setPatternCount] = useState(0);
+  const [showToast, setShowToast] = useState(false);
   
   if (!persona) return null;
   
@@ -536,6 +521,14 @@ function InteractiveDemoStep({
   const handleDemoComplete = () => {
     onDemoComplete({ hasTriedAMFA: true, hasCreatedAILink: true });
     onNext();
+  };
+  const advance = () => {
+    if (demoStep < 4) {
+      setDemoStep(prev => prev + 1);
+      setPatternCount(prev => prev + 1);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2500);
+    }
   };
   
   return (
@@ -553,7 +546,28 @@ function InteractiveDemoStep({
 
       <div className="max-w-3xl mx-auto">
         {/* Demo content area */}
-        <div className="bg-gray-800/50 rounded-2xl p-6 mb-8">
+        <div className="bg-gray-800/50 rounded-2xl p-6 mb-8 relative overflow-hidden">
+          {/* 비슷함 배지 */}
+          <div className="flex justify-between items-center mb-3">
+            <div className="text-sm text-gray-300">지금 생각과 예전 생각</div>
+            <span className="text-xs px-2 py-1 rounded-md bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
+              비슷함 { [73,76,81,78][Math.min(demoStep-1,3)] }%
+            </span>
+          </div>
+
+          {/* 토스트 */}
+          {showToast && (
+            <div className="absolute top-3 right-3 bg-gray-900/90 border border-cyan-500/30 text-xs text-gray-100 px-3 py-2 rounded-lg shadow-lg">
+              <div className="font-semibold text-cyan-300 mb-1">가장 비슷한 메모</div>
+              <div className="text-gray-200">“설명 없이 결론부터 말했어요. 오늘은 근거부터 적어보기.”</div>
+            </div>
+          )}
+          {/* 누적 패턴 카운터 */}
+          <div className="flex justify-end mb-2">
+            <span className="text-xs px-2 py-1 rounded-md bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
+              누적 패턴 {patternCount}
+            </span>
+          </div>
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-4 text-white">샘플 콘텐츠</h3>
             <div className="bg-gray-700/50 rounded-lg p-4 text-gray-300">
@@ -568,6 +582,9 @@ function InteractiveDemoStep({
                 1
               </div>
               <span className="text-white">Atomic Memo 생성 중...</span>
+              {demoStep >= 1 && (
+                <span className="text-xs text-cyan-300 ml-2">키워드 패턴 확보</span>
+              )}
             </div>
             
             {demoStep >= 2 && (
@@ -576,6 +593,7 @@ function InteractiveDemoStep({
                   2
                 </div>
                 <span className="text-white">Memo Evolution 진행 중...</span>
+                <span className="text-xs text-purple-300 ml-2">연결 패턴 형성</span>
               </div>
             )}
             
@@ -585,6 +603,7 @@ function InteractiveDemoStep({
                   3
                 </div>
                 <span className="text-white">Focused Note 완성 중...</span>
+                <span className="text-xs text-pink-300 ml-2">핵심 패턴 통합</span>
               </div>
             )}
             
@@ -594,6 +613,7 @@ function InteractiveDemoStep({
                   4
                 </div>
                 <span className="text-white">AI-Link 생성 완료!</span>
+                <span className="text-xs text-violet-300 ml-2">패턴 기반 조언 준비</span>
               </div>
             )}
           </div>
@@ -603,7 +623,7 @@ function InteractiveDemoStep({
         <div className="text-center">
           {demoStep < 4 ? (
             <button
-              onClick={() => setDemoStep(prev => prev + 1)}
+              onClick={advance}
               className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-semibold text-white transition-colors"
             >
               다음 단계 진행
@@ -624,133 +644,32 @@ function InteractiveDemoStep({
 
 // Step 5: Before/After Comparison
 function BeforeAfterComparisonStep({ persona, onNext }: { persona: UserPersona; onNext: () => void }) {
-  const [showAfter, setShowAfter] = useState(false);
-  
-  if (!persona) return null;
-  
-  // 페르소나별 비교 예시 데이터
-  const comparisonData = {
-    learner: {
-      question: "TOEFL Reading 점수를 향상시키고 싶어요",
-      generalAI: {
-        response: "영어 학습을 위해서는 다음과 같은 일반적인 방법들을 추천드립니다: 1) 매일 영어 기사 읽기, 2) 영어 드라마 시청, 3) 영어 회화 연습, 4) 단어장 암기...",
-        issues: ["일반적인 조언", "개인 맥락 반영 없음", "프롬프트 재작성 필요", "구체적 목표 무시"]
-      },
-      aiLink: {
-        response: "당신의 TOEFL 목표 점수 100점과 현재 Reading 섹션 약점을 고려할 때, 지난주 분석한 학습 패턴에서 보면 오후 2-4시가 집중력이 가장 높으니 이 시간에 Academic 지문 위주로 연습하세요. 특히 Inference 문제에서 자주 틀리는 패턴이 보이니...",
-        benefits: ["개인 목표 반영", "학습 패턴 분석 기반", "프롬프트 불필요", "약점 맞춤 조언"]
-      }
-    },
-    researcher: {
-      question: "AI 연구 논문의 방법론을 분석하고 싶어요",
-      generalAI: {
-        response: "AI 논문 분석을 위해서는 다음 단계를 따르세요: 1) Abstract 읽기, 2) Introduction 검토, 3) Methodology 분석, 4) Results 확인, 5) Discussion 검토...",
-        issues: ["일반적인 절차", "연구 분야 특성 무시", "개인 연구 맥락 부재", "표면적 분석"]
-      },
-      aiLink: {
-        response: "당신이 진행 중인 멀티모달 AI 연구와 연관하여, 이 논문의 attention mechanism이 당신의 vision-language 모델에 적용 가능할 것 같습니다. 특히 3.2절의 cross-modal attention 방식은 당신이 지난달 언급했던 alignment 문제 해결에 도움이 될 수 있어요...",
-        benefits: ["연구 분야 맞춤", "진행 중인 연구 연계", "구체적 적용 방안", "개인 연구 히스토리 반영"]
-      }
-    },
-    professional: {
-      question: "시장 분석 리포트를 요약해주세요",
-      generalAI: {
-        response: "시장 분석 리포트 요약 방법: 1) 핵심 지표 추출, 2) 트렌드 분석, 3) 경쟁사 현황 정리, 4) 기회 요인 식별, 5) 위험 요소 파악...",
-        issues: ["일반적인 방법론", "업종별 특성 무시", "회사 상황 미반영", "실행 가능성 부족"]
-      },
-      aiLink: {
-        response: "Q4 AI 도입 증가 트렌드가 당신 회사의 SaaS 전략에 직접적 영향을 미칠 것 같습니다. 특히 Enterprise 고객들의 AI 통합 요구가 30% 증가한 점을 고려하면, 다음 분기 로드맵에서 논의했던 AI 기능 우선순위를 재조정하는 것이 좋겠어요. 경쟁사 대비 6개월 앞서갈 기회입니다...",
-        benefits: ["회사 상황 맞춤", "기존 전략 연계", "구체적 액션 플랜", "경쟁 우위 관점"]
-      }
-    }
-  };
-  
-  const data = comparisonData[persona];
-  const personaConfig = PERSONAS[persona];
-  
   return (
     <div className="py-16">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold mb-6">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold mb-4">
           <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            차이를 직접 확인하세요
+            이렇게 안내해 드려요
           </span>
         </h1>
-        <p className="text-xl text-gray-300">
-          일반 AI와 AI-Link의 차이점을 비교해보세요
-        </p>
-        <div className="mt-4 p-3 bg-gray-800/30 rounded-lg inline-block">
-          <p className="text-gray-400 text-sm">질문 예시:</p>
-          <p className="text-white font-medium">"{data.question}"</p>
-        </div>
+        <p className="text-xl text-gray-300">상황에 맞춘 간단한 조언을 바로 띄워 드립니다.</p>
       </div>
 
-      <div className="max-w-6xl mx-auto mb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Before: General AI */}
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-red-400/30">
-            <h3 className="text-xl font-semibold mb-4 text-red-400">일반 AI 응답</h3>
-            <div className="space-y-4 text-gray-300">
-              <p className="text-sm bg-gray-700/50 p-4 rounded-lg leading-relaxed">
-                "{data.generalAI.response}"
-              </p>
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-red-300 mb-2">한계점:</p>
-                {data.generalAI.issues.map((issue, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-xs text-gray-400">
-                    <span className="text-red-400">×</span>
-                    <span>{issue}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* After: AI-Link */}
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-cyan-400/50">
-            <h3 className="text-xl font-semibold mb-4 text-cyan-400">
-              {personaConfig.title} 응답
-            </h3>
-            <div className="space-y-4 text-gray-300">
-              <p className="text-sm bg-cyan-900/20 p-4 rounded-lg leading-relaxed border border-cyan-500/20">
-                "{data.aiLink.response}"
-              </p>
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-cyan-300 mb-2">강점:</p>
-                {data.aiLink.benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-xs text-gray-300">
-                    <span className="text-cyan-400">✓</span>
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-gray-800/50 rounded-2xl p-5 border border-gray-700/50">
+          <div className="text-sm text-gray-400 mb-2">비슷함 81%</div>
+          <div className="text-white font-semibold mb-2">시험 전날 서두름</div>
+          <div className="text-sm text-gray-300">먼저 근거를 한 줄 적고, 그다음 결론을 적어 보세요.</div>
         </div>
-      </div>
-
-      {/* 추가 설명 */}
-      <div className="max-w-4xl mx-auto mb-12">
-        <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-2xl p-6 border border-cyan-400/30">
-          <h3 className="text-lg font-semibold mb-4 text-center">
-            <span className={`bg-gradient-to-r ${personaConfig.color} bg-clip-text text-transparent`}>
-              {personaConfig.subtitle}를 위한 AI-Link의 차별점
-            </span>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-            <div>
-              <h4 className="font-semibold text-cyan-400 mb-2">맥락 이해</h4>
-              <p className="text-gray-300 leading-relaxed">
-                당신의 {persona === 'learner' ? '학습 목표와 진도' : persona === 'researcher' ? '연구 분야와 진행 상황' : '업무 환경과 프로젝트'}를 완벽히 기억하고 반영합니다.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-purple-400 mb-2">개인화 조언</h4>
-              <p className="text-gray-300 leading-relaxed">
-                일반적인 답변이 아닌, 당신만을 위한 구체적이고 실행 가능한 조언을 제공합니다.
-              </p>
-            </div>
-          </div>
+        <div className="bg-gray-800/50 rounded-2xl p-5 border border-gray-700/50">
+          <div className="text-sm text-gray-400 mb-2">비슷함 76%</div>
+          <div className="text-white font-semibold mb-2">오후 2–4시 집중</div>
+          <div className="text-sm text-gray-300">이 시간엔 어려운 문제를 배치해 보세요.</div>
+        </div>
+        <div className="bg-gray-800/50 rounded-2xl p-5 border border-gray-700/50">
+          <div className="text-sm text-gray-400 mb-2">비슷함 74%</div>
+          <div className="text-white font-semibold mb-2">설명 없이 주장부터</div>
+          <div className="text-sm text-gray-300">왜 그런지 한 줄 근거를 먼저 적어 보세요.</div>
         </div>
       </div>
 
