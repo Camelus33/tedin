@@ -104,7 +104,6 @@ export class LLMService {
           instructions: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.',
           input: context,
           max_output_tokens: 1000,
-          temperature: 0.7,
         });
 
         // Responses API 결과에서 텍스트 추출 (SDK에 따라 output_text 가 제공될 수 있음)
