@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import axios from 'axios'
 
 export async function GET() {
   const baseUrl = 'https://habitus33.vercel.app'
@@ -9,6 +10,12 @@ export async function GET() {
       url: '',
       priority: '1.0',
       changefreq: 'daily',
+      lastmod: new Date().toISOString()
+    },
+    {
+      url: '/tech-blog',
+      priority: '0.7',
+      changefreq: 'weekly',
       lastmod: new Date().toISOString()
     },
     {
@@ -73,6 +80,18 @@ export async function GET() {
     }
   ]
 
+  // 동적: 기술블로그 글 목록을 백엔드에서 가져와 sitemap에 추가
+  let blogUrls: string[] = []
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    const { data } = await axios.get(`${apiBase}/api/tech-blog`, { timeout: 5000 })
+    if (Array.isArray(data)) {
+      blogUrls = data.map((p: any) => `/tech-blog/${p.slug}`)
+    }
+  } catch (_) {
+    blogUrls = []
+  }
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${staticPages.map(page => `
@@ -81,6 +100,13 @@ ${staticPages.map(page => `
     <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
+  </url>
+`).join('')}
+${blogUrls.map(slug => `
+  <url>
+    <loc>${baseUrl}${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 `).join('')}
 </urlset>`

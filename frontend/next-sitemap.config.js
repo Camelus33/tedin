@@ -6,6 +6,7 @@ module.exports = {
   exclude: [
     '/api/*',
     '/admin/*',
+    '/tech-blog/admin',
     '/auth/*',
     '/profile/*',
     '/dashboard/*',
@@ -30,6 +31,7 @@ module.exports = {
         disallow: [
           '/api/',
           '/admin/',
+          '/tech-blog/admin',
           '/_next/',
           '/auth/',
           '/profile/',

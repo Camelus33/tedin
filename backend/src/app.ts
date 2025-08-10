@@ -69,6 +69,7 @@ import summaryNoteRoutes from './routes/summaryNoteRoutes';
 import publicShareRoutes from './routes/publicShareRoutes';
 import analyticsRoutes from './routes/analytics';
 import diagnosticsRoutes from './routes/diagnostics';
+import techBlogRoutes from './routes/techBlog';
 
 import performanceRoutes from './routes/performance'; // 성능 모니터링 라우트 임포트
 import memoSearchRoutes from './routes/memoSearch'; // 메모카드 검색 라우트 임포트
@@ -179,6 +180,7 @@ app.use('/api/memo-search', memoSearchRoutes); // 메모카드 검색 라우트 
 app.use('/api/admin', adminRoutes); // 관리자 라우트 등록
 app.use('/api/ai-chat', aiChatRoutes); // AI 채팅 라우트 등록
 app.use('/api', warmupRoutes); // TS warmup routes
+app.use('/api', techBlogRoutes);
 
 // Cognitive metrics API route
 import cognitiveRoutes from './routes/cognitive';

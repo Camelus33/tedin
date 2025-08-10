@@ -1,0 +1,59 @@
+import React from 'react'
+import { techBlogApi } from '@/lib/api'
+
+type Props = { params: { slug: string } }
+
+export async function generateMetadata({ params }: Props) {
+  const slug = params.slug
+  try {
+    const post = await techBlogApi.get(slug)
+    return {
+      title: `${post.title} - Habitus33 기술블로그`,
+      description: post.excerpt || 'Habitus33 기술블로그 포스트',
+      alternates: { canonical: `/tech-blog/${slug}` },
+      openGraph: {
+        type: 'article',
+        title: post.title,
+        description: post.excerpt || '',
+        url: `https://habitus33.vercel.app/tech-blog/${slug}`,
+      },
+    }
+  } catch {
+    return { title: 'Habitus33 기술블로그', description: '기술블로그' }
+  }
+}
+
+export default async function TechBlogPostPage({ params }: Props) {
+  const post = await techBlogApi.get(params.slug)
+  return (
+    <main className="container mx-auto px-4 sm:px-6 py-8">
+      <article className="prose prose-indigo max-w-none">
+        <h1>{post.title}</h1>
+        {/* 단순 렌더링: 보안 위해 기본적으로 위험한 HTML은 사용하지 않음. 추후 마크다운/에디터 도입 시 파서 사용 */}
+        <p className="text-sm text-gray-500">{post.publishedAt ? new Date(post.publishedAt).toLocaleString('ko-KR') : ''}</p>
+        <div className="mt-6 whitespace-pre-wrap leading-7 text-gray-800">{post.content}</div>
+      </article>
+      {/* JSON-LD for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: post.title,
+            datePublished: post.publishedAt || undefined,
+            dateModified: post.publishedAt || undefined,
+            author: [{ '@type': 'Person', name: 'Habitus33' }],
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': `https://habitus33.vercel.app/tech-blog/${post.slug}`,
+            },
+            description: post.excerpt || '',
+          }),
+        }}
+      />
+    </main>
+  )
+}
+
+

@@ -655,3 +655,27 @@ export const inlineThreadApi = {
 };
 
 export default api; 
+
+// Tech Blog API
+export const techBlogApi = {
+  list: async (params?: { category?: 'update' | 'post' }) => {
+    const response = await api.get('/tech-blog', { params });
+    return response.data as Array<{ title: string; slug: string; category: 'update'|'post'; excerpt?: string; coverImageUrl?: string; publishedAt?: string; createdAt?: string }>;
+  },
+  get: async (slug: string) => {
+    const response = await api.get(`/tech-blog/${slug}`);
+    return response.data as { _id: string; title: string; slug: string; category: 'update'|'post'; content: string; excerpt?: string; tags?: string[]; publishedAt?: string };
+  },
+  create: async (payload: { title: string; slug: string; category: 'update'|'post'; content: string; excerpt?: string; tags?: string[]; coverImageUrl?: string; status?: 'draft'|'published'; publishedAt?: string; }) => {
+    const response = await api.post('/tech-blog', payload);
+    return response.data;
+  },
+  update: async (id: string, updates: Partial<{ title: string; slug: string; category: 'update'|'post'; content: string; excerpt?: string; tags?: string[]; coverImageUrl?: string; status?: 'draft'|'published'; publishedAt?: string; }>) => {
+    const response = await api.put(`/tech-blog/${id}`, updates);
+    return response.data;
+  },
+  remove: async (id: string) => {
+    const response = await api.delete(`/tech-blog/${id}`);
+    return response.data;
+  },
+};

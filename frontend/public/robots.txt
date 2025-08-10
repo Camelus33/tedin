@@ -8,6 +8,7 @@ Allow: /
 # Disallow sensitive areas
 Disallow: /api/
 Disallow: /admin/
+Disallow: /tech-blog/admin
 Disallow: /_next/
 Disallow: /auth/
 Disallow: /profile/
