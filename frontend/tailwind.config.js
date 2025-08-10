@@ -84,6 +84,7 @@ module.exports = {
     			},
           paper: {
             ivory: '#FBF7EF',
+            ivoryDark: '#F3E9D8',
           },
   			},
   			indigo: {
@@ -121,14 +122,20 @@ module.exports = {
               h1: {
                 fontFamily: 'var(--font-noto-serif-kr), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
                 letterSpacing: '-0.01em',
+                fontSize: '2.125rem',
+                lineHeight: '1.35',
               },
               h2: {
                 fontFamily: 'var(--font-noto-serif-kr), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
                 letterSpacing: '-0.01em',
+                fontSize: '1.75rem',
+                lineHeight: '1.4',
               },
               h3: {
                 fontFamily: 'var(--font-noto-serif-kr), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
                 letterSpacing: '-0.005em',
+                fontSize: '1.5rem',
+                lineHeight: '1.4',
               },
               p: {
                 fontSize: '1.0625rem',
