@@ -62,7 +62,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   const [selectedLLM, setSelectedLLM] = useState<LLMProvider | null>(null);
   const [showLLMSettings, setShowLLMSettings] = useState(false);
   const [llmProviders, setLlmProviders] = useState<LLMProvider[]>([
-    { name: 'ChatGPT', model: 'gpt-4', apiKey: '', isConfigured: false },
+    { name: 'ChatGPT', model: 'gpt-5', apiKey: '', isConfigured: false },
     { name: 'Claude', model: 'claude-3-sonnet', apiKey: '', isConfigured: false },
     { name: 'Gemini', model: 'gemini-pro', apiKey: '', isConfigured: false }
   ]);
