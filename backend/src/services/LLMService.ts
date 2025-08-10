@@ -95,6 +95,38 @@ export class LLMService {
         request.message
       );
 
+      const modelLower = (request.llmModel || '').toLowerCase();
+
+      // GPT-5 및 Responses API 전용 경로: max_output_tokens 사용
+      if (modelLower.startsWith('gpt-5')) {
+        const resp: any = await (openai as any).responses.create({
+          model: request.llmModel,
+          instructions: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.',
+          input: context,
+          max_output_tokens: 1000,
+          temperature: 0.7,
+        });
+
+        // Responses API 결과에서 텍스트 추출 (SDK에 따라 output_text 가 제공될 수 있음)
+        const responseText: string = resp?.output_text
+          || resp?.output?.[0]?.content?.[0]?.text
+          || resp?.choices?.[0]?.message?.content
+          || '응답을 생성할 수 없습니다.';
+
+        const usage = resp?.usage || resp?.response?.usage;
+        return {
+          content: responseText,
+          model: request.llmModel,
+          provider: 'ChatGPT',
+          usage: usage ? {
+            promptTokens: usage.input_tokens ?? usage.prompt_tokens,
+            completionTokens: usage.output_tokens ?? usage.completion_tokens,
+            totalTokens: usage.total_tokens,
+          } : undefined,
+        };
+      }
+
+      // 기본(gpt-4 등) 경로: 기존 Chat Completions API 유지
       const completion = await openai.chat.completions.create({
         model: request.llmModel,
         messages: [
