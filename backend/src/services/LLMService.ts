@@ -99,11 +99,19 @@ export class LLMService {
 
       // GPT-5 및 Responses API 전용 경로: max_output_tokens 사용
       if (modelLower.startsWith('gpt-5')) {
+        // 모범사례: 기본 2048, 환경변수로 조정 가능
+        const maxOut = Math.max(
+          256,
+          Math.min(
+            32768,
+            Number(process.env.OPENAI_RESP_MAX_OUTPUT_TOKENS || 2048)
+          )
+        );
         const resp: any = await (openai as any).responses.create({
           model: request.llmModel,
           instructions: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.',
           input: context,
-          max_output_tokens: 1000,
+          max_output_tokens: maxOut,
         });
 
         // Responses API 결과에서 텍스트 추출 (콘텐츠 블록만 엄격히 수집)
