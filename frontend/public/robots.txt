@@ -30,11 +30,11 @@ Allow: /terms-of-service/
 Allow: /marketing/
 Allow: /ir/
 Allow: /onboarding/
-Allow: /zengo/
-Allow: /ts/
+## 로그인 필요 섹션은 크롤링 금지 (zengo, ts)
 
 # Sitemap location
-Sitemap: https://habitus33.vercel.app/api/sitemap
+# 공식 사이트맵 경로를 정적 파일(/sitemap.xml)로 통일합니다.
+Sitemap: https://habitus33.vercel.app/sitemap.xml
 
 # Crawl delay (optional - adjust based on server capacity)
 Crawl-delay: 1
