@@ -64,20 +64,20 @@ export const WeekHourHeatmap: React.FC<WeekHourHeatmapProps> = ({ data, initialA
         </div>
         <div className="overflow-x-auto">
           <div className="min-w-[720px]">
-            <div className="grid grid-cols-24 gap-1">
+            <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(24, minmax(0, 1fr))' }}>
               {/* x labels */}
               {Array.from({ length: 24 }).map((_, h) => (
                 <div key={`x-${h}`} className="text-[10px] text-gray-500 text-center">{h}</div>
               ))}
             </div>
-            <div className="mt-1 grid grid-rows-7 gap-1">
+            <div className="mt-1 grid gap-1" style={{ gridTemplateRows: 'repeat(7, minmax(0, 1fr))' }}>
               {matrix.map((row, w) => (
-                <div key={`r-${w}`} className="grid grid-cols-24 gap-1">
+                <div key={`r-${w}`} className="grid gap-1" style={{ gridTemplateColumns: 'repeat(24, minmax(0, 1fr))' }}>
                   {row.map((v, h) => (
                     <button
                       key={`c-${w}-${h}`}
                       aria-label={`${weekdayLabel[w]} ${h}시: ${v}건`}
-                      className={`h-6 rounded ${classForValue(v, maxValue)} hover:outline hover:outline-1 hover:outline-indigo-300`}
+                      className={`h-6 rounded ${classForValue(v, maxValue)} border border-gray-800/70 hover:outline hover:outline-1 hover:outline-indigo-300`}
                       onClick={() => onSlotClick?.(w, h, action)}
                       title={`${weekdayLabel[w]} ${h}시: ${v}`}
                     />
