@@ -30,6 +30,8 @@ export default function UpgradePage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [expanded, setExpanded] = useState<Record<PricingPlan['id'], boolean>>({ free: false, pro: false, premium: false });
+  const [showFAQ, setShowFAQ] = useState<boolean>(false);
 
   const pricingPlans: PricingPlan[] = [
     {
@@ -143,7 +145,7 @@ export default function UpgradePage() {
   const currentSelectedPlanData = pricingPlans.find(p => p.id === selectedPlanId);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white p-4 sm:p-6">
       <div className="container mx-auto max-w-5xl">
         <button 
           onClick={() => router.back()} 
@@ -155,34 +157,34 @@ export default function UpgradePage() {
           뒤로
         </button>
 
-        <div className="pt-12 sm:pt-16 pb-10 text-center">
-          <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 tracking-tight">
+        <div className="pt-6 sm:pt-8 pb-4 text-center">
+          <h1 className="text-3xl sm:text-4xl font-extrabold mb-2 tracking-tight">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">
               Habitus33
             </span>
             {' '}플랜으로 잠재력 극대화
           </h1>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-            당신의 성장을 위한 최적의 플랜을 선택하고, 인지 능력과 독서 습관을 한 단계 끌어올리세요.
+          <p className="text-base text-slate-300 max-w-2xl mx-auto">
+            한 눈에 비교하고 바로 시작하세요.
           </p>
         </div>
 
-        <div className="flex justify-center mb-10">
-          <div className="bg-slate-800 p-1 rounded-lg shadow-md">
+        <div className="flex justify-center mb-6">
+          <div className="bg-slate-800 p-0.5 rounded-lg shadow-md">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-md text-sm font-medium transition-colors
+              className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-md text-sm font-medium transition-colors
                 ${billingCycle === 'monthly' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-700'}`}
             >
               월간 결제
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
-              className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-md text-sm font-medium transition-colors relative
+              className={`px-3 py-1.5 sm:px-5 sm:py-2 rounded-md text-sm font-medium transition-colors relative
                 ${billingCycle === 'yearly' ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-700'}`}
             >
               연간 결제
-              <span className="absolute -top-2.5 -right-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full shadow">
+              <span className="absolute -top-2 -right-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full shadow">
                 17% 할인!
               </span>
             </button>
@@ -196,7 +198,7 @@ export default function UpgradePage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+        <div className="grid md:grid-cols-3 gap-4 lg:gap-6 mb-6">
           {pricingPlans.map((plan) => {
             const isCurrentFreePlan = plan.id === 'free';
             const priceToShow = billingCycle === 'yearly' && !isCurrentFreePlan 
@@ -208,7 +210,7 @@ export default function UpgradePage() {
               <div 
                 key={plan.id}
                 className={`
-                  bg-slate-800/70 backdrop-blur-md rounded-xl shadow-2xl p-6 pt-8 border-2 transition-all duration-300 ease-in-out relative flex flex-col
+                  bg-slate-800/70 backdrop-blur-md rounded-xl shadow-xl p-4 pt-5 border-2 transition-all duration-300 ease-in-out relative flex flex-col
                   ${selectedPlanId === plan.id && !isCurrentFreePlan ? (plan.themeColor ? `border-${plan.themeColor}-500 shadow-${plan.themeColor}-500/30` : 'border-indigo-500 shadow-indigo-500/30') : 'border-slate-700'}
                   ${!isCurrentFreePlan ? 'hover:border-slate-600 cursor-pointer' : 'opacity-80'}
                   ${plan.isRecommended && !isCurrentFreePlan ? 'md:scale-105' : ''}
@@ -216,19 +218,19 @@ export default function UpgradePage() {
                 onClick={() => !isCurrentFreePlan && setSelectedPlanId(plan.id)}
               >
                 {plan.isRecommended && !isCurrentFreePlan && (
-                  <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-${plan.themeColor || 'indigo'}-500 to-${plan.themeColor || 'indigo'}-400 text-white px-4 py-1 rounded-full text-xs font-semibold shadow-lg`}>
+                  <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-${plan.themeColor || 'indigo'}-500 to-${plan.themeColor || 'indigo'}-400 text-white px-3 py-0.5 rounded-full text-xs font-semibold shadow-lg`}>
                     추천 플랜
                   </div>
                 )}
                 
-                <div className="text-center mb-6">
-                  {plan.icon && <plan.icon className={`w-10 h-10 mx-auto mb-3 ${plan.themeColor ? `text-${plan.themeColor}-400` : 'text-indigo-400'}`} />}
-                  <h3 className={`text-2xl font-bold mb-1 ${plan.themeColor ? `text-${plan.themeColor}-300` : 'text-indigo-300'}`}>{plan.name}</h3>
-                  <p className="text-slate-400 text-sm h-10 min-h-[2.5rem]">{plan.description}</p>
+                <div className="text-center mb-4">
+                  {plan.icon && <plan.icon className={`w-8 h-8 mx-auto mb-2 ${plan.themeColor ? `text-${plan.themeColor}-400` : 'text-indigo-400'}`} />}
+                  <h3 className={`text-xl font-bold mb-0.5 ${plan.themeColor ? `text-${plan.themeColor}-300` : 'text-indigo-300'}`}>{plan.name}</h3>
+                  <p className="text-slate-400 text-xs h-8 min-h-[2rem]">{plan.description}</p>
                 </div>
                 
-                <div className="mb-6 text-center">
-                  <span className="text-4xl font-extrabold text-white">
+                <div className="mb-4 text-center">
+                  <span className="text-3xl font-extrabold text-white">
                     {formatPrice(priceToShow || 0, '월')}
                   </span>
                   {!isCurrentFreePlan && (
@@ -243,18 +245,29 @@ export default function UpgradePage() {
                   )}
                 </div>
                 
-                <ul className="space-y-3 mb-8 text-sm flex-grow">
-                  {plan.features.map((feature, index) => (
+                <ul className="space-y-2 mb-4 text-sm flex-grow">
+                  {(expanded[plan.id] ? plan.features : plan.features.slice(0, Math.min(4, plan.features.length))).map((feature, index) => (
                     <li key={index} className="flex items-start">
                       <CheckCircleIcon className={`h-5 w-5 mr-2 mt-0.5 flex-shrink-0 ${plan.themeColor ? `text-${plan.themeColor}-500` : 'text-green-500'}`} />
                       <span className="text-slate-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
+                {plan.features.length > 4 && (
+                  <div className="-mt-2 mb-2 text-right">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setExpanded(prev => ({ ...prev, [plan.id]: !prev[plan.id] })); }}
+                      className="text-xs text-slate-400 hover:text-slate-200 underline"
+                    >
+                      {expanded[plan.id] ? '간단히 보기' : '자세히'}
+                    </button>
+                  </div>
+                )}
                 
                 <div className="mt-auto">
                   {isCurrentFreePlan ? (
-                    <div className="text-center py-3 px-4 rounded-lg bg-slate-700 text-slate-400 font-semibold text-sm">
+                    <div className="text-center py-2.5 px-3 rounded-lg bg-slate-700 text-slate-400 font-semibold text-sm">
                       {plan.actionText}
                     </div>
                   ) : (
@@ -264,7 +277,7 @@ export default function UpgradePage() {
                         setSelectedPlanId(plan.id);
                       }}
                       disabled={selectedPlanId === plan.id}
-                      className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors text-sm
+                      className={`w-full py-2.5 px-3 rounded-lg font-semibold transition-colors text-sm
                         ${selectedPlanId === plan.id 
                           ? (plan.themeColor ? `bg-${plan.themeColor}-600 text-white cursor-not-allowed` : 'bg-indigo-600 text-white cursor-not-allowed') 
                           : (plan.themeColor ? `bg-slate-700 hover:bg-${plan.themeColor}-700 text-slate-200` : 'bg-slate-700 hover:bg-indigo-700 text-slate-200')}
@@ -279,35 +292,39 @@ export default function UpgradePage() {
           })}
         </div>
         
-        <div className="text-center mb-12">
-            <h3 className="text-xl font-semibold mb-3 text-white">AI‑Link 캡슐마켓플레이스</h3>
-            <p className="text-slate-400 mb-4 max-w-lg mx-auto">
-              대용량 도메인 전문지식을 ::지식캡슐::로 응축하여 사고파는 공간입니다. 
-              나의 학습/연구 자산을 캡슐로 만들어 공유·판매하고, 다른 전문가의 캡슐을 구매해 
-              즉시 나의 워크플로우에 적용해 보세요. (구독 등급별 할인 혜택 적용)
-            </p>
+        <div className="text-center mb-4">
+          <p className="text-sm text-slate-300">
+            AI‑Link 캡슐마켓플레이스: 대용량 도메인 전문지식을 ::지식캡슐::로 거래하는 공간입니다.{' '}
             <Link href="/zengo/originals" legacyBehavior>
-              <a className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
-                캡슐마켓 둘러보기 &rarr;
-              </a>
+              <a className="underline text-indigo-300 hover:text-indigo-200">캡슐마켓 둘러보기 →</a>
             </Link>
+          </p>
         </div>
 
-        <div className="bg-slate-800/50 rounded-xl shadow-xl p-6 sm:p-8 mb-8">
-          <h3 className="text-2xl font-bold text-center mb-6 text-white">자주 묻는 질문</h3>
-          <div className="space-y-6 max-w-2xl mx-auto">
-            {[
-              { q: '언제든지 플랜을 변경하거나 구독을 취소할 수 있나요?', a: '네, 언제든지 플랜을 변경하거나 다음 결제 주기에 맞춰 구독을 취소할 수 있습니다. 남은 기간 동안은 현재 플랜의 혜택을 계속 이용할 수 있습니다.' },
-              { q: '연간 결제 시 할인이 적용되나요?', a: '네, 연간 결제를 선택하시면 월간 결제 대비 할인된 금액으로 1년 동안 서비스를 이용하실 수 있습니다. 각 플랜 카드에서 할인율을 확인하세요.' },
-              { q: '결제 수단은 어떤 것이 있나요?', a: '신용카드, 체크카드 등 다양한 결제 수단을 지원합니다. 자세한 내용은 결제 페이지에서 확인 가능합니다.' },
-              { q: '무료 플랜으로도 충분한가요?', a: '무료 플랜은 Habitus33의 핵심 기능을 경험하기에 충분합니다. 하지만 더 깊이 있는 분석, 무제한 기능, 독점 콘텐츠를 원하신다면 Pro 또는 Premium 플랜을 추천드립니다.' },
-            ].map((faq, index) => (
-              <div key={index} className="text-slate-300">
-                <h4 className="font-semibold text-lg mb-1 text-white">{faq.q}</h4>
-                <p className="text-sm leading-relaxed">{faq.a}</p>
-              </div>
-            ))}
-          </div>
+        <div className="bg-slate-800/50 rounded-xl shadow-xl p-4 sm:p-5 mb-6">
+          <button
+            type="button"
+            onClick={() => setShowFAQ(v => !v)}
+            className="w-full text-left text-white font-bold text-xl flex items-center justify-between"
+          >
+            <span>자주 묻는 질문</span>
+            <span className="text-slate-400 text-sm">{showFAQ ? '접기' : '펼치기'}</span>
+          </button>
+          {showFAQ && (
+            <div className="mt-4 space-y-4 max-w-2xl mx-auto">
+              {[
+                { q: '언제든지 플랜을 변경하거나 구독을 취소할 수 있나요?', a: '네, 언제든지 플랜을 변경하거나 다음 결제 주기에 맞춰 구독을 취소할 수 있습니다. 남은 기간 동안은 현재 플랜의 혜택을 계속 이용할 수 있습니다.' },
+                { q: '연간 결제 시 할인이 적용되나요?', a: '네, 연간 결제를 선택하시면 월간 결제 대비 할인된 금액으로 1년 동안 서비스를 이용하실 수 있습니다. 각 플랜 카드에서 할인율을 확인하세요.' },
+                { q: '결제 수단은 어떤 것이 있나요?', a: '신용카드, 체크카드 등 다양한 결제 수단을 지원합니다. 자세한 내용은 결제 페이지에서 확인 가능합니다.' },
+                { q: '무료 플랜으로도 충분한가요?', a: '무료 플랜은 Habitus33의 핵심 기능을 경험하기에 충분합니다. 하지만 더 깊이 있는 분석, 무제한 기능, 독점 콘텐츠를 원하신다면 Pro 또는 Premium 플랜을 추천드립니다.' },
+              ].map((faq, index) => (
+                <div key={index} className="text-slate-300">
+                  <h4 className="font-semibold text-base mb-1 text-white">{faq.q}</h4>
+                  <p className="text-sm leading-snug">{faq.a}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="text-center pt-2 pb-8">
@@ -316,7 +333,7 @@ export default function UpgradePage() {
             size="lg"
             onClick={handleSubscription}
             disabled={isProcessing || !selectedPlanId || selectedPlanId === 'free'}
-            className="w-full max-w-xs mx-auto shadow-lg hover:shadow-xl transform hover:scale-105 transition-all !text-base !py-3"
+            className="w-full max-w-xs mx-auto shadow-lg hover:shadow-xl transform hover:scale-105 transition-all !text-base !py-2.5"
           >
             {isProcessing ? (
                 <div className="flex items-center justify-center">
