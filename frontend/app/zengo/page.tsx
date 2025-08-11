@@ -1090,25 +1090,25 @@ export default function ZengoPage(
               {/* 왼쪽: 보드/언어 설정 */}
               <div>
                 {/* 보드 크기 선택 */}
-                <section className="settings-section mb-6 md:mb-4">
-                  <h3 className="text-xl font-semibold text-gray-700 mb-4 text-center md:text-left">메모리보드 크기 선택</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4" role="radiogroup" aria-label="레벨 선택">
+                <section className="settings-section mb-4 md:mb-3">
+                  <h3 className="text-lg md:text-xl font-semibold text-gray-700 mb-3 text-center md:text-left">메모리보드 크기 선택</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3" role="radiogroup" aria-label="레벨 선택">
                     {[{ size: 3, desc: '매일 꾸준히 해 보세요', IconComponent: UserIcon },
                       { size: 5, desc: '점점 더 쉬워집니다', IconComponent: ArrowTrendingUpIcon },
                       { size: 7, desc: '성취감을 느껴 보세요', IconComponent: RocketLaunchIcon }
                     ].map(level => (
                       <div
                         key={level.size}
-                        className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg flex flex-col items-center justify-center text-center ${selectedBoardSize === level.size ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
+                        className={`p-3 rounded-lg border transition-all duration-200 cursor-pointer bg-white hover:shadow-md flex flex-col items-center justify-center text-center ${selectedBoardSize === level.size ? 'border-primary-500 shadow-md ring-1 ring-primary-500/40' : 'border-gray-200 hover:border-gray-300'}`}
                         onClick={() => setSelectedBoardSize(level.size)}
                         onKeyPress={(e) => handleKeyPress(e, () => setSelectedBoardSize(level.size))}
                         role="radio"
                         aria-checked={selectedBoardSize === level.size}
                         tabIndex={0}
                       >
-                        <level.IconComponent className="w-10 h-10 text-primary-600 mb-2" />
-                        <h4 className="text-2xl font-bold text-gray-800 mb-1">{`${level.size}x${level.size}`}</h4>
-                        <p className="text-sm text-gray-600">{level.desc}</p>
+                        <level.IconComponent className="w-8 h-8 text-primary-600 mb-1" />
+                        <h4 className="text-xl font-bold text-gray-800 mb-0.5">{`${level.size}x${level.size}`}</h4>
+                        <p className="text-xs text-gray-600">{level.desc}</p>
                       </div>
                     ))}
                   </div>
