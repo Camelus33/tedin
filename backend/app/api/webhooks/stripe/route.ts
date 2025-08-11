@@ -79,7 +79,16 @@ export async function POST(req: NextRequest) {
       
       if (subscription.metadata?.userId) {
         const userId = subscription.metadata.userId;
-        const planId = subscription.items.data[0].price.nickname?.includes('yearly') ? 'yearly' : 'monthly';
+        // Prefer price.id mapping over nickname for reliability
+        const priceId = subscription.items.data[0]?.price?.id;
+        let planId: 'monthly' | 'yearly' = 'monthly';
+        if (priceId && priceId === (process.env.STRIPE_PRICE_YEARLY_ID as string)) {
+          planId = 'yearly';
+        } else if (priceId && priceId === (process.env.STRIPE_PRICE_MONTHLY_ID as string)) {
+          planId = 'monthly';
+        } else if (subscription.items.data[0]?.price?.recurring?.interval === 'year') {
+          planId = 'yearly';
+        }
         
         // Create a payment record for the renewal
         await db.payment.create({

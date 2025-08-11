@@ -111,15 +111,18 @@ export default function UpgradePage() {
         setIsProcessing(false);
         return;
       }
-      
-      const planIdentifier = `${planToSubscribe.id}-${billingCycle}`; 
-      
-      console.log('Subscribing to (API call placeholder):', planIdentifier);
-      toast.success(`${planToSubscribe.name} (${billingCycle === 'yearly' ? '연간' : '월간'}) 플랜 구독 절차를 시작합니다. (테스트 메시지)`);
-      
-      setTimeout(() => {
-        setIsProcessing(false);
-      }, 2000);
+
+      // Map UI selection to server-expected planId ('monthly' | 'yearly')
+      const planId = billingCycle === 'yearly' ? 'yearly' : 'monthly';
+
+      // Create Stripe Checkout session via Next API (Plan A)
+      const { checkoutUrl } = await paymentService.createCheckoutSession(planId);
+      if (!checkoutUrl) {
+        throw new Error('결제 페이지 주소를 받지 못했습니다. 잠시 후 다시 시도해주세요.');
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = checkoutUrl;
 
     } catch (err: any) {
       const errorMessage = err.message || '결제 처리 중 오류가 발생했습니다.';

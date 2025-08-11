@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAuth } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { stripe } from '@/lib/stripe';
+import { verifyAuth } from '../../../lib/auth';
+import { db } from '../../../lib/db';
+import { stripe } from '../../../lib/stripe';
 
-// Payment plans configuration
+// Payment plans configuration via env for safety
 const PAYMENT_PLANS = {
   monthly: {
-    id: 'price_monthly',
+    id: process.env.STRIPE_PRICE_MONTHLY_ID as string,
     interval: 'month',
   },
   yearly: {
-    id: 'price_yearly',
+    id: process.env.STRIPE_PRICE_YEARLY_ID as string,
     interval: 'year',
   },
-};
+} as const;
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { userId } = authResult;
-    const { planId, interval } = await req.json();
+    const { planId } = await req.json();
 
     // Validate the plan
     if (!planId || !['monthly', 'yearly'].includes(planId)) {
@@ -86,6 +86,11 @@ export async function POST(req: NextRequest) {
       metadata: {
         userId,
         planId,
+      },
+      subscription_data: {
+        metadata: {
+          userId,
+        },
       },
     });
 

@@ -191,7 +191,25 @@ export const paymentService = {
    * Create a checkout session for subscription
    */
   createCheckoutSession: async (planId: string): Promise<{ checkoutUrl: string }> => {
-    return apiClient.post('/payments/create-checkout', { planId });
+    // Use dedicated payments API base (Next API) per Plan A
+    const base = process.env.NEXT_PUBLIC_PAYMENTS_API_URL;
+    if (!base) {
+      throw new Error('결제 API 베이스 URL이 설정되지 않았습니다. NEXT_PUBLIC_PAYMENTS_API_URL 환경변수를 확인하세요.');
+    }
+    const token = (typeof window !== 'undefined') ? localStorage.getItem('token') : null;
+    const res = await fetch(`${base}/api/payments/create-checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ planId }),
+    });
+    if (!res.ok) {
+      const data = await (async () => { try { return await res.json(); } catch { return {}; } })();
+      throw new Error(data.message || '결제 세션 생성에 실패했습니다.');
+    }
+    return res.json();
   },
 
   /**
@@ -202,14 +220,47 @@ export const paymentService = {
     currentPlan?: string;
     expiresAt?: string;
   }> => {
-    return apiClient.get('/user/subscription');
+    const base = process.env.NEXT_PUBLIC_PAYMENTS_API_URL;
+    if (!base) {
+      throw new Error('결제 API 베이스 URL이 설정되지 않았습니다. NEXT_PUBLIC_PAYMENTS_API_URL 환경변수를 확인하세요.');
+    }
+    const token = (typeof window !== 'undefined') ? localStorage.getItem('token') : null;
+    const res = await fetch(`${base}/api/user/subscription`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      const data = await (async () => { try { return await res.json(); } catch { return {}; } })();
+      throw new Error(data.message || '구독 상태 조회에 실패했습니다.');
+    }
+    return res.json();
   },
 
   /**
    * Cancel a subscription
    */
   cancelSubscription: async (): Promise<{ success: boolean }> => {
-    return apiClient.post('/payments/cancel-subscription', {});
+    const base = process.env.NEXT_PUBLIC_PAYMENTS_API_URL;
+    if (!base) {
+      throw new Error('결제 API 베이스 URL이 설정되지 않았습니다. NEXT_PUBLIC_PAYMENTS_API_URL 환경변수를 확인하세요.');
+    }
+    const token = (typeof window !== 'undefined') ? localStorage.getItem('token') : null;
+    const res = await fetch(`${base}/api/payments/cancel-subscription`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({}),
+    });
+    if (!res.ok) {
+      const data = await (async () => { try { return await res.json(); } catch { return {}; } })();
+      throw new Error(data.message || '구독 취소에 실패했습니다.');
+    }
+    return res.json();
   },
 }; 
 
