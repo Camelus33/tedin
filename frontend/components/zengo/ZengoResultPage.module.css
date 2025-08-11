@@ -31,30 +31,23 @@
 
 .resultHeader h2 {
   margin: 0 0 0.5rem;
-  font-size: 2rem;
+  font-size: 2.1rem;
+  line-height: 1.25;
 }
 
 .resultHeader p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: #475569;
 }
 
-.excellent {
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
-}
+.excellent { background: linear-gradient(135deg, #16a34a, #065f46); color: #fff; border: none; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+.success  { background: linear-gradient(135deg, #2563eb, #0f172a); color: #fff; border: none; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+.fail     { background: linear-gradient(135deg, #ef4444, #7f1d1d); color: #fff; border: none; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+.default  { background: linear-gradient(135deg, #9e9e9e, #616161); color: #fff; }
 
-.success {
-  background: linear-gradient(135deg, #2196f3, #0d47a1);
-}
-
-.fail {
-  background: linear-gradient(135deg, #f44336, #b71c1c);
-}
-
-.default {
-  background: linear-gradient(135deg, #9e9e9e, #616161);
-}
+.excellent h2, .success h2, .fail h2, .default h2 { color: #fff; }
+.excellent p, .success p, .fail p, .default p { color: rgba(255,255,255,0.95); }
 
 .resultDetails {
   background-color: white;
@@ -83,13 +76,15 @@
 }
 
 .statLabel {
-  color: #475569;
-  font-weight: 500;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .statValue {
   font-weight: 600;
   color: #111827;
+  font-size: 1.05rem;
 }
 
 .correctValue {
@@ -145,7 +140,7 @@
 }
 
 .retryButton:hover {
-  background-color: #1976d2;
+  background-color: #e2e8f0;
 }
 
 .backButton {
@@ -154,7 +149,14 @@
 }
 
 .backButton:hover {
-  background-color: #757575;
+  background-color: #f1f5f9;
+}
+
+/* Keyboard accessibility: visible focus */
+.nextButton:focus-visible, .retryButton:focus-visible, .backButton:focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.35);
 }
 
 .errorResult {
