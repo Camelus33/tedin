@@ -1059,27 +1059,24 @@ export default function ZengoPage(
               
               {/* 정보 버튼들: 모바일에서만 상단에 노출 (데스크톱은 우측 컬럼에만) */}
               {!isDesktop && (
-                <div className="flex justify-center items-center space-x-4 mb-6">
+                <div className="flex justify-center items-center gap-3 mb-6">
                   <button
-                    className="text-primary-600 hover:text-primary-800 underline text-sm flex items-center space-x-1"
                     onClick={() => setUiState('intro')}
                     onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+                    className="group flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-50 to-purple-50 hover:from-cyan-100 hover:to-purple-100 border border-cyan-200 hover:border-cyan-300 transition-all duration-200"
+                    aria-label="게임 방법 자세히 보기"
                   >
-                    <span>📖</span>
-                    <span>게임 방법 자세히 보기</span>
+                    {/* 게임 방법 아이콘 */}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-cyan-600 group-hover:text-cyan-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 20l9-5-9-5-9 5 9 5z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 12l9-5-9-5-9 5 9 5z"/></svg>
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">게임 방법 자세히 보기</span>
                   </button>
-                  
-                  <div className="w-px h-4 bg-gray-300"></div>
-                  
                   <button 
                     onClick={() => setInfoModalOpen(true)}
                     className="group flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-50 to-purple-50 hover:from-cyan-100 hover:to-purple-100 border border-cyan-200 hover:border-cyan-300 transition-all duration-200"
                     aria-label="젠고가 키워주는 인지 능력 알아보기"
                   >
                     <BrainCircuit className="w-5 h-5 text-cyan-600 group-hover:text-cyan-700" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      뇌 훈련 효과 보기
-                    </span>
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">뇌 훈련 효과 보기</span>
                   </button>
                 </div>
               )}
@@ -1151,15 +1148,6 @@ export default function ZengoPage(
                   >
                     {loading ? '로딩 중...' : (!selectedBoardSize || !selectedLanguage ? '옵션을 모두 선택하세요' : 'ZenGo 시작')}
                   </button>
-                  <button
-                    className="back-button text-gray-500 hover:text-gray-700 underline text-sm"
-                    onClick={() => setUiState('intro')}
-                    onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
-                    aria-label="인트로 화면으로 돌아가기"
-                    tabIndex={0}
-                  >
-                    뒤로 가기
-                  </button>
                 </div>
                 )}
               </div>
@@ -1168,13 +1156,15 @@ export default function ZengoPage(
               {isDesktop && (
               <aside className="md:sticky md:top-6">
                 <div className="space-y-4">
-                  <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
                     <button
-                      className="text-primary-600 hover:text-primary-800 underline text-sm text-left"
                       onClick={() => setUiState('intro')}
                       onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+                      className="flex items-center justify-center px-4 py-3 rounded-lg bg-gradient-to-r from-cyan-50 to-purple-50 hover:from-cyan-100 hover:to-purple-100 border border-cyan-200 hover:border-cyan-300 transition-all duration-200"
+                      aria-label="게임 방법 자세히 보기"
                     >
-                      📖 게임 방법 자세히 보기
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-cyan-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 20l9-5-9-5-9 5 9 5z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 12l9-5-9-5-9 5 9 5z"/></svg>
+                      <span className="text-sm font-medium text-gray-700">게임 방법 자세히 보기</span>
                     </button>
                     <button 
                       onClick={() => setInfoModalOpen(true)}
@@ -1197,15 +1187,7 @@ export default function ZengoPage(
                     {loading ? '로딩 중...' : (!selectedBoardSize || !selectedLanguage ? '옵션을 모두 선택하세요' : '게임 시작')}
                   </button>
 
-                  <button
-                    className="w-full text-gray-500 hover:text-gray-700 underline text-sm"
-                    onClick={() => setUiState('intro')}
-                    onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
-                    aria-label="인트로 화면으로 돌아가기"
-                    tabIndex={0}
-                  >
-                    뒤로 가기
-                  </button>
+                  {/* 뒤로 가기 버튼 제거: 게임방법 버튼이 동일 역할 수행 */}
                 </div>
               </aside>
               )}
