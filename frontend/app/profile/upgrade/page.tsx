@@ -280,14 +280,15 @@ export default function UpgradePage() {
         </div>
         
         <div className="text-center mb-12">
-            <h3 className="text-xl font-semibold mb-3 text-white">ZenGo 오리지널 마켓플레이스</h3>
+            <h3 className="text-xl font-semibold mb-3 text-white">AI‑Link 캡슐마켓플레이스</h3>
             <p className="text-slate-400 mb-4 max-w-lg mx-auto">
-              모든 플랜의 사용자는 전문가들이 제작한 프리미엄 ZenGo 콘텐츠를
-              마켓플레이스에서 개별적으로 구매하여 이용할 수 있습니다. (구독 등급별 할인 혜택 적용)
+              대용량 도메인 전문지식을 ::지식캡슐::로 응축하여 사고파는 공간입니다. 
+              나의 학습/연구 자산을 캡슐로 만들어 공유·판매하고, 다른 전문가의 캡슐을 구매해 
+              즉시 나의 워크플로우에 적용해 보세요. (구독 등급별 할인 혜택 적용)
             </p>
             <Link href="/zengo/originals" legacyBehavior>
               <a className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
-                마켓플레이스 둘러보기 &rarr;
+                캡슐마켓 둘러보기 &rarr;
               </a>
             </Link>
         </div>
