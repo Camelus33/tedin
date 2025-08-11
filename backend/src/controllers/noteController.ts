@@ -7,6 +7,7 @@ import User from '../models/User';
 import mongoose from 'mongoose';
 import { updateFromNote, getBeliefNetwork } from '../services/BeliefNetworkService';
 import { PrismaClient } from '@prisma/client';
+import { embeddingService } from '../services/EmbeddingService';
 import ConceptScoreService from '../services/ConceptScoreService';
 import ThoughtEvent from '../models/ThoughtEvent';
 
@@ -237,6 +238,13 @@ export const updateNote = async (req: Request, res: Response) => {
         }
       }
     } catch {}
+
+    // 확장 임베딩 재생성: 본문/기억강화/링크 변경 시 최신화
+    try {
+      await embeddingService.generateEmbeddingForMemo(noteId);
+    } catch (e) {
+      console.warn('임베딩 재생성 실패(무시):', (e as any)?.message || e);
+    }
 
     // 최신 상태로 응답 (마일스톤 갱신이 있었을 경우 포함)
     const finalNote = await Note.findById(noteId).select('-__v');
@@ -588,6 +596,12 @@ export const addInlineThread = async (req: Request, res: Response) => {
     } catch {}
 
     res.status(201).json(savedThread);
+    // 인라인 쓰레드 생성 후 확장 임베딩 재생성
+    try {
+      await embeddingService.generateEmbeddingForMemo(noteId);
+    } catch (e) {
+      console.warn('임베딩 재생성 실패(무시):', (e as any)?.message || e);
+    }
   } catch (error) {
     console.error('인라인메모 쓰레드 생성 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
@@ -649,6 +663,12 @@ export const updateInlineThread = async (req: Request, res: Response) => {
     } catch {}
 
     res.status(200).json(updatedThread);
+    // 인라인메모 쓰레드 수정 후 확장 임베딩 재생성
+    try {
+      await embeddingService.generateEmbeddingForMemo(noteId);
+    } catch (e) {
+      console.warn('임베딩 재생성 실패(무시):', (e as any)?.message || e);
+    }
   } catch (error) {
     console.error('인라인메모 쓰레드 수정 중 오류 발생:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
@@ -708,6 +728,12 @@ export const deleteInlineThread = async (req: Request, res: Response) => {
       } catch {}
 
       res.status(200).json({ message: '인라인메모 쓰레드가 삭제되었습니다.' });
+      // 인라인메모 쓰레드 삭제 후 확장 임베딩 재생성
+      try {
+        await embeddingService.generateEmbeddingForMemo(noteId);
+      } catch (e) {
+        console.warn('임베딩 재생성 실패(무시):', (e as any)?.message || e);
+      }
     } catch (error) {
       await session.abortTransaction();
       throw error;

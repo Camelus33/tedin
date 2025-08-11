@@ -52,6 +52,63 @@ export class EmbeddingService {
   }
 
   /**
+   * Build extended embedding source from a Note document
+   * Includes: content + 4 evolution fields + recent inline threads (≤5) + related link reasons (≤5)
+   */
+  private buildNoteEmbeddingSource(note: any): string {
+    const lines: string[] = [];
+    const push = (label: string, value?: string | null, maxLen: number = 1000) => {
+      const v = (value || '').toString().trim();
+      if (!v) return;
+      lines.push(`\n[${label}]`);
+      lines.push(v.slice(0, maxLen));
+    };
+
+    // Core content
+    push('CONTENT', note?.content, 2000);
+
+    // Evolution fields
+    push('WHY', note?.importanceReason, 600);
+    push('CONTEXT', note?.momentContext, 600);
+    push('ASSOCIATION', note?.relatedKnowledge, 600);
+    push('IMAGE', note?.mentalImage, 600);
+
+    // Inline threads: use latest up to 5
+    const inlineThreads: any[] = Array.isArray(note?.inlineThreads)
+      ? [...note.inlineThreads]
+      : [];
+    const sortedThreads = inlineThreads
+      .map((t: any) => ({
+        content: (t?.content || '').toString(),
+        createdAt: new Date(t?.createdAt || 0).getTime(),
+      }))
+      .filter(t => t.content.trim().length > 0)
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 5);
+    if (sortedThreads.length) {
+      lines.push('\n[THREADS]');
+      for (const t of sortedThreads) {
+        lines.push('- ' + t.content.slice(0, 300));
+      }
+    }
+
+    // Related link reasons: up to 5
+    const linkReasons: string[] = Array.isArray(note?.relatedLinks)
+      ? note.relatedLinks
+          .map((l: any) => (l?.reason || '').toString().trim())
+          .filter((r: string) => r.length > 0)
+      : [];
+    if (linkReasons.length) {
+      lines.push('\n[LINK_REASONS]');
+      linkReasons.slice(0, 5).forEach((r: string) => lines.push('- ' + r.slice(0, 200)));
+    }
+
+    const text = lines.join('\n').trim();
+    // Cap overall size defensively
+    return text.slice(0, 8000);
+  }
+
+  /**
    * Generate embeddings for all memos without embeddings
    */
   async generateEmbeddingsForAllMemos() {
@@ -73,21 +130,10 @@ export class EmbeddingService {
 
       for (const memo of memosWithoutEmbeddings) {
         try {
-          // Generate embedding for memo content
-          const embedding = await this.generateEmbedding(memo.content);
-
-          // Update memo with embedding
-          await Note.findByIdAndUpdate(memo._id, {
-            embedding,
-            embeddingGeneratedAt: new Date(),
-          });
-
+          await this.generateEmbeddingForMemo(String(memo._id));
           processed++;
           console.log(`Processed memo ${processed}/${memosWithoutEmbeddings.length}: ${memo._id}`);
-
-          // Rate limiting: wait 100ms between requests
           await new Promise(resolve => setTimeout(resolve, 100));
-
         } catch (error) {
           errors++;
           console.error(`Error processing memo ${memo._id}:`, error);
@@ -107,12 +153,13 @@ export class EmbeddingService {
    */
   async generateEmbeddingForMemo(memoId: string) {
     try {
-      const memo = await Note.findById(memoId);
+      const memo = await Note.findById(memoId).populate({ path: 'inlineThreads', select: 'content createdAt' });
       if (!memo) {
         throw new Error('Memo not found');
       }
 
-      const embedding = await this.generateEmbedding(memo.content);
+      const source = this.buildNoteEmbeddingSource(memo);
+      const embedding = await this.generateEmbedding(source);
 
       await Note.findByIdAndUpdate(memoId, {
         embedding,
