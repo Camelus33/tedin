@@ -19,6 +19,7 @@ import { RootState } from '@/store/store';
 import CollectionCard from '@/components/CollectionCard';
 import AppLogo from '@/components/common/AppLogo';
 import NotificationBell from '@/components/common/NotificationBell';
+import Image from 'next/image';
 import HeaderClock from '@/components/common/HeaderClock';
 import { AcademicCapIcon, BookOpenIcon, BriefcaseIcon, SunIcon, PlusIcon, TagIcon, SquaresPlusIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -454,10 +455,12 @@ export default function MyversePage() {
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                 >
                   {user?.profileImage ? (
-                    <img 
+                    <Image 
                       src={user.profileImage} 
                       alt={user?.nickname || '사용자'}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="40px"
+                      className="object-cover"
                     />
                   ) : (
                     <span className={`text-white font-bold text-lg`}>

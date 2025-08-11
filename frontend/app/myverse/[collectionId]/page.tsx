@@ -8,6 +8,7 @@ import { toast } from 'react-hot-toast';
 import Button from '@/components/common/Button';
 import { PlusIcon, PencilSquareIcon, TrashIcon, ArrowLeftIcon, AcademicCapIcon, BookOpenIcon, BriefcaseIcon, SunIcon, TagIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, useParams } from 'next/navigation';
 import CollectionForm from '@/components/CollectionForm';
@@ -225,7 +226,9 @@ export default function Page() {
                 {/* blurred circle behind image/icon */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 md:w-48 md:h-48 rounded-full bg-white/40 blur-2xl z-0" />
                 {collectionMeta?.imageUrl ? (
-                  <img src={collectionMeta.imageUrl} alt="대표 이미지" className="relative w-28 h-28 md:w-36 md:h-36 object-cover rounded-full border-4 shadow-xl ring-4 ring-white/60" style={{ zIndex: 1 }} />
+                  <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 shadow-xl ring-4 ring-white/60" style={{ zIndex: 1 }}>
+                    <Image src={collectionMeta.imageUrl} alt="대표 이미지" fill sizes="(max-width: 768px) 7rem, 9rem" className="object-cover" />
+                  </div>
                 ) : (
                   <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full flex items-center justify-center shadow-xl" style={{ background: categoryMeta[collectionMeta?.type as keyof typeof categoryMeta]?.color || categoryMeta.default.color, opacity: 0.95, zIndex: 1 }}>
                     {React.createElement((categoryMeta[collectionMeta?.type as keyof typeof categoryMeta]?.Icon || categoryMeta.default.Icon), {
