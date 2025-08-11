@@ -334,33 +334,39 @@ export const zengo = {
     return response.data;
   },
   
-  // 젠고 활동 결과 조회
+  // 젠고 활동 결과 조회 (백엔드 개별 결과 엔드포인트 미정의 → 상세 조회로 대체)
   getResults: async (id: string) => {
-    const response = await api.get(`/zengo/${id}/results`);
+    const response = await api.get(`/zengo/${id}`);
     return response.data;
   },
   
-  // 젠고 세션 생성
-  create: async (data: { boardSize: number, moduleType: string }) => {
-    const response = await api.post('/zengo/start', data);
+  // 젠고 활동 생성 (백엔드: POST /api/zengo, body: { boardSize, modules })
+  create: async (data: { boardSize: '3x3'|'5x5'|'9x9'|'19x19'; modules: Array<{ name: string }> }) => {
+    const response = await api.post('/zengo', data);
+    return response.data;
+  },
+
+  // 젠고 활동 시작 (백엔드: PUT /api/zengo/:zengoId/start)
+  start: async (id: string) => {
+    const response = await api.put(`/zengo/${id}/start`);
     return response.data;
   },
   
-  // 젠고 세션 진행 중 모듈 결과 업데이트
-  updateModule: async (id: string, moduleResults: any) => {
-    const response = await api.put(`/zengo/${id}/module`, moduleResults);
+  // 젠고 세션 진행 중 모듈 결과 업데이트 (백엔드: PUT /api/zengo/:zengoId/module/:moduleName)
+  updateModule: async (id: string, moduleName: string, moduleResults: any) => {
+    const response = await api.put(`/zengo/${id}/module/${moduleName}`, moduleResults);
     return response.data;
   },
   
-  // 젠고 세션 완료
-  complete: async (id: string, results: any) => {
-    const response = await api.post(`/zengo/${id}/complete`, results);
+  // 젠고 세션 완료 (백엔드: PUT /api/zengo/:zengoId/complete)
+  complete: async (id: string, results: { overallScore: number }) => {
+    const response = await api.put(`/zengo/${id}/complete`, results);
     return response.data;
   },
   
-  // 젠고 세션 취소
+  // 젠고 세션 취소 (백엔드: PUT /api/zengo/:zengoId/cancel)
   cancel: async (id: string) => {
-    const response = await api.post(`/zengo/${id}/cancel`);
+    const response = await api.put(`/zengo/${id}/cancel`);
     return response.data;
   },
   

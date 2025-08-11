@@ -725,23 +725,13 @@ export const getProverbContent = async (req: Request, res: Response) => {
       }
     }
 
-    // 레벨과 언어에 맞는 콘텐츠를 MongoDB에서 랜덤으로 조회
-    const count = await ZengoProverbContent.countDocuments({ level: levelStr, language });
+    // 레벨과 언어에 맞는 콘텐츠를 MongoDB에서 무작위 1건 샘플링 ($sample) - 대용량에서도 일정 성능
+    const sampled = await ZengoProverbContent.aggregate([
+      { $match: { level: levelStr, language } },
+      { $sample: { size: 1 } }
+    ]);
     
-    if (count === 0) {
-      return res.status(404).json({ 
-        message: `No proverbs found for level ${levelStr} and language ${language}.`,
-        details: 'Database may need to be seeded with proverb data. Please run "npm run clean-zengo-data".'
-      });
-    }
-    
-    // 랜덤 인덱스 생성
-    const randomIndex = Math.floor(Math.random() * count);
-    
-    // MongoDB에서 레벨과 언어에 맞는 모든 속담을 가져와 랜덤으로 하나 선택
-    const randomProverb = await ZengoProverbContent.findOne({ level: levelStr, language })
-      .skip(randomIndex)
-      .exec();
+    const randomProverb = sampled && sampled.length > 0 ? sampled[0] : null;
     
     if (!randomProverb) {
       return res.status(404).json({ 
@@ -770,9 +760,12 @@ export const getProverbContent = async (req: Request, res: Response) => {
       
       validatePositions(newWordMappings, boardSize);
       
-      // 기존 콘텐츠 복사 후 새 매핑으로 업데이트
+      // 기존 콘텐츠 복사 후 새 매핑으로 업데이트 (aggregate 결과는 plain object)
+      const baseObj = typeof (randomProverb as any)?.toObject === 'function' 
+        ? (randomProverb as any).toObject() 
+        : randomProverb;
       proverbContent = {
-        ...randomProverb.toObject(),
+        ...baseObj,
         wordMappings: newWordMappings,
         updatedAt: new Date()
       };
@@ -781,7 +774,10 @@ export const getProverbContent = async (req: Request, res: Response) => {
     } else {
       // reshuffleWords가 false인 경우 기존 콘텐츠 그대로 반환
       console.log(`reshuffleWords=false: 선택된 랜덤 속담과 위치 유지`);
-      proverbContent = randomProverb.toObject();
+      // aggregate 결과는 plain object
+      proverbContent = typeof (randomProverb as any)?.toObject === 'function' 
+        ? (randomProverb as any).toObject() 
+        : randomProverb;
     }
     
     // 최종 응답 반환

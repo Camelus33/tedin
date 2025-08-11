@@ -89,6 +89,9 @@ const ZengoProverbContentSchema: Schema = new Schema(
   }
 );
 
+// Compound index to optimize queries filtering by level and language
+ZengoProverbContentSchema.index({ level: 1, language: 1 });
+
 // Pre-save hook could be used to ensure totalWords matches wordMappings.length if needed
 ZengoProverbContentSchema.pre<IZengoProverbContent>('save', function (next) {
     if (this.isModified('wordMappings') || this.isNew) {

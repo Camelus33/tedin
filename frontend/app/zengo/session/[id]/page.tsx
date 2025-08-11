@@ -272,14 +272,8 @@ export default function ZengoSession() {
     try {
       // API 서비스를 사용하여 세션 완료 처리
       try {
-        await zengoApi.complete(sessionId, {
-          score,
-          moduleResults: {
-            accuracy: score > 0 ? 100 : 0,
-            reactionTimeAvg: 60 - timeLeft,
-            score
-          }
-        });
+        // 표준 API에 맞춰 overallScore만 전달
+        await zengoApi.complete(sessionId, { overallScore: score });
       } catch (apiError) {
         console.log('API 접근 실패:', apiError);
         // 에러가 발생해도 결과 페이지로 이동
