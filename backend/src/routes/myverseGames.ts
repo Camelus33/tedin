@@ -10,7 +10,8 @@ import {
   getAccessibleGames,
   getGamesByType,
   saveMyVerseSessionResult,
-  getSentGames
+  getSentGames,
+  getNextGameInCollection
 } from '../controllers/myverseGameController';
 import { body, query, param } from 'express-validator';
 import validateRequest from '../middlewares/validateRequest';
@@ -38,6 +39,9 @@ router.get('/games/sent', getSentGames);
 router.get('/games/:gameId', getMyverseGame);
 router.put('/games/:gameId', updateMyverseGame);
 router.delete('/games/:gameId', deleteMyverseGame);
+
+// Next game API
+router.get('/games/:gameId/next', getNextGameInCollection);
 
 // Validation rules
 const gameIdValidation = [

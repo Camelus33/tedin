@@ -141,57 +141,16 @@ export default function Page() {
 
   // 현재 게임 기준으로 같은 콜렉션 내 다음 게임 실행
   const handleNextGame = async () => {
-    console.log('handleNextGame triggered'); // 함수 호출 확인
-    if (!gameData) {
-        console.log('handleNextGame: gameData is null');
-        return;
-    }
-    console.log('handleNextGame: Current gameData:', gameData);
-    
     try {
-      console.log(`handleNextGame: Fetching games for collection ${gameData.collectionId}`);
-      // 서버에서 컬렉션 내 게임 목록과 커서를 포함한 응답을 받아옵니다.
-      // TODO: Consider if pagination affects finding the next game. Fetch all?
-      const response = await myverseApi.getByCollection(gameData.collectionId);
-      console.log('handleNextGame: API response received:', response);
-      
-      // 응답 구조 확인 (games 배열이 있는지)
-      if (!response || !Array.isArray(response.games)) {
-        console.error('handleNextGame: Invalid API response structure. Expected { games: [...] }', response);
-        alert('다음 게임 목록을 가져오는 데 실패했습니다. (응답 오류)');
-        return;
-      }
-      
-      const games = response.games; // 배열 형태의 게임 목록
-      console.log('handleNextGame: Games in collection:', games);
-      
-      // 현재 게임의 인덱스를 찾아 다음 게임으로 이동합니다.
-      const idx = games.findIndex((g: { _id: string }) => g._id === gameId);
-      console.log(`handleNextGame: Current game index: ${idx} (for gameId: ${gameId})`);
-
-      // Check if the current game was found in the list
-      if (idx === -1) {
-        console.log('handleNextGame: Current game not found in the collection list!');
-        alert('현재 게임을 컬렉션 목록에서 찾을 수 없습니다.');
-        return; // Stop execution if current game is not found
-      }
-
-      // Calculate the next game index, wrapping around to the beginning if at the end
-      const nextIdx = (idx + 1) % games.length;
-      console.log(`handleNextGame: Calculated next game index: ${nextIdx}`);
-
-      // Ensure there's actually another game (list might contain only one game)
-      // Also ensures we don't navigate to the same game if there's only one
-      if (games.length > 1) { 
-          const nextGameId = games[nextIdx]._id;
-          console.log(`handleNextGame: Found next game (wrapping around if needed). Navigating to /myverse/games/${nextGameId}`);
-          router.push(`/myverse/games/${nextGameId}`);
+      const res = await myverseApi.getNext(gameId, true);
+      const nextId = res?.nextGameId;
+      if (nextId) {
+        router.push(`/myverse/games/${nextId}`);
       } else {
-          console.log('handleNextGame: No other games in this collection (only one game exists).');
-          alert('다른 게임이 없습니다.'); // Keep the same message for the user
+        alert('다른 게임이 없습니다.');
       }
     } catch (error) {
-      console.error('handleNextGame: 다음 게임 로드 오류', error);
+      console.error('handleNextGame: 오류', error);
       alert('다음 게임을 불러오는 중 오류가 발생했습니다.');
     }
   };
@@ -333,6 +292,7 @@ export default function Page() {
             onNextGame={handleNextGame}
             onRetrySameContent={handleRetrySameContent}
             onBackToIntro={handleBackToCollection}
+            mode="myverse"
           />
         </div>
       )}

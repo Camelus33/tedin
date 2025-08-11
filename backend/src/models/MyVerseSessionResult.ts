@@ -14,6 +14,11 @@ export interface IMyVerseSessionResult extends Document {
   completedSuccessfully: boolean;
   resultType: 'EXCELLENT' | 'SUCCESS' | 'FAIL'; // Result category
   score: number;
+  // optional, for deeper analytics
+  orderCorrect?: boolean;
+  placementOrder?: number[];
+  boardSize?: number;
+  detailedMetrics?: any;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,6 +38,10 @@ const MyVerseSessionResultSchema: Schema = new Schema(
     completedSuccessfully: { type: Boolean, required: true },
     resultType: { type: String, enum: ['EXCELLENT', 'SUCCESS', 'FAIL'], required: true },
     score: { type: Number, required: true, index: true },
+    orderCorrect: { type: Boolean, required: false },
+    placementOrder: { type: [Number], required: false, default: undefined },
+    boardSize: { type: Number, enum: [3,5,7], required: false },
+    detailedMetrics: { type: Schema.Types.Mixed, required: false },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields

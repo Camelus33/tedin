@@ -144,10 +144,9 @@ export const submitResultThunk = createAsyncThunk<
         const incorrectPlacementsCount = placedStones.filter(stone => !stone.correct).length;
         const orderCorrect = resultType === 'EXCELLENT'; // 어순 정확성은 결과 타입으로 판단
 
-        // --- 게임 타입 식별 --- 
-        // level 문자열에 '-myverse' 또는 '-custom'이 포함되어 있는지 확인 (더 나은 방법이 있다면 수정)
-        const isMyVerse = currentContent.level.includes('-myverse') || currentContent.level.includes('-custom');
-        console.log(`게임 타입 식별: isMyVerse=${isMyVerse} (level: ${currentContent.level})`);
+        // --- 게임 타입 식별 (플래그 기반) --- 
+        const isMyVerse = zengoProverb.isMyVerseGame === true;
+        console.log(`게임 타입 식별(플래그): isMyVerse=${isMyVerse}`);
 
         try {
             let responseData: ZengoSessionResult | IMyVerseSessionResult;
@@ -170,6 +169,17 @@ export const submitResultThunk = createAsyncThunk<
                     usedStonesCount,
                     completedSuccessfully,
                     resultType,
+                    // 확장 필드: 어순/순서·보드크기·상세
+                    orderCorrect,
+                    placementOrder: correctPlacedStones
+                      .filter(stone => stone.placementIndex !== undefined)
+                      .sort((a, b) => (a.placementIndex || 0) - (b.placementIndex || 0))
+                      .map(stone => {
+                        const index = currentContent.wordMappings.findIndex(wm =>
+                          wm.coords.x === stone.x && wm.coords.y === stone.y);
+                        return index;
+                      }),
+                    boardSize: currentContent.boardSize,
                 };
                 console.log('MyVerse 세션 결과 제출 데이터:', myVersePayload);
                 responseData = await myverseApi.submitResult(myVersePayload);
@@ -680,7 +690,8 @@ const zengoProverbSlice = createSlice({
       state.resultType = null;
       state.error = null;
       // ** Determine if it's a MyVerse game when content is set **
-      state.isMyVerseGame = action.payload.level.includes('-myverse') || action.payload.level.includes('-custom');
+      // 마이버스 여부는 collectionId 존재 여부로 판단(서버 기본 콘텐츠에는 없음)
+      state.isMyVerseGame = Boolean((action.payload as any).collectionId);
       console.log(`Content set: ID=${action.payload._id}, isMyVerse=${state.isMyVerseGame}`);
     },
     calculateAndSetScore(state) {
@@ -739,7 +750,7 @@ const zengoProverbSlice = createSlice({
         state.usedStonesCount = 0;
         state.startTime = null;
         state.error = null;
-        state.isMyVerseGame = action.payload.level.includes('-myverse') || action.payload.level.includes('-custom');
+        state.isMyVerseGame = Boolean((action.payload as any).collectionId);
         console.log(`Content loaded via Thunk: ID=${action.payload._id}, isMyVerse=${state.isMyVerseGame}`);
       })
       .addCase(fetchContentThunk.rejected, (state, action) => {
@@ -783,7 +794,7 @@ const zengoProverbSlice = createSlice({
         state.currentContent = action.payload;
         state.gameState = 'showing';
         state.error = null;
-        state.isMyVerseGame = action.payload.level.includes('-myverse') || action.payload.level.includes('-custom');
+        state.isMyVerseGame = Boolean((action.payload as any).collectionId);
         console.log(`Positions regenerated & content set: ID=${action.payload._id}, isMyVerse=${state.isMyVerseGame}`);
       })
       .addCase(regeneratePositionsThunk.rejected, (state, action) => {

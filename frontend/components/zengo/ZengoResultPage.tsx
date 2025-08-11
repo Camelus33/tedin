@@ -16,6 +16,8 @@ interface ZengoResultPageProps {
   onNextGame: () => void;
   onRetrySameContent: () => void;
   onBackToIntro: () => void;
+  // 모드 분기: 기본(zengo) 또는 마이버스(myverse)
+  mode?: 'zengo' | 'myverse';
 }
 
 const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
@@ -25,7 +27,8 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
   wordOrderCorrect,
   onNextGame,
   onRetrySameContent,
-  onBackToIntro
+  onBackToIntro,
+  mode = 'zengo'
 }) => {
   // Redux 상태에서 필요한 데이터 직접 가져오기
   const { 
@@ -42,8 +45,9 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
   const effectiveResultType = resultType || 'FAIL';
 
   // Progress tracking and nudges (must be declared before any early returns)
-  const recent = React.useMemo(() => getRecentResults(20), []);
+  const recent = React.useMemo(() => (mode === 'zengo' ? getRecentResults(20) : []), [mode]);
   React.useEffect(() => {
+    if (mode !== 'zengo') return; // 마이버스는 로컬 진행기록 기록 안 함
     if (!currentContent) return;
     addResultEntry({
       ts: Date.now(),
@@ -52,9 +56,11 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
       score: (result as any)?.score,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentContent?._id]);
+  }, [currentContent?._id, mode]);
 
-  const nudges = React.useMemo(() => computeNudges(getRecentResults(20)), [currentContent?._id, effectiveResultType]);
+  const nudges = React.useMemo(() => (
+    mode === 'zengo' ? computeNudges(getRecentResults(20)) : { readyFor5x5: false, suggest7x7: false }
+  ), [currentContent?._id, effectiveResultType, mode]);
 
   // 컴포넌트 마운트 시 디버깅 로그 출력
   React.useEffect(() => {

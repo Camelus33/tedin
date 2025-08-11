@@ -441,6 +441,10 @@ interface SubmitMyVerseResultPayload {
   timeTakenMs: number;
   completedSuccessfully: boolean;
   resultType: 'EXCELLENT' | 'SUCCESS' | 'FAIL';
+  // Optional analytics extensions
+  orderCorrect?: boolean;
+  placementOrder?: number[];
+  boardSize?: number;
 }
 
 // Zengo Proverb Game API (NEW)
@@ -552,6 +556,11 @@ export const myverseApi = {
   }) => {
     const response = await api.get('/myverse/games/sent', { params });
     return response.data; // { games: IMyverseGame[], nextCursor: string | null }
+  },
+  // Get next game within the same collection relative to current game
+  getNext: async (gameId: string, wrap: boolean = true): Promise<{ nextGameId?: string }> => {
+    const response = await api.get(`/myverse/games/${gameId}/next`, { params: { wrap } });
+    return response.data; // { nextGameId } or 204 No Content
   },
   /**
    * Submits the result of a MyVerse game session.

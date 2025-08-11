@@ -1028,6 +1028,7 @@ export default function ZengoPage(
                   dispatch(resetGame());
                   setUiState('selection');
                 }}
+                mode="zengo"
               />
             </div>
           );

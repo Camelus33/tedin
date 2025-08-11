@@ -409,6 +409,83 @@ export const getSentGames = async (req: Request, res: Response) => {
   }
 };
 
+// Get next game within the same collection relative to current game (stable order: updatedAt desc, _id desc)
+export const getNextGameInCollection = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user._id;
+    const { gameId } = req.params;
+    const wrap = String(req.query.wrap || 'true') === 'true';
+
+    if (!mongoose.isValidObjectId(gameId)) {
+      return res.status(400).json({ error: '유효하지 않은 게임 ID입니다.' });
+    }
+
+    const current = await MyverseGame.findById(gameId);
+    if (!current) return res.status(404).json({ error: 'Game not found' });
+
+    // Authorization check similar to getMyverseGame
+    const isOwner = current.owner.toString() === userId.toString();
+    const isShared = (current.sharedWith || []).map(id => id.toString()).includes(userId.toString());
+    const isPublic = current.visibility === 'public';
+    if (!(isOwner || isShared || isPublic)) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    // Access filter: user can see next among games they can access
+    const accessFilter: any = {
+      $or: [
+        { owner: userId },
+        { sharedWith: userId },
+        { visibility: 'public' }
+      ]
+    };
+
+    // Cursor condition for tuple (updatedAt desc, _id desc): next means older than current
+    const cursorCondition = {
+      $or: [
+        { updatedAt: { $lt: current.updatedAt } },
+        { updatedAt: current.updatedAt, _id: { $lt: current._id } }
+      ]
+    };
+
+    const baseQuery: any = {
+      collectionId: current.collectionId,
+      ...accessFilter
+    };
+
+    const nextGame = await MyverseGame.find({ ...baseQuery, ...cursorCondition })
+      .sort({ updatedAt: -1, _id: -1 })
+      .limit(1);
+
+    if (nextGame.length > 0) {
+      return res.status(200).json({ nextGameId: nextGame[0]._id });
+    }
+
+    if (!wrap) {
+      return res.status(204).send(); // No Content
+    }
+
+    // Wrap-around: return the first game in the ordering
+    const firstGame = await MyverseGame.find(baseQuery)
+      .sort({ updatedAt: -1, _id: -1 })
+      .limit(1);
+
+    if (firstGame.length === 0) {
+      return res.status(204).send();
+    }
+
+    // If only one game exists (itself), signal no-next
+    if (firstGame[0]._id.toString() === current._id.toString()) {
+      return res.status(204).send();
+    }
+
+    return res.status(200).json({ nextGameId: firstGame[0]._id });
+  } catch (error) {
+    console.error('Error fetching next game in collection:', error);
+    res.status(500).json({ error: 'Failed to fetch next game' });
+  }
+};
+
 /**
  * Saves the result of a MyVerse game session.
  */
@@ -430,7 +507,11 @@ export const saveMyVerseSessionResult = async (req: Request, res: Response) => {
     incorrectPlacements,
     timeTakenMs,
     completedSuccessfully,
-    resultType // EXCELLENT, SUCCESS, FAIL
+    resultType, // EXCELLENT, SUCCESS, FAIL
+    orderCorrect,
+    placementOrder,
+    boardSize,
+    detailedMetrics
   } = req.body;
 
   if (!userId) {
@@ -467,6 +548,10 @@ export const saveMyVerseSessionResult = async (req: Request, res: Response) => {
     completedSuccessfully,
     resultType: resultType || (completedSuccessfully ? 'SUCCESS' : 'FAIL'),
     score,
+    orderCorrect,
+    placementOrder,
+    boardSize,
+    detailedMetrics,
   });
 
   try {
@@ -511,6 +596,13 @@ export const saveMyVerseSessionResult = async (req: Request, res: Response) => {
     const timePenalty = Math.max(0, Math.floor(timeTakenMs / 1000 / 10));
     baseScore -= timePenalty;
     const finalResultType = resultType || (completedSuccessfully ? 'SUCCESS' : 'FAIL');
+    // Board size weight
+    const sizeWeight = boardSize === 7 ? 1.15 : boardSize === 5 ? 1.07 : 1.0;
+    baseScore *= sizeWeight;
+    // Order bonus
+    if (orderCorrect === true) {
+      baseScore += 15;
+    }
     if (finalResultType === 'EXCELLENT') {
       baseScore += 20; // Bonus for perfect play
     }
