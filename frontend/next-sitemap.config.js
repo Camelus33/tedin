@@ -58,6 +58,26 @@ module.exports = {
       'https://habitus33.vercel.app/sitemap.xml'
     ]
   },
+  // 동적 블로그 슬러그를 사이트맵에 포함
+  additionalPaths: async (config) => {
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const res = await fetch(`${apiBase}/api/tech-blog`, { headers: { 'Content-Type': 'application/json' } })
+      const data = await res.json()
+      if (!Array.isArray(data)) return []
+      const now = new Date().toISOString()
+      return data
+        .filter((p) => p && typeof p.slug === 'string' && p.slug.trim().length > 0)
+        .map((p) => ({
+          loc: `/tech-blog/${p.slug}`,
+          changefreq: 'weekly',
+          priority: 0.7,
+          lastmod: now,
+        }))
+    } catch (_) {
+      return []
+    }
+  },
   changefreq: 'daily',
   priority: 0.7,
   sitemapSize: 5000
