@@ -8,6 +8,9 @@ import OverallScoreCard from '@/components/analytics/OverallScoreCard';
 import StrengthsWeaknessesDisplay from '@/components/analytics/StrengthsWeaknessesDisplay';
 import ReflectionJournal from '@/components/analytics/ReflectionJournal';
 import PersonalizedSuggestions from '@/components/analytics/PersonalizedSuggestions';
+import WeekHourHeatmap from '@/components/analytics/WeekHourHeatmap';
+import FastRhythmTop from '@/components/analytics/FastRhythmTop';
+import KeywordChips from '@/components/analytics/KeywordChips';
 import { ExtendedCognitiveMetrics, extendedMetricDisplayNames } from '../../src/types/cognitiveMetricsExtended';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { apiClient } from '@/lib/apiClient';
@@ -34,13 +37,12 @@ export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<string>('3m');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [aggregate, setAggregate] = useState<null | {
-    rangeDays: number;
-    samples: { notes: number; events: number };
-    speed: { mean: number; std: number; count: number };
-    curvature: { mean: number; std: number; count: number };
-    rhythm: { intervalMeanMin: number; intervalStdMin: number; intervalCV: number; burstinessIndex: number; count: number };
-    timeOfDay: { byHour: number[]; byWeekday: number[] };
+  const [aggregate, setAggregate] = useState<null | any>(null);
+  const [v2, setV2] = useState<null | {
+    weekdayHourHeatmap: Record<'all' | 'create_note' | 'add_thought' | 'evolve_memo' | 'add_connection', number[][]>;
+    fastestRhythmTop: Array<{ weekday: number; hour: number; medianIntervalMin: number; count: number }>;
+    topKeywords7d: Array<{ term: string; count: number; deltaPct: number }>;
+    streakDays: number;
   }>(null);
 
   // 백엔드 API에서 가져온 데이터를 저장하는 상태
@@ -198,12 +200,21 @@ export default function AnalyticsPage() {
   const fetchAggregate = async () => {
     try {
       const days = 30; // 기본 30일
-      const res = await apiClient.get(`/analytics/aggregate?days=${days}`);
+      const res = await apiClient.get(`/analytics/aggregate?days=${days}&prevDays=30&topK=5`);
       setAggregate(res || null);
+      if (res && typeof res === 'object') {
+        const { weekdayHourHeatmap, fastestRhythmTop, topKeywords7d, streakDays } = res as any;
+        if (weekdayHourHeatmap && fastestRhythmTop && topKeywords7d) {
+          setV2({ weekdayHourHeatmap, fastestRhythmTop, topKeywords7d, streakDays });
+        } else {
+          setV2(null);
+        }
+      }
     } catch (e) {
       // 집계는 부가 정보이므로 에러시 무시하고 넘어갑니다
       console.warn('aggregate fetch failed', e);
       setAggregate(null);
+      setV2(null);
     }
   };
 
@@ -260,7 +271,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="container p-4 mx-auto max-w-6xl">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800 quiet-victory">인지 능력 분석</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-100">메모 패턴 분석</h1>
       
       <div className="mb-8">
         <Tabs value={timeRange} onValueChange={handleTimeRangeChange}>
@@ -272,6 +283,71 @@ export default function AnalyticsPage() {
           </TabsList>
         </Tabs>
       </div>
+      {/* Three-card impact view (v2) */}
+      {v2 && (
+        <div className="grid grid-cols-1 gap-6 mb-10">
+          {/* Card A: 생산선 현황 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>생산성 현황</CardTitle>
+              <CardDescription>요일×시간대별 메모생성·생각추가·기억강화·지식연결</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <WeekHourHeatmap
+                data={v2.weekdayHourHeatmap}
+                streakDays={v2.streakDays}
+                onSlotClick={(w,h) => {
+                  const params = new URLSearchParams();
+                  params.set('openSimilarPanel','1');
+                  params.set('slot', `${w}-${h}`);
+                  window.location.href = `/memo/new?${params.toString()}`;
+                }}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Card B: 가장 빠른 리듬 Top3 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>가장 빠른 리듬 Top3</CardTitle>
+              <CardDescription>기존 콘텐츠에 추가가 가장 빨랐던 시간대</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FastRhythmTop
+                items={v2.fastestRhythmTop}
+                onSchedule={(w,h) => {
+                  alert(`${['일','월','화','수','목','금','토'][w]} ${h}시에 알림 일정을 추가해보세요.`);
+                }}
+                onWriteNow={(w,h) => {
+                  const params = new URLSearchParams();
+                  params.set('openSimilarPanel','1');
+                  params.set('slot', `${w}-${h}`);
+                  window.location.href = `/memo/new?${params.toString()}`;
+                }}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Card C: 최근 7일 관심사 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>최근 7일 관심사</CardTitle>
+              <CardDescription>가장 많이 등장한 키워드</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <KeywordChips
+                items={v2.topKeywords7d}
+                onClick={(term) => {
+                  const params = new URLSearchParams();
+                  params.set('openSimilarPanel','1');
+                  params.set('seed', term);
+                  window.location.href = `/memo/new?${params.toString()}`;
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
       
       {/* 데이터가 없는 경우 */}
       {!overallScore && !percentileRanks && !timeSeriesData ? (
@@ -439,7 +515,7 @@ export default function AnalyticsPage() {
                       const maxHour = Math.max(...aggregate.timeOfDay.byHour, 1);
                       return (
                         <div className="space-y-2">
-                          {aggregate.timeOfDay.byHour.map((v, i) => {
+                          {aggregate.timeOfDay.byHour.map((v: number, i: number) => {
                             const pct = Math.round((v / maxHour) * 100);
                             return (
                               <div key={i} className="flex items-center gap-3">
@@ -464,7 +540,7 @@ export default function AnalyticsPage() {
                       const maxW = Math.max(...aggregate.timeOfDay.byWeekday, 1);
                       return (
                         <div className="space-y-2">
-                          {aggregate.timeOfDay.byWeekday.map((v, i) => {
+                          {aggregate.timeOfDay.byWeekday.map((v: number, i: number) => {
                             const pct = Math.round((v / maxW) * 100);
                             return (
                               <div key={i} className="flex items-center gap-3">

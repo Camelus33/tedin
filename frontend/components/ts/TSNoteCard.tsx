@@ -390,6 +390,7 @@ export default function TSNoteCard({
   // 유사 메모 패널 상태
   const [similarOpen, setSimilarOpen] = useState(false);
   const [similarItems, setSimilarItems] = useState<Array<{ _id: string; bookId?: string; content: string; createdAt?: string; score?: number }>>([]);
+  const [similarQuery, setSimilarQuery] = useState<string>('');
 
   const tabList = [
     { key: 'importanceReason', label: '적은 이유' },
@@ -407,6 +408,38 @@ export default function TSNoteCard({
   useEffect(() => {
     setIsMounted(true);
     isMountedRef.current = true;
+    // Deep-link handler: openSimilarPanel/seed/slot via URLSearchParams
+    try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const open = params.get('openSimilarPanel');
+        const seed = params.get('seed');
+        if (open === '1') {
+          setSimilarOpen(true);
+        }
+        if (seed && seed.length > 0) {
+          setSimilarQuery(seed);
+          // Trigger a lightweight similar search when seed exists
+          const token = localStorage.getItem('token');
+          const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          if (token) {
+            fetch(`${base}/api/analytics/similar`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ text: seed, limit: 5 }),
+            })
+              .then(r => r.json())
+              .then((data) => {
+                const results = Array.isArray(data?.results) ? data.results : [];
+                if (results.length) {
+                  setSimilarItems(results.slice(0,5));
+                  setSimilarOpen(true);
+                }
+              }).catch(() => {});
+          }
+        }
+      }
+    } catch {}
     
     return () => {
       setIsMounted(false);

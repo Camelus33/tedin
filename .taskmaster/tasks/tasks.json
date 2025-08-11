@@ -3921,5 +3921,53 @@
       "updated": "2025-08-08T13:36:33.236Z",
       "description": "TS warmup redesign: 3-mode (breathing, peripheral, text-flow), each <= 20s, with measurable, reusable metrics."
     }
+  },
+  "feature-analytics-memo-patterns": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Three-card Memo Analytics (Action Heatmap, Fast Rhythm Top3, Weekly Keywords)",
+        "description": "Deliver one-screen analytics answering exactly three questions: when do I produce (by action), where am I fastest (Top3 rhythm slots), and what am I into now (weekly keywords). All actions deep-link into writing.",
+        "details": "Scope: Backend v2 fields on /api/analytics/aggregate; Frontend 3-card layout; TSNoteCard deep link to auto-open similar memo mini panel; alarms/calendar optional.\nAcceptance:\n- Card A: Tabs All/생각추가/기억강화/지식연결; 7×24 heatmap; Top3 chips; streakDays badge; grey low-sample.\n- Card B: Top3 slots with median interval minutes and n; CTA schedule + write-now.\n- Card C: 3–5 keywords with delta arrows; click logs and opens writing seed.\n- Perf: per-user cache TTL 1h; p95 < 300ms (cached < 100ms).\n- Security: PII filtered keywords; user scoped.\n- Mobile-first.\nOut of scope: topic clustering, sankey.\n",
+        "testStrategy": "- Unit: streak calc, rhythm median, keyword topK, stopwords.\n- Integration: GET /api/analytics/aggregate?days=30&prevDays=30 includes v2 fields.\n- Visual: Storybook for three cards, mobile snapshot.\n- E2E: click chip → TSNoteCard opens mini panel with seed.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "high",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Backend: Extend /api/analytics/aggregate (v2 fields)",
+            "description": "Add weekdayHourHeatmap per action, streakDays, fastestRhythmTop, topKeywords7d. Clamp params, add per-user cache TTL 1h. Keep backward-compatible existing fields.",
+            "details": "- Heatmap: bin ThoughtEvent by weekday/hourBucket per action {create_note, add_thought, evolve_memo, add_connection}.\n- Streak: days with >=1 event back from today.\n- Rhythm: for add_thought/evolve_memo/add_connection, compute Δt between consecutive events; attribute to trailing event's (weekday,hourBucket); median(Δt) and count per bin; return top 3 by smallest median with min count 20.\n- Keywords: recent 7d from Note.content + ThoughtEvent.textPreview (above actions); remove PII/URLs/emails; ko/en stopwords; return topK 3–5 with deltaPct vs prev 7d.",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 2,
+            "title": "Frontend: Three cards layout + data wiring",
+            "description": "Implement Card A (heatmap+chips+streak), Card B (Fast Rhythm Top3), Card C (Weekly Keywords). Responsive; mobile-first.",
+            "details": "- Create components: WeekHourHeatmap (CSS Grid), FastRhythmTop, KeywordChips, TopSlotsChips.\n- Update analytics/page.tsx to show only these three cards and fetch v2 fields.\n- Grey low-sample cells; chip click → deep link.\n- Minimal micro-sparklines optional via existing Recharts.\n",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 3,
+            "title": "TSNoteCard deep link: auto-open similar memo mini panel",
+            "description": "When visiting /memo/new?openSimilarPanel=1&seed=키워드&slot=Tue-07, automatically open the mini panel near line 1610 and prefill the search with seed.",
+            "details": "- Read URLSearchParams in TSNoteCard.\n- If openSimilarPanel=1, set state to open the similar memo panel by default.\n- If seed present, prefill the search/filter and trigger initial fetch.\n- If slot present, show a small badge indicating recommended slot.\n- Keep code style; minimal changes; guarded to not affect default behavior.",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 1
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-11T03:25:52.594Z",
+      "updated": "2025-08-11T03:32:35.222Z",
+      "description": "Three-card analytics: action-based heatmap, fastest rhythm Top3, weekly keywords + deep link to TSNoteCard similar panel"
+    }
   }
 }

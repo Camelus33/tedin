@@ -4,6 +4,10 @@ import ThoughtEvent from '../models/ThoughtEvent';
 import Note from '../models/Note';
 import mongoose from 'mongoose';
 import { embeddingService } from '../services/EmbeddingService';
+import { mean, std } from '../utils/analytics/stats';
+import { computeStreak } from '../utils/analytics/streak';
+import { computeFastestBins } from '../utils/analytics/rhythm';
+import { topTerms } from '../utils/analytics/keywords';
 
 const router = Router();
 
@@ -251,9 +255,11 @@ router.get('/aggregate', authenticate, async (req, res) => {
     if (!userId) return res.status(401).json({ message: '인증이 필요합니다.' });
 
     // 기간 필터 (기본: 최근 30일)
-    const { days } = req.query as any;
-    const lookbackDays = Math.max(1, Math.min(120, Number(days) || 30));
+    const { days, prevDays = 30, topK = 5 } = req.query as any;
+    const lookbackDays = Math.max(1, Math.min(365, Number(days) || 30));
+    const prevLookbackDays = Math.max(1, Math.min(365, Number(prevDays) || 30));
     const since = new Date(Date.now() - lookbackDays * 24 * 3600 * 1000);
+    const prevSince = new Date(since.getTime() - prevLookbackDays * 24 * 3600 * 1000);
 
     // 준비: 노트(임베딩 포함), 이벤트 수집
     const notes = await Note.find({
@@ -267,7 +273,13 @@ router.get('/aggregate', authenticate, async (req, res) => {
 
     const events = await ThoughtEvent.find({ userId, createdAt: { $gte: since } })
       .sort({ createdAt: 1 })
-      .select('createdAt type')
+      .select('createdAt type hourBucket weekday textPreview')
+      .lean();
+
+    // 이전 기간 이벤트/노트 (비교용 키워드만 사용)
+    const prevEvents = await ThoughtEvent.find({ userId, createdAt: { $gte: prevSince, $lt: since } })
+      .sort({ createdAt: 1 })
+      .select('createdAt type textPreview')
       .lean();
 
     // 수학 도우미
@@ -312,18 +324,79 @@ router.get('/aggregate', authenticate, async (req, res) => {
         intervalsMin.push(dtMin);
       }
     }
-    const mean = (arr: number[]) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0);
-    const std = (arr: number[]) => { if (arr.length === 0) return 0; const m = mean(arr); return Math.sqrt(arr.reduce((s, x) => s + (x - m) * (x - m), 0) / arr.length); };
     const speedsMean = mean(speeds), speedsStd = std(speeds);
     const curvatureMean = mean(curvatures), curvatureStd = std(curvatures);
     const intervalMean = mean(intervalsMin), intervalStd = std(intervalsMin);
     const intervalCV = intervalMean > 0 ? intervalStd / intervalMean : 0;
     const burstiness = intervalCV; // 간단 지표
 
-    // 시간대/요일 분포
+    // 시간대/요일 분포 (기존)
     const hourHist = Array(24).fill(0);
     const weekdayHist = Array(7).fill(0);
     for (const e of events) { const d = new Date(e.createdAt); hourHist[d.getHours()]++; weekdayHist[d.getDay()]++; }
+
+    // v2 추가: 액션별 7x24 히트맵
+    const ACTIONS = ['create_note', 'add_thought', 'evolve_memo', 'add_connection'] as const;
+    type ActionKey = typeof ACTIONS[number];
+    const heatmap: Record<ActionKey | 'all', number[][]> = {
+      all: Array.from({ length: 7 }, () => Array(24).fill(0)),
+      create_note: Array.from({ length: 7 }, () => Array(24).fill(0)),
+      add_thought: Array.from({ length: 7 }, () => Array(24).fill(0)),
+      evolve_memo: Array.from({ length: 7 }, () => Array(24).fill(0)),
+      add_connection: Array.from({ length: 7 }, () => Array(24).fill(0)),
+    };
+    const dayHistogram: Record<string, number> = {};
+    for (const e of events) {
+      const d = new Date(e.createdAt);
+      const w = d.getDay();
+      const h = d.getHours();
+      const key = d.toISOString().slice(0, 10);
+      dayHistogram[key] = (dayHistogram[key] || 0) + 1;
+      if ((ACTIONS as readonly string[]).includes(String(e.type))) {
+        const ak = e.type as ActionKey;
+        heatmap[ak][w][h] += 1;
+        heatmap.all[w][h] += 1;
+      }
+    }
+    const streakDays = computeStreak(new Set(Object.keys(dayHistogram)));
+
+    // v2 추가: 가장 빠른 리듬 Top3
+    const fastestRhythmTop = computeFastestBins(
+      events.map(e => ({ createdAt: new Date(e.createdAt), type: String(e.type) })),
+      new Set<string>(['add_thought', 'evolve_memo', 'add_connection']),
+      20,
+      3
+    );
+
+    // v2 추가: 최근 7일 키워드 상위
+    const now = new Date();
+    const since7d = new Date(now.getTime() - 7 * 24 * 3600 * 1000);
+    const prevSince7d = new Date(since7d.getTime() - 7 * 24 * 3600 * 1000);
+    const recentNotes7d = await Note.find({ userId, createdAt: { $gte: since7d } })
+      .select('content createdAt')
+      .lean();
+    const prevNotes7d = await Note.find({ userId, createdAt: { $gte: prevSince7d, $lt: since7d } })
+      .select('content createdAt')
+      .lean();
+    const targetEvents7d = events.filter(e => new Date(e.createdAt) >= since7d);
+    const prevTargetEvents7d = prevEvents.filter(e => new Date(e.createdAt) >= prevSince7d && new Date(e.createdAt) < since7d);
+
+    const corpusCurr = [
+      ...recentNotes7d.map(n => String((n as any).content || '')),
+      ...targetEvents7d.map(e => String((e as any).textPreview || '')),
+    ];
+    const corpusPrev = [
+      ...prevNotes7d.map(n => String((n as any).content || '')),
+      ...prevTargetEvents7d.map(e => String((e as any).textPreview || '')),
+    ];
+    const topCurr = topTerms(corpusCurr, Math.max(1, Math.min(10, Number(topK) || 5)));
+    const topPrev = topTerms(corpusPrev, Math.max(1, Math.min(10, Number(topK) || 5)));
+    const prevMap = new Map(topPrev.map(t => [t.term, t.count] as const));
+    const topKeywords7d = topCurr.map(t => ({
+      term: t.term,
+      count: t.count,
+      deltaPct: Math.round(((t.count - (prevMap.get(t.term) || 0)) / Math.max(1, prevMap.get(t.term) || 0)) * 100),
+    }));
 
     return res.status(200).json({
       rangeDays: lookbackDays,
@@ -331,7 +404,13 @@ router.get('/aggregate', authenticate, async (req, res) => {
       speed: { mean: speedsMean, std: speedsStd, count: speeds.length },
       curvature: { mean: curvatureMean, std: curvatureStd, count: curvatures.length },
       rhythm: { intervalMeanMin: intervalMean, intervalStdMin: intervalStd, intervalCV, burstinessIndex: burstiness, count: intervalsMin.length },
-      timeOfDay: { byHour: hourHist, byWeekday: weekdayHist }
+      timeOfDay: { byHour: hourHist, byWeekday: weekdayHist },
+      // v2 additions (backward compatible)
+      weekdayHourHeatmap: heatmap,
+      streakDays,
+      fastestRhythmTop,
+      topKeywords7d,
+      dayHistogram,
     });
   } catch (error) {
     console.error('aggregate analytics error:', error);

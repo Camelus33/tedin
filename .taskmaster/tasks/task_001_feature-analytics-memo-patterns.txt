@@ -1,0 +1,54 @@
+# Task ID: 1
+# Title: Three-card Memo Analytics (Action Heatmap, Fast Rhythm Top3, Weekly Keywords)
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: Deliver one-screen analytics answering exactly three questions: when do I produce (by action), where am I fastest (Top3 rhythm slots), and what am I into now (weekly keywords). All actions deep-link into writing.
+# Details:
+Scope: Backend v2 fields on /api/analytics/aggregate; Frontend 3-card layout; TSNoteCard deep link to auto-open similar memo mini panel; alarms/calendar optional.
+Acceptance:
+- Card A: Tabs All/생각추가/기억강화/지식연결; 7×24 heatmap; Top3 chips; streakDays badge; grey low-sample.
+- Card B: Top3 slots with median interval minutes and n; CTA schedule + write-now.
+- Card C: 3–5 keywords with delta arrows; click logs and opens writing seed.
+- Perf: per-user cache TTL 1h; p95 < 300ms (cached < 100ms).
+- Security: PII filtered keywords; user scoped.
+- Mobile-first.
+Out of scope: topic clustering, sankey.
+
+
+# Test Strategy:
+- Unit: streak calc, rhythm median, keyword topK, stopwords.
+- Integration: GET /api/analytics/aggregate?days=30&prevDays=30 includes v2 fields.
+- Visual: Storybook for three cards, mobile snapshot.
+- E2E: click chip → TSNoteCard opens mini panel with seed.
+
+# Subtasks:
+## 1. Backend: Extend /api/analytics/aggregate (v2 fields) [pending]
+### Dependencies: None
+### Description: Add weekdayHourHeatmap per action, streakDays, fastestRhythmTop, topKeywords7d. Clamp params, add per-user cache TTL 1h. Keep backward-compatible existing fields.
+### Details:
+- Heatmap: bin ThoughtEvent by weekday/hourBucket per action {create_note, add_thought, evolve_memo, add_connection}.
+- Streak: days with >=1 event back from today.
+- Rhythm: for add_thought/evolve_memo/add_connection, compute Δt between consecutive events; attribute to trailing event's (weekday,hourBucket); median(Δt) and count per bin; return top 3 by smallest median with min count 20.
+- Keywords: recent 7d from Note.content + ThoughtEvent.textPreview (above actions); remove PII/URLs/emails; ko/en stopwords; return topK 3–5 with deltaPct vs prev 7d.
+
+## 2. Frontend: Three cards layout + data wiring [pending]
+### Dependencies: None
+### Description: Implement Card A (heatmap+chips+streak), Card B (Fast Rhythm Top3), Card C (Weekly Keywords). Responsive; mobile-first.
+### Details:
+- Create components: WeekHourHeatmap (CSS Grid), FastRhythmTop, KeywordChips, TopSlotsChips.
+- Update analytics/page.tsx to show only these three cards and fetch v2 fields.
+- Grey low-sample cells; chip click → deep link.
+- Minimal micro-sparklines optional via existing Recharts.
+
+
+## 3. TSNoteCard deep link: auto-open similar memo mini panel [pending]
+### Dependencies: None
+### Description: When visiting /memo/new?openSimilarPanel=1&seed=키워드&slot=Tue-07, automatically open the mini panel near line 1610 and prefill the search with seed.
+### Details:
+- Read URLSearchParams in TSNoteCard.
+- If openSimilarPanel=1, set state to open the similar memo panel by default.
+- If seed present, prefill the search/filter and trigger initial fetch.
+- If slot present, show a small badge indicating recommended slot.
+- Keep code style; minimal changes; guarded to not affect default behavior.
+
