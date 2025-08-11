@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Session from '../models/Session';
 import Book from '../models/Book';
 import Note from '../models/Note';
+import ThoughtEvent from '../models/ThoughtEvent';
 import { routineService } from '../services/routineService';
 import UserStats from '../models/UserStats';
 import { 
@@ -276,7 +277,21 @@ export const completeSession = async (req: Request, res: Response) => {
         ...(finalTimes.clientCreatedAt && { clientCreatedAt: finalTimes.clientCreatedAt }) // 클라이언트 시간 (유효할 때만 추가)
       };
       
-      await Note.create(noteData);
+      const saved = await Note.create(noteData);
+      // 이벤트 로깅: create_note (TS 리뷰 생성)
+      try {
+        await ThoughtEvent.create({
+          userId,
+          noteId: (saved as any)._id,
+          type: 'create_note',
+          textPreview: String(memo || '').slice(0, 200),
+          createdAt: noteData.createdAt || new Date(),
+          clientCreatedAt: (noteData as any).clientCreatedAt || null,
+          meta: { bookId: session.bookId, source: 'ts_review' },
+        });
+      } catch (e) {
+        console.error('[completeSession] ThoughtEvent create_note 실패:', e);
+      }
       
       // 개발 환경에서 메모 생성 결과 로깅
       if (process.env.NODE_ENV === 'development') {

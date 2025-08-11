@@ -786,6 +786,21 @@ export const createPdfNote = async (req: Request, res: Response) => {
 
     const savedNote = await newNote.save();
     
+    // 이벤트 로깅: create_note (PDF 하이라이트 생성)
+    try {
+      await ThoughtEvent.create({
+        userId: new mongoose.Types.ObjectId(userId),
+        noteId: savedNote._id,
+        type: 'create_note',
+        textPreview: String(content || '').slice(0, 200),
+        createdAt: new Date(),
+        clientCreatedAt: null,
+        meta: { bookId, pageNumber, source: 'pdf_highlight' },
+      });
+    } catch (e) {
+      console.error('[createPdfNote] ThoughtEvent create_note 실패:', e);
+    }
+    
     res.status(201).json(savedNote);
   } catch (error) {
     console.error('PDF 메모 생성 중 오류 발생:', error);
