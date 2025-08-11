@@ -159,6 +159,8 @@ export default function ZengoPage(
   ];
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
   const [loading, setLoading] = useState(false); // Keep local loading for button state?
+  // 데스크톱 여부(SSR 안전): 중복 시작 버튼 방지용 런타임 분기
+  const [isDesktop, setIsDesktop] = useState(false);
 
   // Track if word order was correct
   const [wordOrderCorrect, setWordOrderCorrect] = useState<boolean | null>(null);
@@ -195,6 +197,16 @@ export default function ZengoPage(
       return () => clearTimeout(timer);
     }
   }, [uiState]);
+
+  // 화면 폭에 따른 데스크톱 여부 감지(768px 기준)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(min-width: 768px)');
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
 
   // Reset Redux state when component mounts or user returns to intro
   useEffect(() => {
@@ -1124,8 +1136,9 @@ export default function ZengoPage(
                   {!selectedLanguage && <p className="text-sm text-red-500 selection-guide md:text-left text-center">언어를 선택해주세요</p>}
                 </section>
 
-                {/* 모바일용 시작 버튼 (데스크톱에서는 우측 고정 영역) */}
-                <div className="action-buttons-container text-center space-y-4 md:hidden">
+                {/* 모바일용 시작 버튼 (데스크톱에서는 렌더링 자체를 건너뜀) */}
+                {!isDesktop && (
+                <div className="action-buttons-container text-center space-y-4">
                   <button
                     className="start-button w-full max-w-md mx-auto block bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleStartGame}
@@ -1146,10 +1159,12 @@ export default function ZengoPage(
                     뒤로 가기
                   </button>
                 </div>
+                )}
               </div>
 
               {/* 오른쪽: 정보/효과 + 시작 버튼 고정 */}
-              <aside className="hidden md:block md:sticky md:top-6">
+              {isDesktop && (
+              <aside className="md:sticky md:top-6">
                 <div className="space-y-4">
                   <div className="flex flex-col gap-3">
                     <button
@@ -1191,6 +1206,7 @@ export default function ZengoPage(
                   </button>
                 </div>
               </aside>
+              )}
             </div>
 
             {/* 인지 효과 모달 (공용) */}
