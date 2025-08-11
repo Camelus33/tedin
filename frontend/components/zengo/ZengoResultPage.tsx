@@ -190,7 +190,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
             <strong>5x5 도전 준비 완료!</strong>
             <div style={{ marginTop: 4 }}>최근 기록이 좋아요. 다음 판을 5x5로 시작해볼까요?</div>
             <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-              <button className={styles.nextButton} onClick={onNextGame}>5x5 바로 도전</button>
+              <button className={styles.nextButton} onClick={() => { try { sessionStorage.setItem('zengo_next_size','5'); } catch(_) {} ; onNextGame(); }}>5x5 바로 도전</button>
               <button className={styles.backButton} onClick={onBackToIntro}>3x3 한 판 더</button>
             </div>
           </div>
@@ -200,7 +200,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
             <strong>하루 한 번, 7x7 챌린지!</strong>
             <div style={{ marginTop: 4 }}>오늘의 도전을 시작하면 특별한 기록을 남길 수 있어요.</div>
             <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-              <button className={styles.nextButton} onClick={() => { markDailyChallengeUsed(); onNextGame(); }}>7x7 도전</button>
+              <button className={styles.nextButton} onClick={() => { markDailyChallengeUsed(); try { sessionStorage.setItem('zengo_next_size','7'); } catch(_) {} ; onNextGame(); }}>7x7 도전</button>
               <button className={styles.backButton} onClick={onBackToIntro}>다음에</button>
             </div>
           </div>

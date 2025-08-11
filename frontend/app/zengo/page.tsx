@@ -407,7 +407,18 @@ export default function ZengoPage(
 
   // Start Game Function (replaces startTraining)
   const handleStartGame = () => {
-    const level = mapSizeToLevel(selectedBoardSize);
+    // 다음 보드 크기를 결과 화면에서 지정했는지 확인
+    let nextSize = selectedBoardSize;
+    try {
+      const override = sessionStorage.getItem('zengo_next_size');
+      if (override) {
+        nextSize = parseInt(override, 10);
+        sessionStorage.removeItem('zengo_next_size');
+        setSelectedBoardSize(nextSize);
+      }
+    } catch {}
+
+    const level = mapSizeToLevel(nextSize);
     const language = selectedLanguage;
 
     console.log('게임 시작 버튼 클릭:', { level, language });
@@ -453,7 +464,17 @@ export default function ZengoPage(
     setHasSubmitted(false);
     // isMyVerseGame 플래그를 명확히 사용
     const isMyVerseGame = currentContent?.level?.includes('-myverse') || currentContent?.level?.includes('-custom');
-    const level = mapSizeToLevel(selectedBoardSize);
+    // 결과 배너에서 다음 보드 크기 지정 시 반영
+    let nextSize = selectedBoardSize;
+    try {
+      const override = sessionStorage.getItem('zengo_next_size');
+      if (override) {
+        nextSize = parseInt(override, 10);
+        sessionStorage.removeItem('zengo_next_size');
+        setSelectedBoardSize(nextSize);
+      }
+    } catch {}
+    const level = mapSizeToLevel(nextSize);
     const language = selectedLanguage;
     console.log('다음 게임 시작...', { level, language, isMyVerseGame });
     try {
@@ -472,7 +493,7 @@ export default function ZengoPage(
         dispatch(setSettings({ level, language }));
         const newContent = await dispatch(fetchContentThunk({ level, language, reshuffleWords: true })).unwrap();
         // 5x5 보호 로직: 첫 3판은 노출시간 +15%, 허용돌 +1 적용
-        if (selectedBoardSize === 5 && firstThreeProtectionsUsed < 3) {
+        if (typeof nextSize === 'number' && nextSize === 5 && firstThreeProtectionsUsed < 3) {
           try {
             newContent.totalAllowedStones = (newContent.totalAllowedStones || newContent.totalWords + 2) + 1;
             newContent.initialDisplayTimeMs = Math.round((newContent.initialDisplayTimeMs || 10000) * 1.15);
