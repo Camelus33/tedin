@@ -145,6 +145,8 @@ export default function ZengoPage(
   const [selectedBoardSize, setSelectedBoardSize] = useState<number>(3);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('ko'); // Default to Korean
   const [isInfoModalOpen, setInfoModalOpen] = useState(false);
+  // 5x5 첫 3판 보호 카운터(세션 기준)
+  const [firstThreeProtectionsUsed, setFirstThreeProtectionsUsed] = useState<number>(0);
   const categories = [
     "수능·시험",
     "외국어·편입",
@@ -468,7 +470,17 @@ export default function ZengoPage(
       } else {
         // 기본: 새 설정 적용 및 콘텐츠 로드
         dispatch(setSettings({ level, language }));
-        await dispatch(fetchContentThunk({ level, language, reshuffleWords: true })).unwrap();
+        const newContent = await dispatch(fetchContentThunk({ level, language, reshuffleWords: true })).unwrap();
+        // 5x5 보호 로직: 첫 3판은 노출시간 +15%, 허용돌 +1 적용
+        if (selectedBoardSize === 5 && firstThreeProtectionsUsed < 3) {
+          try {
+            newContent.totalAllowedStones = (newContent.totalAllowedStones || newContent.totalWords + 2) + 1;
+            newContent.initialDisplayTimeMs = Math.round((newContent.initialDisplayTimeMs || 10000) * 1.15);
+            setFirstThreeProtectionsUsed((v) => v + 1);
+          } catch (e) {
+            console.warn('5x5 보호 적용 실패(무시 가능):', e);
+          }
+        }
         console.log('다음 게임 준비 완료:', rt);
       }
     } catch (error) {

@@ -6,6 +6,7 @@ import { ZengoSessionResult, IMyVerseSessionResult } from '@/src/types/zengo';
 import styles from './ZengoResultPage.module.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import { addResultEntry, computeNudges, getRecentResults, canUseDailyChallenge, markDailyChallengeUsed } from '@/lib/zengoProgress';
 
 interface ZengoResultPageProps {
   result: ZengoSessionResult | IMyVerseSessionResult | null;
@@ -34,11 +35,27 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
     currentContent 
   } = useSelector((state: RootState) => state.zengoProverb);
 
-  // 계산 데이터
+  // Derived basic values
   const correctPlacements = placedStones.filter(stone => stone.correct).length;
   const incorrectPlacements = placedStones.filter(stone => !stone.correct).length;
   const timeTakenMs = startTime ? (Date.now() - startTime) : 0;
-  
+  const effectiveResultType = resultType || 'FAIL';
+
+  // Progress tracking and nudges (must be declared before any early returns)
+  const recent = React.useMemo(() => getRecentResults(20), []);
+  React.useEffect(() => {
+    if (!currentContent) return;
+    addResultEntry({
+      ts: Date.now(),
+      level: currentContent.level,
+      resultType: effectiveResultType as any,
+      score: (result as any)?.score,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentContent?._id]);
+
+  const nudges = React.useMemo(() => computeNudges(getRecentResults(20)), [currentContent?._id, effectiveResultType]);
+
   // 컴포넌트 마운트 시 디버깅 로그 출력
   React.useEffect(() => {
     console.log('ZengoResultPage 렌더링:', { 
@@ -76,7 +93,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
     );
   }
 
-  // 결과를 기다리는 중
+  // 결과를 기다리는 중 (Hooks 선언 이후에 위치해야 함)
   if (!result) {
     console.log('결과 대기 중...');
     return (
@@ -90,7 +107,7 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
   }
 
   // resultType이 없거나 유효하지 않은 경우 기본값으로 처리
-  const actualResultType = resultType || 'FAIL';
+  const actualResultType = effectiveResultType;
   console.log('결과 표시 중:', { 
     actualResultType, 
     result,
@@ -101,6 +118,8 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
       usedStonesCount
     } 
   });
+
+  // (중복 기록 방지: 상단 useEffect에서 기록 처리)
 
   const getResultTitle = () => {
     switch (actualResultType) {
@@ -164,6 +183,29 @@ const ZengoResultPage: React.FC<ZengoResultPageProps> = ({
 
   return (
     <div className={styles.resultContainer}>
+      {/* 승급/도전 넛지 배너 */}
+      <div style={{ marginBottom: 12 }}>
+        {nudges.readyFor5x5 && currentContent?.level?.startsWith('3x3') && (
+          <div className={styles.resultHeader} style={{ padding: '8px 12px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8 }}>
+            <strong>5x5 도전 준비 완료!</strong>
+            <div style={{ marginTop: 4 }}>최근 기록이 좋아요. 다음 판을 5x5로 시작해볼까요?</div>
+            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+              <button className={styles.nextButton} onClick={onNextGame}>5x5 바로 도전</button>
+              <button className={styles.backButton} onClick={onBackToIntro}>3x3 한 판 더</button>
+            </div>
+          </div>
+        )}
+        {nudges.suggest7x7 && currentContent?.level?.startsWith('5x5') && canUseDailyChallenge() && (
+          <div className={styles.resultHeader} style={{ padding: '8px 12px', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)', borderRadius: 8 }}>
+            <strong>하루 한 번, 7x7 챌린지!</strong>
+            <div style={{ marginTop: 4 }}>오늘의 도전을 시작하면 특별한 기록을 남길 수 있어요.</div>
+            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+              <button className={styles.nextButton} onClick={() => { markDailyChallengeUsed(); onNextGame(); }}>7x7 도전</button>
+              <button className={styles.backButton} onClick={onBackToIntro}>다음에</button>
+            </div>
+          </div>
+        )}
+      </div>
       <div className={`${styles.resultHeader} ${styles[actualResultType?.toLowerCase() || 'default']}`}>
         <h2>{getResultTitle()}</h2>
         <p>{getResultDescription()}</p>
