@@ -247,21 +247,22 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-blue-50 flex items-center justify-center">
-        <p>프로필 정보 로딩 중...</p>
+      <div className="min-h-screen bg-gradient-to-br from-[#0b1020] via-[#0a0f1a] to-black text-cyan-100 flex items-center justify-center">
+        <p className="animate-pulse">프로필 정보 로딩 중...</p>
       </div>
     );
   }
 
   if (error && !profile) {
     return (
-      <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-red-600 mb-4">오류 발생</h1>
-          <p className="mb-6">{error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-[#0b1020] via-[#0a0f1a] to-black text-cyan-100 flex items-center justify-center p-4">
+        <div className="bg-slate-900/60 backdrop-blur rounded-xl border border-cyan-500/20 shadow-[0_0_20px_rgba(34,211,238,0.08)] p-6 max-w-md w-full">
+          <h1 className="text-xl font-bold text-fuchsia-400 mb-4">오류 발생</h1>
+          <p className="mb-6 text-cyan-100/80">{error}</p>
           <Button
             href="/auth/login"
             variant="default"
+            className="!bg-cyan-600/20 !border !border-cyan-500/40 !text-cyan-100 hover:!bg-cyan-500/30"
           >
             로그인 화면으로
           </Button>
@@ -272,13 +273,14 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
-          <h1 className="text-xl font-bold text-gray-800 mb-4">프로필 정보를 불러올 수 없습니다</h1>
-          <p className="mb-6">서버에 연결할 수 없거나 프로필 정보가 없습니다.</p>
+      <div className="min-h-screen bg-gradient-to-br from-[#0b1020] via-[#0a0f1a] to-black text-cyan-100 flex items-center justify-center p-4">
+        <div className="bg-slate-900/60 backdrop-blur rounded-xl border border-cyan-500/20 shadow-[0_0_20px_rgba(34,211,238,0.08)] p-6 max-w-md w-full">
+          <h1 className="text-xl font-bold text-cyan-200 mb-4">프로필 정보를 불러올 수 없습니다</h1>
+          <p className="mb-6 text-cyan-100/80">서버에 연결할 수 없거나 프로필 정보가 없습니다.</p>
           <Button
             href="/auth/login"
             variant="default"
+            className="!bg-cyan-600/20 !border !border-cyan-500/40 !text-cyan-100 hover:!bg-cyan-500/30"
           >
             로그인 화면으로
           </Button>
@@ -288,16 +290,16 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#0b1020] via-[#0a0f1a] to-black text-cyan-100 p-4">
       <div className="container mx-auto max-w-2xl space-y-8">
         {/* 1. 내 정보 */}
-        <section className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <UserIcon className="w-6 h-6 text-indigo-500" /> 내 정보
+        <section className="bg-slate-900/60 backdrop-blur rounded-xl border border-cyan-500/20 shadow-[0_0_20px_rgba(34,211,238,0.08)] p-6">
+          <h2 className="text-xl font-bold text-cyan-200 mb-4 flex items-center gap-2">
+            <UserIcon className="w-6 h-6 text-cyan-400" /> 내 정보
           </h2>
           {/* 프로필 이미지 */}
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-indigo-300">
+            <div className="w-20 h-20 rounded-full overflow-hidden bg-slate-800 flex items-center justify-center border-2 border-cyan-500/40">
               {(profileImagePreview || profile.profileImage) ? (
                 <img 
                   src={profileImagePreview || profile.profileImage} 
@@ -318,7 +320,7 @@ export default function ProfilePage() {
               />
               <label 
                 htmlFor="profile-image"
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded text-sm cursor-pointer transition-colors"
+                className="bg-slate-800 hover:bg-slate-700 text-cyan-100 px-3 py-1.5 rounded text-sm cursor-pointer transition-colors border border-cyan-500/30"
               >
                 이미지 변경
               </label>
@@ -327,7 +329,7 @@ export default function ProfilePage() {
 
           {/* 직업 아이콘 선택 */}
           <div className="mb-4">
-            <div className="text-sm font-semibold text-gray-700 mb-2">페르소나 선택</div>
+            <div className="text-sm font-semibold text-cyan-200 mb-2">페르소나 선택</div>
             <div role="radiogroup" className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {[
                 { code: 'student', label: '학생', img: '/avatars/jobs/student.svg' },
@@ -343,13 +345,13 @@ export default function ProfilePage() {
                   role="radio"
                   aria-checked={selectedJobCode === item.code}
                   onClick={() => setSelectedJobCode(item.code)}
-                  className={`relative border rounded-lg p-2 flex flex-col items-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${selectedJobCode === item.code ? 'border-indigo-500' : 'border-gray-200'}`}
+                  className={`relative border rounded-lg p-2 flex flex-col items-center gap-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition ${selectedJobCode === item.code ? 'border-cyan-500' : 'border-cyan-500/20'}`}
                   title={item.label}
                 >
                   <img src={item.img} alt={item.label} className="w-10 h-10" />
-                  <span className="text-xs text-gray-600">{item.label}</span>
+                  <span className="text-xs text-cyan-200/80">{item.label}</span>
                   {selectedJobCode === item.code && (
-                    <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded">선택</span>
+                    <span className="absolute -top-1 -right-1 bg-cyan-600 text-white text-[10px] px-1.5 py-0.5 rounded">선택</span>
                   )}
                 </button>
               ))}
@@ -358,24 +360,24 @@ export default function ProfilePage() {
 
           {/* 닉네임 */}
           <div className="flex items-center gap-3 mb-4">
-            <UserIcon className="w-5 h-5 text-indigo-500" />
+            <UserIcon className="w-5 h-5 text-cyan-400" />
             {isEditing ? (
               <input
                 type="text"
                 value={editNickname}
                 onChange={(e) => setEditNickname(e.target.value)}
-                className="w-full px-4 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-2 border border-cyan-500/30 rounded-lg bg-slate-800 text-cyan-100 placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                 placeholder="닉네임"
               />
             ) : (
-              <span className="text-lg font-semibold text-gray-800">{profile.nickname}</span>
+              <span className="text-lg font-semibold text-cyan-100">{profile.nickname}</span>
             )}
           </div>
 
           {/* 이메일 */}
           <div className="flex items-center gap-3 mb-4">
-            <EnvelopeIcon className="w-5 h-5 text-indigo-500" />
-            <span className="text-gray-800">{profile.email}</span>
+            <EnvelopeIcon className="w-5 h-5 text-cyan-400" />
+            <span className="text-cyan-100">{profile.email}</span>
           </div>
 
           {/* 휴대폰 번호 */}
@@ -384,13 +386,13 @@ export default function ProfilePage() {
             {isEditing ? (
               <input
                 type="tel"
-                className="w-full px-4 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-2 border border-cyan-500/30 rounded-lg bg-slate-800 text-cyan-100 placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                 placeholder="휴대폰 번호"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
               />
             ) : (
-              <span className="text-gray-800">{phone || '휴대폰 번호 미입력'}</span>
+              <span className="text-cyan-100/90">{phone || '휴대폰 번호 미입력'}</span>
             )}
           </div>
 
@@ -400,40 +402,40 @@ export default function ProfilePage() {
             {isEditing ? (
               <input
                 type="email"
-                className="w-full px-4 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-2 border border-cyan-500/30 rounded-lg bg-slate-800 text-cyan-100 placeholder-slate-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                 placeholder="복구 이메일"
                 value={recoveryEmail}
                 onChange={e => setRecoveryEmail(e.target.value)}
               />
             ) : (
-              <span className="text-gray-800">{recoveryEmail || '복구 이메일 미입력'}</span>
+              <span className="text-cyan-100/90">{recoveryEmail || '복구 이메일 미입력'}</span>
             )}
           </div>
 
           {/* 프로필 저장/수정 버튼 */}
           <div className="flex gap-2 mt-6">
             {!isEditing ? (
-              <Button variant="outline" onClick={() => setIsEditing(true)}>수정</Button>
+              <Button variant="outline" onClick={() => setIsEditing(true)} className="!border-cyan-500/50 !text-cyan-200 hover:!bg-cyan-500/10">수정</Button>
             ) : (
               <>
-                <Button variant="default" onClick={handleSaveProfile} loading={isSaving}>저장</Button>
-                <Button variant="outline" onClick={() => { setIsEditing(false); setEditNickname(profile.nickname); setProfileImage(null); setProfileImagePreview(profile.profileImage || null); }} disabled={isSaving}>취소</Button>
+                <Button variant="default" onClick={handleSaveProfile} loading={isSaving} className="!bg-cyan-600/20 !border !border-cyan-500/40 !text-cyan-100 hover:!bg-cyan-500/30">저장</Button>
+                <Button variant="outline" onClick={() => { setIsEditing(false); setEditNickname(profile.nickname); setProfileImage(null); setProfileImagePreview(profile.profileImage || null); }} disabled={isSaving} className="!border-cyan-500/50 !text-cyan-200 hover:!bg-cyan-500/10">취소</Button>
               </>
             )}
           </div>
         </section>
 
         {/* 2. 구독 정보 */}
-        <section className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <CreditCardIcon className="w-6 h-6 text-indigo-500" /> 구독 정보
+        <section className="bg-slate-900/60 backdrop-blur rounded-xl border border-cyan-500/20 shadow-[0_0_20px_rgba(34,211,238,0.08)] p-6">
+          <h2 className="text-xl font-bold text-cyan-200 mb-4 flex items-center gap-2">
+            <CreditCardIcon className="w-6 h-6 text-cyan-400" /> 구독 정보
           </h2>
           {/* 플랜/남은 기간/업그레이드 */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <ArrowUpCircleIcon className="w-6 h-6 text-blue-500" />
+              <ArrowUpCircleIcon className="w-6 h-6 text-cyan-400" />
               <div>
-                <span className="font-semibold text-blue-800">
+                <span className="font-semibold text-cyan-200">
                   {profile.trialEndsAt ? '무료 체험 중' : '프리미엄 회원'}
                 </span>
                 <span className="ml-2 text-xs text-gray-500">(
@@ -441,31 +443,31 @@ export default function ProfilePage() {
                 )</span>
               </div>
             </div>
-            <Button variant="default" onClick={() => router.push('/profile/upgrade')}>
+              <Button variant="default" onClick={() => router.push('/profile/upgrade')} className="!bg-fuchsia-600/20 !border !border-fuchsia-500/40 !text-fuchsia-100 hover:!bg-fuchsia-500/30">
               <ArrowUpCircleIcon className="w-5 h-5 mr-1 inline" /> 업그레이드
             </Button>
           </div>
 
           {/* 결제 내역/영수증 (UI만) */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <ReceiptRefundIcon className="w-5 h-5 text-gray-400" />
-            <span className="text-gray-400">결제 내역 없음</span>
-            <span className="ml-2 text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5">준비중</span>
+          <div className="flex items-center gap-3 mb-4 opacity-70">
+            <ReceiptRefundIcon className="w-5 h-5 text-cyan-400/70" />
+            <span className="text-cyan-200/70">결제 내역 없음</span>
+            <span className="ml-2 text-xs text-cyan-200/70 bg-slate-800 rounded px-2 py-0.5 border border-cyan-500/20">준비중</span>
           </div>
 
           {/* 구독 해지 (UI만) */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <XCircleIcon className="w-5 h-5 text-red-300" />
-            <button className="bg-red-100 text-red-700 px-3 py-1 rounded text-sm cursor-not-allowed" disabled>구독 해지</button>
-            <span className="ml-2 text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5">준비중</span>
+          <div className="flex items-center gap-3 mb-4 opacity-70">
+            <XCircleIcon className="w-5 h-5 text-fuchsia-400/80" />
+            <button className="bg-slate-800 text-fuchsia-200/80 px-3 py-1 rounded text-sm cursor-not-allowed border border-fuchsia-500/30" disabled>구독 해지</button>
+            <span className="ml-2 text-xs text-cyan-200/70 bg-slate-800 rounded px-2 py-0.5 border border-cyan-500/20">준비중</span>
           </div>
 
           {/* 쿠폰/프로모션 코드 입력 (UI만) */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <TagIcon className="w-5 h-5 text-indigo-300" />
-            <input type="text" className="px-3 py-2 border rounded w-40 bg-gray-50 border-gray-200" placeholder="쿠폰 코드 (준비중)" disabled />
-            <button className="bg-indigo-200 text-indigo-700 rounded px-3 py-1 cursor-not-allowed" disabled>적용</button>
-            <span className="ml-2 text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5">준비중</span>
+          <div className="flex items-center gap-3 mb-4 opacity-70">
+            <TagIcon className="w-5 h-5 text-cyan-300/80" />
+            <input type="text" className="px-3 py-2 border rounded w-40 bg-slate-800 border-cyan-500/20 text-cyan-200" placeholder="쿠폰 코드 (준비중)" disabled />
+            <button className="bg-slate-800 text-cyan-200 rounded px-3 py-1 cursor-not-allowed border border-cyan-500/30" disabled>적용</button>
+            <span className="ml-2 text-xs text-cyan-200/70 bg-slate-800 rounded px-2 py-0.5 border border-cyan-500/20">준비중</span>
           </div>
 
           {/* FAQ/고객센터 */}
@@ -476,52 +478,52 @@ export default function ProfilePage() {
         </section>
 
         {/* 3. 기타 설정 */}
-        <section className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <ShieldCheckIcon className="w-6 h-6 text-indigo-500" /> 기타 설정
+        <section className="bg-slate-900/60 backdrop-blur rounded-xl border border-cyan-500/20 shadow-[0_0_20px_rgba(34,211,238,0.08)] p-6">
+          <h2 className="text-xl font-bold text-cyan-200 mb-4 flex items-center gap-2">
+            <ShieldCheckIcon className="w-6 h-6 text-cyan-400" /> 기타 설정
           </h2>
           {/* 웹 푸시 알림 */}
           <div className="flex items-center gap-3 mb-4">
-            <BellIcon className="w-5 h-5 text-indigo-500" />
-            <span className="text-gray-800">웹 푸시 알림</span>
+            <BellIcon className="w-5 h-5 text-cyan-400" />
+            <span className="text-cyan-100">웹 푸시 알림</span>
             <input
               type="checkbox"
-              className="accent-indigo-600"
+              className="accent-cyan-500"
               checked={webPushEnabled}
               disabled={webPushBusy}
               onChange={handleToggleWebPush}
             />
             {webPushBusy && (
-              <span className="text-xs text-gray-500 ml-2">처리 중...</span>
+              <span className="text-xs text-cyan-200/70 ml-2">처리 중...</span>
             )}
           </div>
 
           {/* 이메일 알림 (추후) */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <EnvelopeIcon className="w-5 h-5 text-indigo-400" />
-            <span className="text-gray-700">이메일 알림</span>
-            <input type="checkbox" className="accent-indigo-500" disabled />
-            <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>
+          <div className="flex items-center gap-3 mb-4 opacity-70">
+            <EnvelopeIcon className="w-5 h-5 text-cyan-300/80" />
+            <span className="text-cyan-200/80">이메일 알림</span>
+            <input type="checkbox" className="accent-cyan-500" disabled />
+            <span className="text-xs text-cyan-200/70 bg-slate-800 rounded px-2 py-0.5 ml-2 border border-cyan-500/20">준비중</span>
           </div>
 
           {/* 테마 설정 (UI만) */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <MoonIcon className="w-5 h-5 text-indigo-400" />
-            <span className="text-gray-700">다크모드</span>
-            <input type="checkbox" className="accent-indigo-500" disabled />
-            <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>
+          <div className="flex items-center gap-3 mb-4 opacity-70">
+            <MoonIcon className="w-5 h-5 text-cyan-300/80" />
+            <span className="text-cyan-200/80">다크모드</span>
+            <input type="checkbox" className="accent-cyan-500" disabled />
+            <span className="text-xs text-cyan-200/70 bg-slate-800 rounded px-2 py-0.5 ml-2 border border-cyan-500/20">준비중</span>
           </div>
 
           {/* 데이터/개인정보 관리 (UI만) */}
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <DocumentArrowDownIcon className="w-5 h-5 text-indigo-400" />
-            <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm cursor-not-allowed" disabled>내 데이터 다운로드</button>
-            <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>
+          <div className="flex items-center gap-3 mb-4 opacity-70">
+            <DocumentArrowDownIcon className="w-5 h-5 text-cyan-300/80" />
+            <button className="bg-slate-800 text-cyan-200 px-3 py-1 rounded text-sm cursor-not-allowed border border-cyan-500/30" disabled>내 데이터 다운로드</button>
+            <span className="text-xs text-cyan-200/70 bg-slate-800 rounded px-2 py-0.5 ml-2 border border-cyan-500/20">준비중</span>
           </div>
-          <div className="flex items-center gap-3 mb-4 opacity-60">
-            <ShieldCheckIcon className="w-5 h-5 text-indigo-400" />
-            <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm cursor-not-allowed" disabled>개인정보 처리방침</button>
-            <span className="text-xs text-gray-400 bg-gray-100 rounded px-2 py-0.5 ml-2">준비중</span>
+          <div className="flex items-center gap-3 mb-4 opacity-70">
+            <ShieldCheckIcon className="w-5 h-5 text-cyan-300/80" />
+            <button className="bg-slate-800 text-cyan-200 px-3 py-1 rounded text-sm cursor-not-allowed border border-cyan-500/30" disabled>개인정보 처리방침</button>
+            <span className="text-xs text-cyan-200/70 bg-slate-800 rounded px-2 py-0.5 ml-2 border border-cyan-500/20">준비중</span>
           </div>
 
           {/* 계정 탈퇴 (UI만) */}
@@ -533,14 +535,14 @@ export default function ProfilePage() {
 
           {/* 로그아웃 */}
           <div className="flex items-center gap-3 mb-4">
-            <ArrowRightOnRectangleIcon className="w-5 h-5 text-indigo-500" />
-            <Button variant="danger" className="w-full" onClick={logout}>로그아웃</Button>
+            <ArrowRightOnRectangleIcon className="w-5 h-5 text-fuchsia-400" />
+            <Button variant="danger" className="w-full !bg-fuchsia-600/20 !border !border-fuchsia-500/40 !text-fuchsia-100 hover:!bg-fuchsia-500/30" onClick={logout}>로그아웃</Button>
           </div>
 
           {/* 고객센터/피드백 */}
           <div className="flex items-center gap-3 mt-4">
-            <LifebuoyIcon className="w-5 h-5 text-indigo-400" />
-            <a href="mailto:habitus33.tedin@gmail.com" className="text-indigo-600 text-sm hover:underline">고객센터 / 피드백</a>
+            <LifebuoyIcon className="w-5 h-5 text-cyan-300/80" />
+            <a href="mailto:habitus33.tedin@gmail.com" className="text-cyan-300 text-sm hover:underline">고객센터 / 피드백</a>
           </div>
         </section>
       </div>
