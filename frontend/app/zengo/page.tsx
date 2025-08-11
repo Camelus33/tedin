@@ -1057,30 +1057,32 @@ export default function ZengoPage(
                 바둑판에 나타나는 단어들을 기억하고 순서대로 배치하는 게임입니다
               </p>
               
-              {/* 정보 버튼들을 가로로 배치 */}
-              <div className="flex justify-center items-center space-x-4 mb-6">
-                <button
-                  className="text-primary-600 hover:text-primary-800 underline text-sm flex items-center space-x-1"
-                  onClick={() => setUiState('intro')}
-                  onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
-                >
-                  <span>📖</span>
-                  <span>게임 방법 자세히 보기</span>
-                </button>
-                
-                <div className="w-px h-4 bg-gray-300"></div>
-                
-                <button 
-                  onClick={() => setInfoModalOpen(true)}
-                  className="group flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-50 to-purple-50 hover:from-cyan-100 hover:to-purple-100 border border-cyan-200 hover:border-cyan-300 transition-all duration-200"
-                  aria-label="젠고가 키워주는 인지 능력 알아보기"
-                >
-                  <BrainCircuit className="w-5 h-5 text-cyan-600 group-hover:text-cyan-700" />
-                  <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                    뇌 훈련 효과 보기
-                  </span>
-                </button>
-              </div>
+              {/* 정보 버튼들: 모바일에서만 상단에 노출 (데스크톱은 우측 컬럼에만) */}
+              {!isDesktop && (
+                <div className="flex justify-center items-center space-x-4 mb-6">
+                  <button
+                    className="text-primary-600 hover:text-primary-800 underline text-sm flex items-center space-x-1"
+                    onClick={() => setUiState('intro')}
+                    onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+                  >
+                    <span>📖</span>
+                    <span>게임 방법 자세히 보기</span>
+                  </button>
+                  
+                  <div className="w-px h-4 bg-gray-300"></div>
+                  
+                  <button 
+                    onClick={() => setInfoModalOpen(true)}
+                    className="group flex items-center space-x-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-50 to-purple-50 hover:from-cyan-100 hover:to-purple-100 border border-cyan-200 hover:border-cyan-300 transition-all duration-200"
+                    aria-label="젠고가 키워주는 인지 능력 알아보기"
+                  >
+                    <BrainCircuit className="w-5 h-5 text-cyan-600 group-hover:text-cyan-700" />
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                      뇌 훈련 효과 보기
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
             
             {/* 데스크톱: 2열 레이아웃 (설정 좌측, 정보+시작 버튼 우측) */}
