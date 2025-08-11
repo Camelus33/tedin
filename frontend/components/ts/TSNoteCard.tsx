@@ -387,6 +387,10 @@ export default function TSNoteCard({
   const [isSavingEvolution, setIsSavingEvolution] = useState(false);
   const evolutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // 유사 메모 패널 상태
+  const [similarOpen, setSimilarOpen] = useState(false);
+  const [similarItems, setSimilarItems] = useState<Array<{ _id: string; bookId?: string; content: string; createdAt?: string; score?: number }>>([]);
+
   const tabList = [
     { key: 'importanceReason', label: '적은 이유' },
     { key: 'momentContext', label: '적었던 당시 상황' },
@@ -501,9 +505,63 @@ export default function TSNoteCard({
           const afterMilestone2 = after.milestone2NotifiedAt || null;
           if (!beforeMilestone1 && afterMilestone1) {
             showSuccess('좋아요! 생각추가/기억강화/지식연결이 시작되었어요. 비슷한 메모를 연결해볼까요?');
+            // 1차 마일스톤 달성 시 간단 유사 메모 안내
+            try {
+              const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+              const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+              if (token) {
+                const now = new Date();
+                const hourBucket = now.getHours();
+                const weekday = now.getDay();
+                const text = String(after?.content || note.content || '').slice(0, 600);
+                fetch(`${base}/api/analytics/similar`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                  body: JSON.stringify({ text, limit: 3, hourBucket, weekday }),
+                })
+                  .then(r => r.json())
+                  .then((data) => {
+                    const results = Array.isArray(data?.results) ? data.results : [];
+                    if (results.length) {
+                      showSuccess(`유사 메모 ${results.length}개 발견! 바로 확인해 보세요.`);
+                      setSimilarItems(results.slice(0,3));
+                      setSimilarOpen(true);
+                    }
+                  }).catch(() => {});
+              }
+            } catch {}
           }
           if (!beforeMilestone2 && afterMilestone2) {
             showSuccess('훌륭해요! 4단계 + 연결 4개 달성! 포커스드 노트로 묶어 보시겠어요?');
+            // 2차 마일스톤 달성 시 정밀 유사 메모 안내
+            try {
+              const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+              const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+              if (token) {
+                const now = new Date();
+                const hourBucket = now.getHours();
+                const weekday = now.getDay();
+                const textParts = [
+                  String(after?.content || note.content || ''),
+                  String(after?.importanceReason || ''),
+                  String(after?.relatedKnowledge || ''),
+                ].join('\n').slice(0, 800);
+                fetch(`${base}/api/analytics/similar`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                  body: JSON.stringify({ text: textParts, limit: 5, hourBucket, weekday }),
+                })
+                  .then(r => r.json())
+                  .then((data) => {
+                    const results = Array.isArray(data?.results) ? data.results : [];
+                    if (results.length) {
+                      showSuccess(`정밀 유사 메모 ${results.length}개 발견! 비교해 보세요.`);
+                      setSimilarItems(results.slice(0,3));
+                      setSimilarOpen(true);
+                    }
+                  }).catch(() => {});
+              }
+            } catch {}
           }
           // 반복/방향 제안(경량) — 로그인 환경에서만
           try {
@@ -1546,6 +1604,43 @@ export default function TSNoteCard({
               </Button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* 유사 메모 미니 패널 */}
+      {similarOpen && similarItems.length > 0 && !minimalDisplay && (
+        <div className="absolute bottom-1 left-1 right-1 sm:bottom-2 sm:left-2 sm:right-2 bg-gray-900/95 border border-cyan-700/30 rounded-md p-2 z-30 shadow-xl">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs sm:text-sm text-cyan-300 font-semibold">유사 메모</span>
+            <button className="text-xs text-gray-400 hover:text-white" onClick={(e)=>{e.stopPropagation(); setSimilarOpen(false);}}>닫기</button>
+          </div>
+          <ul className="space-y-1">
+            {similarItems.map((it, idx) => (
+              <li key={it._id || idx} className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[11px] sm:text-xs text-gray-300 truncate" title={it.content}>{(it.content || '').slice(0,80)}</p>
+                  {it.createdAt && (
+                    <span className="text-[10px] text-gray-500">{new Date(it.createdAt).toLocaleDateString()}</span>
+                  )}
+                </div>
+                <button
+                  className="flex-shrink-0 text-[11px] sm:text-xs px-2 py-1 rounded bg-cyan-700 hover:bg-cyan-600 text-white"
+                  onClick={(e)=>{
+                    e.stopPropagation();
+                    try {
+                      const target = document.getElementById(`note-${it._id}`);
+                      if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setSimilarOpen(false);
+                      } else if (it.bookId) {
+                        window.location.href = `/books/${it.bookId}#note-${it._id}`;
+                      }
+                    } catch {}
+                  }}
+                >열기</button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

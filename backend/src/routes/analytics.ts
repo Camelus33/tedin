@@ -28,7 +28,7 @@ router.post('/similar', authenticate, async (req, res) => {
     const recentPool = await Note.find({ userId, embedding: { $exists: true, $ne: null } })
       .sort({ createdAt: -1 })
       .limit(2000)
-      .select('_id content createdAt embedding')
+      .select('_id content createdAt embedding bookId')
       .lean();
 
     const filterByTime = (docs: any[]) => {
@@ -58,10 +58,10 @@ router.post('/similar', authenticate, async (req, res) => {
       const baseline = await Note.find({ userId })
         .sort({ createdAt: -1 })
         .limit(200)
-        .select('_id content createdAt')
+        .select('_id content createdAt bookId')
         .lean();
       const scored = baseline
-        .map(n => ({ _id: n._id, content: n.content, createdAt: n.createdAt, score: jaccard(text, n.content || '') }))
+        .map(n => ({ _id: n._id, bookId: n.bookId, content: n.content, createdAt: n.createdAt, score: jaccard(text, n.content || '') }))
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);
       return res.status(200).json({ query: text.slice(0, 200), results: scored, mode: 'jaccard_fallback' });
@@ -106,6 +106,7 @@ router.post('/similar', authenticate, async (req, res) => {
     const scored = recentNotes
       .map((n: any) => ({
         _id: n._id,
+        bookId: n.bookId,
         content: n.content,
         createdAt: n.createdAt,
         score: Array.isArray(n.embedding) && n.embedding.length > 0 ? cosine(queryEmbedding, n.embedding) : -1,
