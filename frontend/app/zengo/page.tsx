@@ -1071,82 +1071,133 @@ export default function ZengoPage(
               </div>
             </div>
             
-            {/* 보드 크기 선택 + Myverse 카드 */}
-            <section className="settings-section mb-8">
-              <h3 className="text-xl font-semibold text-gray-700 mb-6 text-center">메모리보드 크기 선택</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6" role="radiogroup" aria-label="레벨 선택">
-                {[{ size: 3, desc: '매일 꾸준히 해 보세요', IconComponent: UserIcon },
-                  { size: 5, desc: '점점 더 쉬워집니다', IconComponent: ArrowTrendingUpIcon },
-                  { size: 7, desc: '성취감을 느껴 보세요', IconComponent: RocketLaunchIcon }
-                ].map(level => (
-                  <div
-                    key={level.size}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg flex flex-col items-center justify-center text-center ${selectedBoardSize === level.size ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
-                    onClick={() => setSelectedBoardSize(level.size)}
-                    onKeyPress={(e) => handleKeyPress(e, () => setSelectedBoardSize(level.size))}
-                    role="radio"
-                    aria-checked={selectedBoardSize === level.size}
+            {/* 데스크톱: 2열 레이아웃 (설정 좌측, 정보+시작 버튼 우측) */}
+            <div className="md:grid md:grid-cols-[1fr_360px] md:gap-6 items-start">
+              {/* 왼쪽: 보드/언어 설정 */}
+              <div>
+                {/* 보드 크기 선택 */}
+                <section className="settings-section mb-6 md:mb-4">
+                  <h3 className="text-xl font-semibold text-gray-700 mb-4 text-center md:text-left">메모리보드 크기 선택</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4" role="radiogroup" aria-label="레벨 선택">
+                    {[{ size: 3, desc: '매일 꾸준히 해 보세요', IconComponent: UserIcon },
+                      { size: 5, desc: '점점 더 쉬워집니다', IconComponent: ArrowTrendingUpIcon },
+                      { size: 7, desc: '성취감을 느껴 보세요', IconComponent: RocketLaunchIcon }
+                    ].map(level => (
+                      <div
+                        key={level.size}
+                        className={`p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg flex flex-col items-center justify-center text-center ${selectedBoardSize === level.size ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
+                        onClick={() => setSelectedBoardSize(level.size)}
+                        onKeyPress={(e) => handleKeyPress(e, () => setSelectedBoardSize(level.size))}
+                        role="radio"
+                        aria-checked={selectedBoardSize === level.size}
+                        tabIndex={0}
+                      >
+                        <level.IconComponent className="w-10 h-10 text-primary-600 mb-2" />
+                        <h4 className="text-2xl font-bold text-gray-800 mb-1">{`${level.size}x${level.size}`}</h4>
+                        <p className="text-sm text-gray-600">{level.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                {/* 언어 선택 */}
+                <section className="settings-section mb-6 md:mb-4">
+                  <h3 className="text-xl font-semibold text-gray-700 mb-4 text-center md:text-left">목표 언어</h3>
+                  <div className="flex justify-center md:justify-start gap-4 mb-4" role="radiogroup" aria-label="언어 선택">
+                    {[{ code: 'ko', name: '한국어', flag: '🇰🇷' },
+                      { code: 'en', name: 'English', flag: '🇺🇸' }
+                    ].map(lang => (
+                      <div
+                        key={lang.code}
+                        className={`flex items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg min-w-[140px] justify-center ${selectedLanguage === lang.code ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
+                        onClick={() => setSelectedLanguage(lang.code)}
+                        onKeyPress={(e) => handleKeyPress(e, () => setSelectedLanguage(lang.code))}
+                        role="radio"
+                        aria-checked={selectedLanguage === lang.code}
+                        tabIndex={0}
+                      >
+                        <span className="text-3xl mr-3">{lang.flag}</span>
+                        <span className="text-md font-medium text-gray-800">{lang.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {!selectedLanguage && <p className="text-sm text-red-500 selection-guide md:text-left text-center">언어를 선택해주세요</p>}
+                </section>
+
+                {/* 모바일용 시작 버튼 (데스크톱에서는 우측 고정 영역) */}
+                <div className="action-buttons-container text-center space-y-4 md:hidden">
+                  <button
+                    className="start-button w-full max-w-md mx-auto block bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleStartGame}
+                    onKeyPress={(e) => handleKeyPress(e, handleStartGame)}
+                    disabled={loading || !selectedBoardSize || !selectedLanguage}
+                    aria-disabled={loading || !selectedBoardSize || !selectedLanguage}
                     tabIndex={0}
                   >
-                    <level.IconComponent className="w-10 h-10 text-primary-600 mb-2" />
-                    <h4 className="text-2xl font-bold text-gray-800 mb-1">{`${level.size}x${level.size}`}</h4>
-                    <p className="text-sm text-gray-600">{level.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-            
-            {/* 언어 선택 */}
-            <section className="settings-section mb-8">
-              <h3 className="text-xl font-semibold text-gray-700 mb-6 text-center">목표 언어</h3>
-              <div className="flex justify-center gap-4 mb-6" role="radiogroup" aria-label="언어 선택">
-                {[{ code: 'ko', name: '한국어', flag: '🇰🇷' },
-                  { code: 'en', name: 'English', flag: '🇺🇸' }
-                ].map(lang => (
-                  <div
-                    key={lang.code}
-                    className={`flex items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer bg-white hover:shadow-lg min-w-[140px] justify-center ${selectedLanguage === lang.code ? 'border-primary-500 shadow-xl ring-2 ring-primary-500/50' : 'border-gray-200 hover:border-gray-300'}`}
-                    onClick={() => setSelectedLanguage(lang.code)}
-                    onKeyPress={(e) => handleKeyPress(e, () => setSelectedLanguage(lang.code))}
-                    role="radio"
-                    aria-checked={selectedLanguage === lang.code}
+                    {loading ? '로딩 중...' : (!selectedBoardSize || !selectedLanguage ? '옵션을 모두 선택하세요' : 'ZenGo 시작')}
+                  </button>
+                  <button
+                    className="back-button text-gray-500 hover:text-gray-700 underline text-sm"
+                    onClick={() => setUiState('intro')}
+                    onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+                    aria-label="인트로 화면으로 돌아가기"
                     tabIndex={0}
                   >
-                    <span className="text-3xl mr-3">{lang.flag}</span>
-                    <span className="text-md font-medium text-gray-800">{lang.name}</span>
-                  </div>
-                ))}
+                    뒤로 가기
+                  </button>
+                </div>
               </div>
-              {!selectedLanguage && <p className="text-sm text-red-500 selection-guide text-center">언어를 선택해주세요</p>}
-            </section>
-            
-            {/* Start Game Button */}
-            <div className="action-buttons-container text-center space-y-4">
-              <button
-                className="start-button w-full max-w-md mx-auto block bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleStartGame}
-                onKeyPress={(e) => handleKeyPress(e, handleStartGame)}
-                disabled={loading || !selectedBoardSize || !selectedLanguage}
-                aria-disabled={loading || !selectedBoardSize || !selectedLanguage}
-                tabIndex={0}
-              >
-                {loading ? '로딩 중...' : (!selectedBoardSize || !selectedLanguage ? '옵션을 모두 선택하세요' : 'ZenGo 시작')}
-              </button>
-              
-              <button
-                className="back-button text-gray-500 hover:text-gray-700 underline text-sm"
-                onClick={() => setUiState('intro')}
-                onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
-                aria-label="인트로 화면으로 돌아가기"
-                tabIndex={0}
-              >
-                뒤로 가기
-              </button>
-              <CognitiveEffectModal 
-                isOpen={isInfoModalOpen} 
-                onClose={() => setInfoModalOpen(false)} 
-              />
+
+              {/* 오른쪽: 정보/효과 + 시작 버튼 고정 */}
+              <aside className="hidden md:block md:sticky md:top-6">
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-3">
+                    <button
+                      className="text-primary-600 hover:text-primary-800 underline text-sm text-left"
+                      onClick={() => setUiState('intro')}
+                      onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+                    >
+                      📖 게임 방법 자세히 보기
+                    </button>
+                    <button 
+                      onClick={() => setInfoModalOpen(true)}
+                      className="flex items-center justify-center px-4 py-3 rounded-lg bg-gradient-to-r from-cyan-50 to-purple-50 hover:from-cyan-100 hover:to-purple-100 border border-cyan-200 hover:border-cyan-300 transition-all duration-200"
+                      aria-label="젠고가 키워주는 인지 능력 알아보기"
+                    >
+                      <BrainCircuit className="w-5 h-5 text-cyan-600 mr-2" />
+                      <span className="text-sm font-medium text-gray-700">뇌 훈련 효과 보기</span>
+                    </button>
+                  </div>
+
+                  <button
+                    className="w-full block bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleStartGame}
+                    onKeyPress={(e) => handleKeyPress(e, handleStartGame)}
+                    disabled={loading || !selectedBoardSize || !selectedLanguage}
+                    aria-disabled={loading || !selectedBoardSize || !selectedLanguage}
+                    tabIndex={0}
+                  >
+                    {loading ? '로딩 중...' : (!selectedBoardSize || !selectedLanguage ? '옵션을 모두 선택하세요' : '게임 시작')}
+                  </button>
+
+                  <button
+                    className="w-full text-gray-500 hover:text-gray-700 underline text-sm"
+                    onClick={() => setUiState('intro')}
+                    onKeyPress={(e) => handleKeyPress(e, () => setUiState('intro'))}
+                    aria-label="인트로 화면으로 돌아가기"
+                    tabIndex={0}
+                  >
+                    뒤로 가기
+                  </button>
+                </div>
+              </aside>
             </div>
+
+            {/* 인지 효과 모달 (공용) */}
+            <CognitiveEffectModal 
+              isOpen={isInfoModalOpen} 
+              onClose={() => setInfoModalOpen(false)} 
+            />
           </div>
         </div>
       );
