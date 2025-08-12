@@ -6,8 +6,6 @@ import PercentileRankCard from '@/components/analytics/PercentileRankCard';
 import TimeSeriesChartCard from '@/components/analytics/TimeSeriesChartCard';
 import OverallScoreCard from '@/components/analytics/OverallScoreCard';
 import StrengthsWeaknessesDisplay from '@/components/analytics/StrengthsWeaknessesDisplay';
-import ReflectionJournal from '@/components/analytics/ReflectionJournal';
-import PersonalizedSuggestions from '@/components/analytics/PersonalizedSuggestions';
 import WeekHourHeatmap from '@/components/analytics/WeekHourHeatmap';
 import FastRhythmTop from '@/components/analytics/FastRhythmTop';
 import KeywordChips from '@/components/analytics/KeywordChips';
@@ -385,11 +383,7 @@ export default function AnalyticsPage() {
             )}
           </div>
           
-          {/* 성찰일지와 맞춤형 제안을 상단으로 이동 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <ReflectionJournal metricName="cognitive" />
-            <PersonalizedSuggestions />
-          </div>
+          {/* (제거됨) ReflectionJournal & PersonalizedSuggestions */}
 
           {timeSeriesData && (
             <Card className="mt-6">
