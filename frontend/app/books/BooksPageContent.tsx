@@ -397,12 +397,12 @@ export default function BooksPageContent() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-            <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold ${cyberTheme.primary} tracking-tight`}>나의 도서관</h1>
+            <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold ${cyberTheme.primary} tracking-tight`}>My Lib</h1>
             <button onClick={handleAddBook} aria-label="새 책 등록" className={`flex items-center gap-2 px-6 py-3 rounded-xl ${cyberTheme.buttonPrimaryBg} ${cyberTheme.buttonPrimaryHoverBg} ${cyberTheme.buttonHover} text-white font-semibold ${cyberTheme.cardTransition} w-full sm:w-auto mt-4 sm:mt-0 shadow-lg`}>
               <AiOutlinePlus className="h-5 w-5" /><span>NEW</span>
             </button>
           </div>
-          <p className={`text-base ${cyberTheme.textMuted} leading-relaxed`}>자료, 메모, 노트북, 단권화 노트, AI - Link 관리</p>
+          <p className={`text-base ${cyberTheme.textMuted} leading-relaxed`}>your books, notes, and memories</p>
         </div>
         <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-6 ${cyberTheme.bgSecondary} rounded-xl shadow-lg border ${cyberTheme.inputBorder}/30`}>
           <div className="relative w-full sm:w-auto flex-grow">

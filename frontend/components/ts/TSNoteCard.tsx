@@ -936,7 +936,7 @@ export default function TSNoteCard({
           >
             ▶기억강화(0/4)
           </button>
-          <span className="ml-2 text-xs text-gray-500 italic">1줄만 남겨도 4배는 강해집니다.</span>
+          <span className="ml-2 text-xs text-gray-500 italic">4단계 작성시 유사카드 자동추적</span>
         </div>
       );
     }
