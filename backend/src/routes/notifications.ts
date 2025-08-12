@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate } from '../middlewares/auth';
+import { Request, Response } from 'express';
 import { getNotifications, markAsRead, markAllRead, subscribeWebPush, unsubscribeWebPush, deleteNotification, deleteAllRead } from '../controllers/notificationController';
 import Notification from '../models/Notification';
 
@@ -42,3 +43,22 @@ router.post('/webpush/subscribe', subscribeWebPush);
 router.delete('/webpush/unsubscribe', unsubscribeWebPush);
 
 export default router; 
+
+// SSE stream endpoint (mounted by app.ts after default export)
+export const notificationsStreamHandler = async (req: Request, res: Response) => {
+  // This minimal SSE handler can be wired in app.ts as:
+  // app.get('/api/notifications/stream', authenticate, notificationsStreamHandler)
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders?.();
+
+  const keepAlive = setInterval(() => {
+    res.write(`event: keepalive\n`);
+    res.write(`data: {"ts":"${new Date().toISOString()}"}\n\n`);
+  }, 25000);
+
+  req.on('close', () => {
+    clearInterval(keepAlive);
+  });
+};

@@ -64,7 +64,7 @@ import collectionRoutes from './routes/collections';
 import myverseGamesRoutes from './routes/myverseGames';
 import routineRoutes from './routes/routineRoutes';
 import flashcardRoutes from './routes/flashcards';
-import notificationRoutes from './routes/notifications';
+import notificationRoutes, { notificationsStreamHandler } from './routes/notifications';
 import summaryNoteRoutes from './routes/summaryNoteRoutes';
 import publicShareRoutes from './routes/publicShareRoutes';
 import analyticsRoutes from './routes/analytics';
@@ -170,6 +170,9 @@ app.use('/api/myverse', myverseGamesRoutes);
 app.use('/api/routines', routineRoutes);
 app.use('/api/flashcards', flashcardRoutes);
 app.use('/api/notifications', notificationRoutes);
+// SSE stream for notifications (authenticated)
+import { authenticate } from './middlewares/auth';
+app.get('/api/notifications/stream', authenticate, notificationsStreamHandler);
 app.use('/api/summary-notes', summaryNoteRoutes);
 app.use('/api/public-shares', publicShareRoutes);
 app.use('/api/analytics', analyticsRoutes);
