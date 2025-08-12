@@ -391,6 +391,8 @@ export default function TSNoteCard({
   const [similarOpen, setSimilarOpen] = useState(false);
   const [similarItems, setSimilarItems] = useState<Array<{ _id: string; bookId?: string; content: string; createdAt?: string; score?: number }>>([]);
   const [similarQuery, setSimilarQuery] = useState<string>('');
+  // 1차 트리거 토스트 시퀀스 중복 방지
+  const milestone1ToastShownRef = useRef<boolean>(false);
 
   const tabList = [
     { key: 'importanceReason', label: '적은 이유' },
@@ -536,17 +538,18 @@ export default function TSNoteCard({
           const after = refreshed.data || {};
           const afterMilestone1 = after.milestone1NotifiedAt || null;
           const afterMilestone2 = after.milestone2NotifiedAt || null;
-          if (!beforeMilestone1 && afterMilestone1) {
-            showSuccess('좋아요! 생각추가/기억강화/지식연결이 시작되었어요. 비슷한 메모를 연결해볼까요?');
-            // 1차 마일스톤 달성 시 간단 유사 메모 안내
+          if (!beforeMilestone1 && afterMilestone1 && !milestone1ToastShownRef.current) {
+            milestone1ToastShownRef.current = true;
+            // 1) 유사 메모 자동 추적 완료 → 2) 반복 패턴 → 3) 방향 제안 순으로 토스트 표시 (시간 간격 부여)
             try {
               const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
               const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+              const now = new Date();
+              const hourBucket = now.getHours();
+              const weekday = now.getDay();
               if (token) {
-                const now = new Date();
-                const hourBucket = now.getHours();
-                const weekday = now.getDay();
                 const text = String(after?.content || note.content || '').slice(0, 600);
+                // 1) 유사 메모 자동 추적
                 fetch(`${base}/api/analytics/similar`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -556,11 +559,39 @@ export default function TSNoteCard({
                   .then((data) => {
                     const results = Array.isArray(data?.results) ? data.results : [];
                     if (results.length) {
-                      showSuccess(`유사 메모 ${results.length}개 발견! 바로 확인해 보세요.`);
                       setSimilarItems(results.slice(0,3));
                       setSimilarOpen(true);
+                      showSuccess(`유사 메모 ${results.length}개 자동 추적 완료. 지금 바로 확인하세요.`);
                     }
-                  }).catch(() => {});
+                  })
+                  .catch(() => {})
+                  .finally(() => {
+                    // 2) 반복 패턴 제안 (약간의 지연 후)
+                    setTimeout(() => {
+                      fetch(`${base}/api/analytics/repetition?days=30`, { headers: { Authorization: `Bearer ${token}` } })
+                        .then(r => r.json())
+                        .then((rep) => {
+                          if (rep?.buckets?.length) {
+                            showSuccess('이 시간대 반복되는 생각이군요.');
+                          }
+                        })
+                        .catch(() => {})
+                        .finally(() => {
+                          // 3) 방향(전이) 제안 (추가 지연 후)
+                          setTimeout(() => {
+                            fetch(`${base}/api/analytics/direction`, { headers: { Authorization: `Bearer ${token}` } })
+                              .then(r => r.json())
+                              .then((dir) => {
+                                const tags = dir?.suggestions?.map((s: any) => s.tag).filter(Boolean) || [];
+                                if (tags.length) {
+                                  showSuccess(`다음 생각으로 가능성 높은 주제 : ${tags.join(', ')}`);
+                                }
+                              })
+                              .catch(() => {});
+                          }, 1200);
+                        });
+                    }, 1200);
+                  });
               }
             } catch {}
           }
