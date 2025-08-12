@@ -60,6 +60,37 @@ export default function NotificationBell() {
     return () => clearInterval(interval);
   }, []);
 
+  // --- SSE realtime stream (fallback to polling) ---
+  useEffect(() => {
+    if (!token) return;
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const url = `${base}/api/notifications/stream?token=${encodeURIComponent(token)}`;
+      const es = new EventSource(url, { withCredentials: false });
+
+      es.addEventListener('keepalive', () => {});
+      es.onmessage = (ev) => {
+        // generic message handler (optional)
+      };
+      es.addEventListener('nudge_created', (ev) => {
+        try {
+          const payload = JSON.parse(ev.data || '{}');
+          const item: EphemeralNudge = {
+            id: payload.id || `sse-${Date.now()}`,
+            message: payload.message || '좋아요! 지금 한 걸음 더 나아가 볼까요?',
+            createdAt: new Date().toISOString(),
+            actionLink: payload.actionLink || '/dashboard',
+          };
+          setNudges((prev) => [item, ...prev].slice(0, 3));
+        } catch {}
+      });
+      es.onerror = () => {
+        es.close();
+      };
+      return () => es.close();
+    } catch {}
+  }, [token]);
+
   // --- Periodic client-side encouragement nudges ---
   // Quiet hours: 22:00~08:00 local
   const isQuietHours = () => {

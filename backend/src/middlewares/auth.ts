@@ -33,6 +33,10 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     if (!token && authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.split(' ')[1];
     }
+    // SSE 등 헤더를 쓸 수 없는 경우를 위해 쿼리 파라미터 허용 (보안상 HTTPS 전제)
+    if (!token && req.query && typeof req.query.token === 'string') {
+      token = req.query.token;
+    }
     
     // 토큰 검증 및 사용자 확인
     if (token) {
