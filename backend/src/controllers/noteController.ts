@@ -28,7 +28,8 @@ export const getUserNotes = async (req: Request, res: Response) => {
     const notes = await Note.find({ userId })
       .sort({ createdAt: -1 })
       .limit(limit)
-      .select('_id userId bookId type content tags createdAt clientCreatedAt')
+      // Include milestone fields to keep client-side before/after comparisons accurate
+      .select('_id userId bookId type content tags createdAt clientCreatedAt milestone1NotifiedAt milestone2NotifiedAt relatedLinks inlineThreads')
       .lean();
 
     res.status(200).json(notes);
@@ -154,15 +155,22 @@ export const updateNote = async (req: Request, res: Response) => {
       updateData.mentalImageAt = new Date();
     }
     if (relatedLinks !== undefined) {
-      // 입력된 링크 항목에 createdAt 기본값 주입
+      // 입력된 링크 항목을 검증/정규화하고 createdAt 기본값 주입
       const links = Array.isArray(relatedLinks) ? relatedLinks : [];
-      updateData.relatedLinks = links.map((l: any) => ({ ...l, createdAt: l?.createdAt || new Date() }));
+      const allowedTypes = new Set(['book', 'paper', 'youtube', 'media', 'website']);
+      const cleaned = links.filter((l: any) => {
+        if (!l || typeof l !== 'object') return false;
+        const url = String(l.url || '').trim();
+        const type = String(l.type || '');
+        return url.length > 0 && allowedTypes.has(type);
+      });
+      updateData.relatedLinks = cleaned.map((l: any) => ({ ...l, createdAt: l?.createdAt || new Date() }));
     }
 
     const updatedNote = await Note.findByIdAndUpdate(
       noteId,
       { $set: updateData },
-      { new: true }
+      { new: true, runValidators: true }
     ).select('-__v');
 
     // 이벤트 로깅: update_note
@@ -195,10 +203,17 @@ export const updateNote = async (req: Request, res: Response) => {
     try {
       const after = await Note.findById(noteId).lean();
       if (after) {
+        const allowedTypes = new Set(['book', 'paper', 'youtube', 'media', 'website']);
         const evolveCountAfter = [after.importanceReason, after.momentContext, after.relatedKnowledge, after.mentalImage]
           .filter(v => v && String(v).trim().length > 0).length;
         const inlineCountAfter = Array.isArray((after as any).inlineThreads) ? (after as any).inlineThreads.length : 0;
-        const linkCountAfter = Array.isArray(after.relatedLinks) ? after.relatedLinks.length : 0;
+        const linkCountAfter = Array.isArray(after.relatedLinks)
+          ? after.relatedLinks.filter((l: any) => {
+              const url = String(l?.url || '').trim();
+              const type = String(l?.type || '');
+              return url.length > 0 && allowedTypes.has(type);
+            }).length
+          : 0;
 
         const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
         const evolveAllDone = evolveCountAfter === 4;
@@ -234,7 +249,7 @@ export const updateNote = async (req: Request, res: Response) => {
           } catch {}
         }
         if (Object.keys(updates).length > 0) {
-          await Note.findByIdAndUpdate(noteId, { $set: updates });
+          await Note.findByIdAndUpdate(noteId, { $set: updates }, { runValidators: true });
         }
       }
     } catch {}
@@ -247,7 +262,13 @@ export const updateNote = async (req: Request, res: Response) => {
     }
 
     // 최신 상태로 응답 (마일스톤 갱신이 있었을 경우 포함)
-    const finalNote = await Note.findById(noteId).select('-__v');
+    const finalNote = await Note.findById(noteId)
+      .populate({
+        path: 'inlineThreads',
+        select: '-__v',
+        options: { sort: { createdAt: 1 } },
+      })
+      .select('-__v');
     res.status(200).json(finalNote || updatedNote);
   } catch (error) {
     console.error('노트 업데이트 중 오류 발생:', error);
@@ -515,7 +536,7 @@ export const addInlineThread = async (req: Request, res: Response) => {
     const updatedNote = await Note.findByIdAndUpdate(
       noteId,
       { $addToSet: { inlineThreads: savedThread._id } },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     if (updatedNote) {
@@ -543,10 +564,17 @@ export const addInlineThread = async (req: Request, res: Response) => {
     try {
       const after = await Note.findById(noteId).lean();
       if (after) {
+        const allowedTypes = new Set(['book', 'paper', 'youtube', 'media', 'website']);
         const evolveCountAfter = [after.importanceReason, after.momentContext, after.relatedKnowledge, after.mentalImage]
           .filter(v => v && String(v).trim().length > 0).length;
         const inlineCountAfter = Array.isArray((after as any).inlineThreads) ? (after as any).inlineThreads.length : 0;
-        const linkCountAfter = Array.isArray(after.relatedLinks) ? after.relatedLinks.length : 0;
+        const linkCountAfter = Array.isArray(after.relatedLinks)
+          ? after.relatedLinks.filter((l: any) => {
+              const url = String(l?.url || '').trim();
+              const type = String(l?.type || '');
+              return url.length > 0 && allowedTypes.has(type);
+            }).length
+          : 0;
 
         const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
         const evolveAllDone = evolveCountAfter === 4;
@@ -582,7 +610,7 @@ export const addInlineThread = async (req: Request, res: Response) => {
           } catch {}
         }
         if (Object.keys(updates).length > 0) {
-          await Note.findByIdAndUpdate(noteId, { $set: updates });
+          await Note.findByIdAndUpdate(noteId, { $set: updates }, { runValidators: true });
         }
       }
     } catch {}
@@ -711,7 +739,7 @@ export const deleteInlineThread = async (req: Request, res: Response) => {
       await Note.findByIdAndUpdate(
         noteId,
         { $pull: { inlineThreads: threadId } },
-        { session }
+        { session, runValidators: true }
       );
 
       // 인라인메모 쓰레드 삭제
@@ -977,8 +1005,17 @@ async function updateNoteBasedOnAction(noteId: string, action: string, data: any
     case 'add_connection':
       if (data.relatedLinks) {
         const links = Array.isArray(data.relatedLinks) ? data.relatedLinks : [data.relatedLinks];
-        const stamped = links.map((l: any) => ({ ...l, createdAt: l?.createdAt || new Date() }));
-        updateData.$push = { relatedLinks: { $each: stamped } };
+        const allowedTypes = new Set(['book', 'paper', 'youtube', 'media', 'website']);
+        const cleaned = links.filter((l: any) => {
+          if (!l || typeof l !== 'object') return false;
+          const url = String(l.url || '').trim();
+          const type = String(l.type || '');
+          return url.length > 0 && allowedTypes.has(type);
+        });
+        const stamped = cleaned.map((l: any) => ({ ...l, createdAt: l?.createdAt || new Date() }));
+        if (stamped.length > 0) {
+          updateData.$push = { relatedLinks: { $each: stamped } };
+        }
       }
       // 이벤트 로깅: add_connection
       try {
@@ -1017,15 +1054,22 @@ async function updateNoteBasedOnAction(noteId: string, action: string, data: any
   if (Object.keys(updateData).length > 0) {
     // 마일스톤 자동 알림 로직: 업데이트 전후 상태를 비교하기 위해 현재 노트 로드
     const before = await Note.findById(noteId).lean();
-    await Note.findByIdAndUpdate(noteId, updateData);
+    await Note.findByIdAndUpdate(noteId, updateData, { runValidators: true });
     const after = await Note.findById(noteId).lean();
 
     if (after) {
+      const allowedTypes = new Set(['book', 'paper', 'youtube', 'media', 'website']);
       // 조건: 인라인 쓰레드 ≥1, 메모진화 4단계 중 ≥1, 관련 링크 ≥1 달성 시 1차 알림(한 번만)
       const evolveCountAfter = [after.importanceReason, after.momentContext, after.relatedKnowledge, after.mentalImage]
         .filter(v => v && String(v).trim().length > 0).length;
       const inlineCountAfter = Array.isArray((after as any).inlineThreads) ? (after as any).inlineThreads.length : 0;
-      const linkCountAfter = Array.isArray(after.relatedLinks) ? after.relatedLinks.length : 0;
+      const linkCountAfter = Array.isArray(after.relatedLinks)
+        ? after.relatedLinks.filter((l: any) => {
+            const url = String(l?.url || '').trim();
+            const type = String(l?.type || '');
+            return url.length > 0 && allowedTypes.has(type);
+          }).length
+        : 0;
 
       const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
 
@@ -1063,7 +1107,7 @@ async function updateNoteBasedOnAction(noteId: string, action: string, data: any
         } catch {}
       }
       if (Object.keys(updates).length > 0) {
-        await Note.findByIdAndUpdate(noteId, { $set: updates });
+        await Note.findByIdAndUpdate(noteId, { $set: updates }, { runValidators: true });
       }
     }
   }
