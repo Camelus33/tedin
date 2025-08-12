@@ -302,6 +302,31 @@ export const runEngagementJobs = async (req: Request, res: Response) => {
         }
       }
 
+      // 5) Evolve last step (3/4 -> 4/4): find notes stuck at 3/4 in last 3 days
+      const almostDone = await Note.find({ userId, createdAt: { $gte: threeDaysAgo } })
+        .select('importanceReason momentContext relatedKnowledge mentalImage createdAt')
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .lean();
+      const evolveCounts = almostDone.map(n => [n.importanceReason, n.momentContext, n.relatedKnowledge, n.mentalImage]
+        .filter(v => v && String(v).trim().length > 0).length);
+      const hasThree = evolveCounts.some(c => c === 3);
+      if (hasThree && (await ensureOncePerDay('nudge_evolve_last'))) {
+        if (await dispatchIfAllowed('nudge_evolve_last', '3/4까지 왔어요. 마지막 한 칸이면 자동 연결 추천이 시작돼요 ✨')) created++;
+      }
+
+      // 6) Connect suggestion after evolveAllDone: 4/4 notes with recent similar hits
+      const completed = await Note.find({ userId, createdAt: { $gte: sevenDaysAgo } })
+        .select('importanceReason momentContext relatedKnowledge mentalImage createdAt')
+        .sort({ createdAt: -1 })
+        .limit(100)
+        .lean();
+      const evolveAllDone = completed.some(n => [n.importanceReason, n.momentContext, n.relatedKnowledge, n.mentalImage]
+        .filter(v => v && String(v).trim().length > 0).length === 4);
+      if (evolveAllDone && (await ensureOncePerDay('nudge_connect'))) {
+        if (await dispatchIfAllowed('nudge_connect', '유사 메모를 연결해 지식을 넓혀볼까요? 🔗')) created++;
+      }
+
       // 3) Zengo reminder: today 0, and no plays in last 3 days
       const zengoToday = await Session.countDocuments({ userId, mode: 'ZENGO', status: 'completed', createdAt: { $gte: startOfToday } });
       const zengo3d = await Session.countDocuments({ userId, mode: 'ZENGO', status: 'completed', createdAt: { $gte: threeDaysAgo } });

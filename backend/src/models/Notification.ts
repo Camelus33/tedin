@@ -5,7 +5,7 @@ export interface INotification extends Document {
   userId: Types.ObjectId;      // 수신자
   senderId: Types.ObjectId;    // 발신자
   gameId: Types.ObjectId;      // 관련 게임
-  type: 'game_shared' | 'game_received' | 'nudge_memo' | 'nudge_ts' | 'nudge_zengo' | 'suggest_summary' | 'level_up';
+  type: 'game_shared' | 'game_received' | 'nudge_memo' | 'nudge_ts' | 'nudge_zengo' | 'suggest_summary' | 'level_up' | 'nudge_evolve_last' | 'nudge_connect' ;
   message: string;             // 표시할 텍스트
   isRead: boolean;             // 읽음 여부
   readAt?: Date | null;        // 읽음 시각
@@ -18,7 +18,7 @@ const notificationSchema = new Schema<INotification>(
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     gameId: { type: Schema.Types.ObjectId, ref: 'MyverseGame', required: true },
-    type: { type: String, enum: ['game_shared', 'game_received', 'nudge_memo', 'nudge_ts', 'nudge_zengo', 'suggest_summary', 'level_up'], required: true },
+    type: { type: String, enum: ['game_shared', 'game_received', 'nudge_memo', 'nudge_ts', 'nudge_zengo', 'suggest_summary', 'level_up', 'nudge_evolve_last', 'nudge_connect'], required: true },
     message: { type: String, required: true },
     isRead: { type: Boolean, default: false },
     readAt: { type: Date, default: null },
