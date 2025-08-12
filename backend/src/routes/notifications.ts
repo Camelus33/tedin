@@ -1,6 +1,7 @@
 import express from 'express';
 import { authenticate } from '../middlewares/auth';
 import { Request, Response } from 'express';
+import { sseHub } from '../services/SseHub';
 import { getNotifications, markAsRead, markAllRead, subscribeWebPush, unsubscribeWebPush, deleteNotification, deleteAllRead } from '../controllers/notificationController';
 import Notification from '../models/Notification';
 
@@ -53,6 +54,12 @@ export const notificationsStreamHandler = async (req: Request, res: Response) =>
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders?.();
 
+  // register client
+  const userId = (req as any).user?._id || (req as any).user?.id;
+  if (userId) {
+    sseHub.register(String(userId), res);
+  }
+
   const keepAlive = setInterval(() => {
     res.write(`event: keepalive\n`);
     res.write(`data: {"ts":"${new Date().toISOString()}"}\n\n`);
@@ -60,5 +67,6 @@ export const notificationsStreamHandler = async (req: Request, res: Response) =>
 
   req.on('close', () => {
     clearInterval(keepAlive);
+    if (userId) sseHub.unregister(String(userId), res);
   });
 };

@@ -6,6 +6,7 @@ import Session from '../models/Session';
 import User from '../models/User';
 import SummaryNote from '../models/SummaryNote';
 import { WebPushService } from '../services/WebPushService';
+import { sseHub } from '../services/SseHub';
 
 // GET /api/notifications?unreadOnly=true|false
 export const getNotifications = async (req: Request, res: Response) => {
@@ -250,7 +251,17 @@ export const runEngagementJobs = async (req: Request, res: Response) => {
         if (inQuiet) return false;
 
         // create in-app
-        await Notification.create({ userId, senderId: userId, gameId: userId, type, message });
+        const doc = await Notification.create({ userId, senderId: userId, gameId: userId, type, message });
+
+        // SSE realtime push (soft-fail)
+        try {
+          sseHub.sendToUser(String(userId), 'nudge_created', {
+            id: String((doc as any)._id || ''),
+            message,
+            actionLink: '/dashboard',
+            type
+          });
+        } catch {}
 
         // web push if allowed
         if (allowWebPush) {
