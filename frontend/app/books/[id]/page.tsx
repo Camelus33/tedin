@@ -361,6 +361,34 @@ export default function BookDetailPage() {
     fetchData();
   }, [bookId, book, router]);
 
+  // Deep-link: #note-<id> 스크롤 및 하이라이트
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    // 실행 조건: 노트 목록이 로드된 이후
+    if (!tsNotes || tsNotes.length === 0) return;
+    const hash = window.location.hash;
+    if (!hash || !hash.startsWith('#note-')) return;
+    const targetId = hash.slice(1);
+    // 메모 탭으로 전환 보장
+    setActiveTab('memo');
+    // 약간의 지연 후 스크롤(레이아웃 안정화)
+    const t = setTimeout(() => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        try {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // 임시 하이라이트 효과 부여 후 제거
+          el.classList.add('ring-2', 'ring-cyan-500', 'ring-offset-2', 'ring-offset-gray-900');
+          const remove = setTimeout(() => {
+            el.classList.remove('ring-2', 'ring-cyan-500', 'ring-offset-2', 'ring-offset-gray-900');
+          }, 2000);
+          return () => clearTimeout(remove);
+        } catch {}
+      }
+    }, 150);
+    return () => clearTimeout(t);
+  }, [tsNotes]);
+
   /**
    * @effect 클라이언트 사이드에서 localStorage의 'book-metadata'를 읽어와 localMetadata 상태를 설정합니다.
    * bookId가 변경될 때마다 실행되어 해당 책의 메타데이터를 로드합니다.

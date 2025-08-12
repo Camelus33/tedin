@@ -1697,6 +1697,7 @@ export default function TSNoteCard({
                         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         setSimilarOpen(false);
                       } else if (it.bookId) {
+                        // 상세 페이지로 이동하되, 앵커를 붙여 정확히 해당 카드로 스크롤되게 함
                         window.location.href = `/books/${it.bookId}#note-${it._id}`;
                       }
                     } catch {}
