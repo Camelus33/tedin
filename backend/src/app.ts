@@ -70,6 +70,7 @@ import publicShareRoutes from './routes/publicShareRoutes';
 import analyticsRoutes from './routes/analytics';
 import diagnosticsRoutes from './routes/diagnostics';
 import techBlogRoutes from './routes/techBlog';
+import { runEngagementJobsCore } from './controllers/notificationController';
 
 import performanceRoutes from './routes/performance'; // 성능 모니터링 라우트 임포트
 import memoSearchRoutes from './routes/memoSearch'; // 메모카드 검색 라우트 임포트
@@ -220,6 +221,27 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`[App] Server is running on port ${PORT}`);
   console.log(`[App] uploadsPath (at server start): ${uploadsPath}`);
+  // Lightweight in-process scheduler (15~30min jitter) with simple DB lock
+  const baseMin = Number(process.env.ENGAGEMENT_JOB_MINUTES || 20);
+  const min = Math.max(5, Math.min(120, baseMin));
+  const scheduleNext = () => {
+    const jitter = Math.floor(Math.random() * 16) - 8; // -8..+7
+    const nextMs = Math.max(15, min + jitter) * 60 * 1000;
+    setTimeout(async () => {
+      try {
+        // Lock via HTTP secret (optional) or internal lock inside core (we'll keep simple: single instance best effort)
+        const started = Date.now();
+        const { created } = await runEngagementJobsCore();
+        console.log(`[Scheduler] EngagementJobs ran in ${Date.now()-started}ms, created=${created}`);
+      } catch (e: any) {
+        console.warn('[Scheduler] EngagementJobs error', e?.message || e);
+      } finally {
+        scheduleNext();
+      }
+    }, nextMs);
+    console.log(`[Scheduler] EngagementJobs scheduled in ${(nextMs/60000).toFixed(1)} min`);
+  };
+  scheduleNext();
 });
 
 export default app;

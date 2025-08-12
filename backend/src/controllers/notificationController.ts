@@ -7,6 +7,7 @@ import User from '../models/User';
 import SummaryNote from '../models/SummaryNote';
 import { WebPushService } from '../services/WebPushService';
 import { sseHub } from '../services/SseHub';
+import JobLock from '../models/JobLock';
 
 // GET /api/notifications?unreadOnly=true|false
 export const getNotifications = async (req: Request, res: Response) => {
@@ -350,3 +351,177 @@ export const runEngagementJobs = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Job failed' });
   }
 };
+
+// Internal helper to acquire a time-bound lock; returns true if acquired
+async function acquireJobLock(key: string, ttlMs: number): Promise<boolean> {
+  const now = new Date();
+  const until = new Date(now.getTime() + ttlMs);
+  try {
+    const res = await JobLock.findOneAndUpdate(
+      { key, $or: [ { lockedUntil: { $lte: now } }, { lockedUntil: { $exists: false } } ] },
+      { $set: { key, lockedUntil: until, updatedAt: now } },
+      { upsert: true, new: true }
+    );
+    // if we got a doc with lockedUntil >= now (ours), consider acquired
+    return !!res && res.lockedUntil.getTime() >= until.getTime() - 1;
+  } catch {
+    return false;
+  }
+}
+
+// Programmatic job runner (used by scheduler)
+export async function runEngagementJobsCore(): Promise<{ created: number }> {
+  // emulate req-less call by faking minimal policy: reuse body of runEngagementJobs but without secret checks
+  // We inline the core here for simplicity by calling the same logic block used in the handler.
+  // Implementation: copy of logic from runEngagementJobs without req/res; keep in sync.
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const users = await User.find({}).select('_id preferences nickname email').lean();
+  let created = 0;
+
+  for (const u of users) {
+    const userId = u._id;
+
+    const getPolicy = () => {
+      const notif = (u as any).preferences?.notifications || {};
+      const allowWebPush = !!notif.allowWebPush;
+      const dailyLimit = Number.isFinite(notif.dailyLimit) ? Number(notif.dailyLimit) : 2;
+      const quiet = notif.quietHours || {};
+      const tz = quiet.tz || 'Asia/Seoul';
+      const startStr = quiet.start || '';
+      const endStr = quiet.end || '';
+      const categories = notif.categories || {};
+      return { allowWebPush, dailyLimit, quiet: { startStr, endStr, tz }, categories };
+    };
+
+    const minutesInTz = (d: Date, tz: string) => {
+      try {
+        const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour12: false, hour: '2-digit', minute: '2-digit' });
+        const parts = fmt.formatToParts(d);
+        const hh = Number(parts.find(p => p.type === 'hour')?.value || '0');
+        const mm = Number(parts.find(p => p.type === 'minute')?.value || '0');
+        return hh * 60 + mm;
+      } catch {
+        return d.getHours() * 60 + d.getMinutes();
+      }
+    };
+
+    const isWithinQuietHours = (d: Date, start: string, end: string, tz: string) => {
+      if (!start || !end) return false;
+      const toMin = (s: string) => {
+        const [h, m] = s.split(':').map((x) => Number(x || 0));
+        return h * 60 + m;
+      };
+      const nowM = minutesInTz(d, tz);
+      const sM = toMin(start);
+      const eM = toMin(end);
+      if (sM === eM) return false;
+      if (sM < eM) return nowM >= sM && nowM < eM;
+      return nowM >= sM || nowM < eM;
+    };
+
+    const countToday = async (): Promise<number> => {
+      return Notification.countDocuments({ userId, createdAt: { $gte: startOfToday } });
+    };
+
+    const dispatchIfAllowed = async (type: INotification['type'], message: string) => {
+      const { allowWebPush, dailyLimit, quiet, categories } = getPolicy();
+      const catAllowed = categories[type] !== false;
+      if (!catAllowed) return false;
+
+      const todayCount = await countToday();
+      if (todayCount >= dailyLimit) return false;
+
+      const inQuiet = isWithinQuietHours(now, quiet.startStr, quiet.endStr, quiet.tz);
+      if (inQuiet) return false;
+
+      const doc = await Notification.create({ userId, senderId: userId, gameId: userId, type, message });
+      try {
+        sseHub.sendToUser(String(userId), 'nudge_created', {
+          id: String((doc as any)._id || ''),
+          message,
+          actionLink: '/dashboard',
+          type
+        });
+      } catch {}
+      if (allowWebPush) {
+        await WebPushService.sendToUser(String(userId), {
+          title: 'Habitus33',
+          body: message,
+          data: { actionLink: '/dashboard', type },
+        });
+      }
+      return true;
+    };
+
+    const ensureOncePerDay = async (type: INotification['type']) => {
+      const exists = await Notification.findOne({ userId, type, createdAt: { $gte: startOfToday } }).lean();
+      return !exists;
+    };
+
+    // Replicate simplified job conditions (same as HTTP version)
+    const noteCount24h = await Note.countDocuments({ userId, createdAt: { $gte: dayAgo } });
+    if (noteCount24h === 0 && (await ensureOncePerDay('nudge_memo'))) {
+      if (await dispatchIfAllowed('nudge_memo', '오늘의 생각을 한 줄 메모로 남겨보세요 ✍️')) created++;
+    }
+
+    const nt = (u as any).preferences?.notificationTime as string | undefined;
+    if (nt) {
+      const [h, m] = nt.split(':').map(Number);
+      const target = new Date(startOfToday.getTime());
+      target.setHours(h || 0, m || 0, 0, 0);
+      const diff = Math.abs(now.getTime() - target.getTime());
+      const within15m = diff <= 15 * 60 * 1000;
+      if (within15m) {
+        const tsToday = await Session.countDocuments({ userId, mode: 'TS', status: 'completed', createdAt: { $gte: startOfToday } });
+        if (tsToday === 0 && (await ensureOncePerDay('nudge_ts'))) {
+          if (await dispatchIfAllowed('nudge_ts', '하루 10분, TS로 집중을 끌어올려요 🔥')) created++;
+        }
+      }
+    }
+
+    const almostDone = await Note.find({ userId, createdAt: { $gte: threeDaysAgo } })
+      .select('importanceReason momentContext relatedKnowledge mentalImage createdAt')
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .lean();
+    const evolveCounts = almostDone.map(n => [n.importanceReason, n.momentContext, n.relatedKnowledge, n.mentalImage]
+      .filter(v => v && String(v).trim().length > 0).length);
+    const hasThree = evolveCounts.some(c => c === 3);
+    if (hasThree && (await ensureOncePerDay('nudge_evolve_last'))) {
+      if (await dispatchIfAllowed('nudge_evolve_last', '3/4까지 왔어요. 마지막 한 칸이면 자동 연결 추천이 시작돼요 ✨')) created++;
+    }
+
+    const completed = await Note.find({ userId, createdAt: { $gte: sevenDaysAgo } })
+      .select('importanceReason momentContext relatedKnowledge mentalImage createdAt')
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .lean();
+    const evolveAllDone = completed.some(n => [n.importanceReason, n.momentContext, n.relatedKnowledge, n.mentalImage]
+      .filter(v => v && String(v).trim().length > 0).length === 4);
+    if (evolveAllDone && (await ensureOncePerDay('nudge_connect'))) {
+      if (await dispatchIfAllowed('nudge_connect', '유사 메모를 연결해 지식을 넓혀볼까요? 🔗')) created++;
+    }
+
+    const startOfTodayLocal = startOfToday;
+    const zengoToday = await Session.countDocuments({ userId, mode: 'ZENGO', status: 'completed', createdAt: { $gte: startOfTodayLocal } });
+    const zengo3d = await Session.countDocuments({ userId, mode: 'ZENGO', status: 'completed', createdAt: { $gte: threeDaysAgo } });
+    if (zengoToday === 0 && zengo3d === 0 && (await ensureOncePerDay('nudge_zengo'))) {
+      if (await dispatchIfAllowed('nudge_zengo', '15초 두뇌 워밍업! Zengo로 시작해요 🧠')) created++;
+    }
+
+    const memos7d = await Note.countDocuments({ userId, createdAt: { $gte: sevenDaysAgo } });
+    if (memos7d >= 10) {
+      const recentSummary = await SummaryNote.findOne({ userId, createdAt: { $gte: sevenDaysAgo } }).select('_id').lean();
+      if (!recentSummary && (await ensureOncePerDay('suggest_summary'))) {
+        if (await dispatchIfAllowed('suggest_summary', '메모가 충분해요. 단권화 노트를 만들어 볼까요? 📚')) created++;
+      }
+    }
+  }
+
+  return { created };
+}
