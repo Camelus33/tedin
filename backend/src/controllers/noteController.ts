@@ -215,8 +215,9 @@ export const updateNote = async (req: Request, res: Response) => {
             }).length
           : 0;
 
-        const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
+        // v2: 1차 트리거를 "기억강화 4단계 모두 작성"으로 간소화
         const evolveAllDone = evolveCountAfter === 4;
+        const milestone1Reached = evolveAllDone;
         const milestone2Reached = inlineCountAfter >= 4 && evolveAllDone && linkCountAfter >= 4;
 
         const updates: any = {};
@@ -576,8 +577,9 @@ export const addInlineThread = async (req: Request, res: Response) => {
             }).length
           : 0;
 
-        const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
+        // v2: 1차 트리거를 "기억강화 4단계 모두 작성"으로 간소화
         const evolveAllDone = evolveCountAfter === 4;
+        const milestone1Reached = evolveAllDone;
         const milestone2Reached = inlineCountAfter >= 4 && evolveAllDone && linkCountAfter >= 4;
 
         const updates: any = {};
@@ -1071,10 +1073,10 @@ async function updateNoteBasedOnAction(noteId: string, action: string, data: any
           }).length
         : 0;
 
-      const milestone1Reached = inlineCountAfter >= 1 && evolveCountAfter >= 1 && linkCountAfter >= 1;
-
-      // 조건: 인라인 쓰레드 ≥4, 메모진화 4단계 모두, 링크 ≥4 달성 시 2차 알림(한 번만)
+      // v2: 1차 트리거를 "기억강화 4단계 모두 작성"으로 간소화
       const evolveAllDone = evolveCountAfter === 4;
+      const milestone1Reached = evolveAllDone;
+      // 조건: 인라인 쓰레드 ≥4, 메모진화 4단계 모두, 링크 ≥4 달성 시 2차 알림(한 번만)
       const milestone2Reached = inlineCountAfter >= 4 && evolveAllDone && linkCountAfter >= 4;
 
       const updates: any = {};
