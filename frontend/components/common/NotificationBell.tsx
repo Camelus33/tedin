@@ -11,6 +11,16 @@ interface NotificationType {
   _id: string;
   senderId: { nickname: string };
   gameId: string;
+  type:
+    | 'game_shared'
+    | 'game_received'
+    | 'nudge_memo'
+    | 'nudge_ts'
+    | 'nudge_zengo'
+    | 'suggest_summary'
+    | 'level_up'
+    | 'nudge_evolve_last'
+    | 'nudge_connect';
   message: string;
   isRead: boolean;
   createdAt: string;
@@ -173,7 +183,27 @@ export default function NotificationBell() {
     if (!token) return;
     try {
       await apiClient.put(`/notifications/${n._id}/read`, {});
-      router.push(`/myverse/games/${n.gameId}`);
+      const target = (() => {
+        switch (n.type) {
+          case 'game_shared':
+          case 'game_received':
+            return n.gameId ? `/myverse/games/${n.gameId}` : '/myverse';
+          case 'nudge_memo':
+            return '/memo/new';
+          case 'nudge_ts':
+            return '/ts';
+          case 'nudge_zengo':
+            return '/zengo';
+          case 'suggest_summary':
+            return '/summary-notes/create';
+          case 'nudge_evolve_last':
+          case 'nudge_connect':
+          case 'level_up':
+          default:
+            return '/dashboard';
+        }
+      })();
+      router.push(target);
       setOpen(false);
       fetchNotifications();
     } catch (err) {
