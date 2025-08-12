@@ -7,42 +7,52 @@ import AppLogo from '@/components/common/AppLogo';
 const competitorGroups = [
   {
     icon: <FileText className="w-8 h-8 text-slate-400" />,
-    name: 'The Passive Way: 수동적 학습 도구',
-    examples: 'Anki, Quizlet',
-    approach: '단순 반복만 가능. 새로운 학습 내용을 자동으로 포착하지 못함.',
-    limitation: '학습자가 직접 카드 관리. 맥락 없이 단편적 기억만 형성.',
+    name: '일반 노트앱',
+    examples: 'Notion, Obsidian, Evernote',
+    approach: '기록·정리 중심. 저장 시 자동 유사 비교 없음.',
+    limitation: '수동 검색/링크 의존. 과거 맥락 결합 약함.',
+    delta: 'Habitus33는 저장 이벤트에 즉시 유사 사례 3개 제시·점프/체크리스트 연계.',
   },
   {
     icon: <Hand className="w-8 h-8 text-blue-400" />,
-    name: 'The Manual Way: 수동 학습 관리',
-    examples: 'Notion, Obsidian',
-    approach: '모든 것을 직접 정리해야 함. 높은 학습 관리 능력 요구.',
-    limitation: '복잡한 시스템에 지쳐 포기. 99%는 결국 실패.',
+    name: 'AI 보조 노트',
+    examples: 'Notion AI, Mem',
+    approach: '요약/생성·보조. 대화형.',
+    limitation: '개인 기록과의 실시간 자동 대조 제한.',
+    delta: '생성·요약이 아닌 “저장 즉시 유사 비교” + 시간패턴 반영·교정 액션으로 연결.',
   },
   {
     icon: <Zap className="w-8 h-8 text-purple-400" />,
-    name: 'The Isolated Way: 맥락 없는 AI 학습',
-    examples: 'ChatGPT, Gemini',
-    approach: '매번 독립적인 질문. 학습 이력과 맥락을 기억하지 못함.',
-    limitation: '개인 학습 진화 과정 활용 불가. 시간진화형 지식캡슐 없음.',
+    name: '지식그래프 노트',
+    examples: 'Roam, Logseq',
+    approach: '링크·그래프 중심. 수동 연결.',
+    limitation: '초기·유지 비용 큼. 자동 유사 비교 부재.',
+    delta: '임베딩+문자열 혼합 유사도와 진화필드·링크 이유까지 포함해 자동 대조.',
   },
 ];
 
 const positioningData = {
     axisLabels: {
-        x: ['Manual', 'Automatic'],
-        y: ['Isolated', 'Contextual'],
+        x: ['수동', '자동'],
+        y: ['단절', '맥락'],
     },
     competitors: [
-        { name: 'Anki, Quizlet', x: 20, y: 75, color: 'text-slate-300' },
-        { name: 'Notion, Obsidian', x: 25, y: 25, color: 'text-blue-300' },
-        { name: 'ChatGPT, Gemini', x: 80, y: 75, color: 'text-purple-300' },
+        { name: 'Notion, Obsidian, Evernote', x: 28, y: 55, color: 'text-slate-300' },
+        { name: 'Notion AI, Mem', x: 60, y: 50, color: 'text-blue-300' },
+        { name: 'Roam, Logseq', x: 35, y: 30, color: 'text-purple-300' },
     ],
     habitus: {
-        x: 80,
-        y: 15,
+        x: 75,
+        y: 12,
     },
 };
+
+const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
+const pointStyle = (x: number, y: number) => ({
+  top: `${clamp(y, 8, 92)}%`,
+  left: `${clamp(x, 8, 92)}%`,
+  transform: 'translate(-50%, -50%)',
+});
 
 const CompetitorAnalysisSection = () => {
   const containerVariants = {
@@ -68,10 +78,10 @@ const CompetitorAnalysisSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            Why We Win: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">A New Learning Paradigm</span>
+            차별점
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-4xl mx-auto leading-relaxed">
-            기존 도구들은 '단순 반복'의 한계에 갇혀 있습니다. 우리는 '학습 가속'이라는 새로운 패러다임을 창조합니다.
+            우리는 저장 즉시 유사 사례를 자동 제시하고, 교정 행동으로 연결합니다.
           </p>
         </motion.div>
 
@@ -84,7 +94,7 @@ const CompetitorAnalysisSection = () => {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <div className="relative w-full max-w-lg aspect-square bg-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-4 overflow-hidden">
+            <div className="relative w-full max-w-xl md:max-w-2xl xl:max-w-3xl aspect-square bg-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 overflow-hidden">
               {/* Axes and Labels */}
               <div className="absolute top-1/2 left-4 right-4 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent" />
               <div className="absolute left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent" />
@@ -102,7 +112,7 @@ const CompetitorAnalysisSection = () => {
                 <motion.div
                   key={c.name}
                   className="absolute p-2 rounded-lg"
-                  style={{ top: `${c.y}%`, left: `${c.x}%`, transform: 'translate(-50%, -50%)' }}
+                  style={pointStyle(c.x, c.y)}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
@@ -114,7 +124,7 @@ const CompetitorAnalysisSection = () => {
               {/* Habitus33 Point */}
               <motion.div
                 className="absolute"
-                style={{ top: `${positioningData.habitus.y}%`, left: `${positioningData.habitus.x}%`, transform: 'translate(-50%, -50%)' }}
+                style={pointStyle(positioningData.habitus.x, positioningData.habitus.y)}
                 initial={{ opacity: 0, scale: 0.5, y: 20 }}
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.8, type: 'spring' }}
@@ -150,6 +160,9 @@ const CompetitorAnalysisSection = () => {
                     <p className="text-sm text-gray-300 mt-2"><span className="font-semibold text-gray-100">Approach:</span> {group.approach}</p>
                     <p className="text-sm mt-2 text-red-400/80">
                       <span className="font-semibold text-red-300">Fundamental Limitation:</span> {group.limitation}
+                    </p>
+                    <p className="text-sm mt-2 text-cyan-300/90">
+                      <span className="font-semibold text-cyan-300">Diff vs Habitus33:</span> {group.delta}
                     </p>
                   </div>
                 </div>

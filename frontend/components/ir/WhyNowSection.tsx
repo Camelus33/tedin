@@ -52,23 +52,23 @@ const WhyNowSection = () => {
   const trends = [
     {
       icon: <FiTrendingUp size={48} className="text-cyan-300" />,
-      title: "Wave 1: 평생학습의 부상",
-      subtitle: "성인 학습자 증가 시대 (2020-2024)",
-      description: "기술 변화와 경쟁 압박으로 인해 성인 학습자들이 꾸준히 증가했습니다. OECD 국가에서 성인 학습 참여율이 20% 증가하며, 평생학습의 필요성이 절실해졌습니다.",
+      title: "반복 실수 자각 니즈",
+      subtitle: "2023~2025, 체감 수요 증가",
+      description: "비슷한 실수가 다시 발생하기 전에 알아채고 싶다는 요구가 커졌습니다.",
       delay: 0,
     },
     {
       icon: <FiTarget size={48} className="text-cyan-300" />,
-      title: "Wave 2: 학습 효율성의 한계",
-      subtitle: "전통적 학습 방법의 한계 (2025~)",
-      description: "이제 성인 학습자들은 시간 부족과 인지적 한계라는 현실의 벽에 부딪혔습니다. 시장의 관심은 '어떻게 하면 효율적으로 학습할 것인가'로 이동했습니다.",
+      title: "기록은 늘었지만, 비교는 부재",
+      subtitle: "도구는 많고, 연결은 없다",
+      description: "메신저·문서·노트에 기록되지만 ‘지금과 닮은 과거’는 자동으로 안 보입니다.",
       delay: 0.2,
     },
     {
       icon: <FiZap size={48} className="text-cyan-300" />,
-      title: "The Opportunity",
-      subtitle: "지식캡슐 학습 시간 단축 시장의 개화",
-      description: "'지식캡슐 학습 시간 단축'은 이제 선택이 아닌 필수입니다. 이 거대한 시장의 니즈가 폭발하는 지금, 근본적인 해결책인 AI-Link 지식캡슐에게는 전례 없는 기회가 열렸습니다.",
+      title: "기술 여건 성숙",
+      subtitle: "임베딩/벡터 검색 상용화",
+      description: "개인 맥락 기반의 실시간 유사도 비교가 비용 대비 현실화되었습니다.",
       delay: 0.4,
     },
   ];
@@ -83,12 +83,10 @@ const WhyNowSection = () => {
           variants={sectionVariants}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            The Learning Market Inflection Point is <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Now</span>
+            지금 필요한 이유
           </h2>
           <p className="text-lg md:text-xl text-gray-300 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            학습 시장은 '무작정 공부'의 시대를 지나 '효율적 학습'의 시대로 넘어가고 있습니다. 
-            <br/>
-            이 거대한 패러다임 전환이 우리에게는 전례 없는 기회입니다.
+            같은 실수를 줄이려면, 저장 순간에 과거와 비교가 되어야 합니다. 이제 기술과 수요가 맞물렸습니다.
           </p>
         </motion.div>
         
@@ -102,6 +100,15 @@ const WhyNowSection = () => {
             <TrendCard key={index} {...trend} />
           ))}
         </motion.div>
+
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-500">
+            참고: 
+            <a href="https://www.microsoft.com/en-us/worklab/work-trend-index" target="_blank" rel="noreferrer" className="underline hover:text-gray-300"> Microsoft Work Trend Index</a>,
+            <a href="https://asana.com/resources/anatomy-of-work" target="_blank" rel="noreferrer" className="underline hover:text-gray-300"> Asana Anatomy of Work</a>,
+            <a href="https://www.morningstar.com/lp/mind-the-gap" target="_blank" rel="noreferrer" className="underline hover:text-gray-300"> Morningstar Mind the Gap</a>
+          </p>
+        </div>
       </div>
     </section>
   );

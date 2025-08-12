@@ -116,18 +116,25 @@ const MarketCard: React.FC<MarketCardProps> = ({
 
       <div className="relative mt-12 mb-6 h-16">
         <GrowthChart type={type} />
-        <div className="absolute inset-0 flex items-center justify-start">
-          <span className="text-6xl font-bold text-white">
-            <CountUp start={0} end={value} duration={2.5} separator="," />
-          </span>
-          <span className="text-4xl font-bold text-white ml-2 pt-2">{suffix}</span>
-        </div>
+        {value > 0 ? (
+          <div className="absolute inset-0 flex items-center justify-start">
+            <span className="text-6xl font-bold text-white">
+              <CountUp start={0} end={value} duration={2.5} separator="," />
+            </span>
+            <span className="text-4xl font-bold text-white ml-2 pt-2">{suffix}</span>
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex items-center">
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${typeStyles[type].text} bg-white/10 border ${typeStyles[type].border}`}>
+              측정 진행 중
+            </span>
+          </div>
+        )}
       </div>
-      
+        
       <div className="mt-auto">
         <div className={`font-semibold ${typeStyles[type].text} mb-4`}>
-          연평균 성장률 (CAGR):{' '}
-          <CountUp start={0} end={cagr} duration={2.5} decimals={1} />%
+          연평균 성장률 (CAGR): {cagr > 0 ? (<><CountUp start={0} end={cagr} duration={2.5} decimals={1} />%</>) : '측정 진행 중'}
         </div>
         <p className="text-gray-400 text-sm mb-4 flex-grow">
           {description}
@@ -142,35 +149,35 @@ const MarketSizeSection = () => {
   const markets: MarketCardProps[] = [
     {
       type: 'TAM',
-      title: 'Total Addressable Market',
-      value: 400,
+      title: '글로벌 생산성 도구 시장',
+      value: 2000,
       suffix: '억 달러',
-      cagr: 9.5,
+      cagr: 10.0,
       description:
-        "전 세계 e-learning 시장의 총 규모입니다. 기술 변화와 평생학습 필요성 증가로 지속적으로 확대되고 있습니다.",
-      source: 'Grand View Research (2024)',
+        '세그먼트 합산(중복 차감) 기반 추정.',
+      source: '웹협업 261억 등.2024',
       delay: 0.2,
     },
     {
       type: 'SAM',
-      title: 'Serviceable Addressable Market',
-      value: 80,
+      title: '글로벌 생성형 AI 시장',
+      value: 1430,
       suffix: '억 달러',
-      cagr: 25.0,
+      cagr: 73.3,
       description:
-        "학습 효율성 개선 솔루션을 적극적으로 도입할 의향이 있는 성인 학습자들이 형성하는 유효 시장입니다.",
-      source: 'Market Research Future (2024)',
+        'IDC 전망(전 세계 지출).',
+      source: 'IDC 2027',
       delay: 0.4,
     },
     {
       type: 'SOM',
-      title: 'Serviceable Obtainable Market',
-      value: 8,
+      title: '국내 생성형 AI 시장',
+      value: 7,
       suffix: '억 달러',
-      cagr: 30.0,
+      cagr: 60.0,
       description:
-        "AI 기반 지식캡슐 학습 시간 단축 솔루션으로 해결할 수 있는 시장입니다. Habitus33의 AI-Link 기술이 제공하는 독특한 가치로 초기에 장악할 수 있는 핵심 시장입니다.",
-      source: 'Technavio (2024)',
+        '국내 AI 시장 × GenAI 비중(보수) 가정.',
+      source: '국내 AI 시장 추정 + GenAI 20%',
       delay: 0.6,
     },
   ];
@@ -185,10 +192,10 @@ const MarketSizeSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500">$800M Market</span> We Can Win
+            시장 규모와 진입 전략
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            우리는 거대 시장의 일부를 점유하는 것이 아닌, 가장 빠르게 성장하는 핵심 시장(SOM)을 정의하고 장악하는 전략을 추구합니다.
+            AI 기반 생산성 향상
           </p>
         </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

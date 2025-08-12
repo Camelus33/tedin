@@ -59,20 +59,20 @@ const ProblemSection = () => {
   const problems = [
     {
       icon: <FiClock size={48} />,
-      title: '장시간 집중의 한계',
-      description: '3시간 앉아서 공부하는 것은 불가능. 30분마다 집중력이 급격히 떨어져 학습 효율이 급감합니다.',
+      title: '반복 실수의 재발',
+      description: '비슷한 시간·상황에서 같은 판단을 다시 합니다.',
       delay: 0,
     },
     {
       icon: <FiCpu size={48} />,
-      title: '기억의 빠른 소실',
-      description: '오늘 배운 것, 내일이면 70% 잊어버림. 반복 학습해도 장기 기억으로 전환되지 않습니다.',
+      title: '즉시 비교의 부재',
+      description: "저장 순간 ‘과거와 닮음’을 보여주는 시스템이 없습니다.",
       delay: 0.2,
     },
     {
       icon: <FiTrendingDown size={48} />,
-      title: '느린 학습 속도',
-      description: '청소년에 비해 새로운 정보 습득 속도가 40% 느림. 시험까지 시간이 부족합니다.',
+      title: '재작업과 지연',
+      description: '결국 재작업·일정 지연·손실로 이어집니다.',
       delay: 0.4,
     },
   ];
@@ -89,10 +89,10 @@ const ProblemSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            The Root Cause: <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400">Why Learning is Inefficient</span>
+            우리가 푸는 문제
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            이제 학습자에게 전통적인 학습법은 큰 부담입니다. 
+            저장 순간 과거와 비교되지 않기 때문에, 같은 이유의 오류가 반복됩니다.
           </motion.p>
         </motion.div>
 
@@ -114,12 +114,15 @@ const ProblemSection = () => {
           className="text-center mt-20"
         >
           <h3 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            모든 문제의 근원은 <span className="text-red-400">"인지적 한계와 시간 부족"</span>
+            핵심은 “즉시 비교”입니다
           </h3>
           <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            성인 학습자의 인지적 특성과 현실적 제약이 학습 효율을 저해합니다.
-            <br />
-            그렇다면, <span className="text-cyan-400 font-semibold">인지과학 기반 학습 가속</span>으로 해결할 수 있을까요?
+            저장 즉시 유사 사례 3개를 보여주면 반복 실수를 줄일 수 있습니다.
+          </p>
+          <p className="text-xs text-gray-500 mt-4">
+            참고: 
+            <a href="https://www.microsoft.com/en-us/worklab/work-trend-index" target="_blank" rel="noreferrer" className="underline hover:text-gray-300">Microsoft Work Trend Index</a>,
+            <a href="https://asana.com/resources/anatomy-of-work" target="_blank" rel="noreferrer" className="underline hover:text-gray-300 ml-2">Asana Anatomy of Work</a>
           </p>
         </motion.div>
       </div>

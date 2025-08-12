@@ -7,19 +7,14 @@ import { FiArrowRight } from 'react-icons/fi';
 const techData = [
   {
     image: '/images/ir/temporal-knowledge-ontology-engine.png',
-    title: 'The Learning Moat: 시간진화형 학습 온톨로지',
-    description: "학습자의 모든 학습 활동을 시간순으로 구조화하여, 단순한 정보가 아닌 '학습 진화 과정'을 지식캡슐로 기록합니다. 이 데이터는 학습할수록 더 정확해지며, 개인만의 독특한 학습 패턴을 만들어냅니다. 경쟁사는 이 깊이를 따라올 수 없습니다.",
+    title: '입력 소스 확장',
+    description: '메모 본문 + 생각추가(≤5) + 기억강화 4칸 + 링크 이유(≤5)를 하나로 묶어 비교합니다.',
   },
   {
     image: '/images/ir/4-step-knowledge-distillation-protocol.png',
-    title: 'The Acceleration Engine: 4단계 학습 가속 프로토콜',
-    description: "단순히 내용을 요약하는 것을 넘어, '포착-구조화-최적화-단축'의 4단계 프로토콜을 통해 복잡한 학습 내용을 AI가 즉시 추론할 수 있는 지식캡슐 형태로 변환합니다. 이 독점적인 프로세스는 학습 효율을 획기적으로 향상시킵니다.",
+    title: '유사도 계산 & 시간 가중',
+    description: '의미 유사도(임베딩) + 문자열 유사도(폴백). 요일·시간대·작성 간격이 비슷할수록 가중합니다.',
   },
-  // {
-  //   image: '/images/ir/creative-persona-engine.png',
-  //   title: 'The Personalization Core: Creative Persona Engine',
-  //   description: "지식 그래프를 바탕으로 사용자의 고유한 '창의적 페르소나'를 모델링합니다. AI는 이 페르소나를 기반으로 사용자의 스타일, 톤, 관점을 완벽하게 모방하여, 단순한 정보가 아닌 '지적 파트너'로서의 결과물을 제공합니다.",
-  // },
 ];
 
 const TechnologySection = () => {
@@ -58,10 +53,10 @@ const TechnologySection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            Our Technological <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Moat</span>
+            저장 즉시 유사 사례를 찾는 방법
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            우리의 해자는 단일 기술이 아닌, 두 가지 핵심 엔진이 유기적으로 결합된 '학습 가속 시스템'입니다. 하나를 모방하더라도, 전체 시스템이 만들어내는 학습 효율성은 결코 따라올 수 없습니다.
+            메모의 뜻과 상황을 함께 반영해 비교합니다. 목적은 빠른 교정 행동입니다.
           </p>
         </motion.div>
 
@@ -97,6 +92,13 @@ const TechnologySection = () => {
             </React.Fragment>
           ))}
         </motion.div>
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-500">
+            참고: 
+            <a href="https://www.morningstar.com/lp/mind-the-gap" target="_blank" rel="noreferrer" className="underline hover:text-gray-300">Morningstar Mind the Gap</a>,
+            <a href="https://www.dalbar.com/Products-and-Services/QAIB" target="_blank" rel="noreferrer" className="underline hover:text-gray-300 ml-2">DALBAR QAIB</a>
+          </p>
+        </div>
       </div>
     </section>
   );

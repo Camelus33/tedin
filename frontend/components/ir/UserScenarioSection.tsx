@@ -367,14 +367,10 @@ const UserScenarioSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={textVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            학습 가속 여정 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">5단계</span>
+            이렇게 사용합니다 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">5단계</span>
           </motion.h2>
           <motion.p variants={textVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            1줄 메모가 당신만의 학습 가속기로 진화합니다. 
-            <br className="hidden sm:block" />
-            <span className="text-base text-gray-400">
-              (앞 3단계는 <span className="text-cyan-400 font-semibold">사용자 액션</span>, 뒤 2단계는 <span className="text-indigo-400 font-semibold">AI 자동화</span> 단계입니다.)
-            </span>
+            메모 1줄 → 최소 입력 → 저장 즉시 유사 사례 3개 → 비교·점프 → 체크리스트 보완.
           </motion.p>
           <motion.p variants={textVariants} className="mt-4 text-sm text-cyan-400 font-medium">
             💡 각 단계를 클릭하여 상세 정보를 확인하세요

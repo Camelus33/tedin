@@ -44,27 +44,27 @@ const BenefitsSection = () => {
   
   const comparisonData = [
     {
-      metric: '학습 시간 단축',
-      description: '인지과학 기반 학습 가속으로 학습 효율을 획기적으로 향상시킵니다.',
-      before: '3시간',
-      after: '1.5시간',
-      improvement: '▲ 50%',
+      metric: '반복 재발률',
+      description: '동일 주제/유형의 재발 비율(4주 코호트 전후 비교).',
+      before: '도입 전',
+      after: '도입 후',
+      improvement: '감소 지향',
       isPositive: true,
     },
     {
-      metric: '기억 보존률',
-      description: '시간진화형 온톨로지로 장기 기억 전환을 보장합니다.',
-      before: '30%',
-      after: '70%',
-      improvement: '▲ 133%',
+      metric: '알림→행동 전환율',
+      description: '알림 클릭, 카드 이동, 체크리스트 수정의 단계 전환율.',
+      before: '베이스라인',
+      after: '개선 상태',
+      improvement: '증가 지향',
       isPositive: true,
     },
     {
-      metric: '정보 습득 속도',
-      description: 'AI-Link를 통한 맥락추론으로 새로운 정보 습득 속도를 향상시킵니다.',
-      before: '40% 느림',
-      after: '20% 빠름',
-      improvement: '▲ 150%',
+      metric: '리워크율/대응 시간',
+      description: '재작업 비율과 원인 교정까지 걸린 평균 시간.',
+      before: '도입 전',
+      after: '도입 후',
+      improvement: '감소 지향',
       isPositive: true,
     },
   ];
@@ -81,10 +81,10 @@ const BenefitsSection = () => {
           className="text-center mb-16"
         >
           <motion.h2 variants={itemVariants} className="text-4xl sm:text-5xl font-bold tracking-tight">
-            학습 효율성, <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">데이터로 증명된 개선 효과</span>
+            반복 실수 감축, <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">실제 지표로 확인합니다</span>
           </motion.h2>
           <motion.p variants={itemVariants} className="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-            성인 학습자의 인지적 한계를 극복하고, 학습 시간을 획기적으로 단축하면서도 기억 보존률을 크게 향상시키는 가장 확실한 방법입니다.
+            저장 즉시 유사 사례 3가지를 제시해 빠른 비교·교정을 돕습니다. 아래 지표는 도입 전후 실제 측정·공개합니다.
           </motion.p>
         </motion.div>
 
@@ -133,6 +133,12 @@ const BenefitsSection = () => {
                 </div>
               </motion.div>
             ))}
+          </div>
+          <div className="mt-8 text-center">
+            <p className="text-xs text-gray-500">
+              참고: 
+              <a href="https://asana.com/resources/anatomy-of-work" target="_blank" rel="noreferrer" className="underline hover:text-gray-300">Asana Anatomy of Work</a>
+            </p>
           </div>
         </motion.div>
       </div>

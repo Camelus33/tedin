@@ -59,35 +59,27 @@ const MarketNeedSection = () => {
   const facts = [
     {
       icon: <FiUsers size={28} className="text-indigo-300" />,
-      title: '성인 학습자 증가',
-      value: '20%↑',
-      description: 'OECD 국가에서 성인 학습 참여율은 꾸준히 증가 중입니다.',
-      source: 'OECD Skills Outlook, 2023',
+      title: '투자자',
+      value: '투자실수',
+      description: '감정/FOMO 편향을 줄이고 과거 판단 패턴과의 대조를 원함. 지표 예: 투자자 수익률-상품 수익률 격차, 이벤트 전후 성과 Δ',
+      source: '참고: Morningstar Mind the Gap / DALBAR QAIB',
       delay: 0,
     },
     {
       icon: <FiCpu size={28} className="text-indigo-300" />,
-      title: '단기기억 용량 한계',
-      value: '30%↓',
-      description: '성인은 청소년에 비해 단기기억 용량이 평균적으로 낮습니다.',
-      source: 'Cognitive Aging Research, 2023',
+      title: '직장',
+      value: '재작업',
+      description: '재작업·컨텍스트 전환을 줄이고 근거 대조로 결정 속도를 높이고자 함. 지표 예: 리워크율, 의사결정 리드타임',
+      source: '참고: Microsoft Work Trend Index / Asana Anatomy of Work',
       delay: 0.1,
     },
     {
       icon: <FiClock size={28} className="text-indigo-300" />,
-      title: '학습 시간 부족',
-      value: '30분',
-      description: '성인 학습자의 평균 일일 학습 시간입니다.',
-      source: 'OECD Time Use Surveys, 2023',
+      title: '수험생',
+      value: '오답 재발',
+      description: '동일 개념 오답 재발을 낮추고 교정 루틴을 정착시키려는 수요. 지표 예: 동일 문항군 오답 재발률, 교정 체크리스트 적용률',
+      source: '참고: Dunlosky 2013 / Cepeda 2006·2008',
       delay: 0.2,
-    },
-    {
-      icon: <FiBook size={28} className="text-indigo-300" />,
-      title: '의미 연결 학습 강점',
-      value: '70%↑',
-      description: '성인은 경험과 지식을 활용한 의미 연결 학습에서 우수합니다.',
-      source: 'Adult Learning Theory Research, 2023',
-      delay: 0.3,
     },
   ];
 
@@ -102,24 +94,27 @@ const MarketNeedSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            학습의 역설:
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
-              성인 학습자의 니즈
-            </span>
+            시장의 필요: “같은 실수를 반복하고 싶진 않다”
           </h2>
           <p className="text-xl text-slate-300 max-w-4xl mx-auto">
-            성인은 청소년에 비해 단기기억 용량이 제한적이지만, 
-            경험과 지식을 활용한 의미연결 학습에서는 오히려 우수합니다. 
-            하지만 시간 부족 문제로 인해 학습 목표를 달성하기 어려운 상황입니다.
+            잘못된 판단의 반복을 AI로 줄이려는 니즈가 커지고 있습니다.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {facts.map((fact, index) => (
             <FactCard key={index} {...fact} />
           ))}
         </div>
+      </div>
+      <div className="mt-8 text-center">
+        <p className="text-xs text-gray-500">
+          참고: 
+          <a href="https://www.microsoft.com/en-us/worklab/work-trend-index" target="_blank" rel="noreferrer" className="underline hover:text-gray-300">Microsoft Work Trend Index</a>,
+          <a href="https://asana.com/resources/anatomy-of-work" target="_blank" rel="noreferrer" className="underline hover:text-gray-300 ml-2">Asana Anatomy of Work</a>,
+          <a href="https://www.morningstar.com/lp/mind-the-gap" target="_blank" rel="noreferrer" className="underline hover:text-gray-300 ml-2">Morningstar Mind the Gap</a>,
+          <a href="https://www.dalbar.com/Products-and-Services/QAIB" target="_blank" rel="noreferrer" className="underline hover:text-gray-300 ml-2">DALBAR QAIB</a>
+        </p>
       </div>
     </section>
   );

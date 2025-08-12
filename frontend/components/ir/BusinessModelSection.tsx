@@ -10,11 +10,11 @@ const pricingTiers = [
     audience: 'For individuals starting out',
     price: '$0',
     frequency: '/ forever',
-    description: 'Habitus33의 핵심 기능을 무료로 경험하며 지식 성장의 첫 걸음을 시작하세요.',
+    description: '기본 기능 체험(저장 즉시 유사 사례 안내 포함).',
     features: [
-      'Basic AI-Link creation',
-      'Community access',
-      'Standard support',
+      '저장 즉시 유사 사례 3개 안내',
+      '기본 템플릿',
+      '커뮤니티 접근',
     ],
     cta: 'Start for Free',
     popular: false,
@@ -25,28 +25,28 @@ const pricingTiers = [
     audience: 'For power users & professionals',
     price: '$20',
     frequency: '/ user / month',
-    description: '고급 기능과 늘어난 사용량으로 도메인 지식을 최대한 활용하세요.',
+    description: '임계값 튜닝, 도메인 템플릿, 분석 리포트 등 고급 기능.',
     features: [
-      'Unlimited AI-Link creation',
-      'Advanced analytics dashboard',
-      'Priority support',
+      '임계값/임계치 튜닝',
+      '도메인 템플릿',
+      '분석 리포트',
     ],
     cta: 'Get Started with Pro',
     popular: true,
   },
   {
     icon: <ShoppingBag className="w-10 h-10 mb-4 text-cyan-400" />,
-    title: 'AI-Link Market',
-    audience: 'For knowledge creators & consumers',
-    price: '25%',
-    frequency: ' platform fee',
-          description: '검증된 고품질 지식캡슐을 거래하며 당신의 전문성을 수익으로 전환하세요.',
+    title: 'Premium',
+    audience: 'For teams & marketplace creators',
+    price: '$49',
+    frequency: '/ user / month',
+    description: '팀 협업·보안·관리 + 마켓플레이스 거래 권한 포함.',
     features: [
-      'Publish insights as AI-Links',
-      'Access domain-specific knowledge',
-      'Revenue sharing model',
+      '권한/감사 로그',
+      '팀 관리 기능',
+      '마켓플레이스 거래 권한',
     ],
-    cta: 'Explore the Market',
+    cta: 'Upgrade to Premium',
     popular: false,
   },
 ];
@@ -83,10 +83,10 @@ const BusinessModelSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center tracking-tight">
-            Sustainable & Scalable Business Model
+            사용량에 맞춘 요금제, 결과에 집중하는 기업 플랜
           </h2>
           <p className="text-lg md:text-xl text-gray-400 mb-16 text-center max-w-3xl mx-auto leading-relaxed">
-            사용량에 맞춰 명확한 요금제를 제공하며,  도메인 지식캡슐 오픈마켓을 지원합니다.
+            Free/Pro/Premium. 마켓플레이스 거래는 Premium에서만 가능합니다.
           </p>
         </motion.div>
 
@@ -159,8 +159,7 @@ const BusinessModelSection = () => {
           transition={{ duration: 0.5, delay: 0.5 }}
         >
           <p className="text-gray-400">
-            <span className="font-semibold text-white">Looking for more?</span> 
-            Enterprise 플랜은 별도 문의를 통해 맞춤형으로 제공됩니다.
+            마켓플레이스: 전문가가 50개 이상 메모카드로 만든 써머리노트를 지식캡슐(AI-Link)로 전환, 품질테스트 통과본만 거래. 구매·판매는 Premium 전용.
           </p>
         </motion.div>
 

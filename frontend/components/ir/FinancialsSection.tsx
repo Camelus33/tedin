@@ -5,39 +5,40 @@ import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { DollarSign, Users, Target, TrendingUp, Briefcase, Brain, Cpu, Rocket, Calendar, BarChart3, Repeat, ShoppingCart, Building } from 'lucide-react';
 
 const kpiData = [
-  { icon: <Repeat className="w-8 h-8 text-sky-400" />, label: "Phase 1: 학습 가속 효과", value: "50%↑", note: "학습 시간 단축으로 증명된 핵심 가치" },
-  { icon: <ShoppingCart className="w-8 h-8 text-lime-400" />, label: "Phase 2: 학습 캡슐 거래", value: "$500K+", note: "AI-Link 기반 학습 패턴 마켓플레이스" },
-  { icon: <Building className="w-8 h-8 text-indigo-400" />, label: "Phase 3: 교육기관 계약", value: "$50K+", note: "학습 효율성 관리 솔루션" }
+  { icon: <Repeat className="w-8 h-8 text-sky-400" />, label: "Phase 1: 재발률 감소", value: "20~40%↓", note: "파일럿 전후 '같은 실수' 재발률 개선" },
+  { icon: <Target className="w-8 h-8 text-lime-400" />, label: "A2A 전환률", value: "30%↑", note: "알림→교정 실행 전환(Alerts to Action)" },
+  { icon: <BarChart3 className="w-8 h-8 text-indigo-400" />, label: "리워크/리드타임", value: "15~25%↓", note: "재작업·의사결정 지연 단축" }
 ];
 
 const projectionData = [
-  { year: 'Year 1', proSubscriptions: 0.8, marketplace: 0, enterprise: 0 },
-  { year: 'Year 2', proSubscriptions: 2.5, marketplace: 0.3, enterprise: 0 },
-  { year: 'Year 3', proSubscriptions: 5, marketplace: 2.5, enterprise: 1.2 },
-  { year: 'Year 4', proSubscriptions: 8, marketplace: 8, enterprise: 5 },
-  { year: 'Year 5', proSubscriptions: 12, marketplace: 15, enterprise: 20 },
+  // Year1 개인 구독 = Pro(3,000×7천×12=2.52억) + Premium(100×2.5만×12=0.30억) ≈ 2.82억
+  { year: 'Year 1', proSubscriptions: 2.82, marketplace: 0,   enterprise: 0 },
+  { year: 'Year 2', proSubscriptions: 6.5,  marketplace: 0.5, enterprise: 0 },
+  { year: 'Year 3', proSubscriptions: 14,   marketplace: 3.0, enterprise: 1.5 },
+  { year: 'Year 4', proSubscriptions: 28,   marketplace: 9.0, enterprise: 6.0 },
+  { year: 'Year 5', proSubscriptions: 50,   marketplace: 18,  enterprise: 20 },
 ];
 
 const useOfFundsSeedData = [
-    { name: '학습 가속 엔진 개발', value: 50, icon: <Brain className="w-5 h-5 mr-2" />, details: 'AI-Link 기반 학습 가속 핵심 기능 완성' },
-    { name: '성인 학습자 커뮤니티', value: 30, icon: <Rocket className="w-5 h-5 mr-2" />, details: '타겟 커뮤니티 마케팅 및 온보딩' },
-    { name: '핵심 팀 구성', value: 20, icon: <Users className="w-5 h-5 mr-2" />, details: '학습 가속 전문 인력 확보' },
+    { name: '유사 사례 엔진/임베딩', value: 50, icon: <Brain className="w-5 h-5 mr-2" />, details: '입력 확장·임베딩·유사도·토스트/점프' },
+    { name: '파일럿 확보(수험/투자/팀)', value: 30, icon: <Rocket className="w-5 h-5 mr-2" />, details: '전후 지표 설계·운영' },
+    { name: '핵심 팀 구성', value: 20, icon: <Users className="w-5 h-5 mr-2" />, details: '검색/LLM/프론트/제품' },
 ];
 
 const useOfFundsPreAData = [
-    { name: '지식캡슐 마켓플레이스', value: 40, icon: <ShoppingCart className="w-5 h-5 mr-2" />, details: 'AI-Link 기반 지식캡슐 거래 시스템' },
-    { name: '지식캡슐 마케팅', value: 35, icon: <TrendingUp className="w-5 h-5 mr-2" />, details: '지식캡슐 학습 시간 단축 효과 마케팅' },
-    { name: 'B2B/Enterprise 준비', value: 15, icon: <Building className="w-5 h-5 mr-2" />, details: '교육기관용 학습 효율성 관리 기능' },
-    { name: '운영 및 인프라', value: 10, icon: <Cpu className="w-5 h-5 mr-2" />, details: '안정적 지식캡슐 서비스 운영' },
+    { name: '지식캡슐 마켓플레이스', value: 40, icon: <ShoppingCart className="w-5 h-5 mr-2" />, details: '프리미엄·품질 심사·결제/정산' },
+    { name: '크리에이터/수요 확장', value: 35, icon: <TrendingUp className="w-5 h-5 mr-2" />, details: '수익 공유·리퍼럴·캠페인' },
+    { name: 'B2B/온프레미스 준비', value: 15, icon: <Building className="w-5 h-5 mr-2" />, details: '보안/SSO/API·감사로그' },
+    { name: '운영 및 인프라', value: 10, icon: <Cpu className="w-5 h-5 mr-2" />, details: '안정 운영·모니터링' },
 ];
 
 const COLORS_SEED = ['#2dd4bf', '#0ea5e9', '#8b5cf6'];
 const COLORS_PREA = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
 
 const milestonesData = [
-  { period: "Seed 후 12개월", target: "Phase 1 달성: 학습 가속 효과 증명", kpi: "학습 시간 50% 단축, ARR 8천만원" },
-      { period: "Pre-A 후 12개월", target: "Phase 2 점화: 지식캡슐 마켓 베타", kpi: "GMV 50만 달러, ARR 8억원" },
-  { period: "Pre-A 후 24개월", target: "Phase 3 진입: 첫 교육기관 계약", kpi: "Series A 준비 완료" },
+  { period: "Seed 후 12개월", target: "Phase 1: 재발률·A2A 개선 공개", kpi: "재발률 20%↓, A2A 30%↑, ARR 8천만원" },
+  { period: "Pre-A 후 12개월", target: "Phase 2: 지식캡슐 마켓 베타", kpi: "GMV $0.5M, ARR 8억원" },
+  { period: "Pre-A 후 24개월", target: "Phase 3: 온프레미스 첫 계약", kpi: "엔터프라이즈 계약 1+, Series A 준비" },
 ];
 
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
@@ -69,10 +70,10 @@ const FinancialsSection = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">
-            Financials: <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">The Learning Acceleration Engine</span>
+            Financials: <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">반복 실수 감소 엔진</span>
           </h2>
           <p className="text-lg text-gray-400 text-center max-w-3xl mx-auto mb-16">
-            우리의 재무 모델은 3단계 학습 가속 전략과 맞물려, 각 단계마다 새로운 학습 효율성 엔진을 장착하며 기하급수적으로 성장합니다. 이는 단순한 사용자 증가가 아닌, 학습 가치 폭발의 결과입니다.
+            수익 구조는 Pro 구독 + 지식캡슐(AI‑Link) 마켓 수수료 + 조직/온프레미스 라이선스로 구성됩니다. 각 단계는 전후 지표(재발률·A2A·리워크율)를 공개해 신뢰를 확보합니다.
           </p>
         </motion.div>
 
@@ -105,7 +106,7 @@ const FinancialsSection = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <div className="bg-gray-800/50 p-6 md:p-8 rounded-2xl border border-gray-700/40 h-full">
-              <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center md:text-left">수익 모델 진화 (단위: 억원)</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-8 text-center md:text-left">수익 모델 (단위: 억원)</h3>
               <div className="h-96">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={projectionData} margin={{ top: 10, right: 30, left: 0, bottom: 25 }}>
@@ -128,12 +129,15 @@ const FinancialsSection = () => {
                     <YAxis tick={{ fill: '#a0aec0' }} unit="억" axisLine={{ stroke: '#4a5568' }} tickLine={{ stroke: '#4a5568' }} />
                     <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(148, 163, 184, 0.1)'}} />
                     <Legend wrapperStyle={{ color: '#e2e8f0', paddingTop: '40px' }} formatter={(value) => <span style={{color: '#a0aec0'}}>{value}</span>} />
-                    <Area type="monotone" dataKey="proSubscriptions" name="Pro 구독료" stackId="1" stroke="#38bdf8" fill="url(#colorPro)" />
-                    <Area type="monotone" dataKey="marketplace" name="학습 캡슐 수수료" stackId="1" stroke="#a3e635" fill="url(#colorMarketplace)" />
-                    <Area type="monotone" dataKey="enterprise" name="교육기관 계약" stackId="1" stroke="#8b5cf6" fill="url(#colorEnterprise)" />
+                    <Area type="monotone" dataKey="proSubscriptions" name="개인 구독(Pro+Premium)" stackId="1" stroke="#38bdf8" fill="url(#colorPro)" />
+                    <Area type="monotone" dataKey="marketplace" name="지식캡슐 수수료" stackId="1" stroke="#a3e635" fill="url(#colorMarketplace)" />
+                    <Area type="monotone" dataKey="enterprise" name="조직/온프레미스" stackId="1" stroke="#8b5cf6" fill="url(#colorEnterprise)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
+              <p className="mt-3 text-xs text-gray-500">
+                가정: Year1 Pro 3,000명×7천원/월×12=2.52억 + Premium 100명×2.5만원/월×12=0.30억 ⇒ 개인 구독 2.82억. 이후 급성장 경로(제품 개선·지식캡슐·온프레미스) 반영.
+              </p>
             </div>
           </motion.div>
 

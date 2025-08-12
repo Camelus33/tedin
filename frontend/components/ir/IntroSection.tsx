@@ -53,7 +53,7 @@ const IntroSection = () => {
           className="absolute top-[-25vh] left-0 right-0 mx-auto"
         >
           <p className="text-sm font-semibold tracking-wider text-gray-400">
-            Habitus33 - The Learning Acceleration Platform
+            Habitus33 - 생각 유사도 자동추적 AI
           </p>
         </motion.div>
         
@@ -64,10 +64,10 @@ const IntroSection = () => {
           className="text-6xl md:text-8xl font-black uppercase"
           style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
         >
-          <span className="text-gray-200">모든 학습을</span>
+          <span className="text-gray-200">생각 유사도 자동추적 AI</span>
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">
-            반으로 줄이세요
+            같은 실수를 줄이세요
           </span>
         </motion.h1>
 
@@ -77,7 +77,7 @@ const IntroSection = () => {
           transition={{ duration: 1, delay: 1 }}
           className="mt-6 text-lg md:text-xl text-gray-300 font-medium max-w-2xl mx-auto"
         >
-          집중 촉진 & 기억 강화 - 지식캡슐 기반 학습 단축기
+          메모 저장 즉시 유사 사례 3가지를 보여줍니다. 과거와 나란히 놓고 결정하세요.
         </motion.p>
       </div>
     </section>

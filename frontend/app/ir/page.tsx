@@ -8,8 +8,6 @@ import ProblemSection from '../../components/ir/ProblemSection';
 import SolutionSection from '../../components/ir/SolutionSection';
 import TechnologySection from '../../components/ir/TechnologySection';
 import BenefitsSection from '../../components/ir/BenefitsSection';
-import UserScenarioSection from '../../components/ir/UserScenarioSection';
-import WhyNowSection from '../../components/ir/WhyNowSection';
 import MarketSizeSection from '../../components/ir/MarketSizeSection';
 import CompetitorAnalysisSection from '../../components/ir/CompetitorAnalysisSection';
 import BusinessModelSection from '../../components/ir/BusinessModelSection';
@@ -27,8 +25,6 @@ const IRPage = () => {
       <SolutionSection />
       <TechnologySection />
       <BenefitsSection />
-      <UserScenarioSection />
-      <WhyNowSection />
       <MarketSizeSection />
       <CompetitorAnalysisSection />
       <BusinessModelSection />

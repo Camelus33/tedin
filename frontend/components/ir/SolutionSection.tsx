@@ -8,23 +8,23 @@ import AMFAAnimation from './AMFAAnimation';
 const steps = [
   {
     icon: FiBox,
-    title: "1. Capture & Structure: 학습 맥락 포착",
-    description: "개인의 모든 학습 활동에서 핵심 개념과 이해 과정을 정확히 포착하고, 시간순으로 구조화하여 학습 진화 과정을 기록합니다."
+    title: "1. 메모 1줄",
+    description: "핵심 논지를 한 문장으로 기록합니다."
   },
   {
     icon: FiGitMerge,
-    title: "2. Evolve & Connect: 시간진화형 온톨로지 구축",
-    description: "학습한 내용을 시간순으로 연결하고, 개념 간의 관계를 파악하여 AI가 학습자의 지식 진화 과정을 이해할 수 있는 '시간진화형 온톨로지'를 생성합니다."
+    title: "2. 최소 입력",
+    description: "생각추가 1개, 기억강화 1칸, 링크+이유 1개."
   },
   {
     icon: FiCpu,
-    title: "3. Optimize & Encapsulate: AI-Link 생성",
-    description: "복잡한 학습 맥락을 AI가 즉시 추론하고 활용할 수 있도록, 최적화된 고농축 데이터 지식캡슐인 'AI-Link'로 변환합니다."
+    title: "3. 저장 즉시 알림",
+    description: "유사 사례 3가지를 자동으로 제시합니다."
   },
   {
     icon: FiZap,
-    title: "4. Accelerate & Review: 학습 가속 및 복습",
-    description: "AI-Link를 통해 AI가 학습자의 맥락을 완벽히 이해하므로, NotebookLM의 동영상 오버뷰 이용시 강력한 복습 효과를 얻을 수 있습니다."
+    title: "4. 비교·점프·교정",
+    description: "해당 메모로 이동해 비교하고, 체크리스트를 보완합니다."
   }
 ];
 
@@ -57,13 +57,10 @@ const SolutionSection = () => {
         <div className="relative pt-16">
           <div className="text-left mb-16" style={{ height: '100vh' }}>
             <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-              The Solution: <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Learning Acceleration Engine</span>
+              해결 방식
             </h2>
-            <h3 className="text-2xl sm:text-3xl font-semibold text-indigo-300 mb-6">
-              AI-Link: 학습 맥락을 AI에게 기억시키다
-            </h3>
             <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
-              AI-Link는 성인 학습자의 근본적인 한계인 '맥락 부족' 문제를 해결하는 독보적인 솔루션입니다. 학습자의 고유한 지식 진화 과정을 AI에게 '기억'시켜, 맥락추론이 가능한 강력한 학습 가속기를 제공합니다. 그 결과, 학습 시간을 획기적으로 단축하고 진정한 개인화된 복습 경험을 얻을 수 있습니다.
+              저장 순간, 과거 유사 사례 3가지를 보여 줍니다. 최소 입력으로 반복 실수를 줄이고, 결정 속도를 높입니다.
             </p>
           </div>
 
