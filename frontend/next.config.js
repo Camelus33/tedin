@@ -15,6 +15,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'habitus33-api.onrender.com',
+        port: '',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'tedin-api.onrender.com',
         port: '',
         pathname: '/uploads/**',
@@ -29,12 +35,13 @@ const nextConfig = {
   },
   // API 프록시 설정
   async rewrites() {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       return [
         {
           source: '/api/:path*',
-          destination: 'https://tedin-api.onrender.com/api/:path*',
+          destination: `${apiBase}/api/:path*`,
         },
-    ];
+      ];
   },
   // 백엔드 연결 문제 시 오류 페이지 표시 방지
   onDemandEntries: {
