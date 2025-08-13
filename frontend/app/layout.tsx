@@ -40,7 +40,7 @@ export const metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'ko_KR',
+    locale: 'en_US',
     url: 'https://tedin.vercel.app',
     siteName: 'Tedin',
     title: 'Tedin - Atomic Memo. Accelerate your learning!',
@@ -84,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko" className={`${notoSerifKr.variable} ${notoSansKr.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${notoSerifKr.variable} ${notoSansKr.variable}`} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="manifest" href="/manifest.json" />
@@ -148,7 +148,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Habitus33",
+              "name": "Tedin",
               "url": "https://tedin.vercel.app",
               "logo": "https://tedin.vercel.app/images/mascot/habitus-logo-seal.png",
               "description": "AI 시대를 위한 새로운 생각의 습관을 만드는 플랫폼",
