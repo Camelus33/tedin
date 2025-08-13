@@ -344,7 +344,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full max-h-full min-h-0 bg-secondary">
+    <div className="flex flex-col h-full max-h-full min-h-0 min-w-0 bg-secondary">
       {/* 헤더 */}
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         <div className="flex items-center gap-2">
@@ -438,7 +438,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
 
       {/* 메시지 영역 */}
       <div 
-        className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-gray-800"
+        className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 min-h-0 min-w-0 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-gray-800"
       >
         {messages.map((message) => (
           <div
@@ -457,7 +457,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                   <SparklesIcon className="h-4 w-4 text-indigo-400 mt-0.5 flex-shrink-0" />
                 )}
                 <div className="flex-1">
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                   {message.llmModel && (
                     <p className="text-xs text-gray-400 mt-1">
                       {message.llmModel}
