@@ -210,7 +210,7 @@ export class LLMService {
           256,
           Math.min(
             32768,
-            Number(process.env.OPENAI_RESP_MAX_OUTPUT_TOKENS || 2048)
+            Number(process.env.OPENAI_RESP_MAX_OUTPUT_TOKENS || 4096)
           )
         );
         const style = this.buildStyleOverlay(persona, tone);
@@ -275,6 +275,10 @@ export class LLMService {
 
       // 기본(gpt-4 등) 경로: 기존 Chat Completions API 유지
       const style = this.buildStyleOverlay(persona, tone);
+      const chatMaxTokens = Math.max(
+        256,
+        Math.min(32768, Number(process.env.OPENAI_CHAT_MAX_TOKENS || 4096))
+      );
       const completion = await openai.chat.completions.create({
         model: request.llmModel,
         messages: [
@@ -289,7 +293,7 @@ export class LLMService {
             content: context
           }
         ],
-        max_tokens: 1000,
+        max_tokens: chatMaxTokens,
         temperature: 0.7,
       });
 
@@ -340,9 +344,13 @@ export class LLMService {
         : LLMService.NEUTRAL_SYSTEM_PROMPT;
 
       const model = request.llmModel || 'claude-3-5-sonnet-latest';
+      const claudeMaxTokens = Math.max(
+        256,
+        Math.min(8192, Number(process.env.ANTHROPIC_MAX_TOKENS || 4096))
+      );
       const completion = await (anthropic.messages.create as any)({
         model,
-        max_tokens: 1024,
+        max_tokens: claudeMaxTokens,
         temperature: 0.7,
         system,
         messages: [
@@ -398,6 +406,10 @@ export class LLMService {
         : LLMService.NEUTRAL_SYSTEM_PROMPT;
 
       // text-only generation using SDK
+      const geminiMaxTokens = Math.max(
+        256,
+        Math.min(8192, Number(process.env.GEMINI_MAX_OUTPUT_TOKENS || 4096))
+      );
       const generation = await genAI.getGenerativeModel({ model }).generateContent({
         contents: [
           {
@@ -409,7 +421,7 @@ export class LLMService {
             ],
           },
         ],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+        generationConfig: { temperature: 0.7, maxOutputTokens: geminiMaxTokens },
       } as any);
 
       const text = (generation as any)?.response?.text?.() ||
