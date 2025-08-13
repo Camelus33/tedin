@@ -67,7 +67,8 @@ export class RecommendationQueryService {
   async generateRecommendations(
     searchResults: SearchResult[],
     searchQuery: string,
-    userId: string
+    userId: string,
+    opts?: { llmProvider?: string; llmModel?: string; userApiKey?: string }
   ): Promise<RecommendationQuery[]> {
     try {
       const recommendations: RecommendationQuery[] = [];
@@ -96,9 +97,15 @@ export class RecommendationQueryService {
       const contextQueries = this.generateContextBasedQueries(searchResults, searchQuery);
       recommendations.push(...contextQueries);
 
-      // 3. AI 기반 추천 (LLM을 활용한 추천)
-      const aiQueries = await this.generateAIRecommendations(searchResults, searchQuery, userId);
-      recommendations.push(...aiQueries);
+      // 3. AI 기반 추천 (LLM을 활용한 추천) - 실패해도 나머지 추천 유지
+      if (opts?.userApiKey) {
+        try {
+          const aiQueries = await this.generateAIRecommendations(searchResults, searchQuery, userId, opts);
+          recommendations.push(...aiQueries);
+        } catch (e) {
+          console.warn('AI 추천 단계 실패, 개인화/컨텍스트 추천은 유지합니다.', e);
+        }
+      }
 
       // 중복 제거 및 정렬
       const uniqueRecommendations = this.removeDuplicates(recommendations);
@@ -109,6 +116,7 @@ export class RecommendationQueryService {
       return sortedRecommendations;
     } catch (error) {
       console.error('추천 쿼리 생성 오류:', error);
+      // 전체 실패 시 최소 폴백 반환
       return this.getFallbackRecommendations(searchQuery);
     }
   }
@@ -165,7 +173,8 @@ export class RecommendationQueryService {
   private async generateAIRecommendations(
     searchResults: SearchResult[],
     searchQuery: string,
-    userId: string
+    userId: string,
+    opts?: { llmProvider?: string; llmModel?: string; userApiKey?: string }
   ): Promise<RecommendationQuery[]> {
     try {
       // 검색 결과 컨텍스트 준비
@@ -189,11 +198,14 @@ ${contextSummary}
 ]`;
 
       // LLM 호출
+      const provider = opts?.llmProvider || 'ChatGPT';
+      const model = opts?.llmModel || (provider === 'ChatGPT' ? 'gpt-4o' : provider === 'Claude' ? 'claude-3-5-sonnet-latest' : 'gemini-2.0-flash');
       const llmResponse = await this.llmService.generateResponse({
         message: prompt,
         searchContext: { query: searchQuery, results: searchResults },
-        llmProvider: 'ChatGPT',
-        llmModel: 'gpt-4',
+        llmProvider: provider,
+        llmModel: model,
+        userApiKey: opts?.userApiKey, // 사용자 키 전달(필수)
         userId
       });
 

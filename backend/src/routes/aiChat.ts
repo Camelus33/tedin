@@ -153,7 +153,7 @@ router.post('/send', async (req: Request, res: Response) => {
  */
 router.post('/recommendations', async (req: Request, res: Response) => {
   try {
-    const { searchQuery, searchResults } = req.body;
+  const { searchQuery, searchResults, llmProvider, llmModel, userApiKey } = req.body;
     
     // 인증된 사용자 ID 사용
     const userId = req.user._id.toString();
@@ -173,10 +173,14 @@ router.post('/recommendations', async (req: Request, res: Response) => {
       });
     }
 
+    // LLM 설정이 제공되면 서비스 내부 LLM 호출에서 활용되도록 request body에 포함해 둡니다.
+    // 현재 RecommendationQueryService는 LLMService를 직접 생성하므로, 전달을 위해 환경 또는 상태 주입이 필요하지만
+    // 간단하게는 아래 컨텍스트를 기준으로 LLM 호출로직을 수정할 예정입니다.
     const recommendations = await recommendationService.generateRecommendations(
       searchResults,
       searchQuery,
-      userId
+      userId,
+      { llmProvider, llmModel, userApiKey }
     );
 
     res.json({
