@@ -38,6 +38,14 @@ export interface INote extends Document {
   conceptScore?: number; // AI가 계산한 개념이해도 점수 (0-100점)
   embedding?: number[]; // OpenAI 임베딩 벡터
   embeddingGeneratedAt?: Date; // 임베딩 생성 일시
+  // 세그먼트 단위 임베딩 (경량 시간·타입 인코딩 반영)
+  segmentEmbeddings?: Array<{
+    kind: 'content' | 'why' | 'context' | 'association' | 'image' | 'thread' | 'link_reason';
+    textHash: string;
+    createdAt: Date | null;
+    vector: number[];
+    weight?: number | null;
+  }>;
   // 알림 마일스톤 기록
   milestone1NotifiedAt?: Date;
   milestone2NotifiedAt?: Date;
@@ -216,6 +224,22 @@ const NoteSchema: Schema = new Schema({
   embeddingGeneratedAt: {
     type: Date,
     default: null,
+  },
+  segmentEmbeddings: {
+    type: [
+      {
+        kind: {
+          type: String,
+          required: true,
+          enum: ['content', 'why', 'context', 'association', 'image', 'thread', 'link_reason'],
+        },
+        textHash: { type: String, required: true, trim: true },
+        createdAt: { type: Date, default: null },
+        vector: { type: [Number], required: true },
+        weight: { type: Number, default: null },
+      },
+    ],
+    default: [],
   },
   milestone1NotifiedAt: {
     type: Date,

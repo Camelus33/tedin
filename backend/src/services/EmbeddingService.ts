@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import Note from '../models/Note';
+import { createHash } from 'crypto';
 
 /**
  * Embedding Service
@@ -47,6 +48,25 @@ export class EmbeddingService {
       return response.data[0].embedding;
     } catch (error) {
       console.error('OpenAI embedding generation error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate embeddings for multiple texts using a single API call
+   */
+  private async generateEmbeddings(texts: string[]): Promise<number[][]> {
+    if (!texts || texts.length === 0) return [];
+    try {
+      const openai = this.initializeOpenAI();
+      const inputs = texts.map(t => (t.length > 8000 ? t.substring(0, 8000) : t));
+      const response = await openai.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: inputs,
+      });
+      return response.data.map(d => (d.embedding as unknown as number[]));
+    } catch (error) {
+      console.error('OpenAI batch embedding generation error:', error);
       throw error;
     }
   }
@@ -109,6 +129,79 @@ export class EmbeddingService {
   }
 
   /**
+   * Build aggregate text and segment texts with lightweight time/type encoding
+   * Segments: content | why | context | association | image | thread | link_reason
+   */
+  private buildNoteEmbeddingSourceWithSegments(note: any): {
+    aggregateText: string;
+    segments: Array<{ kind: 'content' | 'why' | 'context' | 'association' | 'image' | 'thread' | 'link_reason'; text: string; createdAt: Date | null; weight?: number }>
+  } {
+    const formatDate = (d?: any) => {
+      if (!d) return null;
+      const dt = new Date(d);
+      if (Number.isNaN(dt.getTime())) return null;
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+    };
+
+    const safeText = (v?: string | null, maxLen = 1000) => (v || '').toString().trim().slice(0, maxLen);
+
+    const segments: Array<{ kind: 'content' | 'why' | 'context' | 'association' | 'image' | 'thread' | 'link_reason'; text: string; createdAt: Date | null; weight?: number }> = [];
+
+    // Content
+    const noteCreated = note?.createdAt ? new Date(note.createdAt) : null;
+    const contentText = safeText(note?.content, 2000);
+    if (contentText) {
+      segments.push({ kind: 'content', text: `[CONTENT ${formatDate(noteCreated) ?? ''}]\n${contentText}`, createdAt: noteCreated, weight: 1.0 });
+    }
+
+    // Evolution fields with timestamps
+    const evo: Array<['why'|'context'|'association'|'image', string|undefined, any, number]> = [
+      ['why', note?.importanceReason, note?.importanceReasonAt, 0.9],
+      ['context', note?.momentContext, note?.momentContextAt, 0.9],
+      ['association', note?.relatedKnowledge, note?.relatedKnowledgeAt, 0.9],
+      ['image', note?.mentalImage, note?.mentalImageAt, 0.9],
+    ];
+    for (const [kind, value, at, weight] of evo) {
+      const t = safeText(value, 600);
+      if (!t) continue;
+      const ts = at ? new Date(at) : null;
+      segments.push({ kind, text: `[${kind.toUpperCase()} ${formatDate(ts) ?? ''}]\n${t}` , createdAt: ts, weight });
+    }
+
+    // Inline threads: oldest -> newest to encode flow; limit 7
+    const inlineThreads: any[] = Array.isArray(note?.inlineThreads) ? [...note.inlineThreads] : [];
+    const sortedThreads = inlineThreads
+      .map((t: any) => ({
+        content: safeText((t?.content || '').toString(), 300),
+        createdAt: t?.createdAt ? new Date(t.createdAt) : null,
+      }))
+      .filter(t => t.content.length > 0)
+      .sort((a, b) => (a.createdAt?.getTime() ?? 0) - (b.createdAt?.getTime() ?? 0))
+      .slice(-7);
+    for (const t of sortedThreads) {
+      segments.push({ kind: 'thread', text: `[THREAD ${formatDate(t.createdAt) ?? ''}]\n${t.content}`, createdAt: t.createdAt, weight: 0.7 });
+    }
+
+    // Related link reasons: include type + createdAt; limit 7
+    const links: any[] = Array.isArray(note?.relatedLinks) ? [...note.relatedLinks] : [];
+    const cleanedLinks = links
+      .map((l: any) => ({
+        type: (l?.type || '').toString(),
+        reason: safeText((l?.reason || '').toString(), 200),
+        createdAt: l?.createdAt ? new Date(l.createdAt) : null,
+      }))
+      .filter(l => l.reason.length > 0)
+      .slice(-7);
+    for (const l of cleanedLinks) {
+      segments.push({ kind: 'link_reason', text: `[LINK ${l.type.toUpperCase()} ${formatDate(l.createdAt) ?? ''}]\n${l.reason}`, createdAt: l.createdAt, weight: 0.6 });
+    }
+
+    const aggregateText = segments.map(s => s.text).join('\n').trim().slice(0, 8000);
+    return { aggregateText, segments };
+  }
+
+  /**
    * Generate embeddings for all memos without embeddings
    */
   async generateEmbeddingsForAllMemos() {
@@ -158,16 +251,35 @@ export class EmbeddingService {
         throw new Error('Memo not found');
       }
 
-      const source = this.buildNoteEmbeddingSource(memo);
-      const embedding = await this.generateEmbedding(source);
+      // Build aggregate text and segment texts (with time/type encoding)
+      const { aggregateText, segments } = this.buildNoteEmbeddingSourceWithSegments(memo);
+
+      // Prepare batch inputs: [aggregate, ...segments]
+      const inputs: string[] = [aggregateText, ...segments.map(s => s.text)];
+      const vectors = await this.generateEmbeddings(inputs);
+      const aggregateVector = vectors[0] || [];
+
+      // Map back segment vectors
+      const segmentEmbeddings = segments.map((s, idx) => {
+        const vec = vectors[idx + 1] || [];
+        const textHash = createHash('sha1').update(s.text).digest('hex');
+        return {
+          kind: s.kind,
+          textHash,
+          createdAt: s.createdAt || null,
+          vector: vec,
+          weight: s.weight ?? null,
+        };
+      });
 
       await Note.findByIdAndUpdate(memoId, {
-        embedding,
+        embedding: aggregateVector,
         embeddingGeneratedAt: new Date(),
+        segmentEmbeddings,
       });
 
       console.log(`Generated embedding for memo: ${memoId}`);
-      return embedding;
+      return aggregateVector;
     } catch (error) {
       console.error('Error generating embedding for memo:', error);
       throw error;
