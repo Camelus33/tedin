@@ -80,7 +80,7 @@ export default function DashboardPage() {
       // 사용자, 노트(제한), 요약노트를 병렬로 가져오기
       const [userResponse, memosResponse, summaryNotesResponse, userStatsResponse] = await Promise.all([
         apiClient.get('/users/profile').catch(() => null),
-        apiClient.get('/notes?sort=createdAt:desc&limit=30'),
+        apiClient.get('/notes?sort=createdAt:desc&limit=33'),
         apiClient.get('/summary-notes'),
         apiClient.get('/users/me/stats').catch(() => null),
       ]);
@@ -200,7 +200,7 @@ export default function DashboardPage() {
 
   // 렌더링 전 상태 확인 - 로그 간소화
   console.log('🔍 [RENDER] User:', user?.nickname, 'Memos:', recentMemos?.length, 'SummaryNotes:', summaryNotes?.length, 'TotalMemos:', totalMemoCount);
-  // 최근 X일 계산: 최근 30개 중 가장 오래된 메모와 오늘(자정) 사이 일수 (최소 1일)
+  // 최근 X일 계산: 최근 33개 중 가장 오래된 메모와 오늘(자정) 사이 일수 (최소 1일)
   const recentDaysWindow = useMemo(() => {
     if (!recentMemos || recentMemos.length === 0) return 0;
     const toStartOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
