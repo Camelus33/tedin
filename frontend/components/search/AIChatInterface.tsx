@@ -499,9 +499,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
           <h4 className="text-xs font-medium text-gray-300 mb-1">맥락기반 추천 질문</h4>
           <div
             ref={recsScrollRef}
-            className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide snap-x snap-mandatory overscroll-x-contain cursor-grab active:cursor-grabbing select-none"
-            onMouseDown={handleRecsMouseDown}
-            style={{ WebkitOverflowScrolling: 'touch' }}
+            className="flex flex-wrap gap-2 pb-2 min-w-0"
           >
             {recommendations.map((rec) => (
               <Button
@@ -509,10 +507,10 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => { if (hasDraggedRef.current) return; handleRecommendationClick(rec); }}
-                className="text-xs py-0.5 px-2 h-auto flex-shrink-0 whitespace-nowrap snap-start"
+                className="text-xs py-0.5 px-2 h-auto whitespace-normal break-words"
               >
                 <span className="mr-1">💡</span>
-                <span className="block max-w-[80vw] overflow-hidden text-ellipsis whitespace-nowrap sm:max-w-none">{rec.text}</span>
+                <span className="block max-w-full overflow-hidden text-ellipsis whitespace-normal break-words">{rec.text}</span>
               </Button>
             ))}
           </div>
