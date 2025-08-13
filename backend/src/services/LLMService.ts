@@ -39,6 +39,108 @@ export interface LLMRequest {
  * ChatGPT, Claude, Gemini를 지원하는 추상화 레이어
  */
 export class LLMService {
+  // 중립 시스템 프롬프트: 품질/안전 가드레일만 포함
+  private static readonly NEUTRAL_SYSTEM_PROMPT = [
+    '당신은 중립적인 AI 어시스턴트입니다.',
+    '정확하고 근거 중심으로 답변하며, 확신이 없으면 불확실성을 명시하세요.',
+    '검색된 사용자 메모를 우선적으로 근거로 활용하되, 추정은 피하고 과장하지 마세요.',
+    '개인정보/민감정보 요청이나 유해한 지시가 있으면 정중히 거부하세요.',
+    '가능하면 간결하고 구조화된 형식(불릿/단계)으로 답변하세요.'
+  ].join(' ');
+
+  /**
+   * 사용자 메시지 선두에서 페르소나/톤 지시를 파싱하고 본문에서 제거
+   */
+  private extractPersonaDirectives(message: string): { cleanedMessage: string; persona?: string; tone?: string } {
+    const lines = (message || '').split(/\r?\n/);
+    let idx = 0;
+    let persona: string | undefined;
+    let tone: string | undefined;
+
+    const norm = (s: string) => s.trim().toLowerCase();
+    const mapPersona = (raw: string) => {
+      const v = norm(raw);
+      if (['연구어시스턴트', '연구조교', 'research', 'research-assistant', '리서치', '리서처'].includes(v)) return 'research-assistant';
+      if (['학습코치', '코치', 'coach', 'study-coach'].includes(v)) return 'study-coach';
+      if ([
+        '기술문서 작성자',
+        '기술 문서 작성자',
+        '기술문서 전문가',
+        '기술 문서화 전문가',
+        '문서화 전문가',
+        'tech-writer',
+        'technical-writer',
+        '테크라이터',
+        '테크니컬 라이터'
+      ].includes(v)) return 'tech-writer';
+      return undefined;
+    };
+    const mapTone = (raw: string) => {
+      const v = norm(raw);
+      if (['친근', 'friendly'].includes(v)) return 'friendly';
+      if (['격식', 'formal'].includes(v)) return 'formal';
+      if (['간결', 'concise'].includes(v)) return 'concise';
+      if (['깊이', '심화', 'in-depth', 'depth'].includes(v)) return 'in-depth';
+      return undefined;
+    };
+
+    while (idx < lines.length) {
+      const line = lines[idx].trim();
+      if (line === '') { idx++; continue; }
+      const mPersona = line.match(/^\s*(persona|역할)\s*:\s*(.+)$/i);
+      const mTone = line.match(/^\s*(tone|톤)\s*:\s*(.+)$/i);
+      if (mPersona) { persona = mapPersona(mPersona[2]); idx++; continue; }
+      if (mTone) { tone = mapTone(mTone[2]); idx++; continue; }
+      break;
+    }
+    const cleaned = lines.slice(idx).join('\n').trim();
+    return { cleanedMessage: cleaned || message, persona, tone };
+  }
+
+  private buildStyleOverlay(persona?: string, tone?: string): string | undefined {
+    const personaText = (() => {
+      switch (persona) {
+        case 'research-assistant':
+          return '스타일 지침: 연구 어시스턴트 톤으로, 근거 중심 요약과 핵심 인사이트를 제공하세요.';
+        case 'study-coach':
+          return '스타일 지침: 학습 코치 톤으로, 단계별 학습전략과 실천 과제를 제안하세요.';
+        case 'tech-writer':
+          return '스타일 지침: 기술문서 작성자 톤으로, 간결한 구조와 명확한 용어 정의를 사용하세요.';
+        default:
+          return undefined;
+      }
+    })();
+    const toneText = (() => {
+      switch (tone) {
+        case 'friendly':
+          return '친근하고 존중하는 말투를 사용하세요.';
+        case 'formal':
+          return '격식 있고 중립적인 말투를 사용하세요.';
+        case 'concise':
+          return '불필요한 수식을 줄이고 간결하게 답변하세요.';
+        case 'in-depth':
+          return '핵심에서 시작하되 필요 시 근거와 한계까지 깊이 있게 제시하세요.';
+        default:
+          return undefined;
+      }
+    })();
+    const parts = [personaText, toneText].filter(Boolean) as string[];
+    return parts.length ? parts.join(' ') : undefined;
+  }
+
+  /**
+   * 대화 메타(기본 페르소나/톤) 적용: runtime 전달값(옵션)을 파싱 결과에 병합
+   */
+  private mergeSessionPreferences(
+    parsed: { cleanedMessage: string; persona?: string; tone?: string },
+    session?: { persona?: string; tone?: string }
+  ) {
+    return {
+      cleanedMessage: parsed.cleanedMessage,
+      persona: parsed.persona || session?.persona,
+      tone: parsed.tone || session?.tone,
+    };
+  }
   /**
    * LLM 응답 생성
    * @param request LLM 요청
@@ -87,10 +189,16 @@ export class LLMService {
     try { // ChatGPT 응답 생성 블록에 try-catch 추가
       const openai = new OpenAI({ apiKey: request.userApiKey });
 
+      const merged = this.mergeSessionPreferences(
+        this.extractPersonaDirectives(request.message),
+        // 대화 전체 기본값은 현재는 라우트에서 보관하되, 여기서는 요청에 포함된 값만 사용 가능
+        undefined
+      );
+      const { cleanedMessage, persona, tone } = merged;
       const context = SearchContextService.createOptimizedPrompt(
         request.searchContext.results,
         request.searchContext.query,
-        request.message
+        cleanedMessage
       );
 
       const modelLower = (request.llmModel || '').toLowerCase();
@@ -105,9 +213,12 @@ export class LLMService {
             Number(process.env.OPENAI_RESP_MAX_OUTPUT_TOKENS || 2048)
           )
         );
+        const style = this.buildStyleOverlay(persona, tone);
         const resp: any = await (openai as any).responses.create({
           model: request.llmModel,
-          instructions: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.',
+          instructions: style
+            ? `${LLMService.NEUTRAL_SYSTEM_PROMPT} ${style}`
+            : LLMService.NEUTRAL_SYSTEM_PROMPT,
           input: context,
           max_output_tokens: maxOut,
         });
@@ -163,12 +274,15 @@ export class LLMService {
       }
 
       // 기본(gpt-4 등) 경로: 기존 Chat Completions API 유지
+      const style = this.buildStyleOverlay(persona, tone);
       const completion = await openai.chat.completions.create({
         model: request.llmModel,
         messages: [
           {
             role: 'system',
-            content: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.'
+            content: style
+              ? `${LLMService.NEUTRAL_SYSTEM_PROMPT} ${style}`
+              : LLMService.NEUTRAL_SYSTEM_PROMPT
           },
           {
             role: 'user',
@@ -210,24 +324,34 @@ export class LLMService {
     }
     try {
       const anthropic = new Anthropic({ apiKey: request.userApiKey });
+      const merged = this.mergeSessionPreferences(
+        this.extractPersonaDirectives(request.message),
+        undefined
+      );
+      const { cleanedMessage, persona, tone } = merged;
       const context = SearchContextService.createOptimizedPrompt(
         request.searchContext.results,
         request.searchContext.query,
-        request.message
+        cleanedMessage
       );
+      const style = this.buildStyleOverlay(persona, tone);
+      const system = style
+        ? `${LLMService.NEUTRAL_SYSTEM_PROMPT} ${style}`
+        : LLMService.NEUTRAL_SYSTEM_PROMPT;
 
       const model = request.llmModel || 'claude-3-5-sonnet-latest';
-      const completion = await anthropic.messages.create({
+      const completion = await (anthropic.messages.create as any)({
         model,
         max_tokens: 1024,
         temperature: 0.7,
+        system,
         messages: [
           {
             role: 'user',
-            content: `당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.\n\n${context}`,
+            content: context,
           },
         ],
-      } as any);
+      });
 
       const text = (completion as any)?.content?.[0]?.text ||
         (completion as any)?.content?.[0]?.type === 'text' && (completion as any)?.content?.[0]?.text ||
@@ -258,11 +382,20 @@ export class LLMService {
     try {
       const genAI = new GoogleGenerativeAI(request.userApiKey);
       const model = request.llmModel || 'gemini-2.0-flash';
+      const merged = this.mergeSessionPreferences(
+        this.extractPersonaDirectives(request.message),
+        undefined
+      );
+      const { cleanedMessage, persona, tone } = merged;
       const context = SearchContextService.createOptimizedPrompt(
         request.searchContext.results,
         request.searchContext.query,
-        request.message
+        cleanedMessage
       );
+      const style = this.buildStyleOverlay(persona, tone);
+      const systemText = style
+        ? `${LLMService.NEUTRAL_SYSTEM_PROMPT} ${style}`
+        : LLMService.NEUTRAL_SYSTEM_PROMPT;
 
       // text-only generation using SDK
       const generation = await genAI.getGenerativeModel({ model }).generateContent({
@@ -271,7 +404,7 @@ export class LLMService {
             role: 'user',
             parts: [
               {
-                text: '당신은 수험생의 학습을 돕는 AI 학습 진단사입니다. 검색된 메모를 바탕으로 정확하고 유용한 답변을 제공해주세요.\n\n' + context,
+                text: systemText + '\n\n' + context,
               },
             ],
           },

@@ -520,7 +520,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
                 ? "AI 모델을 설정해주세요"
                 : !selectedLLM
                 ? "사용할 AI 모델을 선택해주세요"
-                : "AI와 대화해보세요..."
+                : "AI에게 역할과 톤을 부여하세요... (예: 너는 학습코치로서 친절하게 답변해)"
             }
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}

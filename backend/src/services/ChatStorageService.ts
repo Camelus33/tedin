@@ -207,6 +207,31 @@ export class ChatStorageService {
   }
 
   /**
+   * 단일 대화 조회
+   */
+  async getConversation(conversationId: ObjectId): Promise<Conversation | null> {
+    return await this.conversations.findOne({ _id: conversationId });
+  }
+
+  /**
+   * 대화 메타데이터 갱신(부분 업데이트)
+   */
+  async updateConversationMetadata(
+    conversationId: ObjectId,
+    metadata: Partial<Conversation['metadata']>
+  ): Promise<void> {
+    await this.conversations.updateOne(
+      { _id: conversationId },
+      {
+        $set: Object.fromEntries(
+          Object.entries(metadata).map(([k, v]) => [`metadata.${k}`, v])
+        ),
+        $currentDate: { updatedAt: true }
+      }
+    );
+  }
+
+  /**
    * 채팅 히스토리 검색 (하이브리드 검색)
    * @param userId 사용자 ID
    * @param query 검색 쿼리

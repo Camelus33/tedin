@@ -31,7 +31,9 @@ router.post('/send', async (req: Request, res: Response) => {
       llmProvider,
       llmModel,
       userApiKey, // 사용자 API 키 추가
-      conversationId
+      conversationId,
+      persona, // 대화 전체 기본 페르소나(선택)
+      tone // 대화 전체 기본 톤(선택)
     } = req.body;
 
     // 인증된 사용자 ID 사용
@@ -87,6 +89,15 @@ router.post('/send', async (req: Request, res: Response) => {
         userId,
         searchContext
       );
+    }
+
+    // 대화 기본 페르소나/톤 메타데이터 저장(제공된 경우, 또는 첫 턴 지정)
+    if (persona || tone) {
+      await chatStorageService.updateConversationMetadata(currentConversationId, {
+        // 기존 값 보존 + 신규만 덮어쓰기 위해 부분 업데이트 수행
+        ...(persona ? { persona } as any : {}),
+        ...(tone ? { tone } as any : {})
+      });
     }
 
     // 사용자 메시지 저장
