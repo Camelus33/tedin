@@ -484,7 +484,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
             <div className="bg-gray-700 rounded-lg p-3">
               <div className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
-                <span className="text-sm text-gray-300">AI가 응답을 생성하고 있습니다...</span>
+                <span className="text-sm text-gray-300">온톨로지 고품질 답변을 생성하고 있습니다. 조금만 더 기다려 주세요.</span>
               </div>
             </div>
           </div>
