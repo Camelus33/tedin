@@ -62,6 +62,17 @@ router.post('/send', async (req: Request, res: Response) => {
     }
 
     // LLM 응답 생성
+    // 직전 대화 맥락(간단 요약) 구성: 최근 N개 메시지를 불러와 간단히 연결
+    let historySummary: string | undefined;
+    const isValidObjectId = (id: string): boolean => /^[0-9a-fA-F]{24}$/.test(id);
+    if (conversationId && isValidObjectId(conversationId)) {
+      const pastMessages = await chatStorageService.getMessages(new ObjectId(conversationId), 20);
+      const lastTurns = pastMessages.slice(-6); // 최근 6개만 요약
+      historySummary = lastTurns
+        .map(m => `${m.senderType === 'user' ? '사용자' : 'AI'}: ${m.content}`)
+        .join('\n');
+    }
+
     const llmResponse = await llmService.generateResponse({
       message,
       searchContext,
@@ -69,16 +80,12 @@ router.post('/send', async (req: Request, res: Response) => {
       llmModel,
       userApiKey, // 사용자 API 키 전달
       conversationId,
-      userId
+      userId,
+      conversationHistory: historySummary
     });
 
     // 대화 저장
     let currentConversationId: ObjectId;
-    
-    // conversationId가 유효한 ObjectId 형식인지 확인
-    const isValidObjectId = (id: string): boolean => {
-      return /^[0-9a-fA-F]{24}$/.test(id);
-    };
     
     if (conversationId && isValidObjectId(conversationId)) {
       // 기존 대화 사용

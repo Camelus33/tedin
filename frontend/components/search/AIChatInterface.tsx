@@ -65,6 +65,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendationQuery[]>([]);
   const [selectedLLM, setSelectedLLM] = useState<LLMProvider | null>(null);
   const [showLLMSettings, setShowLLMSettings] = useState(false);
@@ -198,7 +199,11 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
     try {
       const response = await apiClient.post('/ai-chat/recommendations', {
         searchQuery,
-        searchResults: searchResults.slice(0, 5) // 상위 5개 결과만 사용
+        searchResults: searchResults.slice(0, 5), // 상위 5개 결과만 사용
+        // LLM 설정 전달(있을 경우 AI 기반 추천 활성화)
+        llmProvider: selectedLLM?.name,
+        llmModel: selectedLLM?.model,
+        userApiKey: selectedLLM?.apiKey
       });
 
       setRecommendations(response.recommendations || []);
@@ -229,7 +234,7 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
         llmProvider: selectedLLM.name,
         llmModel: selectedLLM.model,
         userApiKey: selectedLLM.apiKey,
-        conversationId: 'temp'
+        conversationId: conversationId || undefined
       });
 
       const aiMessage: Message = {
@@ -242,6 +247,9 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({
       };
 
       setMessages(prev => [...prev, aiMessage]);
+      if (response.conversationId && typeof response.conversationId === 'string') {
+        setConversationId(response.conversationId);
+      }
       
       // 새로운 추천 쿼리 생성
       setTimeout(generateRecommendations, 1000);

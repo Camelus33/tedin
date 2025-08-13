@@ -34,6 +34,7 @@ export interface LLMRequest {
   conversationId?: string;
   userId?: string;
   userApiKey?: string;
+  conversationHistory?: string;
 }
 
 /**
@@ -238,6 +239,9 @@ export class LLMService {
         request.searchContext.query,
         cleanedMessage
       );
+      const fullContext = request.conversationHistory
+        ? `이전 대화 요약:\n${request.conversationHistory}\n\n현재 질문 및 검색 컨텍스트:\n${context}`
+        : context;
 
       const modelLower = (request.llmModel || '').toLowerCase();
 
@@ -257,7 +261,7 @@ export class LLMService {
           instructions: style
             ? `${LLMService.NEUTRAL_SYSTEM_PROMPT} ${style}`
             : LLMService.NEUTRAL_SYSTEM_PROMPT,
-          input: context,
+          input: fullContext,
           max_output_tokens: maxOut,
         });
 
@@ -331,7 +335,7 @@ export class LLMService {
           },
           {
             role: 'user',
-            content: context
+            content: fullContext
           }
         ],
         max_tokens: chatMaxTokens,
@@ -386,6 +390,9 @@ export class LLMService {
       const system = style
         ? `${LLMService.NEUTRAL_SYSTEM_PROMPT} ${style}`
         : LLMService.NEUTRAL_SYSTEM_PROMPT;
+      const fullContext = request.conversationHistory
+        ? `이전 대화 요약:\n${request.conversationHistory}\n\n현재 질문 및 검색 컨텍스트:\n${context}`
+        : context;
 
       const model = request.llmModel || 'claude-3-5-sonnet-latest';
       const claudeMaxTokens = Math.max(
@@ -400,7 +407,7 @@ export class LLMService {
         messages: [
           {
             role: 'user',
-            content: context,
+            content: fullContext,
           },
         ],
       });
@@ -451,6 +458,9 @@ export class LLMService {
       const systemText = style
         ? `${LLMService.NEUTRAL_SYSTEM_PROMPT} ${style}`
         : LLMService.NEUTRAL_SYSTEM_PROMPT;
+      const fullContext = request.conversationHistory
+        ? `이전 대화 요약:\n${request.conversationHistory}\n\n현재 질문 및 검색 컨텍스트:\n${context}`
+        : context;
 
       // text-only generation using SDK
       const geminiMaxTokens = Math.max(
@@ -463,7 +473,7 @@ export class LLMService {
             role: 'user',
             parts: [
               {
-                text: systemText + '\n\n' + context,
+                text: systemText + '\n\n' + fullContext,
               },
             ],
           },
