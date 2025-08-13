@@ -1,6 +1,6 @@
 {
-  "name": "Habitus33 - Atomic Memo, Success Habit",
-  "short_name": "Habitus33",
+  "name": "Tedin - Atomic Memo, Success Habit",
+  "short_name": "Tedin",
   "description": "Think, Memo, Evolve",
   "start_url": "/",
   "display": "standalone",
@@ -30,7 +30,7 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Habitus33 메인 화면"
+      "label": "Tedin 메인 화면"
     }
   ],
   "shortcuts": [

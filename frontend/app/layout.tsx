@@ -23,44 +23,44 @@ const notoSansKr = Noto_Sans_KR({
 });
 
 export const metadata = {
-  title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
+  title: 'Tedin - Atomic Memo. Accelerate your learning!',
   description: 'Thought Pattern Mapping(TPM)으로 당신의 메모와 생각 흐름을 분석해 패턴을 발견하고, AI-Link로 지식 캡슐을 만들어 더 깊이 이해하는 학습 도구입니다.',
   keywords: 'Thought Pattern Mapping, TPM, AI-Link, AMFA, AI, 학습, 메모, 지식관리, 학습가속기, 지식캡슐화',
-  authors: [{ name: 'Habitus33 Team' }],
-  creator: 'Habitus33',
-  publisher: 'Habitus33',
+  authors: [{ name: 'Tedin Team' }],
+  creator: 'Tedin',
+  publisher: 'Tedin',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://habitus33.vercel.app'),
+  metadataBase: new URL('https://tedin.vercel.app'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    url: 'https://habitus33.vercel.app',
-    siteName: 'Habitus33',
-    title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
+    url: 'https://tedin.vercel.app',
+    siteName: 'Tedin',
+    title: 'Tedin - Atomic Memo. Accelerate your learning!',
     description: 'Thought Pattern Mapping(TPM)으로 생각의 패턴을 분석하고 AI-Link로 지식 캡슐을 만드는 학습 도구입니다.',
     images: [
       {
         url: '/hero-image.png',
         width: 1200,
         height: 630,
-          alt: 'Habitus33 - Thought Pattern Mapping(TPM)과 AI-Link로 지식 캡슐을 만드는 플랫폼',
+          alt: 'Tedin - Thought Pattern Mapping(TPM)과 AI-Link로 지식 캡슐을 만드는 플랫폼',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Habitus33 - Atomic Memo. Accelerate your learning!',
+    title: 'Tedin - Atomic Memo. Accelerate your learning!',
     description: 'Thought Pattern Mapping(TPM)으로 생각의 패턴을 분석하고 AI-Link로 지식 캡슐을 만드는 학습 도구입니다.',
     images: ['/hero-image.png'],
-    creator: '@habitus33',
-    site: '@habitus33',
+    creator: '@tedin',
+    site: '@tedin',
   },
   robots: {
     index: true,
@@ -102,9 +102,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              "name": "Habitus33",
+              "name": "Tedin",
               "description": "Thought Pattern Mapping(TPM)으로 생각의 패턴을 분석하고 AI-Link로 지식 캡슐을 만들어 더 깊이 이해하게 돕는 학습 도구입니다.",
-              "url": "https://habitus33.vercel.app",
+              "url": "https://tedin.vercel.app",
               "applicationCategory": "EducationalApplication",
               "operatingSystem": "Web",
               "offers": {
@@ -114,15 +114,15 @@ export default function RootLayout({
               },
               "author": {
                 "@type": "Organization",
-                "name": "Habitus33",
-                "url": "https://habitus33.vercel.app"
+                "name": "Tedin",
+                "url": "https://tedin.vercel.app"
               },
               "publisher": {
                 "@type": "Organization",
-                "name": "Habitus33",
+                "name": "Tedin",
                 "logo": {
                   "@type": "ImageObject",
-                  "url": "https://habitus33.vercel.app/images/mascot/habitus-logo-seal.png"
+                  "url": "https://tedin.vercel.app/images/mascot/habitus-logo-seal.png"
                 }
               },
               "aggregateRating": {
@@ -149,12 +149,12 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "Habitus33",
-              "url": "https://habitus33.vercel.app",
-              "logo": "https://habitus33.vercel.app/images/mascot/habitus-logo-seal.png",
+              "url": "https://tedin.vercel.app",
+              "logo": "https://tedin.vercel.app/images/mascot/habitus-logo-seal.png",
               "description": "AI 시대를 위한 새로운 생각의 습관을 만드는 플랫폼",
               "foundingDate": "2024",
               "sameAs": [
-                "https://twitter.com/habitus33"
+                "https://twitter.com/tedin"
               ]
             })
           }}

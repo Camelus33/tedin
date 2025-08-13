@@ -1,5 +1,5 @@
 {
-  "name": "habitus33-monorepo",
+  "name": "tedin-monorepo",
   "private": true,
   "workspaces": [
     "frontend",

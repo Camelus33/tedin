@@ -1,4 +1,4 @@
-# Habitus33 - robots.txt
+# Tedin - robots.txt
 # AI 시대를 위한 새로운 생각의 습관을 만드는 플랫폼
 
 # Allow all crawlers to access the main site
@@ -34,7 +34,7 @@ Allow: /onboarding/
 
 # Sitemap location
 # 공식 사이트맵 경로를 정적 파일(/sitemap.xml)로 통일합니다.
-Sitemap: https://habitus33.vercel.app/sitemap.xml
+Sitemap: https://tedin.vercel.app/sitemap.xml
 
 # Crawl delay (optional - adjust based on server capacity)
 Crawl-delay: 1

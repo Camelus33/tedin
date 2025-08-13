@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: 'https://habitus33.vercel.app',
+  siteUrl: 'https://tedin.vercel.app',
   generateRobotsTxt: false, // 이미 robots.txt가 있으므로 false
   generateIndexSitemap: false,
   exclude: [
@@ -55,7 +55,7 @@ module.exports = {
       }
     ],
     additionalSitemaps: [
-      'https://habitus33.vercel.app/sitemap.xml'
+      'https://tedin.vercel.app/sitemap.xml'
     ]
   },
   // 동적 블로그 슬러그를 사이트맵에 포함
