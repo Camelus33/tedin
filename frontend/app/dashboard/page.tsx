@@ -491,8 +491,8 @@ export default function DashboardPage() {
                         minimalDisplay={true}
                         bookTitle={bookInfoMap.get(memo.bookId)?.title}
                         className={`
-                          bg-stone-50
-                          border border-stone-200
+                          bg-amber-50
+                          border border-amber-200
                           shadow-[0_1px_2px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)]
                           transform ${colorScheme.rotation}
                           hover:shadow-md hover:scale-105 hover:rotate-0
