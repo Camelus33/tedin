@@ -19,6 +19,8 @@ export interface LLMResponse {
     completionTokens: number;
     totalTokens: number;
   };
+  finishReason?: string;
+  isTruncated?: boolean;
 }
 
 export interface LLMRequest {
@@ -39,6 +41,7 @@ export interface LLMRequest {
  * ChatGPT, Claude, Gemini를 지원하는 추상화 레이어
  */
 export class LLMService {
+  private static readonly CONTINUE_INSTRUCTION_KO = '위 답변이 중간에 잘렸습니다. 반복 없이 이어서 계속 작성하세요. 이전 내용을 요약하거나 다시 시작하지 말고 바로 이어서 새 내용을 작성하세요.';
   // 중립 시스템 프롬프트: 품질/안전 가드레일만 포함
   private static readonly NEUTRAL_SYSTEM_PROMPT = [
     '당신은 중립적인 AI 어시스턴트입니다.',
@@ -149,30 +152,65 @@ export class LLMService {
   async generateResponse(request: LLMRequest): Promise<LLMResponse> {
     const { llmProvider, userApiKey } = request;
 
-    // 사용자 입력 키만 허용. 누락 시 에러 반환
     if (!userApiKey || !String(userApiKey).trim()) {
       throw new Error(`${llmProvider}에 대한 사용자 API 키가 필요합니다.`);
     }
 
     try {
-      switch (llmProvider) {
-        case 'ChatGPT':
-          return await this.generateChatGPTResponse(request);
-
-        case 'Claude':
-          return await this.generateClaudeResponse(request);
-
-        case 'Gemini':
-          return await this.generateGeminiResponse(request);
-
-        default:
-          throw new Error(`지원하지 않는 LLM 제공자: ${llmProvider}`);
+      const maxContinues = Math.max(0, Number(process.env.LLM_MAX_CONTINUE_STEPS || 2));
+      let aggregatedContent = '';
+      let totalUsage = { promptTokens: 0, completionTokens: 0, totalTokens: 0 } as any;
+      let lastResponse = await this.singleCall(request);
+      aggregatedContent = lastResponse.content || '';
+      if (lastResponse.usage) {
+        totalUsage.promptTokens += lastResponse.usage.promptTokens || 0;
+        totalUsage.completionTokens += lastResponse.usage.completionTokens || 0;
+        totalUsage.totalTokens += lastResponse.usage.totalTokens || 0;
       }
+
+      let steps = 0;
+      while (lastResponse.isTruncated && steps < maxContinues) {
+        steps++;
+        const tail = aggregatedContent.slice(-500);
+        const continueRequest: LLMRequest = {
+          ...request,
+          message: `${request.message}\n\n${LLMService.CONTINUE_INSTRUCTION_KO}\n\n이전 출력 일부:\n${tail}`,
+        };
+        const next = await this.singleCall(continueRequest);
+        aggregatedContent = `${aggregatedContent}\n${next.content || ''}`.trim();
+        if (next.usage) {
+          totalUsage.promptTokens += next.usage.promptTokens || 0;
+          totalUsage.completionTokens += next.usage.completionTokens || 0;
+          totalUsage.totalTokens += next.usage.totalTokens || 0;
+        }
+        lastResponse = next;
+      }
+
+      return {
+        content: aggregatedContent,
+        model: lastResponse.model,
+        provider: lastResponse.provider,
+        usage: (totalUsage.totalTokens > 0) ? totalUsage : lastResponse.usage,
+        finishReason: lastResponse.finishReason,
+        isTruncated: lastResponse.isTruncated,
+      };
     } catch (error) {
       console.error(`LLM 응답 생성 오류 (${llmProvider}):`, error);
-      // 오류 객체를 자세히 로깅
       console.error('LLM API 호출 오류 상세:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
       throw error;
+    }
+  }
+
+  private async singleCall(request: LLMRequest): Promise<LLMResponse> {
+    switch (request.llmProvider) {
+      case 'ChatGPT':
+        return await this.generateChatGPTResponse(request);
+      case 'Claude':
+        return await this.generateClaudeResponse(request);
+      case 'Gemini':
+        return await this.generateGeminiResponse(request);
+      default:
+        throw new Error(`지원하지 않는 LLM 제공자: ${request.llmProvider}`);
     }
   }
 
@@ -259,8 +297,9 @@ export class LLMService {
         };
 
         const responseText: string = extractText(resp) || '응답을 생성할 수 없습니다.';
-
         const usage = resp?.usage || resp?.response?.usage;
+        const outputTokens = usage?.output_tokens ?? usage?.completion_tokens;
+        const isTruncated = typeof outputTokens === 'number' && outputTokens >= maxOut - 1;
         return {
           content: responseText,
           model: request.llmModel,
@@ -270,6 +309,8 @@ export class LLMService {
             completionTokens: usage.output_tokens ?? usage.completion_tokens,
             totalTokens: usage.total_tokens,
           } : undefined,
+          finishReason: isTruncated ? 'length' : undefined,
+          isTruncated,
         };
       }
 
@@ -298,6 +339,7 @@ export class LLMService {
       });
 
       const response = completion.choices[0]?.message?.content || '응답을 생성할 수 없습니다.';
+      const finishReason = completion.choices[0]?.finish_reason;
 
       return {
         content: response,
@@ -307,7 +349,9 @@ export class LLMService {
           promptTokens: completion.usage.prompt_tokens,
           completionTokens: completion.usage.completion_tokens,
           totalTokens: completion.usage.total_tokens,
-        } : undefined
+        } : undefined,
+        finishReason,
+        isTruncated: finishReason === 'length',
       };
     } catch (error) {
       console.error(`ChatGPT 응답 생성 오류:`, error);
@@ -364,12 +408,15 @@ export class LLMService {
       const text = (completion as any)?.content?.[0]?.text ||
         (completion as any)?.content?.[0]?.type === 'text' && (completion as any)?.content?.[0]?.text ||
         JSON.stringify(completion);
+      const stopReason = (completion as any)?.stop_reason;
 
       return {
         content: typeof text === 'string' ? text : '[빈 응답]',
         model,
         provider: 'Claude',
         usage: undefined,
+        finishReason: stopReason,
+        isTruncated: stopReason === 'max_tokens',
       };
     } catch (error) {
       console.error(`Claude 응답 생성 오류:`, error);
@@ -427,11 +474,14 @@ export class LLMService {
       const text = (generation as any)?.response?.text?.() ||
                    (generation as any)?.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
                    '[빈 응답]';
+      const finish = (generation as any)?.response?.candidates?.[0]?.finishReason;
 
       return {
         content: typeof text === 'string' ? text : '[빈 응답]',
         model,
         provider: 'Gemini',
+        finishReason: finish,
+        isTruncated: finish === 'MAX_TOKENS',
       };
     } catch (error) {
       console.error(`Gemini 응답 생성 오류:`, error);
